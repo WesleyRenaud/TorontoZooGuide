@@ -128,6 +128,16 @@ def Test_IsAnimalUnscheduled_TestScheduleTimes_ExpectUnscheduledWhenIncomplete()
          end_time='09:38',
       )
    )
+   assert not BulkScheduleItineraryRunner.is_animal_unscheduled(
+      ItineraryAnimalRecord(
+         species='Masai Giraffe',
+         exhibit='Africa Savanna',
+         enclosure_name='Outdoor',
+         old_likelihood=None,
+         new_likelihood=100,
+         added_by_transportation=True,
+      )
+   )
 
 
 def Test_Run_TestEmptyItinerary_ExpectAlreadyScheduled(

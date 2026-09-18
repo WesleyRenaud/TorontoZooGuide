@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..domain.itinerary_transportation_animal_syncer import ItineraryTransportationAnimalSyncer
 from ..domain.transportation_route_marker_sequences_builder import TransportationRouteMarkerSequencesBuilder
 from .itinerary_transportation_provider import ItineraryTransportationProvider
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
@@ -116,10 +117,12 @@ class ScheduleItineraryTransportationProvider():
             added_as_attraction=added_as_attraction,
             route_marker_sequences=route_marker_sequences )
 
-      return cls.update_itinerary_transportation_schedule(
+      updated = cls.update_itinerary_transportation_schedule(
          cur,
          name=name,
          added_as_attraction=added_as_attraction,
          start_time=parent_start_time,
          end_time=parent_end_time,
          route=route )
+      ItineraryTransportationAnimalSyncer.apply( cur.connection )
+      return updated

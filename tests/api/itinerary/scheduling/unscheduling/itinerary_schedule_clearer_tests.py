@@ -12,15 +12,16 @@ CAROUSEL = 'Conservation Carousel'
 
 SCHEDULE_CLEARER_SCHEMA = """
 CREATE TABLE ItineraryAnimal (
-   SPECIES              TEXT        NOT NULL,
-   EXHIBIT              TEXT        NOT NULL,
-   ENCLOSURE_NAME       TEXT,
-   OLD_LIKELIHOOD       INTEGER,
-   NEW_LIKELIHOOD       INTEGER,
-   IS_ADDED             INTEGER     NOT NULL DEFAULT 0,
-   COVERED_BY_TALK      INTEGER     NOT NULL DEFAULT 0,
-   START_TIME           TEXT,
-   END_TIME             TEXT
+   SPECIES                 TEXT        NOT NULL,
+   EXHIBIT                 TEXT        NOT NULL,
+   ENCLOSURE_NAME          TEXT,
+   OLD_LIKELIHOOD          INTEGER,
+   NEW_LIKELIHOOD          INTEGER,
+   IS_ADDED                INTEGER     NOT NULL DEFAULT 0,
+   COVERED_BY_TALK         INTEGER     NOT NULL DEFAULT 0,
+   ADDED_BY_TRANSPORTATION INTEGER     NOT NULL DEFAULT 0,
+   START_TIME              TEXT,
+   END_TIME                TEXT
 );
 
 CREATE TABLE ItineraryAttraction (
@@ -95,6 +96,16 @@ CREATE TABLE ItineraryWalkRouteLeg (
    TO_POINT_SEQUENCE          INTEGER     NOT NULL,
    TRAVEL_TIME_MINUTES        INTEGER     NOT NULL DEFAULT 0,
    PRIMARY KEY ( LEG_SEQUENCE )
+);
+
+CREATE TABLE TransportationAnimal (
+   TRANSPORTATION      TEXT        NOT NULL,
+   FROM_STATION        TEXT        NOT NULL,
+   TO_STATION          TEXT        NOT NULL,
+   SPECIES             TEXT        NOT NULL,
+   EXHIBIT             TEXT        NOT NULL,
+   ENCLOSURE_NAME      TEXT,
+   PRIMARY KEY ( SPECIES, EXHIBIT, ENCLOSURE_NAME )
 );
 """
 

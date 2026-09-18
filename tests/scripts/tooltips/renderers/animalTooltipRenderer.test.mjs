@@ -94,3 +94,47 @@ test('Test_CreateCard_TestAnimal_ExpectCardFactoryPayload', () => {
       LikelihoodPresenter.getLikelihoodPhrase = originalPhrase;
    }
 });
+
+test('Test_CreateCard_TestTransportationOnlyAnimal_ExpectStandardDetails', () => {
+   const originalNormalize = AssetKeyNormalizer.normalize;
+   const originalCreateCard = CardFactory.createTooltipCard;
+   const originalTitle = SpeciesLinkTitleBuilder.createAnimalTitleLinkElement;
+   const originalSpecies = AnimalSelectorModel.getAnimalSpecies;
+   const originalEnclosure = AnimalSelectorModel.getAnimalEnclosureName;
+   const originalSubtitle = AnimalSelectorModel.getAnimalSubtitle;
+   const originalPhrase = LikelihoodPresenter.getLikelihoodPhrase;
+   let captured;
+
+   AssetKeyNormalizer.normalize = (value) => String(value).toLowerCase().replace(/\s+/g, '-');
+   SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = (options) => ({ title: options });
+   AnimalSelectorModel.getAnimalSpecies = () => 'Masai Giraffe';
+   AnimalSelectorModel.getAnimalEnclosureName = () => 'Outdoor';
+   AnimalSelectorModel.getAnimalSubtitle = () => 'Africa Savanna';
+   LikelihoodPresenter.getLikelihoodPhrase = () => 'High';
+   CardFactory.createTooltipCard = (payload) => {
+      captured = payload;
+      return { card: true };
+   };
+
+   try {
+      AnimalTooltipRenderer.createCard({
+         species: 'Masai Giraffe',
+         exhibit: 'Africa Savanna',
+         likelihood: 85,
+         added_by_transportation: true,
+         transportation: 'Zoomobile',
+      }, 0);
+      assert.deepEqual(captured.details, [
+         'Africa Savanna',
+         Strings.tooltips.likelihoodDetail('High', 85),
+      ]);
+   } finally {
+      AssetKeyNormalizer.normalize = originalNormalize;
+      CardFactory.createTooltipCard = originalCreateCard;
+      SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = originalTitle;
+      AnimalSelectorModel.getAnimalSpecies = originalSpecies;
+      AnimalSelectorModel.getAnimalEnclosureName = originalEnclosure;
+      AnimalSelectorModel.getAnimalSubtitle = originalSubtitle;
+      LikelihoodPresenter.getLikelihoodPhrase = originalPhrase;
+   }
+});

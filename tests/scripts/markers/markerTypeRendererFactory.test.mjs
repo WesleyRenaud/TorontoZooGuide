@@ -5,6 +5,7 @@ import { IconUrlProvider } from '../../../scripts/assets/iconUrlProvider.js';
 import { MarkerTypeRendererFactory } from '../../../scripts/markers/markerTypeRendererFactory.js';
 import { MarkerVisualHelper } from '../../../scripts/markers/markerVisualHelper.js';
 import { ItemType } from '../../../scripts/shared/enums/itemType.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -26,6 +27,16 @@ test('Test_ShouldShowLimitedViewingIndicator_TestCases_ExpectBoolean', () => {
    }), true);
    assert.equal(MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator({
       viewing_alert_messages: ['Alert'],
+   }), true);
+});
+
+test('Test_ShouldShowViewableFromZoomobileIndicator_TestFlag_ExpectBoolean', () => {
+   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator(null), false);
+   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
+      added_by_transportation: false,
+   }), false);
+   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
+      added_by_transportation: true,
    }), true);
 });
 
@@ -78,7 +89,7 @@ test('Test_CreateGenericIconMarkerRenderer_TestCount_ExpectVisualHelpers', () =>
       const render = MarkerTypeRendererFactory.createGenericIconMarkerRenderer(ItemType.PAVILION);
       const markerEl = _markerEl();
       render(markerEl, [{ type: ItemType.PAVILION }, { type: ItemType.PAVILION }]);
-      assert.deepEqual(calls[0], [
+      assert.deepEqual(calls[Position.FIRST], [
          'class',
          markerEl,
          MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[ItemType.PAVILION],
@@ -120,7 +131,7 @@ test('Test_CreateLikelihoodIconMarkerRenderer_TestSingleAndCount_ExpectIcons', (
 
       calls.length = 0;
       render(markerEl, [{ likelihood: 100 }]);
-      assert.ok(calls.some((entry) => entry[0] === 'bg' && entry[2] === 'url-open'));
+      assert.ok(calls.some((entry) => entry[Position.FIRST] === 'bg' && entry[2] === 'url-open'));
       assert.ok(calls.some(([kind]) => kind === 'size'));
    } finally {
       MarkerVisualHelper.applyMarkerClass = originalClass;
@@ -162,11 +173,28 @@ test('Test_RenderAnimalMarker_TestCountAndLimited_ExpectVisuals', () => {
          likelihood: 80,
          viewing_alert_messages: ['Alert'],
       }]);
-      assert.ok(calls.some((entry) => entry[0] === 'bg' && entry[2] === 'animal-url'));
+      assert.ok(calls.some((entry) => entry[Position.FIRST] === 'bg' && entry[2] === 'animal-url'));
       assert.ok(calls.some((entry) => (
-         entry[0] === 'class'
+         entry[Position.FIRST] === 'class'
          && entry[2] === MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS
       )));
+
+      calls.length = 0;
+      MarkerTypeRendererFactory.renderAnimalMarker(markerEl, [{
+         species: 'Giraffe',
+         exhibit: 'Africa',
+         likelihood: 80,
+         added_by_transportation: true,
+         viewing_alert_messages: ['Alert'],
+      }]);
+      assert.ok(calls.some((entry) => (
+         entry[Position.FIRST] === 'class'
+         && entry[2] === MarkerTypeRendererFactory.VIEWABLE_FROM_ZOOMOBILE_MARKER_CLASS
+      )));
+      assert.equal(calls.some((entry) => (
+         entry[Position.FIRST] === 'class'
+         && entry[2] === MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS
+      )), false);
    } finally {
       MarkerVisualHelper.applyCountMarker = originalCount;
       MarkerVisualHelper.applyBackgroundImage = originalBg;
@@ -206,7 +234,7 @@ test('Test_RenderRestroomMarker_TestClosedAndAlert_ExpectVisuals', () => {
          is_closed: true,
       }]);
       assert.ok(calls.some((entry) => (
-         entry[0] === 'bg' && entry[2] === `restroom-${MarkerTypeRendererFactory.CLOSED_RESTROOM_ICON_TOKEN}`
+         entry[Position.FIRST] === 'bg' && entry[2] === `restroom-${MarkerTypeRendererFactory.CLOSED_RESTROOM_ICON_TOKEN}`
       )));
 
       calls.length = 0;
@@ -216,7 +244,7 @@ test('Test_RenderRestroomMarker_TestClosedAndAlert_ExpectVisuals', () => {
          alert_message: 'Alert',
       }]);
       assert.ok(calls.some((entry) => (
-         entry[0] === 'class'
+         entry[Position.FIRST] === 'class'
          && entry[2] === MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS
       )));
    } finally {
@@ -274,11 +302,11 @@ test('Test_RenderDrinkingFountainMarker_TestLikelihoodPaths_ExpectVisuals', () =
 
       calls.length = 0;
       MarkerTypeRendererFactory.renderDrinkingFountainMarker(markerEl, [{ is_closed: true }]);
-      assert.ok(calls.some((entry) => entry[0] === 'bg' && entry[2] === 'df-0'));
+      assert.ok(calls.some((entry) => entry[Position.FIRST] === 'bg' && entry[2] === 'df-0'));
 
       calls.length = 0;
       MarkerTypeRendererFactory.renderDrinkingFountainMarker(markerEl, [{ likelihood: 0.8 }]);
-      assert.ok(calls.some((entry) => entry[0] === 'bg' && entry[2] === 'df-80'));
+      assert.ok(calls.some((entry) => entry[Position.FIRST] === 'bg' && entry[2] === 'df-80'));
    } finally {
       MarkerVisualHelper.applyMarkerClass = originalClass;
       MarkerVisualHelper.applyCountMarker = originalCount;
@@ -308,13 +336,13 @@ test('Test_RenderGuestServiceMarker_TestFirstAidAndCount_ExpectVisuals', () => {
       ]);
       assert.ok(calls.some(([kind]) => kind === 'count'));
       assert.ok(calls.some((entry) => (
-         entry[0] === 'class'
+         entry[Position.FIRST] === 'class'
          && entry[2] === MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE.firstAidGuestService
       )));
 
       calls.length = 0;
       MarkerTypeRendererFactory.renderGuestServiceMarker(markerEl, [{ service_type: 'Info Desk' }]);
-      assert.ok(calls.some((entry) => entry[0] === 'bg' && entry[2] === 'gs-Info Desk'));
+      assert.ok(calls.some((entry) => entry[Position.FIRST] === 'bg' && entry[2] === 'gs-Info Desk'));
    } finally {
       MarkerVisualHelper.applyMarkerClass = originalClass;
       MarkerVisualHelper.applyCountMarker = originalCount;
@@ -345,7 +373,7 @@ test('Test_RenderEventSiteMarker_TestSingleAndCount_ExpectVisuals', () => {
 
       calls.length = 0;
       MarkerTypeRendererFactory.renderEventSiteMarker(markerEl, [{ name: 'Stage' }]);
-      assert.ok(calls.some((entry) => entry[0] === 'bg' && entry[2] === 'event-Stage'));
+      assert.ok(calls.some((entry) => entry[Position.FIRST] === 'bg' && entry[2] === 'event-Stage'));
    } finally {
       MarkerVisualHelper.applyMarkerClass = originalClass;
       MarkerVisualHelper.applyCountMarker = originalCount;

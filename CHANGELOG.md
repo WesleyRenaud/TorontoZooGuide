@@ -5,6 +5,7 @@
 ### Itinerary
 
 - The itinerary map has a settings gear. It opens a builder-sized overlay for the three suppressible warnings (**Short Visit?**, **Early Admission Hours**, **Add to Itinerary?**). **Save** applies the checkboxes; **×** discards unsaved changes after **Save Changes?**. Checked means the warning still shows; unchecked is the same as **Don’t show this again**.
+- After **Rebuild schedule**, animals viewable from written Zoomobile hops (seeded enclosure-to-leg map) appear on the itinerary map with a lime ring. Clicking one shows the same style of alert as viewing alerts, that the animal is only planned via the Zoomobile on the itinerary. They stay off List and Day Planner, unless the guest also added that enclosure.
 
 ### Console operations
 

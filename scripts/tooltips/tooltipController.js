@@ -98,13 +98,14 @@ export class TooltipController {
          MarkerHelper.applyMarkerVisual(marker, getOpenItems() || marker.__items || []);
       }
 
-      function addMarkerClickHandler(markerEl, items, clickable) {
+      function addMarkerClickHandler(markerEl, items, clickable, hover) {
          if (!clickable) {
             return;
          }
 
          markerEl.addEventListener('click', (event) => {
             event.stopPropagation();
+            hover?.hide?.();
             toggle(markerEl, items);
          });
       }
@@ -124,7 +125,7 @@ export class TooltipController {
       function attachToMarker(markerEl, items, hover, opts = {}) {
          const clickable = opts.clickable !== false;
 
-         addMarkerClickHandler(markerEl, items, clickable);
+         addMarkerClickHandler(markerEl, items, clickable, hover);
          addMarkerHoverHandlers(markerEl, hover);
       }
 

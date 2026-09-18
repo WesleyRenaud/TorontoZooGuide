@@ -38,7 +38,7 @@ class ItineraryStopResolver():
       stops: list[ ItineraryStop ] = [ cls.entrance() ]
 
       for animal in itinerary.animals:
-         if animal.covered_by_talk:
+         if animal.covered_by_talk or animal.added_by_transportation:
             continue
 
          walk_node_id = ViewingWalkNodeIdResolver.resolve(

@@ -32,6 +32,7 @@ def Test_ToDict_TestFields_ExpectFrontendShape() -> None:
       'new_likelihood': 60,
       'is_added': True,
       'covered_by_talk': False,
+      'added_by_transportation': False,
       'start_time': '10:00 AM',
       'end_time': '10:30 AM',
    }

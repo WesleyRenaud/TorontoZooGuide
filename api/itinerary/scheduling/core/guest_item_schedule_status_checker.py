@@ -34,11 +34,12 @@ class GuestItemScheduleStatusChecker():
    @classmethod
    def has_unscheduled_guest_items( cls, itinerary: Itinerary ) -> bool:
       return any(
+         not animal.added_by_transportation
+         and not cls.has_schedule_times( animal.start_time, animal.end_time )
+         for animal in itinerary.animals
+      ) or any(
          not cls.has_schedule_times( item.start_time, item.end_time )
-         for item in (
-            *itinerary.animals,
-            *itinerary.attractions,
-         )
+         for item in itinerary.attractions
       ) or any(
          cls._transportation_counts_as_unscheduled( transportation )
          for transportation in itinerary.transportations

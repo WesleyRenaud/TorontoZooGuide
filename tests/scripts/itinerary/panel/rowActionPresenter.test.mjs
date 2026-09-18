@@ -252,3 +252,21 @@ test('Test_BuildRowScheduleActionProps_TestCombined_ExpectMerged', () => {
    assert.equal(props.actionLabel, 'Schedule');
    assert.equal(props.secondaryActionLabel, 'Remove');
 });
+
+test('Test_BuildRowScheduleActionProps_TestTransportationOnlyAnimal_ExpectNoActions', () => {
+   assert.deepEqual(
+      RowActionPresenter.buildRowScheduleActionProps(
+         ScheduleItemKind.ANIMAL.itemType,
+         {
+            species: 'Masai Giraffe',
+            exhibit: 'Africa Savanna',
+            added_by_transportation: true,
+         },
+         {
+            onScheduleItem: () => {},
+            onRemoveItem: () => {},
+         }
+      ),
+      {}
+   );
+});

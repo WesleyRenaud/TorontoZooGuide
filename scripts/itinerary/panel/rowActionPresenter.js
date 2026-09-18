@@ -1,3 +1,4 @@
+import { ItineraryTransportationAnimal } from '../itineraryTransportationAnimal.js';
 import { ScheduleItemSearcher } from './scheduleItemSearcher.js';
 import { TransportationSelectorModel } from '../selectors/transportationSelector/transportationSelectorModel.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
@@ -9,11 +10,19 @@ export class RowActionPresenter {
    }
 
    static canShowItineraryItemScheduleControls(itemType, item) {
+      if (ItineraryTransportationAnimal.isAddedByTransportation(item)) {
+         return false;
+      }
+
       if (itemType !== ScheduleItemKind.TRANSPORTATION.itemType) {
          return true;
       }
 
       return TransportationSelectorModel.isTransportationAddedAsAttraction(item);
+   }
+
+   static canShowItineraryItemRemoveControls(item) {
+      return !ItineraryTransportationAnimal.isAddedByTransportation(item);
    }
 
    static buildScheduleRowProps(itemType, item, onScheduleItem) {
@@ -79,6 +88,10 @@ export class RowActionPresenter {
       { useSecondaryAction = true } = {}
    ) {
       if (typeof onRemoveItem !== 'function') {
+         return {};
+      }
+
+      if (!RowActionPresenter.canShowItineraryItemRemoveControls(item)) {
          return {};
       }
 

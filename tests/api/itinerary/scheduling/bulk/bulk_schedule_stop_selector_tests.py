@@ -31,6 +31,13 @@ def _saved() -> SavedItinerary:
             exhibit='Indo-Malaya Outdoor',
             old_likelihood=None,
             new_likelihood=100 ),
+         ItineraryAnimalRecord(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100,
+            added_by_transportation=True ),
       ],
       attraction_rows=[
          ItineraryAttractionRecord(
@@ -85,6 +92,15 @@ def Test_Animals_TestScheduledOnly_ExpectTimedAnimals() -> None:
          _saved(),
          only_previously_scheduled=True )
    ] == [ 'African Lion' ]
+
+
+def Test_Animals_TestAllGuestAnimals_ExpectTransportationOnlyOmitted() -> None:
+   assert [
+      animal.species
+      for animal in BulkScheduleStopSelector.animals(
+         _saved(),
+         only_previously_scheduled=False )
+   ] == [ 'African Lion', 'Cheetah' ]
 
 
 def Test_Transportations_TestAttractionModeOnly_ExpectAttractionModeRows() -> None:

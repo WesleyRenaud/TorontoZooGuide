@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import date
 import sqlite3
 
@@ -38,15 +39,17 @@ CREATE TABLE ItineraryExhibit (
 );
 
 CREATE TABLE ItineraryAnimal (
-   SPECIES              TEXT        NOT NULL,
-   EXHIBIT              TEXT        NOT NULL,
-   ENCLOSURE_NAME       TEXT,
-   OLD_LIKELIHOOD       INTEGER,
-   NEW_LIKELIHOOD       INTEGER,
-   IS_ADDED             INTEGER     NOT NULL DEFAULT 0,
-   COVERED_BY_TALK      INTEGER     NOT NULL DEFAULT 0,
-   START_TIME           TEXT,
-   END_TIME             TEXT
+   SPECIES                 TEXT        NOT NULL,
+   EXHIBIT                 TEXT        NOT NULL,
+   ENCLOSURE_NAME          TEXT,
+   OLD_LIKELIHOOD          INTEGER,
+   NEW_LIKELIHOOD          INTEGER,
+   IS_ADDED                INTEGER     NOT NULL DEFAULT 0,
+   COVERED_BY_TALK         INTEGER     NOT NULL DEFAULT 0,
+   ADDED_BY_TRANSPORTATION INTEGER     NOT NULL DEFAULT 0,
+   START_TIME              TEXT,
+   END_TIME                TEXT,
+   PRIMARY KEY ( SPECIES, EXHIBIT, ENCLOSURE_NAME )
 );
 
 CREATE TABLE ItineraryAttraction (
@@ -103,6 +106,16 @@ CREATE TABLE ItineraryEvent (
    EVENT_TYPE           TEXT        NOT NULL PRIMARY KEY,
    START_TIME           TEXT,
    END_TIME             TEXT
+);
+
+CREATE TABLE TransportationAnimal (
+   TRANSPORTATION      TEXT        NOT NULL,
+   FROM_STATION        TEXT        NOT NULL,
+   TO_STATION          TEXT        NOT NULL,
+   SPECIES             TEXT        NOT NULL,
+   EXHIBIT             TEXT        NOT NULL,
+   ENCLOSURE_NAME      TEXT,
+   PRIMARY KEY ( SPECIES, EXHIBIT, ENCLOSURE_NAME )
 );
 """
 
@@ -382,6 +395,123 @@ def Test_SaveItineraryAnimals_TestScheduledAnimal_ExpectPersistedRow(
       'COVERED_BY_TALK': 0,
       'START_TIME': '10:00 AM',
       'END_TIME': '10:08 AM',
+   }
+
+
+def Test_SaveValidatedItinerary_TestExistingTransportationAnimal_ExpectPromotedToGuest(
+      save_provider_conn: sqlite3.Connection ) -> None:
+   save_provider_conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               NEW_LIKELIHOOD,
+               ADDED_BY_TRANSPORTATION
+            )
+            VALUES ( ?, ?, ?, ?, ? );
+      """,
+      ( 'Masai Giraffe', SAVANNA, 'Outdoor', 80, 1 ) )
+   save_provider_conn.commit()
+
+   result = SaveItineraryProvider.save_validated_itinerary(
+      save_provider_conn,
+      VISIT_DATE,
+      replace(
+         _empty_validated(),
+         animals=[
+            AnimalDiff(
+               species='Masai Giraffe',
+               exhibit=SAVANNA,
+               enclosure_name='Outdoor',
+               old_likelihood=80,
+               new_likelihood=65,
+               is_added=True,
+               covered_by_talk=False,
+               start_time='10:00',
+               end_time='10:08' ),
+         ],
+      ) )
+
+   row = save_provider_conn.execute(
+      """   SELECT ADDED_BY_TRANSPORTATION, OLD_LIKELIHOOD, NEW_LIKELIHOOD,
+                   IS_ADDED, START_TIME, END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME = ?;
+      """,
+      ( 'Masai Giraffe', SAVANNA, 'Outdoor' ),
+   ).fetchone()
+
+   assert result is True
+   assert row is not None
+   assert dict( row ) == {
+      'ADDED_BY_TRANSPORTATION': 0,
+      'OLD_LIKELIHOOD': 80,
+      'NEW_LIKELIHOOD': 65,
+      'IS_ADDED': 1,
+      'START_TIME': '10:00 AM',
+      'END_TIME': '10:08 AM',
+   }
+
+
+def Test_SaveItineraryAnimals_TestUnrelatedTransportationAnimal_ExpectUnrelatedRowKept(
+      save_provider_conn: sqlite3.Connection ) -> None:
+   save_provider_conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               NEW_LIKELIHOOD,
+               ADDED_BY_TRANSPORTATION
+            )
+            VALUES ( ?, ?, ?, ?, ? );
+      """,
+      ( 'Masai Giraffe', SAVANNA, 'Outdoor', 80, 1 ) )
+   save_provider_conn.commit()
+
+   cur = save_provider_conn.cursor()
+   SaveItineraryProvider.save_itinerary_animals(
+      cur,
+      [
+         AnimalDiff(
+            species=LION,
+            exhibit=SAVANNA,
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100,
+            is_added=True,
+            covered_by_talk=False,
+            start_time='10:00',
+            end_time='10:08' ),
+      ] )
+   save_provider_conn.commit()
+   cur.close()
+
+   giraffe_row = save_provider_conn.execute(
+      """   SELECT ADDED_BY_TRANSPORTATION
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME = ?;
+      """,
+      ( 'Masai Giraffe', SAVANNA, 'Outdoor' ),
+   ).fetchone()
+
+   lion_row = save_provider_conn.execute(
+      """   SELECT SPECIES, ADDED_BY_TRANSPORTATION
+            FROM ItineraryAnimal
+            WHERE SPECIES = ?;
+      """,
+      ( LION, ),
+   ).fetchone()
+
+   assert giraffe_row is not None
+   assert dict( giraffe_row ) == { 'ADDED_BY_TRANSPORTATION': 1 }
+   assert lion_row is not None
+   assert dict( lion_row ) == {
+      'SPECIES': LION,
+      'ADDED_BY_TRANSPORTATION': 0,
    }
 
 
@@ -703,3 +833,75 @@ def Test_SaveValidatedItinerary_TestEmptyPayload_ExpectDateAndCommit(
    }
    assert exhibit_row is not None
    assert exhibit_row[ 'EXHIBIT' ] == SAVANNA
+
+
+def Test_SaveValidatedItinerary_TestMatchingRideLeg_ExpectTransportationAnimalCommitted(
+      save_provider_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.domain.itinerary_transportation_animal_likelihood_resolver.'
+      'AnimalCoordinator.get_animals_for_saved_itinerary',
+      lambda **kwargs: [] )
+   save_provider_conn.execute(
+      """   INSERT INTO TransportationAnimal (
+               TRANSPORTATION,
+               FROM_STATION,
+               TO_STATION,
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME
+            )
+            VALUES (
+               'Zoomobile',
+               'Canadian Domain Zoomobile Station',
+               'Africa Zoomobile Station',
+               'Masai Giraffe',
+               'Africa Savanna',
+               'Outdoor'
+            );
+      """ )
+   save_provider_conn.execute(
+      """   INSERT INTO ItineraryTransportationLeg (
+               TRANSPORTATION,
+               ADDED_AS_ATTRACTION,
+               FROM_STATION,
+               TO_STATION,
+               START_TIME,
+               END_TIME
+            )
+            VALUES (
+               'Zoomobile',
+               0,
+               'Canadian Domain Zoomobile Station',
+               'Africa Zoomobile Station',
+               '10:20 AM',
+               '10:30 AM'
+            );
+      """ )
+   save_provider_conn.commit()
+
+   result = SaveItineraryProvider.save_validated_itinerary(
+      save_provider_conn,
+      VISIT_DATE,
+      _empty_validated() )
+
+   giraffe = save_provider_conn.execute(
+      """   SELECT
+               ADDED_BY_TRANSPORTATION,
+               NEW_LIKELIHOOD,
+               START_TIME,
+               END_TIME
+            FROM ItineraryAnimal
+            WHERE SPECIES = 'Masai Giraffe'
+              AND EXHIBIT = 'Africa Savanna'
+              AND ENCLOSURE_NAME = 'Outdoor';
+      """ ).fetchone()
+
+   assert result is True
+   assert giraffe is not None
+   assert dict( giraffe ) == {
+      'ADDED_BY_TRANSPORTATION': 1,
+      'NEW_LIKELIHOOD': 0,
+      'START_TIME': None,
+      'END_TIME': None,
+   }

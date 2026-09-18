@@ -1,0 +1,98 @@
+[
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Main Zoomobile Station",
+    "to_station": "Canadian Domain Zoomobile Station",
+    "species": "Greater One-Horned Rhinoceros",
+    "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_name": "Outdoor"
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Main Zoomobile Station",
+    "to_station": "Canadian Domain Zoomobile Station",
+    "species": "Sumatran Orangutan",
+    "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_name": "Outdoor"
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Main Zoomobile Station",
+    "to_station": "Canadian Domain Zoomobile Station",
+    "species": "Masai Giraffe",
+    "exhibit": "Africa Savanna",
+    "enclosure_name": "Outdoor"
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Main Zoomobile Station",
+    "to_station": "Canadian Domain Zoomobile Station",
+    "species": "Cheetah",
+    "exhibit": "Africa Savanna",
+    "enclosure_name": null
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Canadian Domain Zoomobile Station",
+    "to_station": "Africa Zoomobile Station",
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "enclosure_name": null
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Canadian Domain Zoomobile Station",
+    "to_station": "Africa Zoomobile Station",
+    "species": "Grevy's Zebra",
+    "exhibit": "Canadian Domain",
+    "enclosure_name": "Savanna Grasslands"
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Africa Zoomobile Station",
+    "to_station": "Tundra Zoomobile Station",
+    "species": "Watusi Cattle",
+    "exhibit": "Africa Savanna",
+    "enclosure_name": null
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Africa Zoomobile Station",
+    "to_station": "Tundra Zoomobile Station",
+    "species": "American Flamingo",
+    "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "enclosure_name": null
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Africa Zoomobile Station",
+    "to_station": "Tundra Zoomobile Station",
+    "species": "Caribou",
+    "exhibit": "Tundra Trek",
+    "enclosure_name": null
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Tundra Zoomobile Station",
+    "to_station": "Eurasia Zoomobile Station",
+    "species": "Asian Wild Horse",
+    "exhibit": "Eurasia Wilds",
+    "enclosure_name": "Eurasia Drive Thru"
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Tundra Zoomobile Station",
+    "to_station": "Eurasia Zoomobile Station",
+    "species": "Domestic Yak",
+    "exhibit": "Eurasia Wilds",
+    "enclosure_name": "Eurasia Drive Thru"
+  },
+  {
+    "transportation": "Zoomobile",
+    "from_station": "Tundra Zoomobile Station",
+    "to_station": "Eurasia Zoomobile Station",
+    "species": "Highland Cattle",
+    "exhibit": "Eurasia Wilds",
+    "enclosure_name": null
+  }
+]

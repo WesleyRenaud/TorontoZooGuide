@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..domain.itinerary_transportation_animal_syncer import ItineraryTransportationAnimalSyncer
 from .itinerary_transportation_provider import ItineraryTransportationProvider
 from .itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from ...types import Types
@@ -17,7 +18,15 @@ class ClearItineraryProvider():
 
 
    @classmethod
-   def clear_itinerary_animals( cls, cur: Types.Cursor ) -> None:
+   def clear_itinerary_animals_not_added_by_transportation( cls, cur: Types.Cursor ) -> None:
+      cur.execute(
+         """   DELETE FROM ItineraryAnimal
+               WHERE ADDED_BY_TRANSPORTATION = 0;
+         """ )
+
+
+   @classmethod
+   def clear_all_itinerary_animals( cls, cur: Types.Cursor ) -> None:
       cur.execute( 'DELETE FROM ItineraryAnimal;' )
 
 
@@ -48,13 +57,14 @@ class ClearItineraryProvider():
       try:
          cls.clear_itinerary_date( cur )
          cls.clear_itinerary_exhibits( cur )
-         cls.clear_itinerary_animals( cur )
+         cls.clear_itinerary_animals_not_added_by_transportation( cur )
          cls.clear_itinerary_attractions( cur )
          ItineraryTransportationProvider.clear_itinerary_transportations( cur )
          cls.clear_itinerary_guardians_talks( cur )
          cls.clear_itinerary_wild_encounters( cur )
          cls.clear_itinerary_events( cur )
          ItineraryWalkRouteProvider.clear_itinerary_walk_route( cur )
+         ItineraryTransportationAnimalSyncer.apply( conn )
 
          conn.commit()
 

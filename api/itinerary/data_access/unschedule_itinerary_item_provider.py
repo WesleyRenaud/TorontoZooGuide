@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..domain.itinerary_transportation_animal_syncer import ItineraryTransportationAnimalSyncer
 from .itinerary_transportation_provider import ItineraryTransportationProvider
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from ...shared.enums import ItineraryEventType
@@ -31,6 +32,7 @@ class UnscheduleItineraryItemProvider():
       ItineraryTransportationRouteMarkerProvider.clear_itinerary_transportation_route_markers( cur )
       ItineraryTransportationProvider.clear_itinerary_transportation_legs( cur )
       ItineraryTransportationProvider.clear_all_itinerary_transportation_schedule_times( cur )
+      ItineraryTransportationAnimalSyncer.apply( cur.connection )
 
 
    @classmethod
@@ -93,6 +95,7 @@ class UnscheduleItineraryItemProvider():
          cur,
          transportation=name,
          added_as_attraction=added_as_attraction )
+      ItineraryTransportationAnimalSyncer.apply( cur.connection )
 
 
    @classmethod

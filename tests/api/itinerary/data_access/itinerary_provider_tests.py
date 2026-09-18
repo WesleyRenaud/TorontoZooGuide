@@ -21,15 +21,25 @@ CREATE TABLE ItineraryExhibit (
 );
 
 CREATE TABLE ItineraryAnimal (
-   SPECIES              TEXT NOT NULL,
-   EXHIBIT              TEXT NOT NULL,
-   ENCLOSURE_NAME       TEXT,
-   OLD_LIKELIHOOD       INTEGER,
-   NEW_LIKELIHOOD       INTEGER,
-   IS_ADDED             INTEGER NOT NULL DEFAULT 0,
-   COVERED_BY_TALK       INTEGER NOT NULL DEFAULT 0,
-   START_TIME           TEXT,
-   END_TIME             TEXT
+   SPECIES                 TEXT NOT NULL,
+   EXHIBIT                 TEXT NOT NULL,
+   ENCLOSURE_NAME          TEXT,
+   OLD_LIKELIHOOD          INTEGER,
+   NEW_LIKELIHOOD          INTEGER,
+   IS_ADDED                INTEGER NOT NULL DEFAULT 0,
+   COVERED_BY_TALK         INTEGER NOT NULL DEFAULT 0,
+   ADDED_BY_TRANSPORTATION INTEGER NOT NULL DEFAULT 0,
+   START_TIME              TEXT,
+   END_TIME                TEXT
+);
+
+CREATE TABLE TransportationAnimal (
+   TRANSPORTATION      TEXT NOT NULL,
+   FROM_STATION        TEXT NOT NULL,
+   TO_STATION          TEXT NOT NULL,
+   SPECIES             TEXT NOT NULL,
+   EXHIBIT             TEXT NOT NULL,
+   ENCLOSURE_NAME      TEXT
 );
 
 CREATE TABLE ItineraryAttraction (
@@ -192,11 +202,52 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
    assert saved.arrival_time == '9:30 AM'
    assert saved.departure_time == '5:00 PM'
    assert saved.animal_rows[ Position.FIRST ].species == 'African Lion'
+   assert saved.animal_rows[ Position.FIRST ].transportation is None
    assert saved.attraction_rows[ Position.FIRST ].attraction == 'Conservation Carousel'
    assert saved.guardians_talk_rows[ Position.FIRST ].talk_name == 'African Lion'
    assert saved.guardians_talk_rows[ Position.FIRST ].start_time == '10:00 AM'
    assert saved.wild_encounter_rows[ Position.FIRST ].wild_encounter == 'African Rainforest'
    assert saved.wild_encounter_rows[ Position.FIRST ].start_time == '2:00 PM'
+
+
+def Test_FetchItineraryAnimalRows_TestAddedByTransportation_ExpectCatalogTransportation(
+      itinerary_provider_conn: sqlite3.Connection ) -> None:
+   itinerary_provider_conn.execute(
+      """   INSERT INTO TransportationAnimal (
+               TRANSPORTATION,
+               FROM_STATION,
+               TO_STATION,
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME
+            )
+            VALUES ( ?, ?, ?, ?, ?, ? );
+      """,
+      (
+         'Zoomobile',
+         'Canadian Domain Zoomobile Station',
+         'Africa Zoomobile Station',
+         'Masai Giraffe',
+         'Africa Savanna',
+         'Outdoor',
+      ) )
+   itinerary_provider_conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               ADDED_BY_TRANSPORTATION
+            )
+            VALUES ( ?, ?, ?, 1 );
+      """,
+      ( 'Masai Giraffe', 'Africa Savanna', 'Outdoor' ) )
+   itinerary_provider_conn.commit()
+
+   giraffe = ItineraryProvider.fetch_itinerary_animal_rows(
+      itinerary_provider_conn )[ Position.FIRST ]
+
+   assert giraffe.added_by_transportation is True
+   assert giraffe.transportation == 'Zoomobile'
 
 
 def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
@@ -247,3 +298,19 @@ def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
    assert legs[ Position.FIRST ].transportation == 'Zoomobile'
    assert legs[ Position.FIRST ].from_station == 'Main Zoomobile Station'
    assert legs[ Position.LAST ].to_station == 'Africa Zoomobile Station'
+
+
+def Test_FetchItineraryTransportationNames_TestSavedRows_ExpectTransportationNames(
+      itinerary_provider_conn: sqlite3.Connection ) -> None:
+   itinerary_provider_conn.execute(
+      """   INSERT INTO ItineraryTransportation (
+               TRANSPORTATION,
+               ADDED_AS_ATTRACTION
+            )
+            VALUES ( ?, ? );
+      """,
+      ( 'Zoomobile', 0 ) )
+   itinerary_provider_conn.commit()
+
+   assert ItineraryProvider.fetch_itinerary_transportation_names(
+      itinerary_provider_conn ) == { 'Zoomobile' }

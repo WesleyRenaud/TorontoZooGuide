@@ -25,15 +25,16 @@ CREATE TABLE AttractionAnimal (
 );
 
 CREATE TABLE ItineraryAnimal (
-   SPECIES              TEXT        NOT NULL,
-   EXHIBIT              TEXT        NOT NULL,
-   ENCLOSURE_NAME       TEXT,
-   OLD_LIKELIHOOD       INTEGER,
-   NEW_LIKELIHOOD       INTEGER,
-   IS_ADDED             INTEGER     NOT NULL DEFAULT 0,
-   COVERED_BY_TALK      INTEGER     NOT NULL DEFAULT 0,
-   START_TIME           TEXT,
-   END_TIME             TEXT
+   SPECIES                 TEXT        NOT NULL,
+   EXHIBIT                 TEXT        NOT NULL,
+   ENCLOSURE_NAME          TEXT,
+   OLD_LIKELIHOOD          INTEGER,
+   NEW_LIKELIHOOD          INTEGER,
+   IS_ADDED                INTEGER     NOT NULL DEFAULT 0,
+   COVERED_BY_TALK         INTEGER     NOT NULL DEFAULT 0,
+   ADDED_BY_TRANSPORTATION INTEGER     NOT NULL DEFAULT 0,
+   START_TIME              TEXT,
+   END_TIME                TEXT
 );
 
 CREATE TABLE ItineraryAttraction (

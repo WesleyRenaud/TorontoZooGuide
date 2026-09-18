@@ -2,6 +2,7 @@ import { AnimalIdentity } from './animalIdentity.js';
 import { ItineraryDraftEqualityComparer } from './itineraryDraftEqualityComparer.js';
 import { ItineraryDraftModel } from './itineraryDraftModel.js';
 import { ItineraryDraftSaveNormalizer } from './itineraryDraftSaveNormalizer.js';
+import { ItineraryTransportationAnimal } from './itineraryTransportationAnimal.js';
 import { ItineraryItemFormatter } from './panel/itineraryItemFormatter.js';
 import { TransportationSelectorModel } from './selectors/transportationSelector/transportationSelectorModel.js';
 
@@ -94,6 +95,9 @@ export class ItineraryShape {
 
       return {
          ...normalized,
+         animals: normalized.animals.filter(
+            (item) => !ItineraryTransportationAnimal.isAddedByTransportation(item)
+         ),
          attractions: [...normalized.attractions, ...fromTransportations],
          transportations: normalized.transportations.filter(
             (item) => !TransportationSelectorModel.isTransportationAddedAsAttraction(item)
@@ -108,7 +112,10 @@ export class ItineraryShape {
          date: base.date,
          arrivalTime: base.arrivalTime,
          departureTime: base.departureTime,
-         animals: base.animals.map(AnimalIdentity.normalizeAnimalForSave).filter(Boolean),
+         animals: base.animals
+            .filter((item) => !ItineraryTransportationAnimal.isAddedByTransportation(item))
+            .map(AnimalIdentity.normalizeAnimalForSave)
+            .filter(Boolean),
          attractions: ItineraryDraftSaveNormalizer.normalizeAttractionsForSave(base.attractions),
          transportations: ItineraryDraftSaveNormalizer.normalizeTransportationsForSave(base),
          guardiansTalks: ItineraryDraftSaveNormalizer.normalizeGuardiansTalkListForSave(base.guardiansTalks),

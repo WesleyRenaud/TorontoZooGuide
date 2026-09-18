@@ -33,6 +33,11 @@ export class ItineraryStrings {
          ),
          selectRegionsAndExhibits: 'Select regions and exhibits',
       },
+      map: {
+         plannedViaTransportation: transportationName => (
+            `This animal is only planned via the ${transportationName} on your itinerary.`
+         ),
+      },
       settings: {
          title: 'Settings',
          heading: 'Itinerary warnings',

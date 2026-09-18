@@ -8,6 +8,8 @@ export class MarkerTypeRendererFactory {
 
    static LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
 
+   static VIEWABLE_FROM_ZOOMOBILE_MARKER_CLASS = 'marker-viewable-from-zoomobile';
+
    static CLOSED_RESTROOM_ICON_TOKEN = 'closed';
 
    static FIRST_AID_AND_FAMILY_CENTER_TYPE = 'First Aid & Family Center';
@@ -55,6 +57,10 @@ export class MarkerTypeRendererFactory {
       'Conservation Carousel': 2.5,
       'Zoomobile': 2.0,
    });
+
+   static shouldShowViewableFromZoomobileIndicator(animal) {
+      return animal?.added_by_transportation === true;
+   }
 
    static shouldShowLimitedViewingIndicator(animal) {
       return Boolean(
@@ -137,7 +143,12 @@ export class MarkerTypeRendererFactory {
          );
       }
 
-      if (MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator(animal)) {
+      if (MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator(animal)) {
+         MarkerVisualHelper.applyMarkerClass(
+            markerEl,
+            MarkerTypeRendererFactory.VIEWABLE_FROM_ZOOMOBILE_MARKER_CLASS
+         );
+      } else if (MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator(animal)) {
          MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS);
       }
    }

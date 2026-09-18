@@ -163,6 +163,7 @@ class ItineraryAnimalValidator():
          new_likelihood=new_likelihood,
          is_added=carryover.is_added,
          covered_by_talk=carryover.covered_by_talk,
+         added_by_transportation=carryover.added_by_transportation,
          start_time=start_time,
          end_time=end_time,
       )

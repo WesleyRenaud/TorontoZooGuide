@@ -6,14 +6,14 @@ Release cycle notes for the first guest-ready cut of the Toronto Zoo Guide: map 
 
 - **Map** — date presets (Summer / Winter / Specific Map), type filters, search, likelihood markers, stacks, tooltips, Zoomobile routes, Updates / Events, off-display and closed toggles.
 - **Animals** — browse / search and **View on Map**.
-- **Itinerary** — wizard (date, animals, attractions, talks, wild encounters, transportation), List / Day Planner, schedule module, rebuild / unschedule, conflict resolution including **Adjust Activity Times?** trim, Zoomobile as attraction vs transportation (including transit rides after rebuild), save / discard dirty builder close, past-date recovery, settings gear for suppressible warnings (Short Visit, Early Admission, Add to Itinerary).
+- **Itinerary** — wizard (date, animals, attractions, talks, wild encounters, transportation), List / Day Planner, schedule module, rebuild / unschedule, conflict resolution including **Adjust Activity Times?** trim, Zoomobile as attraction vs transportation (including transit rides after rebuild and animals viewable from those rides), save / discard dirty builder close, past-date recovery, settings gear for suppressible warnings (Short Visit, Early Admission, Add to Itinerary).
 - **Console** — off/on display, visibility schedules, viewing alerts, exhibit/amenity open-closed and overrides, attraction hours / closure overrides, transportation stations and routes, guardians talks, wild encounters, drinking fountains, updates CRUD, create event, form validation errors. **Set animal as on display** species suggestions are limited to animals that are off display now or in the future, and the exhibit dropdown lists only exhibits with at least one such animal. **Remove visibility schedule** species suggestions are limited to animals that have a visibility schedule now or in the future, and the exhibit dropdown lists only exhibits with at least one such animal. **Remove animal viewing alert** species suggestions are limited to animals that have a viewing alert now or in the future, and the exhibit dropdown lists only exhibits with at least one such animal. **Set exhibit as open** lists only exhibits that are closed now or in the future. **Set restroom as open** lists only restrooms that are closed now or in the future. **Remove restroom alert** lists only restrooms that have an alert now or in the future. **Set transportation station as open** lists only stations that are closed now or in the future. **End Meet the Guardians talk schedule** lists only locations that have a talk schedule now or in the future, and talks at the selected location that have such a schedule. **End Wild Encounter schedule** lists only encounters that have a schedule now or in the future. On the six animal forms, choosing a unique species fills the exhibit; a species in more than one exhibit only narrows the exhibit list.
 
 ## Manual test map
 
 Canonical suites live under [`docs/manual-tests/`](../../manual-tests/). Open the hub at [`docs/manual-tests/index.html`](../../manual-tests/index.html) in a real browser (not GitHub’s HTML preview).
 
-Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-19**, then **CON-01 → CON-15**.
+Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-20**, then **CON-01 → CON-15**.
 
 ### Map
 
@@ -52,6 +52,7 @@ Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-19**, then **C
 | ITIN-17 | **Add to Itinerary?** from Schedule item |
 | ITIN-18 | **Attraction May Be Closed** |
 | ITIN-19 | Settings gear: suppressible warning toggles |
+| ITIN-20 | Zoomobile ride-viewable animals after rebuild |
 
 ### Console
 

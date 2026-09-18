@@ -4,6 +4,7 @@ from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.saved_itinerary import SavedItinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from .itinerary_transportation_animal_visibility_filter import ItineraryTransportationAnimalVisibilityFilter
 from .itinerary_transportation_stations_builder import ItineraryTransportationStationsBuilder
 from .itinerary_transportations_builder import ItineraryTransportationsBuilder
 from ...models import Animal
@@ -81,12 +82,21 @@ class ItineraryBuilder():
       month = saved_itinerary.month()
       year = saved_itinerary.year()
 
+      itinerary_legs = [
+         leg
+         for transportation_row in saved_itinerary.transportation_rows
+         for leg in transportation_row.legs
+      ]
       animals = animal_coordinator.get_animals_for_saved_itinerary(
          day=day,
          month=month,
          year=year,
          saved_animals=list( saved_itinerary.animal_rows ),
          temp=visit_date_temp )
+
+      animals = ItineraryTransportationAnimalVisibilityFilter.apply(
+         animals,
+         itinerary_legs=itinerary_legs )
 
       attractions = attraction_coordinator.get_attractions_for_saved_itinerary(
          day=day,

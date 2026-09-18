@@ -11,7 +11,7 @@ class UserItineraryDataCleaner():
    @classmethod
    def clear( cls, cursor: Types.Cursor ) -> None:
       ClearItineraryProvider.clear_itinerary_exhibits( cursor )
-      ClearItineraryProvider.clear_itinerary_animals( cursor )
+      ClearItineraryProvider.clear_all_itinerary_animals( cursor )
       ClearItineraryProvider.clear_itinerary_attractions( cursor )
       ClearItineraryProvider.clear_itinerary_guardians_talks( cursor )
       ClearItineraryProvider.clear_itinerary_wild_encounters( cursor )

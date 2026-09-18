@@ -219,6 +219,34 @@ test('Test_HydrateWizardDraftFromSavedItinerary_TestAddedAsAttraction_ExpectMove
    });
 });
 
+test('Test_HydrateWizardDraftFromSavedItinerary_TestTransportationOnlyAnimals_ExpectStripped', () => {
+   assert.deepEqual(ItineraryShape.hydrateWizardDraftFromSavedItinerary({
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         {
+            species: 'Masai Giraffe',
+            exhibit: 'Africa Savanna',
+            enclosure_name: 'Outdoor',
+            added_by_transportation: true,
+         },
+      ],
+   }).animals, [{ species: 'African Lion', exhibit: 'Africa Savanna' }]);
+});
+
+test('Test_ToSetItineraryPayload_TestTransportationOnlyAnimals_ExpectOmitted', () => {
+   assert.deepEqual(ItineraryShape.toSetItineraryPayload({
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         {
+            species: 'Masai Giraffe',
+            exhibit: 'Africa Savanna',
+            enclosure_name: 'Outdoor',
+            added_by_transportation: true,
+         },
+      ],
+   }).animals, [{ species: 'African Lion', exhibit: 'Africa Savanna' }]);
+});
+
 test('Test_HydrateWizardDraftFromSavedItinerary_TestBlankOrDuplicateAttractionNames_ExpectSkipped', () => {
    assert.deepEqual(ItineraryShape.hydrateWizardDraftFromSavedItinerary({
       attractions: [{ name: 'Zoomobile' }],

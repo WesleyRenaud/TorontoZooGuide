@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..domain.itinerary_transportation_animal_syncer import ItineraryTransportationAnimalSyncer
 from .itinerary_exhibit_provider import ItineraryExhibitProvider
 from .itinerary_transportation_provider import ItineraryTransportationProvider
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
@@ -55,10 +56,11 @@ class SaveItineraryProvider():
                      NEW_LIKELIHOOD,
                      IS_ADDED,
                      COVERED_BY_TALK,
+                     ADDED_BY_TRANSPORTATION,
                      START_TIME,
                      END_TIME
                   )
-                  VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? );
+                  VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
             """,
             (
                animal.species,
@@ -68,6 +70,7 @@ class SaveItineraryProvider():
                animal.new_likelihood,
                animal.is_added,
                animal.covered_by_talk,
+               animal.added_by_transportation,
                DateValues.normalize_itinerary_schedule_time( animal.start_time ),
                DateValues.normalize_itinerary_schedule_time( animal.end_time ),
             ) )
@@ -210,6 +213,9 @@ class SaveItineraryProvider():
             validated_itinerary.arrival_time,
             validated_itinerary.departure_time )
          ItineraryExhibitProvider.save_itinerary_exhibits( cur, selected_exhibits or [] )
+         ItineraryTransportationAnimalSyncer.promote_saved_animals(
+            conn,
+            validated_itinerary.animals )
          cls.save_itinerary_animals( cur, validated_itinerary.animals )
          cls.save_itinerary_attractions( cur, validated_itinerary.attractions )
          cls.save_itinerary_transportations(
@@ -218,6 +224,7 @@ class SaveItineraryProvider():
          cls.save_itinerary_guardians_talks( cur, validated_itinerary.guardians_talks )
          cls.save_itinerary_wild_encounters( cur, validated_itinerary.wild_encounters )
          cls.save_itinerary_events( cur, validated_itinerary.events )
+         ItineraryTransportationAnimalSyncer.apply( conn )
 
          conn.commit()
 

@@ -22,11 +22,16 @@ CREATE TABLE ItineraryExhibit (
 );
 
 CREATE TABLE ItineraryAnimal (
-   SPECIES              TEXT NOT NULL,
-   EXHIBIT              TEXT NOT NULL,
-   ENCLOSURE_NAME       TEXT,
-   START_TIME           TEXT,
-   END_TIME             TEXT
+   SPECIES                 TEXT NOT NULL,
+   EXHIBIT                 TEXT NOT NULL,
+   ENCLOSURE_NAME          TEXT,
+   OLD_LIKELIHOOD          INTEGER,
+   NEW_LIKELIHOOD          INTEGER,
+   IS_ADDED                INTEGER NOT NULL DEFAULT 0,
+   COVERED_BY_TALK         INTEGER NOT NULL DEFAULT 0,
+   ADDED_BY_TRANSPORTATION INTEGER NOT NULL DEFAULT 0,
+   START_TIME              TEXT,
+   END_TIME                TEXT
 );
 
 CREATE TABLE ItineraryAttraction (
@@ -115,6 +120,16 @@ CREATE TABLE ItineraryStatusSuppression (
    STATUS             TEXT NOT NULL PRIMARY KEY,
    IS_SUPPRESSED      BOOL NOT NULL DEFAULT 0
 );
+
+CREATE TABLE TransportationAnimal (
+   TRANSPORTATION      TEXT        NOT NULL,
+   FROM_STATION        TEXT        NOT NULL,
+   TO_STATION          TEXT        NOT NULL,
+   SPECIES             TEXT        NOT NULL,
+   EXHIBIT             TEXT        NOT NULL,
+   ENCLOSURE_NAME      TEXT,
+   PRIMARY KEY ( SPECIES, EXHIBIT, ENCLOSURE_NAME )
+);
 """
 
 
@@ -185,3 +200,28 @@ def Test_ClearItinerary_TestSavedRows_ExpectProviderReadsEmpty(
    assert cleared.attraction_rows == []
    assert cleared.guardians_talk_rows == []
    assert cleared.wild_encounter_rows == []
+
+
+def Test_ClearItinerary_TestTransportationAnimal_ExpectRemovedWhenTransportationCleared(
+      clear_itinerary_conn: sqlite3.Connection ) -> None:
+   clear_itinerary_conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ADDED_BY_TRANSPORTATION
+            )
+            VALUES ( ?, ?, ? );
+      """,
+      ( 'Masai Giraffe', 'Africa Savanna', 1 ) )
+   clear_itinerary_conn.commit()
+
+   assert ClearItineraryProvider.clear_itinerary( clear_itinerary_conn )
+
+   rows = clear_itinerary_conn.execute(
+      """   SELECT SPECIES, ADDED_BY_TRANSPORTATION
+            FROM ItineraryAnimal
+            ORDER BY SPECIES;
+      """ ).fetchall()
+
+   assert ItineraryProvider.fetch_itinerary_date( clear_itinerary_conn ) is None
+   assert rows == []

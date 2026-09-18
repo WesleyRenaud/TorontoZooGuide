@@ -21,6 +21,7 @@ export class MarkerVisualHelper {
       'marker-picnic-site',
       'marker-event-site',
       'marker-has-limited-viewing',
+      'marker-viewable-from-zoomobile',
    ];
 
    static resetMarkerVisual(markerEl) {

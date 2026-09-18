@@ -75,7 +75,7 @@ Adding a talk or encounter whose fixed time overlaps items already on the Day Pl
 - On **Add Attractions**, selecting **Zoomobile** asks **Add as Attraction?** (scenic timed stop you can schedule yourself).
 - On **Add Transportation**, selecting **Zoomobile** asks **Add as Transportation?** (used to cut walking when the day is bulk-scheduled).
 
-After **Finish** / **Rebuild schedule**, transportation Zoomobile appears under **Transportation** on the list and as ride pills on Day Planner (station lines such as **Main Zoomobile Station → …**). Removing it warns that remaining items will be rescheduled without it.
+After **Finish** / **Rebuild schedule**, transportation Zoomobile appears under **Transportation** on the list and as ride pills on Day Planner (station lines such as **Main Zoomobile Station → …**). Animals you can see from those hops (for example outdoor giraffe, grasslands zebra) appear on the itinerary map with a lime ring, not on List or Day Planner. Clicking the marker shows the same style of alert as viewing alerts, that the animal is only planned via the Zoomobile on your itinerary. If you also added that enclosure yourself, it behaves as a normal animal (no ring). Finish alone, before Rebuild writes ride legs, does not add them. Removing Zoomobile drops the ride-only animals and warns that remaining items will be rescheduled without it.
 
 ### Closed attractions and off-display animals
 
