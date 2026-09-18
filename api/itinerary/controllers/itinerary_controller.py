@@ -269,6 +269,20 @@ class ItineraryController():
 
 
    @staticmethod
+   def unsuppress_itinerary_warning( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      result = ItineraryCoordinator.unsuppress_itinerary_warning(
+         warning_type=data.get( 'warningType' ) )
+
+      response = SuppressItineraryWarningResultResponseBuilder.to_dict(
+         result,
+         conn=RequestConnectionProvider.get() )
+
+      handler._write_json( response )
+
+
+   @staticmethod
    def get_itinerary( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
       temp = data.get( 'temp' )

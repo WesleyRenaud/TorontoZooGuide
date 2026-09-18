@@ -101,9 +101,6 @@ class ItineraryStatusProvider():
          cls,
          conn: Types.Connection,
          error_type: ItineraryErrorType ) -> None:
-      if not cls.is_itinerary_status_suppressable( conn, error_type ):
-         return
-
       cur = conn.cursor()
 
       cur.execute(
@@ -114,6 +111,24 @@ class ItineraryStatusProvider():
                VALUES ( ?, 1 )
                ON CONFLICT ( STATUS ) DO UPDATE SET
                   IS_SUPPRESSED = 1;
+         """,
+         ( error_type.value, ),
+      )
+
+      conn.commit()
+      cur.close()
+
+
+   @classmethod
+   def unsuppress_itinerary_status(
+         cls,
+         conn: Types.Connection,
+         error_type: ItineraryErrorType ) -> None:
+      cur = conn.cursor()
+
+      cur.execute(
+         """   DELETE FROM ItineraryStatusSuppression
+               WHERE STATUS = ?;
          """,
          ( error_type.value, ),
       )

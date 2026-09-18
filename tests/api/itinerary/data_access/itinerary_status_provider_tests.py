@@ -31,15 +31,6 @@ STATUS_ROWS = [
    ( ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED.value, 0 ),
 ]
 
-NON_SUPPRESSABLE_ERROR_TYPES = [
-   ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-   ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-   ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-   ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
-   ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-   ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED,
-]
-
 
 @pytest.fixture
 def status_db() -> sqlite3.Connection:
@@ -100,16 +91,20 @@ def Test_SuppressItineraryStatus_TestSuppressableType_ExpectPersisted(
    ]
 
 
-def Test_SuppressItineraryStatus_TestNonSuppressableTypes_ExpectIgnored(
+def Test_UnsuppressItineraryStatus_TestAfterSuppress_ExpectCleared(
       status_db: sqlite3.Connection ) -> None:
-   for error_type in NON_SUPPRESSABLE_ERROR_TYPES:
-      ItineraryStatusProvider.suppress_itinerary_status( status_db, error_type )
+   ItineraryStatusProvider.suppress_itinerary_status(
+      status_db,
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
-      assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
-         status_db,
-         error_type )
-      assert error_type.value not in ItineraryStatusProvider.fetch_suppressed_status_values(
-         status_db )
+   ItineraryStatusProvider.unsuppress_itinerary_status(
+      status_db,
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+
+   assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
+      status_db,
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+   assert ItineraryStatusProvider.fetch_suppressed_status_values( status_db ) == []
 
 
 def Test_IsItineraryErrorSuppressed_TestNonSuppressableType_ExpectFalse(

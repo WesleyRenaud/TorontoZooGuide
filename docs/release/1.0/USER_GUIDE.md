@@ -86,6 +86,8 @@ After **Finish** / **Rebuild schedule**, transportation Zoomobile appears under 
 
 On Day Planner, set arrival and departure. Very short windows may ask **Short Visit?**. Times before normal zoo open may ask **Early Admission Hours** (members / sensory hours).
 
+The gear on the itinerary map opens **Settings**, the same size as the itinerary builder. Check which warnings to show (**Short Visit?**, **Early Admission Hours**, **Add to Itinerary?**), then **Save**. Unchecking a warning is the same as **Don’t show this again** on its confirmation. **×** discards unsaved changes after **Save Changes?** (**Save** or **Discard**), like the builder.
+
 If your saved visit date is in the past, **Itinerary Date Has Passed** lets you pick a new date or clear the plan.
 
 ---

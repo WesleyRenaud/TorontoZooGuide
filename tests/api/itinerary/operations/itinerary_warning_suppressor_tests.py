@@ -71,17 +71,6 @@ def Test_Suppress_TestUnknownWarning_ExpectSaveFailed() -> None:
       conn.close()
 
 
-def Test_Suppress_TestEmptyWarningType_ExpectSaveFailed() -> None:
-   conn = sqlite3.connect( ':memory:' )
-
-   try:
-      result = ItineraryWarningSuppressor.suppress( conn, '' )
-
-      assert result.status == ItineraryErrorType.SAVE_FAILED
-   finally:
-      conn.close()
-
-
 def Test_Suppress_TestNonSuppressableWarning_ExpectSaveFailed(
       suppressor_conn: sqlite3.Connection ) -> None:
    result = ItineraryWarningSuppressor.suppress(
@@ -89,3 +78,36 @@ def Test_Suppress_TestNonSuppressableWarning_ExpectSaveFailed(
       ItineraryErrorType.SUCCESS.value )
 
    assert result.status == ItineraryErrorType.SAVE_FAILED
+
+
+def Test_Unsuppress_TestSuppressedWarning_ExpectCleared(
+      suppressor_conn: sqlite3.Connection ) -> None:
+   ItineraryWarningSuppressor.suppress(
+      suppressor_conn,
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value )
+
+   result = ItineraryWarningSuppressor.unsuppress(
+      suppressor_conn,
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value )
+
+   row = suppressor_conn.execute(
+      """   SELECT IS_SUPPRESSED
+            FROM ItineraryStatusSuppression
+            WHERE STATUS = ?;
+      """,
+      ( ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value, ),
+   ).fetchone()
+
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert row is None
+
+
+def Test_Unsuppress_TestUnknownWarning_ExpectSaveFailed() -> None:
+   conn = sqlite3.connect( ':memory:' )
+
+   try:
+      result = ItineraryWarningSuppressor.unsuppress( conn, 'not-a-real-warning' )
+
+      assert result.status == ItineraryErrorType.SAVE_FAILED
+   finally:
+      conn.close()

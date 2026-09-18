@@ -115,6 +115,13 @@ class StubItineraryCoordinator:
       return SuppressItineraryWarningResult()
 
 
+   def unsuppress_itinerary_warning(
+         self,
+         **kwargs: Any ) -> SuppressItineraryWarningResult:
+      self.calls.append( ( 'unsuppress_itinerary_warning', kwargs ) )
+      return SuppressItineraryWarningResult()
+
+
    def accept_itinerary( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'AcceptItineraryProvider.accept_itinerary', kwargs ) )
       return type( self ).default_success

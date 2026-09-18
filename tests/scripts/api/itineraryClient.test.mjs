@@ -304,6 +304,29 @@ test('Test_SuppressItineraryWarningRequest_TestWarningType_ExpectPosted', async 
    );
 });
 
+test('Test_UnsuppressItineraryWarningRequest_TestWarningType_ExpectPosted', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/unsuppress-itinerary-warning');
+      assert.deepEqual(JSON.parse(options.body), {
+         warningType: 'arrivalDepartureTooClose',
+      });
+
+      return mockJsonResponse({
+         status: 'success',
+         suppressed_warnings: [],
+         ..._mockItineraryConfigResponse(),
+      });
+   };
+
+   assert.deepEqual(
+      await ItineraryClient.unsuppressItineraryWarningRequest('arrivalDepartureTooClose'),
+      {
+         ..._normalizedItineraryResultFields('success'),
+         itineraryConfig: _normalizedItineraryConfig(),
+      }
+   );
+});
+
 test('Test_SetItineraryArrivalTimeRequest_TestSuppressedWarnings_ExpectNormalized', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       status: 'success',

@@ -85,7 +85,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 |----|------|-------|
 | ITIN-01 | [json](itinerary/ITIN-01-wizard-happy-path.json) | Full wizard Finish |
 | ITIN-02 | [json](itinerary/ITIN-02-date-only-finish-and-clear.json) | Date-only finish + Clear |
-| ITIN-03 | [json](itinerary/ITIN-03-arrival-departure-early-admission.json) | Times + Early Admission |
+| ITIN-03 | [json](itinerary/ITIN-03-arrival-departure-early-admission.json) | Times + Early Admission. **Don’t show this again** is the same store as the itinerary settings gear (**ITIN-19**). |
 | ITIN-04 | [json](itinerary/ITIN-04-schedule-module.json) | Schedule module + pills |
 | ITIN-05 | [json](itinerary/ITIN-05-rebuild-and-unschedule-all.json) | Rebuild / Unschedule all |
 | ITIN-06 | [json](itinerary/ITIN-06-off-display-low-likelihood-confirm.json) | Off-display / low likelihood confirm |
@@ -101,6 +101,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | ITIN-16 | [json](itinerary/ITIN-16-add-talk-to-existing-scheduled-day.json) | Add overlapping talk → **Update Plan** |
 | ITIN-17 | [json](itinerary/ITIN-17-schedule-item-not-on-itinerary.json) | **Add to Itinerary?** from Schedule item |
 | ITIN-18 | [json](itinerary/ITIN-18-closed-attraction-confirm.json) | **Attraction May Be Closed** |
+| ITIN-19 | [json](itinerary/ITIN-19-warning-settings.json) | Settings gear: Save, discard confirm, Short Visit / Early Admission / Add to Itinerary |
 
 ### Console (`console/`)
 
@@ -124,4 +125,4 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 
 ## Recommended run order
 
-MAP-01 → MAP-09, then ITIN-01 → ITIN-18, then CON-01 → CON-15.
+MAP-01 → MAP-09, then ITIN-01 → ITIN-19, then CON-01 → CON-15.

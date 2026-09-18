@@ -16,6 +16,7 @@ class ItineraryRoutes():
    '/set-itinerary-arrival-time': ItineraryController.set_itinerary_arrival_time,
    '/set-itinerary-departure-time': ItineraryController.set_itinerary_departure_time,
    '/suppress-itinerary-warning': ItineraryController.suppress_itinerary_warning,
+   '/unsuppress-itinerary-warning': ItineraryController.unsuppress_itinerary_warning,
    '/get-itinerary': ItineraryController.get_itinerary,
    '/clear-itinerary': ItineraryController.clear_itinerary,
    '/accept-itinerary': ItineraryController.accept_itinerary,
