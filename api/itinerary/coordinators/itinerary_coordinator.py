@@ -244,6 +244,15 @@ class ItineraryCoordinator():
 
 
    @classmethod
+   def unsuppress_itinerary_warning(
+         cls,
+         warning_type: str ) -> SuppressItineraryWarningResult:
+      return ItineraryWarningSuppressor.unsuppress(
+         RequestConnectionProvider.get(),
+         warning_type )
+
+
+   @classmethod
    def set_arrival_time(
          cls,
          arrival_time: Types.TimeInput,

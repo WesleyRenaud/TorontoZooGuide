@@ -1,0 +1,86 @@
+{
+  "id": "ITIN-19",
+  "title": "Itinerary warning settings",
+  "preconditions": "npm run seed, npm start. Start from a saved itinerary with arrival and departure set at least 2 hours apart.",
+  "cleanup": "npm run clear:itinerary-config, then reload Itinerary.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Clear confirmation skips",
+      "do": "From the project root, run `npm run clear:itinerary-config`, then reload **Itinerary**.",
+      "expect": "Command reports no **Don't show this again** skips (or clears any that were on)."
+    },
+    {
+      "number": 2,
+      "name": "Open settings",
+      "do": "Click the gear in the top-right of the itinerary map.",
+      "expect": "A **Settings** overlay opens at itinerary-builder size, with **Save**, and three checked warnings: **Short Visit?**, **Early Admission Hours**, and **Add to Itinerary?**."
+    },
+    {
+      "number": 3,
+      "name": "Close with unsaved change",
+      "do": "Uncheck **Short Visit?** and press **×**.",
+      "expect": "**Save Changes?** appears (same chrome as the builder), with **Save** and **Discard**."
+    },
+    {
+      "number": 4,
+      "name": "Discard",
+      "do": "Click **Discard**.",
+      "expect": "Settings closes. The gear remains on the map."
+    },
+    {
+      "number": 5,
+      "name": "Discarded change did not persist",
+      "do": "On Day Planner, set arrival and departure less than **2 hours** apart (e.g. **10:00 AM** and **11:00 AM**).",
+      "expect": "**Short Visit?** still appears."
+    },
+    {
+      "number": 6,
+      "name": "Confirm short visit",
+      "do": "On **Short Visit?**, leave **Don’t show this again** unchecked and confirm.",
+      "expect": "Times are saved. The confirmation closes."
+    },
+    {
+      "number": 7,
+      "name": "Lengthen the visit",
+      "do": "Set arrival **10:00 AM** and departure **2:00 PM**.",
+      "expect": "Times are kept. **Short Visit?** does not appear."
+    },
+    {
+      "number": 8,
+      "name": "Save uncheck",
+      "do": "Open the gear, uncheck **Short Visit?**, and click **Save**.",
+      "expect": "Settings closes without **Save Changes?**."
+    },
+    {
+      "number": 9,
+      "name": "Saved uncheck stays quiet",
+      "do": "Set arrival **10:00 AM** and departure **11:00 AM**.",
+      "expect": "**Short Visit?** does not appear. The times are saved."
+    },
+    {
+      "number": 10,
+      "name": "Restore Short Visit",
+      "do": "Open the gear, check **Short Visit?**, and click **Save**.",
+      "expect": "Settings closes. **Short Visit?** is checked if you reopen."
+    },
+    {
+      "number": 11,
+      "name": "Short visit asks again",
+      "do": "Set arrival **10:00 AM** and departure **2:00 PM**, then change departure to **11:00 AM**.",
+      "expect": "**Short Visit?** confirmation appears, with **Don't show this again**."
+    },
+    {
+      "number": 12,
+      "name": "Don't show this again",
+      "do": "Check **Don't show this again** on that confirmation and confirm.",
+      "expect": "Times are saved. Open the gear: **Short Visit?** is unchecked."
+    },
+    {
+      "number": 13,
+      "name": "Day Planner still usable",
+      "do": "Close settings if it is open (Save or **×**) and use Day Planner.",
+      "expect": "Day Planner loads without error."
+    }
+  ]
+}

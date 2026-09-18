@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.0
+
+### Itinerary
+
+- The itinerary map has a settings gear. It opens a builder-sized overlay for the three suppressible warnings (**Short Visit?**, **Early Admission Hours**, **Add to Itinerary?**). **Save** applies the checkboxes; **×** discards unsaved changes after **Save Changes?**. Checked means the warning still shows; unchecked is the same as **Don’t show this again**.
 
 ### Console operations
 

@@ -12,10 +12,6 @@ class ItineraryWarningSuppressor():
          cls,
          conn: Types.Connection,
          warning_type: str ) -> SuppressItineraryWarningResult:
-      if not warning_type:
-         return SuppressItineraryWarningResult(
-            status=ItineraryErrorType.SAVE_FAILED )
-
       try:
          error_type = ItineraryErrorType( warning_type )
       except ValueError:
@@ -27,5 +23,21 @@ class ItineraryWarningSuppressor():
             status=ItineraryErrorType.SAVE_FAILED )
 
       ItineraryStatusProvider.suppress_itinerary_status( conn, error_type )
+
+      return SuppressItineraryWarningResult()
+
+
+   @classmethod
+   def unsuppress(
+         cls,
+         conn: Types.Connection,
+         warning_type: str ) -> SuppressItineraryWarningResult:
+      try:
+         error_type = ItineraryErrorType( warning_type )
+      except ValueError:
+         return SuppressItineraryWarningResult(
+            status=ItineraryErrorType.SAVE_FAILED )
+
+      ItineraryStatusProvider.unsuppress_itinerary_status( conn, error_type )
 
       return SuppressItineraryWarningResult()

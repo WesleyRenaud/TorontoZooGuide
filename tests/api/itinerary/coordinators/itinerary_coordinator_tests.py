@@ -257,6 +257,26 @@ def Test_SuppressItineraryWarning_TestSuppressor_ExpectDelegated(
    assert captured[ 'warning_type' ] == WARNING_TYPE
 
 
+def Test_UnsuppressItineraryWarning_TestSuppressor_ExpectDelegated(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   expected = SuppressItineraryWarningResult()
+   captured: dict[ str, object ] = {}
+
+   def unsuppress(
+         conn: Types.Connection,
+         warning_type: str ) -> SuppressItineraryWarningResult:
+      captured[ 'conn' ] = conn
+      captured[ 'warning_type' ] = warning_type
+      return expected
+
+   monkeypatch.setattr( ItineraryWarningSuppressor, 'unsuppress', unsuppress )
+
+   assert ItineraryCoordinator.unsuppress_itinerary_warning( WARNING_TYPE ) is expected
+   assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
+   assert captured[ 'warning_type' ] == WARNING_TYPE
+
+
 def Test_AcceptItinerary_TestProvider_ExpectMappedKeepLists(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:

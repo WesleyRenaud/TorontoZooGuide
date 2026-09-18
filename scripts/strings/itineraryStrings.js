@@ -33,6 +33,16 @@ export class ItineraryStrings {
          ),
          selectRegionsAndExhibits: 'Select regions and exhibits',
       },
+      settings: {
+         title: 'Settings',
+         heading: 'Itinerary warnings',
+         subtitle: 'Choose which itinerary warnings to show.',
+         openAriaLabel: 'Itinerary settings',
+         closeAriaLabel: 'Close settings',
+         saveChangesMessage: (
+            'You have unsaved settings changes. Would you like to save them before closing?'
+         ),
+      },
       confirmation: {
          attractionMayBeClosed: 'Attraction May Be Closed',
          attractionAlsoTransportationTitle: 'Add as Attraction?',

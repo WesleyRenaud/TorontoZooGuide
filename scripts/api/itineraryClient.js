@@ -102,6 +102,14 @@ export class ItineraryClient {
       return ItineraryApiNormalizer.normalizeItineraryResult(response, { includeItinerary: false });
    }
 
+   static async unsuppressItineraryWarningRequest(warningType) {
+      const response = await ApiClient.postJson('/unsuppress-itinerary-warning', {
+         warningType: ValueNormalizer.asTrimmedString(warningType),
+      });
+
+      return ItineraryApiNormalizer.normalizeItineraryResult(response, { includeItinerary: false });
+   }
+
    static async bulkScheduleItineraryRequest(
       temp,
       { confirmingFixedTimeItemLongWait = false } = {}

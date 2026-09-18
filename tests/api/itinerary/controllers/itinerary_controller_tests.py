@@ -143,6 +143,28 @@ def Test_SuppressItineraryWarning_TestHttpRequest_ExpectMapsWarningType(
    ]
 
 
+def Test_UnsuppressItineraryWarning_TestHttpRequest_ExpectMapsWarningType(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   handler = make_handler(
+      '/unsuppress-itinerary-warning',
+      { 'warningType': 'arrivalDepartureTooClose' } )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert response_json( handler ) == {
+      'status': 'success',
+      'reasons': [],
+      'suppressed_warnings': [],
+      'itinerary_config': ItineraryConfigBuilder.to_dict(),
+   }
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'unsuppress_itinerary_warning',
+         { 'warning_type': 'arrivalDepartureTooClose' },
+      ),
+   ]
+
+
 def Test_SetItinerary_TestHttpRequest_ExpectSuccessPayloads(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
    set_handler = make_handler(

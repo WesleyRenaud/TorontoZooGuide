@@ -1,4 +1,5 @@
 import { ItineraryPanelFragment } from '../itinerary/panel/components/itineraryPanelFragment.js';
+import { ItinerarySettingsController } from '../itinerary/settings/itinerarySettingsController.js';
 import { WheelBlocker } from '../itinerary/wizard/wheelBlocker.js';
 import { ItineraryPageBootstrap } from './itineraryPageBootstrap.js';
 import { SpeciesFragment } from '../overlays/speciesFragment.js';
@@ -20,6 +21,10 @@ export class ItineraryBootstrap {
       WheelBlocker.blockMapWheelWhileWizardOpen(mountEl);
       ItineraryPageBootstrap.bindWizardEvents(openWizard);
       ItineraryPageBootstrap.bindPanelRefreshEvents(refreshPanel);
+      ItinerarySettingsController.createItinerarySettingsController({
+         gearEl: document.getElementById('itinerarySettingsGear'),
+         mountEl,
+      });
 
       void ItineraryPageBootstrap.initItineraryPageContent(mountEl, openWizard, refreshPanel);
    }
