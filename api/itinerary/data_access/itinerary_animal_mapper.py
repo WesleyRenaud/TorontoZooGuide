@@ -16,6 +16,9 @@ class ItineraryAnimalMapper():
          new_likelihood=row[ 'NEW_LIKELIHOOD' ],
          is_added=ValueConversion.as_boolean( row[ 'IS_ADDED' ] ),
          covered_by_talk=ValueConversion.as_boolean( row[ 'COVERED_BY_TALK' ] ),
+         added_by_transportation=ValueConversion.as_boolean(
+            row[ 'ADDED_BY_TRANSPORTATION' ] ),
+         transportation=row[ 'TRANSPORTATION' ],
          start_time=row[ 'START_TIME' ],
          end_time=row[ 'END_TIME' ] )
 

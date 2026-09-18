@@ -8,6 +8,7 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
@@ -16,8 +17,11 @@ from api.itinerary.domain.itinerary_transportations_builder import ItineraryTran
 from api.models.animal import Animal
 from api.models.attraction import Attraction
 from api.models.guardians_talk import GuardiansTalk
+from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.models.wild_encounter import WildEncounter
 from api.shared.enums.position import Position
+from api.transportation.data_access.transportation_animal_provider import TransportationAnimalProvider
+from api.transportation.data_access.transportation_animal_record import TransportationAnimalRecord
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -171,3 +175,69 @@ def Test_BuildCurrent_TestEmptySavedItinerary_ExpectEmpty(
    assert itinerary.attractions == []
    assert itinerary.guardians_talks == []
    assert itinerary.wild_encounters == []
+
+
+def Test_BuildCurrent_TestTransportationAnimal_ExpectCatalogApplied(
+      stub_itinerary_builder_coordinators: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   giraffe = Animal(
+      species='Masai Giraffe',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor',
+      added_by_transportation=True,
+      transportation='Zoomobile' )
+   monkeypatch.setattr(
+      AnimalCoordinator,
+      'get_animals_for_saved_itinerary',
+      lambda **kwargs: [ giraffe ] )
+   monkeypatch.setattr(
+      TransportationAnimalProvider,
+      'fetch_all',
+      lambda conn: [
+         TransportationAnimalRecord(
+            transportation='Zoomobile',
+            from_station='Canadian Domain Zoomobile Station',
+            to_station='Africa Zoomobile Station',
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor' ),
+      ] )
+
+   itinerary = ItineraryBuilder.build_current(
+      SavedItinerary(
+         date_value='2026-06-15',
+         arrival_time='9:30 AM',
+         departure_time='5:00 PM',
+         animal_rows=[
+            ItineraryAnimalRecord(
+               species='Masai Giraffe',
+               exhibit='Africa Savanna',
+               enclosure_name='Outdoor',
+               added_by_transportation=True ),
+         ],
+         transportation_rows=[
+            ItineraryTransportationRecord(
+               transportation='Zoomobile',
+               old_likelihood=None,
+               new_likelihood=100,
+               added_as_attraction=False,
+               start_time='10:20 AM',
+               end_time='10:30 AM',
+               legs=[
+                  ItineraryTransportationLeg(
+                     from_station='Canadian Domain Zoomobile Station',
+                     to_station='Africa Zoomobile Station',
+                     start_time='10:20 AM',
+                     end_time='10:30 AM',
+                     transportation='Zoomobile',
+                     added_as_attraction=False ),
+               ] ),
+         ],
+      ),
+      animal_coordinator=AnimalCoordinator,
+      attraction_coordinator=AttractionCoordinator,
+      guardians_coordinator=GuardiansCoordinator,
+      wild_encounter_coordinator=WildEncounterCoordinator )
+
+   assert itinerary.animals == [ giraffe ]
+   assert giraffe.transportation == 'Zoomobile'

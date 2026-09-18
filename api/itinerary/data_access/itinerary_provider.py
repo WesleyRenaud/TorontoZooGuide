@@ -19,6 +19,7 @@ from .itinerary_wild_encounter_mapper import ItineraryWildEncounterMapper
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from .saved_itinerary import SavedItinerary
+from ...shared.enums.position import Position
 from ...types import Types
 
 
@@ -58,16 +59,23 @@ class ItineraryProvider():
 
       rows = cur.execute(
          """   SELECT
-                  SPECIES,
-                  EXHIBIT,
-                  ENCLOSURE_NAME,
-                  OLD_LIKELIHOOD,
-                  NEW_LIKELIHOOD,
-                  IS_ADDED,
-                  COVERED_BY_TALK,
-                  START_TIME,
-                  END_TIME
-               FROM ItineraryAnimal;
+                  ItineraryAnimal.SPECIES,
+                  ItineraryAnimal.EXHIBIT,
+                  ItineraryAnimal.ENCLOSURE_NAME,
+                  ItineraryAnimal.OLD_LIKELIHOOD,
+                  ItineraryAnimal.NEW_LIKELIHOOD,
+                  ItineraryAnimal.IS_ADDED,
+                  ItineraryAnimal.COVERED_BY_TALK,
+                  ItineraryAnimal.ADDED_BY_TRANSPORTATION,
+                  ItineraryAnimal.START_TIME,
+                  ItineraryAnimal.END_TIME,
+                  TransportationAnimal.TRANSPORTATION
+               FROM ItineraryAnimal
+               LEFT JOIN TransportationAnimal
+                  ON ItineraryAnimal.ADDED_BY_TRANSPORTATION = 1
+                  AND ItineraryAnimal.SPECIES = TransportationAnimal.SPECIES
+                  AND ItineraryAnimal.EXHIBIT = TransportationAnimal.EXHIBIT
+                  AND ItineraryAnimal.ENCLOSURE_NAME IS TransportationAnimal.ENCLOSURE_NAME;
          """ ).fetchall()
 
       cur.close()
@@ -115,6 +123,23 @@ class ItineraryProvider():
       cur.close()
 
       return ItineraryTransportationLegMapper.map_records( rows )
+
+
+   @classmethod
+   def fetch_itinerary_transportation_names( cls, conn: Types.Connection ) -> set[ str ]:
+      cur = conn.cursor()
+
+      rows = cur.execute(
+         """   SELECT TRANSPORTATION
+               FROM ItineraryTransportation;
+         """ ).fetchall()
+
+      cur.close()
+
+      return {
+         row[ Position.FIRST ]
+         for row in rows
+      }
 
 
    @classmethod

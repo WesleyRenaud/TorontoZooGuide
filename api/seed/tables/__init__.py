@@ -60,6 +60,7 @@ from .restaurant_seed_table import RestaurantSeedTable
 from .restroom_alert_seed_table import RestroomAlertSeedTable
 from .restroom_seed_table import RestroomSeedTable
 from .restroom_status_seed_table import RestroomStatusSeedTable
+from .transportation_animal_seed_table import TransportationAnimalSeedTable
 from .transportation_day_route_seed_table import TransportationDayRouteSeedTable
 from .transportation_leg_seed_table import TransportationLegSeedTable
 from .transportation_route_leg_marker_seed_table import TransportationRouteLegMarkerSeedTable
@@ -103,6 +104,7 @@ static_tables = [
    TransportationRouteStationSeedTable,
    TransportationDayRouteSeedTable,
    TransportationLegSeedTable,
+   TransportationAnimalSeedTable,
    TransportationRouteLegSeedTable,
    TransportationRouteLegMarkerSeedTable,
    MeetTheGuardiansTalkSeedTable,

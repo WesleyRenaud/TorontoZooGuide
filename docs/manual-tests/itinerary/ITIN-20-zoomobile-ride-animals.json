@@ -1,0 +1,60 @@
+{
+  "id": "ITIN-20",
+  "title": "Zoomobile ride animals after rebuild",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open builder",
+      "do": "From the bottom nav, open **Itinerary**. Use **Build Itinerary** / **Edit Itinerary**.",
+      "expect": "The itinerary builder opens on **Set Visit Date**."
+    },
+    {
+      "number": 2,
+      "name": "Visit date and distant animals",
+      "do": "On **Set Visit Date**, pick a date on the Zoomobile summer route. On **Add Animals**, add **African Lion** and **Grizzly Bear**. Do not add Masai Giraffe or Grevy's Zebra.",
+      "expect": "**African Lion** and **Grizzly Bear** are selected. Giraffe and zebra are not."
+    },
+    {
+      "number": 3,
+      "name": "Add Zoomobile as transportation",
+      "do": "Skip Zoomobile on **Add Attractions**. On **Add Transportation**, select **Zoomobile**, confirm **Add as Transportation?**, then **Finish**.",
+      "expect": "The itinerary saves. List shows lion and bear, not giraffe or zebra. Finish alone does not add ride-viewable animals."
+    },
+    {
+      "number": 4,
+      "name": "Rebuild to place rides",
+      "do": "Open **Day Planner View** and click **Rebuild schedule**.",
+      "expect": "Feedback such as **Schedule rebuilt** appears. At least one Zoomobile transit ride is on the timeline."
+    },
+    {
+      "number": 5,
+      "name": "List hides ride animals",
+      "do": "Open **List View** and check **Animals**. Look for **Grevy's Zebra** (Savanna Grasslands) and **Masai Giraffe** (Outdoor).",
+      "expect": "Neither appears on List. They also do not appear under Day Planner **Scheduled Items** or **Unscheduled Items**."
+    },
+    {
+      "number": 6,
+      "name": "Day Planner hides ride-only animals",
+      "do": "Open **Day Planner View** and check **Unscheduled Items** and the timed pills.",
+      "expect": "Giraffe and zebra do not appear as unscheduled rows or as their own timed pills. The Zoomobile ride pill remains."
+    },
+    {
+      "number": 7,
+      "name": "Lime ring and planned-via alert",
+      "do": "On the itinerary map, click the giraffe (or zebra) marker.",
+      "expect": "The marker has a lime ring. The animal alert banner says **This animal is only planned via the Zoomobile on your itinerary.**"
+    },
+    {
+      "number": 8,
+      "name": "Guest-added giraffe stays normal",
+      "do": "Edit the itinerary, add **Masai Giraffe** / Africa Savanna / Outdoor on **Add Animals**, **Finish**, then **Rebuild schedule** again. Click the giraffe marker.",
+      "expect": "Giraffe remains on List as a normal animal (schedule/remove still available if untimed). The lime ring and planned-via alert are gone."
+    },
+    {
+      "number": 9,
+      "name": "Removing Zoomobile drops ride-only zebra",
+      "do": "Remove **Zoomobile** transportation from the itinerary.",
+      "expect": "**Grevy's Zebra** (ride-only) leaves the map. Guest-added giraffe stays."
+    }
+  ]
+}

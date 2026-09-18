@@ -47,3 +47,30 @@ def Test_MapFromSavedAnimalRows_TestNoOldVisitDate_ExpectEmptyCarryover() -> Non
 
    assert carryover.start_time is None
    assert carryover.end_time is None
+   assert carryover.added_by_transportation is False
+
+
+def Test_MapFromSavedAnimalRows_TestTransportationOwnedSavedRow_ExpectGuestOwnedCarryover() -> None:
+   carryover = ItineraryAnimalSaveCarryoverMapper.map_from_saved_animal_rows(
+      [
+         ItineraryAnimalRecord(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            old_likelihood=None,
+            new_likelihood=100,
+            added_by_transportation=True,
+            start_time=None,
+            end_time=None,
+         ),
+      ],
+      ItineraryAnimalInput(
+         species='Masai Giraffe',
+         exhibit='Africa Savanna',
+         enclosure_name='Outdoor',
+         is_added=True ),
+      old_visit_date='2026-06-15',
+   )
+
+   assert carryover.added_by_transportation is False
+   assert carryover.is_added is True

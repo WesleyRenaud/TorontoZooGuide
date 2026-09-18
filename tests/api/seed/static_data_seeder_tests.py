@@ -78,6 +78,93 @@ EXPECTED_ZOOMOBILE_ROUTE_LEGS = {
    ( 'winter', 'Eurasia Zoomobile Station', 'Main Zoomobile Station' ),
 }
 
+EXPECTED_ZOOMOBILE_TRANSPORTATION_ANIMALS = {
+   (
+      'Greater One-Horned Rhinoceros',
+      'Indo-Malaya Outdoor',
+      'Outdoor',
+      'Main Zoomobile Station',
+      'Canadian Domain Zoomobile Station',
+   ),
+   (
+      'Sumatran Orangutan',
+      'Indo-Malaya Pavilion',
+      'Outdoor',
+      'Main Zoomobile Station',
+      'Canadian Domain Zoomobile Station',
+   ),
+   (
+      'Masai Giraffe',
+      'Africa Savanna',
+      'Outdoor',
+      'Main Zoomobile Station',
+      'Canadian Domain Zoomobile Station',
+   ),
+   (
+      'Cheetah',
+      'Africa Savanna',
+      None,
+      'Main Zoomobile Station',
+      'Canadian Domain Zoomobile Station',
+   ),
+   (
+      'Ostrich',
+      'Africa Savanna',
+      None,
+      'Canadian Domain Zoomobile Station',
+      'Africa Zoomobile Station',
+   ),
+   (
+      "Grevy's Zebra",
+      'Canadian Domain',
+      'Savanna Grasslands',
+      'Canadian Domain Zoomobile Station',
+      'Africa Zoomobile Station',
+   ),
+   (
+      'Watusi Cattle',
+      'Africa Savanna',
+      None,
+      'Africa Zoomobile Station',
+      'Tundra Zoomobile Station',
+   ),
+   (
+      'American Flamingo',
+      'Americas Outdoor Mayan Temple Ruins',
+      None,
+      'Africa Zoomobile Station',
+      'Tundra Zoomobile Station',
+   ),
+   (
+      'Caribou',
+      'Tundra Trek',
+      None,
+      'Africa Zoomobile Station',
+      'Tundra Zoomobile Station',
+   ),
+   (
+      'Asian Wild Horse',
+      'Eurasia Wilds',
+      'Eurasia Drive Thru',
+      'Tundra Zoomobile Station',
+      'Eurasia Zoomobile Station',
+   ),
+   (
+      'Domestic Yak',
+      'Eurasia Wilds',
+      'Eurasia Drive Thru',
+      'Tundra Zoomobile Station',
+      'Eurasia Zoomobile Station',
+   ),
+   (
+      'Highland Cattle',
+      'Eurasia Wilds',
+      None,
+      'Tundra Zoomobile Station',
+      'Eurasia Zoomobile Station',
+   ),
+}
+
 EXPECTED_ROUTE_LEG_MARKERS = {
    ( 'summer', 'Main Zoomobile Station', 'Canadian Domain Zoomobile Station' ):
       marker_ids( 'zm-s', 5, 85, 297 ),
@@ -140,6 +227,14 @@ def Test_Seed_TestZoomobileTransportationGraph_ExpectSchemaAndSeedIntegrity() ->
       'FROM_STATION',
       'TO_STATION',
       'DURATION_MINUTES',
+   }
+   assert column_names( cursor, 'TransportationAnimal' ) >= {
+      'TRANSPORTATION',
+      'FROM_STATION',
+      'TO_STATION',
+      'SPECIES',
+      'EXHIBIT',
+      'ENCLOSURE_NAME',
    }
    assert column_names( cursor, 'TransportationRouteLeg' ) >= {
       'TRANSPORTATION',
@@ -271,6 +366,32 @@ def Test_Seed_TestZoomobileTransportationGraph_ExpectSchemaAndSeedIntegrity() ->
       ).fetchall()
    }
    assert legs == EXPECTED_ZOOMOBILE_LEGS
+
+   transportation_animals = {
+      (
+         row[ 'SPECIES' ],
+         row[ 'EXHIBIT' ],
+         row[ 'ENCLOSURE_NAME' ],
+         row[ 'FROM_STATION' ],
+         row[ 'TO_STATION' ],
+      )
+      for row in cursor.execute(
+         """   SELECT SPECIES, EXHIBIT, ENCLOSURE_NAME, FROM_STATION, TO_STATION
+               FROM TransportationAnimal
+               WHERE TRANSPORTATION = 'Zoomobile';
+         """
+      ).fetchall()
+   }
+   assert transportation_animals == EXPECTED_ZOOMOBILE_TRANSPORTATION_ANIMALS
+   viewing_spots = {
+      (
+         row[ Position.FIRST ],
+         row[ Position.SECOND ],
+         row[ Position.THIRD ],
+      )
+      for row in transportation_animals
+   }
+   assert len( viewing_spots ) == len( transportation_animals )
 
    route_legs = {
       ( row[ 'ROUTE' ], row[ 'FROM_STATION' ], row[ 'TO_STATION' ] )

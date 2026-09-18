@@ -212,6 +212,7 @@ test('Test_CreateTooltipController_TestAttachAndHover_ExpectHandlers', () => {
 
       markerEl.click();
       assert.deepEqual(api.getOpenItems(), items);
+      assert.equal(hover.hides, 2);
 
       const nonClickable = document.createElement('div');
       api.attachToMarker(nonClickable, items, hover, { clickable: false });

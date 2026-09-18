@@ -39,6 +39,7 @@ CREATE TABLE ItineraryAnimal (
    OLD_LIKELIHOOD                       INTEGER,
    NEW_LIKELIHOOD                       INTEGER,
    IS_ADDED                             INTEGER     NOT NULL DEFAULT 0,
+   ADDED_BY_TRANSPORTATION              INTEGER     NOT NULL DEFAULT 0,
    START_TIME                           TEXT,
    END_TIME                             TEXT
 );

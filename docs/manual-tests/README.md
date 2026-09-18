@@ -102,6 +102,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | ITIN-17 | [json](itinerary/ITIN-17-schedule-item-not-on-itinerary.json) | **Add to Itinerary?** from Schedule item |
 | ITIN-18 | [json](itinerary/ITIN-18-closed-attraction-confirm.json) | **Attraction May Be Closed** |
 | ITIN-19 | [json](itinerary/ITIN-19-warning-settings.json) | Settings gear: Save, discard confirm, Short Visit / Early Admission / Add to Itinerary |
+| ITIN-20 | [json](itinerary/ITIN-20-zoomobile-ride-animals.json) | Rebuild adds Zoomobile-viewable animals (lime ring; hidden on List and Day Planner) |
 
 ### Console (`console/`)
 
@@ -125,4 +126,4 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 
 ## Recommended run order
 
-MAP-01 → MAP-09, then ITIN-01 → ITIN-19, then CON-01 → CON-15.
+MAP-01 → MAP-09, then ITIN-01 → ITIN-20, then CON-01 → CON-15.

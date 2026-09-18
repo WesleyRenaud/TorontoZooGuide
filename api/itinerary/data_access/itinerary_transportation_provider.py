@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..domain.itinerary_transportation_animal_syncer import ItineraryTransportationAnimalSyncer
 from .itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from ...models.itinerary_transportation_leg import ItineraryTransportationLeg
 from ...shared.calendar_dates import DateValues
@@ -185,6 +186,7 @@ class ItineraryTransportationProvider():
          cur,
          transportation=transportation,
          added_as_attraction=added_as_attraction )
+      ItineraryTransportationAnimalSyncer.apply( cur.connection )
 
 
    @classmethod

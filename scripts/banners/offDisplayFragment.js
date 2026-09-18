@@ -1,4 +1,6 @@
+import { ItineraryTransportationAnimal } from '../itinerary/itineraryTransportationAnimal.js';
 import { MessageFragment } from './messageFragment.js';
+import { Strings } from '../strings.js';
 
 export class OffDisplayFragment {
    static createOffDisplayBanner() {
@@ -16,6 +18,12 @@ export class OffDisplayFragment {
 
             if (animal?.viewing_alert_messages?.length) {
                messages.push(animal.viewing_alert_messages.join('\n\n'));
+            }
+
+            if (ItineraryTransportationAnimal.isAddedByTransportation(animal)) {
+               messages.push(
+                  Strings.itinerary.map.plannedViaTransportation(animal.transportation)
+               );
             }
 
             return [...new Set(messages)];

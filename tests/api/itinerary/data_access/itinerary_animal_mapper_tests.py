@@ -13,6 +13,8 @@ ANIMAL_ROW = {
    'NEW_LIKELIHOOD': 100,
    'IS_ADDED': 1,
    'COVERED_BY_TALK': 0,
+   'ADDED_BY_TRANSPORTATION': 0,
+   'TRANSPORTATION': None,
    'START_TIME': '10:00 AM',
    'END_TIME': '10:08 AM',
 }
@@ -27,6 +29,8 @@ def Test_MapRecord_TestRow_ExpectAnimalRecord() -> None:
       new_likelihood=100,
       is_added=True,
       covered_by_talk=False,
+      added_by_transportation=False,
+      transportation=None,
       start_time='10:00 AM',
       end_time='10:08 AM',
    )
@@ -37,3 +41,14 @@ def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
 
    assert len( records ) == 1
    assert records[ Position.FIRST ].species == 'African Lion'
+
+
+def Test_MapRecord_TestAddedByTransportation_ExpectTransportationName() -> None:
+   record = ItineraryAnimalMapper.map_record( {
+      **ANIMAL_ROW,
+      'ADDED_BY_TRANSPORTATION': 1,
+      'TRANSPORTATION': 'Zoomobile',
+   } )
+
+   assert record.added_by_transportation is True
+   assert record.transportation == 'Zoomobile'

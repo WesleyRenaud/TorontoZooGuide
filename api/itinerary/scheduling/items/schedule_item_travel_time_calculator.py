@@ -159,7 +159,7 @@ class ScheduleItemTravelTimeCalculator():
       stops: list[ ScheduledWalkStop ] = []
 
       for animal in itinerary.animals:
-         if animal.covered_by_talk:
+         if animal.covered_by_talk or animal.added_by_transportation:
             continue
 
          cls._append_scheduled_stop_with_walk_node(

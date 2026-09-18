@@ -24,6 +24,9 @@ from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEnco
 class BulkScheduleItineraryRunner():
    @classmethod
    def is_animal_unscheduled( cls, animal_row: ItineraryAnimalRecord ) -> bool:
+      if animal_row.added_by_transportation:
+         return False
+
       return not GuestItemScheduleStatusChecker.has_schedule_times(
          animal_row.start_time,
          animal_row.end_time )

@@ -35,6 +35,8 @@ class Animal:
          old_likelihood: int | None = None,
          is_added: bool = False,
          covered_by_talk: bool = False,
+         added_by_transportation: bool = False,
+         transportation: str | None = None,
          start_time: Types.ScheduleTimeKey = None,
          end_time: Types.ScheduleTimeKey = None,
          viewing_walk_node_id: str | None = None,
@@ -66,6 +68,8 @@ class Animal:
       self.old_likelihood = old_likelihood
       self.is_added = is_added
       self.covered_by_talk = covered_by_talk
+      self.added_by_transportation = added_by_transportation
+      self.transportation = transportation
       self.start_time = start_time
       self.end_time = end_time
       self.viewing_walk_node_id = viewing_walk_node_id
@@ -111,6 +115,9 @@ class Animal:
          'old_likelihood': self.old_likelihood,
          'is_added': ValueConversion.as_boolean( self.is_added ),
          'covered_by_talk': ValueConversion.as_boolean( self.covered_by_talk ),
+         'added_by_transportation': ValueConversion.as_boolean(
+            self.added_by_transportation ),
+         'transportation': self.transportation,
          'start_time': self.start_time,
          'end_time': self.end_time,
          'viewing_walk_node_id': self.viewing_walk_node_id,

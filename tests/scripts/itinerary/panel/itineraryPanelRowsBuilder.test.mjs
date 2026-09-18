@@ -107,6 +107,18 @@ test('Test_BuildAnimalRows_TestConfig_ExpectRowPropsWired', () => {
    }
 });
 
+test('Test_BuildAnimalRows_TestTransportationOnlyAnimals_ExpectOmitted', () => {
+   const { captured } = _captureNamedRowConfig(
+      'buildAnimalRows',
+      [
+         { species: 'African Lion' },
+         { species: 'Masai Giraffe', added_by_transportation: true },
+      ]
+   );
+
+   assert.deepEqual(captured.sourceItems, [{ species: 'African Lion' }]);
+});
+
 test('Test_BuildAttractionRows_TestConfig_ExpectNamedRows', () => {
    const originalNormalize = ItineraryItemFormatter.normalizeAttraction;
    const originalSort = ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime;

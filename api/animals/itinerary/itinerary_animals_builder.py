@@ -69,6 +69,8 @@ class ItineraryAnimalsBuilder():
          animal.start_time = saved_animal.start_time
          animal.end_time = saved_animal.end_time
          animal.covered_by_talk = saved_animal.covered_by_talk
+         animal.added_by_transportation = saved_animal.added_by_transportation
+         animal.transportation = saved_animal.transportation
 
 
    @classmethod

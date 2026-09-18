@@ -27,7 +27,11 @@ class BulkScheduleStopSelector():
                animal_row.end_time )
          ]
 
-      return list( saved_itinerary.animal_rows )
+      return [
+         animal_row
+         for animal_row in saved_itinerary.animal_rows
+         if not animal_row.added_by_transportation
+      ]
 
 
    @classmethod

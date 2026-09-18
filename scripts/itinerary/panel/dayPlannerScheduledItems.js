@@ -3,6 +3,7 @@ import { ScheduledPillViewingWalkModel } from './components/scheduledPillViewing
 import { DayPlannerScheduleController } from './dayPlannerScheduleController.js';
 import { DayPlannerTimelineRenderer } from './dayPlannerTimelineRenderer.js';
 import { ItineraryPanelRowsBuilder } from './itineraryPanelRowsBuilder.js';
+import { ItineraryTransportationAnimal } from '../itineraryTransportationAnimal.js';
 import { RowActionPresenter } from './rowActionPresenter.js';
 import { ScheduleItemEventFormatter } from './scheduleItemEventFormatter.js';
 import { AnimalSelectorModel } from '../selectors/animalSelector/animalSelectorModel.js';
@@ -34,6 +35,10 @@ export class DayPlannerScheduledItems {
 
    static isCoveredByTalk(item) {
       return item?.covered_by_talk === true;
+   }
+
+   static isAddedByTransportation(item) {
+      return ItineraryTransportationAnimal.isAddedByTransportation(item);
    }
 
    static isActiveScheduledOccurrence(item) {
@@ -362,8 +367,9 @@ export class DayPlannerScheduledItems {
    ) {
       return {
          ...itinerary,
-         animals: (itinerary.animals ?? []).filter((_, index) => (
+         animals: (itinerary.animals ?? []).filter((item, index) => (
             !scheduledAnimalIndexes.has(index)
+            && !DayPlannerScheduledItems.isAddedByTransportation(item)
          )),
          attractions: (itinerary.attractions ?? []).filter((_, index) => (
             !scheduledAttractionIndexes.has(index)

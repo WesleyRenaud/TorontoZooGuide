@@ -1127,6 +1127,10 @@ nav ul li a:hover {
    box-shadow: 0 0 0 7px #ffdd00fa;
 }
 
+.marker.marker-viewable-from-zoomobile {
+   box-shadow: 0 0 0 7px #74da00f0;
+}
+
 .marker.marker-restroom.marker-has-limited-viewing {
    box-shadow: 0 0 0 6px #ffdd00fa;
 }

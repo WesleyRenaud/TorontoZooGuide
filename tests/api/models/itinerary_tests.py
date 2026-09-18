@@ -105,6 +105,8 @@ def Test_ToDict_TestMixedObjectsAndDicts_ExpectSerializedItinerary() -> None:
             'old_likelihood': None,
             'is_added': False,
             'covered_by_talk': False,
+            'added_by_transportation': False,
+            'transportation': None,
             'start_time': None,
             'end_time': None,
             'viewing_walk_node_id': None,

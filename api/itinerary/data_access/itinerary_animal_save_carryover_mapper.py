@@ -42,6 +42,7 @@ class ItineraryAnimalSaveCarryoverMapper():
          old_likelihood=None,
          is_added=is_added,
          covered_by_talk=False,
+         added_by_transportation=False,
          start_time=None,
          end_time=None,
       )
@@ -59,6 +60,7 @@ class ItineraryAnimalSaveCarryoverMapper():
          old_likelihood=saved_row.new_likelihood,
          is_added=animal.is_added or saved_row.is_added,
          covered_by_talk=saved_row.covered_by_talk,
+         added_by_transportation=False,
          start_time=saved_row.start_time,
          end_time=saved_row.end_time,
       )

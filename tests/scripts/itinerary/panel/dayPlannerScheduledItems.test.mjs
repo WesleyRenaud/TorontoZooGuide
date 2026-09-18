@@ -618,3 +618,12 @@ test('Test_BuildScheduledAndUnscheduledItinerary_TestIndexes_ExpectFiltered', ()
       wildEncounters: [{ name: 'J' }],
    });
 });
+
+test('Test_BuildUnscheduledItinerary_TestTransportationOnlyAnimals_ExpectOmitted', () => {
+   assert.deepEqual(DayPlannerScheduledItems.buildUnscheduledItinerary({
+      animals: [
+         { species: 'African Lion' },
+         { species: 'Masai Giraffe', added_by_transportation: true },
+      ],
+   }).animals, [{ species: 'African Lion' }]);
+});

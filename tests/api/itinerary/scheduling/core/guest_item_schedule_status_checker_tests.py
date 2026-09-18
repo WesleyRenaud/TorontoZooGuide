@@ -115,6 +115,20 @@ def Test_HasUnscheduledGuestItems_TestFullyScheduledGuestItems_ExpectFalse() -> 
    assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
 
 
+def Test_HasUnscheduledGuestItems_TestTransportationOnlyAnimal_ExpectFalse() -> None:
+   itinerary = _itinerary(
+      animals=[
+         SCHEDULED_LION,
+         Animal(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
+            added_by_transportation=True ),
+      ] )
+
+   assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
+
+
 def Test_HasUnscheduledGuestItems_TestLionAndPenguinFullyScheduled_ExpectFalse() -> None:
    itinerary = _itinerary(
       animals=[

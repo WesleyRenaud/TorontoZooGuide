@@ -33,6 +33,8 @@ def _saved_animal(
       old_likelihood: int | None = None,
       is_added: bool = False,
       covered_by_talk: bool = False,
+      added_by_transportation: bool = False,
+      transportation: str | None = None,
       start_time: str | None = None,
       end_time: str | None = None ) -> ItineraryAnimalRecord:
    return ItineraryAnimalRecord(
@@ -43,6 +45,8 @@ def _saved_animal(
       new_likelihood=old_likelihood,
       is_added=is_added,
       covered_by_talk=covered_by_talk,
+      added_by_transportation=added_by_transportation,
+      transportation=transportation,
       start_time=start_time,
       end_time=end_time )
 
@@ -181,6 +185,8 @@ def Test_Build_TestAppliesSavedSchedule_ExpectTimesAndFlags() -> None:
          old_likelihood=80,
          is_added=True,
          covered_by_talk=True,
+         added_by_transportation=True,
+         transportation='Zoomobile',
          start_time='10:00 AM',
          end_time='10:08 AM' ),
    ]
@@ -191,6 +197,8 @@ def Test_Build_TestAppliesSavedSchedule_ExpectTimesAndFlags() -> None:
    assert lion.old_likelihood == 80
    assert lion.is_added is True
    assert lion.covered_by_talk is True
+   assert lion.added_by_transportation is True
+   assert lion.transportation == 'Zoomobile'
    assert lion.start_time == '10:00 AM'
    assert lion.end_time == '10:08 AM'
 
@@ -225,3 +233,5 @@ def Test_ApplySchedule_TestNoSavedMatch_ExpectUnchanged() -> None:
    assert animal.start_time is None
    assert animal.end_time is None
    assert animal.covered_by_talk is False
+   assert animal.added_by_transportation is False
+   assert animal.transportation is None

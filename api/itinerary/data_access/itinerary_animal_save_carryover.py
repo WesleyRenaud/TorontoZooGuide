@@ -13,5 +13,6 @@ class ItineraryAnimalSaveCarryover:
    old_likelihood: int | None
    is_added: bool
    covered_by_talk: bool
+   added_by_transportation: bool
    start_time: Types.ScheduleTimeKey
    end_time: Types.ScheduleTimeKey

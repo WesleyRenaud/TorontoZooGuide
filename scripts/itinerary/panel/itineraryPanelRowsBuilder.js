@@ -1,5 +1,6 @@
 import { GuardiansTalkLinkedAnimalOpener } from '../../guardians/guardiansTalkLinkedAnimalOpener.js';
 import { ItineraryItemFormatter } from './itineraryItemFormatter.js';
+import { ItineraryTransportationAnimal } from '../itineraryTransportationAnimal.js';
 import { SpeciesFragment } from '../../overlays/speciesFragment.js';
 import { RowActionPresenter } from './rowActionPresenter.js';
 import { RowAlertPresenter } from './rowAlertPresenter.js';
@@ -22,7 +23,9 @@ export class ItineraryPanelRowsBuilder {
          onRemoveItem = null,
       } = {}
    ) {
-      return RowBuilder.buildRows(animals, {
+      return RowBuilder.buildRows(
+         animals.filter((item) => !ItineraryTransportationAnimal.isAddedByTransportation(item)),
+         {
          normalizeItem: ItineraryItemFormatter.normalizeAnimal,
          prepareItems: (normalizedItems) => ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime(
             RowBuilder.buildUniqueAnimals(normalizedItems)

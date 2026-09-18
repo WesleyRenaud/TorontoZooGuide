@@ -23,15 +23,16 @@ from api.shared.enums.transportation_name import TransportationName
 
 UNSCHEDULER_SCHEMA = """
 CREATE TABLE ItineraryAnimal (
-   SPECIES              TEXT        NOT NULL,
-   EXHIBIT              TEXT        NOT NULL,
-   ENCLOSURE_NAME       TEXT,
-   OLD_LIKELIHOOD       INTEGER,
-   NEW_LIKELIHOOD       INTEGER,
-   IS_ADDED             INTEGER     NOT NULL DEFAULT 0,
-   COVERED_BY_TALK      INTEGER     NOT NULL DEFAULT 0,
-   START_TIME           TEXT,
-   END_TIME             TEXT
+   SPECIES                 TEXT        NOT NULL,
+   EXHIBIT                 TEXT        NOT NULL,
+   ENCLOSURE_NAME          TEXT,
+   OLD_LIKELIHOOD          INTEGER,
+   NEW_LIKELIHOOD          INTEGER,
+   IS_ADDED                INTEGER     NOT NULL DEFAULT 0,
+   COVERED_BY_TALK         INTEGER     NOT NULL DEFAULT 0,
+   ADDED_BY_TRANSPORTATION INTEGER     NOT NULL DEFAULT 0,
+   START_TIME              TEXT,
+   END_TIME                TEXT
 );
 
 CREATE TABLE ItineraryAttraction (
@@ -89,6 +90,16 @@ CREATE TABLE ItineraryWildEncounter (
    END_TIME             TEXT,
    IS_DELETED           INTEGER     NOT NULL DEFAULT 0,
    PRIMARY KEY ( WILD_ENCOUNTER, START_TIME )
+);
+
+CREATE TABLE TransportationAnimal (
+   TRANSPORTATION      TEXT        NOT NULL,
+   FROM_STATION        TEXT        NOT NULL,
+   TO_STATION          TEXT        NOT NULL,
+   SPECIES             TEXT        NOT NULL,
+   EXHIBIT             TEXT        NOT NULL,
+   ENCLOSURE_NAME      TEXT,
+   PRIMARY KEY ( SPECIES, EXHIBIT, ENCLOSURE_NAME )
 );
 """
 

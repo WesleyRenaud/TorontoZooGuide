@@ -19,6 +19,8 @@ class ItineraryAnimalRecord:
    new_likelihood: int | None = None
    is_added: bool = False
    covered_by_talk: bool = False
+   added_by_transportation: bool = False
+   transportation: str | None = None
    start_time: Types.ScheduleTimeKey = None
    end_time: Types.ScheduleTimeKey = None
 
