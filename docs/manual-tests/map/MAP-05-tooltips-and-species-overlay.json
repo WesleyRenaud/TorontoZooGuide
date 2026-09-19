@@ -61,6 +61,12 @@
       "name": "Hover after click",
       "do": "Hover a different marker after dismissing click tooltip.",
       "expect": "Hover tooltip still works."
+    },
+    {
+      "number": 11,
+      "name": "Zoomobile-only lime ring",
+      "do": "Search **Domestic Yak** and **View on Map**, then click the marker.",
+      "expect": "The marker has a lime ring. The alert banner says **This animal is only visible via the Zoomobile.** **Asian Wild Horse** at **Shady Acres** does not have that ring."
     }
   ]
 }

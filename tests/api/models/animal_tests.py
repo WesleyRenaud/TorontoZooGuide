@@ -15,5 +15,6 @@ def Test_ToDict_TestBooleanFlags_ExpectFrontendShape() -> None:
    assert result[ 'has_limited_viewing_schedule' ] is True
    assert result[ 'has_viewing_alert' ] is False
    assert result[ 'added_by_transportation' ] is False
+   assert result[ 'is_zoomobile_only' ] is False
    assert result[ 'transportation' ] is None
    assert result[ 'is_deleted' ] is False

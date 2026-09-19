@@ -253,6 +253,7 @@ class AnimalViewabilityBuilder():
          has_limited_viewing_schedule=has_limited_viewing_schedule,
          limited_viewing_message=limited_viewing_message,
          viewing_alert_messages=viewing_alert_messages,
+         is_zoomobile_only=animal.is_zoomobile_only,
          include_all_viewing_spots=animal.include_all_viewing_spots )
 
       ViewingWalkNodeIdApplier.apply( viewable_animal )

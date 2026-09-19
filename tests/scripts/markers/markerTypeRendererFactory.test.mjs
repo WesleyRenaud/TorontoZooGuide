@@ -38,6 +38,13 @@ test('Test_ShouldShowViewableFromZoomobileIndicator_TestFlag_ExpectBoolean', () 
    assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
       added_by_transportation: true,
    }), true);
+   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
+      is_zoomobile_only: true,
+   }), true);
+   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
+      added_by_transportation: false,
+      is_zoomobile_only: false,
+   }), false);
 });
 
 test('Test_ShouldShowRestroomAlertIndicator_TestCases_ExpectBoolean', () => {
@@ -185,6 +192,23 @@ test('Test_RenderAnimalMarker_TestCountAndLimited_ExpectVisuals', () => {
          exhibit: 'Africa',
          likelihood: 80,
          added_by_transportation: true,
+         viewing_alert_messages: ['Alert'],
+      }]);
+      assert.ok(calls.some((entry) => (
+         entry[Position.FIRST] === 'class'
+         && entry[2] === MarkerTypeRendererFactory.VIEWABLE_FROM_ZOOMOBILE_MARKER_CLASS
+      )));
+      assert.equal(calls.some((entry) => (
+         entry[Position.FIRST] === 'class'
+         && entry[2] === MarkerTypeRendererFactory.LIMITED_VIEWING_MARKER_CLASS
+      )), false);
+
+      calls.length = 0;
+      MarkerTypeRendererFactory.renderAnimalMarker(markerEl, [{
+         species: 'Asian Wild Horse',
+         exhibit: 'Eurasia Wilds',
+         likelihood: 80,
+         is_zoomobile_only: true,
          viewing_alert_messages: ['Alert'],
       }]);
       assert.ok(calls.some((entry) => (

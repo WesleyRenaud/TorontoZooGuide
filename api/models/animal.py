@@ -36,6 +36,7 @@ class Animal:
          is_added: bool = False,
          covered_by_talk: bool = False,
          added_by_transportation: bool = False,
+         is_zoomobile_only: bool = False,
          transportation: str | None = None,
          start_time: Types.ScheduleTimeKey = None,
          end_time: Types.ScheduleTimeKey = None,
@@ -69,6 +70,7 @@ class Animal:
       self.is_added = is_added
       self.covered_by_talk = covered_by_talk
       self.added_by_transportation = added_by_transportation
+      self.is_zoomobile_only = is_zoomobile_only
       self.transportation = transportation
       self.start_time = start_time
       self.end_time = end_time
@@ -117,6 +119,7 @@ class Animal:
          'covered_by_talk': ValueConversion.as_boolean( self.covered_by_talk ),
          'added_by_transportation': ValueConversion.as_boolean(
             self.added_by_transportation ),
+         'is_zoomobile_only': ValueConversion.as_boolean( self.is_zoomobile_only ),
          'transportation': self.transportation,
          'start_time': self.start_time,
          'end_time': self.end_time,

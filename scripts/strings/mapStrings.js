@@ -58,6 +58,9 @@ export class MapStrings {
             `Wild Encounter • ${name} + ${count} more - Meeting Spot`
          ),
       },
+      visibleViaTransportation: transportationName => (
+         `This animal is only visible via the ${transportationName}.`
+      ),
       hideUpdates: 'Hide updates and events',
       nextEvent: 'Next event',
       nextUpdate: 'Next update',

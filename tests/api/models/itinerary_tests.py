@@ -106,6 +106,7 @@ def Test_ToDict_TestMixedObjectsAndDicts_ExpectSerializedItinerary() -> None:
             'is_added': False,
             'covered_by_talk': False,
             'added_by_transportation': False,
+            'is_zoomobile_only': False,
             'transportation': None,
             'start_time': None,
             'end_time': None,

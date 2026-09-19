@@ -361,6 +361,27 @@ def Test_BuildViewableAnimalFromRecord_TestLimitedViewingAndAlert_ExpectFlagsAnd
    assert animal.limited_viewing_message == LIMITED_VIEWING_MESSAGE
    assert animal.viewing_alert_messages == [ VIEWING_ALERT_MESSAGE ]
    assert animal.off_display_message is None
+   assert animal.is_zoomobile_only is False
+
+
+def Test_BuildViewableAnimalFromRecord_TestZoomobileOnly_ExpectFlagCopied(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      enclosure_type='Outdoor',
+      is_zoomobile_only=True,
+      animal_day_seasonal_multiplier=1.0,
+      exhibit_day_seasonal_availability_multiplier=1.0 )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.is_zoomobile_only is True
 
 
 def Test_BuildViewableAnimalFromRecord_TestUnknownExhibitMultiplierZero_ExpectExhibitClosedMessage(
