@@ -45,3 +45,27 @@ test('Test_CreateOffDisplayBanner_TestTransportationAnimal_ExpectPlannedViaMessa
    banner.sync({ species: 'African Lion' });
    assert.equal(bannerEl.style.display, 'none');
 });
+
+test('Test_CreateOffDisplayBanner_TestZoomobileOnlyAnimal_ExpectVisibleViaMessage', () => {
+   const banner = OffDisplayFragment.createOffDisplayBanner();
+   banner.sync({
+      is_zoomobile_only: true,
+   });
+   const bannerEl = document.body.children.at(-1);
+   assert.equal(bannerEl.style.display, 'flex');
+   assert.equal(
+      bannerEl.querySelector('.off-display-closed-message')?.textContent,
+      Strings.map.visibleViaTransportation('Zoomobile')
+   );
+
+   banner.sync({
+      added_by_transportation: true,
+      is_zoomobile_only: true,
+      transportation: 'Zoomobile',
+   });
+   assert.equal(
+      bannerEl.querySelector('.off-display-closed-message')?.textContent,
+      Strings.itinerary.map.plannedViaTransportation('Zoomobile')
+   );
+   assert.equal(bannerEl.querySelectorAll('.off-display-closed-message').length, 1);
+});

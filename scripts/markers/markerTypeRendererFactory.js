@@ -59,7 +59,8 @@ export class MarkerTypeRendererFactory {
    });
 
    static shouldShowViewableFromZoomobileIndicator(animal) {
-      return animal?.added_by_transportation === true;
+      return animal?.added_by_transportation === true
+         || animal?.is_zoomobile_only === true;
    }
 
    static shouldShowLimitedViewingIndicator(animal) {
