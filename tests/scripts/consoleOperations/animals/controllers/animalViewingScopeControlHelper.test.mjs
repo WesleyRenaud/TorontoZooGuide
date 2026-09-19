@@ -52,3 +52,19 @@ test('Test_PopulateOptions_TestSingleEnclosure_ExpectFieldHidden', () => {
       [ '' ]
    );
 });
+
+test('Test_PopulateOptions_TestSingleClosedAmongMany_ExpectFieldVisible', () => {
+   const { fieldEl, gridEl } = _createFieldGrid();
+
+   AnimalViewingScopeControlHelper.populateOptions(gridEl, [
+      { enclosureName: 'Indoor', label: 'Indoor' },
+   ], {
+      isFieldVisible: true,
+   });
+
+   assert.equal(fieldEl.classList.contains('is-invisible'), false);
+   assert.deepEqual(
+      AnimalViewingScopeControlHelper.selectedEnclosureNames(gridEl),
+      [ 'Indoor' ]
+   );
+});

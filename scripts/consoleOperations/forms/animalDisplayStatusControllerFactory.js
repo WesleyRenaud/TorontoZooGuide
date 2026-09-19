@@ -1,5 +1,6 @@
 import { AnimalExhibitAutofillController } from '../animals/controllers/animalExhibitAutofillController.js';
 import { AnimalViewingScopeController } from '../animals/controllers/animalViewingScopeController.js';
+import { AnimalsClient } from '../../api/animalsClient.js';
 import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerHelper } from '../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../options/consoleDropdownPopulator.js';
@@ -25,6 +26,8 @@ export class AnimalDisplayStatusControllerFactory {
       successMessage,
       loadExhibits = ConsoleOptionsLoader.loadExhibits,
       loadExhibitsForSpecies = ConsoleOptionsLoader.loadExhibitsForSpecies,
+      loadViewingScopes = AnimalsClient.getAnimalViewingScopes,
+      loadAnimalViewingScopes = loadViewingScopes,
    } = {}) {
       const hasDateRange = Boolean(startDateEl || endDateEl);
       const formFieldEls = [
@@ -38,6 +41,8 @@ export class AnimalDisplayStatusControllerFactory {
          speciesEl,
          exhibitEl,
          viewingScopeEl,
+         loadViewingScopes,
+         loadAnimalViewingScopes,
       });
 
 

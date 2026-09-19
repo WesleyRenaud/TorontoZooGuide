@@ -4,6 +4,7 @@ from ..data_access.animal_enclosure_exhibit_name_provider import AnimalEnclosure
 from ..data_access.animal_information_provider import AnimalInformationProvider
 from ..data_access.animal_off_display_exhibit_name_provider import AnimalOffDisplayExhibitNameProvider
 from ..data_access.animal_off_display_species_name_provider import AnimalOffDisplaySpeciesNameProvider
+from ..data_access.animal_off_display_viewing_scope_provider import AnimalOffDisplayViewingScopeProvider
 from ..data_access.animal_species_name_provider import AnimalSpeciesNameProvider
 from ..data_access.animal_status_provider import AnimalStatusProvider
 from ..data_access.animal_viewable_on_day_provider import AnimalViewableOnDayProvider
@@ -176,6 +177,18 @@ class AnimalCoordinator():
          exhibit: str ) -> list[ AnimalViewingScope ]:
       return AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
          RequestConnectionProvider.get(),
+         species=species,
+         exhibit=exhibit )
+
+
+   @classmethod
+   def get_off_display_viewing_scope_options(
+         cls,
+         species: str,
+         exhibit: str ) -> list[ AnimalViewingScope ]:
+      return AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key(),
          species=species,
          exhibit=exhibit )
 

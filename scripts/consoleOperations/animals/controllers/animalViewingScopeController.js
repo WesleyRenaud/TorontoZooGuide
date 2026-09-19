@@ -7,6 +7,8 @@ export class AnimalViewingScopeController {
       speciesEl,
       exhibitEl,
       viewingScopeEl,
+      loadViewingScopes = AnimalsClient.getAnimalViewingScopes,
+      loadAnimalViewingScopes = loadViewingScopes,
    } = {}) {
       function reset() {
          AnimalViewingScopeControlHelper.clearOptions(viewingScopeEl);
@@ -21,16 +23,27 @@ export class AnimalViewingScopeController {
             return;
          }
 
+         const payload = {
+            species,
+            exhibit,
+         };
+
          try {
-            const scopes = await AnimalsClient.getAnimalViewingScopes({
-               species,
-               exhibit,
-            });
+            const scopesPromise = loadViewingScopes(payload);
+            const [scopes, animalScopes] = await Promise.all([
+               scopesPromise,
+               loadAnimalViewingScopes === loadViewingScopes
+                  ? scopesPromise
+                  : loadAnimalViewingScopes(payload),
+            ]);
 
             AnimalViewingScopeControlHelper.populateOptions(
                viewingScopeEl,
                scopes,
-               { optionIdPrefix: viewingScopeEl.id }
+               {
+                  optionIdPrefix: viewingScopeEl.id,
+                  isFieldVisible: animalScopes.length > 1,
+               }
             );
          }
          catch (err) {

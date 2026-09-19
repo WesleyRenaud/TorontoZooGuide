@@ -334,6 +334,33 @@ def Test_GetOffDisplayExhibitOptions_TestHttpRequestWithSpecies_ExpectMapsSpecie
    ]
 
 
+def Test_GetOffDisplayViewingScopeOptions_TestHttpRequest_ExpectViewingScopesResponse(
+      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
+   handler = make_handler(
+      '/get-off-display-viewing-scope-options',
+      { 'species': ANIMAL_NAME, 'exhibit': ANIMAL_EXHIBIT }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert response_json( handler ) == {
+      'viewingScopes': [
+         { 'enclosureName': 'Indoor', 'label': 'Indoor' },
+         { 'enclosureName': 'Outdoor', 'label': 'Outdoor' },
+      ],
+   }
+   assert stub_animal_coordinator.calls == [
+      (
+         'get_off_display_viewing_scope_options',
+         {
+            'species': ANIMAL_NAME,
+            'exhibit': ANIMAL_EXHIBIT,
+         }
+      )
+   ]
+
+
 def Test_GetAnimalVisibilityScheduleOptions_TestHttpRequest_ExpectMapsExhibitAndSpeciesResponse(
       stub_animal_coordinator: StubAnimalCoordinator ) -> None:
    handler = make_handler(

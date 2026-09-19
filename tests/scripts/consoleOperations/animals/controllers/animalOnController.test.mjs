@@ -4,6 +4,7 @@ import test from 'node:test';
 import { AnimalOnController } from '../../../../../scripts/consoleOperations/animals/controllers/animalOnController.js';
 import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { AnimalViewingScopeController } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingScopeController.js';
+import { AnimalsClient } from '../../../../../scripts/api/animalsClient.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
@@ -30,6 +31,7 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
    const originalSet = ConsoleOperationsClient.setAnimalOnDisplay;
    const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
    const autofillArgs = [];
+   const scopeArgs = [];
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
@@ -45,13 +47,16 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
    ControllerHelper.bindResetValueOnChange = () => {};
-   AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
-      reset: () => {
-         resets.push(true);
-      },
-      refresh: async () => {},
-      selectedEnclosureNames: () => [ 'Male Herd' ],
-   });
+   AnimalViewingScopeController.createAnimalViewingScopeControl = (args) => {
+      scopeArgs.push(args);
+      return {
+         reset: () => {
+            resets.push(true);
+         },
+         refresh: async () => {},
+         selectedEnclosureNames: () => [ 'Male Herd' ],
+      };
+   };
    AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
       autofillArgs.push(args);
       return originalAutofill(args);
@@ -89,6 +94,14 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
       assert.deepEqual(activations, [{ id: 'animal-on' }]);
       assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadOffDisplayExhibits);
       assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadOffDisplayExhibits);
+      assert.equal(
+         scopeArgs[Position.FIRST].loadViewingScopes,
+         ConsoleOptionsLoader.loadOffDisplayViewingScopes
+      );
+      assert.equal(
+         scopeArgs[Position.FIRST].loadAnimalViewingScopes,
+         AnimalsClient.getAnimalViewingScopes
+      );
 
       await submitButtonEl.listeners.click();
       assert.ok(

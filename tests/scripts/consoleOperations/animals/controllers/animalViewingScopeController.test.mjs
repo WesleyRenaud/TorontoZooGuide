@@ -127,6 +127,66 @@ test('Test_CreateAnimalViewingScopeControl_TestUnnamedEnclosure_ExpectMainSelect
    );
 });
 
+test('Test_CreateAnimalViewingScopeControl_TestInjectedLoader_ExpectUsed', async () => {
+   const speciesEl = _createField('Sumatran Orangutan');
+   const exhibitEl = _createField('Indo-Malaya Pavilion');
+   const viewingScopeEl = _createGrid();
+   const payloads = [];
+
+   const control = AnimalViewingScopeController.createAnimalViewingScopeControl({
+      speciesEl,
+      exhibitEl,
+      viewingScopeEl,
+      loadViewingScopes: async (payload) => {
+         payloads.push(payload);
+         return [
+            { enclosureName: 'Indoor', label: 'Indoor' },
+         ];
+      },
+   });
+
+   await speciesEl.trigger('change');
+
+   assert.deepEqual(payloads, [
+      { species: 'Sumatran Orangutan', exhibit: 'Indo-Malaya Pavilion' },
+   ]);
+   assert.deepEqual(control.selectedEnclosureNames(), [ 'Indoor' ]);
+   assert.equal(
+      viewingScopeEl.closest('.console-operations-field').classList.contains('is-invisible'),
+      true
+   );
+});
+
+test('Test_CreateAnimalViewingScopeControl_TestSingleClosedAmongMany_ExpectFieldVisible', async () => {
+   const speciesEl = _createField('Sumatran Orangutan');
+   const exhibitEl = _createField('Indo-Malaya Pavilion');
+   const viewingScopeEl = _createGrid();
+
+   const control = AnimalViewingScopeController.createAnimalViewingScopeControl({
+      speciesEl,
+      exhibitEl,
+      viewingScopeEl,
+      loadViewingScopes: async () => [
+         { enclosureName: 'Indoor', label: 'Indoor' },
+      ],
+      loadAnimalViewingScopes: async () => [
+         { enclosureName: 'Indoor', label: 'Indoor' },
+         { enclosureName: 'Outdoor', label: 'Outdoor' },
+      ],
+   });
+
+   await speciesEl.trigger('change');
+
+   assert.deepEqual(control.selectedEnclosureNames(), [ 'Indoor' ]);
+   assert.equal(viewingScopeEl.querySelectorAll('input[type="checkbox"]').length, 1);
+   assert.equal(viewingScopeEl.textContent.includes('Indoor'), true);
+   assert.equal(viewingScopeEl.textContent.includes('Outdoor'), false);
+   assert.equal(
+      viewingScopeEl.closest('.console-operations-field').classList.contains('is-invisible'),
+      false
+   );
+});
+
 test('Test_CreateAnimalViewingScopeControl_TestMissingFieldsAndErrors_ExpectReset', async () => {
    const speciesEl = _createField('');
    const exhibitEl = _createField('');

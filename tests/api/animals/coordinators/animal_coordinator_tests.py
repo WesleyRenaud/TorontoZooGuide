@@ -12,6 +12,7 @@ from api.animals.data_access.animal_enclosure_exhibit_name_provider import Anima
 from api.animals.data_access.animal_information_provider import AnimalInformationProvider
 from api.animals.data_access.animal_off_display_exhibit_name_provider import AnimalOffDisplayExhibitNameProvider
 from api.animals.data_access.animal_off_display_species_name_provider import AnimalOffDisplaySpeciesNameProvider
+from api.animals.data_access.animal_off_display_viewing_scope_provider import AnimalOffDisplayViewingScopeProvider
 from api.animals.data_access.animal_species_name_provider import AnimalSpeciesNameProvider
 from api.animals.data_access.animal_status_provider import AnimalStatusProvider
 from api.animals.data_access.animal_viewable_on_day_provider import AnimalViewableOnDayProvider
@@ -1455,6 +1456,40 @@ def Test_GetAnimalViewingScopes_TestProviderScopes_ExpectReturned(
    assert AnimalCoordinator.get_animal_viewing_scopes( SPECIES, EXHIBIT ) == [
       AnimalViewingScope.from_enclosure_name( 'Male Herd' ),
    ]
+
+
+def Test_GetOffDisplayViewingScopeOptions_TestProviderScopes_ExpectReturned(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def fetch_off_display_viewing_scopes(
+         _conn: Types.Connection,
+         today: str,
+         species: str,
+         exhibit: str ) -> list[ AnimalViewingScope ]:
+      captured[ 'today' ] = today
+      captured[ 'species' ] = species
+      captured[ 'exhibit' ] = exhibit
+      return [ AnimalViewingScope.from_enclosure_name( 'Indoor' ) ]
+
+   monkeypatch.setattr(
+      DateValues,
+      'today_date_key',
+      lambda: '2026-09-16' )
+   monkeypatch.setattr(
+      AnimalOffDisplayViewingScopeProvider,
+      'fetch_off_display_viewing_scopes',
+      fetch_off_display_viewing_scopes )
+
+   assert AnimalCoordinator.get_off_display_viewing_scope_options( SPECIES, EXHIBIT ) == [
+      AnimalViewingScope.from_enclosure_name( 'Indoor' ),
+   ]
+   assert captured == {
+      'today': '2026-09-16',
+      'species': SPECIES,
+      'exhibit': EXHIBIT,
+   }
 
 def Test_GetAnimalsViewableOnDay_TestProvidersAndBuilder_ExpectAnimals(
       stub_request_connection: None,

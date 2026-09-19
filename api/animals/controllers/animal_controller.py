@@ -130,6 +130,21 @@ class AnimalController():
 
 
    @staticmethod
+   def get_off_display_viewing_scope_options( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      viewing_scopes = AnimalCoordinator.get_off_display_viewing_scope_options(
+         species=data.get( 'species' ),
+         exhibit=data.get( 'exhibit' ) )
+
+      handler._write_json( {
+         'viewingScopes': [
+            viewing_scope.to_dict() for viewing_scope in viewing_scopes
+         ],
+      } )
+
+
+   @staticmethod
    def get_animal_visibility_schedule_options( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

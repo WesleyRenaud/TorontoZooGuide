@@ -1,3 +1,4 @@
+import { AnimalsClient } from '../../../api/animalsClient.js';
 import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js';
 import { AnimalDisplayStatusControllerFactory } from '../../forms/animalDisplayStatusControllerFactory.js';
 import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
@@ -35,6 +36,8 @@ export class AnimalOnController {
          successMessage: result => Strings.status.animalOnDisplay(result),
          loadExhibits: ConsoleOptionsLoader.loadOffDisplayExhibits,
          loadExhibitsForSpecies: ConsoleOptionsLoader.loadOffDisplayExhibits,
+         loadViewingScopes: ConsoleOptionsLoader.loadOffDisplayViewingScopes,
+         loadAnimalViewingScopes: AnimalsClient.getAnimalViewingScopes,
       });
    }
 }
