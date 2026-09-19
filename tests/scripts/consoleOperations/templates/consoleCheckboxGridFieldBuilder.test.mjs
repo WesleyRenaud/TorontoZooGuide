@@ -9,9 +9,11 @@ installDomTestHooks();
 test('Test_CreateCheckboxGridField_TestOptions_ExpectGrid', () => {
    const fieldEl = ConsoleCheckboxGridFieldBuilder.createCheckboxGridField({
       label: 'Days',
+      gridId: 'daysGrid',
       options: [{ id: 'mon', label: 'Monday' }],
    });
    const gridEl = fieldEl.children[1];
+   assert.equal(gridEl.id, 'daysGrid');
    assert.equal(gridEl.className, 'console-operations-checkbox-grid');
    assert.equal(gridEl.children[0].children[0].id, 'mon');
    assert.match(gridEl.textContent, /Monday/);

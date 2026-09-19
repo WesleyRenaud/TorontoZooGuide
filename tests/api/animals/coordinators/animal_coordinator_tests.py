@@ -24,6 +24,7 @@ from api.animals.data_access.animal_visibility_schedule_provider import AnimalVi
 from api.animals.data_access.animal_visibility_schedule_species_name_provider import AnimalVisibilityScheduleSpeciesNameProvider
 from api.animals.domain.animal_viewability_builder import AnimalViewabilityBuilder
 from api.animals.domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
+from api.animals.domain.animal_viewing_scope import AnimalViewingScope
 from api.animals.domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from api.animals.scheduling.animal_limited_viewing_schedule import AnimalLimitedViewingSchedule
 from api.animals.scheduling.animal_limited_viewing_schedule_builder import AnimalLimitedViewingScheduleBuilder
@@ -59,10 +60,10 @@ from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
 from api.request_connection_provider import RequestConnectionProvider
 from api.shared.date_values import DateValues
-from api.shared.enums import AnimalViewingScope, Position
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from api.shared.enums import ScheduleItemKind
+from api.shared.enums.position import Position
 from api.types import Types
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -1447,13 +1448,12 @@ def Test_GetAnimalViewingScopes_TestProviderScopes_ExpectReturned(
       AnimalViewingScopeProvider,
       'fetch_animal_viewing_scopes',
       lambda _conn, *, species, exhibit: (
-         [ AnimalViewingScope.INDOOR, AnimalViewingScope.OUTDOOR ]
+         [ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ]
          if species == SPECIES and exhibit == EXHIBIT
          else [] ) )
 
    assert AnimalCoordinator.get_animal_viewing_scopes( SPECIES, EXHIBIT ) == [
-      AnimalViewingScope.INDOOR,
-      AnimalViewingScope.OUTDOOR,
+      AnimalViewingScope.from_enclosure_name( 'Male Herd' ),
    ]
 
 def Test_GetAnimalsViewableOnDay_TestProvidersAndBuilder_ExpectAnimals(
@@ -1550,7 +1550,7 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
    status = AnimalOffDisplayStatus(
       species=SPECIES,
       exhibit=EXHIBIT,
-      viewing_scope=AnimalViewingScope.INDOOR,
+      viewing_scopes=[ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ],
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE )
@@ -1566,14 +1566,14 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
          *,
          species: str,
          exhibit: str,
-         viewing_scope: AnimalViewingScope,
+         viewing_scopes: list[ AnimalViewingScope ],
          start_date: Types.DateInput,
          end_date: Types.DateInput,
          message: str ) -> bool:
       captured[ 'args' ] = (
          species,
          exhibit,
-         viewing_scope,
+         viewing_scopes,
          start_date,
          end_date,
          message )
@@ -1590,11 +1590,11 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
       START_DATE,
       END_DATE,
       MESSAGE,
-      viewing_scope=AnimalViewingScope.INDOOR ) is True
+      viewing_scopes=[ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ] ) is True
    assert captured[ 'args' ] == (
       SPECIES,
       EXHIBIT,
-      AnimalViewingScope.INDOOR,
+      [ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ],
       START_DATE,
       END_DATE,
       MESSAGE )
@@ -1609,8 +1609,8 @@ def Test_SetAnimalAsOnDisplay_TestProvider_ExpectDelegated(
          *,
          species: str,
          exhibit: str,
-         viewing_scope: AnimalViewingScope ) -> bool:
-      captured[ 'args' ] = ( species, exhibit, viewing_scope )
+         viewing_scopes: list[ AnimalViewingScope ] ) -> bool:
+      captured[ 'args' ] = ( species, exhibit, viewing_scopes )
       return True
 
    monkeypatch.setattr(
@@ -1621,8 +1621,11 @@ def Test_SetAnimalAsOnDisplay_TestProvider_ExpectDelegated(
    assert AnimalCoordinator.set_animal_as_on_display(
       SPECIES,
       EXHIBIT,
-      viewing_scope=AnimalViewingScope.OUTDOOR ) is True
-   assert captured[ 'args' ] == ( SPECIES, EXHIBIT, AnimalViewingScope.OUTDOOR )
+      viewing_scopes=[ AnimalViewingScope.from_enclosure_name( 'Female Herd' ) ] ) is True
+   assert captured[ 'args' ] == (
+      SPECIES,
+      EXHIBIT,
+      [ AnimalViewingScope.from_enclosure_name( 'Female Herd' ) ] )
 
 def Test_SetAnimalLimitedViewingSchedule_TestBuilderAndProvider_ExpectDelegated(
       stub_request_connection: None,

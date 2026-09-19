@@ -1,6 +1,7 @@
 import { Strings } from '../../../strings.js';
 import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
 import { ConsoleAutocompleteFieldBuilder } from '../../templates/consoleAutocompleteFieldBuilder.js';
+import { ConsoleCheckboxGridFieldBuilder } from '../../templates/consoleCheckboxGridFieldBuilder.js';
 import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
 import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
 import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
@@ -24,11 +25,9 @@ export class OffDisplayView {
                resultsId: 'offDisplaySpeciesResults',
                placeholder: Strings.placeholders.speciesSearch,
             }),
-            ConsoleSelectFieldBuilder.createSelectField({
+            ConsoleCheckboxGridFieldBuilder.createCheckboxGridField({
                label: Strings.labels.viewingScope,
-               inputId: 'offDisplayViewingScope',
-               emptyOptionLabel: Strings.placeholders.viewingScope,
-               options: Strings.viewingScopes,
+               gridId: 'offDisplayViewingScope',
             }),
             ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'offDisplayStartDate',

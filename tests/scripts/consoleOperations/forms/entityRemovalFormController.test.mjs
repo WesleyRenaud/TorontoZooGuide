@@ -15,11 +15,9 @@ installDomTestHooks();
 test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
-   const binds = [];
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
    const originalStatus = ConsoleStatusPresenter.setStatus;
    const originalReset = ControllerHelper.resetFormFields;
-   const originalBind = ControllerHelper.bindResetValueOnChange;
    const originalHide = ControllerHelper.hideConsolePanel;
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
@@ -28,9 +26,6 @@ test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStat
    };
    ConsoleStatusPresenter.setStatus = (...args) => { statuses.push(args); };
    ControllerHelper.resetFormFields = () => {};
-   ControllerHelper.bindResetValueOnChange = (sourceEl, targetEl) => {
-      binds.push({ sourceEl, targetEl });
-   };
    ControllerHelper.hideConsolePanel = () => {};
 
    try {
@@ -59,13 +54,7 @@ test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStat
             return { success: true, species: 'Lion', exhibit: 'Savanna' };
          },
          successMessage: result => `Removed ${result.species}`,
-         bindResetValueOnChange: {
-            sourceEl: exhibitEl,
-            targetEl: speciesEl,
-         },
       });
-
-      assert.deepEqual(binds, [{ sourceEl: exhibitEl, targetEl: speciesEl }]);
 
       await controller.show();
       assert.deepEqual(activations, [{ id: 'remove-panel' }]);
@@ -76,7 +65,6 @@ test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStat
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
       ConsoleStatusPresenter.setStatus = originalStatus;
       ControllerHelper.resetFormFields = originalReset;
-      ControllerHelper.bindResetValueOnChange = originalBind;
       ControllerHelper.hideConsolePanel = originalHide;
    }
 });

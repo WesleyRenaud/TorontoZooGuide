@@ -9,7 +9,6 @@ import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperation
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
-import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalViewingScope.js';
 import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
 import { Strings } from '../../../../../scripts/strings.js';
@@ -51,6 +50,7 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
          resets.push(true);
       },
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
    AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
       autofillArgs.push(args);
@@ -60,7 +60,7 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
       assert.deepEqual(payload, {
          species: 'Lion',
          exhibit: 'Savanna',
-         viewingScope: AnimalViewingScope.ALL,
+         viewingScopes: [ 'Male Herd' ],
       });
       return { success: true, species: 'Lion', exhibit: 'Savanna' };
    };
@@ -134,6 +134,7 @@ test('Test_CreateAnimalOnDisplayController_TestValidationAndFailures_ExpectError
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
    ApiErrorMessageResolver.resolveConsoleMutationError = () => 'mutation failed';
 
@@ -175,7 +176,7 @@ test('Test_CreateAnimalOnDisplayController_TestValidationAndFailures_ExpectError
       ControllerHelper.getFieldValue = (el) => {
          if (el === speciesEl) return 'Lion';
          if (el === exhibitEl) return 'Savanna';
-         return AnimalViewingScope.INDOOR;
+         return '';
       };
       ConsoleOperationsClient.setAnimalOnDisplay = async () => ({ success: false });
       await submitButtonEl.listeners.click();

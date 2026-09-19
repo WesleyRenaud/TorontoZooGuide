@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AnimalsApiNormalizer } from '../../../scripts/api/animalsApiNormalizer.js';
-import { AnimalViewingScope } from '../../../scripts/shared/enums/animalViewingScope.js';
 
 test('Test_NormalizeNamedList_TestValues_ExpectTrimmedNonEmpty', () => {
    assert.deepEqual(
@@ -34,19 +33,6 @@ test('Test_NormalizeAnimalsResponse_TestAnimals_ExpectNamedList', () => {
    assert.deepEqual(
       AnimalsApiNormalizer.normalizeAnimalsResponse({ animals: ['  Lion  ', ''] }),
       ['Lion']
-   );
-});
-
-test('Test_NormalizeAnimalViewingScopesResponse_TestValidAndInvalid_ExpectFiltered', () => {
-   assert.deepEqual(
-      AnimalsApiNormalizer.normalizeAnimalViewingScopesResponse({
-         viewingScopes: [
-            AnimalViewingScope.ALL,
-            'not-a-scope',
-            AnimalViewingScope.INDOOR,
-         ],
-      }),
-      [AnimalViewingScope.ALL, AnimalViewingScope.INDOOR]
    );
 });
 

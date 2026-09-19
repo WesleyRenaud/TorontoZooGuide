@@ -31,5 +31,4 @@ export class Strings {
    static entityPhrases = CommonStrings.entityPhrases;
    static format = CommonStrings.format;
    static validation = ConsoleStrings.validation;
-   static viewingScopes = ConsoleStrings.viewingScopes;
 }

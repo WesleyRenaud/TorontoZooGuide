@@ -5188,6 +5188,11 @@ nav ul li a:hover {
    display: none !important;
 }
 
+.console-operations-field.is-invisible {
+   visibility: hidden;
+   pointer-events: none;
+}
+
 .console-operations-label {
    font-size: 2.9em;
    font-weight: 850;
@@ -5489,6 +5494,8 @@ nav ul li a:hover {
    flex-wrap: wrap;
    gap: 16px 28px;
    align-items: center;
+   width: 100%;
+   min-height: max(24px, 2.3em);
 }
 
 .console-operations-checkbox-option {
@@ -5498,6 +5505,7 @@ nav ul li a:hover {
 
    font-size: 2.3em;
    font-weight: 700;
+   line-height: 1;
    color: #14230ad9;
 
    cursor: pointer;

@@ -73,10 +73,6 @@ export class AnimalViewingController {
             message,
          }),
          successMessage: result => Strings.status.animalViewingAlertSaved(result),
-         bindResetValueOnChange: {
-            sourceEl: exhibitEl,
-            targetEl: speciesEl,
-         },
          speciesEl,
          loadOptionsForSpecies: ConsoleOptionsLoader.loadExhibitsForSpecies,
       });

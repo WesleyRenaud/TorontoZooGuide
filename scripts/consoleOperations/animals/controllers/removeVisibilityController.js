@@ -48,10 +48,6 @@ export class RemoveVisibilityController {
             exhibit,
          }),
          successMessage: result => Strings.status.animalVisibilityScheduleRemoved(result),
-         bindResetValueOnChange: {
-            sourceEl: exhibitEl,
-            targetEl: speciesEl,
-         },
          speciesEl,
          loadOptionsForSpecies: ConsoleOptionsLoader.loadVisibilityScheduleExhibits,
       });

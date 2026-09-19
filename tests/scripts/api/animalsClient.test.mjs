@@ -62,7 +62,12 @@ test('Test_GetAnimalsInExhibit_TestNames_ExpectNormalized', async () => {
    assert.deepEqual(await AnimalsClient.getAnimalsInExhibit('African Savanna'), ['African Lion']);
 });
 
-test('Test_GetAnimalViewingScopes_TestMixedScopes_ExpectValidOnly', async () => {
+test('Test_GetAnimalViewingScopes_TestResponse_ExpectScopes', async () => {
+   const viewingScopes = [
+      { enclosureName: 'Male Herd', label: 'Male Herd' },
+      { enclosureName: '', label: 'Main' },
+   ];
+
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-animal-viewing-scopes');
       assert.deepEqual(JSON.parse(options.body), {
@@ -70,15 +75,16 @@ test('Test_GetAnimalViewingScopes_TestMixedScopes_ExpectValidOnly', async () => 
          exhibit: 'African Savanna',
       });
 
-      return _mockResponse(JSON.stringify({
-         viewingScopes: ['all', 'indoor', 'invalid', '  outdoor  '],
-      }));
+      return _mockResponse(JSON.stringify({ viewingScopes }));
    };
 
-   assert.deepEqual(await AnimalsClient.getAnimalViewingScopes({
-      species: 'African Lion',
-      exhibit: 'African Savanna',
-   }), ['all', 'indoor', 'outdoor']);
+   assert.deepEqual(
+      await AnimalsClient.getAnimalViewingScopes({
+         species: 'African Lion',
+         exhibit: 'African Savanna',
+      }),
+      viewingScopes
+   );
 });
 
 test('Test_GetAnimalInformation_TestRows_ExpectFirstNormalized', async () => {

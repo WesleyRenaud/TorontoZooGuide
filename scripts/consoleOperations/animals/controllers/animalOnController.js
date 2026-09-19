@@ -25,11 +25,11 @@ export class AnimalOnController {
          exhibitEl,
          viewingScopeEl,
          activatePanel,
-         submitDisplayStatus: ({ species, exhibit, viewingScope }) => (
+         submitDisplayStatus: ({ species, exhibit, viewingScopes }) => (
             ConsoleOperationsClient.setAnimalOnDisplay({
                species,
                exhibit,
-               viewingScope,
+               viewingScopes,
             })
          ),
          successMessage: result => Strings.status.animalOnDisplay(result),

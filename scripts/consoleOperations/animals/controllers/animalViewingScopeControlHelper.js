@@ -1,17 +1,41 @@
-import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
+import { ConsoleCheckboxGridFieldBuilder } from '../../templates/consoleCheckboxGridFieldBuilder.js';
 
 export class AnimalViewingScopeControlHelper {
-   static animalHasIndoorAndOutdoorViewing(scopes = []) {
-      return (
-         scopes.includes(AnimalViewingScope.INDOOR) &&
-         scopes.includes(AnimalViewingScope.OUTDOOR)
+   static selectedEnclosureNames(gridEl) {
+      return Array.from(gridEl.querySelectorAll('input[type="checkbox"]'))
+         .filter((inputEl) => inputEl.checked)
+         .map((inputEl) => inputEl.value);
+   }
+
+
+   static setFieldVisible(gridEl, isVisible) {
+      gridEl?.closest('.console-operations-field')?.classList.toggle(
+         'is-invisible',
+         !isVisible
       );
    }
 
-   static singleSpecificViewingScope(scopes = []) {
-      const specificScopes = scopes.filter(scope => scope !== AnimalViewingScope.ALL);
-      return specificScopes.length === 1
-         ? specificScopes[0]
-         : '';
+
+   static clearOptions(gridEl) {
+      gridEl?.replaceChildren();
+      AnimalViewingScopeControlHelper.setFieldVisible(gridEl, false);
+   }
+
+
+   static populateOptions(gridEl, scopes = [], {
+      optionIdPrefix = 'viewingScope',
+   } = {}) {
+      AnimalViewingScopeControlHelper.clearOptions(gridEl);
+
+      scopes.forEach((scope, index) => {
+         gridEl.appendChild(ConsoleCheckboxGridFieldBuilder.createCheckboxOption({
+            id: `${optionIdPrefix}-${index}`,
+            label: scope.label,
+            value: scope.enclosureName,
+            checked: true,
+         }));
+      });
+
+      AnimalViewingScopeControlHelper.setFieldVisible(gridEl, scopes.length > 1);
    }
 }

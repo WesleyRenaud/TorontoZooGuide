@@ -9,14 +9,6 @@
          "javascriptClass": "ApiErrorType"
       },
       {
-         "id": "animalViewingScope",
-         "json": "animalViewingScope.json",
-         "pythonModule": "api/shared/enums/animal_viewing_scope.py",
-         "pythonClass": "AnimalViewingScope",
-         "javascriptModule": "scripts/shared/enums/animalViewingScope.js",
-         "javascriptClass": "AnimalViewingScope"
-      },
-      {
          "id": "enclosureType",
          "json": "enclosureType.json",
          "pythonModule": "api/shared/enums/enclosure_type.py",

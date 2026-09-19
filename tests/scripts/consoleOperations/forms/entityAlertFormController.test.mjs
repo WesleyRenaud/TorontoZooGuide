@@ -15,12 +15,10 @@ installDomTestHooks();
 test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
-   const binds = [];
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
    const originalReload = ControllerHelper.reloadOptions;
    const originalStatus = ConsoleStatusPresenter.setStatus;
    const originalReset = ControllerHelper.resetFormFields;
-   const originalBind = ControllerHelper.bindResetValueOnChange;
    const originalHide = ControllerHelper.hideConsolePanel;
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
@@ -32,9 +30,6 @@ test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus
    };
    ConsoleStatusPresenter.setStatus = (...args) => { statuses.push(args); };
    ControllerHelper.resetFormFields = () => {};
-   ControllerHelper.bindResetValueOnChange = (sourceEl, targetEl) => {
-      binds.push({ sourceEl, targetEl });
-   };
    ControllerHelper.hideConsolePanel = () => {};
 
    try {
@@ -75,13 +70,7 @@ test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus
             return { success: true, species: 'Lion', exhibit: 'Savanna' };
          },
          successMessage: result => `Alerted ${result.species}`,
-         bindResetValueOnChange: {
-            sourceEl: exhibitEl,
-            targetEl: speciesEl,
-         },
       });
-
-      assert.deepEqual(binds, [{ sourceEl: exhibitEl, targetEl: speciesEl }]);
 
       await controller.show();
       assert.deepEqual(activations, [{ id: 'alert-panel' }]);
@@ -93,7 +82,6 @@ test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus
       ControllerHelper.reloadOptions = originalReload;
       ConsoleStatusPresenter.setStatus = originalStatus;
       ControllerHelper.resetFormFields = originalReset;
-      ControllerHelper.bindResetValueOnChange = originalBind;
       ControllerHelper.hideConsolePanel = originalHide;
    }
 });

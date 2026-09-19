@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.enums import AnimalViewingScope
+from ..domain.animal_viewing_scope import AnimalViewingScope
 from ...types import Types
 
 
@@ -12,11 +12,11 @@ class AnimalViewingScopeProvider():
          species: str,
          exhibit: str ) -> list[ AnimalViewingScope ]:
       rows = conn.execute(
-         """   SELECT DISTINCT LOWER( ENCLOSURE_TYPE ) AS VIEWING_SCOPE
+         """   SELECT NAME
                FROM EnclosureViewing
                WHERE SPECIES = ?
                   AND EXHIBIT = ?
-               ORDER BY VIEWING_SCOPE;
+               ORDER BY NAME;
          """,
          (
             species,
@@ -24,9 +24,6 @@ class AnimalViewingScopeProvider():
          ) ).fetchall()
 
       return [
-         scope for scope in (
-            AnimalViewingScope.normalize( row[ 'VIEWING_SCOPE' ] )
-            for row in rows
-         )
-         if scope != None
+         AnimalViewingScope.from_enclosure_name( row[ 'NAME' ] )
+         for row in rows
       ]

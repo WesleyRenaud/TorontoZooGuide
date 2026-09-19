@@ -166,7 +166,6 @@ export class AnimalVisibilityController {
          }
       }
 
-      ControllerHelper.bindResetValueOnChange(exhibitEl, speciesEl);
       AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
          speciesEl,
          exhibitEl,

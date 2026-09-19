@@ -22,9 +22,9 @@
     },
     {
       "number": 4,
-      "name": "Scope outdoor only",
-      "do": "Set **Viewing scope** to **Outdoor only**.",
-      "expect": "**Outdoor only** is selected."
+      "name": "Single enclosure hides scope",
+      "do": "Look at **Viewing scope** after **African Lion** is selected.",
+      "expect": "**Viewing scope** is not shown. The card height does not change. Save still applies to the unnamed enclosure."
     },
     {
       "number": 5,
@@ -59,8 +59,8 @@
     {
       "number": 10,
       "name": "Set on display",
-      "do": "In Console, open **Set animal as on display**. Leave **Exhibit** empty. In **Species**, type **African Lion** and select it from the suggestions. Set **Viewing scope** to **Outdoor only**.",
-      "expect": "Exhibit options include **Africa Savanna** because it has an off-display animal. Suggestions include **African Lion** because it is off display now. Choosing **African Lion** fills **Exhibit** with **Africa Savanna**. **Outdoor only** is selected."
+      "do": "In Console, open **Set animal as on display**. Leave **Exhibit** empty. In **Species**, type **African Lion** and select it from the suggestions.",
+      "expect": "Exhibit options include **Africa Savanna** because it has an off-display animal. Suggestions include **African Lion** because it is off display now. Choosing **African Lion** fills **Exhibit** with **Africa Savanna**. **Viewing scope** stays hidden because there is only one enclosure."
     },
     {
       "number": 11,

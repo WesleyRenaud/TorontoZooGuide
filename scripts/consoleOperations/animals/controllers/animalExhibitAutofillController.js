@@ -60,6 +60,11 @@ export class AnimalExhibitAutofillController {
          }
       }
 
+      speciesEl.addEventListener('input', () => {
+         if (!ControllerHelper.getFieldValue(speciesEl)) {
+            applySpecies();
+         }
+      });
       speciesEl.addEventListener('change', () => applySpecies());
 
       return {

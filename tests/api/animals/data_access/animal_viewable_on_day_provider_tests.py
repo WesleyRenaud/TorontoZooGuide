@@ -241,7 +241,7 @@ def Test_FetchAnimalsViewableOnDayRecords_TestJoinedStatusScheduleAlertAndMultip
                OFF_DISPLAY_MESSAGE, OFF_DISPLAY_START, OFF_DISPLAY_END
             ) VALUES ( ?, ?, ?, ?, ?, ?, ? );
       """,
-      ( SPECIES, EXHIBIT, 'all', 1, 'Off display.', '2026-06-01', '2026-06-30' ),
+      ( SPECIES, EXHIBIT, 'Outdoor Yard', 1, 'Off display.', '2026-06-01', '2026-06-30' ),
    )
    animal_viewable_on_day_conn.execute(
       """   INSERT INTO AnimalVisibilitySchedule (
@@ -289,7 +289,7 @@ def Test_FetchAnimalsViewableOnDayRecords_TestJoinedStatusScheduleAlertAndMultip
    assert len( records ) == 1
    record = records[ Position.FIRST ]
    assert record.is_off_display == 1
-   assert record.viewing_scope.value == 'all'
+   assert record.viewing_scope == 'Outdoor Yard'
    assert record.off_display_message == 'Off display.'
    assert record.off_display_start == '2026-06-01'
    assert record.off_display_end == '2026-06-30'
@@ -357,10 +357,11 @@ def Test_FetchAnimalsViewableOnDayRecords_TestWhitespaceOnlyExhibits_ExpectUnfil
    assert { record.exhibit for record in records } == { EXHIBIT, OTHER_EXHIBIT }
 
 
-def Test_FetchAnimalsViewableOnDayRecords_TestScopeMatchingEnclosureType_ExpectJoinedStatus(
+def Test_FetchAnimalsViewableOnDayRecords_TestScopeMatchingEnclosureName_ExpectJoinedStatus(
       animal_viewable_on_day_conn: sqlite3.Connection ) -> None:
    _seed_base_animal(
       animal_viewable_on_day_conn,
+      enclosure_name='Outdoor Yard',
       enclosure_type='Outdoor' )
    animal_viewable_on_day_conn.execute(
       """   INSERT INTO AnimalStatus (
@@ -368,7 +369,7 @@ def Test_FetchAnimalsViewableOnDayRecords_TestScopeMatchingEnclosureType_ExpectJ
                OFF_DISPLAY_MESSAGE, OFF_DISPLAY_START, OFF_DISPLAY_END
             ) VALUES ( ?, ?, ?, ?, ?, ?, ? );
       """,
-      ( SPECIES, EXHIBIT, 'Outdoor', 1, 'Outdoor closed.', '2026-06-01', '2026-06-30' ),
+      ( SPECIES, EXHIBIT, 'Outdoor Yard', 1, 'Outdoor closed.', '2026-06-01', '2026-06-30' ),
    )
    animal_viewable_on_day_conn.commit()
 
@@ -380,4 +381,30 @@ def Test_FetchAnimalsViewableOnDayRecords_TestScopeMatchingEnclosureType_ExpectJ
    assert len( records ) == 1
    assert records[ Position.FIRST ].is_off_display == 1
    assert records[ Position.FIRST ].off_display_message == 'Outdoor closed.'
-   assert records[ Position.FIRST ].viewing_scope.value == 'outdoor'
+   assert records[ Position.FIRST ].viewing_scope == 'Outdoor Yard'
+
+
+def Test_FetchAnimalsViewableOnDayRecords_TestUnnamedEnclosure_ExpectEmptyScopeKeyMatches(
+      animal_viewable_on_day_conn: sqlite3.Connection ) -> None:
+   _seed_base_animal(
+      animal_viewable_on_day_conn,
+      enclosure_name=None,
+      enclosure_type='Outdoor' )
+   animal_viewable_on_day_conn.execute(
+      """   INSERT INTO AnimalStatus (
+               SPECIES, EXHIBIT, VIEWING_SCOPE, IS_OFF_DISPLAY,
+               OFF_DISPLAY_MESSAGE, OFF_DISPLAY_START, OFF_DISPLAY_END
+            ) VALUES ( ?, ?, ?, ?, ?, ?, ? );
+      """,
+      ( SPECIES, EXHIBIT, '', 1, 'Main paddock closed.', '2026-06-01', '2026-06-30' ),
+   )
+   animal_viewable_on_day_conn.commit()
+
+   records = AnimalViewableOnDayProvider.fetch_animals_viewable_on_day_records(
+      animal_viewable_on_day_conn,
+      VISIT_MONTH,
+      VISIT_DAY )
+
+   assert len( records ) == 1
+   assert records[ Position.FIRST ].is_off_display == 1
+   assert records[ Position.FIRST ].viewing_scope == ''
