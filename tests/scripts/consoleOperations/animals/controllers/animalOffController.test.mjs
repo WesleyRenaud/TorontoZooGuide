@@ -9,7 +9,6 @@ import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperation
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
-import { AnimalViewingScope } from '../../../../../scripts/shared/enums/animalViewingScope.js';
 import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
 import { Strings } from '../../../../../scripts/strings.js';
@@ -49,6 +48,7 @@ test('Test_CreateAnimalOffDisplayController_TestShowAndSubmitSuccess_ExpectStatu
          resets.push(true);
       },
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
    AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
       autofillArgs.push(args);
@@ -58,7 +58,7 @@ test('Test_CreateAnimalOffDisplayController_TestShowAndSubmitSuccess_ExpectStatu
       assert.deepEqual(payload, {
          species: 'Lion',
          exhibit: 'Savanna',
-         viewingScope: AnimalViewingScope.ALL,
+         viewingScopes: [ 'Male Herd' ],
          startDate: '2026-06-01',
          endDate: null,
          message: 'Vet care',
@@ -143,6 +143,7 @@ test('Test_CreateAnimalOffDisplayController_TestValidationAndFailures_ExpectErro
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
    ApiErrorMessageResolver.resolveConsoleMutationError = () => 'mutation failed';
 

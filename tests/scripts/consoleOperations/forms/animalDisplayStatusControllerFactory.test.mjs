@@ -7,7 +7,6 @@ import { ApiErrorMessageResolver } from '../../../../scripts/consoleOperations/a
 import { ControllerHelper } from '../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleOptionsLoader } from '../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
-import { AnimalViewingScope } from '../../../../scripts/shared/enums/animalViewingScope.js';
 import { ConsoleStatusPresenter } from '../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -18,7 +17,6 @@ test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectSt
    const statuses = [];
    const activations = [];
    const resets = [];
-   const binds = [];
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
    const originalReload = ControllerHelper.reloadOptions;
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -41,14 +39,12 @@ test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectSt
    };
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
-   ControllerHelper.bindResetValueOnChange = (sourceEl, targetEl) => {
-      binds.push({ sourceEl, targetEl });
-   };
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {
          resets.push(true);
       },
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
 
    try {
@@ -73,7 +69,7 @@ test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectSt
             assert.deepEqual(payload, {
                species: 'Lion',
                exhibit: 'Savanna',
-               viewingScope: AnimalViewingScope.ALL,
+               viewingScopes: [ 'Male Herd' ],
                startDate: '',
                endDate: '',
                message: '',
@@ -82,8 +78,6 @@ test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectSt
          },
          successMessage: result => `On display: ${result.species}`,
       });
-
-      assert.deepEqual(binds, [{ sourceEl: exhibitEl, targetEl: speciesEl }]);
 
       await controller.show();
       assert.deepEqual(activations, [{ id: 'animal-display' }]);
@@ -132,6 +126,7 @@ test('Test_CreateAnimalDisplayStatusController_TestDateRangeAndFailures_ExpectEr
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
    ApiErrorMessageResolver.resolveConsoleMutationError = () => 'mutation failed';
 
@@ -203,6 +198,7 @@ test('Test_CreateAnimalDisplayStatusController_TestMissingSpecies_ExpectValidati
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
 
    try {
@@ -238,6 +234,60 @@ test('Test_CreateAnimalDisplayStatusController_TestMissingSpecies_ExpectValidati
    }
 });
 
+test('Test_CreateAnimalDisplayStatusController_TestMissingViewingScope_ExpectValidationError', async () => {
+   const statuses = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalGet = ControllerHelper.getFieldValue;
+   const originalReset = ControllerHelper.resetFormFields;
+   const originalBind = ControllerHelper.bindResetValueOnChange;
+   const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
+
+   ConsoleStatusPresenter.setStatus = (...args) => {
+      statuses.push(args);
+   };
+   ControllerHelper.getFieldValue = (el) => el?.value ?? '';
+   ControllerHelper.resetFormFields = () => {};
+   ControllerHelper.bindResetValueOnChange = () => {};
+   AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
+      reset: () => {},
+      refresh: async () => {},
+      selectedEnclosureNames: () => [],
+   });
+
+   try {
+      const submitButtonEl = document.createElement('button');
+      const speciesEl = document.createElement('input');
+      const exhibitEl = document.createElement('select');
+      speciesEl.value = 'Lion';
+      exhibitEl.value = 'Savanna';
+
+      AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
+         submitButtonEl,
+         panelEl: {},
+         statusEl: {},
+         speciesEl,
+         exhibitEl,
+         viewingScopeEl: document.createElement('div'),
+         submitDisplayStatus: async () => ({ success: true }),
+         successMessage: () => 'ok',
+      });
+
+      await submitButtonEl.listeners.click();
+      assert.ok(
+         statuses.some((entry) => (
+            entry[1] === Strings.validation.entityRequired(Strings.labels.viewingScope)
+            && entry[2] === 'is-error'
+         ))
+      );
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.getFieldValue = originalGet;
+      ControllerHelper.resetFormFields = originalReset;
+      ControllerHelper.bindResetValueOnChange = originalBind;
+      AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
+   }
+});
+
 test('Test_CreateAnimalDisplayStatusController_TestInjectedLoadExhibits_ExpectUsed', async () => {
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -256,6 +306,7 @@ test('Test_CreateAnimalDisplayStatusController_TestInjectedLoadExhibits_ExpectUs
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
 
    try {
@@ -345,6 +396,7 @@ test('Test_CreateAnimalDisplayStatusController_TestReloadOptionsThrows_ExpectCle
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {},
       refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
    });
 
    try {

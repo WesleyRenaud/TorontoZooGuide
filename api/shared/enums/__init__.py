@@ -1,5 +1,4 @@
 from .amenity_name_field import AmenityNameField
-from .animal_viewing_scope import AnimalViewingScope
 from .enclosure_type import EnclosureType
 from .item_type import ItemType
 from .itinerary_adjustment_type import ItineraryAdjustmentType
@@ -18,7 +17,6 @@ from .transportation_route_source import TransportationRouteSource
 
 __all__ = [
    'AmenityNameField',
-   'AnimalViewingScope',
    'EnclosureType',
    'ItineraryAdjustmentType',
    'ItineraryErrorType',

@@ -21,7 +21,6 @@ export class EntityRemovalFormController {
       validateForm,
       submitRemoval,
       successMessage,
-      bindResetValueOnChange = null,
       speciesEl = null,
       loadOptionsForSpecies = null,
       onUniqueFill = null,
@@ -103,13 +102,6 @@ export class EntityRemovalFormController {
          catch (err) {
             ConsoleStatusPresenter.setStatus(statusEl, Strings.common.requestFailed, 'is-error');
          }
-      }
-
-      if (bindResetValueOnChange) {
-         ControllerHelper.bindResetValueOnChange(
-            bindResetValueOnChange.sourceEl,
-            bindResetValueOnChange.targetEl
-         );
       }
 
       if (speciesEl && loadOptionsForSpecies) {

@@ -36,11 +36,11 @@ export class AnimalOffController {
             startDate,
             endDate,
             message,
-            viewingScope,
+            viewingScopes,
          }) => ConsoleOperationsClient.setAnimalOffDisplay({
             species,
             exhibit,
-            viewingScope,
+            viewingScopes,
             startDate: startDate || null,
             endDate: endDate || null,
             message,

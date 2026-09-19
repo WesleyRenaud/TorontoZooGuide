@@ -10,11 +10,12 @@ import pytest
 from api import database_connection_provider as connection
 from api.animals.controllers.animal_controller import AnimalController
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
+from api.animals.domain.animal_viewing_scope import AnimalViewingScope
 import api.http_request_handler as server
 import api.request_connection_provider as request_connection
 from api.shared.constants import Constants
-from api.shared.enums import AnimalViewingScope, Position
 from api.shared.enums.api_error_type import ApiErrorType
+from api.shared.enums.position import Position
 from api.types import Types
 
 
@@ -524,7 +525,7 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse
       {
          'species': ANIMAL_NAME,
          'exhibit': ANIMAL_EXHIBIT,
-         'viewingScope': 'indoor',
+         'viewingScopes': [ 'Male Herd' ],
          'startDate': OFF_DISPLAY_START_DATE,
          'endDate': OFF_DISPLAY_END_DATE,
          'message': OFF_DISPLAY_MESSAGE
@@ -542,7 +543,9 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse
          {
             'species': ANIMAL_NAME,
             'exhibit': ANIMAL_EXHIBIT,
-            'viewing_scope': AnimalViewingScope.INDOOR,
+            'viewing_scopes': [
+               AnimalViewingScope.from_enclosure_name( 'Male Herd' ),
+            ],
             'start_date': OFF_DISPLAY_START_DATE,
             'end_date': OFF_DISPLAY_END_DATE,
             'message': OFF_DISPLAY_MESSAGE
@@ -552,7 +555,12 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse
    assert result[ 'success' ] is True
    assert result[ 'species' ] == ANIMAL_NAME
    assert result[ 'exhibit' ] == ANIMAL_EXHIBIT
-   assert result[ 'viewingScope' ] == 'indoor'
+   assert result[ 'viewingScopes' ] == [
+      {
+         'enclosureName': 'Male Herd',
+         'label': 'Male Herd',
+      },
+   ]
    assert result[ 'startDate' ] == OFF_DISPLAY_START_DATE
    assert result[ 'endDate' ] == OFF_DISPLAY_END_DATE
    assert result[ 'message' ] == OFF_DISPLAY_MESSAGE
@@ -567,7 +575,7 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectNoAnimalFoundApiError(
       {
          'species': ANIMAL_NAME,
          'exhibit': ANIMAL_EXHIBIT,
-         'viewingScope': 'all'
+         'viewingScopes': [ '' ],
       }
    )
 
@@ -588,7 +596,7 @@ def Test_SetAnimalOnDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
       {
          'species': ANIMAL_NAME,
          'exhibit': ANIMAL_EXHIBIT,
-         'viewingScope': 'outdoor'
+         'viewingScopes': [ 'Female Herd' ],
       }
    )
 
@@ -603,14 +611,21 @@ def Test_SetAnimalOnDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
          {
             'species': ANIMAL_NAME,
             'exhibit': ANIMAL_EXHIBIT,
-            'viewing_scope': AnimalViewingScope.OUTDOOR
+            'viewing_scopes': [
+               AnimalViewingScope.from_enclosure_name( 'Female Herd' ),
+            ],
          }
       )
    ]
    assert result[ 'success' ] is True
    assert result[ 'species' ] == ANIMAL_NAME
    assert result[ 'exhibit' ] == ANIMAL_EXHIBIT
-   assert result[ 'viewingScope' ] == 'outdoor'
+   assert result[ 'viewingScopes' ] == [
+      {
+         'enclosureName': 'Female Herd',
+         'label': 'Female Herd',
+      },
+   ]
    assert result.get( 'error' ) is None
 
 
@@ -666,7 +681,7 @@ def Test_RemoveAnimalVisibilitySchedule_TestHttpRequest_ExpectMapsPayloadAndSucc
       {
          'species': ANIMAL_NAME,
          'exhibit': ANIMAL_EXHIBIT,
-         'viewingScope': 'all'
+         'viewingScopes': [ '' ],
       }
    )
 
@@ -767,7 +782,7 @@ def Test_RemoveAnimalViewingAlert_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
          {
             'species': ANIMAL_NAME,
             'exhibit': ANIMAL_EXHIBIT,
-            'viewingScope': 'outdoor',
+            'viewingScopes': [ 'Female Herd' ],
          },
          ApiErrorType.NO_OFF_DISPLAY_ENTRY_FOUND.value,
       ),

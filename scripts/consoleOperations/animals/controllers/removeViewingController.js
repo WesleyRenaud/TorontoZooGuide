@@ -48,10 +48,6 @@ export class RemoveViewingController {
             exhibit,
          }),
          successMessage: result => Strings.status.animalViewingAlertRemoved(result),
-         bindResetValueOnChange: {
-            sourceEl: exhibitEl,
-            targetEl: speciesEl,
-         },
          speciesEl,
          loadOptionsForSpecies: ConsoleOptionsLoader.loadViewingAlertExhibits,
       });

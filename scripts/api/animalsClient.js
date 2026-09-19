@@ -19,7 +19,7 @@ export class AnimalsClient {
 
    static async getAnimalViewingScopes({ species, exhibit } = {}) {
       const response = await ApiClient.postJson('/get-animal-viewing-scopes', { species, exhibit });
-      return AnimalsApiNormalizer.normalizeAnimalViewingScopesResponse(response);
+      return response.viewingScopes;
    }
 
    static async getAnimalInformation({ species, exhibit }) {

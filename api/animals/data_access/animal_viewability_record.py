@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...shared.enums import AnimalViewingScope
 from ...types import Types
 
 
@@ -29,7 +28,7 @@ class AnimalViewabilityRecord:
    x_coord: Types.Coordinate
    y_coord: Types.Coordinate
    is_off_display: bool | None
-   viewing_scope: AnimalViewingScope | None
+   viewing_scope: str | None
    off_display_message: str | None
    off_display_start: Types.DateKey | None
    off_display_end: Types.DateKey | None

@@ -82,7 +82,6 @@ export class AnimalSpeciesController {
 
       exhibitEl?.addEventListener('change', () => {
          searchRequestId += 1;
-         inputEl.value = '';
          resultsView.clear();
       });
 

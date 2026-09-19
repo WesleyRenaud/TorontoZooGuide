@@ -80,7 +80,7 @@ test('Test_CreateAnimalSpeciesAutocompleteController_TestSearchAndEvents_ExpectR
       inputEl.value = 'keep';
       clears.length = 0;
       exhibitEl.listeners.change();
-      assert.equal(inputEl.value, '');
+      assert.equal(inputEl.value, 'keep');
       assert.ok(clears.length >= 1);
 
       controller.clear();

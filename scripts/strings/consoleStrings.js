@@ -1,4 +1,3 @@
-import { AnimalViewingScope } from '../shared/enums/animalViewingScope.js';
 import { JoinedTimesFormatter } from '../shared/joinedTimesFormatter.js';
 
 export class ConsoleStrings {
@@ -239,12 +238,6 @@ export class ConsoleStrings {
       { value: 'Animal Passing' },
       { value: 'Closure' },
       { value: 'New Arrival' },
-   ];
-
-   static viewingScopes = [
-      { value: AnimalViewingScope.ALL, label: 'Indoor and outdoor' },
-      { value: AnimalViewingScope.INDOOR, label: 'Indoor only' },
-      { value: AnimalViewingScope.OUTDOOR, label: 'Outdoor only' },
    ];
 
    static apiErrors = {

@@ -4,7 +4,6 @@ import { ApiErrorMessageResolver } from '../apiErrorMessageResolver.js';
 import { ControllerHelper } from '../helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../options/consoleDropdownPopulator.js';
 import { ConsoleOptionsLoader } from '../options/consoleOptionsLoader.js';
-import { AnimalViewingScope } from '../../shared/enums/animalViewingScope.js';
 import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
 import { Strings } from '../../strings.js';
 
@@ -31,18 +30,22 @@ export class AnimalDisplayStatusControllerFactory {
       const formFieldEls = [
          speciesEl,
          exhibitEl,
-         viewingScopeEl,
          startDateEl,
          endDateEl,
          messageEl,
       ];
+      const viewingScopeControl = AnimalViewingScopeController.createAnimalViewingScopeControl({
+         speciesEl,
+         exhibitEl,
+         viewingScopeEl,
+      });
 
 
       function getFormValues() {
          return {
             species: ControllerHelper.getFieldValue(speciesEl),
             exhibit: ControllerHelper.getFieldValue(exhibitEl),
-            viewingScope: ControllerHelper.getFieldValue(viewingScopeEl) || AnimalViewingScope.ALL,
+            viewingScopes: viewingScopeControl.selectedEnclosureNames(),
             startDate: ControllerHelper.getFieldValue(startDateEl),
             endDate: ControllerHelper.getFieldValue(endDateEl),
             message: ControllerHelper.getFieldValue(messageEl),
@@ -52,6 +55,7 @@ export class AnimalDisplayStatusControllerFactory {
       function validateForm({
          species,
          exhibit,
+         viewingScopes,
          startDate,
          endDate,
       }) {
@@ -61,6 +65,10 @@ export class AnimalDisplayStatusControllerFactory {
 
          if (!exhibit) {
             return Strings.validation.entityRequired(Strings.entityLabels.exhibit);
+         }
+
+         if (!viewingScopes.length) {
+            return Strings.validation.entityRequired(Strings.labels.viewingScope);
          }
 
          if (!hasDateRange) {
@@ -152,13 +160,6 @@ export class AnimalDisplayStatusControllerFactory {
          }
       }
 
-      const viewingScopeControl = AnimalViewingScopeController.createAnimalViewingScopeControl({
-         speciesEl,
-         exhibitEl,
-         viewingScopeEl,
-      });
-
-      ControllerHelper.bindResetValueOnChange(exhibitEl, speciesEl);
       AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
          speciesEl,
          exhibitEl,

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from api.animals.domain.animal_viewing_scope import AnimalViewingScope
 from api.models.animal import Animal
-from api.shared.enums import AnimalViewingScope
 
 
 class StubAnimalCoordinator():
@@ -54,7 +54,10 @@ class StubAnimalCoordinator():
             }
          )
       )
-      return [ AnimalViewingScope.INDOOR, AnimalViewingScope.OUTDOOR ]
+      return [
+         AnimalViewingScope.from_enclosure_name( 'Male Herd' ),
+         AnimalViewingScope.from_enclosure_name( 'Female Herd' ),
+      ]
 
 
    def get_animal_information( self, species: str, exhibit: str ) -> Animal:

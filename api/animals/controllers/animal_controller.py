@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from ..coordinators.animal_coordinator import AnimalCoordinator
+from ..domain.animal_viewing_scope_mapper import AnimalViewingScopeMapper
 from ...json_request_handler import JsonRequestHandler
 from ...shared.api_error_response_applier import ApiErrorResponseApplier
 from ...shared.constants import Constants
-from ...shared.enums import AnimalViewingScope
 from ...shared.enums.api_error_type import ApiErrorType
 from ...shared.enums.item_type import ItemType
 from ...shared.typed_dict_mapper import TypedDictMapper
@@ -42,7 +42,7 @@ class AnimalController():
 
       handler._write_json( {
          'viewingScopes': [
-            viewing_scope.value for viewing_scope in viewing_scopes
+            viewing_scope.to_dict() for viewing_scope in viewing_scopes
          ],
       } )
 
@@ -186,7 +186,7 @@ class AnimalController():
       start_date = data.get( 'startDate' )
       end_date = data.get( 'endDate' )
       message = data.get( 'message' )
-      viewing_scope = AnimalViewingScope.normalize( data.get( 'viewingScope' ) )
+      viewing_scopes = AnimalViewingScopeMapper.map_payload( data.get( 'viewingScopes' ) )
 
       success = AnimalCoordinator.set_animal_as_off_display(
          species=species,
@@ -194,7 +194,7 @@ class AnimalController():
          start_date=start_date,
          end_date=end_date,
          message=message,
-         viewing_scope=viewing_scope )
+         viewing_scopes=viewing_scopes )
 
       response = {
          'success': success,
@@ -203,7 +203,9 @@ class AnimalController():
          'startDate': start_date,
          'endDate': end_date,
          'message': message,
-         'viewingScope': viewing_scope.value,
+         'viewingScopes': [
+            viewing_scope.to_dict() for viewing_scope in viewing_scopes
+         ],
       }
 
       if not success:
@@ -218,18 +220,20 @@ class AnimalController():
 
       species = data.get( 'species' )
       exhibit = data.get( 'exhibit' )
-      viewing_scope = AnimalViewingScope.normalize( data.get( 'viewingScope' ) )
+      viewing_scopes = AnimalViewingScopeMapper.map_payload( data.get( 'viewingScopes' ) )
 
       success = AnimalCoordinator.set_animal_as_on_display(
          species=species,
          exhibit=exhibit,
-         viewing_scope=viewing_scope )
+         viewing_scopes=viewing_scopes )
 
       response = {
          'success': success,
          'species': species,
          'exhibit': exhibit,
-         'viewingScope': viewing_scope.value,
+         'viewingScopes': [
+            viewing_scope.to_dict() for viewing_scope in viewing_scopes
+         ],
       }
 
       if not success:

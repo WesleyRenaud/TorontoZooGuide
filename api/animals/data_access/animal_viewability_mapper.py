@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from .animal_viewability_record import AnimalViewabilityRecord
-from ...shared.enums import AnimalViewingScope
 from ...shared.value_conversion import ValueConversion
 from ...types import Types
 
@@ -33,7 +32,7 @@ class AnimalViewabilityMapper():
          x_coord=row[ 'X_COORD' ],
          y_coord=row[ 'Y_COORD' ],
          is_off_display=row[ 'IS_OFF_DISPLAY' ],
-         viewing_scope=AnimalViewingScope.normalize( row[ 'VIEWING_SCOPE' ] ),
+         viewing_scope=row[ 'VIEWING_SCOPE' ],
          off_display_message=row[ 'OFF_DISPLAY_MESSAGE' ],
          off_display_start=row[ 'OFF_DISPLAY_START' ],
          off_display_end=row[ 'OFF_DISPLAY_END' ],

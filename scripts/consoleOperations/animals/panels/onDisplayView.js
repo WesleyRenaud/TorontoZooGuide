@@ -1,6 +1,7 @@
 import { Strings } from '../../../strings.js';
 import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
 import { ConsoleAutocompleteFieldBuilder } from '../../templates/consoleAutocompleteFieldBuilder.js';
+import { ConsoleCheckboxGridFieldBuilder } from '../../templates/consoleCheckboxGridFieldBuilder.js';
 import { ConsolePanelShellBuilder } from '../../templates/consolePanelShellBuilder.js';
 import { ConsoleSelectFieldBuilder } from '../../templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../templates/consoleStatusBuilder.js';
@@ -22,11 +23,9 @@ export class OnDisplayView {
                resultsId: 'onDisplaySpeciesResults',
                placeholder: Strings.placeholders.speciesSearch,
             }),
-            ConsoleSelectFieldBuilder.createSelectField({
+            ConsoleCheckboxGridFieldBuilder.createCheckboxGridField({
                label: Strings.labels.viewingScope,
-               inputId: 'onDisplayViewingScope',
-               emptyOptionLabel: Strings.placeholders.viewingScope,
-               options: Strings.viewingScopes,
+               gridId: 'onDisplayViewingScope',
             }),
             ConsoleActionsBuilder.createActions({
                submitId: 'submitOnDisplay',

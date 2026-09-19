@@ -16,6 +16,7 @@ from ..data_access.animal_visibility_schedule_provider import AnimalVisibilitySc
 from ..data_access.animal_visibility_schedule_species_name_provider import AnimalVisibilityScheduleSpeciesNameProvider
 from ..domain.animal_viewability_builder import AnimalViewabilityBuilder
 from ..domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
+from ..domain.animal_viewing_scope import AnimalViewingScope
 from ..domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..itinerary.itinerary_animals_builder import ItineraryAnimalsBuilder
@@ -24,7 +25,6 @@ from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.animal_limited_viewing_schedule_builder import AnimalLimitedViewingScheduleBuilder
 from ..search.animals_matching_query_builder import AnimalsMatchingQueryBuilder
 from ...shared.date_values import DateValues
-from ...shared.enums import AnimalViewingScope
 from ..status.animal_off_display_status_builder import AnimalOffDisplayStatusBuilder
 from ..status.animal_viewing_alert_builder import AnimalViewingAlertBuilder
 from ...types import Types
@@ -188,11 +188,11 @@ class AnimalCoordinator():
          start_date: Types.DateInput,
          end_date: Types.DateInput,
          message: str,
-         viewing_scope: AnimalViewingScope = AnimalViewingScope.ALL ) -> bool:
+         viewing_scopes: list[ AnimalViewingScope ] ) -> bool:
       status = AnimalOffDisplayStatusBuilder.build(
          species=species,
          exhibit=exhibit,
-         viewing_scope=viewing_scope,
+         viewing_scopes=viewing_scopes,
          start_date=start_date,
          end_date=end_date,
          message=message )
@@ -201,7 +201,7 @@ class AnimalCoordinator():
          RequestConnectionProvider.get(),
          species=status.species,
          exhibit=status.exhibit,
-         viewing_scope=status.viewing_scope,
+         viewing_scopes=status.viewing_scopes,
          start_date=status.start_date,
          end_date=status.end_date,
          message=status.message )
@@ -212,12 +212,12 @@ class AnimalCoordinator():
          cls,
          species: str,
          exhibit: str,
-         viewing_scope: AnimalViewingScope = AnimalViewingScope.ALL ) -> bool:
+         viewing_scopes: list[ AnimalViewingScope ] ) -> bool:
       return AnimalStatusProvider.save_animal_on_display_status(
          RequestConnectionProvider.get(),
          species=species,
          exhibit=exhibit,
-         viewing_scope=viewing_scope )
+         viewing_scopes=viewing_scopes )
 
 
    @classmethod

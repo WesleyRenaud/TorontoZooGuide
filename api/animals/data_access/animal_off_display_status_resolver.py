@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.enums import AnimalViewingScope
+from ..domain.animal_viewing_scope import AnimalViewingScope
 from ...types import Types
 
 
@@ -11,25 +11,16 @@ class AnimalOffDisplayStatusResolver():
          cur: Types.Cursor,
          species: str,
          exhibit: str,
-         viewing_scope: AnimalViewingScope ) -> None:
-      if viewing_scope == AnimalViewingScope.ALL:
-         cur.execute(
-            """   DELETE FROM AnimalStatus
-                  WHERE SPECIES = ?
-                     AND EXHIBIT = ?;
-            """,
-            ( species, exhibit ) )
-         return
-
+         viewing_scopes: list[ AnimalViewingScope ] ) -> None:
+      viewing_scope_placeholders = ', '.join( '?' for _ in viewing_scopes )
       cur.execute(
-         """   DELETE FROM AnimalStatus
+         f"""   DELETE FROM AnimalStatus
                WHERE SPECIES = ?
                   AND EXHIBIT = ?
-                  AND VIEWING_SCOPE IN ( ?, ? );
+                  AND VIEWING_SCOPE IN ( { viewing_scope_placeholders } );
          """,
          (
             species,
             exhibit,
-            AnimalViewingScope.ALL.value,
-            viewing_scope.value,
+            *( viewing_scope.enclosure_name for viewing_scope in viewing_scopes ),
          ) )
