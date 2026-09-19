@@ -30,6 +30,7 @@ const _PAYLOAD_METHODS = [
    ['getExhibitsForSpecies', '/get-exhibits-for-species'],
    ['getOffDisplayAnimalOptions', '/get-off-display-animal-options'],
    ['getOffDisplayExhibitOptions', '/get-off-display-exhibit-options'],
+   ['getOffDisplayViewingScopeOptions', '/get-off-display-viewing-scope-options'],
    ['getAnimalVisibilityScheduleOptions', '/get-animal-visibility-schedule-options'],
    ['getAnimalVisibilityScheduleExhibitOptions', '/get-animal-visibility-schedule-exhibit-options'],
    ['getAnimalViewingAlertOptions', '/get-animal-viewing-alert-options'],

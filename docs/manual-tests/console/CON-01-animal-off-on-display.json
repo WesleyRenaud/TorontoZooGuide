@@ -60,7 +60,7 @@
       "number": 10,
       "name": "Set on display",
       "do": "In Console, open **Set animal as on display**. Leave **Exhibit** empty. In **Species**, type **African Lion** and select it from the suggestions.",
-      "expect": "Exhibit options include **Africa Savanna** because it has an off-display animal. Suggestions include **African Lion** because it is off display now. Choosing **African Lion** fills **Exhibit** with **Africa Savanna**. **Viewing scope** stays hidden because there is only one enclosure."
+      "expect": "Exhibit options include **Africa Savanna** because it has an off-display animal. Suggestions include **African Lion** because it is off display now. Choosing **African Lion** fills **Exhibit** with **Africa Savanna**. **Viewing scope** lists only currently off-display enclosures and stays hidden because the animal has only one enclosure."
     },
     {
       "number": 11,

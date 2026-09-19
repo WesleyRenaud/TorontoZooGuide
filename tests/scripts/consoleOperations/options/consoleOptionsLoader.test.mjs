@@ -129,6 +129,39 @@ test('Test_LoadOffDisplayExhibits_TestClientResult_ExpectExhibits', async () => 
    }
 });
 
+test('Test_LoadOffDisplayViewingScopes_TestClientResult_ExpectScopes', async () => {
+   const originalGet = ConsoleOperationsClient.getOffDisplayViewingScopeOptions;
+   const payloads = [];
+
+   ConsoleOperationsClient.getOffDisplayViewingScopeOptions = async (payload) => {
+      payloads.push(payload);
+      return {
+         viewingScopes: [
+            { enclosureName: 'Indoor', label: 'Indoor' },
+            { enclosureName: 'Outdoor', label: 'Outdoor' },
+         ],
+      };
+   };
+
+   try {
+      assert.deepEqual(
+         await ConsoleOptionsLoader.loadOffDisplayViewingScopes({
+            species: 'Sumatran Orangutan',
+            exhibit: 'Indo-Malaya Pavilion',
+         }),
+         [
+            { enclosureName: 'Indoor', label: 'Indoor' },
+            { enclosureName: 'Outdoor', label: 'Outdoor' },
+         ]
+      );
+      assert.deepEqual(payloads, [
+         { species: 'Sumatran Orangutan', exhibit: 'Indo-Malaya Pavilion' },
+      ]);
+   } finally {
+      ConsoleOperationsClient.getOffDisplayViewingScopeOptions = originalGet;
+   }
+});
+
 test('Test_LoadVisibilityScheduleExhibits_TestClientResult_ExpectExhibits', async () => {
    const originalGet = ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions;
    const payloads = [];

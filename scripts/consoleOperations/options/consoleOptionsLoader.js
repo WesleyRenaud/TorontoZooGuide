@@ -36,6 +36,14 @@ export class ConsoleOptionsLoader {
       return result.exhibits;
    }
 
+   static async loadOffDisplayViewingScopes({ species, exhibit } = {}) {
+      const result = await ConsoleOperationsClient.getOffDisplayViewingScopeOptions({
+         species,
+         exhibit,
+      });
+      return result.viewingScopes;
+   }
+
    static async loadVisibilityScheduleExhibits(species) {
       const result = await ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions(
          species ? { species } : {}

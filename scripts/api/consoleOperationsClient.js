@@ -69,6 +69,10 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-off-display-exhibit-options', payload);
    }
 
+   static getOffDisplayViewingScopeOptions(payload = {}) {
+      return ApiClient.postJson('/get-off-display-viewing-scope-options', payload);
+   }
+
    static getAnimalVisibilityScheduleOptions(payload = {}) {
       return ApiClient.postJson('/get-animal-visibility-schedule-options', payload);
    }

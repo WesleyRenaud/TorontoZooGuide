@@ -114,6 +114,25 @@ class StubAnimalCoordinator():
       return [ self.animal_exhibit ]
 
 
+   def get_off_display_viewing_scope_options(
+         self,
+         species: str,
+         exhibit: str ) -> list[ AnimalViewingScope ]:
+      self.calls.append(
+         (
+            'get_off_display_viewing_scope_options',
+            {
+               'species': species,
+               'exhibit': exhibit,
+            }
+         )
+      )
+      return [
+         AnimalViewingScope.from_enclosure_name( 'Indoor' ),
+         AnimalViewingScope.from_enclosure_name( 'Outdoor' ),
+      ]
+
+
    def get_animal_visibility_schedule_options( self, exhibit: str | None = None ) -> list[ str ]:
       self.calls.append(
          (

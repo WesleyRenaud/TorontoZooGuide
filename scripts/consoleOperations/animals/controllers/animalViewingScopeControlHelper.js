@@ -24,6 +24,7 @@ export class AnimalViewingScopeControlHelper {
 
    static populateOptions(gridEl, scopes = [], {
       optionIdPrefix = 'viewingScope',
+      isFieldVisible = scopes.length > 1,
    } = {}) {
       AnimalViewingScopeControlHelper.clearOptions(gridEl);
 
@@ -36,6 +37,6 @@ export class AnimalViewingScopeControlHelper {
          }));
       });
 
-      AnimalViewingScopeControlHelper.setFieldVisible(gridEl, scopes.length > 1);
+      AnimalViewingScopeControlHelper.setFieldVisible(gridEl, isFieldVisible);
    }
 }
