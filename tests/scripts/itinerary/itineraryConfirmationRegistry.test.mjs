@@ -99,6 +99,11 @@ test('Test_GetSetItineraryConfirmationEntries_TestFlags_ExpectConfirmFlags', () 
    );
 
    assert.deepEqual(flags, expectedFlags);
+   assert.ok(flags.includes(
+      ItineraryConfirmationRegistry.SET_ITINERARY_CONFIRMATIONS[
+         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+      ].confirmFlag
+   ));
 });
 
 

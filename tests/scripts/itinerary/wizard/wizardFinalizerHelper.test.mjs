@@ -87,6 +87,38 @@ test('Test_SaveFinalItinerary_TestOptions_ExpectSaverCalled', () => {
          options.overridingConflictingGuardiansTalks
       );
       assert.deepEqual(calls[Position.FIRST].options.selectedExhibits, selectedExhibits);
+      assert.equal(calls[Position.FIRST].options.confirmingShortVisit, false);
+      assert.equal(calls[Position.FIRST].options.confirmingEarlyAdmission, false);
+   } finally {
+      RegionStorageStore.loadSelectedNames = originalLoad;
+   }
+});
+
+
+test('Test_SaveFinalItinerary_TestVisitTimeConfirmations_ExpectFlags', () => {
+   const calls = [];
+   const finalItinerary = { date: '2026-06-15' };
+   const originalLoad = RegionStorageStore.loadSelectedNames;
+   RegionStorageStore.loadSelectedNames = () => [];
+   const confirmingShortVisit = true;
+   const confirmingEarlyAdmission = true;
+   const saveItinerary = (itinerary, nextOptions) => {
+      calls.push({ itinerary, options: nextOptions });
+      return itinerary;
+   };
+
+   try {
+      WizardFinalizerHelper.saveFinalItinerary(
+         finalItinerary,
+         { confirmingShortVisit, confirmingEarlyAdmission },
+         saveItinerary
+      );
+
+      assert.equal(calls[Position.FIRST].options.confirmingShortVisit, confirmingShortVisit);
+      assert.equal(
+         calls[Position.FIRST].options.confirmingEarlyAdmission,
+         confirmingEarlyAdmission
+      );
    } finally {
       RegionStorageStore.loadSelectedNames = originalLoad;
    }

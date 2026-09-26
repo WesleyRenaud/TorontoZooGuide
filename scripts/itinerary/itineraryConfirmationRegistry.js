@@ -61,6 +61,12 @@ export class ItineraryConfirmationRegistry {
          confirmFlag: 'confirmingEarlyAdmission',
          suppressKey: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
       }),
+      [ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE]: Object.freeze({
+         requiresMethod: 'requiresShortVisitConfirmation',
+         showConfirmation: ShortVisitFragment.showShortVisitConfirmation,
+         confirmFlag: 'confirmingShortVisit',
+         suppressKey: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+      }),
       [ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS]: Object.freeze({
          requiresMethod: 'requiresGuardiansTalkUnscheduleConfirmation',
          showConfirmation: GuardiansTalkUnscheduleFragment.showGuardiansTalkUnscheduleConfirmation,

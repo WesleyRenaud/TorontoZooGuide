@@ -45,6 +45,8 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryIncludesSel
          selectedExhibits,
          temp: null,
          overridingConflictingGuardiansTalks: false,
+         confirmingShortVisit: false,
+         confirmingEarlyAdmission: false,
       });
 
       return {

@@ -14,11 +14,17 @@ export class WizardFinalizerHelper {
 
    static saveFinalItinerary(
       finalItinerary,
-      { overridingConflictingGuardiansTalks = false } = {},
+      {
+         overridingConflictingGuardiansTalks = false,
+         confirmingShortVisit = false,
+         confirmingEarlyAdmission = false,
+      } = {},
       saveItineraryFn = ItineraryServiceSaver.saveItinerary,
    ) {
       return saveItineraryFn(finalItinerary, {
          overridingConflictingGuardiansTalks,
+         confirmingShortVisit,
+         confirmingEarlyAdmission,
          selectedExhibits: RegionStorageStore.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY),
       });
    }

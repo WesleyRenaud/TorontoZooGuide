@@ -39,6 +39,37 @@ test('Test_SaveItinerary_TestCancelledConfirmation_ExpectCancelledResult', async
 });
 
 
+test('Test_SaveItinerary_TestVisitTimeConfirmations_ExpectPayloadFlags', async () => {
+   const originalPayload = ItineraryShape.toSetItineraryPayload;
+   const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
+   const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations;
+   const date = '2026-06-15';
+   const confirmingShortVisit = true;
+   const confirmingEarlyAdmission = true;
+   const payloads = [];
+   ItineraryShape.toSetItineraryPayload = () => ({ date });
+   ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: false });
+   ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = async (payload) => {
+      payloads.push(payload);
+      return { cancelled: true };
+   };
+
+   try {
+      await ItineraryServiceSaver.saveItinerary({ date }, {
+         confirmingShortVisit,
+         confirmingEarlyAdmission,
+      });
+
+      assert.equal(payloads[Position.FIRST].confirmingShortVisit, confirmingShortVisit);
+      assert.equal(payloads[Position.FIRST].confirmingEarlyAdmission, confirmingEarlyAdmission);
+   } finally {
+      ItineraryShape.toSetItineraryPayload = originalPayload;
+      ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
+      ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = originalConfirm;
+   }
+});
+
+
 test('Test_SaveItinerary_TestErrorType_ExpectThrowsResolvedMessage', async () => {
    const originalPayload = ItineraryShape.toSetItineraryPayload;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;

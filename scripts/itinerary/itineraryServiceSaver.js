@@ -13,6 +13,8 @@ export class ItineraryServiceSaver {
    {
       overridingConflictingGuardiansTalks = false,
       selectedExhibits = [],
+      confirmingShortVisit = false,
+      confirmingEarlyAdmission = false,
    } = {},
 ) {
       const savePayload = ItineraryShape.toSetItineraryPayload(itinerary);
@@ -21,6 +23,8 @@ export class ItineraryServiceSaver {
          selectedExhibits,
          temp: (await ItinerarySearchContext.getItineraryDateSearchContext({ date: savePayload.date })).temp,
          overridingConflictingGuardiansTalks,
+         confirmingShortVisit,
+         confirmingEarlyAdmission,
       };
 
       const confirmationResult = await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations(basePayload);
