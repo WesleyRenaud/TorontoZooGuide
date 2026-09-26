@@ -28,6 +28,7 @@ export class DateSelectionModel {
    static createDateSelectionModel({
       initialDate = null,
       syncInputValue = () => {},
+      onDateChanged = () => {},
       earliestDateFloor = null,
       getStoredDate = DraftStore.getStoredItineraryDate,
       setStoredDate = DraftStore.setStoredItineraryDate,
@@ -70,6 +71,7 @@ export class DateSelectionModel {
             return false;
          }
 
+         const dateChanged = currentDate?.getTime() !== normalized.getTime();
          currentDate = normalized;
 
          if (updateInput) {
@@ -78,6 +80,10 @@ export class DateSelectionModel {
 
          if (persist) {
             persistDate(normalized);
+         }
+
+         if (dateChanged) {
+            onDateChanged(normalized);
          }
 
          return true;

@@ -1,3 +1,4 @@
+import { ItineraryDraftModel } from '../itineraryDraftModel.js';
 import { ItineraryShape } from '../itineraryShape.js';
 import { ItineraryWizardDraftMutator } from './itineraryWizardDraftMutator.js';
 
@@ -31,6 +32,18 @@ export class ItineraryWizardStore {
          applyValidationResult(date, result) {
             state.date = date;
             ItineraryWizardDraftMutator.applyPendingValidation(state, result ?? {});
+
+            persistDraft();
+         },
+
+         updateVisitTimes({ arrivalTime, departureTime } = {}) {
+            if (arrivalTime !== undefined) {
+               state.arrivalTime = ItineraryDraftModel.normalizeItineraryTime(arrivalTime);
+            }
+
+            if (departureTime !== undefined) {
+               state.departureTime = ItineraryDraftModel.normalizeItineraryTime(departureTime);
+            }
 
             persistDraft();
          },

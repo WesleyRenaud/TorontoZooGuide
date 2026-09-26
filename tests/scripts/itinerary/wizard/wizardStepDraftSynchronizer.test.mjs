@@ -47,6 +47,40 @@ test('Test_ResolveDateStepDraftUpdate_TestChanged_ExpectDate', () => {
 });
 
 
+test('Test_ResolveDateStepTimesUpdate_TestUnchanged_ExpectNull', () => {
+   const arrivalTime = '10:00 AM';
+   const departureTime = '4:00 PM';
+
+   const update = WizardStepDraftSynchronizer.resolveDateStepTimesUpdate({
+      currentArrivalTime: arrivalTime,
+      currentDepartureTime: departureTime,
+      wizardArrivalTime: arrivalTime,
+      wizardDepartureTime: departureTime,
+   });
+
+   assert.equal(update, null);
+});
+
+
+test('Test_ResolveDateStepTimesUpdate_TestChanged_ExpectTimes', () => {
+   const arrivalTime = '10:00 AM';
+   const departureTime = '4:00 PM';
+   const wizardArrivalTime = '9:30 AM';
+
+   const update = WizardStepDraftSynchronizer.resolveDateStepTimesUpdate({
+      currentArrivalTime: arrivalTime,
+      currentDepartureTime: departureTime,
+      wizardArrivalTime,
+      wizardDepartureTime: '',
+   });
+
+   assert.deepEqual(update, {
+      arrivalTime,
+      departureTime,
+   });
+});
+
+
 test('Test_ShouldSyncSelectionStepDraft_TestMissingConfig_ExpectFalse', () => {
    const stepController = { getSelectionSnapshot: async () => [] };
 

@@ -33,6 +33,8 @@ export class PastItineraryDateRecoverer {
          hideNextButton: true,
          titleText: Strings.itinerary.stale.recoveryTitle,
          subtitleText: Strings.itinerary.stale.recoverySubtitle,
+         initialArrivalTime: itinerary.arrivalTime,
+         initialDepartureTime: itinerary.departureTime,
          onClose: () => {
             dateController.hide();
             onCancel?.();

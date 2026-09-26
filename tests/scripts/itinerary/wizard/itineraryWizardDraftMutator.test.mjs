@@ -66,6 +66,8 @@ test('Test_AssignWizardDraft_TestNormalized_ExpectCopiedArrays', () => {
    const station = { name: 'Station' };
    const normalized = {
       date,
+      arrivalTime: '10:00 AM',
+      departureTime: '4:00 PM',
       animals: [animal],
       attractions: [attraction],
       guardiansTalks: [talk],
@@ -80,6 +82,8 @@ test('Test_AssignWizardDraft_TestNormalized_ExpectCopiedArrays', () => {
       ItineraryWizardDraftMutator.assignWizardDraft(state, {});
 
       assert.equal(state.date, date);
+      assert.equal(state.arrivalTime, normalized.arrivalTime);
+      assert.equal(state.departureTime, normalized.departureTime);
       assert.deepEqual(state.animals, [animal]);
       assert.deepEqual(state.attractions, [attraction]);
       assert.notEqual(state.animals, normalized.animals);

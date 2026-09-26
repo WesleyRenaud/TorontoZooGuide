@@ -239,3 +239,23 @@ test('Test_DiscardChanges_TestRestoresInitialDraft_ExpectOk', () => {
    assert.equal(wizard.hasUnsavedChanges(), false);
    assert.deepEqual(wizard.state.animals, [animal]);
 });
+
+
+test('Test_UpdateVisitTimes_TestChangedTimes_ExpectUnsaved', () => {
+   const visitDate = '2026-06-15';
+   const arrivalTime = '10:00 AM';
+   const departureTime = '4:00 PM';
+   const wizard = ItineraryWizardStore.createItineraryWizardState({
+      date: visitDate,
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   wizard.updateVisitTimes({ arrivalTime, departureTime });
+
+   assert.equal(wizard.state.arrivalTime, arrivalTime);
+   assert.equal(wizard.state.departureTime, departureTime);
+   assert.equal(wizard.hasUnsavedChanges(), true);
+});

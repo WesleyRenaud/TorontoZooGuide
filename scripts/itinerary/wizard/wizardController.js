@@ -9,6 +9,7 @@ import { ItineraryWizardStore } from './itineraryWizardStore.js';
 import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { Strings } from '../../strings.js';
 import { VisitDateResolver } from '../visitDateResolver.js';
+import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 import { WizardControllerHelper } from './wizardControllerHelper.js';
 import { WizardDraft } from './wizardDraft.js';
 import { WizardFinalizer } from './wizardFinalizer.js';
@@ -132,17 +133,32 @@ export class WizardController {
          wizard.applyValidationResult(date, null);
       }
 
+      function applyWizardVisitTimesFromDateStep() {
+         const nextTimes = WizardStepDraftSynchronizer.resolveDateStepTimesUpdate({
+            currentArrivalTime: wizardSteps.date?.getArrivalTime?.(),
+            currentDepartureTime: wizardSteps.date?.getDepartureTime?.(),
+            wizardArrivalTime: wizardState.arrivalTime,
+            wizardDepartureTime: wizardState.departureTime,
+         });
+
+         if (!nextTimes) {
+            return;
+         }
+
+         wizard.updateVisitTimes(nextTimes);
+      }
+
       function syncDateStepDraft() {
          const nextDate = WizardStepDraftSynchronizer.resolveDateStepDraftUpdate({
             currentDate: wizardSteps.date?.getDate?.(),
             wizardDate: wizardState.date,
          });
 
-         if (!nextDate) {
-            return;
+         if (nextDate) {
+            applyWizardDate(nextDate);
          }
 
-         applyWizardDate(nextDate);
+         applyWizardVisitTimesFromDateStep();
       }
 
       async function syncSelectionStepDraft(stepKey) {
@@ -232,16 +248,34 @@ export class WizardController {
 
       function handleDateNext(date) {
          applyWizardDate(date);
+         applyWizardVisitTimesFromDateStep();
          showStep('regions');
       }
 
       async function handleDateFinish(date) {
          applyWizardDate(date);
+         applyWizardVisitTimesFromDateStep();
          await finish({ date });
+      }
+
+      function resolveDateStepInitialDate() {
+         if (!wizardState.date) {
+            return earliestVisitNoon;
+         }
+
+         return VisitDateValidator.clampToAllowedVisitDate(
+            VisitDateValidator.parseLocalDate(wizardState.date),
+            VisitDateValidator.DEFAULT_DAYS_AHEAD,
+            earliestVisitNoon,
+            earliestVisitNoon
+         );
       }
 
       wizardSteps.date = createDateStepController({
          mountEl,
+         initialDate: resolveDateStepInitialDate(),
+         initialArrivalTime: wizardState.arrivalTime,
+         initialDepartureTime: wizardState.departureTime,
          earliestSelectableDate: earliestVisitNoon,
          onClose: handleClose,
          onSave: handleDateNext,

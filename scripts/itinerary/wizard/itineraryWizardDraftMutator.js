@@ -25,6 +25,8 @@ export class ItineraryWizardDraftMutator {
       const normalizedDraft = ItineraryShape.normalizeItineraryDraft(draft);
 
       state.date = normalizedDraft.date;
+      state.arrivalTime = normalizedDraft.arrivalTime;
+      state.departureTime = normalizedDraft.departureTime;
       state.animals = normalizedDraft.animals.slice();
       state.attractions = normalizedDraft.attractions.slice();
       state.guardiansTalks = normalizedDraft.guardiansTalks.slice();

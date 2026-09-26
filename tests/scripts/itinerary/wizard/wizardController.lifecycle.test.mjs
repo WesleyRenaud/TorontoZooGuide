@@ -558,3 +558,44 @@ test('Test_Date_TestDateFinishSavesWhenOnlyTheVisitDate_ExpectOk', async () => {
    assert.equal(finishCalls[Position.FIRST].draft.date, visitDate);
    assert.equal(mountEl.children.length, 0);
 });
+
+
+test('Test_Date_TestDateFinishSavesChangedVisitTimes_ExpectDraftTimes', async () => {
+   const mountEl = createDomNode('div', 'wizard-mount');
+   let finishHandler = null;
+   const finishCalls = [];
+   const visitDate = '2026-06-15';
+   const arrivalTime = '10:00 AM';
+   const departureTime = '4:00 PM';
+   mountEl.appendChild(createDomNode('div', 'keep-until-close'));
+
+   await WizardController.openItineraryWizard({
+      mountEl,
+      deps: {
+         loadItinerary: async () => null,
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
+         createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
+         createDateStepController: ({ onFinish }) => {
+            finishHandler = onFinish;
+            return {
+               show() {},
+               getArrivalTime: () => arrivalTime,
+               getDepartureTime: () => departureTime,
+            };
+         },
+         selectionStepConfigs: [],
+         finalizeWizard: async (draft, mount, options) => {
+            finishCalls.push({ draft, options });
+            mount.replaceChildren();
+            return draft;
+         },
+         showConfirmPopup: () => {},
+         syncAnimalDraft: () => {},
+      },
+   });
+   await finishHandler?.(visitDate);
+
+   assert.equal(finishCalls.length, 1);
+   assert.equal(finishCalls[Position.FIRST].draft.arrivalTime, arrivalTime);
+   assert.equal(finishCalls[Position.FIRST].draft.departureTime, departureTime);
+});

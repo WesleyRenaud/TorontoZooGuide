@@ -1,3 +1,4 @@
+import { ItineraryDraftModel } from '../itineraryDraftModel.js';
 import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 import { WizardStepConfigs } from './wizardStepConfigs.js';
 
@@ -17,6 +18,28 @@ export class WizardStepDraftSynchronizer {
       }
 
       return date;
+   }
+
+   static resolveDateStepTimesUpdate({
+      currentArrivalTime,
+      currentDepartureTime,
+      wizardArrivalTime,
+      wizardDepartureTime,
+   } = {}) {
+      const arrivalTime = ItineraryDraftModel.normalizeItineraryTime(currentArrivalTime);
+      const departureTime = ItineraryDraftModel.normalizeItineraryTime(currentDepartureTime);
+
+      if (
+         arrivalTime === ItineraryDraftModel.normalizeItineraryTime(wizardArrivalTime)
+         && departureTime === ItineraryDraftModel.normalizeItineraryTime(wizardDepartureTime)
+      ) {
+         return null;
+      }
+
+      return {
+         arrivalTime,
+         departureTime,
+      };
    }
 
    static shouldSyncSelectionStepDraft({
