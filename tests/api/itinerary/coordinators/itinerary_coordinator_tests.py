@@ -3,7 +3,9 @@ from __future__ import annotations
 from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
+from api.itinerary.conflicts.visit_window_overflow_change_applier import VisitWindowOverflowChangeApplier
 from api.itinerary.conflicts.visit_window_overflow_issue_finder import VisitWindowOverflowIssueFinder
+from api.itinerary.conflicts.visit_window_overflow_resolution import VisitWindowOverflowResolution
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.accept_itinerary_provider import AcceptItineraryProvider
 from api.itinerary.data_access.clear_itinerary_provider import ClearItineraryProvider
@@ -526,6 +528,314 @@ def Test_SetArrivalTime_TestOverflowWarning_ExpectOutsideHoursStatus(
    assert result.reasons == [ overflow_reason ]
 
 
+def Test_SetArrivalTime_TestOverflowConfirmedDropAll_ExpectPersistedAndDropped(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   overflow_item = object()
+   overflow_reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   dropped: list[ object ] = []
+   saved_times: list[ object ] = []
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_saved_itinerary',
+      lambda _conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_itinerary_date',
+      lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_record',
+      lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
+   monkeypatch.setattr(
+      FixedZooScheduleStartTimesBuilder,
+      'from_saved_itinerary',
+      lambda _saved: [] )
+   monkeypatch.setattr(
+      ItineraryArrivalTimeValidator,
+      'validate_for_zoo_hours',
+      lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
+   monkeypatch.setattr(
+      VisitWindowOverflowIssueFinder,
+      'find_from_saved_itinerary',
+      lambda *_args, **_kwargs: [ overflow_reason ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'overflow_items',
+      lambda _reasons: [ overflow_item ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'resolve',
+      lambda items, kept, arrival, departure: VisitWindowOverflowResolution(
+         kept_items=[],
+         dropped_items=list( items ),
+         arrival_time=arrival,
+         departure_time=departure ) )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'drop_saved_items',
+      lambda conn, dropped_items: dropped.append( dropped_items ) )
+   monkeypatch.setattr(
+      EarlyAdmissionWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ShortVisitWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ItineraryTimeProvider,
+      'set_itinerary_arrival_time',
+      lambda conn, value: saved_times.append( value ) )
+   monkeypatch.setattr(
+      ItineraryVisitWindowBuilder,
+      'clear_schedules_outside',
+      lambda *_args, **_kwargs: None )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+
+   result = ItineraryCoordinator.set_arrival_time(
+      ARRIVAL_TIME,
+      confirming_visit_window_overflow=True )
+
+   assert result.success is True
+   assert dropped == [ [ overflow_item ] ]
+   assert saved_times == [ ARRIVAL_TIME ]
+
+
+def Test_SetArrivalTime_TestOverflowConfirmedKeep_ExpectExpandedArrival(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   expanded_arrival_time = '9:50 AM'
+   overflow_item = object()
+   overflow_reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   saved_times: list[ object ] = []
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_saved_itinerary',
+      lambda _conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_itinerary_date',
+      lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_record',
+      lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
+   monkeypatch.setattr(
+      FixedZooScheduleStartTimesBuilder,
+      'from_saved_itinerary',
+      lambda _saved: [] )
+   monkeypatch.setattr(
+      ItineraryArrivalTimeValidator,
+      'validate_for_zoo_hours',
+      lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
+   monkeypatch.setattr(
+      VisitWindowOverflowIssueFinder,
+      'find_from_saved_itinerary',
+      lambda *_args, **_kwargs: [ overflow_reason ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'overflow_items',
+      lambda _reasons: [ overflow_item ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'resolve',
+      lambda items, kept, arrival, departure: VisitWindowOverflowResolution(
+         kept_items=list( items ),
+         dropped_items=[],
+         arrival_time=expanded_arrival_time,
+         departure_time=departure ) )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'drop_saved_items',
+      lambda conn, dropped_items: None )
+   monkeypatch.setattr(
+      EarlyAdmissionWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ShortVisitWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ItineraryTimeProvider,
+      'set_itinerary_arrival_time',
+      lambda conn, value: saved_times.append( value ) )
+   monkeypatch.setattr(
+      ItineraryVisitWindowBuilder,
+      'clear_schedules_outside',
+      lambda *_args, **_kwargs: None )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+
+   result = ItineraryCoordinator.set_arrival_time(
+      ARRIVAL_TIME,
+      confirming_visit_window_overflow=True )
+
+   assert result.success is True
+   assert saved_times == [ expanded_arrival_time ]
+
+
+def Test_SetArrivalTime_TestOverflowConfirmedKeepBoth_ExpectArrivalAndDeparturePersisted(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   expanded_arrival_time = '9:50 AM'
+   expanded_departure_time = '2:10 PM'
+   overflow_item = object()
+   overflow_reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   saved_arrivals: list[ object ] = []
+   saved_departures: list[ object ] = []
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_saved_itinerary',
+      lambda _conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_itinerary_date',
+      lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_record',
+      lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
+   monkeypatch.setattr(
+      FixedZooScheduleStartTimesBuilder,
+      'from_saved_itinerary',
+      lambda _saved: [] )
+   monkeypatch.setattr(
+      ItineraryArrivalTimeValidator,
+      'validate_for_zoo_hours',
+      lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
+   monkeypatch.setattr(
+      VisitWindowOverflowIssueFinder,
+      'find_from_saved_itinerary',
+      lambda *_args, **_kwargs: [ overflow_reason ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'overflow_items',
+      lambda _reasons: [ overflow_item ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'resolve',
+      lambda items, kept, arrival, departure: VisitWindowOverflowResolution(
+         kept_items=list( items ),
+         dropped_items=[],
+         arrival_time=expanded_arrival_time,
+         departure_time=expanded_departure_time ) )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'drop_saved_items',
+      lambda conn, dropped_items: None )
+   monkeypatch.setattr(
+      EarlyAdmissionWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ShortVisitWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ItineraryTimeProvider,
+      'set_itinerary_arrival_time',
+      lambda conn, value: saved_arrivals.append( value ) )
+   monkeypatch.setattr(
+      ItineraryTimeProvider,
+      'set_itinerary_departure_time',
+      lambda conn, value: saved_departures.append( value ) )
+   monkeypatch.setattr(
+      ItineraryVisitWindowBuilder,
+      'clear_schedules_outside',
+      lambda *_args, **_kwargs: None )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+
+   result = ItineraryCoordinator.set_arrival_time(
+      ARRIVAL_TIME,
+      confirming_visit_window_overflow=True )
+
+   assert result.success is True
+   assert saved_arrivals == [ expanded_arrival_time ]
+   assert saved_departures == [ expanded_departure_time ]
+
+
+def Test_SetArrivalTime_TestOverflowConfirmedThenShortVisit_ExpectTooCloseWithoutPersist(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   dropped: list[ object ] = []
+   saved_times: list[ object ] = []
+   overflow_reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_saved_itinerary',
+      lambda _conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_itinerary_date',
+      lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_record',
+      lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
+   monkeypatch.setattr(
+      FixedZooScheduleStartTimesBuilder,
+      'from_saved_itinerary',
+      lambda _saved: [] )
+   monkeypatch.setattr(
+      ItineraryArrivalTimeValidator,
+      'validate_for_zoo_hours',
+      lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
+   monkeypatch.setattr(
+      VisitWindowOverflowIssueFinder,
+      'find_from_saved_itinerary',
+      lambda *_args, **_kwargs: [ overflow_reason ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'overflow_items',
+      lambda _reasons: [] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'resolve',
+      lambda items, kept, arrival, departure: VisitWindowOverflowResolution(
+         kept_items=[],
+         dropped_items=[],
+         arrival_time='3:30 PM',
+         departure_time=departure ) )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'drop_saved_items',
+      lambda conn, dropped_items: dropped.append( dropped_items ) )
+   monkeypatch.setattr(
+      EarlyAdmissionWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ShortVisitWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: True )
+   monkeypatch.setattr(
+      ItineraryTimeProvider,
+      'set_itinerary_arrival_time',
+      lambda conn, value: saved_times.append( value ) )
+
+   result = ItineraryCoordinator.set_arrival_time(
+      ARRIVAL_TIME,
+      confirming_visit_window_overflow=True )
+
+   assert result.status == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   assert dropped == []
+   assert saved_times == []
+
+
 def Test_SetArrivalTime_TestValidTime_ExpectPersistedAndItinerary(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -696,6 +1006,152 @@ def Test_SetDepartureTime_TestOverflowWarning_ExpectOutsideHoursStatus(
 
    assert result.status == ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS
    assert result.reasons == [ overflow_reason ]
+
+
+def Test_SetDepartureTime_TestOverflowConfirmedDropAll_ExpectPersistedAndDropped(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   overflow_item = object()
+   overflow_reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   dropped: list[ object ] = []
+   saved_times: list[ object ] = []
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_saved_itinerary',
+      lambda _conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_itinerary_date',
+      lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_record',
+      lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
+   monkeypatch.setattr(
+      ItineraryDepartureTimeValidator,
+      'validate_for_zoo_hours',
+      lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
+   monkeypatch.setattr(
+      VisitWindowOverflowIssueFinder,
+      'find_from_saved_itinerary',
+      lambda *_args, **_kwargs: [ overflow_reason ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'overflow_items',
+      lambda _reasons: [ overflow_item ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'resolve',
+      lambda items, kept, arrival, departure: VisitWindowOverflowResolution(
+         kept_items=[],
+         dropped_items=list( items ),
+         arrival_time=arrival,
+         departure_time=departure ) )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'drop_saved_items',
+      lambda conn, dropped_items: dropped.append( dropped_items ) )
+   monkeypatch.setattr(
+      ShortVisitWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ItineraryTimeProvider,
+      'set_itinerary_departure_time',
+      lambda conn, value: saved_times.append( value ) )
+   monkeypatch.setattr(
+      ItineraryVisitWindowBuilder,
+      'clear_schedules_outside',
+      lambda *_args, **_kwargs: None )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+
+   result = ItineraryCoordinator.set_departure_time(
+      DEPARTURE_TIME,
+      confirming_visit_window_overflow=True )
+
+   assert result.success is True
+   assert dropped == [ [ overflow_item ] ]
+   assert saved_times == [ DEPARTURE_TIME ]
+
+
+def Test_SetDepartureTime_TestOverflowConfirmedKeepBoth_ExpectArrivalAndDeparturePersisted(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   expanded_arrival_time = '9:50 AM'
+   expanded_departure_time = '2:10 PM'
+   overflow_item = object()
+   overflow_reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   saved_arrivals: list[ object ] = []
+   saved_departures: list[ object ] = []
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_saved_itinerary',
+      lambda _conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_itinerary_date',
+      lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_record',
+      lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
+   monkeypatch.setattr(
+      ItineraryDepartureTimeValidator,
+      'validate_for_zoo_hours',
+      lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
+   monkeypatch.setattr(
+      VisitWindowOverflowIssueFinder,
+      'find_from_saved_itinerary',
+      lambda *_args, **_kwargs: [ overflow_reason ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'overflow_items',
+      lambda _reasons: [ overflow_item ] )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'resolve',
+      lambda items, kept, arrival, departure: VisitWindowOverflowResolution(
+         kept_items=list( items ),
+         dropped_items=[],
+         arrival_time=expanded_arrival_time,
+         departure_time=expanded_departure_time ) )
+   monkeypatch.setattr(
+      VisitWindowOverflowChangeApplier,
+      'drop_saved_items',
+      lambda conn, dropped_items: None )
+   monkeypatch.setattr(
+      ShortVisitWarningBuilder,
+      'is_required',
+      lambda *_args, **_kwargs: False )
+   monkeypatch.setattr(
+      ItineraryTimeProvider,
+      'set_itinerary_departure_time',
+      lambda conn, value: saved_departures.append( value ) )
+   monkeypatch.setattr(
+      ItineraryTimeProvider,
+      'set_itinerary_arrival_time',
+      lambda conn, value: saved_arrivals.append( value ) )
+   monkeypatch.setattr(
+      ItineraryVisitWindowBuilder,
+      'clear_schedules_outside',
+      lambda *_args, **_kwargs: None )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+
+   result = ItineraryCoordinator.set_departure_time(
+      DEPARTURE_TIME,
+      confirming_visit_window_overflow=True )
+
+   assert result.success is True
+   assert saved_departures == [ expanded_departure_time ]
+   assert saved_arrivals == [ expanded_arrival_time ]
 
 
 def Test_SetDepartureTime_TestValidTime_ExpectPersistedAndItinerary(

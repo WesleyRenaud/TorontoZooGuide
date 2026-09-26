@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..conflicts.visit_window_overflow_keep_item import VisitWindowOverflowKeepItem
 from ..coordinators.itinerary_coordinator import ItineraryCoordinator
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
 from ...json_request_handler import JsonRequestHandler
@@ -47,6 +48,10 @@ class ItineraryController():
          data.get( 'confirmingGuardiansTalkWithoutAnimal' ) )
       confirming_attraction_without_animal = bool(
          data.get( 'confirmingAttractionWithoutAnimal' ) )
+      confirming_visit_window_overflow = bool(
+         data.get( 'confirmingVisitWindowOverflow' ) )
+      kept_visit_window_overflow_items = VisitWindowOverflowKeepItem.from_wires(
+         data.get( 'keptVisitWindowOverflowItems' ) )
 
       save_result = ItineraryCoordinator.set_itinerary(
          date=date,
@@ -72,7 +77,9 @@ class ItineraryController():
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ),
          confirming_attraction_without_animal=(
-            confirming_attraction_without_animal ) )
+            confirming_attraction_without_animal ),
+         confirming_visit_window_overflow=confirming_visit_window_overflow,
+         kept_visit_window_overflow_items=kept_visit_window_overflow_items )
 
       response = ItinerarySaveResultResponseBuilder.to_dict(
          save_result,
@@ -221,11 +228,17 @@ class ItineraryController():
       confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
       confirming_early_admission = bool(
          data.get( 'confirmingEarlyAdmission' ) )
+      confirming_visit_window_overflow = bool(
+         data.get( 'confirmingVisitWindowOverflow' ) )
+      kept_visit_window_overflow_items = VisitWindowOverflowKeepItem.from_wires(
+         data.get( 'keptVisitWindowOverflowItems' ) )
 
       save_result = ItineraryCoordinator.set_arrival_time(
          arrival_time=arrival_time,
          confirming_short_visit=confirming_short_visit,
-         confirming_early_admission=confirming_early_admission )
+         confirming_early_admission=confirming_early_admission,
+         confirming_visit_window_overflow=confirming_visit_window_overflow,
+         kept_visit_window_overflow_items=kept_visit_window_overflow_items )
 
       response = ItineraryTimeSetResultResponseBuilder.to_dict(
          save_result,
@@ -240,10 +253,16 @@ class ItineraryController():
 
       departure_time = data.get( 'departureTime' )
       confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
+      confirming_visit_window_overflow = bool(
+         data.get( 'confirmingVisitWindowOverflow' ) )
+      kept_visit_window_overflow_items = VisitWindowOverflowKeepItem.from_wires(
+         data.get( 'keptVisitWindowOverflowItems' ) )
 
       save_result = ItineraryCoordinator.set_departure_time(
          departure_time=departure_time,
-         confirming_short_visit=confirming_short_visit )
+         confirming_short_visit=confirming_short_visit,
+         confirming_visit_window_overflow=confirming_visit_window_overflow,
+         kept_visit_window_overflow_items=kept_visit_window_overflow_items )
 
       response = ItineraryTimeSetResultResponseBuilder.to_dict(
          save_result,

@@ -12,6 +12,7 @@ from api import database_connection_provider as connection
 import api.http_request_handler as server
 from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
+from api.itinerary.conflicts.visit_window_overflow_keep_item import VisitWindowOverflowKeepItem
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
@@ -94,6 +95,51 @@ def Test_SetItineraryArrivalTime_TestHttpRequest_ExpectOnlyArrivalUpdated(
             'arrival_time': arrival_time,
             'confirming_short_visit': confirming_short_visit,
             'confirming_early_admission': confirming_early_admission,
+            'confirming_visit_window_overflow': False,
+            'kept_visit_window_overflow_items': [],
+         },
+      ),
+   ]
+
+
+def Test_SetItineraryArrivalTime_TestOverflowConfirm_ExpectKeepItemsMapped(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   arrival_time = '11:00 AM'
+   expected_result = ItineraryTimeSetResult(
+      itinerary=Itinerary(
+         date=VISIT_DATE,
+         arrival_time=arrival_time ) )
+   handler = make_handler(
+      '/set-itinerary-arrival-time',
+      {
+         'arrivalTime': arrival_time,
+         'confirmingVisitWindowOverflow': True,
+         'keptVisitWindowOverflowItems': [
+            {
+               'name': 'African Lion',
+               'item_type': 'guardiansTalk',
+               'start_time': '10:00 AM',
+            },
+         ],
+      } )
+
+   result = _post_json( handler )
+
+   assert result == ItineraryTimeSetResultResponseBuilder.to_dict( expected_result )
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'set_arrival_time',
+         {
+            'arrival_time': arrival_time,
+            'confirming_short_visit': False,
+            'confirming_early_admission': False,
+            'confirming_visit_window_overflow': True,
+            'kept_visit_window_overflow_items': [
+               VisitWindowOverflowKeepItem(
+                  name='African Lion',
+                  item_type='guardiansTalk',
+                  start_time='10:00 AM' ),
+            ],
          },
       ),
    ]
@@ -120,6 +166,8 @@ def Test_SetItineraryDepartureTime_TestClearedTime_ExpectEmptyItinerary(
          {
             'departure_time': departure_time,
             'confirming_short_visit': confirming_short_visit,
+            'confirming_visit_window_overflow': False,
+            'kept_visit_window_overflow_items': [],
          },
       ),
    ]
@@ -214,6 +262,8 @@ def Test_SetItinerary_TestHttpRequest_ExpectSuccessPayload(
             'confirming_fixed_time_item_long_wait': False,
             'confirming_guardians_talk_without_animal': False,
             'confirming_attraction_without_animal': False,
+            'confirming_visit_window_overflow': False,
+            'kept_visit_window_overflow_items': [],
          },
       ),
    ]
@@ -524,6 +574,8 @@ def Test_SetItineraryDepartureTime_TestHttpRequest_ExpectMappedDeparture(
          {
             'departure_time': departure_time,
             'confirming_short_visit': confirming_short_visit,
+            'confirming_visit_window_overflow': False,
+            'kept_visit_window_overflow_items': [],
          },
       ),
    ]

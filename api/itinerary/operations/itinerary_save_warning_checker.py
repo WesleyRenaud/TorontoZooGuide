@@ -4,6 +4,8 @@ from dataclasses import replace
 
 from ..conflicts.itinerary_schedule_time_conflict_warning_builder import ItineraryScheduleTimeConflictWarningBuilder
 from ..conflicts.itinerary_unschedule_confirmation_warning_builder import ItineraryUnscheduleConfirmationWarningBuilder
+from ..conflicts.visit_window_overflow_change_applier import VisitWindowOverflowChangeApplier
+from ..conflicts.visit_window_overflow_keep_item import VisitWindowOverflowKeepItem
 from .itinerary_save_context import ItinerarySaveContext
 from .itinerary_save_context_builder import ItinerarySaveContextBuilder
 from ..results.itinerary_save_result import ItinerarySaveResult
@@ -33,7 +35,9 @@ class ItinerarySaveWarningChecker():
          confirming_fixed_time_item_long_wait: bool,
          confirming_guardians_talk_without_animal: bool,
          confirming_attraction_without_animal: bool,
-         overriding_conflicting_guardians_talks: bool ) -> tuple[
+         overriding_conflicting_guardians_talks: bool,
+         confirming_visit_window_overflow: bool = False,
+         kept_visit_window_overflow_items: list[ VisitWindowOverflowKeepItem ] | None = None ) -> tuple[
             ItinerarySaveContext,
             ItinerarySaveResult | None,
          ]:
@@ -47,9 +51,16 @@ class ItinerarySaveWarningChecker():
          context.current_itinerary )
 
       if overflow_warning is not None:
-         return (
-            replace( context, suppressed_warnings=suppressed_warnings ),
-            overflow_warning )
+         if not confirming_visit_window_overflow:
+            return (
+               replace( context, suppressed_warnings=suppressed_warnings ),
+               overflow_warning )
+
+         context = VisitWindowOverflowChangeApplier.apply_to_context(
+            context,
+            overflow_warning.reasons,
+            kept_visit_window_overflow_items or [] )
+         save_input = context.save_input
 
       zoo_hours_record = (
          ZooHoursProvider.fetch_zoo_hours_record(
