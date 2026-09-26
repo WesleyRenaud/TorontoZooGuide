@@ -39,9 +39,11 @@ def _attraction_record() -> AttractionRecord:
 
 
 def Test_HasConfiguredOperatingHours_TestWeekdayTimes_ExpectTrue() -> None:
-   assert AttractionOperatingHoursResolver.has_configured_operating_hours(
+   result = AttractionOperatingHoursResolver.has_configured_operating_hours(
       _attraction_record(),
       visit_date=WEEKDAY_VISIT_DATE )
+
+   assert result
 
 
 def Test_OperatingHoursSeconds_TestWeekdayVisit_ExpectConfiguredHours() -> None:
@@ -107,11 +109,13 @@ def Test_FetchConfiguredOperatingHoursSeconds_TestMissingRecord_ExpectNone(
       open_seconds=ZOO_OPEN_SECONDS,
       close_seconds=ZOO_CLOSE_SECONDS )
 
-   assert AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
+   configured_operating_hours_seconds = AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
       None,
       'Conservation Carousel',
       visit_date=WEEKDAY_VISIT_DATE,
-      zoo_operating_hours=zoo_hours ) is None
+      zoo_operating_hours=zoo_hours )
+
+   assert configured_operating_hours_seconds is None
 
 
 def Test_FetchConfiguredOperatingHoursSeconds_TestNoConfiguredHours_ExpectNone(
@@ -135,11 +139,13 @@ def Test_FetchConfiguredOperatingHoursSeconds_TestNoConfiguredHours_ExpectNone(
       open_seconds=ZOO_OPEN_SECONDS,
       close_seconds=ZOO_CLOSE_SECONDS )
 
-   assert AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
+   configured_operating_hours_seconds = AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds(
       None,
       'Conservation Carousel',
       visit_date=WEEKDAY_VISIT_DATE,
-      zoo_operating_hours=zoo_hours ) is None
+      zoo_operating_hours=zoo_hours )
+
+   assert configured_operating_hours_seconds is None
 
 
 def Test_FetchConfiguredOperatingHoursSeconds_TestConfiguredHours_ExpectSeconds(

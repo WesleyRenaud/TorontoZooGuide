@@ -2,59 +2,61 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { TransportationRouteProvider } from '../../../scripts/map/transportationRouteProvider.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
+
+const mainStationName = 'Main Station';
+const stationRow = { name: mainStationName, type: ItemType.TRANSPORTATION_STATION };
+
 
 function _createStore() {
    return {
       byType: {
-         transportationStation: [],
-         transportationRoute: [],
+         [ItemType.TRANSPORTATION_STATION]: [],
+         [ItemType.TRANSPORTATION_ROUTE]: [],
       },
       cache: {},
    };
 }
 
+
 test('Test_CreateTransportationRouteSource_TestSelectedRoute_ExpectStationsStored', async () => {
    const store = _createStore();
    const shownRoutes = [];
-   const source = TransportationRouteProvider.createTransportationRouteSource(store, {
-      fetchTransportationRoute: async (payload) => {
-         assert.deepEqual(payload, {
-            month: 'JUN',
-            day: 15,
-            transportationRoute: 'summer',
-            transportationStationsToInclude: ['Main Station'],
-         });
+   const month = 'JUN';
+   const day = 15;
+   const transportationRoute = 'summer';
+   const transportationStationsToInclude = [mainStationName];
+   const payload = {
+      month,
+      day,
+      transportationRoute,
+      transportationStationsToInclude,
+   };
 
+   const source = TransportationRouteProvider.createTransportationRouteSource(store, {
+      fetchTransportationRoute: async (request) => {
+         assert.deepEqual(request, payload);
          return {
-            route: 'summer',
-            transportationStations: [{ name: 'Main Station' }],
+            route: transportationRoute,
+            transportationStations: [{ name: mainStationName }],
          };
       },
       hideRouteLayers: () => {},
-      showRouteLayer: route => shownRoutes.push(route),
+      showRouteLayer: (route) => shownRoutes.push(route),
    });
+   const rows = await source.fetch(payload);
 
-   assert.deepEqual(await source.fetch({
-      month: 'JUN',
-      day: 15,
-      transportationRoute: 'summer',
-      transportationStationsToInclude: ['Main Station'],
-   }), [
-      { name: 'Main Station', type: 'transportationStation' },
-   ]);
-   assert.deepEqual(store.byType.transportationStation, [
-      { name: 'Main Station', type: 'transportationStation' },
-   ]);
-   assert.deepEqual(store.byType.transportationRoute, [
-      { name: 'Main Station', type: 'transportationStation' },
-   ]);
-   assert.deepEqual(shownRoutes, ['summer']);
+   assert.deepEqual(rows, [stationRow]);
+   assert.deepEqual(store.byType[ItemType.TRANSPORTATION_STATION], [stationRow]);
+   assert.deepEqual(store.byType[ItemType.TRANSPORTATION_ROUTE], [stationRow]);
+   assert.deepEqual(shownRoutes, [transportationRoute]);
 });
+
 
 test('Test_CreateTransportationRouteSource_TestNoRoute_ExpectStationsCleared', async () => {
    const store = _createStore();
-   store.byType.transportationStation = [{ name: 'Main Station', type: 'transportationStation' }];
-   store.byType.transportationRoute = [{ name: 'Main Station', type: 'transportationStation' }];
+   store.byType[ItemType.TRANSPORTATION_STATION] = [stationRow];
+   store.byType[ItemType.TRANSPORTATION_ROUTE] = [stationRow];
 
    const source = TransportationRouteProvider.createTransportationRouteSource(store, {
       fetchTransportationRoute: async () => {
@@ -63,8 +65,9 @@ test('Test_CreateTransportationRouteSource_TestNoRoute_ExpectStationsCleared', a
       hideRouteLayers: () => {},
       showRouteLayer: () => {},
    });
+   const rows = await source.fetch({ transportationRoute: 'none' });
 
-   assert.deepEqual(await source.fetch({ transportationRoute: 'none' }), []);
-   assert.deepEqual(store.byType.transportationStation, []);
-   assert.deepEqual(store.byType.transportationRoute, []);
+   assert.deepEqual(rows, []);
+   assert.deepEqual(store.byType[ItemType.TRANSPORTATION_STATION], []);
+   assert.deepEqual(store.byType[ItemType.TRANSPORTATION_ROUTE], []);
 });

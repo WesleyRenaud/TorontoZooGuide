@@ -6,16 +6,20 @@ from api.shared.enums import ItineraryErrorType
 
 
 def Test_Success_TestSuccessStatus_ExpectTrue() -> None:
+   date = '2026-06-15'
+   arrival_time = '9:45 AM'
    result = ItineraryTimeSetResult(
-      itinerary=Itinerary( date='2026-06-15', arrival_time='9:45 AM' ),
-   )
+      itinerary=Itinerary( date=date, arrival_time=arrival_time ) )
 
-   assert result.success is True
+   success = result.success
+
+   assert success is True
 
 
 def Test_Success_TestFailureStatus_ExpectFalse() -> None:
    result = ItineraryTimeSetResult(
-      status=ItineraryErrorType.TIME_OUT_OF_BOUNDS,
-   )
+      status=ItineraryErrorType.TIME_OUT_OF_BOUNDS )
 
-   assert result.success is False
+   success = result.success
+
+   assert success is False

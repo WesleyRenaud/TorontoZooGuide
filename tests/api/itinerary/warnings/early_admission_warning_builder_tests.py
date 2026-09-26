@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
@@ -45,62 +46,95 @@ def stub_early_admission_suppressed( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 
 def Test_ArrivalIsDuringEarlyAdmission_TestInWindow_ExpectTrue() -> None:
-   assert EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
-      '09:15',
+   arrival_time = '09:15'
+
+   during = EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
+      arrival_time,
       EARLY_ADMISSION_HOURS )
+
+   assert during is True
 
 
 def Test_ArrivalIsDuringEarlyAdmission_TestAtOpen_ExpectFalse() -> None:
-   assert not EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
-      '09:30',
+   arrival_time = EARLY_ADMISSION_HOURS.open_time
+
+   during = EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
+      arrival_time,
       EARLY_ADMISSION_HOURS )
+
+   assert during is False
 
 
 def Test_ArrivalIsDuringEarlyAdmission_TestNoEarlyAdmission_ExpectFalse() -> None:
-   assert not EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
-      '09:15',
+   arrival_time = '09:15'
+
+   during = EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
+      arrival_time,
       STANDARD_HOURS )
+
+   assert during is False
 
 
 def Test_IsRequired_TestConfirming_ExpectFalse(
       stub_no_suppressed_status: None ) -> None:
-   assert not EarlyAdmissionWarningBuilder.is_required(
-      object(),  # type: ignore[arg-type]
-      '09:15',
+   arrival_time = '09:15'
+   confirming_early_admission = True
+
+   required = EarlyAdmissionWarningBuilder.is_required(
+      STUB_REQUEST_CONNECTION,
+      arrival_time,
       EARLY_ADMISSION_HOURS,
-      confirming_early_admission=True )
+      confirming_early_admission=confirming_early_admission )
+
+   assert required is False
 
 
 def Test_IsRequired_TestDuringEarlyAdmission_ExpectTrue(
       stub_no_suppressed_status: None ) -> None:
-   assert EarlyAdmissionWarningBuilder.is_required(
-      object(),  # type: ignore[arg-type]
-      '09:15',
+   arrival_time = '09:15'
+   confirming_early_admission = False
+
+   required = EarlyAdmissionWarningBuilder.is_required(
+      STUB_REQUEST_CONNECTION,
+      arrival_time,
       EARLY_ADMISSION_HOURS,
-      confirming_early_admission=False )
+      confirming_early_admission=confirming_early_admission )
+
+   assert required is True
 
 
 def Test_IsRequired_TestSuppressed_ExpectFalseAndTracked(
       stub_early_admission_suppressed: None ) -> None:
+   arrival_time = '09:15'
+   confirming_early_admission = False
    suppressed_warnings: list[ ItineraryErrorType ] = []
+   expected_warning = ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
 
-   assert not EarlyAdmissionWarningBuilder.is_required(
-      object(),  # type: ignore[arg-type]
-      '09:15',
+   required = EarlyAdmissionWarningBuilder.is_required(
+      STUB_REQUEST_CONNECTION,
+      arrival_time,
       EARLY_ADMISSION_HOURS,
-      confirming_early_admission=False,
+      confirming_early_admission=confirming_early_admission,
       suppressed_warnings=suppressed_warnings )
-   assert suppressed_warnings == [
-      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
-   ]
+
+   assert required is False
+   assert suppressed_warnings == [ expected_warning ]
 
 
 def Test_ArrivalIsDuringEarlyAdmission_TestInvalidOpenTime_ExpectFalse(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    original = DateValues.time_value_in_seconds
+   invalid_open_time = 'bad-open'
+   arrival_time = '09:15'
+   hours = ZooHoursRecord(
+      operating_date='2026-06-20',
+      early_admission_time='09:00',
+      open_time=invalid_open_time,
+      last_admission_time='18:00',
+      close_time='19:00' )
 
    def fake_time_in_seconds( value: Types.TimeInput ) -> int | None:
-      if value == 'bad-open':
+      if value == invalid_open_time:
          return None
       return original( value )
 
@@ -108,12 +142,8 @@ def Test_ArrivalIsDuringEarlyAdmission_TestInvalidOpenTime_ExpectFalse(
       'api.itinerary.warnings.early_admission_warning_builder.DateValues.time_value_in_seconds',
       fake_time_in_seconds )
 
-   assert not EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
-      '09:15',
-      ZooHoursRecord(
-         operating_date='2026-06-20',
-         early_admission_time='09:00',
-         open_time='bad-open',
-         last_admission_time='18:00',
-         close_time='19:00',
-      ) )
+   during = EarlyAdmissionWarningBuilder.arrival_is_during_early_admission(
+      arrival_time,
+      hours )
+
+   assert during is False

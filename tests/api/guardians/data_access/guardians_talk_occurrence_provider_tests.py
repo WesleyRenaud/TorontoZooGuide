@@ -162,12 +162,14 @@ def _insert_schedule(
 
 def Test_OccurrenceRecordExists_TestMissing_ExpectFalse(
       occurrence_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkOccurrenceProvider.occurrence_record_exists(
+   result = GuardiansTalkOccurrenceProvider.occurrence_record_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME ) is False
+      TALK_TIME )
+
+   assert result is False
 
 
 def Test_OccurrenceRecordExists_TestPersisted_ExpectTrue(
@@ -175,12 +177,14 @@ def Test_OccurrenceRecordExists_TestPersisted_ExpectTrue(
    _insert_occurrence( occurrence_provider_conn )
    occurrence_provider_conn.commit()
 
-   assert GuardiansTalkOccurrenceProvider.occurrence_record_exists(
+   result = GuardiansTalkOccurrenceProvider.occurrence_record_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME ) is True
+      TALK_TIME )
+
+   assert result is True
 
 
 def Test_OccurrenceExists_TestExplicitRecord_ExpectTrue(
@@ -188,22 +192,26 @@ def Test_OccurrenceExists_TestExplicitRecord_ExpectTrue(
    _insert_occurrence( occurrence_provider_conn )
    occurrence_provider_conn.commit()
 
-   assert GuardiansTalkOccurrenceProvider.occurrence_exists(
+   result = GuardiansTalkOccurrenceProvider.occurrence_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME ) is True
+      TALK_TIME )
+
+   assert result is True
 
 
 def Test_OccurrenceExists_TestNoneDate_ExpectFalse(
       occurrence_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkOccurrenceProvider.occurrence_exists(
+   result = GuardiansTalkOccurrenceProvider.occurrence_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       None,  # type: ignore[arg-type]
-      TALK_TIME ) is False
+      TALK_TIME )
+
+   assert result is False
 
 
 def Test_OccurrenceExists_TestScheduleOutsideDateRange_ExpectFalse(
@@ -211,12 +219,14 @@ def Test_OccurrenceExists_TestScheduleOutsideDateRange_ExpectFalse(
    _insert_schedule( occurrence_provider_conn )
    occurrence_provider_conn.commit()
 
-   assert GuardiansTalkOccurrenceProvider.occurrence_exists(
+   result = GuardiansTalkOccurrenceProvider.occurrence_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       '2026-07-15',
-      TALK_TIME ) is False
+      TALK_TIME )
+
+   assert result is False
 
 
 def Test_OccurrenceExists_TestScheduleCoversWeekday_ExpectTrue(
@@ -224,12 +234,14 @@ def Test_OccurrenceExists_TestScheduleCoversWeekday_ExpectTrue(
    _insert_schedule( occurrence_provider_conn )
    occurrence_provider_conn.commit()
 
-   assert GuardiansTalkOccurrenceProvider.occurrence_exists(
+   result = GuardiansTalkOccurrenceProvider.occurrence_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME ) is True
+      TALK_TIME )
+
+   assert result is True
 
 
 def Test_OccurrenceExists_TestScheduleExcludesWeekday_ExpectFalse(
@@ -237,36 +249,44 @@ def Test_OccurrenceExists_TestScheduleExcludesWeekday_ExpectFalse(
    _insert_schedule( occurrence_provider_conn )
    occurrence_provider_conn.commit()
 
-   assert GuardiansTalkOccurrenceProvider.occurrence_exists(
+   result = GuardiansTalkOccurrenceProvider.occurrence_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       WEEKEND_DATE,
-      TALK_TIME ) is False
+      TALK_TIME )
+
+   assert result is False
 
 
 def Test_OccurrenceExists_TestNoMatchingSchedule_ExpectFalse(
       occurrence_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkOccurrenceProvider.occurrence_exists(
+   result = GuardiansTalkOccurrenceProvider.occurrence_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME ) is False
+      TALK_TIME )
+
+   assert result is False
 
 
 def Test_SaveOccurrence_TestNewRow_ExpectTrueAndPersisted(
       occurrence_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkOccurrenceProvider.save_occurrence(
+   result = GuardiansTalkOccurrenceProvider.save_occurrence(
       occurrence_provider_conn,
-      _occurrence_input() ) is True
+      _occurrence_input() )
 
-   assert GuardiansTalkOccurrenceProvider.occurrence_record_exists(
+   assert result is True
+
+   result = GuardiansTalkOccurrenceProvider.occurrence_record_exists(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME ) is True
+      TALK_TIME )
+
+   assert result is True
 
 
 def Test_SaveOccurrence_TestDuplicate_ExpectFalse(
@@ -275,19 +295,23 @@ def Test_SaveOccurrence_TestDuplicate_ExpectFalse(
       occurrence_provider_conn,
       _occurrence_input() )
 
-   assert GuardiansTalkOccurrenceProvider.save_occurrence(
+   result = GuardiansTalkOccurrenceProvider.save_occurrence(
       occurrence_provider_conn,
-      _occurrence_input() ) is False
+      _occurrence_input() )
+
+   assert result is False
 
 
 def Test_FetchOccurrenceRecords_TestEmptyRange_ExpectEmptyList(
       occurrence_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkOccurrenceProvider.fetch_occurrence_records(
+   occurrence_records = GuardiansTalkOccurrenceProvider.fetch_occurrence_records(
       occurrence_provider_conn,
       TALK_NAME,
       LOCATION,
       start_date=START_DATE,
-      end_date=END_DATE ) == []
+      end_date=END_DATE )
+
+   assert occurrence_records == []
 
 
 def Test_FetchOccurrenceRecords_TestDateRange_ExpectOrderedMatchingRows(
@@ -329,9 +353,11 @@ def Test_FetchOccurrenceRecords_TestDateRange_ExpectOrderedMatchingRows(
 
 def Test_FetchDayScheduleRecordsFromOccurrences_TestEmpty_ExpectEmptyList(
       occurrence_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkOccurrenceProvider.fetch_day_schedule_records_from_occurrences(
+   day_schedule_records_from_occurrences = GuardiansTalkOccurrenceProvider.fetch_day_schedule_records_from_occurrences(
       occurrence_provider_conn,
-      OCCURRENCE_DATE ) == []
+      OCCURRENCE_DATE )
+
+   assert day_schedule_records_from_occurrences == []
 
 
 def Test_FetchDayScheduleRecordsFromOccurrences_TestActiveOccurrence_ExpectMappedTalk(
@@ -365,6 +391,8 @@ def Test_FetchDayScheduleRecordsFromOccurrences_TestCancelled_ExpectExcluded(
    )
    occurrence_provider_conn.commit()
 
-   assert GuardiansTalkOccurrenceProvider.fetch_day_schedule_records_from_occurrences(
+   day_schedule_records_from_occurrences = GuardiansTalkOccurrenceProvider.fetch_day_schedule_records_from_occurrences(
       occurrence_provider_conn,
-      OCCURRENCE_DATE ) == []
+      OCCURRENCE_DATE )
+
+   assert day_schedule_records_from_occurrences == []

@@ -61,9 +61,11 @@ def transportation_active_route_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchTransportationRouteIds_TestEmpty_ExpectEmptyList(
       transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
-   assert TransportationActiveRouteProvider.fetch_transportation_route_ids(
+   transportation_route_ids = TransportationActiveRouteProvider.fetch_transportation_route_ids(
       transportation_active_route_provider_conn,
-      TransportationName.ZOOMOBILE ) == []
+      TransportationName.ZOOMOBILE )
+
+   assert transportation_route_ids == []
 
 
 def Test_FetchTransportationRouteIds_TestPopulated_ExpectFilteredRoutes(
@@ -89,10 +91,12 @@ def Test_FetchTransportationRouteIds_TestPopulated_ExpectFilteredRoutes(
 
 def Test_FetchTransportationRouteStationNames_TestEmpty_ExpectEmptyList(
       transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
-   assert TransportationActiveRouteProvider.fetch_transportation_route_station_names(
+   transportation_route_station_names = TransportationActiveRouteProvider.fetch_transportation_route_station_names(
       transportation_active_route_provider_conn,
       TransportationName.ZOOMOBILE,
-      SUMMER ) == []
+      SUMMER )
+
+   assert transportation_route_station_names == []
 
 
 def Test_FetchTransportationRouteStationNames_TestPopulated_ExpectFilteredStations(
@@ -121,10 +125,12 @@ def Test_FetchTransportationRouteStationNames_TestPopulated_ExpectFilteredStatio
 
 def Test_FetchActiveTransportationRoute_TestMissing_ExpectNone(
       transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
-   assert TransportationActiveRouteProvider.fetch_active_transportation_route(
+   active_transportation_route = TransportationActiveRouteProvider.fetch_active_transportation_route(
       transportation_active_route_provider_conn,
       TransportationName.ZOOMOBILE,
-      TARGET_DATE ) is None
+      TARGET_DATE )
+
+   assert active_transportation_route is None
 
 
 def Test_FetchActiveTransportationRoute_TestExpiredOnly_ExpectNone(
@@ -142,10 +148,12 @@ def Test_FetchActiveTransportationRoute_TestExpiredOnly_ExpectNone(
    )
    transportation_active_route_provider_conn.commit()
 
-   assert TransportationActiveRouteProvider.fetch_active_transportation_route(
+   active_transportation_route = TransportationActiveRouteProvider.fetch_active_transportation_route(
       transportation_active_route_provider_conn,
       TransportationName.ZOOMOBILE,
-      TARGET_DATE ) is None
+      TARGET_DATE )
+
+   assert active_transportation_route is None
 
 
 def Test_FetchActiveTransportationRoute_TestOpenEndedAndNewerStart_ExpectNewestRoute(
@@ -176,11 +184,13 @@ def Test_FetchActiveTransportationRoute_TestOpenEndedAndNewerStart_ExpectNewestR
 
 def Test_FetchTransportationDayRoute_TestMissing_ExpectNone(
       transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
-   assert TransportationActiveRouteProvider.fetch_transportation_day_route(
+   transportation_day_route = TransportationActiveRouteProvider.fetch_transportation_day_route(
       transportation_active_route_provider_conn,
       TransportationName.ZOOMOBILE,
       TARGET_DATE.month,
-      TARGET_DATE.day ) is None
+      TARGET_DATE.day )
+
+   assert transportation_day_route is None
 
 
 def Test_FetchTransportationDayRoute_TestPresent_ExpectRoute(

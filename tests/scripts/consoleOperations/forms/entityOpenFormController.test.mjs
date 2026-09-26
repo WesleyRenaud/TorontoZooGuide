@@ -10,6 +10,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateEntityOpenFormController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -31,18 +32,20 @@ test('Test_CreateEntityOpenFormController_TestShowAndSubmitSuccess_ExpectStatus'
    ControllerHelper.validateOptionalDateRange = () => null;
 
    try {
+      const entity = 'Near Cafe';
+      const panelEl = { id: 'open-form' };
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
       const entityEl = document.createElement('select');
       const startDateEl = document.createElement('input');
-      entityEl.value = 'Near Cafe';
+      entityEl.value = entity;
       startDateEl.value = '2026-06-01';
 
       const controller = EntityOpenFormController.createEntityOpenFormController({
          showButtonEl,
          submitButtonEl,
          cancelButtonEl: document.createElement('button'),
-         panelEl: { id: 'open-form' },
+         panelEl,
          statusEl: {},
          entityEl,
          startDateEl,
@@ -56,12 +59,12 @@ test('Test_CreateEntityOpenFormController_TestShowAndSubmitSuccess_ExpectStatus'
       });
 
       await showButtonEl.listeners.click();
-      assert.deepEqual(activations, [{ id: 'open-form' }]);
-
       await submitButtonEl.listeners.click();
+
+      assert.deepEqual(activations, [panelEl]);
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === Strings.status.open('Near Cafe') && entry[2] === 'is-success'
+            entry[1] === Strings.status.open(entity) && entry[2] === 'is-success'
          ))
       );
 
@@ -74,6 +77,7 @@ test('Test_CreateEntityOpenFormController_TestShowAndSubmitSuccess_ExpectStatus'
       ControllerHelper.validateOptionalDateRange = originalValidate;
    }
 });
+
 
 test('Test_CreateEntityOpenFormController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];
@@ -156,6 +160,7 @@ test('Test_CreateEntityOpenFormController_TestValidationAndFailures_ExpectErrorS
    }
 });
 
+
 test('Test_CreateEntityOpenFormController_TestNoDateRange_ExpectSkipsDateValidation', async () => {
    const statuses = [];
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -199,6 +204,7 @@ test('Test_CreateEntityOpenFormController_TestNoDateRange_ExpectSkipsDateValidat
       ControllerHelper.validateOptionalDateRange = originalValidate;
    }
 });
+
 
 test('Test_CreateEntityOpenFormController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
    const resets = [];

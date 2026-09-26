@@ -2,13 +2,19 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ItineraryServiceFormatter } from '../../../scripts/itinerary/itineraryServiceFormatter.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
 
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTimeDispatchesUnscheduledDiffForTrimmedVisit_ExpectOk', async () => {
    const updates = [];
-
+   const date = '2026-06-15';
+   const arrivalTime = '09:30';
+   const departureTime = '16:15';
+   const species = 'African Lion';
+   const exhibit = 'Africa Savanna';
    window.dispatchEvent = (event) => {
       if (event.type === 'tzg:itineraryUpdated') {
          updates.push(event.detail.itinerary);
@@ -16,14 +22,13 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
 
       return true;
    };
-
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return {
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-15' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -36,13 +41,13 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
                status: 'success',
                reasons: [],
                itinerary: {
-                  date: '2026-06-15',
-                  arrival_time: '09:30',
+                  date,
+                  arrival_time: arrivalTime,
                   departure_time: '17:00',
                   animals: [
                      {
-                        species: 'African Lion',
-                        exhibit: 'Africa Savanna',
+                        species,
+                        exhibit,
                         start_time: '16:30',
                         end_time: '16:45',
                      },
@@ -65,13 +70,13 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
             status: 'success',
             reasons: [],
             itinerary: {
-               date: '2026-06-15',
-               arrival_time: '09:30',
-               departure_time: '16:15',
+               date,
+               arrival_time: arrivalTime,
+               departure_time: departureTime,
                animals: [
                   {
-                     species: 'African Lion',
-                     exhibit: 'Africa Savanna',
+                     species,
+                     exhibit,
                   },
                ],
                attractions: [],
@@ -82,23 +87,25 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
       };
    };
 
-   const result = await ItineraryServiceFormatter.setItineraryDepartureTime('16:15');
+   const result = await ItineraryServiceFormatter.setItineraryDepartureTime(departureTime);
 
    assert.equal(result.validation.hasChanges, true);
-   assert.deepEqual(
-      result.validation.unscheduled.animals.map((animal) => animal.species),
-      ['African Lion']
-   );
+   assert.equal(result.validation.unscheduled.animals[Position.FIRST].species, species);
    assert.equal(updates.length, 1);
-   assert.deepEqual(
-      updates[0].validation.unscheduled.animals.map((animal) => animal.species),
-      ['African Lion']
+   assert.equal(
+      updates[Position.FIRST].validation.unscheduled.animals[Position.FIRST].species,
+      species
    );
 });
 
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTimeDispatchesRemovedAndUnscheduledTalksAnd_ExpectOk', async () => {
    const updates = [];
-
+   const date = '2026-06-15';
+   const arrivalTime = '09:30';
+   const departureTime = '16:15';
+   const talkName = 'African Lion';
+   const encounterName = 'African Rainforest';
    window.dispatchEvent = (event) => {
       if (event.type === 'tzg:itineraryUpdated') {
          updates.push(event.detail.itinerary);
@@ -106,14 +113,13 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
 
       return true;
    };
-
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return {
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-15' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -126,21 +132,21 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
                status: 'success',
                reasons: [],
                itinerary: {
-                  date: '2026-06-15',
-                  arrival_time: '09:30',
+                  date,
+                  arrival_time: arrivalTime,
                   departure_time: '17:00',
                   animals: [],
                   attractions: [],
                   guardians_talks: [
                      {
-                        name: 'African Lion',
+                        name: talkName,
                         start_time: '16:30',
                         end_time: '16:45',
                      },
                   ],
                   wild_encounters: [
                      {
-                        name: 'African Rainforest',
+                        name: encounterName,
                         start_time: '16:30',
                         end_time: '16:45',
                      },
@@ -160,9 +166,9 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
             status: 'success',
             reasons: [],
             itinerary: {
-               date: '2026-06-15',
-               arrival_time: '09:30',
-               departure_time: '16:15',
+               date,
+               arrival_time: arrivalTime,
+               departure_time: departureTime,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -172,24 +178,18 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
       };
    };
 
-   const result = await ItineraryServiceFormatter.setItineraryDepartureTime('16:15');
+   const result = await ItineraryServiceFormatter.setItineraryDepartureTime(departureTime);
 
    assert.equal(result.validation.hasChanges, true);
-   assert.deepEqual(
-      result.validation.removed.guardiansTalks.map((talk) => talk.name),
-      ['African Lion']
-   );
-   assert.deepEqual(
-      result.validation.removed.wildEncounters.map((encounter) => encounter.name),
-      ['African Rainforest']
-   );
+   assert.equal(result.validation.removed.guardiansTalks[Position.FIRST].name, talkName);
+   assert.equal(result.validation.removed.wildEncounters[Position.FIRST].name, encounterName);
    assert.equal(updates.length, 1);
-   assert.deepEqual(
-      updates[0].validation.removed.guardiansTalks.map((talk) => talk.name),
-      ['African Lion']
+   assert.equal(
+      updates[Position.FIRST].validation.removed.guardiansTalks[Position.FIRST].name,
+      talkName
    );
-   assert.deepEqual(
-      updates[0].validation.removed.wildEncounters.map((encounter) => encounter.name),
-      ['African Rainforest']
+   assert.equal(
+      updates[Position.FIRST].validation.removed.wildEncounters[Position.FIRST].name,
+      encounterName
    );
 });

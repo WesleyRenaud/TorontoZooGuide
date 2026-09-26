@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateDrinkingFountainsClosedPanel_TestDefault_ExpectPanel', () => {
    const panelEl = DrinkingFountainsClosedView.createDrinkingFountainsClosedPanel();
 

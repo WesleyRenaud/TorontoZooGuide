@@ -108,7 +108,9 @@ def Test_DoGet_TestUnknownRoute_ExpectReturns404() -> None:
    missing.path = '/unknown'
    missing.errors = []
    missing.send_error = lambda code, message=None: missing.errors.append( ( code, message ) )
+
    server.HttpRequestHandler.do_GET( missing )
+
    assert missing.errors == [ ( 404, 'Not Found' ) ]
 
 

@@ -5,7 +5,9 @@ import { ItineraryPathCalculator } from '../../../scripts/map/itineraryPathCalcu
 import { ItineraryPathOverlayRenderer } from '../../../scripts/map/itineraryPathOverlayRenderer.js';
 import { ItineraryPathRenderer } from '../../../scripts/map/itineraryPathRenderer.js';
 import { ZooMapConstants } from '../../../scripts/shared/zooMapConstants.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+
 
 function _installCreateElementNS() {
    document.createElementNS = (_ns, tagName) => {
@@ -17,43 +19,58 @@ function _installCreateElementNS() {
 
 installDomTestHooks({ before: _installCreateElementNS });
 
+
 test('Test_GetSvgRoot_TestMissingMount_ExpectNull', () => {
-   assert.equal(ItineraryPathOverlayRenderer.getSvgRoot(), null);
+   const svgRoot = ItineraryPathOverlayRenderer.getSvgRoot();
+
+   assert.equal(svgRoot, null);
 });
 
-test('Test_PointToMapPx_TestPxAndPercent_ExpectMapped', () => {
-   assert.deepEqual(
-      ItineraryPathOverlayRenderer.pointToMapPx({ xPx: 12, yPx: 34 }),
-      { x: 12, y: 34 }
-   );
-   assert.deepEqual(
-      ItineraryPathOverlayRenderer.pointToMapPx({ x: 50, y: 25 }),
-      {
-         x: 50 / 100 * ZooMapConstants.ZOO_MAP_WIDTH_PX,
-         y: 25 / 100 * ZooMapConstants.ZOO_MAP_HEIGHT_PX,
-      }
-   );
-   assert.equal(ItineraryPathOverlayRenderer.pointToMapPx({}), null);
+
+test('Test_PointToMapPx_TestPixels_ExpectMapped', () => {
+   const xPx = 12;
+   const yPx = 34;
+
+   const point = ItineraryPathOverlayRenderer.pointToMapPx({ xPx, yPx });
+
+   assert.deepEqual(point, { x: xPx, y: yPx });
 });
 
-test('Test_BuildPathD_TestLegsAndPoints_ExpectDelegated', () => {
+
+test('Test_PointToMapPx_TestPercent_ExpectMapped', () => {
+   const x = 50;
+   const y = 25;
+
+   const point = ItineraryPathOverlayRenderer.pointToMapPx({ x, y });
+
+   assert.deepEqual(point, {
+      x: x / 100 * ZooMapConstants.ZOO_MAP_WIDTH_PX,
+      y: y / 100 * ZooMapConstants.ZOO_MAP_HEIGHT_PX,
+   });
+});
+
+
+test('Test_PointToMapPx_TestEmpty_ExpectNull', () => {
+   const point = ItineraryPathOverlayRenderer.pointToMapPx({});
+
+   assert.equal(point, null);
+});
+
+
+test('Test_BuildPathD_TestLegs_ExpectDelegated', () => {
    const originalFromLegs = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs;
    const originalRoutePoints = ItineraryPathCalculator.buildRouteMapPoints;
    const originalBuildD = ItineraryPathCalculator.buildItineraryPathD;
+   const legsD = 'legs-d';
 
-   ItineraryPathCalculator.buildItineraryPathDFromWalkLegs = () => 'legs-d';
+   ItineraryPathCalculator.buildItineraryPathDFromWalkLegs = () => legsD;
    ItineraryPathCalculator.buildRouteMapPoints = () => [{ x: 1, y: 1 }];
    ItineraryPathCalculator.buildItineraryPathD = () => 'points-d';
 
    try {
-      assert.equal(
-         ItineraryPathOverlayRenderer.buildPathD({ legs: [{ id: 1 }], points: [] }),
-         'legs-d'
-      );
-      assert.equal(
-         ItineraryPathOverlayRenderer.buildPathD({ legs: [], points: [{ x: 1, y: 1 }] }),
-         'points-d'
-      );
+      const pathD = ItineraryPathOverlayRenderer.buildPathD({ legs: [{ id: 1 }], points: [] });
+
+      assert.equal(pathD, legsD);
    } finally {
       ItineraryPathCalculator.buildItineraryPathDFromWalkLegs = originalFromLegs;
       ItineraryPathCalculator.buildRouteMapPoints = originalRoutePoints;
@@ -61,52 +78,99 @@ test('Test_BuildPathD_TestLegsAndPoints_ExpectDelegated', () => {
    }
 });
 
+
+test('Test_BuildPathD_TestPoints_ExpectDelegated', () => {
+   const originalFromLegs = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs;
+   const originalRoutePoints = ItineraryPathCalculator.buildRouteMapPoints;
+   const originalBuildD = ItineraryPathCalculator.buildItineraryPathD;
+   const pointsD = 'points-d';
+
+   ItineraryPathCalculator.buildItineraryPathDFromWalkLegs = () => 'legs-d';
+   ItineraryPathCalculator.buildRouteMapPoints = () => [{ x: 1, y: 1 }];
+   ItineraryPathCalculator.buildItineraryPathD = () => pointsD;
+
+   try {
+      const pathD = ItineraryPathOverlayRenderer.buildPathD({ legs: [], points: [{ x: 1, y: 1 }] });
+
+      assert.equal(pathD, pointsD);
+   } finally {
+      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs = originalFromLegs;
+      ItineraryPathCalculator.buildRouteMapPoints = originalRoutePoints;
+      ItineraryPathCalculator.buildItineraryPathD = originalBuildD;
+   }
+});
+
+
 test('Test_CreateArrowMarker_TestPlacement_ExpectGroup', () => {
+   const x = 5;
+   const y = 6;
+   const angleDeg = 45;
+
    const marker = ItineraryPathOverlayRenderer.createArrowMarker({
-      x: 5,
-      y: 6,
-      angleDeg: 45,
+      x,
+      y,
+      angleDeg,
    });
 
    assert.equal(marker.classList.contains(ItineraryPathOverlayRenderer.ARROW_CLASS), true);
-   assert.equal(marker.getAttribute('transform'), 'translate(5 6) rotate(45)');
+   assert.equal(marker.getAttribute('transform'), `translate(${x} ${y}) rotate(${angleDeg})`);
 });
+
 
 test('Test_CreatePathLayer_TestPathD_ExpectPathAndArrows', () => {
    const originalPlacements = ItineraryPathRenderer.buildPathArrowPlacements;
    const originalOffset = ItineraryPathRenderer.offsetArrowPlacement;
+   const pathD = 'M 0 0 L 10 0';
 
    ItineraryPathRenderer.buildPathArrowPlacements = () => [{ x: 1, y: 2, angleDeg: 0 }];
    ItineraryPathRenderer.offsetArrowPlacement = (placement) => placement;
 
    try {
-      const layer = ItineraryPathOverlayRenderer.createPathLayer('M 0 0 L 10 0');
+      const layer = ItineraryPathOverlayRenderer.createPathLayer(pathD);
+      const path = layer.children.at(Position.FIRST);
+      const arrows = layer.children.at(Position.SECOND);
 
       assert.equal(layer.id, ItineraryPathOverlayRenderer.ITINERARY_PATH_LAYER_ID);
       assert.equal(layer.getAttribute('aria-hidden'), 'true');
-      assert.equal(layer.children[0].classList.contains(ItineraryPathOverlayRenderer.PATH_CLASS), true);
-      assert.equal(layer.children[0].getAttribute('d'), 'M 0 0 L 10 0');
-      assert.equal(layer.children[1].classList.contains(ItineraryPathOverlayRenderer.ARROWS_CLASS), true);
-      assert.ok(layer.children[1].children.length >= 1);
+      assert.equal(path.classList.contains(ItineraryPathOverlayRenderer.PATH_CLASS), true);
+      assert.equal(path.getAttribute('d'), pathD);
+      assert.equal(arrows.classList.contains(ItineraryPathOverlayRenderer.ARROWS_CLASS), true);
+      assert.ok(arrows.children.length >= Position.SECOND);
    } finally {
       ItineraryPathRenderer.buildPathArrowPlacements = originalPlacements;
       ItineraryPathRenderer.offsetArrowPlacement = originalOffset;
    }
 });
 
+
 test('Test_AppendArrowMarkers_TestEmptyPath_ExpectNoOp', () => {
    const markersLayer = document.createElement('g');
+
    ItineraryPathOverlayRenderer.appendArrowMarkers(markersLayer, '');
-   assert.equal(markersLayer.children.length, 0);
+
+   assert.equal(markersLayer.children.length, Position.FIRST);
 });
+
 
 test('Test_RemoveItineraryPathLayer_TestExisting_ExpectRemoved', () => {
    let removed = false;
+
    ItineraryPathOverlayRenderer.removeItineraryPathLayer({
       querySelector() {
-         return { remove() { removed = true; } };
+         return {
+            remove() {
+               removed = true;
+            },
+         };
       },
    });
+
    assert.equal(removed, true);
-   ItineraryPathOverlayRenderer.removeItineraryPathLayer(null);
+});
+
+
+test('Test_RemoveItineraryPathLayer_TestMissing_ExpectNoOp', () => {
+   const remove = () => ItineraryPathOverlayRenderer.removeItineraryPathLayer(null);
+
+   assert.doesNotThrow(remove);
 });

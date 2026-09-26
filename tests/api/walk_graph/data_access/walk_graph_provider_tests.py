@@ -47,7 +47,9 @@ def Test_Fetch_TestJsonFile_ExpectParsedWalkGraph( tmp_path: Path ) -> None:
    graph_path = tmp_path / 'walk_graph.json'
    graph_path.write_text( json.dumps( TEST_GRAPH ), encoding='utf-8' )
 
-   assert WalkGraphProvider.fetch( path=graph_path ) == TEST_GRAPH
+   result = WalkGraphProvider.fetch( path=graph_path )
+
+   assert result == TEST_GRAPH
 
 
 def Test_Fetch_TestJsonFile_ExpectValidNodeAndEdgeReferences( tmp_path: Path ) -> None:

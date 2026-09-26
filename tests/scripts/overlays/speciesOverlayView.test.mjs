@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { DetailImageBuilder } from '../../../scripts/assets/detailImageBuilder.js';
 import { SpeciesOverlayView } from '../../../scripts/overlays/speciesOverlayView.js';
-import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+
 
 function _allText(node) {
    return [
@@ -11,6 +12,7 @@ function _allText(node) {
       ...(node.children ?? []).flatMap(_allText),
    ].filter(Boolean).join(' ');
 }
+
 
 function _findByClass(root, className) {
    const stack = [root];
@@ -30,33 +32,45 @@ function _findByClass(root, className) {
 
 installDomTestHooks();
 
-test('Test_BuildSpeciesContent_TestPopulatedAnimal_ExpectSections', () => {
-   const fragment = SpeciesOverlayView.buildSpeciesContent({
-      species: 'African Lion',
-      latin_name: 'Panthera leo',
-      exhibit: 'Africa Savanna',
-      identification: 'Large cat with a mane',
-   });
 
+test('Test_BuildSpeciesContent_TestPopulatedAnimal_ExpectSections', () => {
+   const species = 'African Lion';
+   const latinName = 'Panthera leo';
+   const exhibit = 'Africa Savanna';
+   const identification = 'Large cat with a mane';
+
+   const fragment = SpeciesOverlayView.buildSpeciesContent({
+      species,
+      latin_name: latinName,
+      exhibit,
+      identification,
+   });
    const image = _findByClass(fragment, 'new-animal-image');
    const speciesHeading = _findByClass(fragment, 'animal-species-name');
    const latinHeading = _findByClass(fragment, 'latin-name');
    const exhibitHeading = _findByClass(fragment, 'animal-exhibit');
 
-   assert.equal(image?.src, 'images/details/animals/africa-savanna/african-lion.png');
-   assert.equal(image?.alt, 'African Lion');
-   assert.equal(speciesHeading?.textContent, 'African Lion');
-   assert.equal(latinHeading?.textContent, 'Panthera leo');
-   assert.equal(exhibitHeading?.textContent, 'Africa Savanna');
+   assert.equal(
+      image?.src,
+      DetailImageBuilder.buildDetailImageSrcFromParts(['animals', exhibit, species])
+   );
+   assert.equal(image?.alt, species);
+   assert.equal(speciesHeading?.textContent, species);
+   assert.equal(latinHeading?.textContent, latinName);
+   assert.equal(exhibitHeading?.textContent, exhibit);
    assert.match(_allText(fragment), /Identification:/i);
-   assert.match(_allText(fragment), /Large cat with a mane/);
+   assert.match(_allText(fragment), new RegExp(identification));
 });
 
+
 test('Test_BuildSpeciesContent_TestBlankFields_ExpectOmitted', () => {
+   const species = 'African Penguin';
+   const exhibit = 'Africa Savanna';
+
    const fragment = SpeciesOverlayView.buildSpeciesContent({
-      species: 'African Penguin',
+      species,
       latin_name: '   ',
-      exhibit: 'Africa Savanna',
+      exhibit,
       identification: '',
    });
 

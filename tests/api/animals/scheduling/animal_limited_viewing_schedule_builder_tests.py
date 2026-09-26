@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from api.animals.scheduling.animal_limited_viewing_schedule_builder import AnimalLimitedViewingScheduleBuilder
+from api.app_string_provider import AppStringProvider
+from api.shared.calendar_dates import DateValues
 
 
 SPECIES = 'Western Lowland Gorilla'
@@ -41,13 +43,18 @@ def Test_Build_TestMissingMessageWithoutEndDate_ExpectOpenEndedGuestMessage() ->
       daily_end_time=DAILY_END_TIME,
       message='' )
 
-   assert SPECIES in schedule.message
-   assert '10:00 AM' in schedule.message
-   assert '2:00 PM' in schedule.message
-   assert '2026' not in schedule.message
+   assert schedule.message == AppStringProvider.format(
+      'guestStatus.animals.limitedViewingSchedule',
+      species=SPECIES,
+      dailyStartTime=DateValues.format_display_time_value( DAILY_START_TIME ),
+      dailyEndTime=DateValues.format_display_time_value( DAILY_END_TIME ) )
 
 
 def Test_Build_TestMissingMessageWithEndDate_ExpectFormattedGuestMessage() -> None:
+   date_range = DateValues.resolve_open_ended_date_range(
+      start_date=START_DATE,
+      end_date=END_DATE )
+
    schedule = AnimalLimitedViewingScheduleBuilder.build(
       species=SPECIES,
       exhibit=EXHIBIT,
@@ -57,7 +64,9 @@ def Test_Build_TestMissingMessageWithEndDate_ExpectFormattedGuestMessage() -> No
       daily_end_time=DAILY_END_TIME,
       message='' )
 
-   assert SPECIES in schedule.message
-   assert '10:00 AM' in schedule.message
-   assert '2:00 PM' in schedule.message
-   assert '2026' in schedule.message
+   assert schedule.message == AppStringProvider.format(
+      'guestStatus.animals.limitedViewingScheduleUntil',
+      species=SPECIES,
+      dailyStartTime=DateValues.format_display_time_value( DAILY_START_TIME ),
+      dailyEndTime=DateValues.format_display_time_value( DAILY_END_TIME ),
+      endDate=DateValues.format_display_date_value( date_range.end_date ) )

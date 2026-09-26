@@ -94,7 +94,6 @@ def Test_CreateOpeningScheduleConflictResolver_TestSaveReplacingOverlaps_ExpectS
       OpeningScheduleConflictSaver,
       'save_replacing_overlaps',
       save_replacing_overlaps )
-
    resolution = OpeningScheduleConflictResolverFactory.create_opening_schedule_conflict_resolver(
       fetch_conflicts=_fetch_conflicts,
       delete_conflict=_delete_conflict,
@@ -102,7 +101,9 @@ def Test_CreateOpeningScheduleConflictResolver_TestSaveReplacingOverlaps_ExpectS
       update_dates=_update_dates,
       insert_copy=_insert_copy )
 
-   assert resolution.save_replacing_overlaps( STUB_CONNECTION, schedule ) is True
+   saved = resolution.save_replacing_overlaps( STUB_CONNECTION, schedule )
+
+   assert saved is True
    assert calls == [
       ( schedule, _fetch_conflicts, _delete_conflict, _insert_or_update ),
    ]
@@ -132,7 +133,6 @@ def Test_CreateOpeningScheduleConflictResolver_TestTrimConflict_ExpectTrimmerDel
       assert insert_copy is _insert_copy
 
    monkeypatch.setattr( OpeningScheduleConflictTrimmer, 'trim', trim )
-
    resolution = OpeningScheduleConflictResolverFactory.create_opening_schedule_conflict_resolver(
       fetch_conflicts=_fetch_conflicts,
       delete_conflict=_delete_conflict,

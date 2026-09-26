@@ -19,6 +19,7 @@ import {
    timelinePillTexts,
    timelineScheduledPillTexts,
 } from '../../helpers/panelRowsTestSetup.mjs';
+import { Strings } from '../../../../scripts/strings.js';
 
 installPanelRowsTestHooks();
 
@@ -38,13 +39,14 @@ test('Test_BuildAnimalRows_TestUnscheduleHandler_ExpectAction', () => {
    });
    const button = row.querySelector('.itin-panel-item-action-btn');
 
-   assert.equal(button?.textContent, 'Unschedule');
+   assert.equal(button?.textContent, Strings.itinerary.dayPlanner.unschedule);
    button?.click();
    assert.deepEqual(unscheduleCalls, [{
       itemType: 'animals',
       key: 'African Lion||Africa Savanna',
    }]);
 });
+
 
 test('Test_UnscheduledListRows_TestAnimalsAndAttractions_ExpectScheduleAndRemove', () => {
    const scheduleCalls = [];
@@ -107,10 +109,10 @@ test('Test_UnscheduledListRows_TestAnimalsAndAttractions_ExpectScheduleAndRemove
    );
    const dayItemsSections = [...planner.querySelectorAll('.itinerary-day-items-sections')];
    const scheduledList = dayItemsSections.find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(Strings.itinerary.dayPlanner.scheduledTitle)
    ));
    const unscheduledList = dayItemsSections.find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Unscheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(Strings.itinerary.dayPlanner.unscheduledTitle)
    ));
    const scheduledButtons = scheduledList?.querySelectorAll('.itin-panel-item-action-btn') ?? [];
    const unscheduledButtons = unscheduledList?.querySelectorAll('.itin-panel-item-action-btn') ?? [];
@@ -127,13 +129,13 @@ test('Test_UnscheduledListRows_TestAnimalsAndAttractions_ExpectScheduleAndRemove
    assert.equal(unscheduledButtons.length, 4);
    assert.equal(
       unscheduledButtons.every((button) => (
-         button.textContent === 'Schedule' || button.textContent === 'Remove'
+         button.textContent === 'Schedule' || button.textContent === Strings.itinerary.dayPlanner.remove
       )),
       true
    );
    assert.deepEqual(
       [...pandaButtons].map((button) => button.textContent),
-      ['Schedule', 'Remove']
+      ['Schedule', Strings.itinerary.dayPlanner.remove]
    );
 
    [...unscheduledButtons]
@@ -152,6 +154,7 @@ test('Test_UnscheduledListRows_TestAnimalsAndAttractions_ExpectScheduleAndRemove
    assert.equal(removeCalls.length, 0);
 });
 
+
 test('Test_BuildAnimalRows_TestRemoveHandler_ExpectAction', () => {
    const removeCalls = [];
    const [row] = ItineraryPanelRowsBuilder.buildAnimalRows([
@@ -166,13 +169,14 @@ test('Test_BuildAnimalRows_TestRemoveHandler_ExpectAction', () => {
    });
    const button = row.querySelector('.itin-panel-item-action-btn');
 
-   assert.equal(button?.textContent, 'Remove');
+   assert.equal(button?.textContent, Strings.itinerary.dayPlanner.remove);
    button?.click();
    assert.deepEqual(removeCalls, [{
       itemType: 'animals',
       key: 'Giant Panda||Eurasia Wilds',
    }]);
 });
+
 
 test('Test_BuildAnimalRows_TestScheduleHandler_ExpectAction', () => {
    const scheduleCalls = [];
@@ -195,6 +199,8 @@ test('Test_BuildAnimalRows_TestScheduleHandler_ExpectAction', () => {
    assert.equal(scheduleCalls[0].row.species, 'Giant Panda');
    assert.equal(scheduleCalls[0].row.scheduleItemKind, 'animals');
 });
+
+
 test('Test_BuildAnimalRows_TestSameSpecies_ExpectSeparateViewingSpots', () => {
    const rows = ItineraryPanelRowsBuilder.buildAnimalRows([
       {
@@ -223,6 +229,7 @@ test('Test_BuildAnimalRows_TestSameSpecies_ExpectSeparateViewingSpots', () => {
       'African Rainforest Pavilion'
    );
 });
+
 
 test('Test_BuildAnimalRows_TestDuplicateExhibits_ExpectDedupedWithAlerts', () => {
    const rows = ItineraryPanelRowsBuilder.buildAnimalRows([
@@ -261,6 +268,7 @@ test('Test_BuildAnimalRows_TestDuplicateExhibits_ExpectDedupedWithAlerts', () =>
    assert.equal(textFor(rows[1], '.itin-panel-meta'), 'Indo-Malaya Outdoor');
 });
 
+
 test('Test_AnimalSection_TestDeduplicatedRows_ExpectMatchingCount', () => {
    const [animalSection] = SectionConfigs.buildSectionConfigs({
       animals: [
@@ -284,6 +292,7 @@ test('Test_AnimalSection_TestDeduplicatedRows_ExpectMatchingCount', () => {
    assert.equal(animalSection.count, 2);
    assert.equal(animalSection.children.length, 2);
 });
+
 
 test('Test_AttractionSection_TestAddedAsAttractionTransportation_ExpectIncluded', () => {
    const [attractionSection] = SectionConfigs.buildSectionConfigs({
@@ -313,6 +322,7 @@ test('Test_AttractionSection_TestAddedAsAttractionTransportation_ExpectIncluded'
       /Main Station → Wildlife Health/
    );
 });
+
 
 test('Test_TransportationSection_TestPureTransportations_ExpectNoScheduleActions', () => {
    const scheduleCalls = [];
@@ -354,7 +364,7 @@ test('Test_TransportationSection_TestPureTransportations_ExpectNoScheduleActions
    ];
    assert.deepEqual(
       buttons.map((button) => button.textContent),
-      ['Remove']
+      [Strings.itinerary.dayPlanner.remove]
    );
 
    buttons[0]?.click();
@@ -364,6 +374,7 @@ test('Test_TransportationSection_TestPureTransportations_ExpectNoScheduleActions
       key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
    }]);
 });
+
 
 test('Test_AttractionSection_TestUnscheduledRoundTrip_ExpectMainStationLine', () => {
    const [attractionSection] = SectionConfigs.buildSectionConfigs({
@@ -385,6 +396,7 @@ test('Test_AttractionSection_TestUnscheduledRoundTrip_ExpectMainStationLine', ()
       /Main Zoomobile Station \(round trip\)/
    );
 });
+
 
 test('Test_TransportationStationLine_TestRoundTrip_ExpectMarked', () => {
    const [attractionSection] = SectionConfigs.buildSectionConfigs({
@@ -419,6 +431,7 @@ test('Test_TransportationStationLine_TestRoundTrip_ExpectMarked', () => {
    );
 });
 
+
 test('Test_RemovedItemsPopup_TestArrivalAdjustments_ExpectRendered', () => {
    const mount = document.createElement('div');
 
@@ -450,6 +463,7 @@ test('Test_RemovedItemsPopup_TestArrivalAdjustments_ExpectRendered', () => {
       'arrival adjustments should not render an image placeholder'
    );
 });
+
 
 test('Test_RemovedItemsPopup_TestDepartureAdjustments_ExpectRendered', () => {
    const mount = document.createElement('div');
@@ -483,6 +497,7 @@ test('Test_RemovedItemsPopup_TestDepartureAdjustments_ExpectRendered', () => {
    );
 });
 
+
 test('Test_RemovedItemsPopup_TestUnscheduledItems_ExpectRendered', () => {
    const mount = document.createElement('div');
 
@@ -509,11 +524,12 @@ test('Test_RemovedItemsPopup_TestUnscheduledItems_ExpectRendered', () => {
 
    const text = allTextFor(mount);
 
-   assert.match(text, /Unscheduled Items/);
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.unscheduledTitle));
    assert.match(text, /still on your itinerary/);
    assert.match(text, /African Lion/);
    assert.match(text, /Conservation Carousel/);
 });
+
 
 test('Test_AnimalRows_TestScheduledStartTimes_ExpectOmitted', () => {
    const [animalRow] = ItineraryPanelRowsBuilder.buildAnimalRows([
@@ -543,6 +559,7 @@ test('Test_AnimalRows_TestScheduledStartTimes_ExpectOmitted', () => {
    );
 });
 
+
 test('Test_BuildAttractionRows_TestSeededMetadata_ExpectRemovalReason', () => {
    const [row] = ItineraryPanelRowsBuilder.buildAttractionRows([
       {
@@ -570,6 +587,7 @@ test('Test_BuildAttractionRows_TestSeededMetadata_ExpectRemovalReason', () => {
       'Not available on this date: The Conservation Carousel is temporarily closed.'
    );
 });
+
 
 test('Test_BuildGuardiansAndWildRows_TestScheduleMetadata_ExpectRendered', () => {
    const [talkRow] = ItineraryPanelRowsBuilder.buildGuardiansRows([
@@ -622,6 +640,7 @@ test('Test_BuildGuardiansAndWildRows_TestScheduleMetadata_ExpectRendered', () =>
    );
 });
 
+
 test('Test_BuildWildRows_TestUrlPresent_ExpectLinkedTitle', () => {
    const [wildRow] = ItineraryPanelRowsBuilder.buildWildRows([
       {
@@ -645,6 +664,7 @@ test('Test_BuildWildRows_TestUrlPresent_ExpectLinkedTitle', () => {
    );
    assert.equal(wildRow.querySelector('.itin-panel-link'), null);
 });
+
 
 test('Test_ScheduledItemRowBuilders_TestStartTime_ExpectSorted', () => {
    const animalRows = ItineraryPanelRowsBuilder.buildAnimalRows([
@@ -716,6 +736,7 @@ test('Test_ScheduledItemRowBuilders_TestStartTime_ExpectSorted', () => {
    );
 });
 
+
 test('Test_BuildAnimalRows_TestAlreadyScheduled_ExpectOmitSchedule', () => {
    const scheduleCalls = [];
    const [row] = ItineraryPanelRowsBuilder.buildAnimalRows([
@@ -738,6 +759,7 @@ test('Test_BuildAnimalRows_TestAlreadyScheduled_ExpectOmitSchedule', () => {
    assert.equal(scheduleCalls.length, 0);
 });
 
+
 test('Test_BuildAnimalRows_TestUnscheduled_ExpectOmitUnschedule', () => {
    const [row] = ItineraryPanelRowsBuilder.buildAnimalRows([
       {
@@ -750,8 +772,9 @@ test('Test_BuildAnimalRows_TestUnscheduled_ExpectOmitUnschedule', () => {
    const buttonLabels = [...row.querySelectorAll('.itin-panel-item-action-btn')]
       .map((button) => button.textContent);
 
-   assert.equal(buttonLabels.includes('Unschedule'), false);
+   assert.equal(buttonLabels.includes(Strings.itinerary.dayPlanner.unschedule), false);
 });
+
 
 test('Test_BuildAttractionRows_TestBlankId_ExpectOmitActions', () => {
    const [row] = ItineraryPanelRowsBuilder.buildAttractionRows([
@@ -767,6 +790,7 @@ test('Test_BuildAttractionRows_TestBlankId_ExpectOmitActions', () => {
 
    assert.equal(row.querySelectorAll('.itin-panel-item-action-btn').length, 0);
 });
+
 
 test('Test_BuildGuardiansRows_TestBlankName_ExpectOmitRemove', () => {
    const removeCalls = [];
@@ -784,6 +808,7 @@ test('Test_BuildGuardiansRows_TestBlankName_ExpectOmitRemove', () => {
    assert.equal(row.querySelectorAll('.itin-panel-item-action-btn').length, 0);
    assert.equal(removeCalls.length, 0);
 });
+
 
 test('Test_BuildGuardiansRows_TestLinkedAnimal_ExpectConditionalLink', () => {
    const [linkedRow, plainRow] = ItineraryPanelRowsBuilder.buildGuardiansRows([
@@ -824,6 +849,7 @@ test('Test_BuildGuardiansRows_TestLinkedAnimal_ExpectConditionalLink', () => {
    );
 });
 
+
 test('Test_BuildAnimalRows_TestInvalidAssetPath_ExpectOmitImage', () => {
    const [row] = ItineraryPanelRowsBuilder.buildAnimalRows([
       {
@@ -834,6 +860,7 @@ test('Test_BuildAnimalRows_TestInvalidAssetPath_ExpectOmitImage', () => {
 
    assert.equal(imageSrcFor(row), '');
 });
+
 
 test('Test_BuildAttractionRows_TestInfoLink_ExpectLinkedTitle', () => {
    const opened = [];

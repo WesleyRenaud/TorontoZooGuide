@@ -2,15 +2,13 @@ import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
 import { ScheduleItemResults } from '../../../../scripts/itinerary/panel/scheduleItemResults.js';
+import { ScheduleItemKeySeparator } from '../../../../scripts/itinerary/scheduleItemKeySeparator.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import {
    createDomNode,
    installDocument,
    teardownDocument,
 } from '../../helpers/domMock.mjs';
-
-afterEach(() => {
-   teardownDocument();
-});
 
 function _findSelectButton(row) {
    return row.children.find((child) => (
@@ -35,7 +33,9 @@ function _renderRows(resultsEl, rows, selection) {
       rows,
       emptyText: 'No matching items',
       getId: (row) => (
-         row.species ? `${row.species}||${row.exhibit}` : row.name
+         row.species
+            ? [row.species, row.exhibit].join(ScheduleItemKeySeparator.VALUE)
+            : row.name
       ),
       selectedRowId: selection.getSelectedRowId(),
       renderRowLeft: () => createDomNode('div', 'row-left'),
@@ -46,83 +46,97 @@ function _renderRows(resultsEl, rows, selection) {
    });
 }
 
+afterEach(() => {
+   teardownDocument();
+});
+
+
 test('Test_RenderScheduleItemSearchResults_TestNoRows_ExpectEmptyState', () => {
    installDocument();
-
+   const emptyText = 'No matching items';
    const resultsEl = createDomNode('div', 'schedule-item-results');
 
    ScheduleItemResults.renderScheduleItemSearchResults({
       resultsEl,
       rows: [],
-      emptyText: 'No matching items',
+      emptyText,
       getId: () => 'id',
       renderRowLeft: () => createDomNode('div'),
       onSelectRow: () => {},
    });
 
-   assert.equal(resultsEl.children[0].textContent, 'No matching items');
+   assert.equal(resultsEl.children.at(Position.FIRST).textContent, emptyText);
 });
+
 
 test('Test_RenderScheduleItemSearchResults_TestMissingResultsEl_ExpectNoOp', () => {
    assert.doesNotThrow(() => {
       ScheduleItemResults.renderScheduleItemSearchResults({
          resultsEl: null,
-         rows: [{ name: 'Carousel' }],
+         rows: [{ name: 'Conservation Carousel' }],
       });
    });
 });
 
+
 test('Test_RenderScheduleItemSearchResults_TestSelectedRow_ExpectMarked', () => {
    installDocument();
-
+   const species = 'Amur Tiger';
+   const exhibit = 'Eurasia Wilds';
    const resultsEl = createDomNode('div', 'schedule-item-results');
-   const rows = [{ species: 'Tiger', exhibit: 'Savanna' }];
+   const rows = [{ species, exhibit }];
    const selection = _createSingleSelectHandler();
 
    _renderRows(resultsEl, rows, selection);
-   resultsEl.children[0].listeners.click();
+   resultsEl.children.at(Position.FIRST).listeners.click();
 
-   const activeRow = resultsEl.children[0];
-   assert.equal(selection.getSelectedRowId(), 'Tiger||Savanna');
-   assert.equal(activeRow.getAttribute('aria-pressed'), 'true');
+   const activeRow = resultsEl.children.at(Position.FIRST);
+
+   assert.equal(
+      selection.getSelectedRowId(),
+      [species, exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
+   assert.equal(activeRow.getAttribute('aria-pressed'), String(true));
    assert.match(_findSelectButton(activeRow).className, /is-added/);
 });
 
+
 test('Test_RenderScheduleItemSearchResults_TestReselectSame_ExpectCleared', () => {
    installDocument();
-
+   const species = 'Amur Tiger';
+   const exhibit = 'Eurasia Wilds';
    const resultsEl = createDomNode('div', 'schedule-item-results');
-   const rows = [{ species: 'Tiger', exhibit: 'Savanna' }];
+   const rows = [{ species, exhibit }];
    const selection = _createSingleSelectHandler();
 
    _renderRows(resultsEl, rows, selection);
-   resultsEl.children[0].listeners.click();
-   resultsEl.children[0].listeners.click();
+   resultsEl.children.at(Position.FIRST).listeners.click();
+   resultsEl.children.at(Position.FIRST).listeners.click();
 
    assert.equal(selection.getSelectedRowId(), '');
-   assert.equal(resultsEl.children[0].getAttribute('aria-pressed'), 'false');
+   assert.equal(resultsEl.children.at(Position.FIRST).getAttribute('aria-pressed'), String(false));
 });
+
 
 test('Test_RenderScheduleItemSearchResults_TestKeyboard_ExpectSelected', () => {
    installDocument();
-
+   const name = 'Conservation Carousel';
    const resultsEl = createDomNode('div', 'schedule-item-results');
    const selection = _createSingleSelectHandler();
 
    ScheduleItemResults.renderScheduleItemSearchResults({
       resultsEl,
-      rows: [{ name: 'Carousel' }],
+      rows: [{ name }],
       emptyText: 'No matching items',
-      getId: () => 'Carousel',
+      getId: () => name,
       selectedRowId: selection.getSelectedRowId(),
       renderRowLeft: () => createDomNode('div'),
       onSelectRow: selection.onSelectRow,
    });
-
-   resultsEl.children[0].listeners.keydown({
+   resultsEl.children.at(Position.FIRST).listeners.keydown({
       key: 'Enter',
       preventDefault() {},
    });
 
-   assert.equal(selection.getSelectedRowId(), 'Carousel');
+   assert.equal(selection.getSelectedRowId(), name);
 });

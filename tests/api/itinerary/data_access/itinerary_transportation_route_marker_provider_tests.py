@@ -34,59 +34,78 @@ def route_marker_conn() -> sqlite3.Connection:
 
 def Test_InsertItineraryTransportationRouteMarkers_TestSequences_ExpectOrderedRecords(
       route_marker_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   first_marker_id = 'm-a'
+   second_marker_id = 'm-b'
+   third_marker_id = 'm-c'
+   route_marker_sequences = [
+      [ first_marker_id, second_marker_id ],
+      [ third_marker_id ],
+   ]
    cur = route_marker_conn.cursor()
    ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      route_marker_sequences=[
-         [ 'm-a', 'm-b' ],
-         [ 'm-c' ],
-      ] )
+      transportation=transportation,
+      added_as_attraction=added_as_attraction,
+      route_marker_sequences=route_marker_sequences )
    route_marker_conn.commit()
    cur.close()
 
    markers = ItineraryTransportationRouteMarkerProvider.fetch_itinerary_transportation_route_markers(
       route_marker_conn )
 
-   assert len( markers ) == 3
-   assert markers[ Position.FIRST ].sequence == 0
-   assert markers[ Position.FIRST ].marker_order == 0
-   assert markers[ Position.FIRST ].marker_id == 'm-a'
-   assert markers[ Position.THIRD ].sequence == 1
-   assert markers[ Position.THIRD ].marker_id == 'm-c'
+   assert len( markers ) == sum(
+      len( sequence ) for sequence in route_marker_sequences )
+   assert markers[ Position.FIRST ].sequence == Position.FIRST
+   assert markers[ Position.FIRST ].marker_order == Position.FIRST
+   assert markers[ Position.FIRST ].marker_id == first_marker_id
+   assert markers[ Position.THIRD ].sequence == Position.SECOND
+   assert markers[ Position.THIRD ].marker_id == third_marker_id
 
 
 def Test_DeleteItineraryTransportationRouteMarkers_TestOwnedRows_ExpectRemoved(
       route_marker_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   route_marker_sequences = [ [ 'm-a' ] ]
    cur = route_marker_conn.cursor()
    ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      route_marker_sequences=[ [ 'm-a' ] ] )
+      transportation=transportation,
+      added_as_attraction=added_as_attraction,
+      route_marker_sequences=route_marker_sequences )
+
    ItineraryTransportationRouteMarkerProvider.delete_itinerary_transportation_route_markers(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True )
+      transportation=transportation,
+      added_as_attraction=added_as_attraction )
    route_marker_conn.commit()
    cur.close()
+   markers = ItineraryTransportationRouteMarkerProvider.fetch_itinerary_transportation_route_markers(
+      route_marker_conn )
 
-   assert ItineraryTransportationRouteMarkerProvider.fetch_itinerary_transportation_route_markers(
-      route_marker_conn ) == []
+   assert markers == []
 
 
 def Test_ClearItineraryTransportationRouteMarkers_TestOwnedRows_ExpectEmptyTable(
       route_marker_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   route_marker_sequences = [ [ 'm-a' ] ]
    cur = route_marker_conn.cursor()
    ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      route_marker_sequences=[ [ 'm-a' ] ] )
-   ItineraryTransportationRouteMarkerProvider.clear_itinerary_transportation_route_markers( cur )
+      transportation=transportation,
+      added_as_attraction=added_as_attraction,
+      route_marker_sequences=route_marker_sequences )
+
+   ItineraryTransportationRouteMarkerProvider.clear_itinerary_transportation_route_markers(
+      cur )
    route_marker_conn.commit()
    cur.close()
+   remaining_count = route_marker_conn.execute(
+      'SELECT COUNT(*) FROM ItineraryTransportationRouteMarker;' ).fetchone()[
+      Position.FIRST ]
 
-   assert route_marker_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryTransportationRouteMarker;' ).fetchone()[ Position.FIRST ] == 0
+   assert remaining_count == 0

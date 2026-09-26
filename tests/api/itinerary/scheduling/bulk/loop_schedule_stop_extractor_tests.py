@@ -27,27 +27,25 @@ ZOOMOBILE_ATTRACTION = ItineraryTransportationRecord(
    new_likelihood=100,
    added_as_attraction=True,
 )
+MIXED_STOPS = [ LION, SPLASH, ZOOMOBILE_ATTRACTION ]
 
 
 def Test_AttractionsFrom_TestMixedStops_ExpectAttractionRowsOnly() -> None:
-   attractions = LoopScheduleStopExtractor.attractions_from(
-      [ LION, SPLASH, ZOOMOBILE_ATTRACTION ] )
+   attractions = LoopScheduleStopExtractor.attractions_from( MIXED_STOPS )
 
-   assert len( attractions ) == 1
-   assert attractions[ Position.FIRST ].attraction == SPLASH_ISLAND
+   assert attractions == [ SPLASH ]
+   assert attractions[ Position.FIRST ].attraction == SPLASH.attraction
 
 
 def Test_AnimalsFrom_TestMixedStops_ExpectAnimalRowsOnly() -> None:
-   animals = LoopScheduleStopExtractor.animals_from(
-      [ LION, SPLASH, ZOOMOBILE_ATTRACTION ] )
+   animals = LoopScheduleStopExtractor.animals_from( MIXED_STOPS )
 
-   assert len( animals ) == 1
-   assert animals[ Position.FIRST ].species == 'African Lion'
+   assert animals == [ LION ]
+   assert animals[ Position.FIRST ].species == LION.species
 
 
 def Test_TransportationsFrom_TestMixedStops_ExpectTransportationRowsOnly() -> None:
-   transportations = LoopScheduleStopExtractor.transportations_from(
-      [ LION, SPLASH, ZOOMOBILE_ATTRACTION ] )
+   transportations = LoopScheduleStopExtractor.transportations_from( MIXED_STOPS )
 
-   assert len( transportations ) == 1
-   assert transportations[ Position.FIRST ].transportation == TransportationName.ZOOMOBILE
+   assert transportations == [ ZOOMOBILE_ATTRACTION ]
+   assert transportations[ Position.FIRST ].transportation == ZOOMOBILE_ATTRACTION.transportation

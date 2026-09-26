@@ -22,6 +22,7 @@ from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
 from api.itinerary.scheduling.unscheduling.guest_schedule_shift_applier import GuestScheduleShiftApplier
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryEventType, Position
 from api.shared.enums.transportation_name import TransportationName
 
@@ -391,7 +392,9 @@ def Test_ShiftedScheduleTimes_TestNegativeShift_ExpectEarlierBlock() -> None:
 
 
 def Test_ShiftedScheduleTimes_TestInvalidShift_ExpectNone() -> None:
-   assert GuestScheduleShiftApplier.shifted_schedule_times( '10:00 AM', '10:15 AM', -11 * 3600 ) is None
+   result = GuestScheduleShiftApplier.shifted_schedule_times( '10:00 AM', '10:15 AM', -DateValues.time_value_in_seconds( '11:00 AM' ) )
+
+   assert result is None
 
 
 def Test_ResolveUnscheduledItemTimeBlock_TestAnimal_ExpectAnimalBlock() -> None:
@@ -421,8 +424,8 @@ def Test_ResolveUnscheduledItemTimeBlock_TestAnimal_ExpectAnimalBlock() -> None:
    )
 
    assert block == TimeBlock(
-      start_seconds=10 * 3600 + 15 * 60,
-      end_seconds=10 * 3600 + 30 * 60,
+      start_seconds=DateValues.time_value_in_seconds( '10:15 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ),
    )
 
 
@@ -451,8 +454,8 @@ def Test_ResolveUnscheduledItemTimeBlock_TestAttraction_ExpectAttractionBlock() 
    )
 
    assert block == TimeBlock(
-      start_seconds=13 * 3600,
-      end_seconds=13 * 3600 + 15 * 60,
+      start_seconds=DateValues.time_value_in_seconds( '1:00 PM' ),
+      end_seconds=DateValues.time_value_in_seconds( '1:15 PM' ),
    )
 
 
@@ -480,8 +483,8 @@ def Test_ResolveUnscheduledItemTimeBlock_TestEvent_ExpectEventBlock() -> None:
    )
 
    assert block == TimeBlock(
-      start_seconds=12 * 3600,
-      end_seconds=12 * 3600 + 30 * 60,
+      start_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+      end_seconds=DateValues.time_value_in_seconds( '12:30 PM' ),
    )
 
 
@@ -623,11 +626,11 @@ def Test_ShiftItemsAfterUnschedule_TestWovenTalkRemoved_ExpectLaterAnimalShifted
    GuestScheduleShiftApplier.shift_items_after_unschedule(
       shift_applier_conn,
       cur,
-      anchor_end_seconds=11 * 3600 + 30 * 60,
+      anchor_end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
       shift_seconds=-22 * 60,
       freed_block=TimeBlock(
-         start_seconds=11 * 3600,
-         end_seconds=11 * 3600 + 30 * 60,
+         start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
       ) )
    shift_applier_conn.commit()
    cur.close()
@@ -716,13 +719,15 @@ def Test_ResolveUnscheduledItemTimeBlock_TestUnknownKey_ExpectNone() -> None:
       wild_encounter_rows=(),
    )
 
-   assert GuestScheduleShiftApplier.resolve_unscheduled_item_time_block(
+   result = GuestScheduleShiftApplier.resolve_unscheduled_item_time_block(
       saved_itinerary,
       AnimalScheduleItemKey(
          species='Missing Animal',
          exhibit='Africa Savanna',
       ),
-   ) is None
+   )
+
+   assert result is None
 
 
 def Test_ApplyForUnschedule_TestUnknownKey_ExpectNoop(
@@ -786,7 +791,7 @@ def Test_ShiftItemsAfterUnschedule_TestZeroShiftSeconds_ExpectNoop(
    GuestScheduleShiftApplier.shift_items_after_unschedule(
       shift_applier_conn,
       cur,
-      anchor_end_seconds=11 * 3600 + 30 * 60,
+      anchor_end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
       shift_seconds=0 )
    shift_applier_conn.commit()
    cur.close()
@@ -833,11 +838,11 @@ def Test_ShiftItemsAfterUnschedule_TestOverlapWithTalk_ExpectNoShift(
    GuestScheduleShiftApplier.shift_items_after_unschedule(
       shift_applier_conn,
       cur,
-      anchor_end_seconds=12 * 3600 + 30 * 60,
+      anchor_end_seconds=DateValues.time_value_in_seconds( '12:30 PM' ),
       shift_seconds=-20 * 60,
       freed_block=TimeBlock(
-         start_seconds=12 * 3600,
-         end_seconds=12 * 3600 + 20 * 60,
+         start_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+         end_seconds=DateValues.time_value_in_seconds( '12:20 PM' ),
       ) )
    shift_applier_conn.commit()
    cur.close()
@@ -874,7 +879,7 @@ def Test_ShiftItemsAfterUnschedule_TestLaterAttraction_ExpectShiftedEarlier(
    GuestScheduleShiftApplier.shift_items_after_unschedule(
       shift_applier_conn,
       cur,
-      anchor_end_seconds=11 * 3600 + 30 * 60,
+      anchor_end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
       shift_seconds=-15 * 60 )
    shift_applier_conn.commit()
    cur.close()
@@ -927,7 +932,7 @@ def Test_ShiftItemsAfterUnschedule_TestLunchShiftedArrivalDepartureUntouched_Exp
    GuestScheduleShiftApplier.shift_items_after_unschedule(
       shift_applier_conn,
       cur,
-      anchor_end_seconds=12 * 3600 + 30 * 60,
+      anchor_end_seconds=DateValues.time_value_in_seconds( '12:30 PM' ),
       shift_seconds=-20 * 60 )
    shift_applier_conn.commit()
    cur.close()
@@ -975,11 +980,11 @@ def Test_ShiftItemsAfterUnschedule_TestWildEncounterOccupied_ExpectNoShift(
    GuestScheduleShiftApplier.shift_items_after_unschedule(
       shift_applier_conn,
       cur,
-      anchor_end_seconds=13 * 3600,
+      anchor_end_seconds=DateValues.time_value_in_seconds( '1:00 PM' ),
       shift_seconds=-20 * 60,
       freed_block=TimeBlock(
-         start_seconds=12 * 3600 + 40 * 60,
-         end_seconds=13 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '12:40 PM' ),
+         end_seconds=DateValues.time_value_in_seconds( '1:00 PM' ),
       ) )
    shift_applier_conn.commit()
    cur.close()
@@ -1029,7 +1034,7 @@ def Test_ShiftItemsAfterUnschedule_TestCoveredByTalk_ExpectNotShifted(
    GuestScheduleShiftApplier.shift_items_after_unschedule(
       shift_applier_conn,
       cur,
-      anchor_end_seconds=11 * 3600 + 30 * 60,
+      anchor_end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
       shift_seconds=-10 * 60 )
    shift_applier_conn.commit()
    cur.close()
@@ -1058,7 +1063,9 @@ def Test_ShiftItemsAfterUnschedule_TestCoveredByTalk_ExpectNotShifted(
 
 
 def Test_ShiftedScheduleTimes_TestInvalidSourceTimes_ExpectNone() -> None:
-   assert GuestScheduleShiftApplier.shifted_schedule_times( None, None, -60 ) is None
+   result = GuestScheduleShiftApplier.shifted_schedule_times( None, None, -60 )
+
+   assert result is None
 
 
 def Test_CollectFixedActivityBlocks_TestDeletedRows_ExpectSkipped(
@@ -1100,17 +1107,19 @@ def Test_CollectFixedActivityBlocks_TestDeletedRows_ExpectSkipped(
       freed_block=None )
 
    assert blocks == [
-      TimeBlock( start_seconds=11 * 3600, end_seconds=11 * 3600 + 30 * 60 ),
-      TimeBlock( start_seconds=14 * 3600, end_seconds=14 * 3600 + 20 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ) ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '2:00 PM' ), end_seconds=DateValues.time_value_in_seconds( '2:20 PM' ) ),
    ]
 
 
 def Test_ShiftedBlockOverlapsOccupied_TestInvalidShift_ExpectTrue() -> None:
-   assert GuestScheduleShiftApplier._shifted_block_overlaps_occupied(
+   result = GuestScheduleShiftApplier._shifted_block_overlaps_occupied(
       '10:00 AM',
       '10:15 AM',
-      -11 * 3600,
+      -DateValues.time_value_in_seconds( '11:00 AM' ),
       [] )
+
+   assert result
 
 
 def Test_GuestShiftWouldOverlapFixedActivity_TestAttractionOverlap_ExpectTrue(
@@ -1141,14 +1150,16 @@ def Test_GuestShiftWouldOverlapFixedActivity_TestAttractionOverlap_ExpectTrue(
       lambda conn: [] )
 
    occupied = [
-      TimeBlock( start_seconds=10 * 3600 + 45 * 60, end_seconds=11 * 3600 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:45 AM' ), end_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) ),
    ]
 
-   assert GuestScheduleShiftApplier._guest_shift_would_overlap_fixed_activity(
+   result = GuestScheduleShiftApplier._guest_shift_would_overlap_fixed_activity(
       object(),
       anchor_end_time='10:30 AM',
       delta_seconds=-15 * 60,
       occupied_blocks=occupied )
+
+   assert result
 
 
 def Test_GuestShiftWouldOverlapFixedActivity_TestTransportationOverlap_ExpectTrue(
@@ -1180,14 +1191,16 @@ def Test_GuestShiftWouldOverlapFixedActivity_TestTransportationOverlap_ExpectTru
       lambda conn: [] )
 
    occupied = [
-      TimeBlock( start_seconds=10 * 3600 + 45 * 60, end_seconds=11 * 3600 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:45 AM' ), end_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) ),
    ]
 
-   assert GuestScheduleShiftApplier._guest_shift_would_overlap_fixed_activity(
+   result = GuestScheduleShiftApplier._guest_shift_would_overlap_fixed_activity(
       object(),
       anchor_end_time='10:30 AM',
       delta_seconds=-15 * 60,
       occupied_blocks=occupied )
+
+   assert result
 
 
 def Test_GuestShiftWouldOverlapFixedActivity_TestEventOverlap_ExpectTrue(
@@ -1216,14 +1229,16 @@ def Test_GuestShiftWouldOverlapFixedActivity_TestEventOverlap_ExpectTrue(
       ] )
 
    occupied = [
-      TimeBlock( start_seconds=10 * 3600 + 45 * 60, end_seconds=11 * 3600 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:45 AM' ), end_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) ),
    ]
 
-   assert GuestScheduleShiftApplier._guest_shift_would_overlap_fixed_activity(
+   result = GuestScheduleShiftApplier._guest_shift_would_overlap_fixed_activity(
       object(),
       anchor_end_time='10:30 AM',
       delta_seconds=-15 * 60,
       occupied_blocks=occupied )
+
+   assert result
 
 
 def Test_ShiftGuestScheduledAnimalRows_TestInvalidShiftTimes_ExpectSkip(
@@ -1421,11 +1436,13 @@ def Test_ShiftedBlockOverlapsOccupied_TestUnparseableShiftedTimes_ExpectTrue(
       'from_schedule_times',
       lambda start_time, end_time: None )
 
-   assert GuestScheduleShiftApplier._shifted_block_overlaps_occupied(
+   result = GuestScheduleShiftApplier._shifted_block_overlaps_occupied(
       '11:00 AM',
       '11:30 AM',
       -15 * 60,
-      [] ) is True
+      [] )
+
+   assert result is True
 
 
 def Test_GuestShiftWouldOverlapFixedActivity_TestUnscheduledAndBeforeAnchor_ExpectFalse(
@@ -1489,11 +1506,13 @@ def Test_GuestShiftWouldOverlapFixedActivity_TestUnscheduledAndBeforeAnchor_Expe
             end_time='9:30 AM' ),
       ] )
 
-   assert GuestScheduleShiftApplier._guest_shift_would_overlap_fixed_activity(
+   result = GuestScheduleShiftApplier._guest_shift_would_overlap_fixed_activity(
       object(),
       anchor_end_time='10:30 AM',
       delta_seconds=-15 * 60,
-      occupied_blocks=[] ) is False
+      occupied_blocks=[] )
+
+   assert result is False
 
 
 def Test_ShiftGuestScheduledAttractionRows_TestInvalidShiftTimes_ExpectSkip(

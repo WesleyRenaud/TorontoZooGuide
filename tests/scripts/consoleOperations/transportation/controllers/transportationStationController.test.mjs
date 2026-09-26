@@ -1,40 +1,87 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { TransportationStationController } from '../../../../../scripts/consoleOperations/transportation/controllers/transportationStationController.js';
+import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { EntityClosedFormController } from '../../../../../scripts/consoleOperations/forms/entityClosedFormController.js';
 import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
-import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
+import { TransportationStationController } from '../../../../../scripts/consoleOperations/transportation/controllers/transportationStationController.js';
 import { Strings } from '../../../../../scripts/strings.js';
 
-test('Test_CreateTransportationStationClosedController_TestWiring_ExpectClosedForm', async () => {
+
+function _captureClosedForm() {
    const original = EntityClosedFormController.createEntityClosedFormController;
    let captured;
    EntityClosedFormController.createEntityClosedFormController = (options) => {
       captured = options;
       return { created: true };
    };
+   return {
+      getCaptured: () => captured,
+      restore: () => {
+         EntityClosedFormController.createEntityClosedFormController = original;
+      },
+   };
+}
+
+
+test('Test_CreateTransportationStationClosedController_TestWiring_ExpectLoadOptions', () => {
+   const capture = _captureClosedForm();
 
    try {
       TransportationStationController.createTransportationStationClosedController({
          transportationStationEl: {},
       });
-      assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadTransportationStations);
-      const originalSet = ConsoleOperationsClient.setTransportationStationClosed;
-      ConsoleOperationsClient.setTransportationStationClosed = async (payload) => payload;
-      try {
-         assert.deepEqual(
-            await captured.submitClosedStatus({ entity: 'Hub', startDate: '', endDate: '', message: 'm' }),
-            { transportationStation: 'Hub', startDate: null, endDate: null, message: 'm' }
-         );
-         assert.equal(
-            captured.successMessage({ transportation_station: 'Hub' }),
-            Strings.status.closed('Hub')
-         );
-      } finally {
-         ConsoleOperationsClient.setTransportationStationClosed = originalSet;
-      }
+
+      assert.equal(capture.getCaptured().loadOptions, ConsoleOptionsLoader.loadTransportationStations);
    } finally {
-      EntityClosedFormController.createEntityClosedFormController = original;
+      capture.restore();
+   }
+});
+
+
+test('Test_CreateTransportationStationClosedController_TestSubmitClosedStatus_ExpectPayload', async () => {
+   const station = 'Hub';
+   const message = 'm';
+   const capture = _captureClosedForm();
+   const originalSet = ConsoleOperationsClient.setTransportationStationClosed;
+   ConsoleOperationsClient.setTransportationStationClosed = async (payload) => payload;
+
+   try {
+      TransportationStationController.createTransportationStationClosedController({
+         transportationStationEl: {},
+      });
+      const payload = await capture.getCaptured().submitClosedStatus({
+         entity: station,
+         startDate: '',
+         endDate: '',
+         message,
+      });
+
+      assert.deepEqual(payload, {
+         transportationStation: station,
+         startDate: null,
+         endDate: null,
+         message,
+      });
+   } finally {
+      ConsoleOperationsClient.setTransportationStationClosed = originalSet;
+      capture.restore();
+   }
+});
+
+
+test('Test_CreateTransportationStationClosedController_TestSuccessMessage_ExpectCatalogMessage', () => {
+   const station = 'Hub';
+   const capture = _captureClosedForm();
+
+   try {
+      TransportationStationController.createTransportationStationClosedController({
+         transportationStationEl: {},
+      });
+      const status = capture.getCaptured().successMessage({ transportation_station: station });
+
+      assert.equal(status, Strings.status.closed(station));
+   } finally {
+      capture.restore();
    }
 });

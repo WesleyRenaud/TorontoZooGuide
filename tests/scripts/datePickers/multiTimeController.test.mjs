@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { MultiTimeController } from '../../../scripts/datePickers/multiTimeController.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
+
 
 function _createMockPickerInstance(inputEl, overrides = {}) {
    return {
@@ -31,6 +33,7 @@ function _createMockPickerInstance(inputEl, overrides = {}) {
    };
 }
 
+
 function _createFlatpickrSpy() {
    const calls = [];
 
@@ -43,6 +46,7 @@ function _createFlatpickrSpy() {
    };
 }
 
+
 function _dispatchKeydown(inputEl, key) {
    inputEl.listeners.keydown?.({
       key,
@@ -51,37 +55,48 @@ function _dispatchKeydown(inputEl, key) {
    });
 }
 
-test('Test_InitMultiTimePicker_TestMissingInput_ExpectNull', () => {
-   assert.equal(MultiTimeController.initMultiTimePicker(null, {}), null);
-});
 
 test('Test_InitMultiTimePicker_TestMissingInput_ExpectNull', () => {
-   assert.equal(MultiTimeController.initMultiTimePicker(null), null);
+   const inputEl = null;
+
+   const picker = MultiTimeController.initMultiTimePicker(inputEl, {});
+
+   assert.equal(picker, null);
 });
+
+
+test('Test_InitMultiTimePicker_TestMissingOptions_ExpectNull', () => {
+   const inputEl = null;
+
+   const picker = MultiTimeController.initMultiTimePicker(inputEl);
+
+   assert.equal(picker, null);
+});
+
 
 test('Test_InitMultiTimePicker_TestPickerCloses_ExpectCommit', async () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];
+   const time = '1:00 PM';
    const { calls, initFlatpickrFn } = _createFlatpickrSpy();
-
    MultiTimeController.initMultiTimePicker(inputEl, {
-      onCommitTime: (time) => {
-         committedTimes.push(time);
+      onCommitTime: (nextTime) => {
+         committedTimes.push(nextTime);
       },
    }, initFlatpickrFn);
+   inputEl.value = time;
 
-   inputEl.value = '1:00 PM';
-   calls[0].options.onClose([], '1:00 PM', {
+   calls.at(Position.FIRST).options.onClose([], time, {
       setDate() {},
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
 
-   assert.deepEqual(committedTimes, [ '1:00 PM' ]);
+   assert.deepEqual(committedTimes, [time]);
    assert.equal(inputEl.value, '');
 });
+
 
 test('Test_InitMultiTimePicker_TestChangeEvents_ExpectNoCommit', () => {
    const inputEl = createDomNode('input');
@@ -89,29 +104,28 @@ test('Test_InitMultiTimePicker_TestChangeEvents_ExpectNoCommit', () => {
 
    MultiTimeController.initMultiTimePicker(inputEl, {}, initFlatpickrFn);
 
-   assert.equal(calls[0].options.onChange, undefined);
+   assert.equal(calls.at(Position.FIRST).options.onChange, undefined);
 });
+
 
 test('Test_InitMultiTimePicker_TestBlurWhileOpen_ExpectNoCommit', async () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];
+   const time = '12:00 PM';
 
    MultiTimeController.initMultiTimePicker(inputEl, {
-      onCommitTime: (time) => {
-         committedTimes.push(time);
+      onCommitTime: (nextTime) => {
+         committedTimes.push(nextTime);
       },
    }, (_element, options) => {
       const instance = _createMockPickerInstance(inputEl, {
          isOpen: true,
       });
-
       options.onReady?.([], '', instance);
       return instance;
    });
-
-   inputEl.value = '12:00 PM';
+   inputEl.value = time;
    inputEl.listeners.blur?.();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
@@ -119,47 +133,52 @@ test('Test_InitMultiTimePicker_TestBlurWhileOpen_ExpectNoCommit', async () => {
    assert.deepEqual(committedTimes, []);
 });
 
+
 test('Test_InitMultiTimePicker_TestEnterTyped_ExpectCommit', () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];
+   const time = '2:30 PM';
 
    MultiTimeController.initMultiTimePicker(inputEl, {
-      onCommitTime: (time) => {
-         committedTimes.push(time);
+      onCommitTime: (nextTime) => {
+         committedTimes.push(nextTime);
       },
    }, _createFlatpickrSpy().initFlatpickrFn);
-
-   inputEl.value = '2:30 PM';
+   inputEl.value = time;
    _dispatchKeydown(inputEl, 'Enter');
 
-   assert.deepEqual(committedTimes, [ '2:30 PM' ]);
+   assert.deepEqual(committedTimes, [time]);
    assert.equal(inputEl.value, '');
 });
+
 
 test('Test_InitMultiTimePicker_TestEnterEmpty_ExpectCommitDefault', () => {
    const inputEl = createDomNode('input');
    const committedTimes = [];
+   let instance;
 
    MultiTimeController.initMultiTimePicker(inputEl, {
       onCommitTime: (time) => {
          committedTimes.push(time);
       },
    }, (_element, options) => {
-      const instance = _createMockPickerInstance(inputEl, {
+      instance = _createMockPickerInstance(inputEl, {
          close() {
             this.isOpen = false;
          },
       });
-
       options.onReady?.([], '', instance);
       return instance;
    });
-
    _dispatchKeydown(inputEl, 'Enter');
 
-   assert.deepEqual(committedTimes, [ '12:00 PM' ]);
+   assert.deepEqual(
+      committedTimes,
+      [`${instance.hourElement.value}:${instance.minuteElement.value} ${instance.amPM.textContent}`]
+   );
    assert.equal(inputEl.value, '');
 });
+
 
 test('Test_InitMultiTimePicker_TestBackspaceEmpty_ExpectRemoveLast', () => {
    const inputEl = createDomNode('input');
@@ -171,11 +190,11 @@ test('Test_InitMultiTimePicker_TestBackspaceEmpty_ExpectRemoveLast', () => {
          return true;
       },
    }, _createFlatpickrSpy().initFlatpickrFn);
-
    _dispatchKeydown(inputEl, 'Backspace');
 
    assert.equal(removed, true);
 });
+
 
 test('Test_InitMultiTimePicker_TestBackspaceWithText_ExpectNoRemove', () => {
    const inputEl = createDomNode('input');
@@ -187,7 +206,6 @@ test('Test_InitMultiTimePicker_TestBackspaceWithText_ExpectNoRemove', () => {
          return true;
       },
    }, _createFlatpickrSpy().initFlatpickrFn);
-
    inputEl.value = '2';
    _dispatchKeydown(inputEl, 'Backspace');
 

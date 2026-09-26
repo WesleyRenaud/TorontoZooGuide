@@ -128,10 +128,12 @@ def Test_ApproachSecondsToUnit_TestFromEntryNode_ExpectZero() -> None:
       entry_walk_node_id=CHEETAH_NODE_ID,
       exit_walk_node_id=CHEETAH_NODE_ID )
 
-   assert LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
+   result = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
       TEST_GRAPH,
       CHEETAH_NODE_ID,
-      unit ) == 0
+      unit )
+
+   assert result == 0
 
 
 def Test_ApproachSecondsToUnit_TestFromEntrance_ExpectApproachSeconds() -> None:
@@ -141,10 +143,12 @@ def Test_ApproachSecondsToUnit_TestFromEntrance_ExpectApproachSeconds() -> None:
       entry_walk_node_id=CHEETAH_NODE_ID,
       exit_walk_node_id=CHEETAH_NODE_ID )
 
-   assert LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
+   result = LoopUnitTravelTimeCalculator.approach_seconds_to_unit(
       TEST_GRAPH,
       ENTRANCE_NODE_ID,
-      unit ) == CHEETAH_APPROACH_SECONDS
+      unit )
+
+   assert result == CHEETAH_APPROACH_SECONDS
 
 
 def Test_InterStopSeconds_TestTwoAnimals_ExpectTravelBetweenStops(
@@ -156,12 +160,16 @@ def Test_InterStopSeconds_TestTwoAnimals_ExpectTravelBetweenStops(
    travels = LoopUnitTravelTimeCalculator.inter_stop_seconds( TEST_GRAPH, stops )
 
    assert travels == [ 0, CHEETAH_TO_LION_SECONDS ]
-   assert LoopUnitTravelTimeCalculator.total_inter_stop_seconds(
+   result = LoopUnitTravelTimeCalculator.total_inter_stop_seconds(
       TEST_GRAPH,
-      stops ) == CHEETAH_TO_LION_SECONDS
-   assert LoopUnitTravelTimeCalculator.inter_stop_seconds(
+      stops )
+
+   assert result == CHEETAH_TO_LION_SECONDS
+   result = LoopUnitTravelTimeCalculator.inter_stop_seconds(
       TEST_GRAPH,
-      stops[ :1 ] ) == [ 0 ]
+      stops[ :1 ] )
+
+   assert result == [ 0 ]
 
 
 def Test_PackedUnitsOccupiedSeconds_TestTwoUnits_ExpectApproachAndDwell() -> None:
@@ -226,7 +234,9 @@ def Test_PackedUnitsOccupiedSeconds_TestUntilUnit_ExpectFinalApproachIncluded() 
 
 
 def Test_InterStopSeconds_TestEmptyStops_ExpectEmpty() -> None:
-   assert LoopUnitTravelTimeCalculator.inter_stop_seconds( TEST_GRAPH, [] ) == []
+   result = LoopUnitTravelTimeCalculator.inter_stop_seconds( TEST_GRAPH, [] )
+
+   assert result == []
 
 
 def Test_InterStopSeconds_TestMissingWalkNode_ExpectZeroTravel(
@@ -240,4 +250,6 @@ def Test_InterStopSeconds_TestMissingWalkNode_ExpectZeroTravel(
       _animal_record( species='African Lion', exhibit='Africa Savanna' ),
    ]
 
-   assert LoopUnitTravelTimeCalculator.inter_stop_seconds( TEST_GRAPH, stops ) == [ 0, 0 ]
+   result = LoopUnitTravelTimeCalculator.inter_stop_seconds( TEST_GRAPH, stops )
+
+   assert result == [ 0, 0 ]

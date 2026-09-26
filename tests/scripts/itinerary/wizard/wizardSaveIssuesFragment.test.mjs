@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import { WizardSaveIssuesFragment } from '../../../../scripts/itinerary/wizard/wizardSaveIssuesFragment.js';
 import { Strings } from '../../../../scripts/strings.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 
 const savedItinerary = {
    date: '2026-06-15',
@@ -23,11 +24,15 @@ const selectedEncounter = {
    end_time: '13:45',
 };
 
+const _closed = 'closed';
+
+
 test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupNoOpsWhenThereAreNoSave_ExpectOk', () => {
    const noticeCalls = [];
+   const itinerary = { date: savedItinerary.date, saveIssues: [] };
 
    WizardSaveIssuesFragment.showWizardSaveIssuesPopup(
-      { date: '2026-06-15', saveIssues: [] },
+      itinerary,
       {
          showNoticePopup: (config) => {
             noticeCalls.push(config);
@@ -38,6 +43,7 @@ test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupNoOpsWhenThere
 
    assert.equal(noticeCalls.length, 0);
 });
+
 
 test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupConfirmsCloseThroughProceedConfirmation_ExpectOk', () => {
    let noticeConfig = null;
@@ -57,10 +63,9 @@ test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupConfirmsCloseT
       },
       saveFinalItinerary: async () => {},
    });
-
    noticeConfig?.onClose({
       close: () => {
-         closeCalls.push('closed');
+         closeCalls.push(_closed);
       },
    });
 
@@ -75,8 +80,9 @@ test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupConfirmsCloseT
 
    proceedConfig?.onConfirm();
 
-   assert.deepEqual(closeCalls, ['closed']);
+   assert.deepEqual(closeCalls, [_closed]);
 });
+
 
 test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupReturnsFalseWhenConflictSelectionIsUnresolved_ExpectOk', async () => {
    let noticeConfig = null;
@@ -101,6 +107,7 @@ test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupReturnsFalseWh
    assert.equal(result, false);
 });
 
+
 test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupSavesResolvedConflictsAndClosesOnConfirm_ExpectOk', async () => {
    let noticeConfig = null;
    const saveCalls = [];
@@ -109,6 +116,7 @@ test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupSavesResolvedC
       ...savedItinerary,
       wildEncounters: [selectedEncounter],
    };
+   const saveOptions = { overridingConflictingGuardiansTalks: true };
 
    WizardSaveIssuesFragment.showWizardSaveIssuesPopup(savedItinerary, {
       createSaveIssues: () => ({
@@ -134,14 +142,15 @@ test('Test_ShowWizardSaveIssuesPopup_TestShowWizardSaveIssuesPopupSavesResolvedC
 
    const result = await noticeConfig?.onConfirm({
       close: () => {
-         closeCalls.push('closed');
+         closeCalls.push(_closed);
       },
    });
 
    assert.equal(result, true);
    assert.deepEqual(saveCalls, [{
       itinerary: resolvedItinerary,
-      options: { overridingConflictingGuardiansTalks: true },
+      options: saveOptions,
    }]);
-   assert.deepEqual(closeCalls, ['closed']);
+   assert.deepEqual(closeCalls, [_closed]);
+   assert.deepEqual(saveCalls[Position.FIRST].itinerary, resolvedItinerary);
 });

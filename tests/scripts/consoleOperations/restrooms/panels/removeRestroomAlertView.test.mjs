@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateRemoveRestroomAlertPanel_TestDefault_ExpectPanel', () => {
    const panelEl = RemoveRestroomAlertView.createRemoveRestroomAlertPanel();
 

@@ -90,7 +90,9 @@ def Test_GetGuardiansTalkLocations_TestProviderNames_ExpectReturned(
       'fetch_guardians_talk_locations',
       lambda _conn: [ TALK_LOCATION ] )
 
-   assert GuardiansCoordinator.get_guardians_talk_locations() == [ TALK_LOCATION ]
+   guardians_talk_locations = GuardiansCoordinator.get_guardians_talk_locations()
+
+   assert guardians_talk_locations == [ TALK_LOCATION ]
 
 
 def Test_GetGuardiansTalkNames_TestProviderNames_ExpectReturned(
@@ -101,7 +103,9 @@ def Test_GetGuardiansTalkNames_TestProviderNames_ExpectReturned(
       'fetch_guardians_talk_names',
       lambda _conn: [ TALK_NAME ] )
 
-   assert GuardiansCoordinator.get_guardians_talk_names() == [ TALK_NAME ]
+   guardians_talk_names = GuardiansCoordinator.get_guardians_talk_names()
+
+   assert guardians_talk_names == [ TALK_NAME ]
 
 
 def Test_GetGuardiansTalkNamesAtLocation_TestProviderNames_ExpectReturned(
@@ -121,8 +125,10 @@ def Test_GetGuardiansTalkNamesAtLocation_TestProviderNames_ExpectReturned(
       'fetch_guardians_talk_names_at_location',
       fetch )
 
-   assert GuardiansCoordinator.get_guardians_talk_names_at_location(
-      TALK_LOCATION ) == [ TALK_NAME ]
+   guardians_talk_names_at_location = GuardiansCoordinator.get_guardians_talk_names_at_location(
+      TALK_LOCATION )
+
+   assert guardians_talk_names_at_location == [ TALK_NAME ]
    assert captured[ 'location' ] == TALK_LOCATION
 
 
@@ -148,8 +154,10 @@ def Test_GetGuardiansTalkScheduleOptions_TestProviderNames_ExpectReturned(
       'fetch_scheduled_talk_names',
       fetch_scheduled_talk_names )
 
-   assert GuardiansCoordinator.get_guardians_talk_schedule_options(
-      TALK_LOCATION ) == [ TALK_NAME ]
+   guardians_talk_schedule_options = GuardiansCoordinator.get_guardians_talk_schedule_options(
+      TALK_LOCATION )
+
+   assert guardians_talk_schedule_options == [ TALK_NAME ]
    assert captured == {
       'today': '2026-09-16',
       'location': TALK_LOCATION,
@@ -176,7 +184,9 @@ def Test_GetGuardiansTalkScheduleLocationOptions_TestProviderNames_ExpectReturne
       'fetch_scheduled_talk_locations',
       fetch_scheduled_talk_locations )
 
-   assert GuardiansCoordinator.get_guardians_talk_schedule_location_options() == [ TALK_LOCATION ]
+   guardians_talk_schedule_location_options = GuardiansCoordinator.get_guardians_talk_schedule_location_options()
+
+   assert guardians_talk_schedule_location_options == [ TALK_LOCATION ]
    assert captured == { 'today': '2026-09-16' }
 
 
@@ -201,8 +211,10 @@ def Test_GetGuardiansTalkDetails_TestBuilderResult_ExpectReturned(
 
    monkeypatch.setattr( GuardiansTalkBuilder, 'build_details', build_details )
 
-   assert GuardiansCoordinator.get_guardians_talk_details(
-      guardians_talks_to_include=[ TALK_NAME ] ) == [ GUARDIANS_TALK ]
+   guardians_talk_details = GuardiansCoordinator.get_guardians_talk_details(
+      guardians_talks_to_include=[ TALK_NAME ] )
+
+   assert guardians_talk_details == [ GUARDIANS_TALK ]
    assert captured[ 'records' ] is talk_records
    assert captured[ 'include' ] == [ TALK_NAME ]
 
@@ -237,10 +249,12 @@ def Test_GetGuardiansTalkOccurrences_TestProvidersAndBuilder_ExpectOccurrences(
 
    monkeypatch.setattr( GuardiansTalkOccurrencesBuilder, 'build', build )
 
-   assert GuardiansCoordinator.get_guardians_talk_occurrences(
+   guardians_talk_occurrences = GuardiansCoordinator.get_guardians_talk_occurrences(
       talk=TALK_NAME,
       location=TALK_LOCATION,
-      days_ahead=3 ) == expected
+      days_ahead=3 )
+
+   assert guardians_talk_occurrences == expected
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'cancellation_records' ] is cancellation_records
    assert captured[ 'occurrence_records' ] is occurrence_records
@@ -268,13 +282,15 @@ def Test_SetGuardiansTalkSchedule_TestBuiltSchedules_ExpectSaved(
       'save_schedule',
       save_schedule )
 
-   assert GuardiansCoordinator.set_guardians_talk_schedule(
+   result = GuardiansCoordinator.set_guardians_talk_schedule(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      schedule_rows=[ SCHEDULE_ROW ] ) is True
+      schedule_rows=[ SCHEDULE_ROW ] )
+
+   assert result is True
    assert saved == [ SCHEDULE_INPUT ]
 
 
@@ -299,13 +315,15 @@ def Test_ReplaceGuardiansTalkScheduleOverlaps_TestResolver_ExpectCalled(
       'save_replacing_overlaps',
       save_replacing )
 
-   assert GuardiansCoordinator.replace_guardians_talk_schedule_overlaps(
+   result = GuardiansCoordinator.replace_guardians_talk_schedule_overlaps(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      schedule_rows=[ SCHEDULE_ROW ] ) is True
+      schedule_rows=[ SCHEDULE_ROW ] )
+
+   assert result is True
    assert saved == [ SCHEDULE_INPUT ]
 
 
@@ -330,24 +348,28 @@ def Test_TrimGuardiansTalkScheduleOverlaps_TestResolver_ExpectCalled(
       'save_trimming_overlaps',
       save_trimming )
 
-   assert GuardiansCoordinator.trim_guardians_talk_schedule_overlaps(
+   result = GuardiansCoordinator.trim_guardians_talk_schedule_overlaps(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      schedule_rows=[ SCHEDULE_ROW ] ) is True
+      schedule_rows=[ SCHEDULE_ROW ] )
+
+   assert result is True
    assert saved == [ SCHEDULE_INPUT ]
 
 
 def Test_SetGuardiansTalkSchedule_TestEmptyScheduleRows_ExpectFalse(
       stub_request_connection: None ) -> None:
-   assert GuardiansCoordinator.set_guardians_talk_schedule(
+   result = GuardiansCoordinator.set_guardians_talk_schedule(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       start_date=START_DATE,
       end_date=END_DATE,
-      schedule_rows=[] ) is False
+      schedule_rows=[] )
+
+   assert result is False
 
 
 def Test_SetGuardiansTalkSchedule_TestSaveFails_ExpectFalse(
@@ -362,13 +384,15 @@ def Test_SetGuardiansTalkSchedule_TestSaveFails_ExpectFalse(
       'save_schedule',
       lambda *_args, **_kwargs: False )
 
-   assert GuardiansCoordinator.set_guardians_talk_schedule(
+   result = GuardiansCoordinator.set_guardians_talk_schedule(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      schedule_rows=[ SCHEDULE_ROW ] ) is False
+      schedule_rows=[ SCHEDULE_ROW ] )
+
+   assert result is False
 
 
 def Test_EndGuardiansTalkSchedule_TestSaveEnds_ExpectTrue(
@@ -388,11 +412,13 @@ def Test_EndGuardiansTalkSchedule_TestSaveEnds_ExpectTrue(
       'save_schedule_end',
       save_schedule_end )
 
-   assert GuardiansCoordinator.end_guardians_talk_schedule(
+   result = GuardiansCoordinator.end_guardians_talk_schedule(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       schedule_end_date=END_DATE,
-      talk_times=[ TALK_TIME, '11:00 AM' ] ) is True
+      talk_times=[ TALK_TIME, '11:00 AM' ] )
+
+   assert result is True
    assert saved_times == [ TALK_TIME, '11:00 AM' ]
 
 
@@ -404,11 +430,13 @@ def Test_EndGuardiansTalkSchedule_TestSaveFails_ExpectFalse(
       'save_schedule_end',
       lambda *_args, **_kwargs: False )
 
-   assert GuardiansCoordinator.end_guardians_talk_schedule(
+   result = GuardiansCoordinator.end_guardians_talk_schedule(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       schedule_end_date=END_DATE,
-      talk_times=[ TALK_TIME ] ) is False
+      talk_times=[ TALK_TIME ] )
+
+   assert result is False
 
 
 def Test_CancelGuardiansTalkOccurrence_TestSaveCancellations_ExpectTrue(
@@ -428,11 +456,13 @@ def Test_CancelGuardiansTalkOccurrence_TestSaveCancellations_ExpectTrue(
       'save_cancellation',
       save_cancellation )
 
-   assert GuardiansCoordinator.cancel_guardians_talk_occurrence(
+   result = GuardiansCoordinator.cancel_guardians_talk_occurrence(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       date=OCCURRENCE_DATE,
-      talk_times=[ TALK_TIME ] ) is True
+      talk_times=[ TALK_TIME ] )
+
+   assert result is True
    assert saved_times == [ TALK_TIME ]
 
 
@@ -444,15 +474,19 @@ def Test_CancelGuardiansTalkOccurrence_TestSaveFails_ExpectFalse(
       'save_cancellation',
       lambda *_args, **_kwargs: False )
 
-   assert GuardiansCoordinator.cancel_guardians_talk_occurrence(
+   result = GuardiansCoordinator.cancel_guardians_talk_occurrence(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       date=OCCURRENCE_DATE,
-      talk_times=[ TALK_TIME ] ) is False
+      talk_times=[ TALK_TIME ] )
+
+   assert result is False
 
 
 def Test_GetGuardiansTalksForSavedItinerary_TestEmpty_ExpectEmpty() -> None:
-   assert GuardiansCoordinator.get_guardians_talks_for_saved_itinerary( [] ) == []
+   guardians_talks_for_saved_itinerary = GuardiansCoordinator.get_guardians_talks_for_saved_itinerary( [] )
+
+   assert guardians_talks_for_saved_itinerary == []
 
 
 def Test_GetGuardiansTalksForSavedItinerary_TestSavedTalks_ExpectLinkedTalks(
@@ -497,8 +531,10 @@ def Test_GetGuardiansTalksForSavedItinerary_TestSavedTalks_ExpectLinkedTalks(
       'attach',
       lambda _conn, talks: linked if talks is itinerary_talks else [] )
 
-   assert GuardiansCoordinator.get_guardians_talks_for_saved_itinerary(
-      saved ) == linked
+   guardians_talks_for_saved_itinerary = GuardiansCoordinator.get_guardians_talks_for_saved_itinerary(
+      saved )
+
+   assert guardians_talks_for_saved_itinerary == linked
 
 
 def Test_GetGuardiansTalkScheduleForTargetDate_TestProvidersAndBuilders_ExpectTalks(
@@ -521,8 +557,10 @@ def Test_GetGuardiansTalkScheduleForTargetDate_TestProvidersAndBuilders_ExpectTa
       'attach',
       lambda _conn, talks: linked if talks is day_talks else [] )
 
-   assert GuardiansCoordinator.get_guardians_talk_schedule_for_target_date(
-      TARGET_DATE ) == linked
+   guardians_talk_schedule_for_target_date = GuardiansCoordinator.get_guardians_talk_schedule_for_target_date(
+      TARGET_DATE )
+
+   assert guardians_talk_schedule_for_target_date == linked
 
 
 def Test_GetGuardiansTalkSchedule_TestVisitDate_ExpectDelegatesToTargetDate(
@@ -532,10 +570,12 @@ def Test_GetGuardiansTalkSchedule_TestVisitDate_ExpectDelegatesToTargetDate(
       'get_guardians_talk_schedule_for_target_date',
       lambda target: [ GUARDIANS_TALK ] if target == TARGET_DATE else [] )
 
-   assert GuardiansCoordinator.get_guardians_talk_schedule(
+   guardians_talk_schedule = GuardiansCoordinator.get_guardians_talk_schedule(
       month=VISIT_MONTH,
       day=VISIT_DAY,
-      year=VISIT_YEAR ) == [ GUARDIANS_TALK ]
+      year=VISIT_YEAR )
+
+   assert guardians_talk_schedule == [ GUARDIANS_TALK ]
 
 
 def Test_GetGuardiansTalksMatchingQuery_TestScheduleAndBuilder_ExpectMatches(
@@ -552,11 +592,13 @@ def Test_GetGuardiansTalksMatchingQuery_TestScheduleAndBuilder_ExpectMatches(
       'build',
       lambda talks, query: matched if talks is day_talks and query == QUERY else [] )
 
-   assert GuardiansCoordinator.get_guardians_talks_matching_query(
+   guardians_talks_matching_query = GuardiansCoordinator.get_guardians_talks_matching_query(
       query=QUERY,
       month=VISIT_MONTH,
       day=VISIT_DAY,
-      year=VISIT_YEAR ) == matched
+      year=VISIT_YEAR )
+
+   assert guardians_talks_matching_query == matched
 
 
 def Test_GetGuardiansTalkOnDaySchedule_TestProvidedDaySchedule_ExpectFinderResult(
@@ -579,13 +621,15 @@ def Test_GetGuardiansTalkOnDaySchedule_TestProvidedDaySchedule_ExpectFinderResul
       'find_on_day_schedule',
       find )
 
-   assert GuardiansCoordinator.get_guardians_talk_on_day_schedule(
+   guardians_talk_on_day_schedule = GuardiansCoordinator.get_guardians_talk_on_day_schedule(
       month=VISIT_MONTH,
       day=VISIT_DAY,
       talk_name=TALK_NAME,
       year=VISIT_YEAR,
       start_time=TALK_TIME,
-      day_schedule=day_schedule ) is GUARDIANS_TALK
+      day_schedule=day_schedule )
+
+   assert guardians_talk_on_day_schedule is GUARDIANS_TALK
    assert captured[ 'rows' ] is day_schedule
    assert captured[ 'talk_name' ] == TALK_NAME
    assert captured[ 'start_time' ] == TALK_TIME
@@ -604,12 +648,14 @@ def Test_GetGuardiansTalkOnDaySchedule_TestMissingDaySchedule_ExpectFetchesSched
       'find_on_day_schedule',
       lambda rows, *_args, **_kwargs: GUARDIANS_TALK if rows is fetched else None )
 
-   assert GuardiansCoordinator.get_guardians_talk_on_day_schedule(
+   guardians_talk_on_day_schedule = GuardiansCoordinator.get_guardians_talk_on_day_schedule(
       month=VISIT_MONTH,
       day=VISIT_DAY,
       talk_name=TALK_NAME,
       year=VISIT_YEAR,
-      start_time=TALK_TIME ) is GUARDIANS_TALK
+      start_time=TALK_TIME )
+
+   assert guardians_talk_on_day_schedule is GUARDIANS_TALK
 
 
 def Test_AddGuardiansTalkOccurrence_TestExistingOccurrence_ExpectAlreadyExistsFailure(
@@ -723,6 +769,8 @@ def Test_GetGuardiansTalkScheduleTimes_TestUnsortedProviderTimes_ExpectSorted(
       'fetch_schedule_times',
       lambda *_args, **_kwargs: [ '3:30 PM', '10:00 AM' ] )
 
-   assert GuardiansCoordinator.get_guardians_talk_schedule_times(
+   guardians_talk_schedule_times = GuardiansCoordinator.get_guardians_talk_schedule_times(
       TALK_NAME,
-      TALK_LOCATION ) == [ '10:00 AM', '3:30 PM' ]
+      TALK_LOCATION )
+
+   assert guardians_talk_schedule_times == [ '10:00 AM', '3:30 PM' ]

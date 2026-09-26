@@ -73,9 +73,11 @@ def Test_SaveReplacingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       'save_replacing_overlaps',
       save_replacing_overlaps )
 
-   assert AttractionScheduleConflictResolver.save_replacing_overlaps(
+   result = AttractionScheduleConflictResolver.save_replacing_overlaps(
       STUB_REQUEST_CONNECTION,
-      schedule ) is True
+      schedule )
+
+   assert result is True
    assert saver_calls == [
       ( schedule, AttractionScheduleProvider.fetch_opening_schedule_conflicts ),
    ]
@@ -103,9 +105,11 @@ def Test_SaveTrimmingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       'save_trimming_overlaps',
       save_trimming_overlaps )
 
-   assert AttractionScheduleConflictResolver.save_trimming_overlaps(
+   result = AttractionScheduleConflictResolver.save_trimming_overlaps(
       STUB_REQUEST_CONNECTION,
-      schedule ) is True
+      schedule )
+
+   assert result is True
    assert saver_calls == [ schedule ]
 
 

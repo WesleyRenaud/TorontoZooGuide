@@ -1,41 +1,164 @@
 from __future__ import annotations
 
-import pytest
-
 from api.shared.enums.enclosure_type import EnclosureType
 
-def Test_Normalize_TestKnownValues_ExpectMatchingType() -> None:
-   assert EnclosureType.normalize( 'Indoor' ) == EnclosureType.INDOOR
-   assert EnclosureType.normalize( ' Outdoor ' ) == EnclosureType.OUTDOOR
 
-def Test_Normalize_TestUnknownOrEmpty_ExpectNone() -> None:
-   assert EnclosureType.normalize( None ) is None
-   assert EnclosureType.normalize( '' ) is None
-   assert EnclosureType.normalize( 'aviary' ) is None
+def Test_Normalize_TestIndoor_ExpectIndoorType() -> None:
+   value = EnclosureType.INDOOR.value.title()
 
-def Test_NormalizedEnclosureType_TestKnownValues_ExpectLowercaseValue() -> None:
-   assert EnclosureType.normalized_enclosure_type( 'Indoor' ) == 'indoor'
-   assert EnclosureType.normalized_enclosure_type( ' outdoor ' ) == 'outdoor'
+   enclosure_type = EnclosureType.normalize( value )
 
-def Test_NormalizedEnclosureType_TestUnknownOrEmpty_ExpectNone() -> None:
-   assert EnclosureType.normalized_enclosure_type( None ) is None
-   assert EnclosureType.normalized_enclosure_type( '' ) is None
-   assert EnclosureType.normalized_enclosure_type( 'mixed' ) is None
+   assert enclosure_type == EnclosureType.INDOOR
 
-def Test_IsIndoorOrOutdoor_TestNormalizedValues_ExpectFlags() -> None:
-   assert EnclosureType.is_indoor( 'Indoor' )
-   assert not EnclosureType.is_indoor( 'Outdoor' )
-   assert EnclosureType.is_outdoor( 'Outdoor' )
-   assert not EnclosureType.is_outdoor( 'Indoor' )
 
-def Test_OppositeType_TestIndoorOutdoor_ExpectSwapped() -> None:
-   assert EnclosureType.opposite_type( EnclosureType.INDOOR ) == EnclosureType.OUTDOOR
-   assert EnclosureType.opposite_type( EnclosureType.OUTDOOR ) == EnclosureType.INDOOR
+def Test_Normalize_TestOutdoorWhitespace_ExpectOutdoorType() -> None:
+   value = f' { EnclosureType.OUTDOOR.value.title() } '
 
-def Test_NormalizeViewingSpotName_TestEnclosureTypeOrEmpty_ExpectNone() -> None:
-   assert EnclosureType.normalize_viewing_spot_name( None ) is None
-   assert EnclosureType.normalize_viewing_spot_name( 'Indoor' ) is None
-   assert EnclosureType.normalize_viewing_spot_name( 'Outdoor' ) is None
+   enclosure_type = EnclosureType.normalize( value )
+
+   assert enclosure_type == EnclosureType.OUTDOOR
+
+
+def Test_Normalize_TestNone_ExpectNone() -> None:
+   value = None
+
+   enclosure_type = EnclosureType.normalize( value )
+
+   assert enclosure_type is None
+
+
+def Test_Normalize_TestEmpty_ExpectNone() -> None:
+   value = ''
+
+   enclosure_type = EnclosureType.normalize( value )
+
+   assert enclosure_type is None
+
+
+def Test_Normalize_TestUnknown_ExpectNone() -> None:
+   value = 'aviary'
+
+   enclosure_type = EnclosureType.normalize( value )
+
+   assert enclosure_type is None
+
+
+def Test_NormalizedEnclosureType_TestIndoor_ExpectLowercaseValue() -> None:
+   value = EnclosureType.INDOOR.value.title()
+
+   normalized = EnclosureType.normalized_enclosure_type( value )
+
+   assert normalized == value.strip().lower()
+
+
+def Test_NormalizedEnclosureType_TestOutdoorWhitespace_ExpectLowercaseValue() -> None:
+   value = f' { EnclosureType.OUTDOOR.value } '
+
+   normalized = EnclosureType.normalized_enclosure_type( value )
+
+   assert normalized == value.strip().lower()
+
+
+def Test_NormalizedEnclosureType_TestNone_ExpectNone() -> None:
+   value = None
+
+   normalized = EnclosureType.normalized_enclosure_type( value )
+
+   assert normalized is None
+
+
+def Test_NormalizedEnclosureType_TestEmpty_ExpectNone() -> None:
+   value = ''
+
+   normalized = EnclosureType.normalized_enclosure_type( value )
+
+   assert normalized is None
+
+
+def Test_NormalizedEnclosureType_TestUnknown_ExpectNone() -> None:
+   value = 'mixed'
+
+   normalized = EnclosureType.normalized_enclosure_type( value )
+
+   assert normalized is None
+
+
+def Test_IsIndoor_TestIndoor_ExpectTrue() -> None:
+   value = EnclosureType.INDOOR.value.title()
+
+   is_indoor = EnclosureType.is_indoor( value )
+
+   assert is_indoor
+
+
+def Test_IsIndoor_TestOutdoor_ExpectFalse() -> None:
+   value = EnclosureType.OUTDOOR.value.title()
+
+   is_indoor = EnclosureType.is_indoor( value )
+
+   assert not is_indoor
+
+
+def Test_IsOutdoor_TestOutdoor_ExpectTrue() -> None:
+   value = EnclosureType.OUTDOOR.value.title()
+
+   is_outdoor = EnclosureType.is_outdoor( value )
+
+   assert is_outdoor
+
+
+def Test_IsOutdoor_TestIndoor_ExpectFalse() -> None:
+   value = EnclosureType.INDOOR.value.title()
+
+   is_outdoor = EnclosureType.is_outdoor( value )
+
+   assert not is_outdoor
+
+
+def Test_OppositeType_TestIndoor_ExpectOutdoor() -> None:
+   enclosure_type = EnclosureType.INDOOR
+
+   opposite = EnclosureType.opposite_type( enclosure_type )
+
+   assert opposite == EnclosureType.OUTDOOR
+
+
+def Test_OppositeType_TestOutdoor_ExpectIndoor() -> None:
+   enclosure_type = EnclosureType.OUTDOOR
+
+   opposite = EnclosureType.opposite_type( enclosure_type )
+
+   assert opposite == EnclosureType.INDOOR
+
+
+def Test_NormalizeViewingSpotName_TestNone_ExpectNone() -> None:
+   value = None
+
+   normalized = EnclosureType.normalize_viewing_spot_name( value )
+
+   assert normalized is None
+
+
+def Test_NormalizeViewingSpotName_TestIndoor_ExpectNone() -> None:
+   value = EnclosureType.INDOOR.value.title()
+
+   normalized = EnclosureType.normalize_viewing_spot_name( value )
+
+   assert normalized is None
+
+
+def Test_NormalizeViewingSpotName_TestOutdoor_ExpectNone() -> None:
+   value = EnclosureType.OUTDOOR.value.title()
+
+   normalized = EnclosureType.normalize_viewing_spot_name( value )
+
+   assert normalized is None
+
 
 def Test_NormalizeViewingSpotName_TestCustomSpotName_ExpectTrimmedValue() -> None:
-   assert EnclosureType.normalize_viewing_spot_name( '  Penguin Beach  ' ) == 'Penguin Beach'
+   name = 'Penguin Beach'
+   value = f'  { name }  '
+
+   normalized = EnclosureType.normalize_viewing_spot_name( value )
+
+   assert normalized == name

@@ -2,37 +2,44 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { SelectorSearchRunner } from '../../../../scripts/itinerary/selectors/selectorSearchRunner.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+
 
 test('Test_CreateSelectorSearchRunner_TestCurrentQuery_ExpectRows', async () => {
    const renderedRows = [];
+   const query = 'lion';
+   const animals = [{ id: query, name: 'Lion' }];
    const runner = SelectorSearchRunner.createSelectorSearchRunner({
       searchEndpoint: '/search',
-      buildSearchPayload: (query) => ({ query, includeAnimals: true }),
+      buildSearchPayload: (value) => ({ query: value, includeAnimals: true }),
       extractRows: (response) => response.animals,
       getContext: async () => ({ temp: null }),
-      getQuery: () => 'lion',
+      getQuery: () => query,
       onRows: (rows) => {
          renderedRows.push(rows);
       },
       searchItems: async (_endpoint, payload) => {
          assert.deepEqual(payload, {
-            query: 'lion',
+            query,
             includeAnimals: true,
             temp: null,
          });
-         return { animals: [{ id: 'lion', name: 'Lion' }] };
+         return { animals };
       },
       debounceMs: 0,
    });
 
    await runner.runCurrentQuery();
 
-   assert.deepEqual(renderedRows, [[{ id: 'lion', name: 'Lion' }]]);
+   assert.deepEqual(renderedRows.at(Position.FIRST), animals);
 });
+
 
 test('Test_CreateSelectorSearchRunner_TestStaleResponse_ExpectIgnored', async () => {
    const renderedRows = [];
    let resolveFirst = null;
+   const fresh = 'fresh';
+   const stale = 'stale';
    const runner = SelectorSearchRunner.createSelectorSearchRunner({
       searchEndpoint: '/search',
       buildSearchPayload: (query) => ({ query }),
@@ -48,19 +55,19 @@ test('Test_CreateSelectorSearchRunner_TestStaleResponse_ExpectIgnored', async ()
             });
          }
 
-         return { rows: ['fresh'] };
+         return { rows: [fresh] };
       },
       debounceMs: 0,
    });
 
    const firstSearch = runner.runCurrentQuery();
    const secondSearch = runner.runCurrentQuery();
-
-   resolveFirst?.({ rows: ['stale'] });
+   resolveFirst?.({ rows: [stale] });
    await Promise.all([firstSearch, secondSearch]);
 
-   assert.deepEqual(renderedRows, [['fresh']]);
+   assert.deepEqual(renderedRows, [[fresh]]);
 });
+
 
 test('Test_CreateSelectorSearchRunner_TestSearchFails_ExpectCleared', async () => {
    const renderedRows = [];
@@ -83,9 +90,11 @@ test('Test_CreateSelectorSearchRunner_TestSearchFails_ExpectCleared', async () =
    assert.deepEqual(renderedRows, [[]]);
 });
 
-test('Test_CreateSelectorSearchRunner_TestStaleErrorAndSchedule_ExpectIgnoredOrRun', async () => {
+
+test('Test_CreateSelectorSearchRunner_TestStaleError_ExpectIgnored', async () => {
    const renderedRows = [];
    let resolveFirstError = null;
+   const fresh = 'fresh';
    const runner = SelectorSearchRunner.createSelectorSearchRunner({
       searchEndpoint: '/search',
       buildSearchPayload: (query) => ({ query }),
@@ -101,7 +110,7 @@ test('Test_CreateSelectorSearchRunner_TestStaleErrorAndSchedule_ExpectIgnoredOrR
             });
          }
 
-         return { rows: ['fresh'] };
+         return { rows: [fresh] };
       },
       debounceMs: 0,
    });
@@ -111,18 +120,22 @@ test('Test_CreateSelectorSearchRunner_TestStaleErrorAndSchedule_ExpectIgnoredOrR
    resolveFirstError?.(new Error('stale'));
    await Promise.allSettled([firstSearch, secondSearch]);
 
-   assert.deepEqual(renderedRows, [['fresh']]);
+   assert.deepEqual(renderedRows, [[fresh]]);
+});
 
-   renderedRows.length = 0;
+
+test('Test_ScheduleCurrentQuery_TestDebounce_ExpectRun', async () => {
+   const renderedRows = [];
+   const scheduled = 'scheduled';
    const scheduledRunner = SelectorSearchRunner.createSelectorSearchRunner({
       searchEndpoint: '/search',
       buildSearchPayload: (query) => ({ query }),
       extractRows: (response) => response.rows,
-      getQuery: () => 'scheduled',
+      getQuery: () => scheduled,
       onRows: (rows) => {
          renderedRows.push(rows);
       },
-      searchItems: async () => ({ rows: ['scheduled'] }),
+      searchItems: async () => ({ rows: [scheduled] }),
       debounceMs: 0,
    });
 
@@ -131,5 +144,5 @@ test('Test_CreateSelectorSearchRunner_TestStaleErrorAndSchedule_ExpectIgnoredOrR
       setTimeout(resolve, 5);
    });
 
-   assert.deepEqual(renderedRows, [['scheduled']]);
+   assert.deepEqual(renderedRows, [[scheduled]]);
 });

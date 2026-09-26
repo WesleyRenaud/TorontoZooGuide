@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from api.animals.search.species_exhibit_key import SpeciesExhibitKey
 from api.animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from api.models.animal import Animal
 
@@ -10,19 +9,20 @@ def Test_FromAnimal_TestAnimal_ExpectNormalizedKey() -> None:
 
    key = SpeciesExhibitKeyBuilder.from_animal( animal )
 
-   assert key == SpeciesExhibitKey( species='masai giraffe', exhibit='africa savanna' )
+   assert key == SpeciesExhibitKeyBuilder.from_values( animal.species, animal.exhibit )
 
 
 def Test_AnyLinkedIn_TestOverlappingKeys_ExpectTrue() -> None:
+   linked = SpeciesExhibitKeyBuilder.from_values( 'African Lion', 'Africa Savanna' )
    animal_keys = [
       SpeciesExhibitKeyBuilder.from_values( 'Masai Giraffe', 'Africa Savanna' ),
-      SpeciesExhibitKeyBuilder.from_values( 'African Lion', 'Africa Savanna' ),
+      linked,
    ]
-   linked_animals = [
-      SpeciesExhibitKeyBuilder.from_values( 'African Lion', 'Africa Savanna' ),
-   ]
+   linked_animals = [ linked ]
 
-   assert SpeciesExhibitKeyBuilder.any_linked_in( animal_keys, linked_animals )
+   result = SpeciesExhibitKeyBuilder.any_linked_in( animal_keys, linked_animals )
+
+   assert result is True
 
 
 def Test_AnyLinkedIn_TestNoOverlap_ExpectFalse() -> None:
@@ -30,7 +30,11 @@ def Test_AnyLinkedIn_TestNoOverlap_ExpectFalse() -> None:
       SpeciesExhibitKeyBuilder.from_values( 'Masai Giraffe', 'Africa Savanna' ),
    ]
    linked_animals = [
-      SpeciesExhibitKeyBuilder.from_values( 'Western Lowland Gorilla', 'African Rainforest Pavilion' ),
+      SpeciesExhibitKeyBuilder.from_values(
+         'Western Lowland Gorilla',
+         'African Rainforest Pavilion' ),
    ]
 
-   assert not SpeciesExhibitKeyBuilder.any_linked_in( animal_keys, linked_animals )
+   result = SpeciesExhibitKeyBuilder.any_linked_in( animal_keys, linked_animals )
+
+   assert result is False

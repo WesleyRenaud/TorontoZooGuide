@@ -13,6 +13,7 @@ from api.itinerary.scheduling.unscheduling.guardians_talk_unschedule_preparer im
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.itinerary_event import ItineraryEvent
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryEventType, Position
 
 
@@ -35,8 +36,12 @@ def Test_TimeBlocks_TestTimedTalk_ExpectTimeBlock() -> None:
       start_time='12:00 PM',
       end_time='12:30 PM' )
 
-   assert GuardiansTalkUnschedulePreparer.time_blocks( [ talk ] ) == [
-      TimeBlock( start_seconds=12 * 3600, end_seconds=12 * 3600 + 30 * 60 ),
+   result = GuardiansTalkUnschedulePreparer.time_blocks( [ talk ] )
+
+   assert result == [
+      TimeBlock(
+         start_seconds=DateValues.time_value_in_seconds( talk.start_time ),
+         end_seconds=DateValues.time_value_in_seconds( talk.end_time ) ),
    ]
 
 
@@ -47,43 +52,63 @@ def Test_NewlyAddedActive_TestNewTimedTalk_ExpectTalk() -> None:
       start_time='12:00 PM',
       end_time='12:30 PM' )
 
-   assert GuardiansTalkUnschedulePreparer.newly_added_active(
+   result = GuardiansTalkUnschedulePreparer.newly_added_active(
       _empty_saved(),
-      [ talk ] ) == [ talk ]
+      [ talk ] )
+
+   assert result == [ talk ]
 
 
-def Test_NewlyAddedActive_TestAlreadySavedOrDeletedOrUntimed_ExpectEmpty() -> None:
+def Test_NewlyAddedActive_TestAlreadySavedTalk_ExpectEmpty() -> None:
+   talk = GuardiansTalkDiff(
+      name=ZEBRA_TALK,
+      is_deleted=False,
+      start_time='12:00 PM',
+      end_time='12:30 PM' )
    saved = SavedItinerary(
       date_value='2026-06-15',
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
       guardians_talk_rows=[
          ItineraryGuardiansTalkRecord(
-            talk_name=ZEBRA_TALK,
-            start_time='12:00 PM',
-            end_time='12:30 PM',
+            talk_name=talk.name,
+            start_time=talk.start_time,
+            end_time=talk.end_time,
             is_deleted=False ),
       ],
    )
-   talks = [
-      GuardiansTalkDiff(
-         name=ZEBRA_TALK,
-         is_deleted=False,
-         start_time='12:00 PM',
-         end_time='12:30 PM' ),
-      GuardiansTalkDiff(
-         name=LION_TALK,
-         is_deleted=True,
-         start_time='1:00 PM',
-         end_time='1:30 PM' ),
-      GuardiansTalkDiff(
-         name='Slender-Tailed Meerkat',
-         is_deleted=False,
-         start_time=None,
-         end_time=None ),
-   ]
 
-   assert GuardiansTalkUnschedulePreparer.newly_added_active( saved, talks ) == []
+   result = GuardiansTalkUnschedulePreparer.newly_added_active( saved, [ talk ] )
+
+   assert result == []
+
+
+def Test_NewlyAddedActive_TestDeletedTalk_ExpectEmpty() -> None:
+   talk = GuardiansTalkDiff(
+      name=LION_TALK,
+      is_deleted=True,
+      start_time='1:00 PM',
+      end_time='1:30 PM' )
+
+   result = GuardiansTalkUnschedulePreparer.newly_added_active(
+      _empty_saved(),
+      [ talk ] )
+
+   assert result == []
+
+
+def Test_NewlyAddedActive_TestUntimedTalk_ExpectEmpty() -> None:
+   talk = GuardiansTalkDiff(
+      name='Slender-Tailed Meerkat',
+      is_deleted=False,
+      start_time=None,
+      end_time=None )
+
+   result = GuardiansTalkUnschedulePreparer.newly_added_active(
+      _empty_saved(),
+      [ talk ] )
+
+   assert result == []
 
 
 def Test_SavedItineraryHasOverlap_TestOverlappingAnimal_ExpectTrue() -> None:
@@ -107,7 +132,9 @@ def Test_SavedItineraryHasOverlap_TestOverlappingAnimal_ExpectTrue() -> None:
       start_time='12:00 PM',
       end_time='12:30 PM' )
 
-   assert GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap( saved, [ talk ] )
+   result = GuardiansTalkUnschedulePreparer.saved_itinerary_has_overlap( saved, [ talk ] )
+
+   assert result
 
 
 def Test_PrepareValidatedForReschedule_TestClearsListedSchedulesAndOverlappingEvents_ExpectValidatedItinerary() -> None:

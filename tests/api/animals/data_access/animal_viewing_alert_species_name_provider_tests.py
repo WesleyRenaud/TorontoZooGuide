@@ -66,9 +66,11 @@ def _insert_alert(
 
 def Test_FetchViewingAlertSpeciesNames_TestEmpty_ExpectEmptyList(
       viewing_alert_species_conn: sqlite3.Connection ) -> None:
-   assert AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
+   viewing_alert_species_names = AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
       viewing_alert_species_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert viewing_alert_species_names == []
 
 
 def Test_FetchViewingAlertSpeciesNames_TestCurrentAndFuture_ExpectIncluded(
@@ -92,9 +94,11 @@ def Test_FetchViewingAlertSpeciesNames_TestCurrentAndFuture_ExpectIncluded(
       start_date='2026-09-01',
       end_date=None )
 
-   assert AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
+   viewing_alert_species_names = AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
       viewing_alert_species_conn,
-      TODAY ) == [ LION, TIGER, GIRAFFE ]
+      TODAY )
+
+   assert viewing_alert_species_names == [ LION, TIGER, GIRAFFE ]
 
 
 def Test_FetchViewingAlertSpeciesNames_TestExpired_ExpectExcluded(
@@ -106,9 +110,11 @@ def Test_FetchViewingAlertSpeciesNames_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
+   viewing_alert_species_names = AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
       viewing_alert_species_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert viewing_alert_species_names == []
 
 
 def Test_FetchViewingAlertSpeciesNames_TestEndingToday_ExpectIncluded(
@@ -120,9 +126,11 @@ def Test_FetchViewingAlertSpeciesNames_TestEndingToday_ExpectIncluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
+   viewing_alert_species_names = AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names(
       viewing_alert_species_conn,
-      TODAY ) == [ LION ]
+      TODAY )
+
+   assert viewing_alert_species_names == [ LION ]
 
 
 def Test_FetchViewingAlertSpeciesNamesInExhibit_TestMatchingExhibit_ExpectMatchingExhibit(
@@ -140,7 +148,9 @@ def Test_FetchViewingAlertSpeciesNamesInExhibit_TestMatchingExhibit_ExpectMatchi
       start_date='2026-09-01',
       end_date=None )
 
-   assert AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names_in_exhibit(
+   viewing_alert_species_names_in_exhibit = AnimalViewingAlertSpeciesNameProvider.fetch_viewing_alert_species_names_in_exhibit(
       viewing_alert_species_conn,
       TODAY,
-      SAVANNA ) == [ LION ]
+      SAVANNA )
+
+   assert viewing_alert_species_names_in_exhibit == [ LION ]

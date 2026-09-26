@@ -149,6 +149,7 @@ def stub_attraction_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubAttrac
 
 def Test_GetAttractions_TestHttpRequest_ExpectMapsVisitDateAndReturnsAttractions(
       stub_attraction_coordinator: StubAttractionCoordinator ) -> None:
+   attraction = _sample_attraction()
    handler = make_handler(
       '/get-attractions',
       {
@@ -164,7 +165,7 @@ def Test_GetAttractions_TestHttpRequest_ExpectMapsVisitDateAndReturnsAttractions
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'attractions' ] == [ _sample_attraction().to_dict() ]
+   assert result[ 'attractions' ] == [ attraction.to_dict() ]
    assert stub_attraction_coordinator.calls == [
       (
          'get_attractions',

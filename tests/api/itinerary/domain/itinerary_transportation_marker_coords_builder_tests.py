@@ -17,7 +17,7 @@ ATTRACTION_COORDS = ( 30.0, 40.0 )
 
 def _leg() -> ItineraryTransportationLeg:
    return ItineraryTransportationLeg(
-      from_station='Main Zoomobile Station',
+      from_station=MAIN_STATION.name,
       to_station='Africa Zoomobile Station',
       start_time='11:00 AM',
       end_time='11:20 AM',
@@ -26,21 +26,31 @@ def _leg() -> ItineraryTransportationLeg:
 
 
 def Test_Build_TestWithLegs_ExpectMainStationCoords() -> None:
-   assert ItineraryTransportationMarkerCoordsBuilder.build(
-      [ _leg() ],
+   legs = [ _leg() ]
+
+   coords = ItineraryTransportationMarkerCoordsBuilder.build(
+      legs,
       ATTRACTION_COORDS,
-      MAIN_STATION ) == ( 10.0, 20.0 )
+      MAIN_STATION )
+
+   assert coords == ( MAIN_STATION.x_coord, MAIN_STATION.y_coord )
 
 
 def Test_Build_TestNoLegsAndNoAttractionCoords_ExpectMainStationCoords() -> None:
-   assert ItineraryTransportationMarkerCoordsBuilder.build(
+   attraction_coords = None
+
+   coords = ItineraryTransportationMarkerCoordsBuilder.build(
       [],
-      None,
-      MAIN_STATION ) == ( 10.0, 20.0 )
+      attraction_coords,
+      MAIN_STATION )
+
+   assert coords == ( MAIN_STATION.x_coord, MAIN_STATION.y_coord )
 
 
 def Test_Build_TestNoLegsWithAttractionCoords_ExpectAttractionCoords() -> None:
-   assert ItineraryTransportationMarkerCoordsBuilder.build(
+   coords = ItineraryTransportationMarkerCoordsBuilder.build(
       [],
       ATTRACTION_COORDS,
-      MAIN_STATION ) == ATTRACTION_COORDS
+      MAIN_STATION )
+
+   assert coords == ATTRACTION_COORDS

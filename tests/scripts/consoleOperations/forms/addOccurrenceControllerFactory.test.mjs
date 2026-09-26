@@ -10,6 +10,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateAddOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -25,6 +26,11 @@ test('Test_CreateAddOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus',
    };
 
    try {
+      const talk = 'Keeper Talk';
+      const location = 'Africa';
+      const date = '2026-07-01';
+      const times = ['11:00 AM'];
+      const panelEl = { id: 'add-occurrence' };
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
 
@@ -32,7 +38,7 @@ test('Test_CreateAddOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus',
          showButtonEl,
          submitButtonEl,
          cancelButtonEl: document.createElement('button'),
-         panelEl: { id: 'add-occurrence' },
+         panelEl,
          statusEl: {},
          formFieldEls: [document.createElement('input')],
          activatePanel: (panel) => {
@@ -42,10 +48,10 @@ test('Test_CreateAddOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus',
             resets.push('selection');
          },
          getFormValues: () => ({
-            talk: 'Keeper Talk',
-            location: 'Africa',
-            date: '2026-07-01',
-            times: ['11:00 AM'],
+            talk,
+            location,
+            date,
+            times,
          }),
          validateForm: () => null,
          prepareForm: async () => {},
@@ -56,14 +62,14 @@ test('Test_CreateAddOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus',
       });
 
       await showButtonEl.listeners.click();
-      assert.deepEqual(activations, [{ id: 'add-occurrence' }]);
+      await submitButtonEl.listeners.click();
+
+      assert.deepEqual(activations, [panelEl]);
       assert.ok(resets.includes(true));
       assert.ok(resets.includes('selection'));
-
-      await submitButtonEl.listeners.click();
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === 'Keeper Talk in Africa on 2026-07-01 at 11:00 AM was added.'
+            entry[1] === `${talk} in ${location} on ${date} at ${times.join(', ')} was added.`
             && entry[2] === 'is-success'
          ))
       );
@@ -75,6 +81,7 @@ test('Test_CreateAddOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus',
       ControllerHelper.resetFormFields = originalReset;
    }
 });
+
 
 test('Test_CreateAddOccurrenceController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

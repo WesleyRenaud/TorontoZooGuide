@@ -6,14 +6,22 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreatePlaceholderOption_TestLabel_ExpectEmptyValue', () => {
-   const option = ConsoleDropdownOptionBuilder.createPlaceholderOption('Select');
+   const label = 'Select';
+
+   const option = ConsoleDropdownOptionBuilder.createPlaceholderOption(label);
+
    assert.equal(option.value, '');
-   assert.equal(option.textContent, 'Select');
+   assert.equal(option.textContent, label);
 });
 
+
 test('Test_CreateNamedOption_TestName_ExpectValueAndLabel', () => {
-   const option = ConsoleDropdownOptionBuilder.createNamedOption('Carousel');
-   assert.equal(option.value, 'Carousel');
-   assert.equal(option.textContent, 'Carousel');
+   const name = 'Carousel';
+
+   const option = ConsoleDropdownOptionBuilder.createNamedOption(name);
+
+   assert.equal(option.value, name);
+   assert.equal(option.textContent, name);
 });

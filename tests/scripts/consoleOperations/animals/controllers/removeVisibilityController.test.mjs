@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { RemoveVisibilityController } from '../../../../../scripts/consoleOperations/animals/controllers/removeVisibilityController.js';
-import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
+import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
+import { RemoveVisibilityController } from '../../../../../scripts/consoleOperations/animals/controllers/removeVisibilityController.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
-import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
+import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
 import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
@@ -15,18 +15,37 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
-   const statuses = [];
-   const activations = [];
-   const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
-   const originalReload = ControllerHelper.reloadOptions;
-   const originalStatus = ConsoleStatusPresenter.setStatus;
-   const originalGet = ControllerHelper.getFieldValue;
-   const originalReset = ControllerHelper.resetFormFields;
-   const originalBind = ControllerHelper.bindResetValueOnChange;
-   const originalRemove = ConsoleOperationsClient.removeAnimalVisibilitySchedule;
-   const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
-   const autofillArgs = [];
+function _restore(originals) {
+   ControllerHelper.loadOptionsAndShowPanel = originals.load;
+   ControllerHelper.reloadOptions = originals.reload;
+   ControllerHelper.getFieldValue = originals.get;
+   ControllerHelper.resetFormFields = originals.reset;
+   ControllerHelper.bindResetValueOnChange = originals.bind;
+   ControllerHelper.hideConsolePanel = originals.hide;
+   ConsoleStatusPresenter.setStatus = originals.status;
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originals.autofill;
+   ConsoleOperationsClient.removeAnimalVisibilitySchedule = originals.remove;
+   ApiErrorMessageResolver.resolveConsoleMutationError = originals.resolve;
+}
+
+function _installBaseStubs({
+   statuses = [],
+   activations = [],
+   hides = [],
+   autofillArgs = [],
+} = {}) {
+   const originals = {
+      load: ControllerHelper.loadOptionsAndShowPanel,
+      reload: ControllerHelper.reloadOptions,
+      get: ControllerHelper.getFieldValue,
+      reset: ControllerHelper.resetFormFields,
+      bind: ControllerHelper.bindResetValueOnChange,
+      hide: ControllerHelper.hideConsolePanel,
+      status: ConsoleStatusPresenter.setStatus,
+      autofill: AnimalExhibitAutofillController.createAnimalExhibitAutofillController,
+      remove: ConsoleOperationsClient.removeAnimalVisibilitySchedule,
+      resolve: ApiErrorMessageResolver.resolveConsoleMutationError,
+   };
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
@@ -34,141 +53,204 @@ test('Test_CreateRemoveVisibilityScheduleController_TestShowAndSubmitSuccess_Exp
       assert.equal(options.populateOptions, ConsoleDropdownPopulator.populateExhibitDropdown);
    };
    ControllerHelper.reloadOptions = async () => {};
-   ConsoleStatusPresenter.setStatus = (...args) => {
-      statuses.push(args);
-   };
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
-   ControllerHelper.resetFormFields = () => {};
-   ControllerHelper.bindResetValueOnChange = () => {};
-   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
-      autofillArgs.push(args);
-      return originalAutofill(args);
-   };
-   ConsoleOperationsClient.removeAnimalVisibilitySchedule = async (payload) => {
-      assert.deepEqual(payload, { species: 'Lion', exhibit: 'Savanna' });
-      return { success: true, species: 'Lion', exhibit: 'Savanna' };
-   };
-
-   try {
-      const showButtonEl = document.createElement('button');
-      const submitButtonEl = document.createElement('button');
-      const speciesEl = document.createElement('input');
-      const exhibitEl = document.createElement('select');
-      speciesEl.value = 'Lion';
-      exhibitEl.value = 'Savanna';
-
-      const controller = RemoveVisibilityController.createRemoveVisibilityScheduleController({
-         showButtonEl,
-         submitButtonEl,
-         cancelButtonEl: document.createElement('button'),
-         panelEl: { id: 'remove-visibility' },
-         statusEl: {},
-         speciesEl,
-         exhibitEl,
-         activatePanel: () => {},
-      });
-
-      await controller.show();
-      assert.deepEqual(activations, [{ id: 'remove-visibility' }]);
-      assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadVisibilityScheduleExhibits);
-      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadVisibilityScheduleExhibits);
-
-      await submitButtonEl.listeners.click();
-      assert.ok(
-         statuses.some((entry) => (
-            entry[1] === 'Lion in Savanna no longer has a visibility schedule.'
-            && entry[2] === 'is-success'
-         ))
-      );
-   } finally {
-      ControllerHelper.loadOptionsAndShowPanel = originalLoad;
-      ControllerHelper.reloadOptions = originalReload;
-      ConsoleStatusPresenter.setStatus = originalStatus;
-      ControllerHelper.getFieldValue = originalGet;
-      ControllerHelper.resetFormFields = originalReset;
-      ControllerHelper.bindResetValueOnChange = originalBind;
-      ConsoleOperationsClient.removeAnimalVisibilitySchedule = originalRemove;
-      AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originalAutofill;
-   }
-});
-
-test('Test_CreateRemoveVisibilityScheduleController_TestValidationAndFailures_ExpectErrorStatus', async () => {
-   const statuses = [];
-   const hides = [];
-   const originalStatus = ConsoleStatusPresenter.setStatus;
-   const originalGet = ControllerHelper.getFieldValue;
-   const originalReset = ControllerHelper.resetFormFields;
-   const originalBind = ControllerHelper.bindResetValueOnChange;
-   const originalHide = ControllerHelper.hideConsolePanel;
-   const originalRemove = ConsoleOperationsClient.removeAnimalVisibilitySchedule;
-   const originalResolve = ApiErrorMessageResolver.resolveConsoleMutationError;
-
-   ConsoleStatusPresenter.setStatus = (...args) => {
-      statuses.push(args);
-   };
    ControllerHelper.resetFormFields = () => {};
    ControllerHelper.bindResetValueOnChange = () => {};
    ControllerHelper.hideConsolePanel = (args) => {
       hides.push(args);
    };
-   ApiErrorMessageResolver.resolveConsoleMutationError = () => 'mutation failed';
+   ConsoleStatusPresenter.setStatus = (...args) => {
+      statuses.push(args);
+   };
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
+      autofillArgs.push(args);
+      return originals.autofill(args);
+   };
+
+   return originals;
+}
+
+function _createController({
+   panelEl = { id: 'remove-visibility' },
+   species = 'Lion',
+   exhibit = 'Savanna',
+} = {}) {
+   const submitButtonEl = document.createElement('button');
+   const cancelButtonEl = document.createElement('button');
+   const speciesEl = document.createElement('input');
+   const exhibitEl = document.createElement('select');
+   speciesEl.value = species;
+   exhibitEl.value = exhibit;
+
+   const controller = RemoveVisibilityController.createRemoveVisibilityScheduleController({
+      showButtonEl: document.createElement('button'),
+      submitButtonEl,
+      cancelButtonEl,
+      panelEl,
+      statusEl: {},
+      speciesEl,
+      exhibitEl,
+      activatePanel: () => {},
+   });
+
+   return {
+      controller,
+      submitButtonEl,
+      cancelButtonEl,
+      speciesEl,
+      exhibitEl,
+      panelEl,
+   };
+}
+
+
+test('Test_CreateRemoveVisibilityScheduleController_TestShow_ExpectPanelActivated', async () => {
+   const activations = [];
+   const autofillArgs = [];
+   const originals = _installBaseStubs({ activations, autofillArgs });
+   const panelEl = { id: 'remove-visibility' };
 
    try {
-      const submitButtonEl = document.createElement('button');
-      const cancelButtonEl = document.createElement('button');
-      const speciesEl = document.createElement('input');
-      const exhibitEl = document.createElement('select');
-      const controller = RemoveVisibilityController.createRemoveVisibilityScheduleController({
-         showButtonEl: document.createElement('button'),
-         submitButtonEl,
-         cancelButtonEl,
-         panelEl: {},
-         statusEl: {},
-         speciesEl,
-         exhibitEl,
-         activatePanel: () => {},
-      });
+      const { controller } = _createController({ panelEl });
 
+      await controller.show();
+
+      assert.deepEqual(activations, [panelEl]);
+      assert.equal(
+         autofillArgs[Position.FIRST].loadExhibits,
+         ConsoleOptionsLoader.loadVisibilityScheduleExhibits
+      );
+      assert.equal(
+         autofillArgs[Position.FIRST].loadExhibitsForSpecies,
+         ConsoleOptionsLoader.loadVisibilityScheduleExhibits
+      );
+   } finally {
+      _restore(originals);
+   }
+});
+
+
+test('Test_CreateRemoveVisibilityScheduleController_TestSubmitSuccess_ExpectStatus', async () => {
+   const statuses = [];
+   const species = 'Lion';
+   const exhibit = 'Savanna';
+   const originals = _installBaseStubs({ statuses });
+
+   ConsoleOperationsClient.removeAnimalVisibilitySchedule = async (payload) => {
+      assert.deepEqual(payload, { species, exhibit });
+      return { success: true, species, exhibit };
+   };
+
+   try {
+      const { submitButtonEl } = _createController({ species, exhibit });
+
+      await submitButtonEl.listeners.click();
+
+      assert.ok(
+         statuses.some((entry) => (
+            entry[Position.SECOND] === Strings.status.animalVisibilityScheduleRemoved({ species, exhibit })
+            && entry[Position.THIRD] === 'is-success'
+         ))
+      );
+   } finally {
+      _restore(originals);
+   }
+});
+
+
+test('Test_CreateRemoveVisibilityScheduleController_TestMissingSpecies_ExpectErrorStatus', async () => {
+   const statuses = [];
+   const originals = _installBaseStubs({ statuses });
+
+   try {
+      const { submitButtonEl } = _createController({ species: '', exhibit: '' });
       ControllerHelper.getFieldValue = () => '';
+
       await submitButtonEl.listeners.click();
+
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === Strings.validation.entityRequired(Strings.labels.species)
+            entry[Position.SECOND] === Strings.validation.entityRequired(Strings.labels.species)
          ))
       );
+   } finally {
+      _restore(originals);
+   }
+});
 
-      statuses.length = 0;
-      ControllerHelper.getFieldValue = (el) => (el === speciesEl ? 'Lion' : '');
+
+test('Test_CreateRemoveVisibilityScheduleController_TestMissingExhibit_ExpectErrorStatus', async () => {
+   const statuses = [];
+   const species = 'Lion';
+   const originals = _installBaseStubs({ statuses });
+
+   try {
+      const { submitButtonEl, speciesEl } = _createController({ species, exhibit: '' });
+      ControllerHelper.getFieldValue = (el) => (el === speciesEl ? species : '');
+
       await submitButtonEl.listeners.click();
+
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === Strings.validation.entityRequired(Strings.entityLabels.exhibit)
+            entry[Position.SECOND] === Strings.validation.entityRequired(Strings.entityLabels.exhibit)
          ))
       );
+   } finally {
+      _restore(originals);
+   }
+});
 
-      statuses.length = 0;
-      ControllerHelper.getFieldValue = (el) => (el === speciesEl ? 'Lion' : 'Savanna');
-      ConsoleOperationsClient.removeAnimalVisibilitySchedule = async () => ({ success: false });
-      await submitButtonEl.listeners.click();
-      assert.ok(statuses.some((entry) => entry[1] === 'mutation failed'));
 
-      statuses.length = 0;
-      ConsoleOperationsClient.removeAnimalVisibilitySchedule = async () => {
-         throw new Error('network');
-      };
+test('Test_CreateRemoveVisibilityScheduleController_TestMutationFailure_ExpectErrorStatus', async () => {
+   const statuses = [];
+   const mutationFailed = 'mutation failed';
+   const originals = _installBaseStubs({ statuses });
+   ApiErrorMessageResolver.resolveConsoleMutationError = () => mutationFailed;
+   ConsoleOperationsClient.removeAnimalVisibilitySchedule = async () => ({ success: false });
+
+   try {
+      const { submitButtonEl } = _createController();
+
       await submitButtonEl.listeners.click();
-      assert.ok(statuses.some((entry) => entry[1] === Strings.common.requestFailed));
+
+      assert.ok(statuses.some((entry) => entry[Position.SECOND] === mutationFailed));
+   } finally {
+      _restore(originals);
+   }
+});
+
+
+test('Test_CreateRemoveVisibilityScheduleController_TestNetworkError_ExpectRequestFailed', async () => {
+   const statuses = [];
+   const originals = _installBaseStubs({ statuses });
+   ConsoleOperationsClient.removeAnimalVisibilitySchedule = async () => {
+      throw new Error('network');
+   };
+
+   try {
+      const { submitButtonEl } = _createController();
+
+      await submitButtonEl.listeners.click();
+
+      assert.ok(statuses.some((entry) => entry[Position.SECOND] === Strings.common.requestFailed));
+   } finally {
+      _restore(originals);
+   }
+});
+
+
+test('Test_CreateRemoveVisibilityScheduleController_TestHideAndCancel_ExpectPanelHidden', () => {
+   const hides = [];
+   const originals = _installBaseStubs({ hides });
+
+   try {
+      const { controller, cancelButtonEl } = _createController();
 
       controller.hide();
       cancelButtonEl.listeners.click();
+
       assert.equal(hides.length, 2);
    } finally {
-      ConsoleStatusPresenter.setStatus = originalStatus;
-      ControllerHelper.getFieldValue = originalGet;
-      ControllerHelper.resetFormFields = originalReset;
-      ControllerHelper.bindResetValueOnChange = originalBind;
-      ControllerHelper.hideConsolePanel = originalHide;
-      ConsoleOperationsClient.removeAnimalVisibilitySchedule = originalRemove;
-      ApiErrorMessageResolver.resolveConsoleMutationError = originalResolve;
+      _restore(originals);
    }
 });

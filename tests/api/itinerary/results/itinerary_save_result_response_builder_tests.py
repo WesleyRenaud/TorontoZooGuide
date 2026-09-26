@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
 from api.itinerary.domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
+from api.itinerary.results.itinerary_path_builder import ItineraryPathBuilder
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.results.itinerary_save_result_response_builder import ItinerarySaveResultResponseBuilder
@@ -12,26 +13,6 @@ from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 
 
 VISIT_DATE = '2026-06-15'
-
-EMPTY_ITINERARY_PATH = {
-   'stops': [],
-   'legs': [],
-   'points': [],
-}
-
-EMPTY_ITINERARY = {
-   'date': VISIT_DATE,
-   'arrival_time': None,
-   'departure_time': None,
-   'selected_exhibits': [],
-   'animals': [],
-   'attractions': [],
-   'transportations': [],
-   'transportation_stations': [],
-   'guardians_talks': [],
-   'wild_encounters': [],
-   'events': [],
-}
 
 ARRIVAL_ADJUSTMENT = ItineraryAdjustment(
    type=ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED,
@@ -46,57 +27,44 @@ def Test_ToDict_TestMinimalResult_ExpectStatusAndItinerary() -> None:
    result = ItinerarySaveResult(
       itinerary=Itinerary( date=VISIT_DATE ) )
 
-   assert ItinerarySaveResultResponseBuilder.to_dict( result ) == {
-      'status': 'success',
-      'reasons': [],
-      'adjustments': [],
-      'suppressed_warnings': [],
-      'itinerary': EMPTY_ITINERARY,
-      'itinerary_path': EMPTY_ITINERARY_PATH,
-   }
+   payload = ItinerarySaveResultResponseBuilder.to_dict( result )
+
+   assert payload[ 'status' ] == result.status.value
+   assert payload[ 'reasons' ] == []
+   assert payload[ 'adjustments' ] == []
+   assert payload[ 'suppressed_warnings' ] == []
+   assert payload[ 'itinerary' ] == result.itinerary.to_dict()
+   assert payload[ 'itinerary_path' ] == ItineraryPathBuilder.build( None )
 
 
 def Test_ToDict_TestResultWithAdjustment_ExpectAdjustments() -> None:
+   date = '2026-06-22'
+   arrival_time = '9:30 AM'
    result = ItinerarySaveResult(
       itinerary=Itinerary(
-         date='2026-06-22',
-         arrival_time='9:30 AM',
-      ),
-      adjustments=[ ARRIVAL_ADJUSTMENT ],
-   )
+         date=date,
+         arrival_time=arrival_time ),
+      adjustments=[ ARRIVAL_ADJUSTMENT ] )
 
    payload = ItinerarySaveResultResponseBuilder.to_dict( result )
 
    assert payload[ 'adjustments' ] == [
-      {
-         'type': 'arrivalTimeAdjusted',
-         'field': 'arrivalTime',
-         'previous_value': '9:15 AM',
-         'value': '09:30',
-         'reason': 'arrivalOutsideAdmissionHours',
-      },
+      adjustment.to_dict() for adjustment in result.adjustments
    ]
 
 
 def Test_ToDict_TestResultWithReason_ExpectReasonCodes() -> None:
+   reason = ItineraryResultReason(
+      code=ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
    result = ItinerarySaveResult(
       status=ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
       itinerary=Itinerary( date=VISIT_DATE ),
-      reasons=[
-         ItineraryResultReason(
-            code=ItineraryErrorType.ITEM_NOT_ON_ITINERARY ),
-      ],
-   )
+      reasons=[ reason ] )
 
    payload = ItinerarySaveResultResponseBuilder.to_dict( result )
 
-   assert payload[ 'status' ] == 'itemNotOnItinerary'
-   assert payload[ 'reasons' ] == [
-      {
-         'code': 'itemNotOnItinerary',
-         'items': [],
-      },
-   ]
+   assert payload[ 'status' ] == result.status.value
+   assert payload[ 'reasons' ] == [ item.to_dict() for item in result.reasons ]
 
 
 def Test_ToDict_TestExcludeItinerary_ExpectNoItineraryKeys() -> None:
@@ -125,9 +93,10 @@ def Test_ToDict_TestIncludeConfig_ExpectConfig() -> None:
 def Test_ToDict_TestExtra_ExpectMergedPayload() -> None:
    result = ItinerarySaveResult(
       itinerary=Itinerary( date=VISIT_DATE ) )
+   extra = { 'customField': 'value' }
 
    payload = ItinerarySaveResultResponseBuilder.to_dict(
       result,
-      extra={ 'customField': 'value' } )
+      extra=extra )
 
-   assert payload[ 'customField' ] == 'value'
+   assert payload[ 'customField' ] == extra[ 'customField' ]

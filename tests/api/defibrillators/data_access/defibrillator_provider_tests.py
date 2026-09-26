@@ -29,8 +29,10 @@ def defibrillator_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchDefibrillators_TestEmpty_ExpectEmptyList(
       defibrillator_provider_conn: sqlite3.Connection ) -> None:
-   assert DefibrillatorProvider.fetch_defibrillators(
-      defibrillator_provider_conn ) == []
+   defibrillators = DefibrillatorProvider.fetch_defibrillators(
+      defibrillator_provider_conn )
+
+   assert defibrillators == []
 
 
 def Test_FetchDefibrillators_TestPopulated_ExpectMappedCoordinates(

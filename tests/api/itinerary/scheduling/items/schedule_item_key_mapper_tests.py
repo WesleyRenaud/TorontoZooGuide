@@ -22,88 +22,102 @@ ZOOMOBILE_ATTRACTION_WIRE = TransportationScheduleItemKey(
 
 
 def Test_FromWire_TestEmptyItemType_ExpectNone() -> None:
-   assert ScheduleItemKeyMapper.from_wire( '   ', LION_KEY ) is None
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( '   ', LION_KEY )
+
+   assert schedule_item_key is None
 
 
 def Test_FromWire_TestUnknownItemType_ExpectNone() -> None:
-   assert ScheduleItemKeyMapper.from_wire( 'unknown', LION_KEY ) is None
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'unknown', LION_KEY )
+
+   assert schedule_item_key is None
 
 
 def Test_FromWire_TestEventItemType_ExpectEventFromWireKey() -> None:
-   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'event', 'lunch' )
+   event_key = 'lunch'
 
-   assert schedule_item_key == ItineraryEventType.LUNCH
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'event', event_key )
+
+   assert schedule_item_key == ItineraryEventType.normalize( event_key )
 
 
 def Test_FromWire_TestEntranceItemType_ExpectNone() -> None:
-   assert ScheduleItemKeyMapper.from_wire( 'entrance', 'entrance' ) is None
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'entrance', 'entrance' )
+
+   assert schedule_item_key is None
 
 
 def Test_FromWire_TestAnimalKey_ExpectAnimalScheduleItemKey() -> None:
    schedule_item_key = ScheduleItemKeyMapper.from_wire( 'animals', LION_KEY )
 
-   assert schedule_item_key == AnimalScheduleItemKey(
-      species='African Lion',
-      exhibit='Africa Savanna' )
+   assert schedule_item_key == AnimalScheduleItemKey.from_wire( LION_KEY )
 
 
 def Test_FromWire_TestAnimalKeyWithEnclosure_ExpectAnimalScheduleItemKey() -> None:
    schedule_item_key = ScheduleItemKeyMapper.from_wire( 'animals', PENGUIN_KEY )
 
-   assert schedule_item_key == AnimalScheduleItemKey(
-      species='African Penguin',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor' )
+   assert schedule_item_key == AnimalScheduleItemKey.from_wire( PENGUIN_KEY )
 
 
 def Test_FromWire_TestEventTypeAsItemType_ExpectLunchEvent() -> None:
-   schedule_item_key = ScheduleItemKeyMapper.from_wire( 'lunch', '' )
+   event_type = 'lunch'
 
-   assert schedule_item_key == ItineraryEventType.LUNCH
+   schedule_item_key = ScheduleItemKeyMapper.from_wire( event_type, '' )
+
+   assert schedule_item_key == ItineraryEventType.normalize( event_type )
 
 
 def Test_FromWire_TestAttractionKey_ExpectAttractionScheduleItemKey() -> None:
+   attraction_name = 'Conservation Carousel'
+
    schedule_item_key = ScheduleItemKeyMapper.from_wire(
       'attractions',
-      'Conservation Carousel' )
+      attraction_name )
 
-   assert schedule_item_key == AttractionScheduleItemKey(
-      name='Conservation Carousel' )
+   assert schedule_item_key == AttractionScheduleItemKey.from_wire( attraction_name )
 
 
-def Test_FromWire_TestTransportationKeys_ExpectTransitOrAttractionMode() -> None:
+def Test_FromWire_TestTransportationTransitKey_ExpectTransitMode() -> None:
    schedule_item_key = ScheduleItemKeyMapper.from_wire(
       'transportations',
       ZOOMOBILE_TRANSIT_WIRE )
 
-   assert schedule_item_key == TransportationScheduleItemKey(
-      name=TransportationName.ZOOMOBILE,
-      added_as_attraction=False )
-   assert ScheduleItemKeyMapper.from_wire(
+   assert schedule_item_key == TransportationScheduleItemKey.from_wire(
+      ZOOMOBILE_TRANSIT_WIRE )
+
+
+def Test_FromWire_TestTransportationBareName_ExpectNone() -> None:
+   schedule_item_key = ScheduleItemKeyMapper.from_wire(
       'transportations',
-      TransportationName.ZOOMOBILE ) is None
-   assert ScheduleItemKeyMapper.from_wire(
+      TransportationName.ZOOMOBILE )
+
+   assert schedule_item_key is None
+
+
+def Test_FromWire_TestTransportationAttractionKey_ExpectAttractionMode() -> None:
+   schedule_item_key = ScheduleItemKeyMapper.from_wire(
       'transportations',
-      ZOOMOBILE_ATTRACTION_WIRE ) == TransportationScheduleItemKey(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=True )
+      ZOOMOBILE_ATTRACTION_WIRE )
+
+   assert schedule_item_key == TransportationScheduleItemKey.from_wire(
+      ZOOMOBILE_ATTRACTION_WIRE )
 
 
 def Test_FromWire_TestGuardiansTalkKey_ExpectGuardiansTalkScheduleItemKey() -> None:
+   talk_wire = 'Gorilla Guardians||10:00'
+
    schedule_item_key = ScheduleItemKeyMapper.from_wire(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
-      'Gorilla Guardians||10:00' )
+      talk_wire )
 
-   assert schedule_item_key == GuardiansTalkScheduleItemKey(
-      name='Gorilla Guardians',
-      start_time='10:00' )
+   assert schedule_item_key == GuardiansTalkScheduleItemKey.from_wire( talk_wire )
 
 
 def Test_FromWire_TestWildEncounterKey_ExpectWildEncounterScheduleItemKey() -> None:
+   encounter_wire = 'African Rainforest||14:00'
+
    schedule_item_key = ScheduleItemKeyMapper.from_wire(
       ScheduleItemKind.WILD_ENCOUNTER.item_type,
-      'African Rainforest||14:00' )
+      encounter_wire )
 
-   assert schedule_item_key == WildEncounterScheduleItemKey(
-      name='African Rainforest',
-      start_time='2:00 PM' )
+   assert schedule_item_key == WildEncounterScheduleItemKey.from_wire( encounter_wire )

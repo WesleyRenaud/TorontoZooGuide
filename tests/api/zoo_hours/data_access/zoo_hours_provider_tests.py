@@ -110,9 +110,11 @@ def Test_FetchZooHoursRecord_TestDecember25_ExpectHolidayHours(
 
 def Test_FetchZooHoursRecord_TestMissingDate_ExpectNone(
       zoo_hours_provider_conn: sqlite3.Connection ) -> None:
-   assert ZooHoursProvider.fetch_zoo_hours_record(
+   zoo_hours_record = ZooHoursProvider.fetch_zoo_hours_record(
       zoo_hours_provider_conn,
-      '2026-01-01' ) is None
+      '2026-01-01' )
+
+   assert zoo_hours_record is None
 
 
 def Test_FetchZooHoursRecordsBetween_TestInclusiveEndDate_ExpectOrderedRange(
@@ -154,7 +156,9 @@ def Test_FetchZooHoursRecordsBetween_TestOpenEnded_ExpectFromStartOnward(
 
 def Test_FetchZooHoursRecordsBetween_TestEmptyRange_ExpectEmptyList(
       zoo_hours_provider_conn: sqlite3.Connection ) -> None:
-   assert ZooHoursProvider.fetch_zoo_hours_records_between(
+   zoo_hours_records_between = ZooHoursProvider.fetch_zoo_hours_records_between(
       zoo_hours_provider_conn,
       '2026-07-01',
-      '2026-07-31' ) == []
+      '2026-07-31' )
+
+   assert zoo_hours_records_between == []

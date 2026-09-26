@@ -5,12 +5,14 @@ import { PersistItineraryWarningSuppressor } from '../../../scripts/itinerary/pe
 import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { Strings } from '../../../scripts/strings.js';
 
+
 test('Test_PersistItineraryWarningSuppression_TestBlankType_ExpectNoOp', async () => {
    const requests = [];
+   const warningType = '';
 
-   await PersistItineraryWarningSuppressor.persistItineraryWarningSuppression('', {
-      suppressWarning: async (warningType) => {
-         requests.push(warningType);
+   await PersistItineraryWarningSuppressor.persistItineraryWarningSuppression(warningType, {
+      suppressWarning: async (nextType) => {
+         requests.push(nextType);
          return { errorType: 'success' };
       },
    });
@@ -18,26 +20,31 @@ test('Test_PersistItineraryWarningSuppression_TestBlankType_ExpectNoOp', async (
    assert.equal(requests.length, 0);
 });
 
+
 test('Test_PersistItineraryWarningSuppression_TestSuccess_ExpectResult', async () => {
+   const warningType = 'arrivalDepartureTooClose';
    const response = { errorType: 'success', suppressed: true };
 
    const result = await PersistItineraryWarningSuppressor.persistItineraryWarningSuppression(
-      'arrivalDepartureTooClose',
+      warningType,
       {
-         suppressWarning: async (warningType) => {
-            assert.equal(warningType, 'arrivalDepartureTooClose');
+         suppressWarning: async (nextType) => {
+            assert.equal(nextType, warningType);
             return response;
          },
-         isSuccess: (errorType) => errorType === 'success',
+         isSuccess: (errorType) => errorType === response.errorType,
       }
    );
 
    assert.deepEqual(result, response);
 });
 
+
 test('Test_PersistItineraryWarningSuppression_TestFailure_ExpectThrows', async () => {
+   const warningType = 'shortVisit';
+
    await assert.rejects(
-      () => PersistItineraryWarningSuppressor.persistItineraryWarningSuppression('shortVisit', {
+      () => PersistItineraryWarningSuppressor.persistItineraryWarningSuppression(warningType, {
          suppressWarning: async () => ({ errorType: ItineraryErrorType.SAVE_FAILED }),
          isSuccess: () => false,
       }),
@@ -45,12 +52,14 @@ test('Test_PersistItineraryWarningSuppression_TestFailure_ExpectThrows', async (
    );
 });
 
+
 test('Test_PersistItineraryWarningUnsuppression_TestBlankType_ExpectNoOp', async () => {
    const requests = [];
+   const warningType = '';
 
-   await PersistItineraryWarningSuppressor.persistItineraryWarningUnsuppression('', {
-      unsuppressWarning: async (warningType) => {
-         requests.push(warningType);
+   await PersistItineraryWarningSuppressor.persistItineraryWarningUnsuppression(warningType, {
+      unsuppressWarning: async (nextType) => {
+         requests.push(nextType);
          return { errorType: 'success' };
       },
    });
@@ -58,26 +67,31 @@ test('Test_PersistItineraryWarningUnsuppression_TestBlankType_ExpectNoOp', async
    assert.equal(requests.length, 0);
 });
 
+
 test('Test_PersistItineraryWarningUnsuppression_TestSuccess_ExpectResult', async () => {
+   const warningType = 'arrivalDepartureTooClose';
    const response = { errorType: 'success', suppressed: false };
 
    const result = await PersistItineraryWarningSuppressor.persistItineraryWarningUnsuppression(
-      'arrivalDepartureTooClose',
+      warningType,
       {
-         unsuppressWarning: async (warningType) => {
-            assert.equal(warningType, 'arrivalDepartureTooClose');
+         unsuppressWarning: async (nextType) => {
+            assert.equal(nextType, warningType);
             return response;
          },
-         isSuccess: (errorType) => errorType === 'success',
+         isSuccess: (errorType) => errorType === response.errorType,
       }
    );
 
    assert.deepEqual(result, response);
 });
 
+
 test('Test_PersistItineraryWarningUnsuppression_TestFailure_ExpectThrows', async () => {
+   const warningType = 'shortVisit';
+
    await assert.rejects(
-      () => PersistItineraryWarningSuppressor.persistItineraryWarningUnsuppression('shortVisit', {
+      () => PersistItineraryWarningSuppressor.persistItineraryWarningUnsuppression(warningType, {
          unsuppressWarning: async () => ({ errorType: ItineraryErrorType.SAVE_FAILED }),
          isSuccess: () => false,
       }),

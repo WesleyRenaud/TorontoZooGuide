@@ -36,7 +36,9 @@ def Test_GetGiftShopNames_TestProviderNames_ExpectReturned(
       'fetch_gift_shop_names',
       lambda _conn: [ GIFT_SHOP_NAME ] )
 
-   assert GiftShopCoordinator.get_gift_shop_names() == [ GIFT_SHOP_NAME ]
+   gift_shop_names = GiftShopCoordinator.get_gift_shop_names()
+
+   assert gift_shop_names == [ GIFT_SHOP_NAME ]
 
 
 def Test_GetGiftShops_TestProvidersAndBuilder_ExpectGiftShops(
@@ -75,11 +77,13 @@ def Test_GetGiftShops_TestProvidersAndBuilder_ExpectGiftShops(
 
    monkeypatch.setattr( GiftShopBuilder, 'build_gift_shops', build_gift_shops )
 
-   assert GiftShopCoordinator.get_gift_shops(
+   gift_shops = GiftShopCoordinator.get_gift_shops(
       day=VISIT_DAY,
       month=VISIT_MONTH,
       year=VISIT_YEAR,
-      include_closed_gift_shops=True ) == [ GIFT_SHOP ]
+      include_closed_gift_shops=True )
+
+   assert gift_shops == [ GIFT_SHOP ]
    assert captured[ 'gift_shop_records' ] is gift_shop_records
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'schedule_override_records' ] is override_records
@@ -101,11 +105,13 @@ def Test_GetGiftShopsMatchingQuery_TestBuilder_ExpectMatches(
       'build',
       lambda rows, query: rows if query == QUERY else [] )
 
-   assert GiftShopCoordinator.get_gift_shops_matching_query(
+   gift_shops_matching_query = GiftShopCoordinator.get_gift_shops_matching_query(
       query=QUERY,
       day=VISIT_DAY,
       month=VISIT_MONTH,
-      year=VISIT_YEAR ) == gift_shops
+      year=VISIT_YEAR )
+
+   assert gift_shops_matching_query == gift_shops
    assert captured[ 'include_closed_gift_shops' ] is True
 
 
@@ -125,11 +131,13 @@ def Test_SetGiftShopAsClosed_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
 
-   assert GiftShopCoordinator.set_gift_shop_as_closed(
+   result = GiftShopCoordinator.set_gift_shop_as_closed(
       GIFT_SHOP_NAME,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( GIFT_SHOP_NAME, START_DATE, END_DATE, MESSAGE )
 
 
@@ -149,11 +157,13 @@ def Test_SetGiftShopClosureOverride_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
 
-   assert GiftShopCoordinator.set_gift_shop_closure_override(
+   result = GiftShopCoordinator.set_gift_shop_closure_override(
       GIFT_SHOP_NAME,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( GIFT_SHOP_NAME, START_DATE, END_DATE, MESSAGE )
 
 
@@ -168,7 +178,7 @@ def Test_SetGiftShopOpeningSchedule_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
 
-   assert GiftShopCoordinator.set_gift_shop_opening_schedule(
+   result = GiftShopCoordinator.set_gift_shop_opening_schedule(
       GIFT_SHOP_NAME,
       START_DATE,
       END_DATE,
@@ -180,7 +190,9 @@ def Test_SetGiftShopOpeningSchedule_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == (
       GIFT_SHOP_NAME,
       START_DATE,
@@ -204,7 +216,7 @@ def Test_ReplaceGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
 
-   assert GiftShopCoordinator.replace_gift_shop_opening_schedule_overlaps(
+   result = GiftShopCoordinator.replace_gift_shop_opening_schedule_overlaps(
       GIFT_SHOP_NAME,
       START_DATE,
       END_DATE,
@@ -216,7 +228,9 @@ def Test_ReplaceGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
 
 
 def Test_TrimGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
@@ -227,7 +241,7 @@ def Test_TrimGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
 
-   assert GiftShopCoordinator.trim_gift_shop_opening_schedule_overlaps(
+   result = GiftShopCoordinator.trim_gift_shop_opening_schedule_overlaps(
       GIFT_SHOP_NAME,
       START_DATE,
       END_DATE,
@@ -239,4 +253,6 @@ def Test_TrimGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True

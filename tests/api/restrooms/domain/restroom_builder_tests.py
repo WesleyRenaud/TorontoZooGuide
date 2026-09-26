@@ -34,24 +34,30 @@ def _restroom_record( **overrides: object ) -> RestroomRecord:
 
 
 def Test_IsStatusActive_TestVisitDateInRange_ExpectTrue() -> None:
-   assert RestroomBuilder.is_status_active(
+   flag = RestroomBuilder.is_status_active(
       _restroom_record(),
-      VISIT_DATE ) is True
+      VISIT_DATE )
+
+   assert flag is True
 
 
 def Test_IsStatusActive_TestVisitDateOutsideRange_ExpectFalse() -> None:
-   assert RestroomBuilder.is_status_active(
+   flag = RestroomBuilder.is_status_active(
       _restroom_record(),
-      OUTSIDE_VISIT_DATE ) is False
+      OUTSIDE_VISIT_DATE )
+
+   assert flag is False
 
 
 def Test_IsAlertActive_TestActiveAlert_ExpectTrue() -> None:
-   assert RestroomBuilder.is_alert_active(
+   flag = RestroomBuilder.is_alert_active(
       _restroom_record(
          alert_message=ALERT_MESSAGE,
          alert_start_date='2026-06-01',
          alert_end_date='2026-06-30' ),
-      VISIT_DATE ) is True
+      VISIT_DATE )
+
+   assert flag is True
 
 
 def Test_BuildRestroom_TestClosedStatus_ExpectClosedMessageOnlyWhenActive() -> None:
@@ -86,4 +92,6 @@ def Test_BuildRestrooms_TestClosedRestroom_ExpectExcludedUnlessRequested() -> No
 def Test_IsStatusActive_TestNullIsClosed_ExpectFalse() -> None:
    record = _restroom_record( is_closed=None )
 
-   assert RestroomBuilder.is_status_active( record, target_date=VISIT_DATE ) is False
+   flag = RestroomBuilder.is_status_active( record, target_date=VISIT_DATE )
+
+   assert flag is False

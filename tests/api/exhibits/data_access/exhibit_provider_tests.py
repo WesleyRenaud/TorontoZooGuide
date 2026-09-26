@@ -65,7 +65,9 @@ def _seed_exhibits( conn: sqlite3.Connection ) -> None:
 
 def Test_FetchExhibitNames_TestEmpty_ExpectEmptyList(
       exhibit_provider_conn: sqlite3.Connection ) -> None:
-   assert ExhibitProvider.fetch_exhibit_names( exhibit_provider_conn ) == []
+   exhibit_names = ExhibitProvider.fetch_exhibit_names( exhibit_provider_conn )
+
+   assert exhibit_names == []
 
 
 def Test_FetchExhibitNames_TestPopulated_ExpectNames(
@@ -92,9 +94,11 @@ def Test_FetchExhibitNamesInRegion_TestEmptyRegion_ExpectEmptyList(
       exhibit_provider_conn: sqlite3.Connection ) -> None:
    _seed_exhibits( exhibit_provider_conn )
 
-   assert ExhibitProvider.fetch_exhibit_names_in_region(
+   exhibit_names_in_region = ExhibitProvider.fetch_exhibit_names_in_region(
       exhibit_provider_conn,
-      EURASIA ) == []
+      EURASIA )
+
+   assert exhibit_names_in_region == []
 
 
 def Test_FetchRegionExhibitRows_TestMixedRegions_ExpectOrderedRowsIncludingNullExhibit(
@@ -117,9 +121,11 @@ def Test_FetchAnimalNamesInExhibit_TestEmpty_ExpectEmptyList(
       exhibit_provider_conn: sqlite3.Connection ) -> None:
    _seed_exhibits( exhibit_provider_conn )
 
-   assert ExhibitProvider.fetch_animal_names_in_exhibit(
+   animal_names_in_exhibit = ExhibitProvider.fetch_animal_names_in_exhibit(
       exhibit_provider_conn,
-      SAVANNA ) == []
+      SAVANNA )
+
+   assert animal_names_in_exhibit == []
 
 
 def Test_FetchAnimalNamesInExhibit_TestPopulated_ExpectDistinctSpecies(

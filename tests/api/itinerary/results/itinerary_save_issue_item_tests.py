@@ -15,16 +15,15 @@ def Test_FromGuardiansTalkDiff_TestTalk_ExpectIssueItemDict() -> None:
       location='Africa Savanna' )
 
    issue_item = ItinerarySaveIssueItem.from_guardians_talk_diff( talk )
+   result = issue_item.to_dict()
 
-   assert issue_item.to_dict() == {
-      'name': 'African Lion',
-      'start_time': '2:00 PM',
-      'end_time': '2:30 PM',
-      'item_type': ItinerarySaveIssueItemType.GUARDIANS_TALK,
-      'meeting_spot': '',
-      'location': 'Africa Savanna',
-      'link': '',
-   }
+   assert result[ 'name' ] == talk.name
+   assert result[ 'start_time' ] == talk.start_time
+   assert result[ 'end_time' ] == talk.end_time
+   assert result[ 'item_type' ] == ItinerarySaveIssueItemType.GUARDIANS_TALK
+   assert result[ 'meeting_spot' ] == ''
+   assert result[ 'location' ] == talk.location
+   assert result[ 'link' ] == ''
 
 
 def Test_FromWildEncounterDiff_TestEncounter_ExpectIssueItemDict() -> None:
@@ -37,13 +36,12 @@ def Test_FromWildEncounterDiff_TestEncounter_ExpectIssueItemDict() -> None:
       link='https://www.torontozoo.com/tickets/weafricarainforest' )
 
    issue_item = ItinerarySaveIssueItem.from_wild_encounter_diff( encounter )
+   result = issue_item.to_dict()
 
-   assert issue_item.to_dict() == {
-      'name': 'African Rainforest',
-      'start_time': '2:00 PM',
-      'end_time': '2:45 PM',
-      'item_type': ItinerarySaveIssueItemType.WILD_ENCOUNTER,
-      'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
-      'location': '',
-      'link': 'https://www.torontozoo.com/tickets/weafricarainforest',
-   }
+   assert result[ 'name' ] == encounter.name
+   assert result[ 'start_time' ] == encounter.start_time
+   assert result[ 'end_time' ] == encounter.end_time
+   assert result[ 'item_type' ] == ItinerarySaveIssueItemType.WILD_ENCOUNTER
+   assert result[ 'meeting_spot' ] == encounter.meeting_spot
+   assert result[ 'location' ] == ''
+   assert result[ 'link' ] == encounter.link

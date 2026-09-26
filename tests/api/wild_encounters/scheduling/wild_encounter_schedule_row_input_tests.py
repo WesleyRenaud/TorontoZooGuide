@@ -68,4 +68,6 @@ def Test_ParseRows_TestEquivalentTimeFormats_ExpectDistinctEncounterTimes() -> N
 
 
 def Test_FromWire_TestInvalidRow_ExpectNone() -> None:
-   assert WildEncounterScheduleRowInput.from_wire( {} ) is None
+   result = WildEncounterScheduleRowInput.from_wire( {} )
+
+   assert result is None

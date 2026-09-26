@@ -12,6 +12,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -33,6 +34,18 @@ test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus
    ControllerHelper.hideConsolePanel = () => {};
 
    try {
+      const species = 'Lion';
+      const exhibit = 'Savanna';
+      const startDate = '2026-06-01';
+      const message = 'Behind glass';
+      const panelEl = { id: 'alert-panel' };
+      const formValues = {
+         species,
+         exhibit,
+         startDate,
+         endDate: '',
+         message,
+      };
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
       const cancelButtonEl = document.createElement('button');
@@ -43,7 +56,7 @@ test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus
          showButtonEl,
          submitButtonEl,
          cancelButtonEl,
-         panelEl: { id: 'alert-panel' },
+         panelEl,
          statusEl: {},
          formFieldEls: [speciesEl, exhibitEl],
          activatePanel: () => {},
@@ -51,32 +64,20 @@ test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus
          populateOptions: () => {},
          targetEl: exhibitEl,
          loadErrorMessage: 'load failed',
-         getFormValues: () => ({
-            species: 'Lion',
-            exhibit: 'Savanna',
-            startDate: '2026-06-01',
-            endDate: '',
-            message: 'Behind glass',
-         }),
+         getFormValues: () => formValues,
          validateForm: () => null,
          submitAlert: async (payload) => {
-            assert.deepEqual(payload, {
-               species: 'Lion',
-               exhibit: 'Savanna',
-               startDate: '2026-06-01',
-               endDate: '',
-               message: 'Behind glass',
-            });
-            return { success: true, species: 'Lion', exhibit: 'Savanna' };
+            assert.deepEqual(payload, formValues);
+            return { success: true, species, exhibit };
          },
          successMessage: result => `Alerted ${result.species}`,
       });
 
       await controller.show();
-      assert.deepEqual(activations, [{ id: 'alert-panel' }]);
-
       await submitButtonEl.listeners.click();
-      assert.ok(statuses.some((entry) => entry[1] === 'Alerted Lion' && entry[2] === 'is-success'));
+
+      assert.deepEqual(activations, [panelEl]);
+      assert.ok(statuses.some((entry) => entry[1] === `Alerted ${species}` && entry[2] === 'is-success'));
    } finally {
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
       ControllerHelper.reloadOptions = originalReload;
@@ -85,6 +86,7 @@ test('Test_CreateEntityAlertFormController_TestShowAndSubmitSuccess_ExpectStatus
       ControllerHelper.hideConsolePanel = originalHide;
    }
 });
+
 
 test('Test_CreateEntityAlertFormController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];
@@ -173,6 +175,7 @@ test('Test_CreateEntityAlertFormController_TestValidationAndFailures_ExpectError
    }
 });
 
+
 test('Test_CreateEntityAlertFormController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
    const resets = [];
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -216,6 +219,7 @@ test('Test_CreateEntityAlertFormController_TestReloadOptionsThrows_ExpectClearsF
       ControllerHelper.resetFormFields = originalReset;
    }
 });
+
 
 test('Test_CreateEntityAlertFormController_TestSpeciesLoaders_ExpectAutofillWired', () => {
    const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;

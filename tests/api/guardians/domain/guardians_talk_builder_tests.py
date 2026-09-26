@@ -17,31 +17,37 @@ def _talk_record( *, name: str, location: str ) -> MeetTheGuardiansTalkRecord:
 
 
 def Test_BuildDetails_TestNoIncludeFilter_ExpectAllTalksSorted() -> None:
-   talks = GuardiansTalkBuilder.build_details( [
-      _talk_record( name='Zebra Talk', location='Africa Savanna' ),
-      _talk_record( name='African Lion', location='Africa Savanna' ),
-   ] )
+   zebra_talk = _talk_record( name='Zebra Talk', location='Africa Savanna' )
+   african_lion = _talk_record( name='African Lion', location='Africa Savanna' )
+   records = [ zebra_talk, african_lion ]
+
+   talks = GuardiansTalkBuilder.build_details( records )
 
    assert [ ( talk.name, talk.location ) for talk in talks ] == [
-      ( 'African Lion', 'Africa Savanna' ),
-      ( 'Zebra Talk', 'Africa Savanna' ),
+      ( african_lion.name, african_lion.location ),
+      ( zebra_talk.name, zebra_talk.location ),
    ]
 
 
 def Test_BuildDetails_TestIncludeFilter_ExpectMatchingTalkOnly() -> None:
-   talks = GuardiansTalkBuilder.build_details(
-      [
-         _talk_record( name='African Lion', location='Africa Savanna' ),
-         _talk_record( name='Zebra Talk', location='Africa Savanna' ),
-      ],
-      guardians_talks_to_include=[ 'african lion' ] )
+   african_lion = _talk_record( name='African Lion', location='Africa Savanna' )
+   zebra_talk = _talk_record( name='Zebra Talk', location='Africa Savanna' )
+   records = [ african_lion, zebra_talk ]
+   include = [ african_lion.name.lower() ]
 
-   assert [ talk.name for talk in talks ] == [ 'African Lion' ]
+   talks = GuardiansTalkBuilder.build_details(
+      records,
+      guardians_talks_to_include=include )
+
+   assert [ talk.name for talk in talks ] == [ african_lion.name ]
 
 
 def Test_BuildDetails_TestEmptyIncludeList_ExpectNoTalks() -> None:
+   african_lion = _talk_record( name='African Lion', location='Africa Savanna' )
+   records = [ african_lion ]
+
    talks = GuardiansTalkBuilder.build_details(
-      [ _talk_record( name='African Lion', location='Africa Savanna' ) ],
+      records,
       guardians_talks_to_include=[] )
 
    assert talks == []

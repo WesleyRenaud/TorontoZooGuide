@@ -8,6 +8,7 @@ import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../../../../scripts
 import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateCancelWildEncounterOccurrencePanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -32,15 +33,14 @@ test('Test_CreateCancelWildEncounterOccurrencePanel_TestWiring_ExpectShellOption
       const result = CancelWildEncounterOccurrenceView.createCancelWildEncounterOccurrencePanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'cancelWildEncounterOccurrencePanel');
       assert.equal(captured.title, Strings.panelTitles.cancelWildEncounterOccurrence);
       assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'cancelWildEncounterOccurrenceName');
-      assert.equal(captured.bodyChildren[1].inputId, 'cancelWildEncounterOccurrenceDate');
-      assert.equal(captured.bodyChildren[2].inputId, 'cancelWildEncounterOccurrenceTimes');
-      assert.equal(captured.bodyChildren[2].helpText, Strings.help.cancelOccurrenceTimes);
-      assert.equal(captured.bodyChildren[3].submitId, 'submitCancelWildEncounterOccurrence');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'cancelWildEncounterOccurrenceName');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).inputId, 'cancelWildEncounterOccurrenceDate');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'cancelWildEncounterOccurrenceTimes');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).helpText, Strings.help.cancelOccurrenceTimes);
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).submitId, 'submitCancelWildEncounterOccurrence');
       assert.equal(captured.bodyChildren[4].statusId, 'cancelWildEncounterOccurrenceStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;

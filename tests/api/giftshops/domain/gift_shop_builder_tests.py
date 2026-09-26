@@ -81,10 +81,18 @@ def _override_record( **overrides: object ) -> GiftShopScheduleOverrideRecord:
 
 
 def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() -> None:
-   assert GiftShopBuilder.calculate_likelihood( None ) == 100
-   assert GiftShopBuilder.calculate_likelihood( -0.5 ) == 0
-   assert GiftShopBuilder.calculate_likelihood( 0.444 ) == 44
-   assert GiftShopBuilder.calculate_likelihood( 1.5 ) == 100
+   result = GiftShopBuilder.calculate_likelihood( None )
+
+   assert result == 100
+   result = GiftShopBuilder.calculate_likelihood( -0.5 )
+
+   assert result == 0
+   result = GiftShopBuilder.calculate_likelihood( 0.444 )
+
+   assert result == 44
+   result = GiftShopBuilder.calculate_likelihood( 1.5 )
+
+   assert result == 100
 
 
 def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
@@ -187,10 +195,12 @@ def Test_ResolveContext_TestVisitDay_ExpectVisitContext() -> None:
 def Test_IsOpenOnDay_TestMondaySchedule_ExpectOpenOnMonday() -> None:
    schedule = _schedule_record( monday=True )
 
-   assert GiftShopBuilder.is_open_on_day(
+   flag = GiftShopBuilder.is_open_on_day(
       schedule,
       weekday=VISIT_DATE.weekday(),
-      is_holiday=False ) is True
+      is_holiday=False )
+
+   assert flag is True
 
 
 def Test_GetActiveScheduleOverrideStatus_TestClosedOverride_ExpectClosed() -> None:

@@ -4,4 +4,9 @@ from api.itinerary.data_access.itinerary_name_key_builder import ItineraryNameKe
 
 
 def Test_Build_TestMixedCaseAndWhitespace_ExpectNormalizedKey() -> None:
-   assert ItineraryNameKeyBuilder.build( '  African Lion  ' ) == 'african lion'
+   species = 'African Lion'
+   value = f'  { species }  '
+
+   key = ItineraryNameKeyBuilder.build( value )
+
+   assert key == species.lower()

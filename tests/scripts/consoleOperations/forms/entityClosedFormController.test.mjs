@@ -10,6 +10,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateEntityClosedFormController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -31,18 +32,20 @@ test('Test_CreateEntityClosedFormController_TestShowAndSubmitSuccess_ExpectStatu
    ControllerHelper.validateOptionalDateRange = () => null;
 
    try {
+      const entity = 'Near Cafe';
+      const panelEl = { id: 'closed-form' };
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
       const entityEl = document.createElement('select');
       const messageEl = document.createElement('input');
-      entityEl.value = 'Near Cafe';
+      entityEl.value = entity;
       messageEl.value = 'Closed';
 
       const controller = EntityClosedFormController.createEntityClosedFormController({
          showButtonEl,
          submitButtonEl,
          cancelButtonEl: document.createElement('button'),
-         panelEl: { id: 'closed-form' },
+         panelEl,
          statusEl: {},
          entityEl,
          startDateEl: document.createElement('input'),
@@ -57,12 +60,12 @@ test('Test_CreateEntityClosedFormController_TestShowAndSubmitSuccess_ExpectStatu
       });
 
       await showButtonEl.listeners.click();
-      assert.deepEqual(activations, [{ id: 'closed-form' }]);
-
       await submitButtonEl.listeners.click();
+
+      assert.deepEqual(activations, [panelEl]);
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === Strings.status.closed('Near Cafe') && entry[2] === 'is-success'
+            entry[1] === Strings.status.closed(entity) && entry[2] === 'is-success'
          ))
       );
 
@@ -75,6 +78,7 @@ test('Test_CreateEntityClosedFormController_TestShowAndSubmitSuccess_ExpectStatu
       ControllerHelper.validateOptionalDateRange = originalValidate;
    }
 });
+
 
 test('Test_CreateEntityClosedFormController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];
@@ -157,6 +161,7 @@ test('Test_CreateEntityClosedFormController_TestValidationAndFailures_ExpectErro
       ApiErrorMessageResolver.resolveConsoleMutationError = originalResolve;
    }
 });
+
 
 test('Test_CreateEntityClosedFormController_TestNoDateRange_ExpectSkipsDateValidation', async () => {
    const statuses = [];

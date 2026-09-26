@@ -26,12 +26,12 @@ def stub_emergency_intercom_coordinator( monkeypatch: pytest.MonkeyPatch ) -> St
 
 def Test_GetEmergencyIntercoms_TestHttpRequest_ExpectReturnsEmergencyIntercoms(
       stub_emergency_intercom_coordinator: StubEmergencyIntercomCoordinator ) -> None:
+   emergency_intercom = _sample_emergency_intercom()
    handler = make_handler( '/get-emergency-intercoms', {} )
 
    server.HttpRequestHandler.do_POST( handler )
-
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
    assert stub_emergency_intercom_coordinator.calls == [ ( 'get_emergency_intercoms', {} ) ]
-   assert result[ 'emergency_intercoms' ] == [ _sample_emergency_intercom().to_dict() ]
+   assert result[ 'emergency_intercoms' ] == [ emergency_intercom.to_dict() ]

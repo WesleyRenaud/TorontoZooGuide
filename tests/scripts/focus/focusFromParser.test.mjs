@@ -7,6 +7,7 @@ import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_InitFocusFromQuery_TestMissingRequest_ExpectNoOp', () => {
    const original = FocusFromQueryHelper.getFocusRequestFromQuery;
    FocusFromQueryHelper.getFocusRequestFromQuery = () => null;
@@ -14,29 +15,33 @@ test('Test_InitFocusFromQuery_TestMissingRequest_ExpectNoOp', () => {
 
    try {
       FocusFromParser.initFocusFromQuery({ onFocus: (request) => focuses.push(request) });
+
       assert.deepEqual(focuses, []);
    } finally {
       FocusFromQueryHelper.getFocusRequestFromQuery = original;
    }
 });
 
+
 test('Test_InitFocusFromQuery_TestRequest_ExpectFocusAndReplaceState', () => {
    const originalGet = FocusFromQueryHelper.getFocusRequestFromQuery;
    const replaces = [];
    const focuses = [];
-
-   FocusFromQueryHelper.getFocusRequestFromQuery = () => ({ type: 'animal', id: 'lion' });
+   const request = { type: 'animal', id: 'lion' };
+   const pathname = '/map';
+   FocusFromQueryHelper.getFocusRequestFromQuery = () => request;
    globalThis.history = {
       replaceState: (...args) => { replaces.push(args); },
    };
-   globalThis.window.location = { pathname: '/map' };
+   globalThis.window.location = { pathname };
 
    try {
       FocusFromParser.initFocusFromQuery({
-         onFocus: (request) => focuses.push(request),
+         onFocus: (nextRequest) => focuses.push(nextRequest),
       });
-      assert.deepEqual(focuses, [{ type: 'animal', id: 'lion' }]);
-      assert.deepEqual(replaces, [[{}, '', '/map']]);
+
+      assert.deepEqual(focuses, [request]);
+      assert.deepEqual(replaces, [[{}, '', pathname]]);
    } finally {
       FocusFromQueryHelper.getFocusRequestFromQuery = originalGet;
       delete globalThis.history;

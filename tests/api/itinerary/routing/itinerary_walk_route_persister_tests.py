@@ -10,28 +10,29 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
+from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_walk_route import ItineraryWalkRoute
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
 from api.itinerary.routing.itinerary_walk_route_persister import ItineraryWalkRoutePersister
 from api.itinerary.routing.itinerary_walk_route_stop import ItineraryWalkRouteStop
 from api.itinerary.routing.walk_route_point import WalkRoutePoint
 from api.itinerary.scheduling.items.itinerary_schedule_context_builder import ItineraryScheduleContextBuilder
-from api.models import Itinerary
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
+ENTRANCE_WALK_NODE_ID = 'n-1'
 BUILT_ROUTE = ItineraryWalkRoute(
    stops=[
       ItineraryWalkRouteStop(
          schedule_item_kind=ScheduleItemKind.ENTRANCE,
-         item_key='entrance',
-         walk_node_id='n-1' ),
+         item_key=ENTRANCE_ITEM_KEY,
+         walk_node_id=ENTRANCE_WALK_NODE_ID ),
    ],
    legs=[],
    points=[
       WalkRoutePoint(
-         node_id='n-1',
+         node_id=ENTRANCE_WALK_NODE_ID,
          x=0.0,
          y=0.0,
          x_px=0.0,
@@ -88,12 +89,14 @@ def Test_RebuildAndPersist_TestSavedItinerary_ExpectBuiltRoutePersisted(
    conn = sqlite3.connect( ':memory:' )
 
    try:
-      assert ItineraryWalkRoutePersister.rebuild_and_persist(
+      persisted = ItineraryWalkRoutePersister.rebuild_and_persist(
          conn,
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
          wild_encounter_coordinator=WildEncounterCoordinator )
-      assert stub_itinerary_walk_route_persister_dependencies == [ BUILT_ROUTE ]
    finally:
       conn.close()
+
+   assert persisted is True
+   assert stub_itinerary_walk_route_persister_dependencies == [ BUILT_ROUTE ]

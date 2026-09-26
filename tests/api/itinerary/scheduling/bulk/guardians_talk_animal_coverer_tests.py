@@ -13,6 +13,7 @@ from api.itinerary.scheduling.bulk.guardians_talk_animal_coverer import Guardian
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import Position, ScheduleItemKind
 
 
@@ -44,6 +45,8 @@ DELETED_CARIBOU_TALK = GuardiansTalkDiff(
 
 PENGUIN_TALK = 'African Penguin'
 LION_TALK = 'African Lion'
+LION_TALK_START_TIME = '11:00 AM'
+LION_TALK_END_TIME = '11:30 AM'
 OTTER_TALK = 'North American River Otter'
 
 PENGUIN_INDOOR_ROW = ItineraryAnimalRecord(
@@ -128,8 +131,8 @@ def _penguin_loop_pin() -> LoopSchedulePin:
       loop_id='africa_savanna_canadian_domain',
       viewing_spot_index=1,
       stop=_talk_stop( name=PENGUIN_TALK ),
-      start_seconds=11 * 3600,
-      end_seconds=11 * 3600 + 30 * 60,
+      start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
    )
 
 
@@ -138,8 +141,8 @@ def _lion_loop_pin() -> LoopSchedulePin:
       loop_id='africa_savanna_canadian_domain',
       viewing_spot_index=0,
       stop=_talk_stop( name=LION_TALK ),
-      start_seconds=11 * 3600,
-      end_seconds=11 * 3600 + 30 * 60,
+      start_seconds=DateValues.time_value_in_seconds( LION_TALK_START_TIME ),
+      end_seconds=DateValues.time_value_in_seconds( LION_TALK_END_TIME ),
    )
 
 
@@ -155,8 +158,8 @@ def _otter_loop_pin() -> LoopSchedulePin:
          start_time='2:00 PM',
          end_time='2:30 PM',
       ),
-      start_seconds=14 * 3600,
-      end_seconds=14 * 3600 + 30 * 60,
+      start_seconds=DateValues.time_value_in_seconds( '2:00 PM' ),
+      end_seconds=DateValues.time_value_in_seconds( '2:30 PM' ),
    )
 
 
@@ -423,8 +426,8 @@ def Test_ApplyAndRestore_TestPenguinOutdoor_ExpectIndoorUntouched(
       penguin_coverer_conn,
       talk_name=PENGUIN_TALK,
       talk_block=TimeBlock(
-         start_seconds=11 * 3600,
-         end_seconds=11 * 3600 + 30 * 60,
+         start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
       ),
       animal_rows=[
          ItineraryAnimalRecord(
@@ -448,7 +451,7 @@ def Test_ApplyAndRestore_TestPenguinOutdoor_ExpectIndoorUntouched(
 
    assert len( restored.animals ) == 1
    assert restored.animals[ Position.FIRST ].enclosure_name == 'Outdoor'
-   assert restored.replacement_end_seconds == 11 * 3600 + 5 * 60
+   assert restored.replacement_end_seconds == DateValues.time_value_in_seconds( '11:05 AM' )
 
    rows_by_enclosure = {
       row[ 'ENCLOSURE_NAME' ]: row
@@ -533,12 +536,15 @@ def Test_KeysToCover_TestAfricanLionLoopPin_ExpectLionRowOnly(
 def Test_ApplyAndRestore_TestAfricanLion_ExpectEightMinuteWindow(
       lion_coverer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   talk_start_time = LION_TALK_START_TIME
+   talk_end_time = LION_TALK_END_TIME
+   viewing_minutes = 8
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
       lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
-      lambda conn, species, exhibit, enclosure_name: 8 * 60 )
+      lambda conn, species, exhibit, enclosure_name: viewing_minutes * 60 )
 
    covered = GuardiansTalkAnimalCoverer.keys_to_cover(
       lion_coverer_conn,
@@ -556,8 +562,8 @@ def Test_ApplyAndRestore_TestAfricanLion_ExpectEightMinuteWindow(
 
    assert row is not None
    assert row[ 'COVERED_BY_TALK' ] == 1
-   assert row[ 'START_TIME' ] == '11:00 AM'
-   assert row[ 'END_TIME' ] == '11:30 AM'
+   assert row[ 'START_TIME' ] == talk_start_time
+   assert row[ 'END_TIME' ] == talk_end_time
 
    cur = lion_coverer_conn.cursor()
    restored = GuardiansTalkAnimalCoverer.restore_after_removed(
@@ -565,24 +571,26 @@ def Test_ApplyAndRestore_TestAfricanLion_ExpectEightMinuteWindow(
       lion_coverer_conn,
       talk_name=LION_TALK,
       talk_block=TimeBlock(
-         start_seconds=11 * 3600,
-         end_seconds=11 * 3600 + 30 * 60,
+         start_seconds=DateValues.time_value_in_seconds( talk_start_time ),
+         end_seconds=DateValues.time_value_in_seconds( talk_end_time ),
       ),
       animal_rows=[
          ItineraryAnimalRecord(
             species='African Lion',
             exhibit='Africa Savanna',
             covered_by_talk=True,
-            start_time='11:00 AM',
-            end_time='11:30 AM',
+            start_time=talk_start_time,
+            end_time=talk_end_time,
          ),
       ],
    )
    lion_coverer_conn.commit()
    cur.close()
+   viewing_end_time = DateValues.add_minutes_to_time( talk_start_time, viewing_minutes )
 
    assert len( restored.animals ) == 1
-   assert restored.replacement_end_seconds == 11 * 3600 + 8 * 60
+   assert restored.replacement_end_seconds == DateValues.time_value_in_seconds(
+      viewing_end_time )
 
    row = lion_coverer_conn.execute(
       """   SELECT COVERED_BY_TALK, START_TIME, END_TIME
@@ -593,8 +601,8 @@ def Test_ApplyAndRestore_TestAfricanLion_ExpectEightMinuteWindow(
 
    assert row is not None
    assert row[ 'COVERED_BY_TALK' ] == 0
-   assert row[ 'START_TIME' ] == '11:00 AM'
-   assert row[ 'END_TIME' ] == '11:08 AM'
+   assert row[ 'START_TIME' ] == talk_start_time
+   assert row[ 'END_TIME' ] == viewing_end_time
 
 
 def Test_KeysToCover_TestLinkWithoutMatchingAnimalRow_ExpectEmpty(
@@ -714,8 +722,8 @@ def Test_RestoreAfterRemoved_TestMissingDuration_ExpectScheduleCleared(
       lion_coverer_conn,
       talk_name=LION_TALK,
       talk_block=TimeBlock(
-         start_seconds=11 * 3600,
-         end_seconds=11 * 3600 + 30 * 60,
+         start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
       ),
       animal_rows=[
          ItineraryAnimalRecord(
@@ -856,8 +864,8 @@ def Test_RestoreAfterRemoved_TestUncoveredLinkedAnimal_ExpectSkipped(
       lion_coverer_conn,
       talk_name=LION_TALK,
       talk_block=TimeBlock(
-         start_seconds=11 * 3600,
-         end_seconds=11 * 3600 + 30 * 60,
+         start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
       ),
       animal_rows=[
          ItineraryAnimalRecord(

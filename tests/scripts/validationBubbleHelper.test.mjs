@@ -6,81 +6,105 @@ import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_ResolveClassNames_TestOverrides_ExpectMerged', () => {
-   assert.deepEqual(ValidationBubbleHelper.resolveClassNames({
-      bubble: 'custom-bubble',
-   }), {
+   const bubble = 'custom-bubble';
+
+   const classNames = ValidationBubbleHelper.resolveClassNames({
+      bubble,
+   });
+
+   assert.deepEqual(classNames, {
       ...ValidationBubbleHelper.DEFAULT_CLASS_NAMES,
-      bubble: 'custom-bubble',
+      bubble,
    });
 });
+
 
 test('Test_PositionValidationBubble_TestBelowAnchor_ExpectStyles', () => {
+   const bubbleWidth = 100;
+   const bubbleHeight = 40;
+   const anchorLeft = 30;
+   const anchorTop = 10;
+   const anchorWidth = 40;
+   const anchorHeight = 20;
    const bubbleEl = document.createElement('div');
    const anchorEl = document.createElement('button');
    const properties = {};
-
    bubbleEl.getBoundingClientRect = () => ({
-      width: 100,
-      height: 40,
+      width: bubbleWidth,
+      height: bubbleHeight,
       top: 0,
       left: 0,
-      right: 100,
-      bottom: 40,
+      right: bubbleWidth,
+      bottom: bubbleHeight,
    });
    anchorEl.getBoundingClientRect = () => ({
-      width: 40,
-      height: 20,
-      top: 10,
-      left: 30,
-      right: 70,
-      bottom: 30,
+      width: anchorWidth,
+      height: anchorHeight,
+      top: anchorTop,
+      left: anchorLeft,
+      right: anchorLeft + anchorWidth,
+      bottom: anchorTop + anchorHeight,
    });
    bubbleEl.style.setProperty = (name, value) => {
       properties[name] = value;
    };
-
    globalThis.window.innerWidth = 400;
    globalThis.window.innerHeight = 400;
 
    ValidationBubbleHelper.positionValidationBubble(bubbleEl, anchorEl);
 
-   assert.equal(bubbleEl.style.left, '30px');
-   assert.equal(bubbleEl.style.top, '42px');
-   assert.equal(properties['--tzg-validation-bubble-arrow-left'], '20px');
+   assert.equal(bubbleEl.style.left, `${anchorLeft}px`);
+   assert.equal(
+      bubbleEl.style.top,
+      `${anchorTop + anchorHeight + ValidationBubbleHelper.ANCHOR_GAP}px`
+   );
+   assert.equal(
+      properties['--tzg-validation-bubble-arrow-left'],
+      `${anchorWidth / 2}px`
+   );
 });
 
+
 test('Test_PositionValidationBubble_TestNearEdges_ExpectClamped', () => {
+   const bubbleWidth = 120;
+   const bubbleHeight = 50;
+   const viewportSize = 400;
+   const anchorLeft = 350;
+   const anchorTop = 360;
+   const anchorSize = 20;
    const bubbleEl = document.createElement('div');
    const anchorEl = document.createElement('button');
    const properties = {};
-
    bubbleEl.getBoundingClientRect = () => ({
-      width: 120,
-      height: 50,
+      width: bubbleWidth,
+      height: bubbleHeight,
       top: 0,
       left: 0,
-      right: 120,
-      bottom: 50,
+      right: bubbleWidth,
+      bottom: bubbleHeight,
    });
    anchorEl.getBoundingClientRect = () => ({
-      width: 20,
-      height: 20,
-      top: 360,
-      left: 350,
-      right: 370,
-      bottom: 380,
+      width: anchorSize,
+      height: anchorSize,
+      top: anchorTop,
+      left: anchorLeft,
+      right: anchorLeft + anchorSize,
+      bottom: anchorTop + anchorSize,
    });
    bubbleEl.style.setProperty = (name, value) => {
       properties[name] = value;
    };
-
-   globalThis.window.innerWidth = 400;
-   globalThis.window.innerHeight = 400;
+   globalThis.window.innerWidth = viewportSize;
+   globalThis.window.innerHeight = viewportSize;
 
    ValidationBubbleHelper.positionValidationBubble(bubbleEl, anchorEl);
 
-   assert.equal(bubbleEl.style.left, '268px');
-   assert.ok(Number.parseInt(bubbleEl.style.top, 10) < 360);
+   assert.equal(
+      bubbleEl.style.left,
+      `${viewportSize - bubbleWidth - ValidationBubbleHelper.VIEWPORT_PADDING}px`
+   );
+   assert.ok(Number.parseInt(bubbleEl.style.top, 10) < anchorTop);
    assert.ok(properties['--tzg-validation-bubble-arrow-left']);
 });

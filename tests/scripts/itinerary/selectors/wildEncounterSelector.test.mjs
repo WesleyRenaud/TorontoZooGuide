@@ -7,22 +7,23 @@ import { WildEncounterSelectorModel } from '../../../../scripts/itinerary/select
 import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { Strings } from '../../../../scripts/strings.js';
 
+
 test('Test_CreateItineraryWildEncounterSelectorController_TestWiring_ExpectFactoryOptions', () => {
    const original = CreateScheduledOccurrenceSelector.createScheduledOccurrenceSelectorController;
    let captured;
-
+   const controllerResult = { selector: true };
+   const mountEl = { id: 'mount' };
    CreateScheduledOccurrenceSelector.createScheduledOccurrenceSelectorController = (options) => {
       captured = options;
-      return { selector: true };
+      return controllerResult;
    };
 
    try {
-      assert.deepEqual(
-         WildEncounterSelector.createItineraryWildEncounterSelectorController({
-            mountEl: { id: 'mount' },
-         }),
-         { selector: true }
-      );
+      const controller = WildEncounterSelector.createItineraryWildEncounterSelectorController({
+         mountEl,
+      });
+
+      assert.deepEqual(controller, controllerResult);
       assert.equal(WildEncounterSelector.STORAGE_KEY, StorageKeys.WILD_KEY);
       assert.equal(captured.storageKey, WildEncounterSelector.STORAGE_KEY);
       assert.equal(captured.responseKey, 'wild_encounters');

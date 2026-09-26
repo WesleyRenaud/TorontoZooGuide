@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from api.shared.enums.position import Position
+from api.animals.search.species_exhibit_key import SpeciesExhibitKey
+from api.animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from api.transportation.data_access.transportation_animal_record import TransportationAnimalRecord
 
 
-def Test_ViewingSpotAndLegKey_TestGiraffeOutdoor_ExpectNormalizedKeys() -> None:
+def Test_ViewingSpotKey_TestGiraffeOutdoor_ExpectNormalizedKey() -> None:
    record = TransportationAnimalRecord(
       transportation='Zoomobile',
       from_station='Canadian Domain Zoomobile Station',
@@ -13,10 +14,40 @@ def Test_ViewingSpotAndLegKey_TestGiraffeOutdoor_ExpectNormalizedKeys() -> None:
       exhibit='Africa Savanna',
       enclosure_name='Outdoor' )
 
-   assert record.viewing_spot_key()[ Position.FIRST ] == 'masai giraffe'
-   assert record.leg_key() == (
-      'Zoomobile',
-      'Canadian Domain Zoomobile Station',
-      'Africa Zoomobile Station',
-   )
-   assert record.species_exhibit_key().species == 'masai giraffe'
+   key = record.viewing_spot_key()
+
+   assert key == ViewingSpotKeyBuilder.from_values(
+      record.species,
+      record.exhibit,
+      record.enclosure_name )
+
+
+def Test_LegKey_TestGiraffeOutdoor_ExpectStations() -> None:
+   record = TransportationAnimalRecord(
+      transportation='Zoomobile',
+      from_station='Canadian Domain Zoomobile Station',
+      to_station='Africa Zoomobile Station',
+      species='Masai Giraffe',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor' )
+
+   key = record.leg_key()
+
+   assert key == (
+      record.transportation,
+      record.from_station,
+      record.to_station )
+
+
+def Test_SpeciesExhibitKey_TestGiraffeOutdoor_ExpectNormalizedSpecies() -> None:
+   record = TransportationAnimalRecord(
+      transportation='Zoomobile',
+      from_station='Canadian Domain Zoomobile Station',
+      to_station='Africa Zoomobile Station',
+      species='Masai Giraffe',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor' )
+
+   key = record.species_exhibit_key()
+
+   assert key == SpeciesExhibitKey.from_values( record.species, record.exhibit )

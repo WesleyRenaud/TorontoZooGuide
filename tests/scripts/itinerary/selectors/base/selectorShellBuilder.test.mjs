@@ -7,25 +7,34 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_BuildSelectorShell_TestDefaults_ExpectShellParts', () => {
+   const topTitle = 'Builder';
+   const heading = 'Animals';
+   const subtitle = 'Pick animals';
+
    const shell = SelectorShellBuilder.buildSelectorShell({
-      topTitle: 'Builder',
-      h1: 'Animals',
-      subtitle: 'Pick animals',
+      topTitle,
+      h1: heading,
+      subtitle,
    });
 
    assert.equal(shell.root.className, 'itin-overlay');
    assert.equal(shell.inputEl.placeholder, Strings.itinerary.searchPlaceholder);
    assert.equal(shell.nextButton.textContent, Strings.itinerary.actions.next);
    assert.equal(shell.finishButton.textContent, Strings.itinerary.actions.finish);
-   assert.match(shell.root.textContent, /Animals/);
-   assert.match(shell.root.textContent, /Pick animals/);
+   assert.match(shell.root.textContent, new RegExp(heading));
+   assert.match(shell.root.textContent, new RegExp(subtitle));
 });
 
+
 test('Test_BuildSelectorShell_TestHideNext_ExpectNullNext', () => {
+   const topTitle = 'Builder';
+   const heading = 'Done';
+
    const shell = SelectorShellBuilder.buildSelectorShell({
-      topTitle: 'Builder',
-      h1: 'Done',
+      topTitle,
+      h1: heading,
       subtitle: '',
       hideNextButton: true,
    });

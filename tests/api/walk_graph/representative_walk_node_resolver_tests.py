@@ -37,25 +37,33 @@ TEST_GRAPH: WalkGraph = {
 }
 
 def Test_Resolve_TestEmptyCandidates_ExpectNone() -> None:
-   assert RepresentativeWalkNodeResolver.resolve(
+   result = RepresentativeWalkNodeResolver.resolve(
       TEST_GRAPH,
       FROM_NODE_ID,
-      [] ) is None
+      [] )
+
+   assert result is None
 
 def Test_Resolve_TestSingleCandidate_ExpectThatId() -> None:
-   assert RepresentativeWalkNodeResolver.resolve(
+   result = RepresentativeWalkNodeResolver.resolve(
       TEST_GRAPH,
       FROM_NODE_ID,
-      [ FAR_NODE_ID ] ) == FAR_NODE_ID
+      [ FAR_NODE_ID ] )
+
+   assert result == FAR_NODE_ID
 
 def Test_Resolve_TestMultipleCandidates_ExpectClosest() -> None:
-   assert RepresentativeWalkNodeResolver.resolve(
+   result = RepresentativeWalkNodeResolver.resolve(
       TEST_GRAPH,
       FROM_NODE_ID,
-      [ FAR_NODE_ID, NEAR_NODE_ID ] ) == NEAR_NODE_ID
+      [ FAR_NODE_ID, NEAR_NODE_ID ] )
+
+   assert result == NEAR_NODE_ID
 
 def Test_Resolve_TestUnreachableCandidates_ExpectSkipped() -> None:
-   assert RepresentativeWalkNodeResolver.resolve(
+   result = RepresentativeWalkNodeResolver.resolve(
       TEST_GRAPH,
       FROM_NODE_ID,
-      [ UNREACHABLE_NODE_ID, FAR_NODE_ID ] ) == FAR_NODE_ID
+      [ UNREACHABLE_NODE_ID, FAR_NODE_ID ] )
+
+   assert result == FAR_NODE_ID

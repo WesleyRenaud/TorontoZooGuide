@@ -15,6 +15,10 @@ CREATE TABLE ItineraryDate (
 );
 """
 
+ITINERARY_DATE = '2026-06-15'
+SEEDED_ARRIVAL_TIME = '9:30 AM'
+SEEDED_DEPARTURE_TIME = '5:00 PM'
+
 
 @pytest.fixture
 def time_provider_conn() -> sqlite3.Connection:
@@ -29,7 +33,7 @@ def time_provider_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ? );
       """,
-      ( '2026-06-15', '9:30 AM', '5:00 PM' ) )
+      ( ITINERARY_DATE, SEEDED_ARRIVAL_TIME, SEEDED_DEPARTURE_TIME ) )
    conn.commit()
 
    yield conn
@@ -51,35 +55,44 @@ def _fetch_times( conn: sqlite3.Connection ) -> tuple[ str | None, str | None ]:
 
 def Test_SetItineraryArrivalTime_TestNewTime_ExpectUpdatedArrivalOnly(
       time_provider_conn: sqlite3.Connection ) -> None:
-   assert ItineraryTimeProvider.set_itinerary_arrival_time(
+   arrival_time = '10:15 AM'
+
+   updated = ItineraryTimeProvider.set_itinerary_arrival_time(
       time_provider_conn,
-      '10:15 AM' )
+      arrival_time )
+   persisted_arrival_time, persisted_departure_time = _fetch_times(
+      time_provider_conn )
 
-   arrival_time, departure_time = _fetch_times( time_provider_conn )
-
-   assert arrival_time == '10:15 AM'
-   assert departure_time == '5:00 PM'
+   assert updated
+   assert persisted_arrival_time == arrival_time
+   assert persisted_departure_time == SEEDED_DEPARTURE_TIME
 
 
 def Test_SetItineraryDepartureTime_TestNewTime_ExpectUpdatedDepartureOnly(
       time_provider_conn: sqlite3.Connection ) -> None:
-   assert ItineraryTimeProvider.set_itinerary_departure_time(
+   departure_time = '4:15 PM'
+
+   updated = ItineraryTimeProvider.set_itinerary_departure_time(
       time_provider_conn,
-      '4:15 PM' )
+      departure_time )
+   persisted_arrival_time, persisted_departure_time = _fetch_times(
+      time_provider_conn )
 
-   arrival_time, departure_time = _fetch_times( time_provider_conn )
-
-   assert arrival_time == '9:30 AM'
-   assert departure_time == '4:15 PM'
+   assert updated
+   assert persisted_arrival_time == SEEDED_ARRIVAL_TIME
+   assert persisted_departure_time == departure_time
 
 
 def Test_SetItineraryArrivalTime_TestNull_ExpectClearedArrivalOnly(
       time_provider_conn: sqlite3.Connection ) -> None:
-   assert ItineraryTimeProvider.set_itinerary_arrival_time(
+   arrival_time = None
+
+   updated = ItineraryTimeProvider.set_itinerary_arrival_time(
       time_provider_conn,
-      None )
+      arrival_time )
+   persisted_arrival_time, persisted_departure_time = _fetch_times(
+      time_provider_conn )
 
-   arrival_time, departure_time = _fetch_times( time_provider_conn )
-
-   assert arrival_time is None
-   assert departure_time == '5:00 PM'
+   assert updated
+   assert persisted_arrival_time is None
+   assert persisted_departure_time == SEEDED_DEPARTURE_TIME

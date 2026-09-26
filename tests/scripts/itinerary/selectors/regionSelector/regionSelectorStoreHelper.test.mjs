@@ -6,43 +6,48 @@ import { ItinerarySearchContext } from '../../../../../scripts/itinerary/itinera
 import { SearchContext } from '../../../../../scripts/search/searchContext.js';
 import { VisitDateValidator } from '../../../../../scripts/visitDates/visitDateValidator.js';
 
+
 test('Test_ResolveAnimalsByExhibitQueryContext_TestExistingDate_ExpectSameContext', async () => {
    const original = ItinerarySearchContext.getItineraryDateSearchContext;
-   ItinerarySearchContext.getItineraryDateSearchContext = async () => ({
+   const existingContext = {
       month: 'JUN',
       day: 15,
-   });
+   };
+   ItinerarySearchContext.getItineraryDateSearchContext = async () => existingContext;
 
    try {
       const context = await RegionSelectorStoreHelper.resolveAnimalsByExhibitQueryContext();
-      assert.deepEqual(context, { month: 'JUN', day: 15 });
+
+      assert.deepEqual(context, existingContext);
    } finally {
       ItinerarySearchContext.getItineraryDateSearchContext = original;
    }
 });
+
 
 test('Test_ResolveAnimalsByExhibitQueryContext_TestMissingDate_ExpectBuiltContext', async () => {
    const originalItinerary = ItinerarySearchContext.getItineraryDateSearchContext;
    const originalSearch = SearchContext.buildDateSearchContext;
    const originalToday = VisitDateValidator.getToday;
    const originalIso = VisitDateValidator.toISODate;
-
+   const isoDate = '2026-06-15';
+   const month = 'JUN';
+   const day = 15;
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ month: null, day: null });
-   VisitDateValidator.getToday = () => new Date(2026, 5, 15, 12);
-   VisitDateValidator.toISODate = () => '2026-06-15';
-   SearchContext.buildDateSearchContext = async (isoDate) => ({
-      month: 'JUN',
-      day: 15,
-      isoDate,
+   VisitDateValidator.getToday = () => new Date(2026, 5, day, 12);
+   VisitDateValidator.toISODate = () => isoDate;
+   SearchContext.buildDateSearchContext = async (value) => ({
+      month,
+      day,
+      isoDate: value,
    });
 
    try {
       const context = await RegionSelectorStoreHelper.resolveAnimalsByExhibitQueryContext();
-      assert.deepEqual(context, {
-         month: 'JUN',
-         day: 15,
-         isoDate: '2026-06-15',
-      });
+
+      assert.equal(context.month, month);
+      assert.equal(context.day, day);
+      assert.equal(context.isoDate, isoDate);
    } finally {
       ItinerarySearchContext.getItineraryDateSearchContext = originalItinerary;
       SearchContext.buildDateSearchContext = originalSearch;

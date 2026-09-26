@@ -63,12 +63,16 @@ def _saved() -> SavedItinerary:
 
 
 def Test_Attractions_TestNone_ExpectEmpty() -> None:
-   assert BulkScheduleStopSelector.attractions(
+   result = BulkScheduleStopSelector.attractions(
       None,
-      only_previously_scheduled=False ) == []
-   assert BulkScheduleStopSelector.stops(
+      only_previously_scheduled=False )
+
+   assert result == []
+   result = BulkScheduleStopSelector.stops(
       None,
-      only_previously_scheduled=False ) == []
+      only_previously_scheduled=False )
+
+   assert result == []
 
 
 def Test_Attractions_TestAllVersusScheduledOnly_ExpectFiltered() -> None:
@@ -80,9 +84,11 @@ def Test_Attractions_TestAllVersusScheduledOnly_ExpectFiltered() -> None:
          saved,
          only_previously_scheduled=False )
    ] == [ CAROUSEL ]
-   assert BulkScheduleStopSelector.attractions(
+   result = BulkScheduleStopSelector.attractions(
       saved,
-      only_previously_scheduled=True ) == []
+      only_previously_scheduled=True )
+
+   assert result == []
 
 
 def Test_Animals_TestScheduledOnly_ExpectTimedAnimals() -> None:
@@ -274,9 +280,11 @@ def Test_Stops_TestClearedAttractionSchedule_ExpectCarouselStillSelected() -> No
          saved,
          only_previously_scheduled=False )
    ] == [ CAROUSEL ]
-   assert BulkScheduleStopSelector.attractions(
+   result = BulkScheduleStopSelector.attractions(
       saved,
-      only_previously_scheduled=True ) == []
+      only_previously_scheduled=True )
+
+   assert result == []
    assert len( stops ) == 2
 
 
@@ -306,11 +314,15 @@ def Test_Transportations_TestScheduledOnly_ExpectTimedRows() -> None:
 
 
 def Test_TransitTransportations_TestNone_ExpectEmpty() -> None:
-   assert BulkScheduleStopSelector.transit_transportations( None ) == []
+   result = BulkScheduleStopSelector.transit_transportations( None )
+
+   assert result == []
 
 
 def Test_StopsMatchingPrevious_TestNoneBeforeClear_ExpectEmpty() -> None:
-   assert BulkScheduleStopSelector.stops_matching_previous(
+   result = BulkScheduleStopSelector.stops_matching_previous(
       None,
       _saved(),
-   ) == []
+   )
+
+   assert result == []

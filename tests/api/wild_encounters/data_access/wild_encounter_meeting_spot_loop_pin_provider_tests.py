@@ -56,8 +56,10 @@ def _insert_meeting_spot(
 
 def Test_FetchMeetingSpotLoopPinsByName_TestEmpty_ExpectEmptyDict(
       meeting_spot_loop_pin_conn: sqlite3.Connection ) -> None:
-   assert WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name(
-      meeting_spot_loop_pin_conn ) == {}
+   meeting_spot_loop_pins_by_name = WildEncounterMeetingSpotLoopPinProvider.fetch_meeting_spot_loop_pins_by_name(
+      meeting_spot_loop_pin_conn )
+
+   assert meeting_spot_loop_pins_by_name == {}
 
 def Test_FetchMeetingSpotLoopPinsByName_TestPinnedAndUnpinned_ExpectPinnedOnly(
       meeting_spot_loop_pin_conn: sqlite3.Connection ) -> None:

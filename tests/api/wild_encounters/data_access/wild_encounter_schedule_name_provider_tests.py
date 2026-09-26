@@ -60,9 +60,11 @@ def _insert_schedule(
 
 def Test_FetchScheduledWildEncounterNames_TestEmpty_ExpectEmptyList(
       wild_encounter_schedule_name_conn: sqlite3.Connection ) -> None:
-   assert WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
+   scheduled_wild_encounter_names = WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
       wild_encounter_schedule_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert scheduled_wild_encounter_names == []
 
 
 def Test_FetchScheduledWildEncounterNames_TestCurrentAndFuture_ExpectDistinctSortedEncounters(
@@ -90,9 +92,11 @@ def Test_FetchScheduledWildEncounterNames_TestCurrentAndFuture_ExpectDistinctSor
       end_date=None,
       encounter_time='3:30 PM' )
 
-   assert WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
+   scheduled_wild_encounter_names = WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
       wild_encounter_schedule_name_conn,
-      TODAY ) == [ GIRAFFE, KANGAROO ]
+      TODAY )
+
+   assert scheduled_wild_encounter_names == [ GIRAFFE, KANGAROO ]
 
 
 def Test_FetchScheduledWildEncounterNames_TestExpired_ExpectExcluded(
@@ -103,9 +107,11 @@ def Test_FetchScheduledWildEncounterNames_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
+   scheduled_wild_encounter_names = WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
       wild_encounter_schedule_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert scheduled_wild_encounter_names == []
 
 
 def Test_FetchScheduledWildEncounterNames_TestEndingToday_ExpectExcluded(
@@ -116,6 +122,8 @@ def Test_FetchScheduledWildEncounterNames_TestEndingToday_ExpectExcluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
+   scheduled_wild_encounter_names = WildEncounterScheduleNameProvider.fetch_scheduled_wild_encounter_names(
       wild_encounter_schedule_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert scheduled_wild_encounter_names == []

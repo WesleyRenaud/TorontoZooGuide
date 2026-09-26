@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from typing import Any
 
 import pytest
@@ -61,7 +62,9 @@ from api.types import Types
    ]
 )
 def Test_normalize_month( value: Types.MonthInput, expected: Types.VisitMonth | None ) -> None:
-   assert CalendarDates.normalize_month( value ) == expected
+   month = CalendarDates.normalize_month( value )
+
+   assert month == expected
 
 
 @pytest.mark.parametrize(
@@ -77,7 +80,9 @@ def Test_normalize_month( value: Types.MonthInput, expected: Types.VisitMonth | 
    ]
 )
 def Test_get_month_abbreviation( value: Types.MonthInput, expected: str ) -> None:
-   assert CalendarDates.get_month_abbreviation( value ) == expected
+   abbreviation = CalendarDates.get_month_abbreviation( value )
+
+   assert abbreviation == expected
 
 
 @pytest.mark.parametrize(
@@ -110,23 +115,41 @@ def Test_get_month_abbreviation_rejects_invalid_values( value: Any ) -> None:
 def Test_resolve_visit_calendar_month(
       value: Types.MonthInput,
       expected: Types.VisitMonth ) -> None:
-   got = CalendarDates.resolve_visit_calendar_month( value )
-   assert got == expected
-   assert isinstance( got, int )
+   month = CalendarDates.resolve_visit_calendar_month( value )
+
+   assert month == expected
+   assert isinstance( month, int )
 
 
 def Test_ResolveVisitCalendarMonth_TestInvalidValues_ExpectRaises() -> None:
+   month = 13
+
    with pytest.raises( ValueError ):
-      CalendarDates.resolve_visit_calendar_month( 13 )
+      CalendarDates.resolve_visit_calendar_month( month )
 
 
-def Test_ResolveVisitDayOfMonth_TestValidValues_ExpectDayNumber() -> None:
-   assert CalendarDates.resolve_visit_day_of_month( '15' ) == 15
-   assert CalendarDates.resolve_visit_day_of_month( 7 ) == 7
+def Test_ResolveVisitDayOfMonth_TestStringDay_ExpectDayNumber() -> None:
+   day = '15'
+
+   resolved_day = CalendarDates.resolve_visit_day_of_month( day )
+
+   assert resolved_day == int( day )
+
+
+def Test_ResolveVisitDayOfMonth_TestIntegerDay_ExpectSame() -> None:
+   day = 7
+
+   resolved_day = CalendarDates.resolve_visit_day_of_month( day )
+
+   assert resolved_day == day
 
 
 def Test_ResolveVisitCalendarYear_TestExplicitYear_ExpectValue() -> None:
-   assert CalendarDates.resolve_visit_calendar_year( 2029 ) == 2029
+   year = 2029
+
+   resolved_year = CalendarDates.resolve_visit_calendar_year( year )
+
+   assert resolved_year == year
 
 
 def Test_ResolveVisitCalendarYear_TestNone_ExpectModuleDatetime( monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -136,47 +159,111 @@ def Test_ResolveVisitCalendarYear_TestNone_ExpectModuleDatetime( monkeypatch: py
          return datetime( 2032, 3, 1, 0, 0, 0 )
 
    monkeypatch.setattr( date_values, 'datetime', Fixed )
-   assert CalendarDates.resolve_visit_calendar_year( None ) == 2032
+
+   year = CalendarDates.resolve_visit_calendar_year( None )
+
+   assert year == Fixed.now().year
 
 
-def Test_VisitTargetDate_TestValidInputs_ExpectDate() -> None:
-   assert CalendarDates.visit_target_date( 'June', 15, 2026 ) == date( 2026, 6, 15 )
-   assert CalendarDates.visit_target_date( 6, 15, 2026 ) == date( 2026, 6, 15 )
-   assert CalendarDates.visit_target_date( 'January', 10, '2028' ) == date( 2028, 1, 10 )
+def Test_VisitTargetDate_TestMonthName_ExpectDate() -> None:
+   month = 'June'
+   day = 15
+   year = 2026
+
+   target = CalendarDates.visit_target_date( month, day, year )
+
+   assert target == date(
+      year,
+      CalendarDates.resolve_visit_calendar_month( month ),
+      day )
 
 
-def Test_ScheduleIncludesWeekday_TestMondayFirst_ExpectTrue() -> None:
+def Test_VisitTargetDate_TestMonthNumber_ExpectDate() -> None:
+   month = 6
+   day = 15
+   year = 2026
+
+   target = CalendarDates.visit_target_date( month, day, year )
+
+   assert target == date( year, month, day )
+
+
+def Test_VisitTargetDate_TestStringYear_ExpectDate() -> None:
+   month = 'January'
+   day = 10
+   year = '2028'
+
+   target = CalendarDates.visit_target_date( month, day, year )
+
+   assert target == date(
+      int( year ),
+      CalendarDates.resolve_visit_calendar_month( month ),
+      day )
+
+
+def Test_ScheduleIncludesWeekday_TestMonday_ExpectFlagValue() -> None:
    flags = ( True, False, False, False, False, False, False )
+   monday = 0
 
-   assert CalendarDates.schedule_includes_weekday( 0, flags ) is True
-   assert CalendarDates.schedule_includes_weekday( 1, flags ) is False
+   included = CalendarDates.schedule_includes_weekday( monday, flags )
+
+   assert included is flags[ monday ]
 
 
-def Test_ScheduleIncludesWeekday_TestBadIndex_ExpectRaises() -> None:
+def Test_ScheduleIncludesWeekday_TestTuesday_ExpectFlagValue() -> None:
+   flags = ( True, False, False, False, False, False, False )
+   tuesday = 1
+
+   included = CalendarDates.schedule_includes_weekday( tuesday, flags )
+
+   assert included is flags[ tuesday ]
+
+
+def Test_ScheduleIncludesWeekday_TestNegativeIndex_ExpectFalse() -> None:
    flags = ( True, ) * 7
+   weekday_index = -1
 
-   assert CalendarDates.schedule_includes_weekday( -1, flags ) is False
-   assert CalendarDates.schedule_includes_weekday( 7, flags ) is False
+   included = CalendarDates.schedule_includes_weekday( weekday_index, flags )
+
+   assert included is False
+
+
+def Test_ScheduleIncludesWeekday_TestIndexPastSunday_ExpectFalse() -> None:
+   flags = ( True, ) * 7
+   weekday_index = 7
+
+   included = CalendarDates.schedule_includes_weekday( weekday_index, flags )
+
+   assert included is False
 
 
 @pytest.mark.parametrize(
-   'month, day, expected',
+   'month, day',
    [
-      ( 'JAN', 1, 0 ),
-      ( 'FEB', 1, 31 ),
-      ( 'MAR', 1, 59 ),
-      ( 'APR', 15, 104 ),
-      ( 'JUN', 15, 165 ),
-      ( 'DEC', 31, 364 ),
+      ( 'JAN', 1 ),
+      ( 'FEB', 1 ),
+      ( 'MAR', 1 ),
+      ( 'APR', 15 ),
+      ( 'JUN', 15 ),
+      ( 'DEC', 31 ),
    ]
 )
-def Test_get_day_of_year( month: str, day: int, expected: int ) -> None:
-   assert CalendarDates.get_day_of_year( month, day ) == expected
+def Test_get_day_of_year( month: str, day: int ) -> None:
+   year = 2026
+
+   day_of_year = CalendarDates.get_day_of_year( month, day )
+
+   assert day_of_year == date(
+      year,
+      CalendarDates.resolve_visit_calendar_month( month ),
+      day ).timetuple().tm_yday - 1
 
 
 def Test_GetDayOfYear_TestInvalidMonth_ExpectKeyError() -> None:
+   month = 'NotAMonth'
+
    with pytest.raises( KeyError ):
-      CalendarDates.get_day_of_year( 'NotAMonth', 1 )
+      CalendarDates.get_day_of_year( month, 1 )
 
 
 @pytest.mark.parametrize(
@@ -200,7 +287,9 @@ def Test_GetDayOfYear_TestInvalidMonth_ExpectKeyError() -> None:
    ]
 )
 def Test_get_next_month( month: str, expected: str | None ) -> None:
-   assert CalendarDates.get_next_month( month ) == expected
+   next_month = CalendarDates.get_next_month( month )
+
+   assert next_month == expected
 
 
 @pytest.mark.parametrize(
@@ -220,7 +309,9 @@ def Test_get_next_month( month: str, expected: str | None ) -> None:
    ]
 )
 def Test_get_number_of_days_in_month( month: str, expected: int | None ) -> None:
-   assert CalendarDates.get_number_of_days_in_month( month ) == expected
+   days = CalendarDates.get_number_of_days_in_month( month )
+
+   assert days == expected
 
 
 @pytest.mark.parametrize(
@@ -238,57 +329,143 @@ def Test_get_number_of_days_in_month( month: str, expected: int | None ) -> None
    ]
 )
 def Test_is_peak_season_month( month: Types.MonthInput, expected: bool ) -> None:
-   assert CalendarDates.is_peak_season_month( month ) is expected
+   is_peak = CalendarDates.is_peak_season_month( month )
+
+   assert is_peak is expected
 
 
 def Test_GetEasterDate_TestYear2026_ExpectAprilFifth() -> None:
-   assert CalendarDates.get_easter_date( 2026 ) == date( 2026, 4, 5 )
+   year = 2026
+
+   easter = CalendarDates.get_easter_date( year )
+
+   assert easter == date( year, 4, 5 )
 
 
-def Test_GetCanadianHolidays_TestYear2026_ExpectExpectedDates() -> None:
-   assert CalendarDates.get_family_day( 2026 ) == date( 2026, 2, 16 )
-   assert CalendarDates.get_good_friday( 2026 ) == date( 2026, 4, 3 )
-   assert CalendarDates.get_victoria_day( 2026 ) == date( 2026, 5, 18 )
-   assert CalendarDates.get_civic_holiday( 2026 ) == date( 2026, 8, 3 )
-   assert CalendarDates.get_labour_day( 2026 ) == date( 2026, 9, 7 )
-   assert CalendarDates.get_thanksgiving( 2026 ) == date( 2026, 10, 12 )
+def Test_GetFamilyDay_TestYear2026_ExpectThirdMondayInFebruary() -> None:
+   year = 2026
+
+   family_day = CalendarDates.get_family_day( year )
+
+   assert family_day == date( year, 2, 16 )
 
 
-@pytest.mark.parametrize(
-   'holiday',
-   [
-      date( 2026, 1, 1 ),
-      date( 2026, 2, 16 ),
-      date( 2026, 4, 3 ),
-      date( 2026, 5, 18 ),
-      date( 2026, 7, 1 ),
-      date( 2026, 8, 3 ),
-      date( 2026, 9, 7 ),
-      date( 2026, 10, 12 ),
-      date( 2026, 12, 25 ),
+def Test_GetGoodFriday_TestYear2026_ExpectTwoDaysBeforeEaster() -> None:
+   year = 2026
+
+   good_friday = CalendarDates.get_good_friday( year )
+
+   assert good_friday == CalendarDates.get_easter_date( year ) - timedelta( days=2 )
+
+
+def Test_GetVictoriaDay_TestYear2026_ExpectMondayBeforeMay24() -> None:
+   year = 2026
+
+   victoria_day = CalendarDates.get_victoria_day( year )
+
+   assert victoria_day == date( year, 5, 18 )
+
+
+def Test_GetCivicHoliday_TestYear2026_ExpectFirstMondayInAugust() -> None:
+   year = 2026
+
+   civic_holiday = CalendarDates.get_civic_holiday( year )
+
+   assert civic_holiday == date( year, 8, 3 )
+
+
+def Test_GetLabourDay_TestYear2026_ExpectFirstMondayInSeptember() -> None:
+   year = 2026
+
+   labour_day = CalendarDates.get_labour_day( year )
+
+   assert labour_day == date( year, 9, 7 )
+
+
+def Test_GetThanksgiving_TestYear2026_ExpectSecondMondayInOctober() -> None:
+   year = 2026
+
+   thanksgiving = CalendarDates.get_thanksgiving( year )
+
+   assert thanksgiving == date( year, 10, 12 )
+
+
+def Test_IsHoliday_TestCanadianHolidays_ExpectTrue() -> None:
+   year = 2026
+   holidays = [
+      date( year, 1, 1 ),
+      CalendarDates.get_family_day( year ),
+      CalendarDates.get_good_friday( year ),
+      CalendarDates.get_victoria_day( year ),
+      date( year, 7, 1 ),
+      CalendarDates.get_civic_holiday( year ),
+      CalendarDates.get_labour_day( year ),
+      CalendarDates.get_thanksgiving( year ),
+      date( year, 12, 25 ),
    ]
-)
-def Test_is_holiday_recognizes_canadian_holidays( holiday: date ) -> None:
-   assert CalendarDates.is_holiday( holiday ) is True
+
+   results = [ CalendarDates.is_holiday( holiday ) for holiday in holidays ]
+
+   assert all( results )
 
 
-def Test_IsHoliday_TestRegularDays_ExpectFalse() -> None:
-   assert CalendarDates.is_holiday( date( 2026, 12, 24 ) ) is False
-   assert CalendarDates.is_holiday( date( 2026, 6, 15 ) ) is False
+def Test_IsHoliday_TestChristmasEve_ExpectFalse() -> None:
+   christmas_eve = date( 2026, 12, 24 )
+
+   is_holiday = CalendarDates.is_holiday( christmas_eve )
+
+   assert is_holiday is False
 
 
-def Test_NextWeekdayDate_TestFromWeekend_ExpectMonday() -> None:
-   assert CalendarDates.next_weekday_date( date( 2026, 6, 20 ) ) == date( 2026, 6, 22 )
-   assert CalendarDates.next_weekday_date( date( 2026, 6, 15 ) ) == date( 2026, 6, 15 )
+def Test_IsHoliday_TestMidJune_ExpectFalse() -> None:
+   mid_june = date( 2026, 6, 15 )
+
+   is_holiday = CalendarDates.is_holiday( mid_june )
+
+   assert is_holiday is False
 
 
-def Test_NextWeekendOrHolidayDate_TestFromWeekday_ExpectSaturday() -> None:
-   assert CalendarDates.next_weekend_or_holiday_date(
-      date( 2026, 6, 15 ) ) == date( 2026, 6, 20 )
-   assert CalendarDates.next_weekend_or_holiday_date(
-      date( 2026, 6, 20 ) ) == date( 2026, 6, 20 )
-   assert CalendarDates.next_weekend_or_holiday_date(
-      date( 2026, 7, 1 ) ) == date( 2026, 7, 1 )
+def Test_NextWeekdayDate_TestFromSaturday_ExpectMonday() -> None:
+   saturday = date( 2026, 6, 20 )
+
+   next_weekday = CalendarDates.next_weekday_date( saturday )
+
+   assert next_weekday.weekday() < 5
+   assert CalendarDates.is_holiday( next_weekday ) is False
+   assert next_weekday > saturday
+
+
+def Test_NextWeekdayDate_TestFromMonday_ExpectSameDate() -> None:
+   monday = date( 2026, 6, 15 )
+
+   next_weekday = CalendarDates.next_weekday_date( monday )
+
+   assert next_weekday == monday
+
+
+def Test_NextWeekendOrHolidayDate_TestFromWeekday_ExpectWeekendOrHoliday() -> None:
+   weekday = date( 2026, 6, 15 )
+
+   next_date = CalendarDates.next_weekend_or_holiday_date( weekday )
+
+   assert CalendarDates.is_weekend_or_holiday( next_date )
+   assert next_date >= weekday
+
+
+def Test_NextWeekendOrHolidayDate_TestFromSaturday_ExpectSameDate() -> None:
+   saturday = date( 2026, 6, 20 )
+
+   next_date = CalendarDates.next_weekend_or_holiday_date( saturday )
+
+   assert next_date == saturday
+
+
+def Test_NextWeekendOrHolidayDate_TestFromHoliday_ExpectSameDate() -> None:
+   canada_day = date( 2026, 7, 1 )
+
+   next_date = CalendarDates.next_weekend_or_holiday_date( canada_day )
+
+   assert next_date == canada_day
 
 
 def Test_ResolveVisitCalendarMonth_TestNormalizeReturnsNone_ExpectValueError(

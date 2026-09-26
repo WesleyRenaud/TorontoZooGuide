@@ -19,6 +19,7 @@ from api.itinerary.scheduling.items.itinerary_save_result_builder import Itinera
 from api.itinerary.scheduling.items.parsed_schedule_time_options import ParsedScheduleTimeOptions
 from api.itinerary.scheduling.items.prepared_schedule_window import PreparedScheduleWindow
 from api.models import Animal
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.operating_hours import OperatingHours
 
@@ -70,31 +71,39 @@ def stub_save_result( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 
 def Test_AttractionHoursAdjustmentForRequestedTime_TestBeforeOpen_ExpectBeforeOpen() -> None:
-   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+   result = AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
       '10:00 AM',
       duration_seconds=60 * 60,
-      attraction_hours=WEEKEND_HOURS ) == AttractionHoursScheduleAdjustment.BEFORE_OPEN
+      attraction_hours=WEEKEND_HOURS )
+
+   assert result == AttractionHoursScheduleAdjustment.BEFORE_OPEN
 
 
 def Test_AttractionHoursAdjustmentForRequestedTime_TestAfterClose_ExpectAfterClose() -> None:
-   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+   result = AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
       '5:30 PM',
       duration_seconds=60 * 60,
-      attraction_hours=WEEKEND_HOURS ) == AttractionHoursScheduleAdjustment.AFTER_CLOSE
+      attraction_hours=WEEKEND_HOURS )
+
+   assert result == AttractionHoursScheduleAdjustment.AFTER_CLOSE
 
 
 def Test_AttractionHoursAdjustmentForRequestedTime_TestOverrunClose_ExpectAfterClose() -> None:
-   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+   result = AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
       '4:30 PM',
       duration_seconds=60 * 60,
-      attraction_hours=WEEKEND_HOURS ) == AttractionHoursScheduleAdjustment.AFTER_CLOSE
+      attraction_hours=WEEKEND_HOURS )
+
+   assert result == AttractionHoursScheduleAdjustment.AFTER_CLOSE
 
 
 def Test_AttractionHoursAdjustmentForRequestedTime_TestWithinHours_ExpectNone() -> None:
-   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+   result = AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
       '1:00 PM',
       duration_seconds=60 * 60,
-      attraction_hours=WEEKEND_HOURS ) is None
+      attraction_hours=WEEKEND_HOURS )
+
+   assert result is None
 
 
 def Test_ResolveAdjustedAttractionSlot_TestAfterClose_ExpectSlotEndingAtClose(
@@ -164,7 +173,7 @@ def Test_Schedule_TestCollapsedAttractionWindow_ExpectNoAvailableSlot(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=SAVED_ITINERARY,
-      window=( 16 * 3600 + 20 * 60, 16 * 3600 + 25 * 60 ),
+      window=( DateValues.time_value_in_seconds( '4:20 PM' ), DateValues.time_value_in_seconds( '4:25 PM' ) ),
       visit_date=VISIT_DATE,
       zoo_operating_hours=OperatingHours.from_schedule_times( '4:00 PM', '4:15 PM' ) )
 
@@ -306,7 +315,7 @@ def Test_Schedule_TestDefaultTimeAfterPriorAnimal_ExpectAttractionOpenStart(
       lambda conn, attraction_name: 60 * 60 )
    monkeypatch.setattr(
       'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel',
-      lambda *args, **kwargs: 10 * 3600 + 8 * 60 )
+      lambda *args, **kwargs: DateValues.time_value_in_seconds( '10:08 AM' ) )
    monkeypatch.setattr(
       ItineraryBuilder,
       'build_current',
@@ -366,8 +375,8 @@ def Test_Schedule_TestShortVisitWindow_ExpectSlotAfterPriorAnimal(
       scheduler_conn: sqlite3.Connection,
       stub_save_result: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   short_visit_window = ( 12 * 3600, 12 * 3600 + 30 * 60 )
-   day_hours_window = ( 9 * 3600 + 30 * 60, 17 * 3600 )
+   short_visit_window = ( DateValues.time_value_in_seconds( '12:00 PM' ), DateValues.time_value_in_seconds( '12:30 PM' ) )
+   day_hours_window = ( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) )
    saved_itinerary = SavedItinerary(
       date_value='2026-06-20',
       arrival_time='12:00 PM',
@@ -406,7 +415,7 @@ def Test_Schedule_TestShortVisitWindow_ExpectSlotAfterPriorAnimal(
       lambda conn, attraction_name: 60 * 60 )
    monkeypatch.setattr(
       'api.itinerary.scheduling.items.attraction_itinerary_item_scheduler.ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel',
-      lambda *args, **kwargs: 12 * 3600 )
+      lambda *args, **kwargs: DateValues.time_value_in_seconds( '12:00 PM' ) )
    monkeypatch.setattr(
       ItineraryBuilder,
       'build_current',
@@ -497,7 +506,7 @@ def Test_Schedule_TestMembershipError_ExpectPropagated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=SAVED_ITINERARY,
-      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       visit_date=VISIT_DATE,
       zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
    membership_error = ItinerarySaveResult(
@@ -549,7 +558,7 @@ def Test_Schedule_TestAlreadyScheduled_ExpectItemAlreadyScheduled(
    )
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=saved_itinerary,
-      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       visit_date=VISIT_DATE,
       zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
 
@@ -583,7 +592,7 @@ def Test_Schedule_TestMissingDuration_ExpectSaveFailed(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=SAVED_ITINERARY,
-      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       visit_date=VISIT_DATE,
       zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
 
@@ -615,24 +624,30 @@ def Test_Schedule_TestMissingDuration_ExpectSaveFailed(
 
 
 def Test_AttractionHoursAdjustmentForRequestedTime_TestUnparseableStart_ExpectNone() -> None:
-   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+   result = AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
       '',
       duration_seconds=60 * 60,
-      attraction_hours=WEEKEND_HOURS ) is None
+      attraction_hours=WEEKEND_HOURS )
+
+   assert result is None
 
 
 def Test_AttractionHoursAdjustmentForRequestedTime_TestMissingStart_ExpectNone() -> None:
-   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+   result = AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
       None,
       duration_seconds=60 * 60,
-      attraction_hours=WEEKEND_HOURS ) is None
+      attraction_hours=WEEKEND_HOURS )
+
+   assert result is None
 
 
 def Test_AttractionHoursAdjustmentForRequestedTime_TestMissingHours_ExpectNone() -> None:
-   assert AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
+   result = AttractionItineraryItemScheduler._attraction_hours_adjustment_for_requested_time(
       '1:00 PM',
       duration_seconds=60 * 60,
-      attraction_hours=None ) is None
+      attraction_hours=None )
+
+   assert result is None
 
 
 def Test_ResolveAdjustedAttractionSlot_TestBeforeOpen_ExpectResolverSlot(
@@ -646,7 +661,7 @@ def Test_ResolveAdjustedAttractionSlot_TestBeforeOpen_ExpectResolverSlot(
    slot, error = AttractionItineraryItemScheduler._resolve_adjusted_attraction_slot(
       scheduler_conn,
       SAVED_ITINERARY,
-      ( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      ( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       60 * 60,
       hours_adjustment=AttractionHoursScheduleAdjustment.BEFORE_OPEN,
       itinerary_context=ITINERARY_CONTEXT )
@@ -671,7 +686,7 @@ def Test_ResolveAdjustedAttractionSlot_TestAfterCloseNoSlot_ExpectNoAvailableSlo
    slot, error = AttractionItineraryItemScheduler._resolve_adjusted_attraction_slot(
       scheduler_conn,
       SAVED_ITINERARY,
-      ( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      ( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       60 * 60,
       hours_adjustment=AttractionHoursScheduleAdjustment.AFTER_CLOSE,
       itinerary_context=ITINERARY_CONTEXT )
@@ -687,7 +702,7 @@ def Test_Schedule_TestConfirmedOutsideHoursSlotError_ExpectSuppressedSlotError(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=SAVED_ITINERARY,
-      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       visit_date=VISIT_DATE,
       zoo_operating_hours=OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' ) )
    slot_error = ItinerarySaveResult(

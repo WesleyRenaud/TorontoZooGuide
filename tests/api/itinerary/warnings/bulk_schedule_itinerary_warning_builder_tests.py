@@ -6,73 +6,74 @@ from api.itinerary.data_access.itinerary_transportation_record import ItineraryT
 from api.itinerary.warnings.bulk_schedule_itinerary_warning_builder import BulkScheduleItineraryWarningBuilder
 from api.shared.enums import ItineraryErrorType, Position
 from api.shared.enums import ItinerarySaveIssueItemType
+from api.shared.enums.transportation_name import TransportationName
 
 
 CAROUSEL = 'Conservation Carousel'
 
 
 def Test_BuildNotEnoughTimeIssue_TestAnimalAndAttraction_ExpectIssueItems() -> None:
-   issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue(
-      [
-         ItineraryAnimalRecord(
-            species='African Lion',
-            exhibit='Africa Savanna',
-            old_likelihood=None,
-            new_likelihood=100 ),
-         ItineraryAttractionRecord(
-            attraction=CAROUSEL,
-            old_likelihood=None,
-            new_likelihood=100 ),
-      ] )
+   lion = ItineraryAnimalRecord(
+      species='African Lion',
+      exhibit='Africa Savanna',
+      old_likelihood=None,
+      new_likelihood=100 )
+   attraction = ItineraryAttractionRecord(
+      attraction=CAROUSEL,
+      old_likelihood=None,
+      new_likelihood=100 )
+   items = [ lion, attraction ]
+
+   issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue( items )
 
    assert issue.code == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME
    assert [
       ( item.name, item.item_type, item.location )
       for item in issue.items
    ] == [
-      ( 'African Lion', ItinerarySaveIssueItemType.ANIMAL, 'Africa Savanna' ),
-      ( CAROUSEL, ItinerarySaveIssueItemType.ATTRACTION, '' ),
+      ( lion.species, ItinerarySaveIssueItemType.ANIMAL, lion.exhibit ),
+      ( attraction.attraction, ItinerarySaveIssueItemType.ATTRACTION, '' ),
    ]
 
 
 def Test_BuildNotEnoughTimeIssue_TestPenguinAndLion_ExpectIssueOrderPreserved() -> None:
-   issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue(
-      [
-         ItineraryAnimalRecord(
-            species='African Penguin',
-            exhibit='Africa Savanna',
-            enclosure_name='Outdoor',
-            old_likelihood=None,
-            new_likelihood=100 ),
-         ItineraryAnimalRecord(
-            species='African Lion',
-            exhibit='Africa Savanna',
-            old_likelihood=None,
-            new_likelihood=100 ),
-      ] )
+   penguin = ItineraryAnimalRecord(
+      species='African Penguin',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor',
+      old_likelihood=None,
+      new_likelihood=100 )
+   lion = ItineraryAnimalRecord(
+      species='African Lion',
+      exhibit='Africa Savanna',
+      old_likelihood=None,
+      new_likelihood=100 )
+   items = [ penguin, lion ]
+
+   issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue( items )
 
    assert issue.code == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME
    assert [ item.name for item in issue.items ] == [
-      'African Penguin',
-      'African Lion',
+      penguin.species,
+      lion.species,
    ]
    assert [ item.location for item in issue.items ] == [
-      'Africa Savanna',
-      'Africa Savanna',
+      penguin.exhibit,
+      lion.exhibit,
    ]
 
 
 def Test_BuildNotEnoughTimeIssue_TestTransportation_ExpectAttractionIssueItem() -> None:
+   transportation = ItineraryTransportationRecord(
+      transportation=TransportationName.ZOOMOBILE,
+      old_likelihood=None,
+      new_likelihood=100,
+      added_as_attraction=True )
+
    issue = BulkScheduleItineraryWarningBuilder.build_not_enough_time_issue(
-      [
-         ItineraryTransportationRecord(
-            transportation='Zoomobile',
-            old_likelihood=None,
-            new_likelihood=100,
-            added_as_attraction=True ),
-      ] )
+      [ transportation ] )
 
    assert issue.code == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME
    assert len( issue.items ) == 1
-   assert issue.items[ Position.FIRST ].name == 'Zoomobile'
+   assert issue.items[ Position.FIRST ].name == transportation.transportation
    assert issue.items[ Position.FIRST ].item_type == ItinerarySaveIssueItemType.ATTRACTION

@@ -66,6 +66,7 @@ def stub_restroom_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubRestroom
 
 def Test_GetRestrooms_TestHttpRequest_ExpectMapsVisitDateAndIncludeClosedToggle(
       stub_restroom_coordinator: StubRestroomCoordinator ) -> None:
+   restroom = _sample_restroom()
    handler = make_handler(
       '/get-restrooms',
       {
@@ -81,7 +82,7 @@ def Test_GetRestrooms_TestHttpRequest_ExpectMapsVisitDateAndIncludeClosedToggle(
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'restrooms' ] == [ _sample_restroom().to_dict() ]
+   assert result[ 'restrooms' ] == [ restroom.to_dict() ]
    assert stub_restroom_coordinator.calls == [
       (
          'get_restrooms',

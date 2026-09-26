@@ -99,7 +99,9 @@ def Test_GetWildEncounterNames_TestProviderNames_ExpectReturned(
       'fetch_wild_encounter_names',
       lambda _conn: [ WILD_ENCOUNTER_NAME ] )
 
-   assert WildEncounterCoordinator.get_wild_encounter_names() == [ WILD_ENCOUNTER_NAME ]
+   wild_encounter_names = WildEncounterCoordinator.get_wild_encounter_names()
+
+   assert wild_encounter_names == [ WILD_ENCOUNTER_NAME ]
 
 
 def Test_GetWildEncounterScheduleOptions_TestProviderNames_ExpectReturned(
@@ -122,7 +124,9 @@ def Test_GetWildEncounterScheduleOptions_TestProviderNames_ExpectReturned(
       'fetch_scheduled_wild_encounter_names',
       fetch_scheduled_wild_encounter_names )
 
-   assert WildEncounterCoordinator.get_wild_encounter_schedule_options() == [ WILD_ENCOUNTER_NAME ]
+   wild_encounter_schedule_options = WildEncounterCoordinator.get_wild_encounter_schedule_options()
+
+   assert wild_encounter_schedule_options == [ WILD_ENCOUNTER_NAME ]
    assert captured == { 'today': '2026-09-16' }
 
 
@@ -147,8 +151,10 @@ def Test_GetWildEncounterDetails_TestBuilderResult_ExpectReturned(
 
    monkeypatch.setattr( WildEncounterBuilder, 'build_details', build_details )
 
-   assert WildEncounterCoordinator.get_wild_encounter_details(
-      wild_encounters_to_include=[ WILD_ENCOUNTER_NAME ] ) == [ WILD_ENCOUNTER ]
+   wild_encounter_details = WildEncounterCoordinator.get_wild_encounter_details(
+      wild_encounters_to_include=[ WILD_ENCOUNTER_NAME ] )
+
+   assert wild_encounter_details == [ WILD_ENCOUNTER ]
    assert captured[ 'records' ] is records
    assert captured[ 'include' ] == [ WILD_ENCOUNTER_NAME ]
 
@@ -176,9 +182,11 @@ def Test_GetWildEncounterOccurrences_TestProvidersAndBuilder_ExpectOccurrences(
 
    monkeypatch.setattr( WildEncounterOccurrencesBuilder, 'build', build )
 
-   assert WildEncounterCoordinator.get_wild_encounter_occurrences(
+   wild_encounter_occurrences = WildEncounterCoordinator.get_wild_encounter_occurrences(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
-      days_ahead=5 ) == expected
+      days_ahead=5 )
+
+   assert wild_encounter_occurrences == expected
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'cancellation_records' ] is cancellation_records
    assert captured[ 'days_ahead' ] == 5
@@ -205,12 +213,14 @@ def Test_SetWildEncounterSchedule_TestBuiltSchedules_ExpectSaved(
       'save_schedule',
       save_schedule )
 
-   assert WildEncounterCoordinator.set_wild_encounter_schedule(
+   result = WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      schedule_rows=[ SCHEDULE_ROW ] ) is True
+      schedule_rows=[ SCHEDULE_ROW ] )
+
+   assert result is True
    assert saved == [ SCHEDULE_INPUT ]
 
 
@@ -228,12 +238,14 @@ def Test_ReplaceWildEncounterScheduleOverlaps_TestResolver_ExpectCalled(
       'save_replacing_overlaps',
       lambda _conn, schedule: saved.append( schedule ) or True )
 
-   assert WildEncounterCoordinator.replace_wild_encounter_schedule_overlaps(
+   result = WildEncounterCoordinator.replace_wild_encounter_schedule_overlaps(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      schedule_rows=[ SCHEDULE_ROW ] ) is True
+      schedule_rows=[ SCHEDULE_ROW ] )
+
+   assert result is True
    assert saved == [ SCHEDULE_INPUT ]
 
 
@@ -251,22 +263,26 @@ def Test_TrimWildEncounterScheduleOverlaps_TestResolver_ExpectCalled(
       'save_trimming_overlaps',
       lambda _conn, schedule: saved.append( schedule ) or True )
 
-   assert WildEncounterCoordinator.trim_wild_encounter_schedule_overlaps(
+   result = WildEncounterCoordinator.trim_wild_encounter_schedule_overlaps(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      schedule_rows=[ SCHEDULE_ROW ] ) is True
+      schedule_rows=[ SCHEDULE_ROW ] )
+
+   assert result is True
    assert saved == [ SCHEDULE_INPUT ]
 
 
 def Test_SetWildEncounterSchedule_TestEmptyScheduleRows_ExpectFalse(
       stub_request_connection: None ) -> None:
-   assert WildEncounterCoordinator.set_wild_encounter_schedule(
+   result = WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       start_date=START_DATE,
       end_date=END_DATE,
-      schedule_rows=[] ) is False
+      schedule_rows=[] )
+
+   assert result is False
 
 
 def Test_SetWildEncounterSchedule_TestSaveFails_ExpectFalse(
@@ -281,12 +297,14 @@ def Test_SetWildEncounterSchedule_TestSaveFails_ExpectFalse(
       'save_schedule',
       lambda *_args, **_kwargs: False )
 
-   assert WildEncounterCoordinator.set_wild_encounter_schedule(
+   result = WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      schedule_rows=[ SCHEDULE_ROW ] ) is False
+      schedule_rows=[ SCHEDULE_ROW ] )
+
+   assert result is False
 
 
 def Test_EndWildEncounterSchedule_TestSaveEnds_ExpectTrue(
@@ -306,10 +324,12 @@ def Test_EndWildEncounterSchedule_TestSaveEnds_ExpectTrue(
       'save_schedule_end',
       save_schedule_end )
 
-   assert WildEncounterCoordinator.end_wild_encounter_schedule(
+   result = WildEncounterCoordinator.end_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       schedule_end_date=END_DATE,
-      encounter_times=[ ENCOUNTER_TIME, '3:00 PM' ] ) is True
+      encounter_times=[ ENCOUNTER_TIME, '3:00 PM' ] )
+
+   assert result is True
    assert saved_times == [ ENCOUNTER_TIME, '3:00 PM' ]
 
 
@@ -321,10 +341,12 @@ def Test_EndWildEncounterSchedule_TestSaveFails_ExpectFalse(
       'save_schedule_end',
       lambda *_args, **_kwargs: False )
 
-   assert WildEncounterCoordinator.end_wild_encounter_schedule(
+   result = WildEncounterCoordinator.end_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       schedule_end_date=END_DATE,
-      encounter_times=[ ENCOUNTER_TIME ] ) is False
+      encounter_times=[ ENCOUNTER_TIME ] )
+
+   assert result is False
 
 
 def Test_CancelWildEncounterOccurrence_TestSaveCancellations_ExpectTrue(
@@ -344,10 +366,12 @@ def Test_CancelWildEncounterOccurrence_TestSaveCancellations_ExpectTrue(
       'save_cancellation',
       save_cancellation )
 
-   assert WildEncounterCoordinator.cancel_wild_encounter_occurrence(
+   result = WildEncounterCoordinator.cancel_wild_encounter_occurrence(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       date=OCCURRENCE_DATE,
-      encounter_times=[ ENCOUNTER_TIME ] ) is True
+      encounter_times=[ ENCOUNTER_TIME ] )
+
+   assert result is True
    assert saved_times == [ ENCOUNTER_TIME ]
 
 
@@ -359,14 +383,18 @@ def Test_CancelWildEncounterOccurrence_TestSaveFails_ExpectFalse(
       'save_cancellation',
       lambda *_args, **_kwargs: False )
 
-   assert WildEncounterCoordinator.cancel_wild_encounter_occurrence(
+   result = WildEncounterCoordinator.cancel_wild_encounter_occurrence(
       wild_encounter_name=WILD_ENCOUNTER_NAME,
       date=OCCURRENCE_DATE,
-      encounter_times=[ ENCOUNTER_TIME ] ) is False
+      encounter_times=[ ENCOUNTER_TIME ] )
+
+   assert result is False
 
 
 def Test_GetWildEncountersForSavedItinerary_TestEmpty_ExpectEmpty() -> None:
-   assert WildEncounterCoordinator.get_wild_encounters_for_saved_itinerary( [] ) == []
+   wild_encounters_for_saved_itinerary = WildEncounterCoordinator.get_wild_encounters_for_saved_itinerary( [] )
+
+   assert wild_encounters_for_saved_itinerary == []
 
 
 def Test_GetWildEncountersForSavedItinerary_TestSavedEncounters_ExpectBuilderResult(
@@ -396,8 +424,10 @@ def Test_GetWildEncountersForSavedItinerary_TestSavedEncounters_ExpectBuilderRes
       'build',
       lambda encounters, saved_encounters: built if encounters is details else [] )
 
-   assert WildEncounterCoordinator.get_wild_encounters_for_saved_itinerary(
-      saved ) == built
+   wild_encounters_for_saved_itinerary = WildEncounterCoordinator.get_wild_encounters_for_saved_itinerary(
+      saved )
+
+   assert wild_encounters_for_saved_itinerary == built
 
 
 def Test_GetWildEncounterSchedule_TestProviderAndBuilder_ExpectDaySchedule(
@@ -424,10 +454,12 @@ def Test_GetWildEncounterSchedule_TestProviderAndBuilder_ExpectDaySchedule(
       'build_for_target_date',
       build_for_target_date )
 
-   assert WildEncounterCoordinator.get_wild_encounter_schedule(
+   wild_encounter_schedule = WildEncounterCoordinator.get_wild_encounter_schedule(
       month=VISIT_MONTH,
       day=VISIT_DAY,
-      year=VISIT_YEAR ) == expected
+      year=VISIT_YEAR )
+
+   assert wild_encounter_schedule == expected
    assert captured[ 'records' ] is records
    assert getattr( captured[ 'target_date' ], 'isoformat' )() == '2026-06-15'
 
@@ -443,13 +475,15 @@ def Test_GetWildEncounterOnDaySchedule_TestProvidedDaySchedule_ExpectFinderResul
       if rows is day_schedule and name == WILD_ENCOUNTER_NAME and start_time == ENCOUNTER_TIME
       else None )
 
-   assert WildEncounterCoordinator.get_wild_encounter_on_day_schedule(
+   wild_encounter_on_day_schedule = WildEncounterCoordinator.get_wild_encounter_on_day_schedule(
       month=VISIT_MONTH,
       day=VISIT_DAY,
       encounter_name=WILD_ENCOUNTER_NAME,
       year=VISIT_YEAR,
       start_time=ENCOUNTER_TIME,
-      day_schedule=day_schedule ) is WILD_ENCOUNTER
+      day_schedule=day_schedule )
+
+   assert wild_encounter_on_day_schedule is WILD_ENCOUNTER
 
 
 def Test_GetWildEncounterOnDaySchedule_TestMissingDaySchedule_ExpectFetchesSchedule(
@@ -465,12 +499,14 @@ def Test_GetWildEncounterOnDaySchedule_TestMissingDaySchedule_ExpectFetchesSched
       'find_on_day_schedule',
       lambda rows, *_args, **_kwargs: WILD_ENCOUNTER if rows is fetched else None )
 
-   assert WildEncounterCoordinator.get_wild_encounter_on_day_schedule(
+   wild_encounter_on_day_schedule = WildEncounterCoordinator.get_wild_encounter_on_day_schedule(
       month=VISIT_MONTH,
       day=VISIT_DAY,
       encounter_name=WILD_ENCOUNTER_NAME,
       year=VISIT_YEAR,
-      start_time=ENCOUNTER_TIME ) is WILD_ENCOUNTER
+      start_time=ENCOUNTER_TIME )
+
+   assert wild_encounter_on_day_schedule is WILD_ENCOUNTER
 
 
 def Test_GetAvailableWildEncounters_TestFilterAvailable_ExpectFiltered(
@@ -487,10 +523,12 @@ def Test_GetAvailableWildEncounters_TestFilterAvailable_ExpectFiltered(
       'filter_available',
       lambda rows: available if rows is day_schedule else [] )
 
-   assert WildEncounterCoordinator.get_available_wild_encounters(
+   available_wild_encounters = WildEncounterCoordinator.get_available_wild_encounters(
       month=VISIT_MONTH,
       day=VISIT_DAY,
-      year=VISIT_YEAR ) == available
+      year=VISIT_YEAR )
+
+   assert available_wild_encounters == available
 
 
 def Test_GetWildEncountersMatchingQuery_TestAvailableAndBuilder_ExpectMatches(
@@ -507,11 +545,13 @@ def Test_GetWildEncountersMatchingQuery_TestAvailableAndBuilder_ExpectMatches(
       'build',
       lambda encounters, query: matched if encounters is available and query == QUERY else [] )
 
-   assert WildEncounterCoordinator.get_wild_encounters_matching_query(
+   wild_encounters_matching_query = WildEncounterCoordinator.get_wild_encounters_matching_query(
       query=QUERY,
       month=VISIT_MONTH,
       day=VISIT_DAY,
-      year=VISIT_YEAR ) == matched
+      year=VISIT_YEAR )
+
+   assert wild_encounters_matching_query == matched
 
 
 def Test_GetWildEncounterScheduleTimes_TestEncounter_ExpectSortedTimes(
@@ -523,6 +563,8 @@ def Test_GetWildEncounterScheduleTimes_TestEncounter_ExpectSortedTimes(
       'api.wild_encounters.coordinators.wild_encounter_coordinator.RequestConnectionProvider.get',
       lambda: object() )
 
-   assert WildEncounterCoordinator.get_wild_encounter_schedule_times(
+   wild_encounter_schedule_times = WildEncounterCoordinator.get_wild_encounter_schedule_times(
       'Kangaroo',
-   ) == [ '11:00 AM', '2:00 PM' ]
+   )
+
+   assert wild_encounter_schedule_times == [ '11:00 AM', '2:00 PM' ]

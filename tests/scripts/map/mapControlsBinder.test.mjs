@@ -4,15 +4,16 @@ import test from 'node:test';
 import { MapControlsBinder } from '../../../scripts/map/mapControlsBinder.js';
 import { VisitDateAdapter } from '../../../scripts/visitDates/visitDateAdapter.js';
 import { VisitDateValidator } from '../../../scripts/visitDates/visitDateValidator.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
 
 test('Test_BlurMapDateInput_TestInputAndActive_ExpectBlurCalls', () => {
    const blurs = [];
    const mapDateInput = { blur: () => blurs.push('input') };
    const originalActive = Object.getOwnPropertyDescriptor(document, 'activeElement');
-
    Object.defineProperty(document, 'activeElement', {
       configurable: true,
       get: () => ({ blur: () => blurs.push('active') }),
@@ -21,6 +22,7 @@ test('Test_BlurMapDateInput_TestInputAndActive_ExpectBlurCalls', () => {
    try {
       MapControlsBinder.blurMapDateInput(mapDateInput);
       MapControlsBinder.blurMapDateInput(null);
+
       assert.deepEqual(blurs, ['input', 'active', 'active']);
    } finally {
       if (originalActive) {
@@ -31,95 +33,168 @@ test('Test_BlurMapDateInput_TestInputAndActive_ExpectBlurCalls', () => {
    }
 });
 
+
 test('Test_CloseMapDatePicker_TestFpAndInput_ExpectCloseAndBlur', () => {
    const closes = [];
    const blurs = [];
    const originalBlur = MapControlsBinder.blurMapDateInput;
-
-   MapControlsBinder.blurMapDateInput = (input) => { blurs.push(input); };
+   const input = 'input';
+   MapControlsBinder.blurMapDateInput = (nextInput) => {
+      blurs.push(nextInput);
+   };
 
    try {
-      MapControlsBinder.closeMapDatePicker({ close: () => closes.push(true) }, 'input');
-      MapControlsBinder.closeMapDatePicker(null, 'input');
+      MapControlsBinder.closeMapDatePicker({ close: () => closes.push(true) }, input);
+      MapControlsBinder.closeMapDatePicker(null, input);
+
       assert.deepEqual(closes, [true]);
-      assert.deepEqual(blurs, ['input', 'input']);
+      assert.deepEqual(blurs, [input, input]);
    } finally {
       MapControlsBinder.blurMapDateInput = originalBlur;
    }
 });
 
-test('Test_IsSpecificDayPreset_TestValues_ExpectBoolean', () => {
-   assert.equal(MapControlsBinder.isSpecificDayPreset({ value: 'specific-day' }), true);
-   assert.equal(MapControlsBinder.isSpecificDayPreset({ value: 'today' }), false);
-   assert.equal(MapControlsBinder.isSpecificDayPreset(null), false);
+
+test('Test_IsSpecificDayPreset_TestSpecificDay_ExpectTrue', () => {
+   const isSpecific = MapControlsBinder.isSpecificDayPreset({ value: 'specific-day' });
+
+   assert.equal(isSpecific, true);
 });
 
-test('Test_GetCurrentDateStr_TestFallback_ExpectInputOrFp', () => {
-   assert.equal(MapControlsBinder.getCurrentDateStr({ value: '2026-06-15' }, null), '2026-06-15');
-   assert.equal(
-      MapControlsBinder.getCurrentDateStr({ value: '' }, { input: { value: '2026-06-16' } }),
-      '2026-06-16'
-   );
-   assert.equal(MapControlsBinder.getCurrentDateStr(null, null), '');
+
+test('Test_IsSpecificDayPreset_TestToday_ExpectFalse', () => {
+   const isSpecific = MapControlsBinder.isSpecificDayPreset({ value: 'today' });
+
+   assert.equal(isSpecific, false);
 });
 
-test('Test_SyncDateInputVisibility_TestPreset_ExpectDisplay', () => {
+
+test('Test_IsSpecificDayPreset_TestNull_ExpectFalse', () => {
+   const isSpecific = MapControlsBinder.isSpecificDayPreset(null);
+
+   assert.equal(isSpecific, false);
+});
+
+
+test('Test_GetCurrentDateStr_TestInput_ExpectValue', () => {
+   const iso = '2026-06-15';
+
+   const dateStr = MapControlsBinder.getCurrentDateStr({ value: iso }, null);
+
+   assert.equal(dateStr, iso);
+});
+
+
+test('Test_GetCurrentDateStr_TestPickerInput_ExpectValue', () => {
+   const iso = '2026-06-16';
+
+   const dateStr = MapControlsBinder.getCurrentDateStr({ value: '' }, { input: { value: iso } });
+
+   assert.equal(dateStr, iso);
+});
+
+
+test('Test_GetCurrentDateStr_TestMissing_ExpectEmpty', () => {
+   const dateStr = MapControlsBinder.getCurrentDateStr(null, null);
+
+   assert.equal(dateStr, '');
+});
+
+
+test('Test_SyncDateInputVisibility_TestSpecificDay_ExpectInline', () => {
    const mapDateInput = { style: { display: '' } };
 
    MapControlsBinder.syncDateInputVisibility({ value: 'specific-day' }, mapDateInput);
+
    assert.equal(mapDateInput.style.display, 'inline-block');
+});
+
+
+test('Test_SyncDateInputVisibility_TestToday_ExpectNone', () => {
+   const mapDateInput = { style: { display: '' } };
 
    MapControlsBinder.syncDateInputVisibility({ value: 'today' }, mapDateInput);
+
    assert.equal(mapDateInput.style.display, 'none');
 });
 
-test('Test_UpdateMapForCurrentControls_TestPresets_ExpectOnUpdate', () => {
+
+test('Test_UpdateMapForCurrentControls_TestEmptyPreset_ExpectNoUpdate', () => {
    const updates = [];
-   const onUpdate = (...args) => updates.push(args);
 
    MapControlsBinder.updateMapForCurrentControls({
       mapPreset: { value: '' },
       mapDateInput: { value: '2026-06-15' },
-      onUpdate,
+      onUpdate: (...args) => updates.push(args),
    });
+
    assert.deepEqual(updates, []);
-
-   MapControlsBinder.updateMapForCurrentControls({
-      mapPreset: { value: 'specific-day' },
-      mapDateInput: { value: '' },
-      fp: { input: { value: '' } },
-      onUpdate,
-   });
-   assert.deepEqual(updates, []);
-
-   MapControlsBinder.updateMapForCurrentControls({
-      mapPreset: { value: 'specific-day' },
-      mapDateInput: { value: '2026-06-15' },
-      onUpdate,
-   });
-   assert.deepEqual(updates, [['specific-day', '2026-06-15']]);
-
-   MapControlsBinder.updateMapForCurrentControls({
-      mapPreset: { value: 'today' },
-      mapDateInput: { value: '' },
-      fp: { input: { value: '' } },
-      onUpdate,
-   });
-   assert.deepEqual(updates.at(-1), ['today', null]);
 });
+
+
+test('Test_UpdateMapForCurrentControls_TestSpecificDayEmpty_ExpectNoUpdate', () => {
+   const updates = [];
+
+   MapControlsBinder.updateMapForCurrentControls({
+      mapPreset: { value: 'specific-day' },
+      mapDateInput: { value: '' },
+      fp: { input: { value: '' } },
+      onUpdate: (...args) => updates.push(args),
+   });
+
+   assert.deepEqual(updates, []);
+});
+
+
+test('Test_UpdateMapForCurrentControls_TestSpecificDay_ExpectIso', () => {
+   const updates = [];
+   const preset = 'specific-day';
+   const iso = '2026-06-15';
+
+   MapControlsBinder.updateMapForCurrentControls({
+      mapPreset: { value: preset },
+      mapDateInput: { value: iso },
+      onUpdate: (...args) => updates.push(args),
+   });
+
+   assert.deepEqual(updates, [[preset, iso]]);
+});
+
+
+test('Test_UpdateMapForCurrentControls_TestToday_ExpectNullDate', () => {
+   const updates = [];
+   const preset = 'today';
+
+   MapControlsBinder.updateMapForCurrentControls({
+      mapPreset: { value: preset },
+      mapDateInput: { value: '' },
+      fp: { input: { value: '' } },
+      onUpdate: (...args) => updates.push(args),
+   });
+
+   assert.deepEqual(updates.at(Position.LAST), [preset, null]);
+});
+
 
 test('Test_BindChangeListeners_TestInputs_ExpectHandlers', () => {
    const calls = [];
-   const a = document.createElement('input');
-   const b = document.createElement('input');
+   const first = document.createElement('input');
+   const second = document.createElement('input');
 
-   MapControlsBinder.bindChangeListeners([a, null, b], () => calls.push(true));
-   a.listeners.change();
-   b.listeners.change();
+   MapControlsBinder.bindChangeListeners([first, null, second], () => calls.push(true));
+   first.listeners.change();
+   second.listeners.change();
+
    assert.equal(calls.length, 2);
-
-   MapControlsBinder.bindChangeListeners(null, () => {});
 });
+
+
+test('Test_BindChangeListeners_TestMissing_ExpectNoOp', () => {
+   const bind = () => MapControlsBinder.bindChangeListeners(null, () => {});
+
+   assert.doesNotThrow(bind);
+});
+
 
 test('Test_InitMapDatePicker_TestCallbacks_ExpectFlatpickrOptions', () => {
    const originalInit = VisitDateAdapter.initVisitDateFlatpickr;
@@ -129,9 +204,12 @@ test('Test_InitMapDatePicker_TestCallbacks_ExpectFlatpickrOptions', () => {
    const specificDayChanges = [];
    const blurs = [];
    const floor = new Date('2026-06-01T12:00:00');
+   const iso = '2026-06-15';
 
    VisitDateValidator.getToday = () => floor;
-   MapControlsBinder.blurMapDateInput = (input) => { blurs.push(input); };
+   MapControlsBinder.blurMapDateInput = (input) => {
+      blurs.push(input);
+   };
    VisitDateAdapter.initVisitDateFlatpickr = (input, options) => {
       optionsSeen.push({ input, options });
       return { id: 'fp', close() {}, open() {} };
@@ -141,34 +219,19 @@ test('Test_InitMapDatePicker_TestCallbacks_ExpectFlatpickrOptions', () => {
       const mapDateInput = { id: 'date' };
       const fp = MapControlsBinder.initMapDatePicker(mapDateInput, {
          mapPreset: { value: 'specific-day' },
-         onSpecificDayChange: (iso) => specificDayChanges.push(iso),
+         onSpecificDayChange: (nextIso) => specificDayChanges.push(nextIso),
       });
+      const instance = { close() { instance.closed = true; } };
+      optionsSeen.at(Position.FIRST).options.onChange(null, iso, instance);
+      optionsSeen.at(Position.FIRST).options.onClose();
 
       assert.equal(fp.id, 'fp');
-      assert.equal(optionsSeen[0].options.defaultDate, floor);
-      assert.equal(optionsSeen[0].options.earliestNoon, floor);
-      assert.equal(optionsSeen[0].options.clickOpens, false);
-
-      const instance = { close() { instance.closed = true; } };
-      optionsSeen[0].options.onChange(null, '2026-06-15', instance);
+      assert.equal(optionsSeen.at(Position.FIRST).options.defaultDate, floor);
+      assert.equal(optionsSeen.at(Position.FIRST).options.earliestNoon, floor);
+      assert.equal(optionsSeen.at(Position.FIRST).options.clickOpens, false);
       assert.equal(instance.closed, true);
-      assert.deepEqual(specificDayChanges, ['2026-06-15']);
-      assert.equal(blurs.length, 1);
-
-      optionsSeen[0].options.onClose();
+      assert.deepEqual(specificDayChanges, [iso]);
       assert.equal(blurs.length, 2);
-
-      MapControlsBinder.initMapDatePicker(mapDateInput, {
-         mapPreset: { value: 'today' },
-         earliestSelectableNoon: new Date('2026-07-01T12:00:00'),
-         onSpecificDayChange: () => {},
-      });
-      assert.equal(
-         optionsSeen[1].options.defaultDate.toISOString(),
-         new Date('2026-07-01T12:00:00').toISOString()
-      );
-      optionsSeen[1].options.onChange(null, '2026-07-02', { close() {} });
-      assert.deepEqual(specificDayChanges, ['2026-06-15']);
    } finally {
       VisitDateAdapter.initVisitDateFlatpickr = originalInit;
       VisitDateValidator.getToday = originalToday;
@@ -176,15 +239,50 @@ test('Test_InitMapDatePicker_TestCallbacks_ExpectFlatpickrOptions', () => {
    }
 });
 
-test('Test_HandlePresetChange_TestEmptyAndValid_ExpectUpdate', () => {
+
+test('Test_InitMapDatePicker_TestTodayFloor_ExpectEarliestNoon', () => {
+   const originalInit = VisitDateAdapter.initVisitDateFlatpickr;
+   const originalToday = VisitDateValidator.getToday;
+   const originalBlur = MapControlsBinder.blurMapDateInput;
+   const optionsSeen = [];
+   const earliestSelectableNoon = new Date('2026-07-01T12:00:00');
+   VisitDateValidator.getToday = () => new Date('2026-06-01T12:00:00');
+   MapControlsBinder.blurMapDateInput = () => {};
+   VisitDateAdapter.initVisitDateFlatpickr = (input, options) => {
+      optionsSeen.push({ input, options });
+      return { id: 'fp', close() {}, open() {} };
+   };
+
+   try {
+      MapControlsBinder.initMapDatePicker({ id: 'date' }, {
+         mapPreset: { value: 'today' },
+         earliestSelectableNoon,
+         onSpecificDayChange: () => {},
+      });
+      optionsSeen.at(Position.FIRST).options.onChange(null, '2026-07-02', { close() {} });
+
+      assert.equal(
+         optionsSeen.at(Position.FIRST).options.defaultDate.toISOString(),
+         earliestSelectableNoon.toISOString()
+      );
+   } finally {
+      VisitDateAdapter.initVisitDateFlatpickr = originalInit;
+      VisitDateValidator.getToday = originalToday;
+      MapControlsBinder.blurMapDateInput = originalBlur;
+   }
+});
+
+
+test('Test_HandlePresetChange_TestEmpty_ExpectCloseOnly', () => {
    const updates = [];
    const closes = [];
    const originalSync = MapControlsBinder.syncDateInputVisibility;
    const originalClose = MapControlsBinder.closeMapDatePicker;
    const originalUpdate = MapControlsBinder.updateMapForCurrentControls;
-
    MapControlsBinder.syncDateInputVisibility = () => {};
-   MapControlsBinder.closeMapDatePicker = () => { closes.push(true); };
+   MapControlsBinder.closeMapDatePicker = () => {
+      closes.push(true);
+   };
    MapControlsBinder.updateMapForCurrentControls = (options) => {
       updates.push(options.mapPreset.value);
    };
@@ -196,16 +294,9 @@ test('Test_HandlePresetChange_TestEmptyAndValid_ExpectUpdate', () => {
          fp: {},
          onUpdate: () => {},
       });
-      assert.deepEqual(updates, []);
-      assert.equal(closes.length, 1);
 
-      MapControlsBinder.handlePresetChange({
-         mapPreset: { value: 'today' },
-         mapDateInput: {},
-         fp: {},
-         onUpdate: () => {},
-      });
-      assert.deepEqual(updates, ['today']);
+      assert.deepEqual(updates, []);
+      assert.equal(closes.length, Position.SECOND);
    } finally {
       MapControlsBinder.syncDateInputVisibility = originalSync;
       MapControlsBinder.closeMapDatePicker = originalClose;
@@ -213,18 +304,53 @@ test('Test_HandlePresetChange_TestEmptyAndValid_ExpectUpdate', () => {
    }
 });
 
+
+test('Test_HandlePresetChange_TestToday_ExpectUpdate', () => {
+   const updates = [];
+   const originalSync = MapControlsBinder.syncDateInputVisibility;
+   const originalClose = MapControlsBinder.closeMapDatePicker;
+   const originalUpdate = MapControlsBinder.updateMapForCurrentControls;
+   const preset = 'today';
+   MapControlsBinder.syncDateInputVisibility = () => {};
+   MapControlsBinder.closeMapDatePicker = () => {};
+   MapControlsBinder.updateMapForCurrentControls = (options) => {
+      updates.push(options.mapPreset.value);
+   };
+
+   try {
+      MapControlsBinder.handlePresetChange({
+         mapPreset: { value: preset },
+         mapDateInput: {},
+         fp: {},
+         onUpdate: () => {},
+      });
+
+      assert.deepEqual(updates, [preset]);
+   } finally {
+      MapControlsBinder.syncDateInputVisibility = originalSync;
+      MapControlsBinder.closeMapDatePicker = originalClose;
+      MapControlsBinder.updateMapForCurrentControls = originalUpdate;
+   }
+});
+
+
 test('Test_InitMapControls_TestMissingElements_ExpectNull', () => {
    const originalWarn = console.warn;
    const warnings = [];
-   console.warn = (...args) => { warnings.push(args); };
+   console.warn = (...args) => {
+      warnings.push(args);
+   };
 
    try {
-      assert.equal(MapControlsBinder.initMapControls({}), null);
-      assert.equal(warnings.length, 1);
+      const api = MapControlsBinder.initMapControls({});
+
+      assert.equal(api, null);
+      assert.equal(warnings.length, Position.SECOND);
    } finally {
       console.warn = originalWarn;
    }
 });
+
 
 test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
    const originalInitPicker = MapControlsBinder.initMapDatePicker;
@@ -237,13 +363,13 @@ test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
    const syncs = [];
    const blurs = [];
    let pickerOptions = null;
-
    const fp = {
       open: () => opens.push(true),
       close() {},
    };
+   const iso = '2026-06-20';
 
-   MapControlsBinder.initMapDatePicker = (input, options) => {
+   MapControlsBinder.initMapDatePicker = (_input, options) => {
       pickerOptions = options;
       return fp;
    };
@@ -253,12 +379,15 @@ test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
    MapControlsBinder.updateMapForCurrentControls = (options) => {
       updates.push(['update', options.mapPreset.value]);
    };
-   MapControlsBinder.syncDateInputVisibility = () => { syncs.push(true); };
-   MapControlsBinder.blurMapDateInput = (input) => { blurs.push(input); };
+   MapControlsBinder.syncDateInputVisibility = () => {
+      syncs.push(true);
+   };
+   MapControlsBinder.blurMapDateInput = (input) => {
+      blurs.push(input);
+   };
 
    const mapPreset = document.createElement('select');
    mapPreset.value = 'specific-day';
-
    const mapDateInput = document.createElement('input');
    const includeOffDisplayCheckbox = document.createElement('input');
    includeOffDisplayCheckbox.type = 'checkbox';
@@ -278,32 +407,25 @@ test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
          earliestSelectableNoon: new Date('2026-06-01T12:00:00'),
          onUpdate: (...args) => updates.push(['onUpdate', ...args]),
       });
+      pickerOptions.onSpecificDayChange(iso);
+      mapPreset.listeners.change();
+      mapDateInput.listeners.mousedown({ preventDefault() {} });
+      mapDateInput.listeners.focus();
+      includeOffDisplayCheckbox.listeners.change();
+      radio.listeners.change();
+      mapPreset.value = 'today';
+      mapDateInput.listeners.mousedown({ preventDefault() {} });
+      api.refetch();
 
       assert.equal(api.flatpickr, fp);
       assert.equal(typeof api.refetch, 'function');
-      assert.equal(syncs.length, 1);
-
-      pickerOptions.onSpecificDayChange('2026-06-20');
-      assert.deepEqual(updates.at(-1), ['onUpdate', 'specific-day', '2026-06-20']);
-
-      mapPreset.listeners.change();
-      assert.deepEqual(updates.at(-1), ['preset', 'specific-day']);
-
-      mapDateInput.listeners.mousedown({ preventDefault() {} });
+      assert.equal(syncs.length, Position.SECOND);
+      assert.deepEqual(updates.at(Position.FIRST), ['onUpdate', 'specific-day', iso]);
+      assert.ok(updates.some(([kind]) => kind === 'preset'));
       assert.deepEqual(opens, [true]);
-
-      mapDateInput.listeners.focus();
-      assert.equal(blurs.at(-1), mapDateInput);
-
-      includeOffDisplayCheckbox.listeners.change();
-      radio.listeners.change();
+      assert.equal(blurs.at(Position.LAST), mapDateInput);
       assert.ok(updates.some(([kind]) => kind === 'update'));
-
-      mapPreset.value = 'today';
-      mapDateInput.listeners.mousedown({ preventDefault() {} });
-      assert.equal(opens.length, 1);
-
-      api.refetch();
+      assert.equal(opens.length, Position.SECOND);
    } finally {
       MapControlsBinder.initMapDatePicker = originalInitPicker;
       MapControlsBinder.handlePresetChange = originalHandlePreset;

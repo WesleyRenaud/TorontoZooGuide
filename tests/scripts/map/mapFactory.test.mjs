@@ -15,15 +15,20 @@ import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateMapRuntime_TestMissingElements_ExpectNull', () => {
    const originalHas = MapRuntimeFactory.hasRequiredRuntimeElements;
    MapRuntimeFactory.hasRequiredRuntimeElements = () => false;
+
    try {
-      assert.equal(MapFactory.createMapRuntime({ mapInner: {} }), null);
+      const runtime = MapFactory.createMapRuntime({ mapInner: {} });
+
+      assert.equal(runtime, null);
    } finally {
       MapRuntimeFactory.hasRequiredRuntimeElements = originalHas;
    }
 });
+
 
 test('Test_CreateMapRuntime_TestWiredDeps_ExpectRuntimeParts', () => {
    const originalHas = MapRuntimeFactory.hasRequiredRuntimeElements;
@@ -39,6 +44,8 @@ test('Test_CreateMapRuntime_TestWiredDeps_ExpectRuntimeParts', () => {
    const originalUpdater = MapUpdater.createMapUpdater;
    const originalRepositioner = MapRuntimeFactory.createTooltipRepositioner;
    const labelInits = [];
+   const checkbox = { id: 'labels' };
+   const repositioned = 'repositioned';
 
    MapRuntimeFactory.hasRequiredRuntimeElements = () => true;
    PanzoomAdapter.createPanzoom = (el, options) => {
@@ -50,17 +57,18 @@ test('Test_CreateMapRuntime_TestWiredDeps_ExpectRuntimeParts', () => {
    HoverFragment.createHoverTooltip = () => ({ hover: true });
    SpeciesFragment.initSpeciesOverlay = () => ({ overlay: true });
    MapRuntimeFactory.createMapTooltip = () => ({ tooltip: true });
-   MapRuntimeFactory.initMapLabels = (checkbox) => { labelInits.push(checkbox); };
+   MapRuntimeFactory.initMapLabels = (labelsCheckbox) => {
+      labelInits.push(labelsCheckbox);
+   };
    MarkerController.createMarkerLayer = () => ({ markers: true });
    MapRuntimeFactory.createMapFocus = () => ({ focus: true });
    MapUpdater.createMapUpdater = (options) => ({ updater: true, options });
-   MapRuntimeFactory.createTooltipRepositioner = () => () => 'repositioned';
+   MapRuntimeFactory.createTooltipRepositioner = () => () => repositioned;
 
    try {
       const parent = document.createElement('div');
       const mapInner = document.createElement('div');
       parent.appendChild(mapInner);
-      const checkbox = { id: 'labels' };
 
       const runtime = MapFactory.createMapRuntime({
          mapInner,
@@ -77,7 +85,7 @@ test('Test_CreateMapRuntime_TestWiredDeps_ExpectRuntimeParts', () => {
       assert.equal(runtime.markers.markers, true);
       assert.equal(runtime.focus.focus, true);
       assert.equal(runtime.updater.updater, true);
-      assert.equal(runtime.repositionTooltips(), 'repositioned');
+      assert.equal(runtime.repositionTooltips(), repositioned);
       assert.deepEqual(labelInits, [checkbox]);
    } finally {
       MapRuntimeFactory.hasRequiredRuntimeElements = originalHas;

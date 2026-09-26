@@ -1,56 +1,93 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
 
-test('Test_ItineraryErrorTypes_TestItineraryErrorTypesResolveItineraryErrorMessageMapsNoAvailableSlot_ExpectOk', () => {
-   assert.match(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('noAvailableSlot'),
-      /No open time slot/
+
+test('Test_ResolveItineraryErrorMessage_TestNoAvailableSlot_ExpectMessage', () => {
+   const errorType = ItineraryErrorType.NO_AVAILABLE_SLOT;
+
+   const message = ItineraryErrorTypes.resolveItineraryErrorMessage(errorType);
+
+   assert.equal(
+      message,
+      Strings.itinerary.errors[ItineraryErrorTypes.ITINERARY_ERROR_MESSAGE_KEYS[errorType]]
    );
 });
 
-test('Test_ItineraryErrorTypes_TestItineraryErrorTypesResolveItineraryErrorMessageMapsRequestedTimeNotAvailable_ExpectOk', () => {
-   assert.match(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('requestedTimeNotAvailable'),
-      /That time is not available/
+
+test('Test_ResolveItineraryErrorMessage_TestRequestedTimeNotAvailable_ExpectMessage', () => {
+   const errorType = ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE;
+
+   const message = ItineraryErrorTypes.resolveItineraryErrorMessage(errorType);
+
+   assert.equal(
+      message,
+      Strings.itinerary.errors[ItineraryErrorTypes.ITINERARY_ERROR_MESSAGE_KEYS[errorType]]
    );
 });
 
-test('Test_ItineraryErrorTypes_TestItineraryErrorTypesResolveItineraryErrorMessageMapsItemAlreadyScheduled_ExpectOk', () => {
-   assert.match(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('itemAlreadyScheduled'),
-      /already scheduled/i
+
+test('Test_ResolveItineraryErrorMessage_TestItemAlreadyScheduled_ExpectMessage', () => {
+   const errorType = ItineraryErrorType.ITEM_ALREADY_SCHEDULED;
+
+   const message = ItineraryErrorTypes.resolveItineraryErrorMessage(errorType);
+
+   assert.equal(
+      message,
+      Strings.itinerary.errors[ItineraryErrorTypes.ITINERARY_ERROR_MESSAGE_KEYS[errorType]]
    );
 });
 
-test('Test_ItineraryErrorTypes_TestItineraryErrorTypesResolveItineraryErrorMessageMapsBulkScheduleItineraryAlreadyScheduled_ExpectOk', () => {
-   assert.match(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('bulkScheduleItineraryAlreadyScheduled'),
-      /no items to schedule/i
+
+test('Test_ResolveItineraryErrorMessage_TestBulkAlreadyScheduled_ExpectMessage', () => {
+   const errorType = ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED;
+
+   const message = ItineraryErrorTypes.resolveItineraryErrorMessage(errorType);
+
+   assert.equal(
+      message,
+      Strings.itinerary.errors[ItineraryErrorTypes.ITINERARY_ERROR_MESSAGE_KEYS[errorType]]
    );
 });
 
-test('Test_ItineraryErrorTypes_TestItineraryErrorTypesResolveItineraryErrorMessageMapsUnscheduleAllNothingScheduled_ExpectOk', () => {
-   assert.match(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('unscheduleAllNothingScheduled'),
-      /no items to unschedule/i
+
+test('Test_ResolveItineraryErrorMessage_TestUnscheduleAllNothingScheduled_ExpectMessage', () => {
+   const errorType = ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED;
+
+   const message = ItineraryErrorTypes.resolveItineraryErrorMessage(errorType);
+
+   assert.equal(
+      message,
+      Strings.itinerary.errors[ItineraryErrorTypes.ITINERARY_ERROR_MESSAGE_KEYS[errorType]]
    );
 });
 
-test('Test_ItineraryErrorTypes_TestItineraryErrorTypesResolveItineraryErrorMessageMapsActivityNotOnDaySchedule_ExpectOk', () => {
-   assert.match(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('activityNotOnDaySchedule'),
-      /not scheduled on your visit day/i
+
+test('Test_ResolveItineraryErrorMessage_TestActivityNotOnDaySchedule_ExpectMessage', () => {
+   const errorType = ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE;
+
+   const message = ItineraryErrorTypes.resolveItineraryErrorMessage(errorType);
+
+   assert.equal(
+      message,
+      Strings.itinerary.errors[ItineraryErrorTypes.ITINERARY_ERROR_MESSAGE_KEYS[errorType]]
    );
 });
 
-test('Test_ItineraryErrorTypes_TestItineraryErrorTypesResolveItineraryErrorMessageMapsScheduleWindowUnavailable_ExpectOk', () => {
-   assert.match(
-      ItineraryErrorTypes.resolveItineraryErrorMessage('scheduleWindowUnavailable'),
-      /Operating hours are unavailable/i
+
+test('Test_ResolveItineraryErrorMessage_TestScheduleWindowUnavailable_ExpectMessage', () => {
+   const errorType = ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE;
+
+   const message = ItineraryErrorTypes.resolveItineraryErrorMessage(errorType);
+
+   assert.equal(
+      message,
+      Strings.itinerary.errors[ItineraryErrorTypes.ITINERARY_ERROR_MESSAGE_KEYS[errorType]]
    );
 });

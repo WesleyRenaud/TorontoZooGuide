@@ -9,23 +9,28 @@ import { ItineraryService } from '../../../scripts/itinerary/itineraryService.js
 import { ItineraryServiceHelper } from '../../../scripts/itinerary/itineraryServiceHelper.js';
 import { ItineraryShape } from '../../../scripts/itinerary/itineraryShape.js';
 import { VisitDateValidator } from '../../../scripts/visitDates/visitDateValidator.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 
 installItineraryServiceTestHooks();
 
+
 test('Test_DispatchItineraryUpdated_TestItinerary_ExpectCustomEvent', () => {
    const events = [];
+   const date = '2026-06-15';
+   const itinerary = { date };
    window.dispatchEvent = (event) => {
       events.push(event);
       return true;
    };
 
-   ItineraryService.dispatchItineraryUpdated({ date: '2026-06-15' });
+   ItineraryService.dispatchItineraryUpdated(itinerary);
 
    assert.equal(events.length, 1);
-   assert.equal(events[0].type, 'tzg:itineraryUpdated');
-   assert.deepEqual(events[0].detail, { itinerary: { date: '2026-06-15' } });
+   assert.equal(events[Position.FIRST].type, 'tzg:itineraryUpdated');
+   assert.deepEqual(events[Position.FIRST].detail, { itinerary });
 });
+
 
 test('Test_DispatchScheduleItineraryItemResult_TestMissingItinerary_ExpectNoOp', () => {
    const original = ItineraryService.dispatchItineraryUpdated;
@@ -36,17 +41,19 @@ test('Test_DispatchScheduleItineraryItemResult_TestMissingItinerary_ExpectNoOp',
 
    try {
       ItineraryService.dispatchScheduleItineraryItemResult({});
+
       assert.deepEqual(calls, []);
    } finally {
       ItineraryService.dispatchItineraryUpdated = original;
    }
 });
 
+
 test('Test_DispatchScheduleItineraryItemResult_TestWithItinerary_ExpectNormalizedDispatch', () => {
    const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
    const originalDispatch = ItineraryService.dispatchItineraryUpdated;
+   const date = '2026-06-15';
    const calls = [];
-
    ItineraryNormalizer.normalizeItineraryFromApiResult = (result) => ({
       ...result.itinerary,
       normalized: true,
@@ -57,37 +64,36 @@ test('Test_DispatchScheduleItineraryItemResult_TestWithItinerary_ExpectNormalize
 
    try {
       ItineraryService.dispatchScheduleItineraryItemResult({
-         itinerary: { date: '2026-06-15' },
+         itinerary: { date },
       });
-      assert.deepEqual(calls, [{ date: '2026-06-15', normalized: true }]);
+
+      assert.deepEqual(calls, [{ date, normalized: true }]);
    } finally {
       ItineraryNormalizer.normalizeItineraryFromApiResult = originalNormalize;
       ItineraryService.dispatchItineraryUpdated = originalDispatch;
    }
 });
 
+
 test('Test_GetItinerary_TestApiResult_ExpectNormalized', async () => {
    const originalFetchDate = ItineraryServiceHelper.fetchSavedItineraryVisitDate;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
    const originalRequest = ItineraryClient.getItineraryRequest;
    const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
-
-   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => '2026-06-15';
+   const date = '2026-06-15';
+   const normalized = { date, animals: [] };
+   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => date;
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: null });
    ItineraryClient.getItineraryRequest = async (temp) => {
       assert.equal(temp, null);
-      return { itinerary: { date: '2026-06-15' } };
+      return { itinerary: { date } };
    };
-   ItineraryNormalizer.normalizeItineraryFromApiResult = () => ({
-      date: '2026-06-15',
-      animals: [],
-   });
+   ItineraryNormalizer.normalizeItineraryFromApiResult = () => normalized;
 
    try {
-      assert.deepEqual(await ItineraryService.getItinerary(), {
-         date: '2026-06-15',
-         animals: [],
-      });
+      const itinerary = await ItineraryService.getItinerary();
+
+      assert.deepEqual(itinerary, normalized);
    } finally {
       ItineraryServiceHelper.fetchSavedItineraryVisitDate = originalFetchDate;
       ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
@@ -96,19 +102,38 @@ test('Test_GetItinerary_TestApiResult_ExpectNormalized', async () => {
    }
 });
 
-test('Test_GetZooHours_TestMissingOrInvalidDate_ExpectNull', async () => {
-   assert.equal(await ItineraryService.getZooHours(null), null);
-   assert.equal(await ItineraryService.getZooHours(''), null);
 
+test('Test_GetZooHours_TestNull_ExpectNull', async () => {
+   const date = null;
+
+   const hours = await ItineraryService.getZooHours(date);
+
+   assert.equal(hours, null);
+});
+
+
+test('Test_GetZooHours_TestEmpty_ExpectNull', async () => {
+   const date = '';
+
+   const hours = await ItineraryService.getZooHours(date);
+
+   assert.equal(hours, null);
+});
+
+
+test('Test_GetZooHours_TestInvalidMonth_ExpectNull', async () => {
    const originalMonth = VisitDateValidator.getMonth;
    const originalDay = VisitDateValidator.getDay;
    const originalYear = VisitDateValidator.getYear;
+   const date = '2026-06-15';
    VisitDateValidator.getMonth = () => null;
    VisitDateValidator.getDay = () => 15;
    VisitDateValidator.getYear = () => 2026;
 
    try {
-      assert.equal(await ItineraryService.getZooHours('2026-06-15'), null);
+      const hours = await ItineraryService.getZooHours(date);
+
+      assert.equal(hours, null);
    } finally {
       VisitDateValidator.getMonth = originalMonth;
       VisitDateValidator.getDay = originalDay;
@@ -116,25 +141,30 @@ test('Test_GetZooHours_TestMissingOrInvalidDate_ExpectNull', async () => {
    }
 });
 
+
 test('Test_GetZooHours_TestValidDate_ExpectHours', async () => {
    const originalMonth = VisitDateValidator.getMonth;
    const originalDay = VisitDateValidator.getDay;
    const originalYear = VisitDateValidator.getYear;
    const originalRequest = ItineraryClient.getZooHoursRequest;
-
-   VisitDateValidator.getMonth = () => 'JUN';
-   VisitDateValidator.getDay = () => 15;
-   VisitDateValidator.getYear = () => 2026;
+   const date = '2026-06-15';
+   const day = 15;
+   const month = 'JUN';
+   const year = 2026;
+   const openTime = '09:30';
+   const closeTime = '19:00';
+   VisitDateValidator.getMonth = () => month;
+   VisitDateValidator.getDay = () => day;
+   VisitDateValidator.getYear = () => year;
    ItineraryClient.getZooHoursRequest = async (payload) => {
-      assert.deepEqual(payload, { day: 15, month: 'JUN', year: 2026 });
-      return { hours: { openTime: '09:30', closeTime: '19:00' } };
+      assert.deepEqual(payload, { day, month, year });
+      return { hours: { openTime, closeTime } };
    };
 
    try {
-      assert.deepEqual(await ItineraryService.getZooHours('2026-06-15'), {
-         openTime: '09:30',
-         closeTime: '19:00',
-      });
+      const hours = await ItineraryService.getZooHours(date);
+
+      assert.deepEqual(hours, { openTime, closeTime });
    } finally {
       VisitDateValidator.getMonth = originalMonth;
       VisitDateValidator.getDay = originalDay;
@@ -143,15 +173,17 @@ test('Test_GetZooHours_TestValidDate_ExpectHours', async () => {
    }
 });
 
+
 test('Test_ClearItinerary_TestSuccess_ExpectClearedEvents', async () => {
    const originalRequest = ItineraryClient.clearItineraryRequest;
    const originalEmpty = ItineraryNormalizer.createEmptyItinerary;
    const originalDispatch = ItineraryService.dispatchItineraryUpdated;
    const events = [];
    const dispatches = [];
-
-   ItineraryClient.clearItineraryRequest = async () => ({ success: true });
-   ItineraryNormalizer.createEmptyItinerary = () => ({ date: null, animals: [] });
+   const cleared = { success: true };
+   const emptyItinerary = { date: null, animals: [] };
+   ItineraryClient.clearItineraryRequest = async () => cleared;
+   ItineraryNormalizer.createEmptyItinerary = () => emptyItinerary;
    ItineraryService.dispatchItineraryUpdated = (itinerary) => {
       dispatches.push(itinerary);
    };
@@ -161,9 +193,11 @@ test('Test_ClearItinerary_TestSuccess_ExpectClearedEvents', async () => {
    };
 
    try {
-      assert.deepEqual(await ItineraryService.clearItinerary(), { success: true });
+      const result = await ItineraryService.clearItinerary();
+
+      assert.deepEqual(result, cleared);
       assert.deepEqual(events, ['tzg:itineraryCleared']);
-      assert.deepEqual(dispatches, [{ date: null, animals: [] }]);
+      assert.deepEqual(dispatches, [emptyItinerary]);
    } finally {
       ItineraryClient.clearItineraryRequest = originalRequest;
       ItineraryNormalizer.createEmptyItinerary = originalEmpty;
@@ -171,31 +205,34 @@ test('Test_ClearItinerary_TestSuccess_ExpectClearedEvents', async () => {
    }
 });
 
+
 test('Test_BulkScheduleItinerary_TestError_ExpectMessagePayload', async () => {
    const originalFetchDate = ItineraryServiceHelper.fetchSavedItineraryVisitDate;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
    const originalRequest = ItineraryClient.bulkScheduleItineraryRequest;
    const originalSuccess = ItineraryErrorTypes.isItinerarySuccess;
    const originalResolve = ItineraryErrorTypes.resolveItineraryErrorMessage;
-
-   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => '2026-06-15';
+   const date = '2026-06-15';
+   const errorType = 'fixedTimeItemLongWait';
+   const message = 'long wait';
+   const issues = [{ code: 'wait' }];
+   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => date;
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: false });
    ItineraryClient.bulkScheduleItineraryRequest = async (_temp, options) => {
       assert.equal(options.confirmingFixedTimeItemLongWait, true);
-      return { errorType: 'fixedTimeItemLongWait', issues: [{ code: 'wait' }] };
+      return { errorType, issues };
    };
    ItineraryErrorTypes.isItinerarySuccess = () => false;
-   ItineraryErrorTypes.resolveItineraryErrorMessage = () => 'long wait';
+   ItineraryErrorTypes.resolveItineraryErrorMessage = () => message;
 
    try {
-      assert.deepEqual(
-         await ItineraryService.bulkScheduleItinerary({ confirmingFixedTimeItemLongWait: true }),
-         {
-            errorType: 'fixedTimeItemLongWait',
-            message: 'long wait',
-            issues: [{ code: 'wait' }],
-         }
-      );
+      const result = await ItineraryService.bulkScheduleItinerary({
+         confirmingFixedTimeItemLongWait: true,
+      });
+
+      assert.equal(result.errorType, errorType);
+      assert.equal(result.message, message);
+      assert.deepEqual(result.issues, issues);
    } finally {
       ItineraryServiceHelper.fetchSavedItineraryVisitDate = originalFetchDate;
       ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
@@ -205,6 +242,7 @@ test('Test_BulkScheduleItinerary_TestError_ExpectMessagePayload', async () => {
    }
 });
 
+
 test('Test_BulkScheduleItinerary_TestSuccess_ExpectNormalizedItinerary', async () => {
    const originalFetchDate = ItineraryServiceHelper.fetchSavedItineraryVisitDate;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
@@ -212,26 +250,28 @@ test('Test_BulkScheduleItinerary_TestSuccess_ExpectNormalizedItinerary', async (
    const originalSuccess = ItineraryErrorTypes.isItinerarySuccess;
    const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
    const originalDispatch = ItineraryService.dispatchItineraryUpdated;
+   const date = '2026-06-15';
+   const issues = [];
+   const normalized = { date, animals: [] };
    const dispatches = [];
-
-   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => '2026-06-15';
+   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => date;
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: null });
    ItineraryClient.bulkScheduleItineraryRequest = async () => ({
       errorType: 'success',
-      itinerary: { date: '2026-06-15' },
-      issues: [],
+      itinerary: { date },
+      issues,
    });
    ItineraryErrorTypes.isItinerarySuccess = () => true;
-   ItineraryNormalizer.normalizeItineraryFromApiResult = () => ({ date: '2026-06-15', animals: [] });
+   ItineraryNormalizer.normalizeItineraryFromApiResult = () => normalized;
    ItineraryService.dispatchItineraryUpdated = (itinerary) => {
       dispatches.push(itinerary);
    };
 
    try {
-      assert.deepEqual(await ItineraryService.bulkScheduleItinerary(), {
-         itinerary: { date: '2026-06-15', animals: [] },
-         issues: [],
-      });
+      const result = await ItineraryService.bulkScheduleItinerary();
+
+      assert.equal(result.itinerary, normalized);
+      assert.deepEqual(result.issues, issues);
       assert.equal(dispatches.length, 1);
    } finally {
       ItineraryServiceHelper.fetchSavedItineraryVisitDate = originalFetchDate;
@@ -243,48 +283,70 @@ test('Test_BulkScheduleItinerary_TestSuccess_ExpectNormalizedItinerary', async (
    }
 });
 
-test('Test_UnscheduleAllItineraryItems_TestErrorAndSuccess_ExpectPayloads', async () => {
+
+test('Test_UnscheduleAllItineraryItems_TestError_ExpectMessagePayload', async () => {
    const originalFetchDate = ItineraryServiceHelper.fetchSavedItineraryVisitDate;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
    const originalRequest = ItineraryClient.unscheduleAllItineraryItemsRequest;
    const originalSuccess = ItineraryErrorTypes.isItinerarySuccess;
    const originalResolve = ItineraryErrorTypes.resolveItineraryErrorMessage;
-   const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
-   const originalDispatch = ItineraryService.dispatchItineraryUpdated;
-
-   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => '2026-06-15';
+   const date = '2026-06-15';
+   const errorType = 'empty';
+   const message = 'nothing scheduled';
+   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => date;
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: null });
-   ItineraryClient.unscheduleAllItineraryItemsRequest = async () => ({ errorType: 'empty' });
+   ItineraryClient.unscheduleAllItineraryItemsRequest = async () => ({ errorType });
    ItineraryErrorTypes.isItinerarySuccess = () => false;
-   ItineraryErrorTypes.resolveItineraryErrorMessage = () => 'nothing scheduled';
+   ItineraryErrorTypes.resolveItineraryErrorMessage = () => message;
 
    try {
-      assert.deepEqual(await ItineraryService.unscheduleAllItineraryItems(), {
-         errorType: 'empty',
-         message: 'nothing scheduled',
-      });
+      const result = await ItineraryService.unscheduleAllItineraryItems();
 
-      ItineraryErrorTypes.isItinerarySuccess = () => true;
-      ItineraryNormalizer.normalizeItineraryFromApiResult = () => ({ date: '2026-06-15' });
-      ItineraryService.dispatchItineraryUpdated = () => {};
-      ItineraryClient.unscheduleAllItineraryItemsRequest = async () => ({
-         errorType: 'success',
-         itinerary: { date: '2026-06-15' },
-      });
-
-      assert.deepEqual(await ItineraryService.unscheduleAllItineraryItems(), {
-         itinerary: { date: '2026-06-15' },
-      });
+      assert.equal(result.errorType, errorType);
+      assert.equal(result.message, message);
    } finally {
       ItineraryServiceHelper.fetchSavedItineraryVisitDate = originalFetchDate;
       ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
       ItineraryClient.unscheduleAllItineraryItemsRequest = originalRequest;
       ItineraryErrorTypes.isItinerarySuccess = originalSuccess;
       ItineraryErrorTypes.resolveItineraryErrorMessage = originalResolve;
+   }
+});
+
+
+test('Test_UnscheduleAllItineraryItems_TestSuccess_ExpectNormalizedItinerary', async () => {
+   const originalFetchDate = ItineraryServiceHelper.fetchSavedItineraryVisitDate;
+   const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
+   const originalRequest = ItineraryClient.unscheduleAllItineraryItemsRequest;
+   const originalSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
+   const originalDispatch = ItineraryService.dispatchItineraryUpdated;
+   const date = '2026-06-15';
+   const normalized = { date };
+   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => date;
+   ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: null });
+   ItineraryErrorTypes.isItinerarySuccess = () => true;
+   ItineraryNormalizer.normalizeItineraryFromApiResult = () => normalized;
+   ItineraryService.dispatchItineraryUpdated = () => {};
+   ItineraryClient.unscheduleAllItineraryItemsRequest = async () => ({
+      errorType: 'success',
+      itinerary: { date },
+   });
+
+   try {
+      const result = await ItineraryService.unscheduleAllItineraryItems();
+
+      assert.deepEqual(result, { itinerary: normalized });
+   } finally {
+      ItineraryServiceHelper.fetchSavedItineraryVisitDate = originalFetchDate;
+      ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
+      ItineraryClient.unscheduleAllItineraryItemsRequest = originalRequest;
+      ItineraryErrorTypes.isItinerarySuccess = originalSuccess;
       ItineraryNormalizer.normalizeItineraryFromApiResult = originalNormalize;
       ItineraryService.dispatchItineraryUpdated = originalDispatch;
    }
 });
+
 
 test('Test_AcceptItinerary_TestKeepLists_ExpectNormalized', async () => {
    const originalFetchDate = ItineraryServiceHelper.fetchSavedItineraryVisitDate;
@@ -292,31 +354,30 @@ test('Test_AcceptItinerary_TestKeepLists_ExpectNormalized', async () => {
    const originalRequest = ItineraryClient.acceptItineraryRequest;
    const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
    const originalDispatch = ItineraryService.dispatchItineraryUpdated;
+   const date = '2026-06-15';
+   const animalsToKeep = ['Lion'];
+   const attractionsToKeep = ['Carousel'];
+   const normalized = { date, accepted: true };
    const dispatches = [];
-
-   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => '2026-06-15';
+   ItineraryServiceHelper.fetchSavedItineraryVisitDate = async () => date;
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: true });
    ItineraryClient.acceptItineraryRequest = async (temp, keep) => {
       assert.equal(temp, true);
-      assert.deepEqual(keep, {
-         animalsToKeep: ['Lion'],
-         attractionsToKeep: ['Carousel'],
-      });
-      return { itinerary: { date: '2026-06-15' } };
+      assert.deepEqual(keep, { animalsToKeep, attractionsToKeep });
+      return { itinerary: { date } };
    };
-   ItineraryNormalizer.normalizeItineraryFromApiResult = () => ({ date: '2026-06-15', accepted: true });
+   ItineraryNormalizer.normalizeItineraryFromApiResult = () => normalized;
    ItineraryService.dispatchItineraryUpdated = (itinerary) => {
       dispatches.push(itinerary);
    };
 
    try {
-      assert.deepEqual(
-         await ItineraryService.acceptItinerary({
-            animalsToKeep: ['Lion'],
-            attractionsToKeep: ['Carousel'],
-         }),
-         { date: '2026-06-15', accepted: true }
-      );
+      const itinerary = await ItineraryService.acceptItinerary({
+         animalsToKeep,
+         attractionsToKeep,
+      });
+
+      assert.deepEqual(itinerary, normalized);
       assert.equal(dispatches.length, 1);
    } finally {
       ItineraryServiceHelper.fetchSavedItineraryVisitDate = originalFetchDate;
@@ -327,22 +388,51 @@ test('Test_AcceptItinerary_TestKeepLists_ExpectNormalized', async () => {
    }
 });
 
-test('Test_HasActiveItinerary_TestFlags_ExpectBoolean', async () => {
+
+test('Test_HasActiveItinerary_TestActiveWithContent_ExpectTrue', async () => {
    const originalGet = ItineraryService.getItinerary;
    const originalHas = ItineraryShape.hasSavedItineraryContent;
-
    ItineraryService.getItinerary = async () => ({ isActive: true });
    ItineraryShape.hasSavedItineraryContent = () => true;
 
    try {
-      assert.equal(await ItineraryService.hasActiveItinerary(), true);
+      const isActive = await ItineraryService.hasActiveItinerary();
 
-      ItineraryShape.hasSavedItineraryContent = () => false;
-      assert.equal(await ItineraryService.hasActiveItinerary(), false);
+      assert.equal(isActive, true);
+   } finally {
+      ItineraryService.getItinerary = originalGet;
+      ItineraryShape.hasSavedItineraryContent = originalHas;
+   }
+});
 
-      ItineraryService.getItinerary = async () => ({ isActive: false });
-      ItineraryShape.hasSavedItineraryContent = () => true;
-      assert.equal(await ItineraryService.hasActiveItinerary(), false);
+
+test('Test_HasActiveItinerary_TestNoContent_ExpectFalse', async () => {
+   const originalGet = ItineraryService.getItinerary;
+   const originalHas = ItineraryShape.hasSavedItineraryContent;
+   ItineraryService.getItinerary = async () => ({ isActive: true });
+   ItineraryShape.hasSavedItineraryContent = () => false;
+
+   try {
+      const isActive = await ItineraryService.hasActiveItinerary();
+
+      assert.equal(isActive, false);
+   } finally {
+      ItineraryService.getItinerary = originalGet;
+      ItineraryShape.hasSavedItineraryContent = originalHas;
+   }
+});
+
+
+test('Test_HasActiveItinerary_TestInactiveWithContent_ExpectFalse', async () => {
+   const originalGet = ItineraryService.getItinerary;
+   const originalHas = ItineraryShape.hasSavedItineraryContent;
+   ItineraryService.getItinerary = async () => ({ isActive: false });
+   ItineraryShape.hasSavedItineraryContent = () => true;
+
+   try {
+      const isActive = await ItineraryService.hasActiveItinerary();
+
+      assert.equal(isActive, false);
    } finally {
       ItineraryService.getItinerary = originalGet;
       ItineraryShape.hasSavedItineraryContent = originalHas;

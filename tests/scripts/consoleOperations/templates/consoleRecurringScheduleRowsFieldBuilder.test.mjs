@@ -7,19 +7,21 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateRecurringScheduleRowsField_TestIds_ExpectRowsAndAddButton', () => {
+   const rowsId = 'rows';
+   const addRowButtonId = 'add-row';
+
    const fieldEl = ConsoleRecurringScheduleRowsFieldBuilder.createRecurringScheduleRowsField({
-      rowsId: 'rows',
-      addRowButtonId: 'add-row',
+      rowsId,
+      addRowButtonId,
    });
 
+   const rowsEl = [...fieldEl.children].find((child) => child.id === rowsId);
+   const addButtonEl = [...fieldEl.children].find((child) => child.id === addRowButtonId);
    assert.match(fieldEl.textContent, new RegExp(Strings.labels.encounterTimes));
    assert.match(fieldEl.textContent, new RegExp(Strings.actions.addEncounterScheduleRow));
    assert.match(fieldEl.textContent, new RegExp(Strings.help.encounterScheduleRows));
-
-   const rowsEl = [...fieldEl.children].find((child) => child.id === 'rows');
-   const addButtonEl = [...fieldEl.children].find((child) => child.id === 'add-row');
-
    assert.equal(rowsEl.className, 'console-operations-schedule-rows');
    assert.equal(addButtonEl.type, 'button');
    assert.equal(addButtonEl.className, 'console-operations-secondary-btn console-operations-schedule-rows-add');

@@ -12,18 +12,25 @@ import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryError
 import { EarlyAdmissionFragment } from '../../../scripts/itinerary/panel/earlyAdmissionFragment.js';
 import { ShortVisitFragment } from '../../../scripts/itinerary/panel/shortVisitFragment.js';
 import { PersistItineraryWarningSuppressor } from '../../../scripts/itinerary/persistItineraryWarningSuppressor.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+
 
 test('Test_CreateItineraryTimeChangeCancelledError_TestDefault_ExpectNamedError', () => {
    const error = ItineraryServiceTimeRunner.createItineraryTimeChangeCancelledError();
+
    assert.equal(error.name, 'ItineraryTimeChangeCancelledError');
    assert.match(error.message, /cancelled/i);
 });
+
 
 test('Test_RequestConfirmedItineraryTimeChange_TestConfirmSuccess_ExpectResolved', async () => {
    const originalPersist = PersistItineraryWarningSuppressor.persistItineraryWarningSuppression;
    const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
    const persists = [];
-
+   const timeValue = '09:00 AM';
+   const suppressionType = 'EARLY';
+   const confirmationOptions = { confirmingEarlyAdmission: true };
+   const errorType = 'SUCCESS';
    PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = async (type) => {
       persists.push(type);
    };
@@ -32,126 +39,216 @@ test('Test_RequestConfirmedItineraryTimeChange_TestConfirmSuccess_ExpectResolved
    try {
       const result = await ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
          showConfirmation: ({ onConfirm }) => onConfirm({ doNotShowAgain: true }),
-         requestFn: async (time, options) => ({ errorType: 'SUCCESS', time, options }),
-         timeValue: '09:00 AM',
-         suppressionType: 'EARLY',
-         confirmationOptions: { confirmingEarlyAdmission: true },
+         requestFn: async (time, options) => ({ errorType, time, options }),
+         timeValue,
+         suppressionType,
+         confirmationOptions,
       });
 
-      assert.deepEqual(result, {
-         errorType: 'SUCCESS',
-         time: '09:00 AM',
-         options: { confirmingEarlyAdmission: true },
-      });
-      assert.deepEqual(persists, ['EARLY']);
+      assert.equal(result.errorType, errorType);
+      assert.equal(result.time, timeValue);
+      assert.deepEqual(result.options, confirmationOptions);
+      assert.deepEqual(persists, [suppressionType]);
    } finally {
       PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = originalPersist;
       ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
    }
 });
 
-test('Test_RequestConfirmedItineraryTimeChange_TestCancelAndFailure_ExpectRejected', async () => {
-   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
-   const originalResolve = ItineraryErrorTypes.resolveItineraryErrorMessage;
-   ItineraryErrorTypes.isItinerarySuccess = () => false;
-   ItineraryErrorTypes.resolveItineraryErrorMessage = () => 'failed';
+
+test('Test_RequestConfirmedItineraryTimeChange_TestCancel_ExpectRejected', async () => {
+   const timeValue = '09:00 AM';
 
    await assert.rejects(
       () => ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
          showConfirmation: ({ onCancel }) => onCancel(),
          requestFn: async () => ({}),
-         timeValue: '09:00 AM',
+         timeValue,
          suppressionType: 'EARLY',
          confirmationOptions: {},
       }),
       (error) => error.name === 'ItineraryTimeChangeCancelledError'
    );
-
-   await assert.rejects(
-      () => ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
-         showConfirmation: ({ onConfirm }) => onConfirm({}),
-         requestFn: async () => ({ errorType: 'SAVE_FAILED' }),
-         timeValue: '09:00 AM',
-         suppressionType: 'EARLY',
-         confirmationOptions: {},
-      }),
-      /failed/
-   );
-
-   await assert.rejects(
-      () => ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
-         showConfirmation: ({ onConfirm }) => onConfirm({}),
-         requestFn: async () => {
-            throw new Error('persist boom');
-         },
-         timeValue: '09:00 AM',
-         suppressionType: 'EARLY',
-         confirmationOptions: {},
-      }),
-      /persist boom/
-   );
-
-   ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
-   ItineraryErrorTypes.resolveItineraryErrorMessage = originalResolve;
 });
 
-test('Test_SetItineraryTimeWithConfirmation_TestBranches_ExpectFlows', async () => {
+
+test('Test_RequestConfirmedItineraryTimeChange_TestFailure_ExpectRejected', async () => {
+   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const originalResolve = ItineraryErrorTypes.resolveItineraryErrorMessage;
+   const message = 'failed';
+   ItineraryErrorTypes.isItinerarySuccess = () => false;
+   ItineraryErrorTypes.resolveItineraryErrorMessage = () => message;
+
+   try {
+      await assert.rejects(
+         () => ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
+            showConfirmation: ({ onConfirm }) => onConfirm({}),
+            requestFn: async () => ({ errorType: 'SAVE_FAILED' }),
+            timeValue: '09:00 AM',
+            suppressionType: 'EARLY',
+            confirmationOptions: {},
+         }),
+         new RegExp(message)
+      );
+   } finally {
+      ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
+      ItineraryErrorTypes.resolveItineraryErrorMessage = originalResolve;
+   }
+});
+
+
+test('Test_RequestConfirmedItineraryTimeChange_TestPersistFailure_ExpectRejected', async () => {
+   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const message = 'persist boom';
+   ItineraryErrorTypes.isItinerarySuccess = () => false;
+
+   try {
+      await assert.rejects(
+         () => ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
+            showConfirmation: ({ onConfirm }) => onConfirm({}),
+            requestFn: async () => {
+               throw new Error(message);
+            },
+            timeValue: '09:00 AM',
+            suppressionType: 'EARLY',
+            confirmationOptions: {},
+         }),
+         new RegExp(message)
+      );
+   } finally {
+      ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
+   }
+});
+
+
+test('Test_SetItineraryTimeWithConfirmation_TestSuccess_ExpectResult', async () => {
+   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const errorType = 'SUCCESS';
+   const timeValue = '10:00 AM';
+   ItineraryErrorTypes.isItinerarySuccess = () => true;
+
+   try {
+      const result = await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(
+         async () => ({ errorType }),
+         timeValue
+      );
+
+      assert.equal(result.errorType, errorType);
+   } finally {
+      ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
+   }
+});
+
+
+test('Test_SetItineraryTimeWithConfirmation_TestEarlyAdmission_ExpectConfirmed', async () => {
    const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
    const originalEarly = ItineraryErrorTypes.requiresEarlyAdmissionConfirmation;
-   const originalShort = ItineraryErrorTypes.requiresShortVisitConfirmation;
-   const originalResolve = ItineraryErrorTypes.resolveItineraryErrorMessage;
    const originalRequest = ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange;
-   const originalEarlyShow = EarlyAdmissionFragment.showEarlyAdmissionConfirmation;
-   const originalShortShow = ShortVisitFragment.showShortVisitConfirmation;
    const requests = [];
-
+   const timeValue = '8:00 AM';
+   const suppressionType = ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP;
+   ItineraryErrorTypes.isItinerarySuccess = () => false;
+   ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = () => true;
    ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = async (options) => {
       requests.push(options);
       return { confirmed: true, via: options.suppressionType };
    };
 
    try {
-      ItineraryErrorTypes.isItinerarySuccess = () => true;
-      assert.deepEqual(
-         await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(
-            async () => ({ errorType: 'SUCCESS' }),
-            '10:00 AM'
-         ),
-         { errorType: 'SUCCESS' }
+      const result = await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(
+         async () => ({}),
+         timeValue
       );
 
-      ItineraryErrorTypes.isItinerarySuccess = () => false;
-      ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = () => true;
-      assert.deepEqual(
-         await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(async () => ({}), '8:00 AM'),
-         { confirmed: true, via: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP }
+      assert.equal(result.confirmed, true);
+      assert.equal(result.via, suppressionType);
+      assert.equal(
+         requests[Position.FIRST].showConfirmation,
+         EarlyAdmissionFragment.showEarlyAdmissionConfirmation
       );
-      assert.equal(requests[0].showConfirmation, EarlyAdmissionFragment.showEarlyAdmissionConfirmation);
+   } finally {
+      ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
+      ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = originalEarly;
+      ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = originalRequest;
+   }
+});
 
-      ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = () => false;
-      ItineraryErrorTypes.requiresShortVisitConfirmation = () => true;
-      assert.deepEqual(
-         await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(async () => ({}), '3:00 PM'),
-         { confirmed: true, via: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE }
+
+test('Test_SetItineraryTimeWithConfirmation_TestShortVisit_ExpectConfirmed', async () => {
+   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const originalEarly = ItineraryErrorTypes.requiresEarlyAdmissionConfirmation;
+   const originalShort = ItineraryErrorTypes.requiresShortVisitConfirmation;
+   const originalRequest = ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange;
+   const requests = [];
+   const timeValue = '3:00 PM';
+   const suppressionType = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+   ItineraryErrorTypes.isItinerarySuccess = () => false;
+   ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = () => false;
+   ItineraryErrorTypes.requiresShortVisitConfirmation = () => true;
+   ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = async (options) => {
+      requests.push(options);
+      return { confirmed: true, via: options.suppressionType };
+   };
+
+   try {
+      const result = await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(
+         async () => ({}),
+         timeValue
       );
-      assert.equal(requests[1].showConfirmation, ShortVisitFragment.showShortVisitConfirmation);
 
-      ItineraryErrorTypes.requiresShortVisitConfirmation = () => false;
-      ItineraryErrorTypes.resolveItineraryErrorMessage = () => 'hard fail';
+      assert.equal(result.confirmed, true);
+      assert.equal(result.via, suppressionType);
+      assert.equal(
+         requests[Position.FIRST].showConfirmation,
+         ShortVisitFragment.showShortVisitConfirmation
+      );
+   } finally {
+      ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
+      ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = originalEarly;
+      ItineraryErrorTypes.requiresShortVisitConfirmation = originalShort;
+      ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = originalRequest;
+   }
+});
+
+
+test('Test_SetItineraryTimeWithConfirmation_TestHardFail_ExpectRejected', async () => {
+   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const originalEarly = ItineraryErrorTypes.requiresEarlyAdmissionConfirmation;
+   const originalShort = ItineraryErrorTypes.requiresShortVisitConfirmation;
+   const originalResolve = ItineraryErrorTypes.resolveItineraryErrorMessage;
+   const message = 'hard fail';
+   const timeValue = '1:00 PM';
+   ItineraryErrorTypes.isItinerarySuccess = () => false;
+   ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = () => false;
+   ItineraryErrorTypes.requiresShortVisitConfirmation = () => false;
+   ItineraryErrorTypes.resolveItineraryErrorMessage = () => message;
+
+   try {
       await assert.rejects(
-         () => ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(async () => ({}), '1:00 PM'),
-         /hard fail/
+         () => ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(async () => ({}), timeValue),
+         new RegExp(message)
       );
    } finally {
       ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
       ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = originalEarly;
       ItineraryErrorTypes.requiresShortVisitConfirmation = originalShort;
       ItineraryErrorTypes.resolveItineraryErrorMessage = originalResolve;
-      ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = originalRequest;
-      EarlyAdmissionFragment.showEarlyAdmissionConfirmation = originalEarlyShow;
-      ShortVisitFragment.showShortVisitConfirmation = originalShortShow;
    }
 });
+
+
+test('Test_BuildValidatedTimeSetItinerary_TestNullResult_ExpectNull', () => {
+   const previousItinerary = {};
+   const result = null;
+
+   const validated = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary(
+      previousItinerary,
+      result
+   );
+
+   assert.equal(validated, null);
+});
+
 
 test('Test_BuildValidatedTimeSetItinerary_TestResult_ExpectNormalizedDiff', () => {
    const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
@@ -159,27 +256,26 @@ test('Test_BuildValidatedTimeSetItinerary_TestResult_ExpectNormalizedDiff', () =
    const originalDiff = ItineraryDiff.buildItineraryDiff;
    const originalApply = ItineraryValidationResult.applyItineraryDiffToValidation;
    const applies = [];
-
+   const issues = ['warn'];
+   const diff = { changed: true };
    ItineraryNormalizer.normalizeItineraryFromApiResult = () => ({
       animals: [],
       itineraryConfig: { a: 1 },
    });
    ItineraryShape.normalizeItineraryDraft = (draft) => ({ ...draft, shaped: true });
-   ItineraryDiff.buildItineraryDiff = () => ({ changed: true });
-   ItineraryValidationResult.applyItineraryDiffToValidation = (itinerary, diff) => {
-      applies.push({ itinerary, diff });
+   ItineraryDiff.buildItineraryDiff = () => diff;
+   ItineraryValidationResult.applyItineraryDiffToValidation = (itinerary, nextDiff) => {
+      applies.push({ itinerary, diff: nextDiff });
    };
 
    try {
-      assert.equal(ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary({}, null), null);
-
       const validated = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary(
          { previous: true },
-         { itinerary: { animals: [] }, issues: ['warn'] }
+         { itinerary: { animals: [] }, issues }
       );
 
-      assert.deepEqual(validated.saveIssues, ['warn']);
-      assert.deepEqual(applies[0].diff, { changed: true });
+      assert.deepEqual(validated.saveIssues, issues);
+      assert.deepEqual(applies[Position.FIRST].diff, diff);
    } finally {
       ItineraryNormalizer.normalizeItineraryFromApiResult = originalNormalize;
       ItineraryShape.normalizeItineraryDraft = originalShape;
@@ -188,30 +284,56 @@ test('Test_BuildValidatedTimeSetItinerary_TestResult_ExpectNormalizedDiff', () =
    }
 });
 
+
 test('Test_SetItineraryTimeAndDispatch_TestValidated_ExpectDispatch', async () => {
    const originalGet = ItineraryService.getItinerary;
    const originalSet = ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation;
    const originalBuild = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary;
    const originalDispatch = ItineraryService.dispatchItineraryUpdated;
    const dispatches = [];
-
+   const validated = { validated: true };
+   const timeValue = '10:00 AM';
    ItineraryService.getItinerary = async () => ({ previous: true });
    ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation = async () => ({ itinerary: { ok: true } });
-   ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = () => ({ validated: true });
+   ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = () => validated;
    ItineraryService.dispatchItineraryUpdated = (itinerary) => dispatches.push(itinerary);
 
    try {
-      assert.deepEqual(
-         await ItineraryServiceTimeRunner.setItineraryTimeAndDispatch(async () => ({}), '10:00 AM'),
-         { validated: true }
+      const result = await ItineraryServiceTimeRunner.setItineraryTimeAndDispatch(
+         async () => ({}),
+         timeValue
       );
-      assert.deepEqual(dispatches, [{ validated: true }]);
 
-      ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = () => null;
-      assert.deepEqual(
-         await ItineraryServiceTimeRunner.setItineraryTimeAndDispatch(async () => ({}), '10:00 AM'),
-         { itinerary: { ok: true } }
+      assert.equal(result, validated);
+      assert.deepEqual(dispatches, [validated]);
+   } finally {
+      ItineraryService.getItinerary = originalGet;
+      ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation = originalSet;
+      ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = originalBuild;
+      ItineraryService.dispatchItineraryUpdated = originalDispatch;
+   }
+});
+
+
+test('Test_SetItineraryTimeAndDispatch_TestUnvalidated_ExpectRawResult', async () => {
+   const originalGet = ItineraryService.getItinerary;
+   const originalSet = ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation;
+   const originalBuild = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary;
+   const originalDispatch = ItineraryService.dispatchItineraryUpdated;
+   const rawResult = { itinerary: { ok: true } };
+   const timeValue = '10:00 AM';
+   ItineraryService.getItinerary = async () => ({ previous: true });
+   ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation = async () => rawResult;
+   ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = () => null;
+   ItineraryService.dispatchItineraryUpdated = () => {};
+
+   try {
+      const result = await ItineraryServiceTimeRunner.setItineraryTimeAndDispatch(
+         async () => ({}),
+         timeValue
       );
+
+      assert.equal(result, rawResult);
    } finally {
       ItineraryService.getItinerary = originalGet;
       ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation = originalSet;

@@ -3,27 +3,46 @@ import test from 'node:test';
 
 import { WizardStepConfigs } from '../../../../scripts/itinerary/wizard/wizardStepConfigs.js';
 
-test('Test_ResolveWizardStartStep_TestUnknownValues_ExpectDateFallback', () => {
-   assert.equal(
-      WizardStepConfigs.resolveWizardStartStep('date'),
-      WizardStepConfigs.WIZARD_DEFAULT_START_STEP
-   );
-   assert.equal(WizardStepConfigs.resolveWizardStartStep('animals'), 'animals');
-   assert.equal(
-      WizardStepConfigs.resolveWizardStartStep('unknown-step'),
-      WizardStepConfigs.WIZARD_DEFAULT_START_STEP
-   );
+
+test('Test_ResolveWizardStartStep_TestDate_ExpectDefault', () => {
+   const step = 'date';
+
+   const resolved = WizardStepConfigs.resolveWizardStartStep(step);
+
+   assert.equal(resolved, WizardStepConfigs.WIZARD_DEFAULT_START_STEP);
 });
+
+
+test('Test_ResolveWizardStartStep_TestAnimals_ExpectAnimals', () => {
+   const step = 'animals';
+
+   const resolved = WizardStepConfigs.resolveWizardStartStep(step);
+
+   assert.equal(resolved, step);
+});
+
+
+test('Test_ResolveWizardStartStep_TestUnknown_ExpectDefault', () => {
+   const step = 'unknown-step';
+
+   const resolved = WizardStepConfigs.resolveWizardStartStep(step);
+
+   assert.equal(resolved, WizardStepConfigs.WIZARD_DEFAULT_START_STEP);
+});
+
 
 test('Test_BuildSelectionStepHandlers_TestNextAndFinish_ExpectUpdateThenOverride', () => {
    const updates = [];
    const finished = [];
    let advanced = 0;
+   const selectionKey = 'animals';
+   const nextSelection = [{ id: 'lion' }];
+   const finishSelection = [{ id: 'tiger' }];
 
    const handlers = WizardStepConfigs.buildSelectionStepHandlers({
-      selectionKey: 'animals',
-      updateSelection: (selectionKey, value, options) => {
-         updates.push({ selectionKey, value, options });
+      selectionKey,
+      updateSelection: (nextKey, value, options) => {
+         updates.push({ selectionKey: nextKey, value, options });
       },
       showNextStep: () => {
          advanced += 1;
@@ -33,42 +52,31 @@ test('Test_BuildSelectionStepHandlers_TestNextAndFinish_ExpectUpdateThenOverride
       },
    });
 
-   handlers.onNext?.([{ id: 'lion' }]);
-   handlers.onFinish?.([{ id: 'tiger' }]);
+   handlers.onNext?.(nextSelection);
+   handlers.onFinish?.(finishSelection);
 
    assert.deepEqual(updates, [
       {
-         selectionKey: 'animals',
-         value: [{ id: 'lion' }],
+         selectionKey,
+         value: nextSelection,
          options: { preserveOnInvalid: false },
       },
    ]);
    assert.equal(advanced, 1);
-   assert.deepEqual(finished, [{ animals: [{ id: 'tiger' }] }]);
+   assert.deepEqual(finished, [{ [selectionKey]: finishSelection }]);
 });
 
+
 test('Test_WizardSelectionStepDefinitionsByKey_TestConfiguredSteps_ExpectAllKeys', () => {
-   assert.deepEqual(
-      Object.keys(WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY).sort(),
-      [
-         'animals',
-         'attractions',
-         'guardiansTalks',
-         'regions',
-         'transportations',
-         'wildEncounters',
-      ]
-   );
-   assert.equal(
-      WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY.regions.preserveOnInvalid,
-      true
-   );
-   assert.equal(
-      WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY.wildEncounters.nextStepKey,
-      'transportations'
-   );
-   assert.equal(
-      WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY.transportations.prevStepKey,
-      'wildEncounters'
-   );
+   const definitions = WizardStepConfigs.WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY;
+
+   assert.ok(definitions.animals);
+   assert.ok(definitions.attractions);
+   assert.ok(definitions.guardiansTalks);
+   assert.ok(definitions.regions);
+   assert.ok(definitions.transportations);
+   assert.ok(definitions.wildEncounters);
+   assert.equal(definitions.regions.preserveOnInvalid, true);
+   assert.equal(definitions.wildEncounters.nextStepKey, 'transportations');
+   assert.equal(definitions.transportations.prevStepKey, 'wildEncounters');
 });

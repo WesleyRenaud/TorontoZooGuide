@@ -11,11 +11,19 @@ import { DayPlannerScheduleController } from '../../../../../scripts/itinerary/p
 import { DayPlannerScheduledItems } from '../../../../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
 import { DayPlannerTimelineRenderer } from '../../../../../scripts/itinerary/panel/dayPlannerTimelineRenderer.js';
 import { ItineraryItemFormatter } from '../../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
+import { ZooClockTimeHelper } from '../../../../../scripts/shared/zooClockTimeHelper.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
+
+const _MORNING_SLOT = ZooClockTimeHelper.parseMinutes('9:30');
+const _NEXT_SLOT = ZooClockTimeHelper.parseMinutes('10:00');
 
 installDomTestHooks();
 
-function _stubPreviewDeps({ timelineSlotStarts = [], scheduledSection = null, unscheduledSection = null } = {}) {
+function _stubPreviewDeps({
+   timelineSlotStarts = [],
+   scheduledSection = null,
+   unscheduledSection = null,
+} = {}) {
    const originals = {
       formatISODateFull: ItineraryItemFormatter.formatISODateFull,
       makeDayPlannerControls: DayPlannerController.makeDayPlannerControls,
@@ -47,13 +55,9 @@ function _stubPreviewDeps({ timelineSlotStarts = [], scheduledSection = null, un
       el.className = 'controls';
       return el;
    };
-   DayPlannerScheduleController.parseClockTimeMinutes = (value) => {
-      if (!value) return null;
-      const [h, m] = String(value).split(':').map(Number);
-      return (h * 60) + m;
-   };
-   DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes = () => 9 * 60 + 30;
-   DayPlannerScheduleController.buildHalfHourSlotStarts = () => [570, 600];
+   DayPlannerScheduleController.parseClockTimeMinutes = (value) => ZooClockTimeHelper.parseMinutes(value);
+   DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes = () => _MORNING_SLOT;
+   DayPlannerScheduleController.buildHalfHourSlotStarts = () => [_MORNING_SLOT, _NEXT_SLOT];
    DayPlannerScheduleController.formatMinutesAsClockTime = (minutes) => `${minutes}`;
    DayPlannerTimelineRenderer.buildItineraryTimeMarkers = () => [];
    DayPlannerPreviewBuilder.buildTimelineSlotStarts = () => timelineSlotStarts;
@@ -62,7 +66,7 @@ function _stubPreviewDeps({ timelineSlotStarts = [], scheduledSection = null, un
       itemsByStart: new Map(),
    });
    ScheduledPillRenderBuilder.planScheduledPillRenderGroupsByAnchor = () => new Map([
-      [570, [{ label: 'Lion' }]],
+      [_MORNING_SLOT, [{ label: 'African Lion' }]],
    ]);
    DayPlannerPreviewBuilder.buildTimelinePointPillMarkers = () => [];
    DayPlannerPreviewBuilder.appendScheduleActionButtons = (bar) => {
@@ -124,6 +128,7 @@ function _stubPreviewDeps({ timelineSlotStarts = [], scheduledSection = null, un
    };
 }
 
+
 test('Test_MakeDayPlannerPreview_TestNoSlots_ExpectUnavailableMessage', () => {
    const restore = _stubPreviewDeps({ timelineSlotStarts: [] });
 
@@ -137,10 +142,10 @@ test('Test_MakeDayPlannerPreview_TestNoSlots_ExpectUnavailableMessage', () => {
             onRebuildScheduleClick: () => {},
          }
       );
+      const scheduleActions = root.querySelector('.itinerary-day-module-schedule-actions');
 
       assert.equal(root.className, 'itinerary-day-planner-content');
       assert.ok(root.querySelector('.unavailable'));
-      const scheduleActions = root.querySelector('.itinerary-day-module-schedule-actions');
       assert.ok(scheduleActions);
       assert.ok(scheduleActions.children.length > 0);
       assert.equal(root.querySelector('.itinerary-day-timeline'), null);
@@ -149,13 +154,14 @@ test('Test_MakeDayPlannerPreview_TestNoSlots_ExpectUnavailableMessage', () => {
    }
 });
 
+
 test('Test_MakeDayPlannerPreview_TestSlots_ExpectTimelineAndLists', () => {
    const scheduled = document.createElement('div');
    scheduled.className = 'scheduled-list';
    const unscheduled = document.createElement('div');
    unscheduled.className = 'unscheduled-list';
    const restore = _stubPreviewDeps({
-      timelineSlotStarts: [570, 600],
+      timelineSlotStarts: [_MORNING_SLOT, _NEXT_SLOT],
       scheduledSection: scheduled,
       unscheduledSection: unscheduled,
    });
@@ -183,20 +189,24 @@ test('Test_MakeDayPlannerPreview_TestSlots_ExpectTimelineAndLists', () => {
    }
 });
 
+
 test('Test_MakeDayPlannerPreview_TestInvalidHoursObject_ExpectUsesEmptyHours', () => {
    const restore = _stubPreviewDeps({ timelineSlotStarts: [] });
 
    try {
       const root = DayPlannerView.makeDayPlannerPreview('not-an-object', {});
+
       assert.ok(root.querySelector('.unavailable'));
    } finally {
       restore();
    }
 });
 
+
 test('Test_MakeDayPlannerPreview_TestNoItineraryDate_ExpectDoesNotUseHoursDate', () => {
    const formatCalls = [];
    const restore = _stubPreviewDeps({ timelineSlotStarts: [] });
+
    ItineraryItemFormatter.formatISODateFull = (iso, fallback) => {
       formatCalls.push({ iso, fallback });
       return iso ? `formatted:${iso}` : '';
@@ -214,9 +224,12 @@ test('Test_MakeDayPlannerPreview_TestNoItineraryDate_ExpectDoesNotUseHoursDate',
    }
 });
 
+
 test('Test_MakeDayPlannerPreview_TestItineraryDate_ExpectFormatsItineraryDate', () => {
+   const itineraryDate = '2026-09-20';
    const formatCalls = [];
    const restore = _stubPreviewDeps({ timelineSlotStarts: [] });
+
    ItineraryItemFormatter.formatISODateFull = (iso, fallback) => {
       formatCalls.push({ iso, fallback });
       return `formatted:${iso}`;
@@ -225,10 +238,10 @@ test('Test_MakeDayPlannerPreview_TestItineraryDate_ExpectFormatsItineraryDate', 
    try {
       DayPlannerView.makeDayPlannerPreview(
          { date: '2026-09-11', openTime: '09:30', closeTime: '16:30' },
-         { date: '2026-09-20' }
+         { date: itineraryDate }
       );
 
-      assert.deepEqual(formatCalls, [{ iso: '2026-09-20', fallback: undefined }]);
+      assert.deepEqual(formatCalls, [{ iso: itineraryDate, fallback: undefined }]);
    } finally {
       restore();
    }

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { PositionFragment } from '../../../scripts/tooltips/positionFragment.js';
 
+
 test('Test_PositionTooltip_TestRects_ExpectClampedStyle', () => {
    const tooltipEl = {
       style: {},
@@ -17,9 +18,11 @@ test('Test_PositionTooltip_TestRects_ExpectClampedStyle', () => {
    };
 
    PositionFragment.positionTooltip(tooltipEl, markerEl);
+
    assert.match(tooltipEl.style.left, /px$/);
    assert.match(tooltipEl.style.top, /px$/);
 });
+
 
 test('Test_PositionTooltip_TestNearTop_ExpectFlipsBelow', () => {
    const tooltipEl = {
@@ -35,5 +38,6 @@ test('Test_PositionTooltip_TestNearTop_ExpectFlipsBelow', () => {
    };
 
    PositionFragment.positionTooltip(tooltipEl, markerEl);
+
    assert.ok(Number.parseFloat(tooltipEl.style.top) >= 12);
 });

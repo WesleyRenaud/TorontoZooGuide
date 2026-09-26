@@ -15,13 +15,14 @@ from api.shared.enums.transportation_name import TransportationName
 from api.transportation.data_access.transportation_provider import TransportationProvider
 from api.transportation.data_access.transportation_station_provider import TransportationStationProvider
 from api.transportation.data_access.transportation_station_record import TransportationStationRecord
-from api.types import Types
 
 
 VISIT_DATE = date( 2026, 6, 15 )
 MAIN_STATION = 'Main Zoomobile Station'
 CANADA_STATION = 'Canadian Domain Zoomobile Station'
 ROUTE_DURATION_MINUTES = 75
+ATTRACTION_X_COORD = 30.0
+ATTRACTION_Y_COORD = 40.0
 
 MAIN_STATION_RECORD = TransportationStationRecord(
    name=MAIN_STATION,
@@ -53,6 +54,14 @@ SAVED_TRANSPORTATION = ItineraryTransportationRecord(
    route_marker_sequences=[ [ 'm-1', 'm-2' ] ],
 )
 
+UNSCHEDULED_TRANSPORTATION = ItineraryTransportationRecord(
+   transportation=TransportationName.ZOOMOBILE,
+   old_likelihood=None,
+   new_likelihood=None,
+   added_as_attraction=True,
+   legs=[],
+)
+
 
 @pytest.fixture
 def stub_itinerary_transportations_builder( monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -66,8 +75,8 @@ def stub_itinerary_transportations_builder( monkeypatch: pytest.MonkeyPatch ) ->
             (),
             {
                'name': TransportationName.ZOOMOBILE,
-               'x_coord': 30.0,
-               'y_coord': 40.0,
+               'x_coord': ATTRACTION_X_COORD,
+               'y_coord': ATTRACTION_Y_COORD,
             },
          )(),
       ] )
@@ -83,44 +92,40 @@ def stub_itinerary_transportations_builder( monkeypatch: pytest.MonkeyPatch ) ->
 
 def Test_Build_TestSavedTransportation_ExpectMappedModel(
       stub_itinerary_transportations_builder: None ) -> None:
+   saved = SAVED_TRANSPORTATION
+
    transportations = ItineraryTransportationsBuilder.build(
-      [ SAVED_TRANSPORTATION ],
+      [ saved ],
       target_date=VISIT_DATE )
 
-   assert len( transportations ) == 1
    transportation = transportations[ Position.FIRST ]
 
-   assert transportation.name == TransportationName.ZOOMOBILE
-   assert transportation.old_likelihood == 1
-   assert transportation.likelihood == 3
-   assert transportation.start_time == '10:00 AM'
-   assert transportation.end_time == '11:15 AM'
-   assert transportation.x_coord == 10.0
-   assert transportation.y_coord == 20.0
-   assert transportation.main_station == MAIN_STATION
-   assert transportation.legs == TRANSPORTATION_LEGS
-   assert transportation.route == 'summer'
-   assert transportation.route_marker_sequences == [ [ 'm-1', 'm-2' ] ]
-   assert transportation.added_as_attraction is False
+   assert len( transportations ) == 1
+   assert transportation.name == saved.transportation
+   assert transportation.old_likelihood == saved.old_likelihood
+   assert transportation.likelihood == saved.new_likelihood
+   assert transportation.start_time == saved.start_time
+   assert transportation.end_time == saved.end_time
+   assert transportation.x_coord == MAIN_STATION_RECORD.x_coord
+   assert transportation.y_coord == MAIN_STATION_RECORD.y_coord
+   assert transportation.main_station == MAIN_STATION_RECORD.name
+   assert transportation.legs == saved.legs
+   assert transportation.route == saved.route
+   assert transportation.route_marker_sequences == saved.route_marker_sequences
+   assert transportation.added_as_attraction is saved.added_as_attraction
    assert transportation.route_duration_minutes == ROUTE_DURATION_MINUTES
-   assert transportation.bulk_transit_evaluated is True
+   assert transportation.bulk_transit_evaluated is saved.bulk_transit_evaluated
 
 
 def Test_Build_TestUnscheduledTransportation_ExpectAttractionCoords(
-      monkeypatch: pytest.MonkeyPatch,
-      stub_itinerary_transportations_builder: None,
-) -> None:
+      stub_itinerary_transportations_builder: None ) -> None:
+   saved = UNSCHEDULED_TRANSPORTATION
+
    transportations = ItineraryTransportationsBuilder.build(
-      [
-         ItineraryTransportationRecord(
-            transportation=TransportationName.ZOOMOBILE,
-            old_likelihood=None,
-            new_likelihood=None,
-            added_as_attraction=True,
-            legs=[],
-         ),
-      ],
+      [ saved ],
       target_date=VISIT_DATE )
 
-   assert transportations[ Position.FIRST ].x_coord == 30.0
-   assert transportations[ Position.FIRST ].y_coord == 40.0
+   transportation = transportations[ Position.FIRST ]
+
+   assert transportation.x_coord == ATTRACTION_X_COORD
+   assert transportation.y_coord == ATTRACTION_Y_COORD

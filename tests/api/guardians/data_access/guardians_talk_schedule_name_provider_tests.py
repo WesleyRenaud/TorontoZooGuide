@@ -66,10 +66,12 @@ def _insert_schedule(
 
 def Test_FetchScheduledTalkNames_TestEmpty_ExpectEmptyList(
       guardians_talk_schedule_name_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
+   scheduled_talk_names = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
       guardians_talk_schedule_name_conn,
       TODAY,
-      AFRICA ) == []
+      AFRICA )
+
+   assert scheduled_talk_names == []
 
 
 def Test_FetchScheduledTalkNames_TestCurrentAndFuture_ExpectDistinctSortedTalks(
@@ -94,10 +96,12 @@ def Test_FetchScheduledTalkNames_TestCurrentAndFuture_ExpectDistinctSortedTalks(
       start_date='2026-10-01',
       end_date='2026-10-15' )
 
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
+   scheduled_talk_names = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
       guardians_talk_schedule_name_conn,
       TODAY,
-      AFRICA ) == [ LION, TIGER ]
+      AFRICA )
+
+   assert scheduled_talk_names == [ LION, TIGER ]
 
 
 def Test_FetchScheduledTalkNames_TestExpired_ExpectExcluded(
@@ -109,10 +113,12 @@ def Test_FetchScheduledTalkNames_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
+   scheduled_talk_names = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
       guardians_talk_schedule_name_conn,
       TODAY,
-      AFRICA ) == []
+      AFRICA )
+
+   assert scheduled_talk_names == []
 
 
 def Test_FetchScheduledTalkNames_TestEndingToday_ExpectExcluded(
@@ -124,10 +130,12 @@ def Test_FetchScheduledTalkNames_TestEndingToday_ExpectExcluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
+   scheduled_talk_names = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
       guardians_talk_schedule_name_conn,
       TODAY,
-      AFRICA ) == []
+      AFRICA )
+
+   assert scheduled_talk_names == []
 
 
 def Test_FetchScheduledTalkNames_TestOtherLocation_ExpectExcluded(
@@ -139,17 +147,21 @@ def Test_FetchScheduledTalkNames_TestOtherLocation_ExpectExcluded(
       start_date='2026-09-01',
       end_date='2026-09-30' )
 
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
+   scheduled_talk_names = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
       guardians_talk_schedule_name_conn,
       TODAY,
-      AFRICA ) == []
+      AFRICA )
+
+   assert scheduled_talk_names == []
 
 
 def Test_FetchScheduledTalkLocations_TestEmpty_ExpectEmptyList(
       guardians_talk_schedule_name_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
+   scheduled_talk_locations = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
       guardians_talk_schedule_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert scheduled_talk_locations == []
 
 
 def Test_FetchScheduledTalkLocations_TestCurrentAndFuture_ExpectDistinctSortedLocations(
@@ -167,9 +179,11 @@ def Test_FetchScheduledTalkLocations_TestCurrentAndFuture_ExpectDistinctSortedLo
       start_date='2026-10-01',
       end_date=None )
 
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
+   scheduled_talk_locations = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
       guardians_talk_schedule_name_conn,
-      TODAY ) == [ AFRICA, EURASIA ]
+      TODAY )
+
+   assert scheduled_talk_locations == [ AFRICA, EURASIA ]
 
 
 def Test_FetchScheduledTalkLocations_TestExpired_ExpectExcluded(
@@ -181,9 +195,11 @@ def Test_FetchScheduledTalkLocations_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
+   scheduled_talk_locations = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
       guardians_talk_schedule_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert scheduled_talk_locations == []
 
 
 def Test_FetchScheduledTalkLocations_TestEndingToday_ExpectExcluded(
@@ -195,6 +211,8 @@ def Test_FetchScheduledTalkLocations_TestEndingToday_ExpectExcluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
+   scheduled_talk_locations = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_locations(
       guardians_talk_schedule_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert scheduled_talk_locations == []

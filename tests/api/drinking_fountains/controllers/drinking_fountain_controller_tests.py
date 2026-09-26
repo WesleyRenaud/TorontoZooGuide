@@ -58,6 +58,7 @@ def stub_drinking_fountain_coordinator( monkeypatch: pytest.MonkeyPatch ) -> Stu
 
 def Test_GetDrinkingFountains_TestHttpRequest_ExpectMapsVisitDateAndReturnsFountains(
       stub_drinking_fountain_coordinator: StubDrinkingFountainCoordinator ) -> None:
+   drinking_fountain = _sample_drinking_fountain()
    handler = make_handler(
       '/get-drinking-fountains',
       {
@@ -72,7 +73,7 @@ def Test_GetDrinkingFountains_TestHttpRequest_ExpectMapsVisitDateAndReturnsFount
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'drinking_fountains' ] == [ _sample_drinking_fountain().to_dict() ]
+   assert result[ 'drinking_fountains' ] == [ drinking_fountain.to_dict() ]
 
 
 def Test_SetDrinkingFountainsClosed_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

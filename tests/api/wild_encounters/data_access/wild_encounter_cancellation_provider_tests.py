@@ -65,9 +65,11 @@ def _insert_cancellation(
 
 def Test_FetchCancellationRecords_TestEmpty_ExpectEmptyList(
       cancellation_provider_conn: sqlite3.Connection ) -> None:
-   assert WildEncounterCancellationProvider.fetch_cancellation_records(
+   cancellation_records = WildEncounterCancellationProvider.fetch_cancellation_records(
       cancellation_provider_conn,
-      KANGAROO ) == []
+      KANGAROO )
+
+   assert cancellation_records == []
 
 
 def Test_FetchCancellationRecords_TestMatchingEncounter_ExpectMappedRecords(
@@ -97,9 +99,11 @@ def Test_FetchCancellationRecords_TestMatchingEncounter_ExpectMappedRecords(
 
 def Test_SaveCancellation_TestNewRow_ExpectTrueAndPersisted(
       cancellation_provider_conn: sqlite3.Connection ) -> None:
-   assert WildEncounterCancellationProvider.save_cancellation(
+   result = WildEncounterCancellationProvider.save_cancellation(
       cancellation_provider_conn,
-      _cancellation_input() ) is True
+      _cancellation_input() )
+
+   assert result is True
 
    records = WildEncounterCancellationProvider.fetch_cancellation_records(
       cancellation_provider_conn,
@@ -116,6 +120,8 @@ def Test_SaveCancellation_TestDuplicate_ExpectFalse(
       cancellation_provider_conn,
       _cancellation_input() )
 
-   assert WildEncounterCancellationProvider.save_cancellation(
+   result = WildEncounterCancellationProvider.save_cancellation(
       cancellation_provider_conn,
-      _cancellation_input() ) is False
+      _cancellation_input() )
+
+   assert result is False

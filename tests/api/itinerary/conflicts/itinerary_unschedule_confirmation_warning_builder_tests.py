@@ -24,8 +24,12 @@ RAINFOREST = WildEncounterDiff(
 
 
 def Test_Build_TestPendingTalkAndEncounter_ExpectSaveResultWithReasons() -> None:
+   requirements = ItineraryUnscheduleRequirements(
+      talks=[ ZEBRA_TALK ],
+      encounters=[ RAINFOREST ] )
+
    result = ItineraryUnscheduleConfirmationWarningBuilder.build(
-      ItineraryUnscheduleRequirements( talks=[ ZEBRA_TALK ], encounters=[ RAINFOREST ] ),
+      requirements,
       ItineraryBuilder.empty(),
       confirming_guardians_talk_unschedule=False,
       confirming_wild_encounter_unschedule=False )
@@ -39,8 +43,12 @@ def Test_Build_TestPendingTalkAndEncounter_ExpectSaveResultWithReasons() -> None
 
 
 def Test_Build_TestBothConfirmed_ExpectNone() -> None:
+   requirements = ItineraryUnscheduleRequirements(
+      talks=[ ZEBRA_TALK ],
+      encounters=[ RAINFOREST ] )
+
    result = ItineraryUnscheduleConfirmationWarningBuilder.build(
-      ItineraryUnscheduleRequirements( talks=[ ZEBRA_TALK ], encounters=[ RAINFOREST ] ),
+      requirements,
       ItineraryBuilder.empty(),
       confirming_guardians_talk_unschedule=True,
       confirming_wild_encounter_unschedule=True )
@@ -49,8 +57,10 @@ def Test_Build_TestBothConfirmed_ExpectNone() -> None:
 
 
 def Test_Build_TestEmptyRequirements_ExpectNone() -> None:
+   requirements = ItineraryUnscheduleRequirements( talks=[], encounters=[] )
+
    result = ItineraryUnscheduleConfirmationWarningBuilder.build(
-      ItineraryUnscheduleRequirements( talks=[], encounters=[] ),
+      requirements,
       ItineraryBuilder.empty(),
       confirming_guardians_talk_unschedule=False,
       confirming_wild_encounter_unschedule=False )

@@ -4,62 +4,79 @@ import test from 'node:test';
 import { DayPlannerScheduledPillOptions } from '../../../../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js';
 import { DayPlannerScheduledPillOptionsBuilder } from '../../../../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptionsBuilder.js';
 import { ScheduledPillChecker } from '../../../../../scripts/itinerary/panel/components/scheduledPillChecker.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
+
 
 test('Test_ResolveScheduledPillOptions_TestEmptyMenu_ExpectEmptyObject', () => {
    const originalBuild = DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems;
+   const strings = { scheduledItemMenuAria: 'Menu' };
+
    DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems = () => [];
+
    try {
-      assert.deepEqual(
-         DayPlannerScheduledPillOptions.resolveScheduledPillOptions({}, {}, { scheduledItemMenuAria: 'Menu' }),
-         {}
-      );
+      const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions({}, {}, strings);
+
+      assert.deepEqual(options, {});
    } finally {
       DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems = originalBuild;
    }
 });
 
+
 test('Test_ResolveScheduledPillOptions_TestMenuItems_ExpectAriaAndItems', () => {
    const originalBuild = DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems;
-   DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems = () => [{ label: 'Remove' }];
+   const menuItems = [{ label: 'Remove' }];
+   const menuAriaLabel = 'Menu';
+   const strings = { scheduledItemMenuAria: menuAriaLabel };
+
+   DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems = () => menuItems;
+
    try {
-      assert.deepEqual(
-         DayPlannerScheduledPillOptions.resolveScheduledPillOptions({}, {}, { scheduledItemMenuAria: 'Menu' }),
-         {
-            menuAriaLabel: 'Menu',
-            menuItems: [{ label: 'Remove' }],
-         }
-      );
+      const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions({}, {}, strings);
+
+      assert.deepEqual(options, {
+         menuAriaLabel,
+         menuItems,
+      });
    } finally {
       DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems = originalBuild;
    }
 });
+
 
 test('Test_BuildGroupedScheduledPillItems_TestItems_ExpectMappedGroup', () => {
    const originalFlatten = DayPlannerScheduledPillOptionsBuilder.flattenScheduledItemsForPillGroup;
    const originalSort = ScheduledPillChecker.sortScheduledItemsForGroupDisplay;
    const originalBuild = DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems;
+   const species = 'African Lion';
+   const startTime = '10:00';
+   const endTime = '11:00';
+   const menuItems = [{ label: 'Unschedule' }];
+   const clickResult = 'clicked';
+   const items = [{
+      label: species,
+      item: { start_time: startTime, end_time: endTime },
+   }];
 
-   DayPlannerScheduledPillOptionsBuilder.flattenScheduledItemsForPillGroup = (items) => items;
-   ScheduledPillChecker.sortScheduledItemsForGroupDisplay = (items) => items;
-   DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems = () => [{ label: 'Unschedule' }];
+   DayPlannerScheduledPillOptionsBuilder.flattenScheduledItemsForPillGroup = (grouped) => grouped;
+   ScheduledPillChecker.sortScheduledItemsForGroupDisplay = (grouped) => grouped;
+   DayPlannerScheduledPillOptionsBuilder.buildScheduledPillMenuItems = () => menuItems;
 
    try {
       const groupItems = DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems(
-         [{
-            label: 'Lion',
-            item: { start_time: '10:00', end_time: '11:00' },
-         }],
+         items,
          {},
          {},
-         () => () => 'clicked'
+         () => () => clickResult
       );
+      const firstItem = groupItems.at(Position.FIRST);
 
-      assert.equal(groupItems.length, 1);
-      assert.equal(groupItems[0].label, 'Lion');
-      assert.equal(groupItems[0].startTime, '10:00');
-      assert.equal(groupItems[0].endTime, '11:00');
-      assert.equal(groupItems[0].onLabelClick(), 'clicked');
-      assert.deepEqual(groupItems[0].menuItems, [{ label: 'Unschedule' }]);
+      assert.equal(groupItems.length, items.length);
+      assert.equal(firstItem.label, species);
+      assert.equal(firstItem.startTime, startTime);
+      assert.equal(firstItem.endTime, endTime);
+      assert.equal(firstItem.onLabelClick(), clickResult);
+      assert.deepEqual(firstItem.menuItems, menuItems);
    } finally {
       DayPlannerScheduledPillOptionsBuilder.flattenScheduledItemsForPillGroup = originalFlatten;
       ScheduledPillChecker.sortScheduledItemsForGroupDisplay = originalSort;
@@ -67,47 +84,50 @@ test('Test_BuildGroupedScheduledPillItems_TestItems_ExpectMappedGroup', () => {
    }
 });
 
+
 test('Test_ResolveGroupedScheduledPillOptions_TestSparseGroup_ExpectEmpty', () => {
    const originalBuildGrouped = DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems;
    const originalMerge = DayPlannerScheduledPillOptionsBuilder.mergeScheduledPillMenuItems;
 
-   DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems = () => [{ label: 'Only' }];
+   DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems = () => [{ label: 'African Lion' }];
    DayPlannerScheduledPillOptionsBuilder.mergeScheduledPillMenuItems = () => [];
 
    try {
-      assert.deepEqual(
-         DayPlannerScheduledPillOptions.resolveGroupedScheduledPillOptions([], {}, {}),
-         {}
-      );
+      const options = DayPlannerScheduledPillOptions.resolveGroupedScheduledPillOptions([], {}, {});
+
+      assert.deepEqual(options, {});
    } finally {
       DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems = originalBuildGrouped;
       DayPlannerScheduledPillOptionsBuilder.mergeScheduledPillMenuItems = originalMerge;
    }
 });
 
+
 test('Test_ResolveGroupedScheduledPillOptions_TestMenusOrMany_ExpectOptions', () => {
    const originalBuildGrouped = DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems;
    const originalMerge = DayPlannerScheduledPillOptionsBuilder.mergeScheduledPillMenuItems;
-
-   DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems = () => [
-      { label: 'A' },
-      { label: 'B' },
+   const groupItems = [
+      { label: 'African Lion' },
+      { label: 'Amur Tiger' },
    ];
-   DayPlannerScheduledPillOptionsBuilder.mergeScheduledPillMenuItems = () => [{ label: 'Remove' }];
+   const menuItems = [{ label: 'Remove' }];
+   const menuAriaLabel = 'Group menu';
+
+   DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems = () => groupItems;
+   DayPlannerScheduledPillOptionsBuilder.mergeScheduledPillMenuItems = () => menuItems;
 
    try {
-      assert.deepEqual(
-         DayPlannerScheduledPillOptions.resolveGroupedScheduledPillOptions(
-            [],
-            {},
-            { scheduledItemMenuAria: 'Group menu' }
-         ),
-         {
-            menuAriaLabel: 'Group menu',
-            menuItems: [{ label: 'Remove' }],
-            groupItems: [{ label: 'A' }, { label: 'B' }],
-         }
+      const options = DayPlannerScheduledPillOptions.resolveGroupedScheduledPillOptions(
+         [],
+         {},
+         { scheduledItemMenuAria: menuAriaLabel }
       );
+
+      assert.deepEqual(options, {
+         menuAriaLabel,
+         menuItems,
+         groupItems,
+      });
    } finally {
       DayPlannerScheduledPillOptions.buildGroupedScheduledPillItems = originalBuildGrouped;
       DayPlannerScheduledPillOptionsBuilder.mergeScheduledPillMenuItems = originalMerge;

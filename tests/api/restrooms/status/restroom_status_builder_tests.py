@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.app_string_provider import AppStringProvider
 from api.restrooms.status.restroom_alert_builder import RestroomAlertBuilder
 from api.restrooms.status.restroom_status_builder import RestroomStatusBuilder
 
@@ -9,8 +10,6 @@ CLOSURE_START_DATE = '2026-06-01'
 CLOSURE_END_DATE = '2026-06-30'
 ALERT_START_DATE = '2026-06-01'
 ALERT_END_DATE = '2026-06-30'
-CUSTOM_CLOSED_MESSAGE = 'Closed for maintenance.'
-DEFAULT_CLOSED_MESSAGE = 'The Entrance Restroom is temporarily closed.'
 ALERT_MESSAGE = "Women's restroom is temporarily unavailable."
 
 
@@ -22,7 +21,9 @@ def Test_BuildClosedStatus_TestEmptyMessage_ExpectDefaultGuestStatusMessage() ->
       message='' )
 
    assert status.restroom == RESTROOM_NAME
-   assert status.message == DEFAULT_CLOSED_MESSAGE
+   assert status.message == AppStringProvider.format(
+      'guestStatus.locations.temporarilyClosed',
+      name=RESTROOM_NAME )
 
 
 def Test_BuildAlert_TestExplicitDates_ExpectAlertFieldsRetained() -> None:

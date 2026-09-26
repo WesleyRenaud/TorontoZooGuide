@@ -12,28 +12,33 @@ import { GuardiansTalkLinkedAnimalOpener } from '../../../scripts/guardians/guar
 import { LabelPresenter } from '../../../scripts/map/labelPresenter.js';
 import { TooltipController } from '../../../scripts/tooltips/tooltipController.js';
 import { FocusController } from '../../../scripts/focus/focusController.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_HasRequiredRuntimeElements_TestPresence_ExpectBoolean', () => {
-   assert.equal(
-      MapRuntimeFactory.hasRequiredRuntimeElements({
-         mapInner: {},
-         tooltipEl: {},
-         viewportEl: {},
-      }),
-      true
-   );
-   assert.equal(
-      MapRuntimeFactory.hasRequiredRuntimeElements({
-         mapInner: null,
-         tooltipEl: {},
-         viewportEl: {},
-      }),
-      false
-   );
+
+test('Test_HasRequiredRuntimeElements_TestPresent_ExpectTrue', () => {
+   const hasElements = MapRuntimeFactory.hasRequiredRuntimeElements({
+      mapInner: {},
+      tooltipEl: {},
+      viewportEl: {},
+   });
+
+   assert.equal(hasElements, true);
 });
+
+
+test('Test_HasRequiredRuntimeElements_TestMissingInner_ExpectFalse', () => {
+   const hasElements = MapRuntimeFactory.hasRequiredRuntimeElements({
+      mapInner: null,
+      tooltipEl: {},
+      viewportEl: {},
+   });
+
+   assert.equal(hasElements, false);
+});
+
 
 test('Test_CreateMapBannerSet_TestFragments_ExpectBannerKeys', () => {
    const originalOff = OffDisplayFragment.createOffDisplayBanner;
@@ -42,22 +47,30 @@ test('Test_CreateMapBannerSet_TestFragments_ExpectBannerKeys', () => {
    const originalGift = GiftShopClosedFragment.createGiftShopClosedBanner;
    const originalAttraction = AttractionClosedFragment.createAttractionClosedBanner;
    const originalFountain = DrinkingFountainClosedFragment.createDrinkingFountainClosedBanner;
+   const offDisplayBanner = 'off';
+   const restaurantClosedBanner = 'restaurant';
+   const restroomMessageBanner = 'restroom';
+   const giftShopClosedBanner = 'gift';
+   const attractionClosedBanner = 'attraction';
+   const drinkingFountainClosedBanner = 'fountain';
 
-   OffDisplayFragment.createOffDisplayBanner = () => 'off';
-   RestaurantClosedFragment.createRestaurantClosedBanner = () => 'restaurant';
-   RestroomMessageFragment.createRestroomMessageBanner = () => 'restroom';
-   GiftShopClosedFragment.createGiftShopClosedBanner = () => 'gift';
-   AttractionClosedFragment.createAttractionClosedBanner = () => 'attraction';
-   DrinkingFountainClosedFragment.createDrinkingFountainClosedBanner = () => 'fountain';
+   OffDisplayFragment.createOffDisplayBanner = () => offDisplayBanner;
+   RestaurantClosedFragment.createRestaurantClosedBanner = () => restaurantClosedBanner;
+   RestroomMessageFragment.createRestroomMessageBanner = () => restroomMessageBanner;
+   GiftShopClosedFragment.createGiftShopClosedBanner = () => giftShopClosedBanner;
+   AttractionClosedFragment.createAttractionClosedBanner = () => attractionClosedBanner;
+   DrinkingFountainClosedFragment.createDrinkingFountainClosedBanner = () => drinkingFountainClosedBanner;
 
    try {
-      assert.deepEqual(MapRuntimeFactory.createMapBannerSet(), {
-         offDisplayBanner: 'off',
-         restaurantClosedBanner: 'restaurant',
-         restroomMessageBanner: 'restroom',
-         giftShopClosedBanner: 'gift',
-         attractionClosedBanner: 'attraction',
-         drinkingFountainClosedBanner: 'fountain',
+      const banners = MapRuntimeFactory.createMapBannerSet();
+
+      assert.deepEqual(banners, {
+         offDisplayBanner,
+         restaurantClosedBanner,
+         restroomMessageBanner,
+         giftShopClosedBanner,
+         attractionClosedBanner,
+         drinkingFountainClosedBanner,
       });
    } finally {
       OffDisplayFragment.createOffDisplayBanner = originalOff;
@@ -69,30 +82,57 @@ test('Test_CreateMapBannerSet_TestFragments_ExpectBannerKeys', () => {
    }
 });
 
-test('Test_CreateAnimalCardClickHandler_TestAnimalAndTalk_ExpectHandlers', async () => {
+
+test('Test_CreateAnimalCardClickHandler_TestAnimal_ExpectOpened', () => {
    const openedAnimals = [];
+   const animal = { type: ItemType.ANIMAL, species: 'African Lion' };
+   const handler = MapRuntimeFactory.createAnimalCardClickHandler({
+      openFromAnimal: (item) => {
+         openedAnimals.push(item);
+      },
+   });
+
+   handler(animal);
+
+   assert.deepEqual(openedAnimals, [animal]);
+});
+
+
+test('Test_CreateAnimalCardClickHandler_TestTalk_ExpectOpened', async () => {
    const openedTalks = [];
    const originalOpen = GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal;
+   const talk = { type: ItemType.GUARDIANS_TALK, name: 'Amur Tiger' };
    GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal = async (item) => {
       openedTalks.push(item);
    };
 
    try {
       const handler = MapRuntimeFactory.createAnimalCardClickHandler({
-         openFromAnimal: (item) => { openedAnimals.push(item); },
+         openFromAnimal: () => {},
       });
-
-      handler({ type: 'animal', species: 'Lion' });
-      handler({ type: 'guardiansTalk', name: 'Talk' });
-      handler({ type: 'restaurant' });
-
-      assert.deepEqual(openedAnimals, [{ type: 'animal', species: 'Lion' }]);
+      handler(talk);
       await Promise.resolve();
-      assert.deepEqual(openedTalks, [{ type: 'guardiansTalk', name: 'Talk' }]);
+
+      assert.deepEqual(openedTalks, [talk]);
    } finally {
       GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal = originalOpen;
    }
 });
+
+
+test('Test_CreateAnimalCardClickHandler_TestRestaurant_ExpectIgnored', () => {
+   const openedAnimals = [];
+   const handler = MapRuntimeFactory.createAnimalCardClickHandler({
+      openFromAnimal: (item) => {
+         openedAnimals.push(item);
+      },
+   });
+
+   handler({ type: ItemType.RESTAURANT });
+
+   assert.deepEqual(openedAnimals, []);
+});
+
 
 test('Test_CreateMapTooltipAndFocus_TestWiring_ExpectControllers', () => {
    const originalBannerSet = MapRuntimeFactory.createMapBannerSet;
@@ -100,9 +140,14 @@ test('Test_CreateMapTooltipAndFocus_TestWiring_ExpectControllers', () => {
    const originalTooltip = TooltipController.createTooltipController;
    const originalFocus = FocusController.createFocusController;
    const originalLabels = LabelPresenter.initLabelVisibilityToggle;
+   const clickHandler = 'click-handler';
+   const banner = true;
+   const coordKey = '1|2';
+   const allMarkers = ['a'];
+   const viewportId = 'vp';
 
-   MapRuntimeFactory.createMapBannerSet = () => ({ banner: true });
-   MapRuntimeFactory.createAnimalCardClickHandler = () => 'click-handler';
+   MapRuntimeFactory.createMapBannerSet = () => ({ banner });
+   MapRuntimeFactory.createAnimalCardClickHandler = () => clickHandler;
    TooltipController.createTooltipController = (options) => ({ tooltip: true, options });
    FocusController.createFocusController = (options) => ({ focus: true, options });
    LabelPresenter.initLabelVisibilityToggle = () => {};
@@ -112,26 +157,25 @@ test('Test_CreateMapTooltipAndFocus_TestWiring_ExpectControllers', () => {
          tooltipEl: { id: 'tip' },
          speciesOverlay: {},
       });
-      assert.equal(tooltip.tooltip, true);
-      assert.equal(tooltip.options.onAnimalCardClick, 'click-handler');
-      assert.equal(tooltip.options.banner, true);
-
       const markers = {
          getMarkerByCoord: (key) => `marker:${key}`,
-         getAllMarkers: () => ['a'],
+         getAllMarkers: () => allMarkers,
       };
       const focus = MapRuntimeFactory.createMapFocus({
          panzoom: {},
          markers,
          tooltip,
-         viewportEl: { id: 'vp' },
+         viewportEl: { id: viewportId },
       });
-      assert.equal(focus.focus, true);
-      assert.equal(focus.options.getMarkerByCoord('1|2'), 'marker:1|2');
-      assert.deepEqual(focus.options.getAllMarkers(), ['a']);
-      assert.equal(focus.options.getViewportEl().id, 'vp');
-
       MapRuntimeFactory.initMapLabels({ id: 'labels' });
+
+      assert.equal(tooltip.tooltip, true);
+      assert.equal(tooltip.options.onAnimalCardClick, clickHandler);
+      assert.equal(tooltip.options.banner, banner);
+      assert.equal(focus.focus, true);
+      assert.equal(focus.options.getMarkerByCoord(coordKey), `marker:${coordKey}`);
+      assert.deepEqual(focus.options.getAllMarkers(), allMarkers);
+      assert.equal(focus.options.getViewportEl().id, viewportId);
    } finally {
       MapRuntimeFactory.createMapBannerSet = originalBannerSet;
       MapRuntimeFactory.createAnimalCardClickHandler = originalClickHandler;
@@ -140,6 +184,7 @@ test('Test_CreateMapTooltipAndFocus_TestWiring_ExpectControllers', () => {
       LabelPresenter.initLabelVisibilityToggle = originalLabels;
    }
 });
+
 
 test('Test_CreateTooltipRepositioner_TestCalls_ExpectImmediateAndRaf', async () => {
    const calls = [];
@@ -151,11 +196,19 @@ test('Test_CreateTooltipRepositioner_TestCalls_ExpectImmediateAndRaf', async () 
 
    try {
       const reposition = MapRuntimeFactory.createTooltipRepositioner({
-         tooltip: { reposition: () => { calls.push('tooltip'); } },
-         hover: { reposition: () => { calls.push('hover'); } },
+         tooltip: {
+            reposition: () => {
+               calls.push('tooltip');
+            },
+         },
+         hover: {
+            reposition: () => {
+               calls.push('hover');
+            },
+         },
       });
-
       reposition();
+
       assert.deepEqual(calls, ['tooltip', 'hover', 'tooltip', 'hover']);
    } finally {
       globalThis.requestAnimationFrame = originalRaf;

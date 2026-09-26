@@ -57,7 +57,6 @@ def Test_SaveTrimmingOverlaps_TestConflicts_ExpectTrimInsertAndCommit() -> None:
       insert_or_update=lambda _conn, item: inserted.append( item ) )
 
    assert saved is True
-   assert len( trimmed ) == 1
-   assert trimmed[ Position.FIRST ][ Position.SECOND ] == schedule
+   assert trimmed == [ ( conflicts[ Position.FIRST ], schedule ) ]
    assert inserted == [ schedule ]
    assert conn.commits == 1

@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ItineraryNormalizer } from '../../../scripts/itinerary/itineraryNormalizer.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+
 
 test('Test_NormalizeItinerary_TestWithConfig_ExpectActiveAndConfig', () => {
    const config = {
@@ -9,10 +11,12 @@ test('Test_NormalizeItinerary_TestWithConfig_ExpectActiveAndConfig', () => {
       errorTypes: { SUCCESS: 'success' },
       suppressedErrorTypes: [],
    };
+   const date = '2026-06-15';
+   const animal = { species: 'Amur Tiger', exhibit: 'Tundra Trek' };
 
    const normalized = ItineraryNormalizer.normalizeItinerary({
-      date: '2026-06-15',
-      animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+      date,
+      animals: [animal],
       itineraryConfig: config,
    });
 
@@ -21,34 +25,39 @@ test('Test_NormalizeItinerary_TestWithConfig_ExpectActiveAndConfig', () => {
    assert.equal(ItineraryNormalizer.isItineraryEmpty(normalized), false);
 });
 
+
 test('Test_NormalizeItinerary_TestScheduledEvents_ExpectPreserved', () => {
+   const date = '2026-06-15';
+   const event = { event_type: 'lunch', start_time: '12:00', end_time: '12:40' };
+
    const normalized = ItineraryNormalizer.normalizeItinerary({
-      date: '2026-06-15',
-      events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
+      date,
+      events: [event],
    });
 
-   assert.deepEqual(normalized.events, [{
-      event_type: 'lunch',
-      start_time: '12:00',
-      end_time: '12:40',
-   }]);
+   assert.deepEqual(normalized.events[Position.FIRST], event);
    assert.equal(ItineraryNormalizer.isItineraryEmpty(normalized), false);
 });
 
-test('Test_NormalizeItinerary_TestDateOnly_ExpectActiveSavedContent', () => {
-   const normalized = ItineraryNormalizer.normalizeItinerary({
-      date: '2026-06-15',
-   });
 
+test('Test_NormalizeItinerary_TestDateOnly_ExpectActiveSavedContent', () => {
+   const date = '2026-06-15';
+
+   const normalized = ItineraryNormalizer.normalizeItinerary({ date });
+
+   assert.equal(normalized.date, date);
    assert.equal(normalized.isActive, true);
    assert.equal(ItineraryNormalizer.isItineraryEmpty(normalized), false);
 });
 
+
 test('Test_NormalizeItinerary_TestMissingCollections_ExpectEmptyDefaults', () => {
-   const normalized = ItineraryNormalizer.normalizeItinerary({
+   const source = {
       animals: 'not-an-array',
       attractions: null,
-   });
+   };
+
+   const normalized = ItineraryNormalizer.normalizeItinerary(source);
 
    assert.deepEqual(normalized.animals, []);
    assert.deepEqual(normalized.attractions, []);

@@ -94,27 +94,37 @@ def stub_viewing_spot_walk_nodes( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 def Test_Resolve_TestMasterRouteLoops_ExpectFirstAndLastWalkNodes(
       stub_viewing_spot_walk_nodes: None ) -> None:
-   assert LoopWalkEndpointNodeIdsResolver.resolve( AUSTRALASIA_LOOP ) == (
+   result = LoopWalkEndpointNodeIdsResolver.resolve( AUSTRALASIA_LOOP )
+
+   assert result == (
       AUSTRALASIA_FIRST_NODE_ID,
       AUSTRALASIA_LAST_NODE_ID )
-   assert LoopWalkEndpointNodeIdsResolver.resolve( INDO_MALAYA_LOOP ) == (
+   result = LoopWalkEndpointNodeIdsResolver.resolve( INDO_MALAYA_LOOP )
+
+   assert result == (
       INDO_FIRST_NODE_ID,
       INDO_LAST_NODE_ID )
 
 
 def Test_Orientations_TestTraversalKinds_ExpectForwardAndReversePairs(
       stub_viewing_spot_walk_nodes: None ) -> None:
-   assert LoopWalkEndpointNodeIdsResolver.orientations( INDO_MALAYA_LOOP ) == [
+   result = LoopWalkEndpointNodeIdsResolver.orientations( INDO_MALAYA_LOOP )
+
+   assert result == [
       ( INDO_FIRST_NODE_ID, INDO_LAST_NODE_ID ),
       ( INDO_LAST_NODE_ID, INDO_FIRST_NODE_ID ),
    ]
-   assert LoopWalkEndpointNodeIdsResolver.orientations( AUSTRALASIA_LOOP ) == [
+   result = LoopWalkEndpointNodeIdsResolver.orientations( AUSTRALASIA_LOOP )
+
+   assert result == [
       ( AUSTRALASIA_FIRST_NODE_ID, AUSTRALASIA_LAST_NODE_ID ),
    ]
 
 
 def Test_Resolve_TestEmptyViewingSpots_ExpectNonePair() -> None:
-   assert LoopWalkEndpointNodeIdsResolver.resolve( EMPTY_LOOP ) == ( None, None )
+   result = LoopWalkEndpointNodeIdsResolver.resolve( EMPTY_LOOP )
+
+   assert result == ( None, None )
 
 
 def Test_Resolve_TestAttractionStops_ExpectWalkNodeIds(
@@ -134,7 +144,9 @@ def Test_Resolve_TestAttractionStops_ExpectWalkNodeIds(
       'for_map_location',
       for_map_location )
 
-   assert LoopWalkEndpointNodeIdsResolver.resolve( ATTRACTION_LOOP ) == (
+   result = LoopWalkEndpointNodeIdsResolver.resolve( ATTRACTION_LOOP )
+
+   assert result == (
       CAROUSEL_NODE_ID,
       None )
 
@@ -143,5 +155,7 @@ def Test_WalkNodeIdForRouteStop_TestUnknownKind_ExpectNone() -> None:
    class _UnknownStop:
       kind = ScheduleItemKind.ENTRANCE
 
-   assert LoopWalkEndpointNodeIdsResolver._walk_node_id_for_route_stop(
-      _UnknownStop() ) is None
+   result = LoopWalkEndpointNodeIdsResolver._walk_node_id_for_route_stop(
+      _UnknownStop() )
+
+   assert result is None

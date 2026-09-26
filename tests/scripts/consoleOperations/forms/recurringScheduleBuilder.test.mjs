@@ -2,61 +2,88 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { RecurringScheduleBuilder } from '../../../../scripts/consoleOperations/forms/recurringScheduleBuilder.js';
+import { Strings } from '../../../../scripts/strings.js';
+
 
 test('Test_NormalizeRecurringScheduleRow_TestTimeAndDays_ExpectFormattedFlags', () => {
-   assert.deepEqual(
-      RecurringScheduleBuilder.normalizeRecurringScheduleRow({
-         time: '2:30 PM',
-         monday: true,
-         tuesday: false,
-         wednesday: true,
-      }),
-      {
-         time: '2:30 PM',
-         monday: true,
-         tuesday: false,
-         wednesday: true,
-         thursday: false,
-         friday: false,
-         saturday: false,
-         sunday: false,
-      }
+   const time = '2:30 PM';
+   const monday = true;
+   const tuesday = false;
+   const wednesday = true;
+
+   const row = RecurringScheduleBuilder.normalizeRecurringScheduleRow({
+      time,
+      monday,
+      tuesday,
+      wednesday,
+   });
+
+   assert.deepEqual(row, {
+      time,
+      monday,
+      tuesday,
+      wednesday,
+      thursday: false,
+      friday: false,
+      saturday: false,
+      sunday: false,
+   });
+});
+
+
+test('Test_ValidateRecurringScheduleRows_TestEmpty_ExpectEncounterTimesMessage', () => {
+   const message = RecurringScheduleBuilder.validateRecurringScheduleRows([]);
+
+   assert.equal(
+      message,
+      Strings.validation.entityRequired(Strings.labels.encounterTimes)
    );
 });
 
-test('Test_ValidateRecurringScheduleRows_TestInvalidAndValidRows_ExpectMessagesOrNull', () => {
-   assert.match(
-      RecurringScheduleBuilder.validateRecurringScheduleRows([]) ?? '',
-      /Encounter times/
-   );
 
-   assert.match(
-      RecurringScheduleBuilder.validateRecurringScheduleRows([
-         { time: '', monday: true },
-      ]) ?? '',
-      /Encounter time/
-   );
+test('Test_ValidateRecurringScheduleRows_TestMissingTime_ExpectEncounterTimeMessage', () => {
+   const rows = [{ time: '', monday: true }];
 
-   assert.match(
-      RecurringScheduleBuilder.validateRecurringScheduleRows([
-         { time: '11:00 AM', monday: false, tuesday: false },
-      ]) ?? '',
-      /at least one day/i
-   );
-
-   assert.match(
-      RecurringScheduleBuilder.validateRecurringScheduleRows([
-         { time: '11:00 AM', monday: true },
-         { time: '11:00 AM', tuesday: true },
-      ]) ?? '',
-      /only be added once/i
-   );
+   const message = RecurringScheduleBuilder.validateRecurringScheduleRows(rows);
 
    assert.equal(
-      RecurringScheduleBuilder.validateRecurringScheduleRows([
-         { time: '11:00 AM', monday: true },
-         { time: '2:30 PM', saturday: true, sunday: true },
-      ]),
-      null
+      message,
+      Strings.validation.entityRequired(Strings.labels.encounterTime)
    );
+});
+
+
+test('Test_ValidateRecurringScheduleRows_TestNoDays_ExpectAtLeastOneDay', () => {
+   const rows = [{ time: '11:00 AM', monday: false, tuesday: false }];
+
+   const message = RecurringScheduleBuilder.validateRecurringScheduleRows(rows);
+
+   assert.equal(message, Strings.validation.encounterScheduleRowNeedsDay);
+});
+
+
+test('Test_ValidateRecurringScheduleRows_TestDuplicateTime_ExpectOnceMessage', () => {
+   const time = '11:00 AM';
+   const rows = [
+      { time, monday: true },
+      { time, tuesday: true },
+   ];
+
+   const message = RecurringScheduleBuilder.validateRecurringScheduleRows(rows);
+
+   assert.equal(message, Strings.validation.duplicateEncounterTime);
+});
+
+
+test('Test_ValidateRecurringScheduleRows_TestValidRows_ExpectNull', () => {
+   const morning = '11:00 AM';
+   const afternoon = '2:30 PM';
+   const rows = [
+      { time: morning, monday: true },
+      { time: afternoon, saturday: true, sunday: true },
+   ];
+
+   const message = RecurringScheduleBuilder.validateRecurringScheduleRows(rows);
+
+   assert.equal(message, null);
 });

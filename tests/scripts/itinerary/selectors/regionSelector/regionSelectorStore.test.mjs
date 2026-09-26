@@ -4,6 +4,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 import { RegionSelectorStore } from '../../../../../scripts/itinerary/selectors/regionSelector/regionSelectorStore.js';
 import { StorageKeys } from '../../../../../scripts/itinerary/storageKeys.js';
 import { DraftStore } from '../../../../../scripts/itinerary/draftStore.js';
+import { ScheduleItemKeySeparator } from '../../../../../scripts/itinerary/scheduleItemKeySeparator.js';
 import { createLocalStorageMock } from '../../../helpers/localStorageMock.mjs';
 import { createFetchMock } from '../../../helpers/fetchMock.mjs';
 
@@ -16,29 +17,36 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
-test('Test_GetAnimalsByExhibit_TestGetAnimalsByExhibitReceivesMonthAndDayFromStoredVisit_ExpectOk', async () => {
-   localStorage.setItem(StorageKeys.DATE_KEY, '2026-08-12');
 
+test('Test_GetAnimalsByExhibit_TestStoredVisit_ExpectMonthAndDay', async () => {
+   const isoDate = '2026-08-12';
+   const month = 'AUG';
+   const day = 12;
+   localStorage.setItem(StorageKeys.DATE_KEY, isoDate);
    globalThis.fetch = createFetchMock({
       '/get-animals-by-exhibit': (_url, options) => {
          const body = JSON.parse(options.body);
-         assert.equal(body.month, 'AUG');
-         assert.equal(body.day, 12);
+         assert.equal(body.month, month);
+         assert.equal(body.day, day);
          assert.equal(body.forItinerary, true);
          assert.ok(Array.isArray(body.exhibitsToInclude));
 
          return { animals: [] };
       },
    });
-
+   const regionName = 'R1';
+   const exhibitName = 'E1';
    const state = RegionSelectorStore.createRegionSelectorState();
-   state.setRegions([{ name: 'R1', exhibits: ['E1'] }]);
-   assert.equal(state.toggleRegion('R1'), true);
+   state.setRegions([{ name: regionName, exhibits: [exhibitName] }]);
 
+   const toggled = state.toggleRegion(regionName);
    await state.buildUpdatedAnimalsFromSelection();
+
+   assert.equal(toggled, true);
 });
 
-test('Test_GetAnimalsByExhibit_TestGetAnimalsByExhibitFallsBackToTodayWhenNoVisit_ExpectOk', async () => {
+
+test('Test_GetAnimalsByExhibit_TestNoVisit_ExpectTodayFallback', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-animals-by-exhibit');
       const body = JSON.parse(options.body);
@@ -54,331 +62,231 @@ test('Test_GetAnimalsByExhibit_TestGetAnimalsByExhibitFallsBackToTodayWhenNoVisi
          text: async () => '{"animals":[]}',
       };
    };
-
+   const regionName = 'R1';
+   const exhibitName = 'E1';
    const state = RegionSelectorStore.createRegionSelectorState();
-   state.setRegions([{ name: 'R1', exhibits: ['E1'] }]);
-   assert.equal(state.toggleRegion('R1'), true);
+   state.setRegions([{ name: regionName, exhibits: [exhibitName] }]);
 
+   const toggled = state.toggleRegion(regionName);
    await state.buildUpdatedAnimalsFromSelection();
+
+   assert.equal(toggled, true);
 });
 
-test('Test_BuildUpdatedAnimalsFromSelection_TestBuildUpdatedAnimalsFromSelectionKeepsRemainingAnimalsAfterIncompleteExhibitDeselect_ExpectOk', async () => {
-   localStorage.setItem(
-      StorageKeys.ANIMALS_KEY,
-      JSON.stringify([
-         {
-            species: 'African Lion',
-            exhibit: 'Africa Savanna',
-         },
-         {
-            species: 'African Penguin',
-            exhibit: 'Africa Savanna',
-         },
-      ])
-   );
-   localStorage.setItem(
-      StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
-   );
 
+test('Test_BuildUpdatedAnimalsFromSelection_TestIncompleteDeselect_ExpectRemainingAnimals', async () => {
+   const lion = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   const penguin = { species: 'African Penguin', exhibit: 'Africa Savanna' };
+   const giraffe = { species: 'Masai Giraffe', exhibit: 'Africa Savanna' };
+   localStorage.setItem(StorageKeys.ANIMALS_KEY, JSON.stringify([lion, penguin]));
+   localStorage.setItem(StorageKeys.SELECTED_EXHIBITS_KEY, JSON.stringify([lion.exhibit]));
    globalThis.fetch = async () => ({
       ok: true,
       status: 200,
       statusText: 'OK',
-      text: async () => JSON.stringify({
-         animals: [
-            {
-               species: 'African Lion',
-               exhibit: 'Africa Savanna',
-            },
-            {
-               species: 'African Penguin',
-               exhibit: 'Africa Savanna',
-            },
-            {
-               species: 'Masai Giraffe',
-               exhibit: 'Africa Savanna',
-            },
-         ],
-      }),
+      text: async () => JSON.stringify({ animals: [lion, penguin, giraffe] }),
    });
-
    DraftStore.removeAnimalFromItineraryAnimalDraft(
       'animals',
-      'African Penguin||Africa Savanna'
+      [penguin.species, penguin.exhibit].join(ScheduleItemKeySeparator.VALUE)
    );
-
    const state = RegionSelectorStore.createRegionSelectorState();
-   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   state.setRegions([{ name: 'Africa', exhibits: [lion.exhibit] }]);
    await state.hydrateSelectionsFromStorage();
 
-   assert.deepEqual(
-      [...state.getSelectedExhibitNamesSet()],
-      []
-   );
-
    const animals = await state.buildUpdatedAnimalsFromSelection();
-   const species = animals.map((animal) => animal.species).sort();
 
-   assert.deepEqual(species, ['African Lion']);
+   assert.deepEqual([...state.getSelectedExhibitNamesSet()], []);
+   assert.deepEqual(animals.map((animal) => animal.species).sort(), [lion.species]);
 });
 
-test('Test_HydrateSelectionsFromStorage_TestHydrateSelectionsFromStorageDeselectsExhibitsMissingCatalogAnimals_ExpectOk', async () => {
-   localStorage.setItem(
-      StorageKeys.ANIMALS_KEY,
-      JSON.stringify([
-         { species: 'African Lion', exhibit: 'Africa Savanna' },
-      ])
-   );
-   localStorage.setItem(
-      StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
-   );
 
+test('Test_HydrateSelectionsFromStorage_TestMissingCatalogAnimals_ExpectDeselected', async () => {
+   const lion = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   const cattle = { species: 'Watusi Cattle', exhibit: 'Africa Savanna' };
+   localStorage.setItem(StorageKeys.ANIMALS_KEY, JSON.stringify([lion]));
+   localStorage.setItem(StorageKeys.SELECTED_EXHIBITS_KEY, JSON.stringify([lion.exhibit]));
    globalThis.fetch = async () => ({
       ok: true,
       status: 200,
       statusText: 'OK',
-      text: async () => JSON.stringify({
-         animals: [
-            { species: 'African Lion', exhibit: 'Africa Savanna' },
-            { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
-         ],
-      }),
+      text: async () => JSON.stringify({ animals: [lion, cattle] }),
    });
-
    DraftStore.removeAnimalFromItineraryAnimalDraft(
       'animals',
-      'Watusi Cattle||Africa Savanna'
+      [cattle.species, cattle.exhibit].join(ScheduleItemKeySeparator.VALUE)
    );
-
    const state = RegionSelectorStore.createRegionSelectorState();
-   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   state.setRegions([{ name: 'Africa', exhibits: [lion.exhibit] }]);
+
    await state.hydrateSelectionsFromStorage();
 
    assert.deepEqual([...state.getSelectedExhibitNamesSet()], []);
-   assert.deepEqual(
-      JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)),
-      []
-   );
+   assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)), []);
 });
 
-test('Test_HydrateSelectionsFromStorage_TestHydrateSelectionsFromStorageKeepsExhibitsWhenCatalogGrowsForA_ExpectOk', async () => {
-   localStorage.setItem(StorageKeys.DATE_KEY, '2026-10-17');
-   localStorage.setItem(
-      StorageKeys.ANIMALS_KEY,
-      JSON.stringify([
-         { species: 'African Lion', exhibit: 'Africa Savanna' },
-      ])
-   );
-   localStorage.setItem(
-      StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
-   );
 
+test('Test_HydrateSelectionsFromStorage_TestCatalogGrew_ExpectKept', async () => {
+   const lion = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   const cattle = { species: 'Watusi Cattle', exhibit: 'Africa Savanna' };
+   localStorage.setItem(StorageKeys.DATE_KEY, '2026-10-17');
+   localStorage.setItem(StorageKeys.ANIMALS_KEY, JSON.stringify([lion]));
+   localStorage.setItem(StorageKeys.SELECTED_EXHIBITS_KEY, JSON.stringify([lion.exhibit]));
    globalThis.fetch = async () => ({
       ok: true,
       status: 200,
       statusText: 'OK',
-      text: async () => JSON.stringify({
-         animals: [
-            { species: 'African Lion', exhibit: 'Africa Savanna' },
-            { species: 'Watusi Cattle', exhibit: 'Africa Savanna' },
-         ],
-      }),
+      text: async () => JSON.stringify({ animals: [lion, cattle] }),
    });
-
    const state = RegionSelectorStore.createRegionSelectorState();
-   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   state.setRegions([{ name: 'Africa', exhibits: [lion.exhibit] }]);
+
    await state.hydrateSelectionsFromStorage();
 
-   assert.deepEqual(
-      [...state.getSelectedExhibitNamesSet()],
-      ['Africa Savanna']
-   );
+   assert.deepEqual([...state.getSelectedExhibitNamesSet()], [lion.exhibit]);
    assert.equal(state.selectedExhibitsNeedCatalogRebuild(), true);
-   assert.deepEqual(
-      JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)),
-      ['Africa Savanna']
-   );
 
    const animals = await state.buildUpdatedAnimalsFromSelection();
 
+   assert.equal(state.selectedExhibitsNeedCatalogRebuild(), false);
+   assert.deepEqual(
+      JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)),
+      [lion.exhibit]
+   );
    assert.deepEqual(
       animals.map((animal) => animal.species).sort(),
-      ['African Lion', 'Watusi Cattle']
+      [lion.species, cattle.species].sort()
    );
-   assert.equal(state.selectedExhibitsNeedCatalogRebuild(), false);
 });
 
-test('Test_Re_TestReSelectingAnExhibitReHydratesPreviouslyRemoved_ExpectOk', async () => {
-   localStorage.setItem(
-      StorageKeys.ANIMALS_KEY,
-      JSON.stringify([
-         { species: 'African Lion', exhibit: 'Africa Savanna' },
-      ])
-   );
-   localStorage.setItem(
-      StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
-   );
 
+test('Test_ToggleExhibit_TestReselect_ExpectRemovedAnimalsRestored', async () => {
+   const lion = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   const penguin = { species: 'African Penguin', exhibit: 'Africa Savanna' };
+   localStorage.setItem(StorageKeys.ANIMALS_KEY, JSON.stringify([lion]));
+   localStorage.setItem(StorageKeys.SELECTED_EXHIBITS_KEY, JSON.stringify([lion.exhibit]));
    globalThis.fetch = async () => ({
       ok: true,
       status: 200,
       statusText: 'OK',
-      text: async () => JSON.stringify({
-         animals: [
-            { species: 'African Lion', exhibit: 'Africa Savanna' },
-            { species: 'African Penguin', exhibit: 'Africa Savanna' },
-         ],
-      }),
+      text: async () => JSON.stringify({ animals: [lion, penguin] }),
    });
-
    DraftStore.removeAnimalFromItineraryAnimalDraft(
       'animals',
-      'African Penguin||Africa Savanna'
+      [penguin.species, penguin.exhibit].join(ScheduleItemKeySeparator.VALUE)
    );
-
    const state = RegionSelectorStore.createRegionSelectorState();
-   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   state.setRegions([{ name: 'Africa', exhibits: [lion.exhibit] }]);
    await state.hydrateSelectionsFromStorage();
 
    assert.deepEqual([...state.getSelectedExhibitNamesSet()], []);
-   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
 
+   const toggled = state.toggleExhibit('Africa', lion.exhibit);
    const animals = await state.buildUpdatedAnimalsFromSelection();
-   const species = animals.map((animal) => animal.species).sort();
 
-   assert.deepEqual(species, ['African Lion', 'African Penguin']);
+   assert.equal(toggled, true);
+   assert.deepEqual(
+      animals.map((animal) => animal.species).sort(),
+      [lion.species, penguin.species].sort()
+   );
 });
 
-test('Test_Deselecting_TestDeselectingABulkExhibitRemovesItsAnimalsFrom_ExpectOk', async () => {
-   localStorage.setItem(
-      StorageKeys.ANIMALS_KEY,
-      JSON.stringify([
-         { species: 'African Lion', exhibit: 'Africa Savanna' },
-         { species: 'African Penguin', exhibit: 'Africa Savanna' },
-      ])
-   );
-   localStorage.setItem(
-      StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
-   );
 
+test('Test_ToggleExhibit_TestDeselectBulk_ExpectAnimalsRemoved', async () => {
+   const lion = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   const penguin = { species: 'African Penguin', exhibit: 'Africa Savanna' };
+   localStorage.setItem(StorageKeys.ANIMALS_KEY, JSON.stringify([lion, penguin]));
+   localStorage.setItem(StorageKeys.SELECTED_EXHIBITS_KEY, JSON.stringify([lion.exhibit]));
    globalThis.fetch = async () => ({
       ok: true,
       status: 200,
       statusText: 'OK',
       text: async () => JSON.stringify({ animals: [] }),
    });
-
    const state = RegionSelectorStore.createRegionSelectorState();
-   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   state.setRegions([{ name: 'Africa', exhibits: [lion.exhibit] }]);
    await state.hydrateSelectionsFromStorage();
-   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
 
+   const toggled = state.toggleExhibit('Africa', lion.exhibit);
    const animals = await state.buildUpdatedAnimalsFromSelection();
 
+   assert.equal(toggled, true);
    assert.deepEqual(animals, []);
    assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.ANIMALS_KEY)), []);
 });
 
-test('Test_Deselecting_TestDeselectingABulkExhibitKeepsManuallyAddedAnimals_ExpectOk', async () => {
-   localStorage.setItem(
-      StorageKeys.ANIMALS_KEY,
-      JSON.stringify([
-         { species: 'African Lion', exhibit: 'Africa Savanna' },
-         { species: 'Red Panda', exhibit: 'Indo-Malaya' },
-      ])
-   );
-   localStorage.setItem(
-      StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
-   );
 
+test('Test_ToggleExhibit_TestDeselectBulk_ExpectManualAnimalsKept', async () => {
+   const lion = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   const panda = { species: 'Red Panda', exhibit: 'Indo-Malaya' };
+   localStorage.setItem(StorageKeys.ANIMALS_KEY, JSON.stringify([lion, panda]));
+   localStorage.setItem(StorageKeys.SELECTED_EXHIBITS_KEY, JSON.stringify([lion.exhibit]));
    globalThis.fetch = async () => ({
       ok: true,
       status: 200,
       statusText: 'OK',
-      text: async () => JSON.stringify({
-         animals: [
-            { species: 'African Lion', exhibit: 'Africa Savanna' },
-         ],
-      }),
+      text: async () => JSON.stringify({ animals: [lion] }),
    });
-
    const state = RegionSelectorStore.createRegionSelectorState();
    state.setRegions([
-      { name: 'Africa', exhibits: ['Africa Savanna'] },
-      { name: 'Indo-Malaya', exhibits: ['Indo-Malaya'] },
+      { name: 'Africa', exhibits: [lion.exhibit] },
+      { name: panda.exhibit, exhibits: [panda.exhibit] },
    ]);
    await state.hydrateSelectionsFromStorage();
-   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
 
+   const toggled = state.toggleExhibit('Africa', lion.exhibit);
    const animals = await state.buildUpdatedAnimalsFromSelection();
-   const species = animals.map((animal) => animal.species);
 
-   assert.deepEqual(species, ['Red Panda']);
+   assert.equal(toggled, true);
+   assert.deepEqual(animals.map((animal) => animal.species), [panda.species]);
 });
 
-test('Test_RegionSelectorStore_TestGuardPathsAndPreserve_ExpectFallbacks', async () => {
+
+test('Test_CreateRegionSelectorState_TestGuardPaths_ExpectFallbacks', async () => {
+   const lion = { species: 'African Lion', exhibit: 'Africa Savanna' };
    globalThis.fetch = async () => ({
       ok: true,
       status: 200,
       statusText: 'OK',
-      text: async () => JSON.stringify({
-         animals: [
-            { species: 'African Lion', exhibit: 'Africa Savanna' },
-         ],
-      }),
+      text: async () => JSON.stringify({ animals: [lion] }),
    });
-
    const state = RegionSelectorStore.createRegionSelectorState();
+
    assert.deepEqual(state.getRegions(), []);
    assert.equal(state.toggleRegion('Missing'), false);
 
+   const emptyName = 'Empty';
+   const africa = 'Africa';
+   const savanna = 'Africa Savanna';
+   const tundra = 'Tundra';
    state.setRegions([
-      { name: 'Empty', exhibits: [] },
-      { name: 'Africa', exhibits: ['Africa Savanna', 'Tundra'] },
+      { name: emptyName, exhibits: [] },
+      { name: africa, exhibits: [savanna, tundra] },
    ]);
-   assert.equal(state.toggleRegion('Empty'), false);
-   assert.equal(state.toggleExhibit('Missing', 'Africa Savanna'), false);
-   assert.equal(state.toggleExhibit('Africa', ''), false);
+   assert.equal(state.toggleRegion(emptyName), false);
+   assert.equal(state.toggleExhibit('Missing', savanna), false);
+   assert.equal(state.toggleExhibit(africa, ''), false);
 
    await state.hydrateSelectionsFromStorage();
+   assert.equal(state.toggleRegion(africa), true);
+   assert.equal(state.toggleRegion(africa), true);
 
-   assert.equal(state.toggleRegion('Africa'), true);
-   assert.equal(state.toggleRegion('Africa'), true);
-
-   localStorage.setItem(
-      StorageKeys.ANIMALS_KEY,
-      JSON.stringify([
-         { species: 'Mystery Bird' },
-         { species: 'Red Panda', exhibit: 'Indo-Malaya' },
-         { species: 'African Lion', exhibit: 'Africa Savanna' },
-      ])
-   );
+   const mystery = { species: 'Mystery Bird' };
+   const panda = { species: 'Red Panda', exhibit: 'Indo-Malaya' };
+   localStorage.setItem(StorageKeys.ANIMALS_KEY, JSON.stringify([mystery, panda, lion]));
 
    const preserved = await state.buildUpdatedAnimalsFromSelection();
    assert.deepEqual(
       preserved.map((animal) => animal.species).sort(),
-      ['Mystery Bird', 'Red Panda']
+      [mystery.species, panda.species].sort()
    );
 
-   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
-   localStorage.setItem(
-      StorageKeys.ANIMALS_KEY,
-      JSON.stringify([
-         { species: 'Mystery Bird' },
-         { species: 'Red Panda', exhibit: 'Indo-Malaya' },
-         { species: 'African Lion', exhibit: 'Africa Savanna' },
-      ])
-   );
+   assert.equal(state.toggleExhibit(africa, savanna), true);
+   localStorage.setItem(StorageKeys.ANIMALS_KEY, JSON.stringify([mystery, panda, lion]));
 
    const merged = await state.buildUpdatedAnimalsFromSelection();
    const species = merged.map((animal) => animal.species).sort();
-   assert.ok(species.includes('Mystery Bird'));
-   assert.ok(species.includes('Red Panda'));
-   assert.ok(species.includes('African Lion'));
+   assert.ok(species.includes(mystery.species));
+   assert.ok(species.includes(panda.species));
+   assert.ok(species.includes(lion.species));
 });

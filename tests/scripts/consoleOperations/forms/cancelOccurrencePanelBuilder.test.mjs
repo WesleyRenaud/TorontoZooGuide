@@ -7,6 +7,7 @@ import { ConsolePanelShellBuilder } from '../../../../scripts/consoleOperations/
 import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleScheduleTimesCheckboxFieldBuilder.js';
 import { ConsoleSelectFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
 
 function _installBuilderMocks() {
@@ -17,11 +18,12 @@ function _installBuilderMocks() {
       createActions: ConsoleActionsBuilder.createActions,
       createStatus: ConsoleStatusBuilder.createStatus,
    };
-
+   const panel = { panel: true };
    let captured;
+
    ConsolePanelShellBuilder.createPanelShell = (options) => {
       captured = options;
-      return { panel: true };
+      return panel;
    };
    ConsoleSelectFieldBuilder.createSelectField = (options) => ({ kind: 'createSelectField', ...options });
    ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField = (options) => ({
@@ -31,83 +33,110 @@ function _installBuilderMocks() {
    ConsoleActionsBuilder.createActions = (options) => ({ kind: 'createActions', ...options });
    ConsoleStatusBuilder.createStatus = (options) => ({ kind: 'createStatus', ...options });
 
-   return { originals, getCaptured: () => captured };
+   return {
+      panel,
+      getCaptured: () => captured,
+      restore() {
+         ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
+         ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;
+         ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField = originals.createScheduleTimesCheckboxField;
+         ConsoleActionsBuilder.createActions = originals.createActions;
+         ConsoleStatusBuilder.createStatus = originals.createStatus;
+      },
+   };
 }
 
-function _restoreBuilderMocks(originals) {
-   ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
-   ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;
-   ConsoleScheduleTimesCheckboxFieldBuilder.createScheduleTimesCheckboxField = originals.createScheduleTimesCheckboxField;
-   ConsoleActionsBuilder.createActions = originals.createActions;
-   ConsoleStatusBuilder.createStatus = originals.createStatus;
-}
 
 test('Test_CreatePanel_TestGuardiansTalkConfig_ExpectLocationTalkFields', () => {
-   const { originals, getCaptured } = _installBuilderMocks();
+   const mocks = _installBuilderMocks();
+   const panelId = 'cancelGuardiansTalkOccurrencePanel';
+   const locationInputId = 'cancelGuardiansTalkOccurrenceLocation';
+   const talkInputId = 'cancelGuardiansTalkOccurrenceTalkName';
+   const dateInputId = 'cancelGuardiansTalkOccurrenceDate';
+   const timesInputId = 'cancelGuardiansTalkOccurrenceTimes';
+   const submitId = 'submitCancelGuardiansTalkOccurrence';
+   const statusId = 'cancelGuardiansTalkOccurrenceStatus';
 
    try {
       const result = CancelOccurrencePanelBuilder.createPanel({
-         panelId: 'cancelGuardiansTalkOccurrencePanel',
+         panelId,
          title: Strings.panelTitles.cancelGuardiansTalkOccurrence,
          locationLabel: Strings.labels.location,
-         locationInputId: 'cancelGuardiansTalkOccurrenceLocation',
+         locationInputId,
          locationEmptyOptionLabel: Strings.placeholders.location,
          talkLabel: Strings.labels.talkName,
-         talkInputId: 'cancelGuardiansTalkOccurrenceTalkName',
+         talkInputId,
          talkEmptyOptionLabel: Strings.placeholders.talk,
          dateLabel: Strings.labels.date,
-         dateInputId: 'cancelGuardiansTalkOccurrenceDate',
+         dateInputId,
          dateEmptyOptionLabel: Strings.placeholders.date,
          timesLabel: Strings.labels.talkTimes,
-         timesInputId: 'cancelGuardiansTalkOccurrenceTimes',
+         timesInputId,
          timesHelpText: Strings.help.cancelOccurrenceTimes,
-         submitId: 'submitCancelGuardiansTalkOccurrence',
-         statusId: 'cancelGuardiansTalkOccurrenceStatus',
+         submitId,
+         statusId,
       });
 
-      const captured = getCaptured();
-      assert.deepEqual(result, { panel: true });
-      assert.equal(captured.panelId, 'cancelGuardiansTalkOccurrencePanel');
-      assert.equal(captured.bodyChildren.length, 6);
-      assert.equal(captured.bodyChildren[0].inputId, 'cancelGuardiansTalkOccurrenceLocation');
-      assert.equal(captured.bodyChildren[1].inputId, 'cancelGuardiansTalkOccurrenceTalkName');
-      assert.equal(captured.bodyChildren[2].inputId, 'cancelGuardiansTalkOccurrenceDate');
-      assert.equal(captured.bodyChildren[3].inputId, 'cancelGuardiansTalkOccurrenceTimes');
-      assert.equal(captured.bodyChildren[4].submitId, 'submitCancelGuardiansTalkOccurrence');
-      assert.equal(captured.bodyChildren[5].statusId, 'cancelGuardiansTalkOccurrenceStatus');
+      const captured = mocks.getCaptured();
+      const [
+         locationField,
+         talkField,
+         dateField,
+         timesField,
+         actions,
+         status,
+      ] = captured.bodyChildren;
+      assert.equal(result, mocks.panel);
+      assert.equal(captured.panelId, panelId);
+      assert.equal(locationField.inputId, locationInputId);
+      assert.equal(talkField.inputId, talkInputId);
+      assert.equal(dateField.inputId, dateInputId);
+      assert.equal(timesField.inputId, timesInputId);
+      assert.equal(actions.submitId, submitId);
+      assert.equal(status.statusId, statusId);
    } finally {
-      _restoreBuilderMocks(originals);
+      mocks.restore();
    }
 });
 
+
 test('Test_CreatePanel_TestWildEncounterConfig_ExpectEntityField', () => {
-   const { originals, getCaptured } = _installBuilderMocks();
+   const mocks = _installBuilderMocks();
+   const entityInputId = 'cancelWildEncounterOccurrenceName';
+   const dateInputId = 'cancelWildEncounterOccurrenceDate';
+   const timesInputId = 'cancelWildEncounterOccurrenceTimes';
+   const submitId = 'submitCancelWildEncounterOccurrence';
+   const statusId = 'cancelWildEncounterOccurrenceStatus';
 
    try {
       CancelOccurrencePanelBuilder.createPanel({
          panelId: 'cancelWildEncounterOccurrencePanel',
          title: Strings.panelTitles.cancelWildEncounterOccurrence,
          entityLabel: Strings.entityLabels.wildEncounter,
-         entityInputId: 'cancelWildEncounterOccurrenceName',
+         entityInputId,
          entityEmptyOptionLabel: Strings.placeholders.wildEncounter,
          dateLabel: Strings.labels.date,
-         dateInputId: 'cancelWildEncounterOccurrenceDate',
+         dateInputId,
          dateEmptyOptionLabel: Strings.placeholders.date,
          timesLabel: Strings.labels.encounterTimes,
-         timesInputId: 'cancelWildEncounterOccurrenceTimes',
+         timesInputId,
          timesHelpText: Strings.help.cancelOccurrenceTimes,
-         submitId: 'submitCancelWildEncounterOccurrence',
-         statusId: 'cancelWildEncounterOccurrenceStatus',
+         submitId,
+         statusId,
       });
 
-      const captured = getCaptured();
-      assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'cancelWildEncounterOccurrenceName');
-      assert.equal(captured.bodyChildren[1].inputId, 'cancelWildEncounterOccurrenceDate');
-      assert.equal(captured.bodyChildren[2].inputId, 'cancelWildEncounterOccurrenceTimes');
-      assert.equal(captured.bodyChildren[3].submitId, 'submitCancelWildEncounterOccurrence');
-      assert.equal(captured.bodyChildren[4].statusId, 'cancelWildEncounterOccurrenceStatus');
+      const captured = mocks.getCaptured();
+      const entityField = captured.bodyChildren[Position.FIRST];
+      const dateField = captured.bodyChildren[Position.SECOND];
+      const timesField = captured.bodyChildren[Position.THIRD];
+      const actions = captured.bodyChildren[Position.FOURTH];
+      const status = captured.bodyChildren.at(Position.LAST);
+      assert.equal(entityField.inputId, entityInputId);
+      assert.equal(dateField.inputId, dateInputId);
+      assert.equal(timesField.inputId, timesInputId);
+      assert.equal(actions.submitId, submitId);
+      assert.equal(status.statusId, statusId);
    } finally {
-      _restoreBuilderMocks(originals);
+      mocks.restore();
    }
 });

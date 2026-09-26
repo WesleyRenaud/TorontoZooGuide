@@ -4,68 +4,87 @@ import { test } from 'node:test';
 import { FilterDraftExcludingWarningFixedTimeItems } from '../../../../scripts/itinerary/wizard/filterDraftExcludingWarningFixedTimeItems.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
+
 test('Test_FilterDraftExcludingWarningFixedTimeItems_TestMatchingItems_ExpectRemoved', () => {
+   const tiger = 'Amur Tiger';
+   const lion = 'African Lion';
+   const capybara = 'Capybara';
+   const tigerTime = '11:00 AM';
+   const lionTime = '2:00 PM';
+   const capybaraTime = '3:00 PM';
+   const draft = {
+      guardiansTalks: [
+         { name: tiger, start_time: tigerTime },
+         { name: lion, start_time: lionTime },
+      ],
+      wildEncounters: [
+         { name: capybara, start_time: capybaraTime },
+      ],
+   };
+   const saveIssues = [{
+      type: 'fixedTimeItemLongWait',
+      items: [
+         {
+            name: tiger,
+            start_time: tigerTime,
+            item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
+         },
+         {
+            name: capybara,
+            item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
+         },
+      ],
+   }];
+
    const filtered = FilterDraftExcludingWarningFixedTimeItems.filterDraftExcludingWarningFixedTimeItems(
-      {
-         guardiansTalks: [
-            { name: 'Amur Tiger', start_time: '11:00 AM' },
-            { name: 'African Lion', start_time: '2:00 PM' },
-         ],
-         wildEncounters: [
-            { name: 'Capybara', start_time: '3:00 PM' },
-         ],
-      },
-      [{
-         type: 'fixedTimeItemLongWait',
-         items: [
-            {
-               name: 'Amur Tiger',
-               start_time: '11:00 AM',
-               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-            },
-            {
-               name: 'Capybara',
-               item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
-            },
-         ],
-      }]
+      draft,
+      saveIssues
    );
 
    assert.deepEqual(
       filtered.guardiansTalks.map((talk) => talk.name),
-      ['African Lion']
+      [lion]
    );
    assert.deepEqual(filtered.wildEncounters, []);
 });
 
+
 test('Test_FilterDraftExcludingWarningFixedTimeItems_TestEndTimeOnly_ExpectMatched', () => {
+   const kangaroo = 'Western Grey Kangaroo';
+   const tortoise = 'Aldabra Tortoise';
+   const kangarooTime = '11:00 AM';
+   const tortoiseTime = '2:00 PM';
+   const kangarooEndTime = '11:30 AM';
+   const draft = {
+      guardiansTalks: [
+         {
+            name: kangaroo,
+            start_time: kangarooTime,
+         },
+         {
+            name: tortoise,
+            start_time: tortoiseTime,
+         },
+      ],
+      wildEncounters: [],
+   };
+   const saveIssues = [{
+      type: 'fixedTimeItemLongWait',
+      items: [{
+         name: kangaroo,
+         item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
+         start_time: kangarooTime,
+         end_time: kangarooEndTime,
+      }],
+   }];
+
    const filtered = FilterDraftExcludingWarningFixedTimeItems.filterDraftExcludingWarningFixedTimeItems(
-      {
-         guardiansTalks: [
-            {
-               name: 'Western Grey Kangaroo',
-               start_time: '11:00 AM',
-            },
-            {
-               name: 'Aldabra Tortoise',
-               start_time: '2:00 PM',
-            },
-         ],
-         wildEncounters: [],
-      },
-      [{
-         type: 'fixedTimeItemLongWait',
-         items: [{
-            name: 'Western Grey Kangaroo',
-            item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-            start_time: '11:00 AM',
-            end_time: '11:30 AM',
-         }],
-      }]
+      draft,
+      saveIssues
    );
 
    assert.deepEqual(
       filtered.guardiansTalks.map((talk) => talk.name),
-      ['Aldabra Tortoise']
+      [tortoise]
    );
 });

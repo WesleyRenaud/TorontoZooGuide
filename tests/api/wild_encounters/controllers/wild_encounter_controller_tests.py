@@ -196,6 +196,7 @@ def Test_GetWildEncounterScheduleOptions_TestHttpRequest_ExpectWritesEncountersF
 
 def Test_GetWildEncounterOccurrences_TestHttpRequest_ExpectMapsWildEncounter(
       stub_wild_encounter_coordinator: StubWildEncounterCoordinator ) -> None:
+   occurrence = _sample_occurrence()
    handler = make_handler(
       '/get-wild-encounter-occurrences',
       { 'wildEncounter': WILD_ENCOUNTER_NAME }
@@ -210,7 +211,7 @@ def Test_GetWildEncounterOccurrences_TestHttpRequest_ExpectMapsWildEncounter(
       { 'wild_encounter_name': WILD_ENCOUNTER_NAME },
    )
    assert result[ 'wildEncounter' ] == WILD_ENCOUNTER_NAME
-   assert result[ 'occurrences' ] == [ _sample_occurrence().to_dict() ]
+   assert result[ 'occurrences' ] == [ occurrence.to_dict() ]
 
 
 def Test_SetWildEncounterSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

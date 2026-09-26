@@ -29,8 +29,10 @@ def drinking_fountain_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchDrinkingFountainRecords_TestEmpty_ExpectEmptyList(
       drinking_fountain_provider_conn: sqlite3.Connection ) -> None:
-   assert DrinkingFountainProvider.fetch_drinking_fountain_records(
-      drinking_fountain_provider_conn ) == []
+   drinking_fountain_records = DrinkingFountainProvider.fetch_drinking_fountain_records(
+      drinking_fountain_provider_conn )
+
+   assert drinking_fountain_records == []
 
 
 def Test_FetchDrinkingFountainRecords_TestPopulated_ExpectMappedCoordinates(

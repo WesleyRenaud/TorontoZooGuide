@@ -13,6 +13,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateRestroomAlertController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -33,17 +34,20 @@ test('Test_CreateRestroomAlertController_TestShowAndSubmitSuccess_ExpectStatus',
    ConsoleStatusPresenter.setStatus = (...args) => {
       statuses.push(args);
    };
+   const restroom = 'Near Cafe';
+   const alertStartDate = '2026-06-01';
+   const message = 'Out of order';
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
    ControllerHelper.validateOptionalDateRange = () => null;
    ConsoleOperationsClient.setRestroomAlert = async (payload) => {
       assert.deepEqual(payload, {
-         restroom: 'Near Cafe',
-         alertStartDate: '2026-06-01',
+         restroom,
+         alertStartDate,
          alertEndDate: null,
-         message: 'Out of order',
+         message,
       });
-      return { success: true, restroom: 'Near Cafe' };
+      return { success: true, restroom };
    };
 
    try {
@@ -52,9 +56,9 @@ test('Test_CreateRestroomAlertController_TestShowAndSubmitSuccess_ExpectStatus',
       const restroomEl = document.createElement('select');
       const startDateEl = document.createElement('input');
       const messageEl = document.createElement('input');
-      restroomEl.value = 'Near Cafe';
-      startDateEl.value = '2026-06-01';
-      messageEl.value = 'Out of order';
+      restroomEl.value = restroom;
+      startDateEl.value = alertStartDate;
+      messageEl.value = message;
 
       const controller = RestroomController.createRestroomAlertController({
          showButtonEl,
@@ -75,7 +79,7 @@ test('Test_CreateRestroomAlertController_TestShowAndSubmitSuccess_ExpectStatus',
       await submitButtonEl.listeners.click();
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === 'Near Cafe was given an alert.' && entry[2] === 'is-success'
+            entry[1] === Strings.status.restroomAlertSaved({ restroom }) && entry[2] === 'is-success'
          ))
       );
    } finally {
@@ -88,6 +92,7 @@ test('Test_CreateRestroomAlertController_TestShowAndSubmitSuccess_ExpectStatus',
       ConsoleOperationsClient.setRestroomAlert = originalSet;
    }
 });
+
 
 test('Test_CreateRestroomAlertController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

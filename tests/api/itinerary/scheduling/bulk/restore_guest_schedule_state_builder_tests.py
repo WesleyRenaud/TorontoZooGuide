@@ -10,7 +10,7 @@ from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecor
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.routing.itinerary_walk_route import ItineraryWalkRoute
 from api.itinerary.scheduling.bulk.restore_guest_schedule_state_builder import RestoreGuestScheduleStateBuilder
-from api.shared.enums import ItineraryEventType
+from api.shared.enums import ItineraryEventType, Position
 
 
 RESTORE_SCHEMA = """
@@ -266,19 +266,24 @@ def Test_Restore_TestSnapshotState_ExpectScheduledRowsAndTimesRestored(
    times = restore_conn.execute(
       'SELECT ARRIVAL_TIME, DEPARTURE_TIME FROM ItineraryDate;' ).fetchone()
 
+   scheduled_lion = SAVED_ITINERARY.animal_rows[ Position.FIRST ]
+   unscheduled_cheetah = SAVED_ITINERARY.animal_rows[ Position.SECOND ]
+   scheduled_carousel = SAVED_ITINERARY.attraction_rows[ Position.FIRST ]
+   scheduled_lunch = SAVED_ITINERARY.event_rows[ Position.FIRST ]
+
    assert lion is not None
-   assert lion[ 'START_TIME' ] == '10:00 AM'
-   assert lion[ 'END_TIME' ] == '10:08 AM'
+   assert lion[ 'START_TIME' ] == scheduled_lion.start_time
+   assert lion[ 'END_TIME' ] == scheduled_lion.end_time
    assert cheetah is not None
-   assert cheetah[ 'START_TIME' ] is None
-   assert cheetah[ 'END_TIME' ] is None
+   assert cheetah[ 'START_TIME' ] == unscheduled_cheetah.start_time
+   assert cheetah[ 'END_TIME' ] == unscheduled_cheetah.end_time
    assert carousel is not None
-   assert carousel[ 'START_TIME' ] == '11:00 AM'
+   assert carousel[ 'START_TIME' ] == scheduled_carousel.start_time
    assert lunch is not None
-   assert lunch[ 'START_TIME' ] == '12:00 PM'
+   assert lunch[ 'START_TIME' ] == scheduled_lunch.start_time
    assert times is not None
-   assert times[ 'ARRIVAL_TIME' ] == '9:00 AM'
-   assert times[ 'DEPARTURE_TIME' ] == '5:00 PM'
+   assert times[ 'ARRIVAL_TIME' ] == SAVED_ITINERARY.arrival_time
+   assert times[ 'DEPARTURE_TIME' ] == SAVED_ITINERARY.departure_time
 
 
 def Test_Restore_TestCoveredByTalkAnimal_ExpectCoverFlagRestored(
@@ -319,6 +324,8 @@ def Test_Restore_TestCoveredByTalkAnimal_ExpectCoverFlagRestored(
       ( LION_SPECIES, ),
    ).fetchone()
 
+   lion = saved.animal_rows[ Position.FIRST ]
+
    assert row is not None
-   assert row[ 'COVERED_BY_TALK' ] == 1
-   assert row[ 'START_TIME' ] == '10:00 AM'
+   assert row[ 'COVERED_BY_TALK' ] == int( lion.covered_by_talk )
+   assert row[ 'START_TIME' ] == lion.start_time

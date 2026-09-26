@@ -1,144 +1,308 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { AnimalSelectorModel } from '../../../../scripts/itinerary/selectors/animalSelector/animalSelectorModel.js';
-import { AttractionSelectorModel } from '../../../../scripts/itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 import { ItineraryEventTypes } from '../../../../scripts/itinerary/itineraryEventTypes.js';
 import { ItineraryVisitDateResolver } from '../../../../scripts/itinerary/itineraryVisitDateResolver.js';
 import { ScheduleItemConfirmationController } from '../../../../scripts/itinerary/panel/scheduleItemConfirmationController.js';
 import { ScheduleItemController } from '../../../../scripts/itinerary/panel/scheduleItemController.js';
 import { ScheduleItemSearcher } from '../../../../scripts/itinerary/panel/scheduleItemSearcher.js';
 import { ScheduleItemTypes } from '../../../../scripts/itinerary/panel/scheduleItemTypes.js';
+import { AnimalSelectorModel } from '../../../../scripts/itinerary/selectors/animalSelector/animalSelectorModel.js';
+import { AttractionSelectorModel } from '../../../../scripts/itinerary/selectors/attractionSelector/attractionSelectorModel.js';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 
-test('Test_BuildAnimalDraftEntry_TestMissingAndEnclosure_ExpectEntryOrNull', () => {
+
+test('Test_BuildAnimalDraftEntry_TestMissingSpecies_ExpectNull', () => {
    const originals = {
       getAnimalSpecies: AnimalSelectorModel.getAnimalSpecies,
       getAnimalExhibit: AnimalSelectorModel.getAnimalExhibit,
       getAnimalStoredEnclosureName: AnimalSelectorModel.getAnimalStoredEnclosureName,
    };
-
    AnimalSelectorModel.getAnimalSpecies = () => '';
-   AnimalSelectorModel.getAnimalExhibit = () => 'Savanna';
+   AnimalSelectorModel.getAnimalExhibit = () => 'Africa Savanna';
    AnimalSelectorModel.getAnimalStoredEnclosureName = () => '';
-   assert.equal(ScheduleItemController.buildAnimalDraftEntry({}), null);
 
-   AnimalSelectorModel.getAnimalSpecies = () => 'Lion';
-   AnimalSelectorModel.getAnimalExhibit = () => 'Savanna';
-   AnimalSelectorModel.getAnimalStoredEnclosureName = () => '';
-   assert.deepEqual(ScheduleItemController.buildAnimalDraftEntry({}), {
-      species: 'Lion',
-      exhibit: 'Savanna',
-   });
+   try {
+      const entry = ScheduleItemController.buildAnimalDraftEntry({});
 
-   AnimalSelectorModel.getAnimalStoredEnclosureName = () => 'Yard A';
-   assert.deepEqual(ScheduleItemController.buildAnimalDraftEntry({}), {
-      species: 'Lion',
-      exhibit: 'Savanna',
-      enclosure_name: 'Yard A',
-   });
-
-   Object.assign(AnimalSelectorModel, originals);
+      assert.equal(entry, null);
+   } finally {
+      Object.assign(AnimalSelectorModel, originals);
+   }
 });
 
-test('Test_BuildAttractionDraftEntry_TestName_ExpectNameOrNull', () => {
+
+test('Test_BuildAnimalDraftEntry_TestSpeciesAndExhibit_ExpectEntry', () => {
+   const originals = {
+      getAnimalSpecies: AnimalSelectorModel.getAnimalSpecies,
+      getAnimalExhibit: AnimalSelectorModel.getAnimalExhibit,
+      getAnimalStoredEnclosureName: AnimalSelectorModel.getAnimalStoredEnclosureName,
+   };
+   const species = 'African Lion';
+   const exhibit = 'Africa Savanna';
+   AnimalSelectorModel.getAnimalSpecies = () => species;
+   AnimalSelectorModel.getAnimalExhibit = () => exhibit;
+   AnimalSelectorModel.getAnimalStoredEnclosureName = () => '';
+
+   try {
+      const entry = ScheduleItemController.buildAnimalDraftEntry({});
+
+      assert.deepEqual(entry, { species, exhibit });
+   } finally {
+      Object.assign(AnimalSelectorModel, originals);
+   }
+});
+
+
+test('Test_BuildAnimalDraftEntry_TestEnclosure_ExpectEnclosureName', () => {
+   const originals = {
+      getAnimalSpecies: AnimalSelectorModel.getAnimalSpecies,
+      getAnimalExhibit: AnimalSelectorModel.getAnimalExhibit,
+      getAnimalStoredEnclosureName: AnimalSelectorModel.getAnimalStoredEnclosureName,
+   };
+   const species = 'African Lion';
+   const exhibit = 'Africa Savanna';
+   const enclosureName = 'Yard A';
+   AnimalSelectorModel.getAnimalSpecies = () => species;
+   AnimalSelectorModel.getAnimalExhibit = () => exhibit;
+   AnimalSelectorModel.getAnimalStoredEnclosureName = () => enclosureName;
+
+   try {
+      const entry = ScheduleItemController.buildAnimalDraftEntry({});
+
+      assert.deepEqual(entry, { species, exhibit, enclosure_name: enclosureName });
+   } finally {
+      Object.assign(AnimalSelectorModel, originals);
+   }
+});
+
+
+test('Test_BuildAttractionDraftEntry_TestBlankName_ExpectNull', () => {
    const original = AttractionSelectorModel.getAttractionName;
    AttractionSelectorModel.getAttractionName = () => '';
-   assert.equal(ScheduleItemController.buildAttractionDraftEntry({}), null);
-   AttractionSelectorModel.getAttractionName = () => 'Carousel';
-   assert.equal(ScheduleItemController.buildAttractionDraftEntry({}), 'Carousel');
-   AttractionSelectorModel.getAttractionName = original;
+
+   try {
+      const entry = ScheduleItemController.buildAttractionDraftEntry({});
+
+      assert.equal(entry, null);
+   } finally {
+      AttractionSelectorModel.getAttractionName = original;
+   }
 });
 
-test('Test_BuildScheduleItemRequest_TestEventSearchAndTimes_ExpectPayload', () => {
+
+test('Test_BuildAttractionDraftEntry_TestName_ExpectName', () => {
+   const original = AttractionSelectorModel.getAttractionName;
+   const name = 'Conservation Carousel';
+   AttractionSelectorModel.getAttractionName = () => name;
+
+   try {
+      const entry = ScheduleItemController.buildAttractionDraftEntry({});
+
+      assert.equal(entry, name);
+   } finally {
+      AttractionSelectorModel.getAttractionName = original;
+   }
+});
+
+
+test('Test_BuildScheduleItemRequest_TestEventType_ExpectPayload', () => {
+   const originals = {
+      isScheduleItemEventType: ItineraryEventTypes.isScheduleItemEventType,
+   };
+   const itemType = 'arrival';
+   const startTime = '10:00';
+   const durationMinutes = 30;
+   ItineraryEventTypes.isScheduleItemEventType = () => true;
+
+   try {
+      const request = ScheduleItemController.buildScheduleItemRequest(itemType, null, [itemType], {
+         startTime,
+         durationMinutes,
+      });
+
+      assert.deepEqual(request, {
+         itemType,
+         key: '',
+         startTime,
+         durationMinutes,
+      });
+   } finally {
+      ItineraryEventTypes.isScheduleItemEventType = originals.isScheduleItemEventType;
+   }
+});
+
+
+test('Test_BuildScheduleItemRequest_TestSearchDisabled_ExpectNull', () => {
+   const originals = {
+      isScheduleItemEventType: ItineraryEventTypes.isScheduleItemEventType,
+      isScheduleItemSearchEnabled: ScheduleItemTypes.isScheduleItemSearchEnabled,
+   };
+   ItineraryEventTypes.isScheduleItemEventType = () => false;
+   ScheduleItemTypes.isScheduleItemSearchEnabled = () => false;
+
+   try {
+      const request = ScheduleItemController.buildScheduleItemRequest(
+         ScheduleItemKind.ANIMAL.itemType,
+         null,
+         []
+      );
+
+      assert.equal(request, null);
+   } finally {
+      ItineraryEventTypes.isScheduleItemEventType = originals.isScheduleItemEventType;
+      ScheduleItemTypes.isScheduleItemSearchEnabled = originals.isScheduleItemSearchEnabled;
+   }
+});
+
+
+test('Test_BuildScheduleItemRequest_TestMissingRow_ExpectNull', () => {
+   const originals = {
+      isScheduleItemEventType: ItineraryEventTypes.isScheduleItemEventType,
+      isScheduleItemSearchEnabled: ScheduleItemTypes.isScheduleItemSearchEnabled,
+   };
+   ItineraryEventTypes.isScheduleItemEventType = () => false;
+   ScheduleItemTypes.isScheduleItemSearchEnabled = () => true;
+
+   try {
+      const request = ScheduleItemController.buildScheduleItemRequest(
+         ScheduleItemKind.ANIMAL.itemType,
+         null,
+         []
+      );
+
+      assert.equal(request, null);
+   } finally {
+      ItineraryEventTypes.isScheduleItemEventType = originals.isScheduleItemEventType;
+      ScheduleItemTypes.isScheduleItemSearchEnabled = originals.isScheduleItemSearchEnabled;
+   }
+});
+
+
+test('Test_BuildScheduleItemRequest_TestSelectedRow_ExpectPayload', () => {
    const originals = {
       isScheduleItemEventType: ItineraryEventTypes.isScheduleItemEventType,
       isScheduleItemSearchEnabled: ScheduleItemTypes.isScheduleItemSearchEnabled,
       getScheduleItemRowKind: ScheduleItemSearcher.getScheduleItemRowKind,
       getScheduleItemRowId: ScheduleItemSearcher.getScheduleItemRowId,
    };
-
-   ItineraryEventTypes.isScheduleItemEventType = () => true;
-   assert.deepEqual(
-      ScheduleItemController.buildScheduleItemRequest('arrival', null, ['arrival'], {
-         startTime: '10:00',
-         durationMinutes: 30,
-      }),
-      {
-         itemType: 'arrival',
-         key: '',
-         startTime: '10:00',
-         durationMinutes: 30,
-      }
-   );
-
+   const itemType = ScheduleItemKind.ANIMAL.kind;
+   const key = 'lion||savanna';
    ItineraryEventTypes.isScheduleItemEventType = () => false;
-   ScheduleItemTypes.isScheduleItemSearchEnabled = () => false;
-   assert.equal(ScheduleItemController.buildScheduleItemRequest('animals', null, []), null);
-
    ScheduleItemTypes.isScheduleItemSearchEnabled = () => true;
-   assert.equal(ScheduleItemController.buildScheduleItemRequest('animals', null, []), null);
+   ScheduleItemSearcher.getScheduleItemRowKind = () => itemType;
+   ScheduleItemSearcher.getScheduleItemRowId = () => key;
 
-   ScheduleItemSearcher.getScheduleItemRowKind = () => 'animal';
-   ScheduleItemSearcher.getScheduleItemRowId = () => 'lion||savanna';
-   assert.deepEqual(
-      ScheduleItemController.buildScheduleItemRequest('animals', { id: 1 }, [], {}),
-      {
-         itemType: 'animal',
-         key: 'lion||savanna',
-      }
-   );
+   try {
+      const request = ScheduleItemController.buildScheduleItemRequest(
+         ScheduleItemKind.ANIMAL.itemType,
+         { id: 1 },
+         [],
+         {}
+      );
 
-   Object.assign(ItineraryEventTypes, {
-      isScheduleItemEventType: originals.isScheduleItemEventType,
-   });
-   ScheduleItemTypes.isScheduleItemSearchEnabled = originals.isScheduleItemSearchEnabled;
-   ScheduleItemSearcher.getScheduleItemRowKind = originals.getScheduleItemRowKind;
-   ScheduleItemSearcher.getScheduleItemRowId = originals.getScheduleItemRowId;
+      assert.deepEqual(request, { itemType, key });
+   } finally {
+      ItineraryEventTypes.isScheduleItemEventType = originals.isScheduleItemEventType;
+      ScheduleItemTypes.isScheduleItemSearchEnabled = originals.isScheduleItemSearchEnabled;
+      ScheduleItemSearcher.getScheduleItemRowKind = originals.getScheduleItemRowKind;
+      ScheduleItemSearcher.getScheduleItemRowId = originals.getScheduleItemRowId;
+   }
 });
 
-test('Test_ScheduleSelectedItineraryItem_TestFailureAndSuccess_ExpectResults', async () => {
+
+test('Test_ScheduleSelectedItineraryItem_TestMissingRequest_ExpectFailed', async () => {
+   const originals = {
+      resolveEffectiveScheduleItemSelection: ScheduleItemSearcher.resolveEffectiveScheduleItemSelection,
+      buildScheduleItemRequest: ScheduleItemController.buildScheduleItemRequest,
+      createScheduleItemSaveFailedResult: ScheduleItemConfirmationController.createScheduleItemSaveFailedResult,
+   };
+   const failed = { ok: false };
+   ScheduleItemSearcher.resolveEffectiveScheduleItemSelection = () => ScheduleItemKind.ANIMAL.itemType;
+   ScheduleItemController.buildScheduleItemRequest = () => null;
+   ScheduleItemConfirmationController.createScheduleItemSaveFailedResult = () => failed;
+
+   try {
+      const result = await ScheduleItemController.scheduleSelectedItineraryItem(
+         {},
+         ScheduleItemKind.ANIMAL.itemType,
+         null,
+         []
+      );
+
+      assert.equal(result, failed);
+   } finally {
+      ScheduleItemSearcher.resolveEffectiveScheduleItemSelection = originals.resolveEffectiveScheduleItemSelection;
+      ScheduleItemController.buildScheduleItemRequest = originals.buildScheduleItemRequest;
+      ScheduleItemConfirmationController.createScheduleItemSaveFailedResult = originals.createScheduleItemSaveFailedResult;
+   }
+});
+
+
+test('Test_ScheduleSelectedItineraryItem_TestMissingDate_ExpectFailed', async () => {
    const originals = {
       resolveEffectiveScheduleItemSelection: ScheduleItemSearcher.resolveEffectiveScheduleItemSelection,
       buildScheduleItemRequest: ScheduleItemController.buildScheduleItemRequest,
       createScheduleItemSaveFailedResult: ScheduleItemConfirmationController.createScheduleItemSaveFailedResult,
       ensureItineraryVisitDate: ItineraryVisitDateResolver.ensureItineraryVisitDate,
-      scheduleItineraryItemWithConfirmation: ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation,
    };
    const failed = { ok: false };
-
-   ScheduleItemSearcher.resolveEffectiveScheduleItemSelection = () => 'animals';
-   ScheduleItemController.buildScheduleItemRequest = () => null;
+   const request = { itemType: ScheduleItemKind.ANIMAL.kind, key: 'a' };
+   ScheduleItemSearcher.resolveEffectiveScheduleItemSelection = () => ScheduleItemKind.ANIMAL.itemType;
+   ScheduleItemController.buildScheduleItemRequest = () => request;
    ScheduleItemConfirmationController.createScheduleItemSaveFailedResult = () => failed;
-
-   assert.equal(
-      await ScheduleItemController.scheduleSelectedItineraryItem({}, 'animals', null, []),
-      failed
-   );
-
-   ScheduleItemController.buildScheduleItemRequest = () => ({ itemType: 'animal', key: 'a' });
    ItineraryVisitDateResolver.ensureItineraryVisitDate = async () => {
       throw new Error('no date');
    };
-   assert.equal(
-      await ScheduleItemController.scheduleSelectedItineraryItem({}, 'animals', {}, []),
-      failed
-   );
 
+   try {
+      const result = await ScheduleItemController.scheduleSelectedItineraryItem(
+         {},
+         ScheduleItemKind.ANIMAL.itemType,
+         {},
+         []
+      );
+
+      assert.equal(result, failed);
+   } finally {
+      ScheduleItemSearcher.resolveEffectiveScheduleItemSelection = originals.resolveEffectiveScheduleItemSelection;
+      ScheduleItemController.buildScheduleItemRequest = originals.buildScheduleItemRequest;
+      ScheduleItemConfirmationController.createScheduleItemSaveFailedResult = originals.createScheduleItemSaveFailedResult;
+      ItineraryVisitDateResolver.ensureItineraryVisitDate = originals.ensureItineraryVisitDate;
+   }
+});
+
+
+test('Test_ScheduleSelectedItineraryItem_TestSuccess_ExpectScheduled', async () => {
+   const originals = {
+      resolveEffectiveScheduleItemSelection: ScheduleItemSearcher.resolveEffectiveScheduleItemSelection,
+      buildScheduleItemRequest: ScheduleItemController.buildScheduleItemRequest,
+      ensureItineraryVisitDate: ItineraryVisitDateResolver.ensureItineraryVisitDate,
+      scheduleItineraryItemWithConfirmation: ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation,
+   };
+   const request = { itemType: ScheduleItemKind.ANIMAL.kind, key: 'a' };
+   ScheduleItemSearcher.resolveEffectiveScheduleItemSelection = () => ScheduleItemKind.ANIMAL.itemType;
+   ScheduleItemController.buildScheduleItemRequest = () => request;
    ItineraryVisitDateResolver.ensureItineraryVisitDate = async () => {};
-   ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation = async (request) => ({
+   ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation = async (nextRequest) => ({
       ok: true,
-      request,
+      request: nextRequest,
    });
-   assert.deepEqual(
-      await ScheduleItemController.scheduleSelectedItineraryItem({}, 'animals', {}, [], {
-         startTime: '11:00',
-      }),
-      { ok: true, request: { itemType: 'animal', key: 'a' } }
-   );
 
-   ScheduleItemSearcher.resolveEffectiveScheduleItemSelection = originals.resolveEffectiveScheduleItemSelection;
-   ScheduleItemController.buildScheduleItemRequest = originals.buildScheduleItemRequest;
-   ScheduleItemConfirmationController.createScheduleItemSaveFailedResult = originals.createScheduleItemSaveFailedResult;
-   ItineraryVisitDateResolver.ensureItineraryVisitDate = originals.ensureItineraryVisitDate;
-   ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation = originals.scheduleItineraryItemWithConfirmation;
+   try {
+      const result = await ScheduleItemController.scheduleSelectedItineraryItem(
+         {},
+         ScheduleItemKind.ANIMAL.itemType,
+         {},
+         [],
+         { startTime: '11:00' }
+      );
+
+      assert.deepEqual(result, { ok: true, request });
+   } finally {
+      ScheduleItemSearcher.resolveEffectiveScheduleItemSelection = originals.resolveEffectiveScheduleItemSelection;
+      ScheduleItemController.buildScheduleItemRequest = originals.buildScheduleItemRequest;
+      ItineraryVisitDateResolver.ensureItineraryVisitDate = originals.ensureItineraryVisitDate;
+      ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation = originals.scheduleItineraryItemWithConfirmation;
+   }
 });

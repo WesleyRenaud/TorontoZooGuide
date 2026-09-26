@@ -5,10 +5,12 @@ import { GlobalAmenityStatusFormController } from '../../../../scripts/consoleOp
 import { ApiErrorMessageResolver } from '../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
 import { ControllerHelper } from '../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleStatusPresenter } from '../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
 
 test('Test_CreateGlobalAmenityStatusFormController_TestOpenPath_ExpectShowAndSubmitSuccess', async () => {
    const statuses = [];
@@ -25,16 +27,18 @@ test('Test_CreateGlobalAmenityStatusFormController_TestOpenPath_ExpectShowAndSub
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
 
    try {
+      const startDate = '2026-06-01';
+      const panelEl = { id: 'open-panel' };
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
       const startDateEl = document.createElement('input');
       const endDateEl = document.createElement('input');
-      startDateEl.value = '2026-06-01';
+      startDateEl.value = startDate;
 
       const controller = GlobalAmenityStatusFormController.createGlobalAmenityStatusFormController({
          showButtonEl,
          submitButtonEl,
-         panelEl: { id: 'open-panel' },
+         panelEl,
          statusEl: {},
          startDateEl,
          endDateEl,
@@ -47,10 +51,10 @@ test('Test_CreateGlobalAmenityStatusFormController_TestOpenPath_ExpectShowAndSub
       });
 
       controller.show();
-      assert.deepEqual(activations, [{ id: 'open-panel' }]);
-
       await submitButtonEl.listeners.click();
-      assert.deepEqual(submitted, [{ startDate: '2026-06-01', endDate: '', message: '' }]);
+
+      assert.deepEqual(activations, [panelEl]);
+      assert.deepEqual(submitted, [{ startDate, endDate: '', message: '' }]);
       assert.ok(statuses.some((entry) => entry[1] === Strings.status.drinkingFountainsOpen));
    } finally {
       ConsoleStatusPresenter.setStatus = originalStatus;
@@ -59,6 +63,7 @@ test('Test_CreateGlobalAmenityStatusFormController_TestOpenPath_ExpectShowAndSub
       ControllerHelper.getFieldValue = originalGet;
    }
 });
+
 
 test('Test_CreateGlobalAmenityStatusFormController_TestClosedPath_ExpectMessageAndFnSuccess', async () => {
    const statuses = [];
@@ -74,9 +79,10 @@ test('Test_CreateGlobalAmenityStatusFormController_TestClosedPath_ExpectMessageA
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
 
    try {
+      const message = 'Closed for repair';
       const submitButtonEl = document.createElement('button');
       const messageEl = document.createElement('input');
-      messageEl.value = 'Closed for repair';
+      messageEl.value = message;
 
       GlobalAmenityStatusFormController.createGlobalAmenityStatusFormController({
          showButtonEl: document.createElement('button'),
@@ -95,7 +101,8 @@ test('Test_CreateGlobalAmenityStatusFormController_TestClosedPath_ExpectMessageA
       });
 
       await submitButtonEl.listeners.click();
-      assert.equal(submitted[0].message, 'Closed for repair');
+
+      assert.equal(submitted[Position.FIRST].message, message);
       assert.ok(statuses.some((entry) => entry[1] === Strings.status.drinkingFountainsClosed));
    } finally {
       ConsoleStatusPresenter.setStatus = originalStatus;
@@ -104,6 +111,7 @@ test('Test_CreateGlobalAmenityStatusFormController_TestClosedPath_ExpectMessageA
       ControllerHelper.getFieldValue = originalGet;
    }
 });
+
 
 test('Test_CreateGlobalAmenityStatusFormController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

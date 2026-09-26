@@ -55,6 +55,7 @@ def _weekday_schedule(
 
 
 def Test_GroupRecordsByName_TestDuplicateNames_ExpectGroupedLists() -> None:
+   name = 'Africa Restaurant'
    records = [
       SampleOpeningScheduleRecord(
          schedule_start_date='2026-01-01',
@@ -84,9 +85,9 @@ def Test_GroupRecordsByName_TestDuplicateNames_ExpectGroupedLists() -> None:
 
    grouped = OpeningScheduleStatusResolver.group_records_by_name(
       records,
-      lambda record: 'Africa Restaurant' )
+      lambda record: name )
 
-   assert len( grouped[ 'Africa Restaurant' ] ) == 2
+   assert grouped[ name ] == records
 
 
 def Test_GetActiveOpeningScheduleStatus_TestNoSchedules_ExpectUnknown() -> None:
@@ -153,34 +154,48 @@ def Test_GetActiveOpeningScheduleStatus_TestClosedWeekday_ExpectClosedMessage() 
 
 
 def Test_GetActiveScheduleOverrideStatus_TestClosedOverride_ExpectClosed() -> None:
+   override_message = 'Temporarily closed.'
    override = SampleScheduleOverrideRecord(
       override_start_date='2026-06-01',
       override_end_date=None,
       is_closed=True,
-      override_message='Temporarily closed.' )
+      override_message=override_message )
 
    status, message = OpeningScheduleStatusResolver.get_active_schedule_override_status(
       override_records=[ override ],
       target_date=MONDAY_VISIT_DATE )
 
    assert status == ScheduleStatus.CLOSED
-   assert message == 'Temporarily closed.'
+   assert message == override.override_message
 
 
 def Test_CalculateSeasonalLikelihood_TestMultiplier_ExpectRoundedPercent() -> None:
-   assert OpeningScheduleStatusResolver.calculate_seasonal_likelihood( 0.45 ) == 45
-   assert OpeningScheduleStatusResolver.calculate_seasonal_likelihood( None ) == 100
+   multiplier = 0.45
+
+   likelihood = OpeningScheduleStatusResolver.calculate_seasonal_likelihood( multiplier )
+
+   assert likelihood == round( multiplier * 100 )
+
+
+def Test_CalculateSeasonalLikelihood_TestNone_ExpectFullLikelihood() -> None:
+   multiplier = None
+
+   likelihood = OpeningScheduleStatusResolver.calculate_seasonal_likelihood( multiplier )
+
+   assert likelihood == round( 1.0 * 100 )
 
 
 def Test_ResolveAmenityLikelihoodAndMessage_TestClosedOverride_ExpectZeroLikelihood() -> None:
+   override_message = 'Closed today.'
    override = SampleScheduleOverrideRecord(
       override_start_date='2026-06-01',
       override_end_date=None,
       is_closed=True,
-      override_message='Closed today.' )
+      override_message=override_message )
+   restaurant_name = 'Africa Restaurant'
 
    likelihood, message = OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
-      name='Africa Restaurant',
+      name=restaurant_name,
       schedule_records=[ _weekday_schedule( monday=True ) ],
       override_records=[ override ],
       target_date=MONDAY_VISIT_DATE,
@@ -188,12 +203,14 @@ def Test_ResolveAmenityLikelihoodAndMessage_TestClosedOverride_ExpectZeroLikelih
       seasonal_multiplier=1.0 )
 
    assert likelihood == 0
-   assert message == 'Closed today.'
+   assert message == override.override_message
 
 
 def Test_ResolveAmenityLikelihoodAndMessage_TestUnknownScheduleWithZeroSeasonal_ExpectLikelyClosedMessage() -> None:
+   restaurant_name = 'Africa Restaurant'
+
    likelihood, message = OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
-      name='Africa Restaurant',
+      name=restaurant_name,
       schedule_records=[],
       override_records=[],
       target_date=MONDAY_VISIT_DATE,
@@ -202,18 +219,20 @@ def Test_ResolveAmenityLikelihoodAndMessage_TestUnknownScheduleWithZeroSeasonal_
 
    assert likelihood == 0
    assert message is not None
-   assert 'Africa Restaurant' in message
+   assert restaurant_name in message
 
 
 def Test_GetActiveOpeningScheduleStatus_TestClosedWithBuilder_ExpectCustomMessage() -> None:
+   custom_message = 'Custom closed.'
+
    status, message = OpeningScheduleStatusResolver.get_active_opening_schedule_status(
       schedule_records=[ _weekday_schedule() ],
       target_date=MONDAY_VISIT_DATE,
       weekday=MONDAY_VISIT_DATE.weekday(),
-      build_closed_message=lambda record: 'Custom closed.' )
+      build_closed_message=lambda record: custom_message )
 
    assert status == ScheduleStatus.CLOSED
-   assert message == 'Custom closed.'
+   assert message == custom_message
 
 
 def Test_GetActiveScheduleOverrideStatus_TestOpenOverride_ExpectOpen() -> None:

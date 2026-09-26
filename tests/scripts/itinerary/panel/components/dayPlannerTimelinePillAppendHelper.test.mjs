@@ -6,63 +6,90 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
+test('Test_ApplyPointPillStripPlacement_TestEmptyPlacement_ExpectNoAttribute', () => {
+   const strip = document.createElement('div');
+
+   DayPlannerTimelinePillAppendHelper.applyPointPillStripPlacement(strip, '');
+
+   assert.equal(strip.getAttribute('data-visit-boundary-placement'), null);
+});
+
+
 test('Test_ApplyPointPillStripPlacement_TestPlacement_ExpectAttribute', () => {
    const strip = document.createElement('div');
-   DayPlannerTimelinePillAppendHelper.applyPointPillStripPlacement(strip, '');
-   assert.equal(strip.getAttribute('data-visit-boundary-placement'), null);
+   const placement = 'ends-at-anchor';
 
-   DayPlannerTimelinePillAppendHelper.applyPointPillStripPlacement(strip, 'ends-at-anchor');
-   assert.equal(strip.getAttribute('data-visit-boundary-placement'), 'ends-at-anchor');
+   DayPlannerTimelinePillAppendHelper.applyPointPillStripPlacement(strip, placement);
+
+   assert.equal(strip.getAttribute('data-visit-boundary-placement'), placement);
 });
+
 
 test('Test_InsertPointPillInStrip_TestPill_ExpectAppended', () => {
    const strip = document.createElement('div');
    const pill = document.createElement('div');
+
    DayPlannerTimelinePillAppendHelper.insertPointPillInStrip(strip, pill);
+
    assert.equal(strip.children.length, 1);
 });
 
+
 test('Test_ResolveTimePillOptions_TestArrival_ExpectEndsAtAnchor', () => {
+   const arrivalKind = 'arrival';
+   const arrivalTimeMenuAria = 'Arrival menu';
    const cleared = [];
+
    const options = DayPlannerTimelinePillAppendHelper.resolveTimePillOptions(
-      { kind: 'arrival' },
+      { kind: arrivalKind },
       { onArrivalTimeChange: (value) => { cleared.push(value); } },
       {
-         arrivalTimeMenuAria: 'Arrival menu',
+         arrivalTimeMenuAria,
          remove: 'Remove',
       },
-      { arrival: 'arrival', departure: 'departure' }
+      { arrival: arrivalKind, departure: 'departure' }
    );
-
-   assert.equal(options.menuAriaLabel, 'Arrival menu');
-   assert.equal(options.visitBoundaryPlacement, 'ends-at-anchor');
    options.onRemove();
+
+   assert.equal(options.menuAriaLabel, arrivalTimeMenuAria);
+   assert.equal(options.visitBoundaryPlacement, 'ends-at-anchor');
    assert.deepEqual(cleared, ['']);
 });
+
 
 test('Test_ResolveTimePillOptions_TestDeparture_ExpectStartsAtAnchor', () => {
+   const departureKind = 'departure';
+   const departureTimeMenuAria = 'Departure menu';
    const cleared = [];
+
    const options = DayPlannerTimelinePillAppendHelper.resolveTimePillOptions(
-      { kind: 'departure' },
+      { kind: departureKind },
       { onDepartureTimeChange: (value) => { cleared.push(value); } },
       {
-         departureTimeMenuAria: 'Departure menu',
+         departureTimeMenuAria,
          remove: 'Remove',
       },
-      { arrival: 'arrival', departure: 'departure' }
+      { arrival: 'arrival', departure: departureKind }
    );
-
-   assert.equal(options.menuAriaLabel, 'Departure menu');
-   assert.equal(options.visitBoundaryPlacement, 'starts-at-anchor');
    options.onRemove();
+
+   assert.equal(options.menuAriaLabel, departureTimeMenuAria);
+   assert.equal(options.visitBoundaryPlacement, 'starts-at-anchor');
    assert.deepEqual(cleared, ['']);
 });
 
+
 test('Test_ResolveTimePillOptions_TestOtherKind_ExpectEmpty', () => {
-   assert.deepEqual(DayPlannerTimelinePillAppendHelper.resolveTimePillOptions(
-      { kind: 'animal' },
+   const marker = { kind: 'animal' };
+   const visitBoundaryEventTypes = { arrival: 'arrival', departure: 'departure' };
+
+   const options = DayPlannerTimelinePillAppendHelper.resolveTimePillOptions(
+      marker,
       {},
       {},
-      { arrival: 'arrival', departure: 'departure' }
-   ), {});
+      visitBoundaryEventTypes
+   );
+
+   assert.deepEqual(options, {});
 });

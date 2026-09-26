@@ -9,13 +9,16 @@ import itinerarySaveIssueItemTypeValues from '../../../../shared/enums/itinerary
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItinerarySaveIssueItemType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(itinerarySaveIssueItemTypeValues)) {
-      assert.equal(ItinerarySaveIssueItemType[key], value);
-   }
 
+test('Test_ItinerarySaveIssueItemType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/itinerarySaveIssueItemType.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(itinerarySaveIssueItemTypeValues).map((key) => [key, ItinerarySaveIssueItemType[key]])
+   );
+
+   assert.deepEqual(mapped, itinerarySaveIssueItemTypeValues);
    assert.deepEqual(itinerarySaveIssueItemTypeValues, diskValues);
 });

@@ -6,26 +6,50 @@ import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_SetLabelVisibility_TestHide_ExpectDisplayNone', () => {
    const label = document.createElement('div');
+
    PanzoomLabelPresenter.setLabelVisibility([label], true);
+
    assert.equal(label.style.display, 'none');
+});
+
+
+test('Test_SetLabelVisibility_TestShow_ExpectClearedDisplay', () => {
+   const label = document.createElement('div');
+   PanzoomLabelPresenter.setLabelVisibility([label], true);
+
    PanzoomLabelPresenter.setLabelVisibility([label], false);
+
    assert.equal(label.style.display, '');
 });
 
-test('Test_SyncSvgLabelVisibility_TestScale_ExpectHiddenAboveThreshold', () => {
+
+test('Test_SyncSvgLabelVisibility_TestAboveThreshold_ExpectHidden', () => {
    const mapInner = document.createElement('div');
    const primary = document.createElement('div');
    primary.className = 'map-label-primary-svg';
    mapInner.appendChild(primary);
 
    PanzoomLabelPresenter.syncSvgLabelVisibility(mapInner, 3);
+
    assert.equal(primary.style.display, 'none');
+});
+
+
+test('Test_SyncSvgLabelVisibility_TestBelowThreshold_ExpectVisible', () => {
+   const mapInner = document.createElement('div');
+   const primary = document.createElement('div');
+   primary.className = 'map-label-primary-svg';
+   mapInner.appendChild(primary);
+   PanzoomLabelPresenter.syncSvgLabelVisibility(mapInner, 3);
 
    PanzoomLabelPresenter.syncSvgLabelVisibility(mapInner, 1.5);
+
    assert.equal(primary.style.display, '');
 });
+
 
 test('Test_CreateSvgLabelVisibilityHandler_TestPanzoom_ExpectSynced', () => {
    const mapInner = document.createElement('div');
@@ -35,6 +59,8 @@ test('Test_CreateSvgLabelVisibilityHandler_TestPanzoom_ExpectSynced', () => {
    const handler = PanzoomLabelPresenter.createSvgLabelVisibilityHandler(mapInner, {
       getScale: () => 3,
    });
+
    handler();
+
    assert.equal(label.style.display, 'none');
 });

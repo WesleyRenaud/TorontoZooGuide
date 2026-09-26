@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateRemoveViewingAlertPanel_TestDefault_ExpectPanel', () => {
    const panelEl = RemoveViewingAlertView.createRemoveViewingAlertPanel();
 

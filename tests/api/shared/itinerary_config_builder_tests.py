@@ -6,36 +6,46 @@ from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 
 
 def Test_ToDict_TestAnimalVisibilityChangeThreshold_ExpectConstant() -> None:
-   assert ItineraryConfigBuilder.to_dict()[
-      'animal_visibility_change_threshold'
-   ] == Constants.ANIMAL_VISIBILITY_CHANGE_THRESHOLD
+   config = ItineraryConfigBuilder.to_dict()
+
+   assert config[ 'animal_visibility_change_threshold' ] == (
+      Constants.ANIMAL_VISIBILITY_CHANGE_THRESHOLD )
 
 
 def Test_ToDict_TestItineraryAnimalMinLikelihood_ExpectConstant() -> None:
-   assert ItineraryConfigBuilder.to_dict()[
-      'itinerary_animal_min_likelihood'
-   ] == Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD
+   config = ItineraryConfigBuilder.to_dict()
+
+   assert config[ 'itinerary_animal_min_likelihood' ] == (
+      Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD )
 
 
 def Test_ToDict_TestEventTypes_ExpectAllEventTypeValues() -> None:
-   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_event_types' ] == [
+   config = ItineraryConfigBuilder.to_dict()
+
+   assert config[ 'itinerary_event_types' ] == [
       event_type.value for event_type in ItineraryEventType
    ]
 
 
 def Test_ToDict_TestVisitBoundaryEventTypes_ExpectArrivalAndDeparture() -> None:
-   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_visit_boundary_event_types' ] == {
+   config = ItineraryConfigBuilder.to_dict()
+
+   assert config[ 'itinerary_visit_boundary_event_types' ] == {
       'arrival': ItineraryEventType.ARRIVAL.value,
       'departure': ItineraryEventType.DEPARTURE.value,
    }
 
 
 def Test_ToDict_TestNoConnection_ExpectEmptySuppressedErrorTypes() -> None:
-   assert ItineraryConfigBuilder.to_dict()[ 'suppressed_error_types' ] == []
+   config = ItineraryConfigBuilder.to_dict()
+
+   assert config[ 'suppressed_error_types' ] == []
 
 
 def Test_ToDict_TestNoConnection_ExpectEmptyItineraryStatuses() -> None:
-   assert ItineraryConfigBuilder.to_dict()[ 'itinerary_statuses' ] == []
+   config = ItineraryConfigBuilder.to_dict()
+
+   assert config[ 'itinerary_statuses' ] == []
 
 
 def Test_ToDict_TestStaticEnumMaps_ExpectOmitted() -> None:

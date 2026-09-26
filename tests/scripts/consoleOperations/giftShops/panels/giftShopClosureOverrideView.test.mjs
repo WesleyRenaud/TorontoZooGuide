@@ -9,6 +9,7 @@ import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperati
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { ConsoleTextareaFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleTextareaFieldBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateGiftShopClosureOverridePanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -35,23 +36,22 @@ test('Test_CreateGiftShopClosureOverridePanel_TestWiring_ExpectShellOptions', ()
       const result = GiftShopClosureOverrideView.createGiftShopClosureOverridePanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'giftShopClosureOverridePanel');
       assert.equal(captured.title, Strings.panelTitles.giftShopClosureOverride);
       assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'giftShopClosureOverrideGiftShop');
-      assert.equal(captured.bodyChildren[0].label, Strings.entityLabels.giftShop);
-      assert.equal(captured.bodyChildren[0].emptyOptionLabel, Strings.placeholders.giftShop);
-      assert.equal(captured.bodyChildren[1].startDateId, 'giftShopClosureOverrideStartDate');
-      assert.equal(captured.bodyChildren[1].endDateId, 'giftShopClosureOverrideEndDate');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'giftShopClosureOverrideGiftShop');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).label, Strings.entityLabels.giftShop);
+      assert.equal(captured.bodyChildren.at(Position.FIRST).emptyOptionLabel, Strings.placeholders.giftShop);
+      assert.equal(captured.bodyChildren.at(Position.SECOND).startDateId, 'giftShopClosureOverrideStartDate');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).endDateId, 'giftShopClosureOverrideEndDate');
       assert.equal(
-         captured.bodyChildren[1].endHelpText,
+         captured.bodyChildren.at(Position.SECOND).endHelpText,
          Strings.help.continueUntilReopened('gift shop')
       );
-      assert.equal(captured.bodyChildren[2].inputId, 'giftShopClosureOverrideMessage');
-      assert.equal(captured.bodyChildren[2].label, Strings.labels.closedMessage);
-      assert.equal(captured.bodyChildren[2].placeholder, Strings.textareas.closedMessage('gift shop'));
-      assert.equal(captured.bodyChildren[3].submitId, 'submitGiftShopClosureOverride');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'giftShopClosureOverrideMessage');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).label, Strings.labels.closedMessage);
+      assert.equal(captured.bodyChildren.at(Position.THIRD).placeholder, Strings.textareas.closedMessage('gift shop'));
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).submitId, 'submitGiftShopClosureOverride');
       assert.equal(captured.bodyChildren[4].statusId, 'giftShopClosureOverrideStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;

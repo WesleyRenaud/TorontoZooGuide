@@ -48,21 +48,20 @@ def Test_FetchRecords_TestOwnedRows_ExpectMappedEventDefaults(
       event_default_conn: sqlite3.Connection ) -> None:
    records = ItineraryEventDefaultProvider.fetch_records( event_default_conn )
 
+   lunch_duration = next(
+      duration
+      for event_type, duration in OWNED_EVENT_DEFAULTS
+      if event_type == ItineraryEventType.LUNCH.value )
+   lunch = next(
+      record
+      for record in records
+      if record.event_type == ItineraryEventType.LUNCH )
+
    assert len( records ) == len( OWNED_EVENT_DEFAULTS )
    assert {
       record.event_type for record in records
    } == {
-      ItineraryEventType.BREAKFAST,
-      ItineraryEventType.LUNCH,
-      ItineraryEventType.DINNER,
-      ItineraryEventType.SNACK,
-      ItineraryEventType.BREAK,
-      ItineraryEventType.SHOPPING,
+      ItineraryEventType.normalize( event_type )
+      for event_type, _duration in OWNED_EVENT_DEFAULTS
    }
-
-   lunch = next(
-      record for record in records
-      if record.event_type == ItineraryEventType.LUNCH
-   )
-
-   assert lunch.default_duration_minutes == 40
+   assert lunch.default_duration_minutes == lunch_duration

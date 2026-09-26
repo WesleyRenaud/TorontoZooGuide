@@ -4,9 +4,12 @@ import test from 'node:test';
 import { OpeningScheduleOverlapResolver } from '../../../../scripts/consoleOperations/forms/openingScheduleOverlapResolver.js';
 import { OpeningScheduleOverlapResolution } from '../../../../scripts/shared/enums/openingScheduleOverlapResolution.js';
 
-const PAYLOAD = { restaurant: 'Peaks' };
+const RESTAURANT = 'Peaks';
+const PAYLOAD = { restaurant: RESTAURANT };
+
 
 test('Test_ResolveOpeningScheduleOverlapConflict_TestReplace_ExpectReplaceCallback', async () => {
+   const replaced = { replaced: PAYLOAD };
    let replaceCalled = false;
 
    const result = await OpeningScheduleOverlapResolver.resolveOpeningScheduleOverlapConflict({
@@ -20,10 +23,12 @@ test('Test_ResolveOpeningScheduleOverlapConflict_TestReplace_ExpectReplaceCallba
    });
 
    assert.equal(replaceCalled, true);
-   assert.deepEqual(result, { replaced: PAYLOAD });
+   assert.deepEqual(result, replaced);
 });
 
+
 test('Test_ResolveOpeningScheduleOverlapConflict_TestTrim_ExpectTrimCallback', async () => {
+   const trimmed = { trimmed: PAYLOAD };
    let trimCalled = false;
 
    const result = await OpeningScheduleOverlapResolver.resolveOpeningScheduleOverlapConflict({
@@ -37,20 +42,24 @@ test('Test_ResolveOpeningScheduleOverlapConflict_TestTrim_ExpectTrimCallback', a
    });
 
    assert.equal(trimCalled, true);
-   assert.deepEqual(result, { trimmed: PAYLOAD });
+   assert.deepEqual(result, trimmed);
 });
 
+
 test('Test_ResolveOpeningScheduleOverlapConflict_TestDismiss_ExpectDismissedResult', async () => {
+   const dismissedResult = { success: false, dismissed: true };
+
    const result = await OpeningScheduleOverlapResolver.resolveOpeningScheduleOverlapConflict({
       payload: PAYLOAD,
       replaceOverlaps: async () => ({ replaced: true }),
       trimOverlaps: async () => ({ trimmed: true }),
-      dismissedResult: { success: false, dismissed: true },
+      dismissedResult,
       showDialog: async () => null,
    });
 
-   assert.deepEqual(result, { success: false, dismissed: true });
+   assert.deepEqual(result, dismissedResult);
 });
+
 
 test('Test_ResolveOpeningScheduleOverlapConflict_TestDismissWithoutResult_ExpectNull', async () => {
    const result = await OpeningScheduleOverlapResolver.resolveOpeningScheduleOverlapConflict({

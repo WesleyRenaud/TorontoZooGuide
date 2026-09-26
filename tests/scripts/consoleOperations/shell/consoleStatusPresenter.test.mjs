@@ -6,20 +6,33 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_SetStatus_TestMessageAndKind_ExpectUpdatedElement', () => {
+
+test('Test_SetStatus_TestSuccessKind_ExpectUpdatedElement', () => {
+   const message = 'Saved';
+   const kind = 'is-success';
    const el = document.createElement('div');
 
-   ConsoleStatusPresenter.setStatus(el, 'Saved', 'is-success');
+   ConsoleStatusPresenter.setStatus(el, message, kind);
 
-   assert.equal(el.textContent, 'Saved');
-   assert.equal(el.classList.contains('is-success'), true);
-
-   ConsoleStatusPresenter.setStatus(el, 'Failed', 'is-error');
-
-   assert.equal(el.textContent, 'Failed');
-   assert.equal(el.classList.contains('is-error'), true);
+   assert.equal(el.textContent, message);
+   assert.equal(el.classList.contains(kind), true);
 });
 
+
+test('Test_SetStatus_TestErrorKind_ExpectUpdatedElement', () => {
+   const message = 'Failed';
+   const kind = 'is-error';
+   const el = document.createElement('div');
+
+   ConsoleStatusPresenter.setStatus(el, message, kind);
+
+   assert.equal(el.textContent, message);
+   assert.equal(el.classList.contains(kind), true);
+});
+
+
 test('Test_SetStatus_TestMissingElement_ExpectNoThrow', () => {
-   assert.doesNotThrow(() => ConsoleStatusPresenter.setStatus(null, 'Saved', 'is-success'));
+   const el = null;
+
+   assert.doesNotThrow(() => ConsoleStatusPresenter.setStatus(el, 'Saved', 'is-success'));
 });

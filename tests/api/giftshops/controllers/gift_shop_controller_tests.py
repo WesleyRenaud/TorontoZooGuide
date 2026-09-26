@@ -100,6 +100,7 @@ def stub_gift_shop_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubGiftSho
 
 def Test_GetGiftShops_TestHttpRequest_ExpectMapsVisitDateAndReturnsGiftShops(
       stub_gift_shop_coordinator: StubGiftShopCoordinator ) -> None:
+   gift_shop = _sample_gift_shop()
    handler = make_handler(
       '/get-gift-shops',
       {
@@ -116,7 +117,7 @@ def Test_GetGiftShops_TestHttpRequest_ExpectMapsVisitDateAndReturnsGiftShops(
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'gift_shops' ] == [ _sample_gift_shop().to_dict() ]
+   assert result[ 'gift_shops' ] == [ gift_shop.to_dict() ]
    assert stub_gift_shop_coordinator.calls == [
       (
          'get_gift_shops',

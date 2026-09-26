@@ -11,6 +11,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateCancelOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -28,13 +29,17 @@ test('Test_CreateCancelOccurrenceController_TestShowAndSubmitSuccess_ExpectStatu
    ControllerHelper.resetFormFields = () => {
       resets.push(true);
    };
-   ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => ['11:00 AM'];
+   const entity = 'Giraffe';
+   const date = '2026-07-01';
+   const times = ['11:00 AM'];
+   const panelEl = { id: 'cancel-occurrence' };
+   ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => times;
 
    try {
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
       const dateEl = document.createElement('input');
-      dateEl.value = '2026-07-01';
+      dateEl.value = date;
 
       const occurrenceFilterController = {
          clear: () => {
@@ -49,7 +54,7 @@ test('Test_CreateCancelOccurrenceController_TestShowAndSubmitSuccess_ExpectStatu
          showButtonEl,
          submitButtonEl,
          cancelButtonEl: document.createElement('button'),
-         panelEl: { id: 'cancel-occurrence' },
+         panelEl,
          statusEl: {},
          dateEl,
          timesEl: {},
@@ -60,7 +65,7 @@ test('Test_CreateCancelOccurrenceController_TestShowAndSubmitSuccess_ExpectStatu
          resetSelection: () => {
             resets.push('selection');
          },
-         getSelectionValues: () => ({ entity: 'Giraffe' }),
+         getSelectionValues: () => ({ entity }),
          validateSelection: () => null,
          prepareForm: async () => {},
          submitOccurrenceCancellation: async (values) => ({ success: true, ...values }),
@@ -70,15 +75,15 @@ test('Test_CreateCancelOccurrenceController_TestShowAndSubmitSuccess_ExpectStatu
       });
 
       await showButtonEl.listeners.click();
-      assert.deepEqual(activations, [{ id: 'cancel-occurrence' }]);
+      await submitButtonEl.listeners.click();
+
+      assert.deepEqual(activations, [panelEl]);
       assert.ok(resets.includes(true));
       assert.ok(resets.includes('selection'));
       assert.ok(filterCalls.includes('clear'));
-
-      await submitButtonEl.listeners.click();
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === 'Giraffe on 2026-07-01 at 11:00 AM was cancelled.'
+            entry[1] === `${entity} on ${date} at ${times.join(', ')} was cancelled.`
             && entry[2] === 'is-success'
          ))
       );
@@ -96,6 +101,7 @@ test('Test_CreateCancelOccurrenceController_TestShowAndSubmitSuccess_ExpectStatu
       ScheduleTimesCheckboxField.getSelectedScheduleTimes = originalGetTimes;
    }
 });
+
 
 test('Test_CreateCancelOccurrenceController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

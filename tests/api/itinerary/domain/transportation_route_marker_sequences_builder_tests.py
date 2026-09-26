@@ -13,6 +13,7 @@ CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
 TUNDRA = 'Tundra Zoomobile Station'
 EURASIA = 'Eurasia Zoomobile Station'
+ROUTE = 'summer'
 MARKERS_BY_LEG = {
    ( MAIN, CANADA ): [ 'm-a', 'm-b' ],
    ( CANADA, AFRICA ): [ 'm-c' ],
@@ -45,58 +46,61 @@ def stub_transportation_route_leg_markers( monkeypatch: pytest.MonkeyPatch ) -> 
 
 def Test_Build_TestDiscontinuousLegs_ExpectSplitSequences(
       stub_transportation_route_leg_markers: None ) -> None:
+   first_leg = _leg(
+      from_station=MAIN,
+      to_station=CANADA,
+      start_time='10:00 AM',
+      end_time='10:20 AM' )
+   second_leg = _leg(
+      from_station=TUNDRA,
+      to_station=EURASIA,
+      start_time='2:00 PM',
+      end_time='2:15 PM' )
+
    sequences = TransportationRouteMarkerSequencesBuilder.build(
       None,
       transportation=TransportationName.ZOOMOBILE,
-      route='summer',
-      legs=[
-         _leg(
-            from_station=MAIN,
-            to_station=CANADA,
-            start_time='10:00 AM',
-            end_time='10:20 AM' ),
-         _leg(
-            from_station=TUNDRA,
-            to_station=EURASIA,
-            start_time='2:00 PM',
-            end_time='2:15 PM' ),
-      ],
-   )
+      route=ROUTE,
+      legs=[ first_leg, second_leg ] )
 
    assert sequences == [
-      [ 'm-a', 'm-b' ],
-      [ 'm-d', 'm-e' ],
+      MARKERS_BY_LEG[ ( first_leg.from_station, first_leg.to_station ) ],
+      MARKERS_BY_LEG[ ( second_leg.from_station, second_leg.to_station ) ],
    ]
 
 
 def Test_Build_TestConsecutiveLegs_ExpectConcatenatedSequence(
       stub_transportation_route_leg_markers: None ) -> None:
+   first_leg = _leg(
+      from_station=MAIN,
+      to_station=CANADA,
+      start_time='10:00 AM',
+      end_time='10:20 AM' )
+   second_leg = _leg(
+      from_station=CANADA,
+      to_station=AFRICA,
+      start_time=first_leg.end_time,
+      end_time='10:30 AM' )
+
    sequences = TransportationRouteMarkerSequencesBuilder.build(
       None,
       transportation=TransportationName.ZOOMOBILE,
-      route='summer',
-      legs=[
-         _leg(
-            from_station=MAIN,
-            to_station=CANADA,
-            start_time='10:00 AM',
-            end_time='10:20 AM' ),
-         _leg(
-            from_station=CANADA,
-            to_station=AFRICA,
-            start_time='10:20 AM',
-            end_time='10:30 AM' ),
-      ],
-   )
+      route=ROUTE,
+      legs=[ first_leg, second_leg ] )
 
    assert sequences == [
-      [ 'm-a', 'm-b', 'm-c' ],
+      MARKERS_BY_LEG[ ( first_leg.from_station, first_leg.to_station ) ]
+      + MARKERS_BY_LEG[ ( second_leg.from_station, second_leg.to_station ) ],
    ]
 
 
 def Test_Build_TestEmptyLegs_ExpectEmptySequences() -> None:
-   assert TransportationRouteMarkerSequencesBuilder.build(
+   legs: list[ ItineraryTransportationLeg ] = []
+
+   sequences = TransportationRouteMarkerSequencesBuilder.build(
       None,
       transportation=TransportationName.ZOOMOBILE,
-      route='summer',
-      legs=[] ) == []
+      route=ROUTE,
+      legs=legs )
+
+   assert sequences == []

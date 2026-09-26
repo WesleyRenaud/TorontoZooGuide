@@ -10,6 +10,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateEndRecurringScheduleFormController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -28,6 +29,8 @@ test('Test_CreateEndRecurringScheduleFormController_TestShowAndSubmitSuccess_Exp
    };
 
    try {
+      const entity = 'Giraffe';
+      const panelEl = { id: 'end-schedule' };
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
       const endDateEl = document.createElement('input');
@@ -37,13 +40,13 @@ test('Test_CreateEndRecurringScheduleFormController_TestShowAndSubmitSuccess_Exp
          showButtonEl,
          submitButtonEl,
          cancelButtonEl: document.createElement('button'),
-         panelEl: { id: 'end-schedule' },
+         panelEl,
          statusEl: {},
          endDateEl,
          activatePanel: (panel) => {
             activations.push(panel);
          },
-         getSelectionValues: () => ({ entity: 'Giraffe' }),
+         getSelectionValues: () => ({ entity }),
          validateSelection: () => null,
          prepareForm: async () => {
             prepareCalls.push(true);
@@ -53,13 +56,13 @@ test('Test_CreateEndRecurringScheduleFormController_TestShowAndSubmitSuccess_Exp
       });
 
       await showButtonEl.listeners.click();
-      assert.deepEqual(activations, [{ id: 'end-schedule' }]);
-      assert.ok(resets.length >= 1);
-
       await submitButtonEl.listeners.click();
+
+      assert.deepEqual(activations, [panelEl]);
+      assert.ok(resets.length >= 1);
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === Strings.status.scheduleEnded('Giraffe') && entry[2] === 'is-success'
+            entry[1] === Strings.status.scheduleEnded(entity) && entry[2] === 'is-success'
          ))
       );
       assert.equal(prepareCalls.length, 2);
@@ -72,6 +75,7 @@ test('Test_CreateEndRecurringScheduleFormController_TestShowAndSubmitSuccess_Exp
       ControllerHelper.resetFormFields = originalReset;
    }
 });
+
 
 test('Test_CreateEndRecurringScheduleFormController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

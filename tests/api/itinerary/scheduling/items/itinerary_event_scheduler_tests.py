@@ -14,13 +14,14 @@ from api.itinerary.scheduling.items.itinerary_event_scheduler import ItineraryEv
 from api.itinerary.scheduling.items.itinerary_save_result_builder import ItinerarySaveResultBuilder
 from api.itinerary.scheduling.items.parsed_schedule_time_options import ParsedScheduleTimeOptions
 from api.itinerary.scheduling.items.prepared_schedule_window import PreparedScheduleWindow
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.shared.operating_hours import OperatingHours
 
 
 VISIT_DATE = date( 2026, 6, 20 )
-VISIT_WINDOW = ( 9 * 3600 + 30 * 60, 17 * 3600 )
+VISIT_WINDOW = ( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) )
 ZOO_HOURS = OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' )
 assert ZOO_HOURS is not None
 
@@ -189,11 +190,13 @@ def Test_Schedule_TestPrepareFailure_ExpectSaveResult(
       'api.itinerary.scheduling.items.itinerary_event_scheduler.ScheduleWindowPreparer.prepare',
       lambda conn, saved_itinerary, **context: failure )
 
-   assert ItineraryEventScheduler.schedule(
+   result = ItineraryEventScheduler.schedule(
       scheduler_conn,
       event_type=ItineraryEventType.LUNCH,
       time_options=ParsedScheduleTimeOptions( start_time='12:00 PM', duration_minutes=30 ),
-      itinerary_context=ITINERARY_CONTEXT ) is failure
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is failure
 
 
 def Test_Schedule_TestMissingDuration_ExpectSaveFailed(

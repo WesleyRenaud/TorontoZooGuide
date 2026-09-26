@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AttractionSelectorRenderer } from '../../../../../scripts/itinerary/selectors/attractionSelector/attractionSelectorRenderer.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
 
 test('Test_RenderIncludeClosedAttractionsToggle_TestChange_ExpectCallbacks', () => {
    const bodyEl = document.createElement('div');
@@ -21,7 +23,6 @@ test('Test_RenderIncludeClosedAttractionsToggle_TestChange_ExpectCallbacks', () 
    const search = document.createElement('input');
    search.className = 'itin-search-input';
    bodyEl.appendChild(search);
-
    let checkedValue = null;
    let rerunCount = 0;
 
@@ -31,8 +32,9 @@ test('Test_RenderIncludeClosedAttractionsToggle_TestChange_ExpectCallbacks', () 
       rerunSearch: () => { rerunCount += 1; },
    });
 
-   assert.equal(bodyEl.children[0].className, 'itin-selector-toggle-wrap');
-   const checkbox = bodyEl.children[0].children[0].children[0];
+   const wrap = bodyEl.children.at(Position.FIRST);
+   assert.equal(wrap.className, 'itin-selector-toggle-wrap');
+   const checkbox = wrap.children.at(Position.FIRST).children.at(Position.FIRST);
    checkbox.checked = true;
    checkbox.listeners.change?.();
    assert.equal(checkedValue, true);

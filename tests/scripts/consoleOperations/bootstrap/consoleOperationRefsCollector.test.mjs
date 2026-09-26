@@ -12,17 +12,21 @@ function _fakeDoc(ids = {}) {
    };
 }
 
+
 test('Test_CapitalizeFirstLetter_TestValues_ExpectCapitalized', () => {
    assert.equal(ConsoleOperationRefsCollector.capitalizeFirstLetter('offDisplay'), 'OffDisplay');
    assert.equal(ConsoleOperationRefsCollector.capitalizeFirstLetter(''), '');
    assert.equal(ConsoleOperationRefsCollector.capitalizeFirstLetter(), '');
 });
 
+
 test('Test_GetById_TestDocument_ExpectElement', () => {
    const el = { id: 'panel' };
+
    assert.equal(ConsoleOperationRefsCollector.getById(_fakeDoc({ panel: el }), 'panel'), el);
    assert.equal(ConsoleOperationRefsCollector.getById(_fakeDoc(), 'missing'), null);
 });
+
 
 test('Test_CreateElementRefs_TestIds_ExpectMapped', () => {
    const show = { id: 'show' };
@@ -35,6 +39,7 @@ test('Test_CreateElementRefs_TestIds_ExpectMapped', () => {
    assert.deepEqual(refs, { showButtonEl: show, panelEl: panel });
 });
 
+
 test('Test_CreatePrefixedRefs_TestSuffixes_ExpectPrefixedIds', () => {
    const start = { id: 'opStartDate' };
    const end = { id: 'opEndDate' };
@@ -46,6 +51,7 @@ test('Test_CreatePrefixedRefs_TestSuffixes_ExpectPrefixedIds', () => {
 
    assert.deepEqual(refs, { startDateEl: start, endDateEl: end });
 });
+
 
 test('Test_CreateFormRefs_TestOperationName_ExpectFormControls', () => {
    const ids = {
@@ -63,6 +69,7 @@ test('Test_CreateFormRefs_TestOperationName_ExpectFormControls', () => {
       statusEl: ids.offDisplayStatus,
    });
 });
+
 
 test('Test_CreateAnimalSpeciesAndDateRangeRefs_TestOperation_ExpectFields', () => {
    const species = { id: 'species' };
@@ -83,11 +90,13 @@ test('Test_CreateAnimalSpeciesAndDateRangeRefs_TestOperation_ExpectFields', () =
       speciesResultsEl: results,
       exhibitEl: exhibit,
    });
+
    assert.deepEqual(ConsoleOperationRefsCollector.createDateRangeRefs(doc, 'op'), {
       startDateEl: start,
       endDateEl: end,
    });
 });
+
 
 test('Test_CreateWeekdayAndWeeklyAvailabilityRefs_TestOperation_ExpectDays', () => {
    const monday = { id: 'monday' };
@@ -110,16 +119,19 @@ test('Test_CreateWeekdayAndWeeklyAvailabilityRefs_TestOperation_ExpectDays', () 
    });
 
    const weekdayRefs = ConsoleOperationRefsCollector.createWeekdayScheduleRefs(doc, 'op');
+
    assert.equal(weekdayRefs.mondayEl, monday);
    assert.equal(Object.keys(weekdayRefs).length, 7);
 
    const weeklyRefs = ConsoleOperationRefsCollector.createWeeklyAvailabilityRefs(doc, 'op');
+
    assert.equal(weeklyRefs.presetEl, preset);
    assert.equal(weeklyRefs.holidaysOnlyEl, holidays);
    assert.equal(weeklyRefs.startDateEl, start);
    assert.equal(weeklyRefs.endDateEl, end);
    assert.equal(weeklyRefs.mondayEl, monday);
 });
+
 
 test('Test_CreateOperationRefs_TestFlagsAndOverrides_ExpectCombined', () => {
    const doc = _fakeDoc({
@@ -151,6 +163,7 @@ test('Test_CreateOperationRefs_TestFlagsAndOverrides_ExpectCombined', () => {
    assert.equal(refs.wildEncounterEl.id, 'custom');
 });
 
+
 test('Test_CreateGroupRefs_TestConfig_ExpectKeyedOperations', () => {
    const doc = _fakeDoc({
       showClosedForm: { id: 'show' },
@@ -166,6 +179,7 @@ test('Test_CreateGroupRefs_TestConfig_ExpectKeyedOperations', () => {
    assert.equal(group.closed.panelEl.id, 'panel');
    assert.equal(group.closed.showButtonEl.id, 'show');
 });
+
 
 test('Test_CollectConsoleOperationRefs_TestConfig_ExpectAllGroups', () => {
    const originalGet = ConsoleOperationRefsCollector.getById;

@@ -29,7 +29,8 @@ installDomTestHooks({
    },
 });
 
-test('Test_DateSelectorView_TestDateSelectorViewBuildDateSelectorViewRendersTheVisitDateSelectorShell_ExpectOk', () => {
+
+test('Test_BuildDateSelectorView_TestShell_ExpectVisitDateParts', () => {
    const view = DateSelectorView.buildDateSelectorView();
 
    assert.equal(view.root.className, 'itin-overlay');
@@ -38,13 +39,11 @@ test('Test_DateSelectorView_TestDateSelectorViewBuildDateSelectorViewRendersTheV
       Strings.itinerary.selectors.titleDate
    );
    assert.equal(view.inputEl.className, 'itin-date-input');
-   assert.equal(
-      view.nextButtonEl.textContent,
-      Strings.itinerary.actions.next
-   );
+   assert.equal(view.nextButtonEl.textContent, Strings.itinerary.actions.next);
 });
 
-test('Test_DateSelector_TestDateSelectorCreateItineraryDateSelectorControllerShowAndHideManageTheMount_ExpectOk', () => {
+
+test('Test_CreateItineraryDateSelectorController_TestShowAndHide_ExpectMountManaged', () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const controller = DateSelector.createItineraryDateSelectorController({
       mountEl,
@@ -65,9 +64,11 @@ test('Test_DateSelector_TestDateSelectorCreateItineraryDateSelectorControllerSho
    assert.equal(mountEl.children.length, 0);
 });
 
-test('Test_DateSelector_TestDateSelectorCreateItineraryDateSelectorControllerCommitsTheSelectedDateOnNext_ExpectOk', () => {
+
+test('Test_CreateItineraryDateSelectorController_TestNext_ExpectSavedDate', () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const savedDates = [];
+   const selectedDate = makeNoonDate(2026, 5, 16);
    const controller = DateSelector.createItineraryDateSelectorController({
       mountEl,
       earliestSelectableDate: floor,
@@ -79,64 +80,73 @@ test('Test_DateSelector_TestDateSelectorCreateItineraryDateSelectorControllerCom
          createPicker: _createStubPicker,
       },
    });
-
    controller.show();
-   controller.setDate(makeNoonDate(2026, 5, 16));
+   controller.setDate(selectedDate);
+
    mountEl.querySelector('.itin-next')?.click();
 
-   assert.deepEqual(savedDates, ['2026-06-16']);
+   assert.deepEqual(savedDates, [VisitDateValidator.toISODate(selectedDate)]);
    assert.equal(mountEl.children.length, 1);
 });
 
-test('Test_DateSelector_TestDateSelectorCreateItineraryDateSelectorControllerCallsOnCloseFromTheCloseButton_ExpectOk', () => {
+
+test('Test_CreateItineraryDateSelectorController_TestClose_ExpectOnClose', () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const closeCalls = [];
+   const closed = 'closed';
    const controller = DateSelector.createItineraryDateSelectorController({
       mountEl,
       earliestSelectableDate: floor,
       onClose: () => {
-         closeCalls.push('closed');
+         closeCalls.push(closed);
       },
       deps: {
          getTodayFn: () => floor,
          createPicker: _createStubPicker,
       },
    });
-
    controller.show();
+
    mountEl.querySelector('.itin-close')?.click();
 
-   assert.deepEqual(closeCalls, ['closed']);
+   assert.deepEqual(closeCalls, [closed]);
 });
 
-test('Test_DateSelector_TestMissingMountTitlesFinishAndHideNext_ExpectBranches', () => {
+
+test('Test_CreateItineraryDateSelectorController_TestHideNextAndTitles_ExpectCustomCopy', () => {
    const finished = [];
    const mountEl = createDomNode('div', 'wizard-mount');
+   const titleText = 'Pick a day';
+   const subtitleText = 'Visit soon';
+   const selectedDate = makeNoonDate(2026, 5, 17);
    const controller = DateSelector.createItineraryDateSelectorController({
       mountEl,
       earliestSelectableDate: floor,
       hideNextButton: true,
-      titleText: 'Pick a day',
-      subtitleText: 'Visit soon',
+      titleText,
+      subtitleText,
       onFinish: (isoDate) => { finished.push(isoDate); },
       deps: {
          getTodayFn: () => floor,
          createPicker: _createStubPicker,
       },
    });
+   controller.show();
+   controller.show();
+   controller.setDate(selectedDate);
 
-   controller.show();
-   controller.show();
-   assert.equal(mountEl.querySelector('.itin-h1')?.textContent, 'Pick a day');
-   assert.equal(mountEl.querySelector('.itin-subtitle')?.textContent, 'Visit soon');
+   mountEl.querySelector('.itin-finish')?.click();
+
+   assert.equal(mountEl.querySelector('.itin-h1')?.textContent, titleText);
+   assert.equal(mountEl.querySelector('.itin-subtitle')?.textContent, subtitleText);
    const nextOnly = [...mountEl.querySelectorAll('.itin-next')]
       .find((button) => !button.classList.contains('itin-finish'));
    assert.equal(nextOnly?.hidden, true);
+   assert.deepEqual(finished, [VisitDateValidator.toISODate(selectedDate)]);
+});
 
-   controller.setDate(makeNoonDate(2026, 5, 17));
-   mountEl.querySelector('.itin-finish')?.click();
-   assert.deepEqual(finished, ['2026-06-17']);
 
+test('Test_CreateItineraryDateSelectorController_TestMissingMount_ExpectNoOp', () => {
    const noMount = DateSelector.createItineraryDateSelectorController({
       earliestSelectableDate: floor,
       deps: {
@@ -144,11 +154,15 @@ test('Test_DateSelector_TestMissingMountTitlesFinishAndHideNext_ExpectBranches',
          createPicker: _createStubPicker,
       },
    });
+
    assert.doesNotThrow(() => {
       noMount.show();
       noMount.hide();
    });
+});
 
+
+test('Test_CreateItineraryDateSelectorController_TestMissingInput_ExpectNoThrow', () => {
    const noInput = DateSelector.createItineraryDateSelectorController({
       mountEl: createDomNode('div'),
       earliestSelectableDate: floor,
@@ -164,10 +178,14 @@ test('Test_DateSelector_TestMissingMountTitlesFinishAndHideNext_ExpectBranches',
          }),
       },
    });
+
    assert.doesNotThrow(() => {
       noInput.show();
    });
+});
 
+
+test('Test_CreateItineraryDateSelectorController_TestInvalidDate_ExpectNotSaved', () => {
    const blockedMount = createDomNode('div', 'wizard-mount');
    const saved = [];
    const blocked = DateSelector.createItineraryDateSelectorController({
@@ -182,10 +200,12 @@ test('Test_DateSelector_TestMissingMountTitlesFinishAndHideNext_ExpectBranches',
    blocked.show();
    const originalNormalize = VisitDateValidator.normalizeDate;
    VisitDateValidator.normalizeDate = () => null;
+
    try {
       [...blockedMount.querySelectorAll('.itin-next')]
          .find((button) => !button.classList.contains('itin-finish'))
          ?.click();
+
       assert.deepEqual(saved, []);
    } finally {
       VisitDateValidator.normalizeDate = originalNormalize;

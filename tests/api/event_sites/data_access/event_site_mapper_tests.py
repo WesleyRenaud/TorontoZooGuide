@@ -11,12 +11,13 @@ Y_COORD = 67.5
 
 
 def Test_MapRecord_TestRow_ExpectNameAndCoordinatesMapped() -> None:
-   event_site = EventSiteMapper.map_record(
-      make_row( {
-         'NAME': EVENT_SITE_NAME,
-         'X_COORD': X_COORD,
-         'Y_COORD': Y_COORD,
-      } ) )
+   row = make_row( {
+      'NAME': EVENT_SITE_NAME,
+      'X_COORD': X_COORD,
+      'Y_COORD': Y_COORD,
+   } )
+
+   event_site = EventSiteMapper.map_record( row )
 
    assert event_site.name == EVENT_SITE_NAME
    assert event_site.x_coord == X_COORD

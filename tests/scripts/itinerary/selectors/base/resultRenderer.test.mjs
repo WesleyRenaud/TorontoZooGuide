@@ -4,109 +4,149 @@ import test from 'node:test';
 import { ResultRenderer } from '../../../../../scripts/itinerary/selectors/base/resultRenderer.js';
 import { SelectorResultRowBuilder } from '../../../../../scripts/itinerary/selectors/base/selectorResultRowBuilder.js';
 import { SpeciesLinkTitleBuilder } from '../../../../../scripts/animals/speciesLinkTitleBuilder.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_CreateSelectorThumb_TestPlaceholderAndError_ExpectFallback', () => {
+
+test('Test_CreateSelectorThumb_TestPlaceholder_ExpectPlaceholderClass', () => {
    const placeholder = ResultRenderer.createSelectorThumb();
+
    assert.equal(placeholder.className, 'itin-animal-thumb is-placeholder');
+});
+
+
+test('Test_CreateSelectorThumb_TestImageError_ExpectFallback', () => {
+   const imageSrc = '../images/details/animals/lion.png';
+   const imageAlt = 'African Lion';
 
    const thumb = ResultRenderer.createSelectorThumb({
-      imageSrc: '../images/details/animals/lion.png',
-      imageAlt: 'African Lion',
+      imageSrc,
+      imageAlt,
    });
    const img = thumb.querySelector('.itin-animal-thumb-img');
-   assert.equal(img.src, '../images/details/animals/lion.png');
+
+   assert.equal(img.src, imageSrc);
    img.listeners.error?.();
    assert.equal(thumb.classList.contains('is-placeholder'), true);
 });
 
-test('Test_CreateSelectorTextColumn_TestSubtitleInfoAndParts_ExpectNodes', () => {
-   const withSubtitle = ResultRenderer.createSelectorTextColumn({
-      title: 'Carousel',
-      subtitle: 'Free',
-      infoLink: 'https://example.com',
-   });
-   assert.equal(withSubtitle.querySelector('.animal-result-species')?.textContent, 'Carousel');
-   assert.equal(withSubtitle.querySelector('.animal-result-exhibit')?.textContent, 'Free');
-   assert.equal(withSubtitle.querySelector('.tooltip-link')?.textContent, Strings.common.moreInfo);
 
+test('Test_CreateSelectorTextColumn_TestSubtitleAndInfoLink_ExpectNodes', () => {
+   const title = 'Carousel';
+   const subtitle = 'Free';
+   const infoLink = 'https://example.com';
+
+   const column = ResultRenderer.createSelectorTextColumn({
+      title,
+      subtitle,
+      infoLink,
+   });
+
+   assert.equal(column.querySelector('.animal-result-species')?.textContent, title);
+   assert.equal(column.querySelector('.animal-result-exhibit')?.textContent, subtitle);
+   assert.equal(column.querySelector('.tooltip-link')?.textContent, Strings.common.moreInfo);
+});
+
+
+test('Test_CreateSelectorTextColumn_TestCustomNodes_ExpectNodes', () => {
+   const titleClass = 'custom-title';
+   const subtitleClass = 'custom-subtitle';
    const titleNode = document.createElement('div');
-   titleNode.className = 'custom-title';
+   titleNode.className = titleClass;
    titleNode.textContent = 'Custom';
    const subtitleNode = document.createElement('div');
-   subtitleNode.className = 'custom-subtitle';
-   const withNodes = ResultRenderer.createSelectorTextColumn({
+   subtitleNode.className = subtitleClass;
+
+   const column = ResultRenderer.createSelectorTextColumn({
       titleNode,
       subtitleNode,
    });
-   assert.ok(withNodes.querySelector('.custom-title'));
-   assert.ok(withNodes.querySelector('.custom-subtitle'));
 
+   assert.ok(column.querySelector(`.${titleClass}`));
+   assert.ok(column.querySelector(`.${subtitleClass}`));
+});
+
+
+test('Test_CreateSelectorTextColumn_TestTitleParts_ExpectSpecies', () => {
    const originalParts = SpeciesLinkTitleBuilder.createAnimalTitleLinkElement;
-   SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = ({ species }) => {
+   const species = 'Lion';
+   SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = ({ species: value }) => {
       const el = document.createElement('div');
       el.className = 'animal-result-species';
-      el.textContent = species;
+      el.textContent = value;
       return el;
    };
 
    try {
-      const withParts = ResultRenderer.createSelectorTextColumn({
-         titleParts: { species: 'Lion', enclosureName: 'Yard' },
+      const column = ResultRenderer.createSelectorTextColumn({
+         titleParts: { species, enclosureName: 'Yard' },
          onTitleClick: () => {},
       });
-      assert.equal(withParts.querySelector('.animal-result-species')?.textContent, 'Lion');
+
+      assert.equal(column.querySelector('.animal-result-species')?.textContent, species);
    } finally {
       SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = originalParts;
    }
 });
 
+
 test('Test_CreateSelectorRowContent_TestThumbAndText_ExpectContent', () => {
+   const textClass = 'text-col';
    const textColumnEl = document.createElement('div');
-   textColumnEl.className = 'text-col';
+   textColumnEl.className = textClass;
+
    const content = ResultRenderer.createSelectorRowContent({
       imageSrc: null,
       imageAlt: '',
       textColumnEl,
    });
+
    assert.equal(content.className, 'itin-animal-content');
    assert.ok(content.querySelector('.itin-animal-thumb'));
-   assert.ok(content.querySelector('.text-col'));
+   assert.ok(content.querySelector(`.${textClass}`));
 });
 
+
 test('Test_CreateDefaultSelectorRowLeftRenderer_TestRow_ExpectContent', () => {
-   const clicks = [];
+   const name = 'Lion';
    const render = ResultRenderer.createDefaultSelectorRowLeftRenderer({
       getTitle: (row) => row.name,
       getTitleSuffix: () => ' talk',
       getSubtitle: () => 'Africa',
       getImageSrc: () => null,
       getInfoLink: () => null,
-      onTitleClick: (row) => {
-         clicks.push(row.name);
-      },
+      onTitleClick: () => {},
       shouldEnableTitleClick: () => true,
    });
-   const content = render({ name: 'Lion' });
+
+   const content = render({ name });
+
    assert.ok(content.classList.contains('itin-animal-content'));
 });
 
-test('Test_RenderSelectorResults_TestRowsToggleAndEmpty_ExpectOk', () => {
+
+test('Test_RenderSelectorResults_TestRowsAndToggle_ExpectOk', () => {
    const resultsEl = createDomNode('div', 'animal-results');
    const toggled = [];
    const selectedIds = new Set();
+   const lionId = 'lion';
+   const lionName = 'African Lion';
+   const tigerId = 'tiger';
+   const tigerName = 'Amur Tiger';
+   const rows = [
+      { id: lionId, name: lionName },
+      { id: tigerId, name: tigerName },
+   ];
+   const emptyText = 'No animals found';
 
    ResultRenderer.renderSelectorResults({
       resultsEl,
-      rows: [
-         { id: 'lion', name: 'African Lion' },
-         { id: 'tiger', name: 'Amur Tiger' },
-      ],
-      emptyText: 'No animals found',
+      rows,
+      emptyText,
       getId: (row) => row.id,
       isSelected: (id) => selectedIds.has(id),
       renderRowLeft: ResultRenderer.createDefaultSelectorRowLeftRenderer({
@@ -126,23 +166,31 @@ test('Test_RenderSelectorResults_TestRowsToggleAndEmpty_ExpectOk', () => {
       },
    });
 
-   assert.equal(resultsEl.children.length, 2);
-   resultsEl.children[0].querySelector('.itin-add-btn')?.listeners.click?.({
+   assert.equal(resultsEl.children.length, rows.length);
+   resultsEl.children.at(Position.FIRST).querySelector('.itin-add-btn')?.listeners.click?.({
       stopPropagation() {},
    });
-   assert.deepEqual(toggled, ['lion']);
+   assert.deepEqual(toggled, [lionId]);
+});
+
+
+test('Test_RenderSelectorResults_TestEmptyRows_ExpectEmptyState', () => {
+   const resultsEl = createDomNode('div', 'animal-results');
+   const emptyText = 'No animals found';
 
    ResultRenderer.renderSelectorResults({
       resultsEl,
       rows: [],
-      emptyText: 'No animals found',
+      emptyText,
       getId: () => '',
       isSelected: () => false,
       renderRowLeft: () => createDomNode('div'),
       onToggle: () => {},
    });
-   assert.equal(resultsEl.children[0].className, 'itin-empty');
+
+   assert.equal(resultsEl.children.at(Position.FIRST).className, 'itin-empty');
 });
+
 
 test('Test_RenderSelectorResults_TestMissingResultsEl_ExpectNoOp', () => {
    ResultRenderer.renderSelectorResults({
@@ -156,13 +204,18 @@ test('Test_RenderSelectorResults_TestMissingResultsEl_ExpectNoOp', () => {
    });
 });
 
+
 test('Test_RenderSelectorResults_TestBeforeToggleAdd_ExpectProceedOrder', () => {
    const resultsEl = createDomNode('div', 'animal-results');
    const proceedCalls = [];
+   const confirmed = 'confirmed';
+   const toggled = 'toggled';
+   const lionId = 'lion';
+   const lionName = 'African Lion';
 
    ResultRenderer.renderSelectorResults({
       resultsEl,
-      rows: [{ id: 'lion', name: 'African Lion' }],
+      rows: [{ id: lionId, name: lionName }],
       emptyText: 'No animals found',
       getId: (row) => row.id,
       isSelected: () => false,
@@ -173,36 +226,39 @@ test('Test_RenderSelectorResults_TestBeforeToggleAdd_ExpectProceedOrder', () => 
          getInfoLink: () => null,
       }),
       onToggle: () => {
-         proceedCalls.push('toggled');
+         proceedCalls.push(toggled);
       },
       onBeforeToggleAdd: ({ proceed }) => {
-         proceedCalls.push('confirmed');
+         proceedCalls.push(confirmed);
          proceed();
       },
    });
-
-   resultsEl.children[0].querySelector('.itin-add-btn')?.listeners.click?.({
+   resultsEl.children.at(Position.FIRST).querySelector('.itin-add-btn')?.listeners.click?.({
       stopPropagation() {},
    });
-   assert.deepEqual(proceedCalls, ['confirmed', 'toggled']);
+
+   assert.deepEqual(proceedCalls, [confirmed, toggled]);
 });
+
 
 test('Test_RenderSelectorResults_TestHasRowsFalse_ExpectEmptyViaBuilder', () => {
    const resultsEl = createDomNode('div', 'animal-results');
    const originalHasRows = SelectorResultRowBuilder.hasRows;
+   const emptyText = 'None';
    SelectorResultRowBuilder.hasRows = () => false;
 
    try {
       ResultRenderer.renderSelectorResults({
          resultsEl,
          rows: [{ id: 'x' }],
-         emptyText: 'None',
+         emptyText,
          getId: () => 'x',
          isSelected: () => false,
          renderRowLeft: () => createDomNode('div'),
          onToggle: () => {},
       });
-      assert.equal(resultsEl.children[0].textContent, 'None');
+
+      assert.equal(resultsEl.children.at(Position.FIRST).textContent, emptyText);
    } finally {
       SelectorResultRowBuilder.hasRows = originalHasRows;
    }

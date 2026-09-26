@@ -3,10 +3,22 @@ import test from 'node:test';
 
 import { ItineraryPanelViewUrlHelper } from '../../../../scripts/itinerary/panel/itineraryPanelViewUrlHelper.js';
 
-test('Test_GetDefaultLocationAndHistory_TestGlobals_ExpectSameReferences', () => {
-   globalThis.location = { href: 'https://example.test' };
-   globalThis.history = { replaceState() {} };
 
-   assert.equal(ItineraryPanelViewUrlHelper.getDefaultLocation(), globalThis.location);
-   assert.equal(ItineraryPanelViewUrlHelper.getDefaultHistory(), globalThis.history);
+test('Test_GetDefaultLocation_TestGlobalLocation_ExpectSameReference', () => {
+   const location = { href: 'https://example.test' };
+   globalThis.location = location;
+
+   const defaultLocation = ItineraryPanelViewUrlHelper.getDefaultLocation();
+
+   assert.equal(defaultLocation, location);
+});
+
+
+test('Test_GetDefaultHistory_TestGlobalHistory_ExpectSameReference', () => {
+   const history = { replaceState() {} };
+   globalThis.history = history;
+
+   const defaultHistory = ItineraryPanelViewUrlHelper.getDefaultHistory();
+
+   assert.equal(defaultHistory, history);
 });

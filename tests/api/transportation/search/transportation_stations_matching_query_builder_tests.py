@@ -16,24 +16,24 @@ def _station( name: str ) -> TransportationStation:
 
 
 def Test_Build_TestMatchingQuery_ExpectMatchingStationOnly() -> None:
-   stations = [
-      _station( 'Africa Station' ),
-      _station( 'Americas Station' ),
-   ]
+   africa_station = _station( 'Africa Station' )
+   americas_station = _station( 'Americas Station' )
+   stations = [ africa_station, americas_station ]
+   query = 'africa'
 
-   matches = TransportationStationsMatchingQueryBuilder.build( stations, 'africa' )
+   matches = TransportationStationsMatchingQueryBuilder.build( stations, query )
 
-   assert [ station.name for station in matches ] == [ 'Africa Station' ]
+   assert [ station.name for station in matches ] == [ africa_station.name ]
 
 
 def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingStationOnly() -> None:
-   stations = [
-      _station( 'Africa Station' ),
-      _station( 'Americas Station' ),
-   ]
+   africa_station = _station( 'Africa Station' )
+   americas_station = _station( 'Americas Station' )
+   stations = [ africa_station, americas_station ]
+   query = 'americas'
 
    matches = TransportationStationsMatchingQueryBuilder.filter_matching_query(
       stations,
-      'americas' )
+      query )
 
-   assert [ station.name for station in matches ] == [ 'Americas Station' ]
+   assert [ station.name for station in matches ] == [ americas_station.name ]

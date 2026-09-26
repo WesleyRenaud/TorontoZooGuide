@@ -9,6 +9,7 @@ import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperati
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { ConsoleTextareaFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleTextareaFieldBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateRestaurantClosureOverridePanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -35,21 +36,20 @@ test('Test_CreateRestaurantClosureOverridePanel_TestWiring_ExpectShellOptions', 
       const result = RestaurantClosureOverrideView.createRestaurantClosureOverridePanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'restaurantClosureOverridePanel');
       assert.equal(captured.title, Strings.panelTitles.restaurantClosureOverride);
       assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'restaurantClosureOverrideRestaurant');
-      assert.equal(captured.bodyChildren[0].label, Strings.entityLabels.restaurant);
-      assert.equal(captured.bodyChildren[1].startDateId, 'restaurantClosureOverrideStartDate');
-      assert.equal(captured.bodyChildren[1].endDateId, 'restaurantClosureOverrideEndDate');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'restaurantClosureOverrideRestaurant');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).label, Strings.entityLabels.restaurant);
+      assert.equal(captured.bodyChildren.at(Position.SECOND).startDateId, 'restaurantClosureOverrideStartDate');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).endDateId, 'restaurantClosureOverrideEndDate');
       assert.equal(
-         captured.bodyChildren[1].endHelpText,
+         captured.bodyChildren.at(Position.SECOND).endHelpText,
          Strings.help.continueUntilReopened('restaurant')
       );
-      assert.equal(captured.bodyChildren[2].inputId, 'restaurantClosureOverrideMessage');
-      assert.equal(captured.bodyChildren[2].placeholder, Strings.textareas.closedMessage('restaurant'));
-      assert.equal(captured.bodyChildren[3].submitId, 'submitRestaurantClosureOverride');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'restaurantClosureOverrideMessage');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).placeholder, Strings.textareas.closedMessage('restaurant'));
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).submitId, 'submitRestaurantClosureOverride');
       assert.equal(captured.bodyChildren[4].statusId, 'restaurantClosureOverrideStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;

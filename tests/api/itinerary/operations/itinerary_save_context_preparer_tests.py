@@ -84,6 +84,7 @@ def preparer_conn() -> sqlite3.Connection:
 def Test_Prepare_TestOwnedSaveInput_ExpectSaveContextWithValidatedItinerary(
       preparer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   old_visit_date = SAVED_ITINERARY.date_value
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_context_preparer.ItinerarySaveValidator.validate_for_save',
       lambda conn, save_input, *coordinators, **kwargs: VALIDATED_ITINERARY )
@@ -100,7 +101,7 @@ def Test_Prepare_TestOwnedSaveInput_ExpectSaveContextWithValidatedItinerary(
    context = ItinerarySaveContextPreparer.prepare(
       preparer_conn,
       SAVE_INPUT,
-      old_visit_date='2026-06-20',
+      old_visit_date=old_visit_date,
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
@@ -113,7 +114,7 @@ def Test_Prepare_TestOwnedSaveInput_ExpectSaveContextWithValidatedItinerary(
    assert context.save_input == SAVE_INPUT
    assert context.validated_itinerary == VALIDATED_ITINERARY
    assert context.saved_itinerary == SAVED_ITINERARY
-   assert context.old_visit_date == '2026-06-20'
+   assert context.old_visit_date == old_visit_date
    assert context.unschedule_requirements == UNSCHEDULE_REQUIREMENTS
    assert context.adjustments == ADJUSTMENTS
 
@@ -121,6 +122,7 @@ def Test_Prepare_TestOwnedSaveInput_ExpectSaveContextWithValidatedItinerary(
 def Test_Prepare_TestWithoutOldVisitDate_ExpectNoSavedItinerary(
       preparer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   empty_requirements = ItineraryUnscheduleRequirements( talks=[], encounters=[] )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_context_preparer.ItinerarySaveValidator.validate_for_save',
       lambda conn, save_input, *coordinators, **kwargs: VALIDATED_ITINERARY )
@@ -143,5 +145,5 @@ def Test_Prepare_TestWithoutOldVisitDate_ExpectNoSavedItinerary(
       itinerary_controller_kwargs=CONTROLLER_KWARGS )
 
    assert context.saved_itinerary is None
-   assert context.unschedule_requirements.talks == []
-   assert context.unschedule_requirements.encounters == []
+   assert context.unschedule_requirements.talks == empty_requirements.talks
+   assert context.unschedule_requirements.encounters == empty_requirements.encounters

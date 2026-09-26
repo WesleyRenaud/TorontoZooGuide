@@ -6,43 +6,61 @@ import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemK
 import { Strings } from '../../../../scripts/strings.js';
 import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 
-test('Test_IsTransitModeTransportationRemove_TestKeys_ExpectBoolean', () => {
-   assert.equal(
-      RemoveItineraryItemConfirmationHelper.isTransitModeTransportationRemove(
-         ScheduleItemKind.TRANSPORTATION.itemType,
-         new TransportationScheduleItemKey('Zoomobile', false).toWire()
-      ),
-      true
+
+test('Test_IsTransitModeTransportationRemove_TestTransitKey_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.TRANSPORTATION.itemType;
+   const key = new TransportationScheduleItemKey('Zoomobile', false).toWire();
+
+   const isTransit = RemoveItineraryItemConfirmationHelper.isTransitModeTransportationRemove(
+      itemType,
+      key
    );
-   assert.equal(
-      RemoveItineraryItemConfirmationHelper.isTransitModeTransportationRemove(
-         ScheduleItemKind.TRANSPORTATION.itemType,
-         new TransportationScheduleItemKey('Zoomobile', true).toWire()
-      ),
-      false
-   );
-   assert.equal(
-      RemoveItineraryItemConfirmationHelper.isTransitModeTransportationRemove(
-         ScheduleItemKind.ATTRACTION.itemType,
-         new TransportationScheduleItemKey('Zoomobile', false).toWire()
-      ),
-      false
-   );
+
+   assert.equal(isTransit, true);
 });
 
-test('Test_RemoveConfirmationMessage_TestTransitAndDefault_ExpectStrings', () => {
-   assert.equal(
-      RemoveItineraryItemConfirmationHelper.removeConfirmationMessage(
-         ScheduleItemKind.TRANSPORTATION.itemType,
-         new TransportationScheduleItemKey('Zoomobile', false).toWire()
-      ),
-      Strings.itinerary.confirmation.removeTransitTransportationMessage
+
+test('Test_IsTransitModeTransportationRemove_TestAttractionKey_ExpectFalse', () => {
+   const itemType = ScheduleItemKind.TRANSPORTATION.itemType;
+   const key = new TransportationScheduleItemKey('Zoomobile', true).toWire();
+
+   const isTransit = RemoveItineraryItemConfirmationHelper.isTransitModeTransportationRemove(
+      itemType,
+      key
    );
-   assert.equal(
-      RemoveItineraryItemConfirmationHelper.removeConfirmationMessage(
-         ScheduleItemKind.ATTRACTION.itemType,
-         'Carousel'
-      ),
-      Strings.itinerary.confirmation.removeItemMessage
+
+   assert.equal(isTransit, false);
+});
+
+
+test('Test_IsTransitModeTransportationRemove_TestAttractionType_ExpectFalse', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+   const key = new TransportationScheduleItemKey('Zoomobile', false).toWire();
+
+   const isTransit = RemoveItineraryItemConfirmationHelper.isTransitModeTransportationRemove(
+      itemType,
+      key
    );
+
+   assert.equal(isTransit, false);
+});
+
+
+test('Test_RemoveConfirmationMessage_TestTransit_ExpectTransitMessage', () => {
+   const itemType = ScheduleItemKind.TRANSPORTATION.itemType;
+   const key = new TransportationScheduleItemKey('Zoomobile', false).toWire();
+
+   const message = RemoveItineraryItemConfirmationHelper.removeConfirmationMessage(itemType, key);
+
+   assert.equal(message, Strings.itinerary.confirmation.removeTransitTransportationMessage);
+});
+
+
+test('Test_RemoveConfirmationMessage_TestAttraction_ExpectDefaultMessage', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+   const key = 'Conservation Carousel';
+
+   const message = RemoveItineraryItemConfirmationHelper.removeConfirmationMessage(itemType, key);
+
+   assert.equal(message, Strings.itinerary.confirmation.removeItemMessage);
 });

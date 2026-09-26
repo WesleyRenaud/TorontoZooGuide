@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
 from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
@@ -9,7 +10,7 @@ from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttra
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.warnings.schedule_item_not_on_itinerary_warning_builder import ScheduleItemNotOnItineraryWarningBuilder
-from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItineraryErrorType, Position
 
 
 SAVED = SavedItinerary(
@@ -47,45 +48,74 @@ def stub_no_suppressed_status( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 
 def Test_SavedItineraryHasScheduleItem_TestAnimalWithoutEnclosure_ExpectTrue() -> None:
-   assert ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
+   lion = SAVED.animal_rows[ Position.FIRST ]
+   key = AnimalScheduleItemKey( species=lion.species, exhibit=lion.exhibit )
+
+   found = ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
       SAVED,
-      AnimalScheduleItemKey( species='African Lion', exhibit='Africa Savanna' ) )
+      key )
+
+   assert found is True
 
 
 def Test_SavedItineraryHasScheduleItem_TestAnimalWithEnclosure_ExpectTrue() -> None:
-   assert ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
+   penguin = SAVED.animal_rows[ Position.SECOND ]
+   key = AnimalScheduleItemKey(
+      species=penguin.species,
+      exhibit=penguin.exhibit,
+      enclosure_name=penguin.enclosure_name )
+
+   found = ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
       SAVED,
-      AnimalScheduleItemKey(
-         species='African Penguin',
-         exhibit='Africa Savanna',
-         enclosure_name='Outdoor' ) )
+      key )
+
+   assert found is True
 
 
 def Test_SavedItineraryHasScheduleItem_TestMissingAnimal_ExpectFalse() -> None:
-   assert not ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
+   key = AnimalScheduleItemKey( species='Cheetah', exhibit='Indo-Malaya Outdoor' )
+
+   found = ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
       SAVED,
-      AnimalScheduleItemKey( species='Cheetah', exhibit='Indo-Malaya Outdoor' ) )
+      key )
+
+   assert found is False
 
 
 def Test_SavedItineraryHasScheduleItem_TestAttraction_ExpectTrue() -> None:
-   assert ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
+   attraction = SAVED.attraction_rows[ Position.FIRST ]
+   key = AttractionScheduleItemKey( name=attraction.attraction )
+
+   found = ScheduleItemNotOnItineraryWarningBuilder.saved_itinerary_has_schedule_item(
       SAVED,
-      AttractionScheduleItemKey( name='Conservation Carousel' ) )
+      key )
+
+   assert found is True
 
 
 def Test_IsRequired_TestConfirming_ExpectFalse(
       stub_no_suppressed_status: None ) -> None:
-   assert not ScheduleItemNotOnItineraryWarningBuilder.is_required(
-      object(),  # type: ignore[arg-type]
+   key = AnimalScheduleItemKey( species='Cheetah', exhibit='Indo-Malaya Outdoor' )
+   confirming_schedule_item_not_on_itinerary = True
+
+   required = ScheduleItemNotOnItineraryWarningBuilder.is_required(
+      STUB_REQUEST_CONNECTION,
       SAVED,
-      AnimalScheduleItemKey( species='Cheetah', exhibit='Indo-Malaya Outdoor' ),
-      confirming_schedule_item_not_on_itinerary=True )
+      key,
+      confirming_schedule_item_not_on_itinerary=confirming_schedule_item_not_on_itinerary )
+
+   assert required is False
 
 
 def Test_IsRequired_TestMissingItem_ExpectTrue(
       stub_no_suppressed_status: None ) -> None:
-   assert ScheduleItemNotOnItineraryWarningBuilder.is_required(
-      object(),  # type: ignore[arg-type]
+   key = AnimalScheduleItemKey( species='Cheetah', exhibit='Indo-Malaya Outdoor' )
+   confirming_schedule_item_not_on_itinerary = False
+
+   required = ScheduleItemNotOnItineraryWarningBuilder.is_required(
+      STUB_REQUEST_CONNECTION,
       SAVED,
-      AnimalScheduleItemKey( species='Cheetah', exhibit='Indo-Malaya Outdoor' ),
-      confirming_schedule_item_not_on_itinerary=False )
+      key,
+      confirming_schedule_item_not_on_itinerary=confirming_schedule_item_not_on_itinerary )
+
+   assert required is True

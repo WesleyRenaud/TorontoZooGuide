@@ -28,12 +28,12 @@ def stub_event_site_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubEventS
 
 def Test_GetEventSites_TestHttpRequest_ExpectReturnsEventSites(
       stub_event_site_coordinator: StubEventSiteCoordinator ) -> None:
+   event_site = _sample_event_site()
    handler = make_handler( '/get-event-sites', {} )
 
    server.HttpRequestHandler.do_POST( handler )
-
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
    assert stub_event_site_coordinator.calls == [ ( 'get_event_sites', {} ) ]
-   assert result[ 'event_sites' ] == [ _sample_event_site().to_dict() ]
+   assert result[ 'event_sites' ] == [ event_site.to_dict() ]

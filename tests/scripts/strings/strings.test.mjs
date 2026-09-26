@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { Strings } from '../../../scripts/strings.js';
 
+
 function _collectStringValues(value, path = 'Strings', values = new Map()) {
    if (typeof value === 'string') {
       const paths = values.get(value) ?? [];
@@ -27,6 +28,7 @@ function _collectStringValues(value, path = 'Strings', values = new Map()) {
    return values;
 }
 
+
 test('Test_Strings_TestStringsDoesNotContainDuplicateStringValues_ExpectOk', () => {
    const stringBags = Object.fromEntries(
       Object.getOwnPropertyNames(Strings)
@@ -36,6 +38,7 @@ test('Test_Strings_TestStringsDoesNotContainDuplicateStringValues_ExpectOk', () 
          })
          .map((key) => [key, Strings[key]])
    );
+
    const duplicates = [..._collectStringValues(stringBags).entries()]
       .filter(([, paths]) => paths.length > 1)
       .map(([value, paths]) => `${JSON.stringify(value)}:\n${paths.join('\n')}`);

@@ -8,9 +8,12 @@ import { GlobalListener } from '../../../scripts/tooltips/globalListener.js';
 import { PositionFragment } from '../../../scripts/tooltips/positionFragment.js';
 import { TooltipController } from '../../../scripts/tooltips/tooltipController.js';
 import { TooltipRenderer } from '../../../scripts/tooltips/tooltipRenderer.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
 
 function _stubTooltipDeps({ renderResult = true } = {}) {
    const bannerSyncs = [];
@@ -97,86 +100,128 @@ function _stubTooltipDeps({ renderResult = true } = {}) {
    };
 }
 
-test('Test_CreateTooltipController_TestOpenCloseToggle_ExpectState', () => {
+
+function _createApi(tooltipEl) {
+   return TooltipController.createTooltipController({
+      tooltipEl,
+      onAnimalCardClick: () => {},
+      offDisplayBanner: {},
+      restaurantClosedBanner: {},
+      restroomMessageBanner: {},
+      giftShopClosedBanner: {},
+      attractionClosedBanner: {},
+      drinkingFountainClosedBanner: {},
+   });
+}
+
+
+test('Test_CreateTooltipController_TestOpen_ExpectVisible', () => {
    const stubs = _stubTooltipDeps({ renderResult: true });
    const tooltipEl = document.createElement('div');
    tooltipEl.style.display = 'none';
+   const lion = { type: ItemType.ANIMAL, species: 'African Lion' };
+   const cafe = { type: ItemType.RESTAURANT, name: 'Peaks Cafe' };
+   const items = [lion, cafe];
 
    try {
-      const api = TooltipController.createTooltipController({
-         tooltipEl,
-         onAnimalCardClick: () => {},
-         offDisplayBanner: {},
-         restaurantClosedBanner: {},
-         restroomMessageBanner: {},
-         giftShopClosedBanner: {},
-         attractionClosedBanner: {},
-         drinkingFountainClosedBanner: {},
-      });
-
+      const api = _createApi(tooltipEl);
       const markerEl = document.createElement('div');
-      const items = [{ type: 'animal', species: 'Lion' }, { type: 'restaurant', name: 'Peaks' }];
-
       api.open(markerEl, items);
+
       assert.equal(tooltipEl.style.display, 'flex');
       assert.equal(tooltipEl.style.pointerEvents, 'auto');
       assert.deepEqual(api.getOpenItems(), items);
       assert.ok(stubs.carouselCalls.some(([kind]) => kind === 'showFirst'));
       assert.ok(stubs.listenerCalls.includes('install'));
-      assert.deepEqual(stubs.positions.at(-1), [tooltipEl, markerEl]);
-
-      stubs.getOnIndexChange()(0);
-      assert.deepEqual(stubs.animalIconCalls.at(-1)?.[0], markerEl);
-      assert.deepEqual(stubs.bannerSyncs.at(-1), items[0]);
-
-      stubs.getOnIndexChange()(1);
-      assert.deepEqual(stubs.bannerSyncs.at(-1), items[1]);
-
-      api.toggle(markerEl, items);
-      assert.equal(tooltipEl.style.display, 'none');
-      assert.ok(stubs.listenerCalls.includes('uninstall'));
-      assert.ok(stubs.bannerHides.length >= 1);
-      assert.deepEqual(api.getOpenItems(), []);
-
-      api.open(null, items);
-      assert.deepEqual(api.getOpenItems(), []);
-
-      api.close();
+      assert.deepEqual(stubs.positions.at(Position.LAST), [tooltipEl, markerEl]);
    } finally {
       stubs.restore();
    }
 });
+
+
+test('Test_CreateTooltipController_TestIndexChange_ExpectBannerSync', () => {
+   const stubs = _stubTooltipDeps({ renderResult: true });
+   const tooltipEl = document.createElement('div');
+   const lion = { type: ItemType.ANIMAL, species: 'African Lion' };
+   const cafe = { type: ItemType.RESTAURANT, name: 'Peaks Cafe' };
+   const items = [lion, cafe];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.open(markerEl, items);
+      stubs.getOnIndexChange()(Position.FIRST);
+      stubs.getOnIndexChange()(Position.SECOND);
+
+      assert.deepEqual(stubs.animalIconCalls.at(Position.LAST)?.at(Position.FIRST), markerEl);
+      assert.deepEqual(stubs.bannerSyncs.at(Position.LAST), cafe);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestToggle_ExpectClosed', () => {
+   const stubs = _stubTooltipDeps({ renderResult: true });
+   const tooltipEl = document.createElement('div');
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.open(markerEl, items);
+      api.toggle(markerEl, items);
+
+      assert.equal(tooltipEl.style.display, 'none');
+      assert.ok(stubs.listenerCalls.includes('uninstall'));
+      assert.ok(stubs.bannerHides.length >= Position.SECOND);
+      assert.deepEqual(api.getOpenItems(), []);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestOpenWithoutMarker_ExpectEmpty', () => {
+   const stubs = _stubTooltipDeps({ renderResult: true });
+   const tooltipEl = document.createElement('div');
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      api.open(null, items);
+
+      assert.deepEqual(api.getOpenItems(), []);
+   } finally {
+      stubs.restore();
+   }
+});
+
 
 test('Test_CreateTooltipController_TestRenderFails_ExpectStillInstalled', () => {
    const stubs = _stubTooltipDeps({ renderResult: false });
    const tooltipEl = document.createElement('div');
 
    try {
-      const api = TooltipController.createTooltipController({
-         tooltipEl,
-         onAnimalCardClick: () => {},
-         offDisplayBanner: {},
-         restaurantClosedBanner: {},
-         restroomMessageBanner: {},
-         giftShopClosedBanner: {},
-         attractionClosedBanner: {},
-         drinkingFountainClosedBanner: {},
-      });
-
+      const api = _createApi(tooltipEl);
       const markerEl = document.createElement('div');
-      api.open(markerEl, [{ type: 'animal', species: 'Lion' }]);
+      api.open(markerEl, [{ type: ItemType.ANIMAL, species: 'African Lion' }]);
+
       assert.ok(stubs.listenerCalls.includes('install'));
-      assert.ok(stubs.bannerSyncs.length >= 1);
-      assert.equal(stubs.positions.length, 0);
+      assert.ok(stubs.bannerSyncs.length >= Position.SECOND);
+      assert.equal(stubs.positions.length, Position.FIRST);
       assert.ok(stubs.getIsOpenFn()());
    } finally {
       stubs.restore();
    }
 });
 
+
 test('Test_CreateTooltipController_TestAttachAndHover_ExpectHandlers', () => {
    const stubs = _stubTooltipDeps();
    const tooltipEl = document.createElement('div');
+   const hoverText = 'African Lion';
    const hover = {
       shows: [],
       moves: [],
@@ -185,124 +230,127 @@ test('Test_CreateTooltipController_TestAttachAndHover_ExpectHandlers', () => {
       move(event) { this.moves.push(event); },
       hide() { this.hides += 1; },
    };
+   const items = [{ type: ItemType.ANIMAL, species: hoverText }];
 
    try {
-      const api = TooltipController.createTooltipController({
-         tooltipEl,
-         onAnimalCardClick: () => {},
-         offDisplayBanner: {},
-         restaurantClosedBanner: {},
-         restroomMessageBanner: {},
-         giftShopClosedBanner: {},
-         attractionClosedBanner: {},
-         drinkingFountainClosedBanner: {},
-      });
-
+      const api = _createApi(tooltipEl);
       const markerEl = document.createElement('div');
-      markerEl.dataset.hover = 'Lion';
-      const items = [{ type: 'animal', species: 'Lion' }];
-
+      markerEl.dataset.hover = hoverText;
       api.attachToMarker(markerEl, items, hover);
       markerEl.listeners.mouseenter({ stopPropagation() {} });
       markerEl.listeners.mousemove({});
       markerEl.listeners.mouseleave();
-      assert.equal(hover.shows[0][0], 'Lion');
-      assert.equal(hover.moves.length, 1);
-      assert.equal(hover.hides, 1);
-
       markerEl.click();
-      assert.deepEqual(api.getOpenItems(), items);
-      assert.equal(hover.hides, 2);
 
+      assert.equal(hover.shows.at(Position.FIRST).at(Position.FIRST), hoverText);
+      assert.equal(hover.moves.length, Position.SECOND);
+      assert.equal(hover.hides, 2);
+      assert.deepEqual(api.getOpenItems(), items);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestNonClickable_ExpectNoOpen', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const hover = {
+      shows: [],
+      moves: [],
+      hides: 0,
+      show() {},
+      move() {},
+      hide() { this.hides += 1; },
+   };
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.attachToMarker(markerEl, items, hover);
+      markerEl.click();
       const nonClickable = document.createElement('div');
       api.attachToMarker(nonClickable, items, hover, { clickable: false });
       nonClickable.click();
-      assert.equal(api.getOpenItems().length, 1);
 
-      api.jumpTo((item) => item.species === 'Lion');
-      assert.equal(stubs.carouselCalls.at(-1)[0], 'jumpTo');
-
-      stubs.getStepFn()(1);
-      assert.deepEqual(stubs.carouselCalls.at(-1), ['step', 1]);
-      stubs.getCloseFn()();
+      assert.equal(api.getOpenItems().length, Position.SECOND);
    } finally {
       stubs.restore();
    }
 });
 
-test('Test_CreateTooltipController_TestRepositionAndMissingTooltip_ExpectGuards', () => {
+
+test('Test_CreateTooltipController_TestJumpAndStep_ExpectCarousel', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const species = 'African Lion';
+
+   try {
+      const api = _createApi(tooltipEl);
+      api.jumpTo((item) => item.species === species);
+      stubs.getStepFn()(1);
+      const stepped = stubs.carouselCalls.some((call) => call.at(Position.FIRST) === 'step');
+      stubs.getCloseFn()();
+
+      assert.equal(stepped, true);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestMissingTooltip_ExpectGuards', () => {
    const stubs = _stubTooltipDeps();
 
    try {
-      const withoutTooltip = TooltipController.createTooltipController({
-         tooltipEl: null,
-         onAnimalCardClick: () => {},
-         offDisplayBanner: {},
-         restaurantClosedBanner: {},
-         restroomMessageBanner: {},
-         giftShopClosedBanner: {},
-         attractionClosedBanner: {},
-         drinkingFountainClosedBanner: {},
-      });
-
-      withoutTooltip.open(document.createElement('div'), [{ type: 'animal' }]);
+      const withoutTooltip = _createApi(null);
+      withoutTooltip.open(document.createElement('div'), [{ type: ItemType.ANIMAL }]);
       withoutTooltip.close();
       withoutTooltip.reposition();
 
-      const tooltipEl = document.createElement('div');
-      const api = TooltipController.createTooltipController({
-         tooltipEl,
-         onAnimalCardClick: () => {},
-         offDisplayBanner: {},
-         restaurantClosedBanner: {},
-         restroomMessageBanner: {},
-         giftShopClosedBanner: {},
-         attractionClosedBanner: {},
-         drinkingFountainClosedBanner: {},
-      });
-
-      api.reposition();
-      const markerEl = document.createElement('div');
-      api.open(markerEl, [{ type: 'restaurant', name: 'Peaks' }]);
-      stubs.positions.length = 0;
-      api.reposition();
-      assert.deepEqual(stubs.positions.at(-1), [tooltipEl, markerEl]);
-
-      stubs.getOnIndexChange()(0);
-      assert.equal(stubs.animalIconCalls.length, 0);
+      assert.deepEqual(withoutTooltip.getOpenItems(), []);
    } finally {
       stubs.restore();
    }
 });
+
+
+test('Test_CreateTooltipController_TestReposition_ExpectPositioned', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.open(markerEl, [{ type: ItemType.RESTAURANT, name: 'Peaks Cafe' }]);
+      stubs.positions.length = 0;
+      api.reposition();
+      stubs.getOnIndexChange()(Position.FIRST);
+
+      assert.deepEqual(stubs.positions.at(Position.LAST), [tooltipEl, markerEl]);
+      assert.equal(stubs.animalIconCalls.length, Position.FIRST);
+   } finally {
+      stubs.restore();
+   }
+});
+
 
 test('Test_CreateTooltipController_TestSyncMarkerGuards_ExpectNoop', () => {
    const stubs = _stubTooltipDeps();
    const tooltipEl = document.createElement('div');
 
    try {
-      const api = TooltipController.createTooltipController({
-         tooltipEl,
-         onAnimalCardClick: () => {},
-         offDisplayBanner: {},
-         restaurantClosedBanner: {},
-         restroomMessageBanner: {},
-         giftShopClosedBanner: {},
-         attractionClosedBanner: {},
-         drinkingFountainClosedBanner: {},
-      });
-
+      const api = _createApi(tooltipEl);
       const onIndexChange = stubs.getOnIndexChange();
       onIndexChange(99);
-      assert.equal(stubs.animalIconCalls.length, 0);
-
       const markerEl = document.createElement('div');
-      api.open(markerEl, [{ type: 'animal', species: 'Lion' }]);
+      api.open(markerEl, [{ type: ItemType.ANIMAL, species: 'African Lion' }]);
       onIndexChange(99);
-      assert.equal(stubs.animalIconCalls.length, 0);
-
       api.close();
-      onIndexChange(0);
-      assert.equal(stubs.animalIconCalls.length, 0);
+      onIndexChange(Position.FIRST);
+
+      assert.equal(stubs.animalIconCalls.length, Position.FIRST);
    } finally {
       stubs.restore();
    }

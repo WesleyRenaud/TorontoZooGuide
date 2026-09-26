@@ -9,6 +9,7 @@ from api.shared.enums.shared_enum_values import SharedEnumValues
 
 def Test_OpeningScheduleOverlapErrorType_TestSharedJson_ExpectSingleSourceOfTruth() -> None:
    shared_members = SharedEnumValues.load( 'openingScheduleOverlapErrorType.json' )
+
    actual = {
       name: member.value
       for name, member in OpeningScheduleOverlapErrorType.__members__.items()
@@ -18,6 +19,5 @@ def Test_OpeningScheduleOverlapErrorType_TestSharedJson_ExpectSingleSourceOfTrut
 
    raw = json.loads(
       ( Path( SharedEnumValues.shared_enums_directory() ) / 'openingScheduleOverlapErrorType.json' )
-      .read_text( encoding='utf-8' )
-   )
+      .read_text( encoding='utf-8' ) )
    assert dict( sorted( raw.items() ) ) == shared_members

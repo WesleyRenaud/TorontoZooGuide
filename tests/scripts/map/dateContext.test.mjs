@@ -2,48 +2,61 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { DateContext } from '../../../scripts/map/dateContext.js';
+import { SearchContext } from '../../../scripts/search/searchContext.js';
+
 
 test('Test_BuildMapDateContext_TestSummerAnchor_ExpectPresetYear', async () => {
-   assert.deepEqual(
-      await DateContext.buildMapDateContext('summer', '2028-07-04'),
-      {
-         preset: 'summer',
-         date: '',
-         month: 'JUL',
-         day: 20,
-         dayOfWeek: null,
-         temp: null,
-         year: 2028,
-      }
-   );
+   const preset = 'summer';
+   const year = 2028;
+   const dateStr = `${year}-07-04`;
+
+   const context = await DateContext.buildMapDateContext(preset, dateStr);
+
+   assert.deepEqual(context, {
+      preset,
+      ...DateContext.PRESET_DATE_CONTEXTS[preset],
+      year,
+   });
 });
+
 
 test('Test_BuildMapDateContext_TestSummerAnchorAlt_ExpectYearFromIso', async () => {
-   const ctx = await DateContext.buildMapDateContext('summer', '2031-12-15');
+   const preset = 'summer';
+   const year = 2031;
+   const dateStr = `${year}-12-15`;
 
-   assert.equal(ctx.preset, 'summer');
-   assert.equal(ctx.month, 'JUL');
-   assert.equal(ctx.day, 20);
-   assert.equal(ctx.year, 2031);
+   const context = await DateContext.buildMapDateContext(preset, dateStr);
+
+   assert.equal(context.preset, preset);
+   assert.equal(context.month, DateContext.PRESET_DATE_CONTEXTS[preset].month);
+   assert.equal(context.day, DateContext.PRESET_DATE_CONTEXTS[preset].day);
+   assert.equal(context.year, year);
 });
 
+
 test('Test_BuildMapDateContext_TestCustomDate_ExpectSearchContext', async () => {
-   const { SearchContext } = await import('../../../scripts/search/searchContext.js');
+   const preset = 'custom';
+   const dateStr = '2027-03-15';
+   const month = 'MAR';
+   const day = 15;
+   const year = 2027;
    const originalBuild = SearchContext.buildDateSearchContext;
-   SearchContext.buildDateSearchContext = async (dateStr) => ({
-      date: dateStr,
-      month: 'MAR',
-      day: 15,
-      year: 2027,
+   SearchContext.buildDateSearchContext = async (nextDate) => ({
+      date: nextDate,
+      month,
+      day,
+      year,
    });
 
    try {
-      assert.deepEqual(await DateContext.buildMapDateContext('custom', '2027-03-15'), {
-         preset: 'custom',
-         date: '2027-03-15',
-         month: 'MAR',
-         day: 15,
-         year: 2027,
+      const context = await DateContext.buildMapDateContext(preset, dateStr);
+
+      assert.deepEqual(context, {
+         preset,
+         date: dateStr,
+         month,
+         day,
+         year,
       });
    } finally {
       SearchContext.buildDateSearchContext = originalBuild;

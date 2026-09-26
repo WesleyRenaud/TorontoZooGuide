@@ -48,7 +48,6 @@ def Test_SaveReplacingOverlaps_TestResolution_ExpectSaverDelegation(
       OpeningScheduleConflictSaver,
       'save_replacing_overlaps',
       save_replacing_overlaps )
-
    resolution = OpeningScheduleConflictResolution(
       fetch_conflicts=lambda _conn, _schedule: [],
       delete_conflict=lambda _conn, _conflict: None,
@@ -56,7 +55,9 @@ def Test_SaveReplacingOverlaps_TestResolution_ExpectSaverDelegation(
       update_dates=lambda *_args: None,
       insert_copy=lambda *_args: None )
 
-   assert resolution.save_replacing_overlaps( STUB_CONNECTION, schedule ) is True
+   saved = resolution.save_replacing_overlaps( STUB_CONNECTION, schedule )
+
+   assert saved is True
    assert calls == [ 'save_replacing_overlaps' ]
 
 
@@ -81,7 +82,6 @@ def Test_TrimConflict_TestResolution_ExpectTrimmerDelegation(
       calls.append( ( item, schedule_item ) )
 
    monkeypatch.setattr( OpeningScheduleConflictTrimmer, 'trim', trim )
-
    resolution = OpeningScheduleConflictResolution(
       fetch_conflicts=lambda _conn, _schedule: [],
       delete_conflict=lambda _conn, _conflict: None,

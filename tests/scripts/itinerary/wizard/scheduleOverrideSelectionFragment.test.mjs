@@ -12,27 +12,35 @@ installDomTestHooks({
    },
 });
 
-test('Test_ScheduleOverrideSelectionConfirmation_TestCopy_ExpectDefined', () => {
-   assert.equal(
-      Strings.itinerary.confirmation.scheduleOverrideSelectionTitle,
-      'Adjust Activity Times?'
-   );
-   assert.match(
-      Strings.itinerary.confirmation.scheduleOverrideSelectionMessage,
-      /overlap in time/
-   );
-   assert.match(
-      Strings.itinerary.confirmation.scheduleOverrideSelectionMessage,
-      /Wild Encounters taking priority/
-   );
+
+test('Test_ScheduleOverrideSelectionConfirmation_TestTitle_ExpectDefined', () => {
+   const title = Strings.itinerary.confirmation.scheduleOverrideSelectionTitle;
+
+   assert.equal(title, 'Adjust Activity Times?');
 });
+
+
+test('Test_ScheduleOverrideSelectionConfirmation_TestOverlapCopy_ExpectDefined', () => {
+   const message = Strings.itinerary.confirmation.scheduleOverrideSelectionMessage;
+
+   assert.match(message, /overlap in time/);
+});
+
+
+test('Test_ScheduleOverrideSelectionConfirmation_TestPriorityCopy_ExpectDefined', () => {
+   const message = Strings.itinerary.confirmation.scheduleOverrideSelectionMessage;
+
+   assert.match(message, /Wild Encounters taking priority/);
+});
+
 
 test('Test_ShowScheduleOverrideSelectionConfirmation_TestOverride_ExpectConfirmPopup', () => {
    const confirmCalls = [];
+   const confirmed = 'confirmed';
 
    ScheduleOverrideSelectionFragment.showScheduleOverrideSelectionConfirmation({
       onConfirm: () => {
-         confirmCalls.push('confirmed');
+         confirmCalls.push(confirmed);
       },
    });
 
@@ -49,5 +57,5 @@ test('Test_ShowScheduleOverrideSelectionConfirmation_TestOverride_ExpectConfirmP
 
    confirmButton?.click();
 
-   assert.deepEqual(confirmCalls, ['confirmed']);
+   assert.deepEqual(confirmCalls, [confirmed]);
 });

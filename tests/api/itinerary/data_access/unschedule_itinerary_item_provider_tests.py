@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
+from api.shared.date_values import DateValues
 from api.shared.enums import ItineraryEventType, Position
 from api.shared.enums.transportation_name import TransportationName
 
@@ -76,9 +77,60 @@ CREATE TABLE TransportationAnimal (
 );
 """
 
+GUARDIANS_SCHEMA = """
+CREATE TABLE ItineraryGuardiansTalk (
+   TALK_NAME TEXT NOT NULL PRIMARY KEY,
+   START_TIME TEXT,
+   END_TIME TEXT,
+   IS_DELETED INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE ItineraryWildEncounter (
+   WILD_ENCOUNTER TEXT NOT NULL,
+   START_TIME TEXT NOT NULL,
+   END_TIME TEXT,
+   IS_DELETED INTEGER NOT NULL DEFAULT 0,
+   PRIMARY KEY ( WILD_ENCOUNTER, START_TIME )
+);
+"""
+
 CAROUSEL = 'Conservation Carousel'
 MAIN = 'Main Zoomobile Station'
 CANADA = 'Canadian Domain Zoomobile Station'
+LION_SPECIES = 'African Lion'
+LION_EXHIBIT = 'Africa Savanna'
+LION_TALK = 'African Lion'
+RHINO_ENCOUNTER = 'White Rhinoceros'
+LION_START_TIME = '10:00'
+LION_DURATION_MINUTES = 8
+LION_END_TIME = DateValues.add_minutes_to_time(
+   LION_START_TIME,
+   LION_DURATION_MINUTES )
+CAROUSEL_START_TIME = '11:00'
+CAROUSEL_DURATION_MINUTES = 20
+CAROUSEL_END_TIME = DateValues.add_minutes_to_time(
+   CAROUSEL_START_TIME,
+   CAROUSEL_DURATION_MINUTES )
+LUNCH_START_TIME = '12:00'
+LUNCH_DURATION_MINUTES = 40
+LUNCH_END_TIME = DateValues.add_minutes_to_time(
+   LUNCH_START_TIME,
+   LUNCH_DURATION_MINUTES )
+ZOOMOBILE_START_TIME = '10:00 AM'
+ZOOMOBILE_DURATION_MINUTES = 75
+ZOOMOBILE_END_TIME = DateValues.add_minutes_to_time(
+   ZOOMOBILE_START_TIME,
+   ZOOMOBILE_DURATION_MINUTES )
+LEG_DURATION_MINUTES = 20
+TALK_START_TIME = '10:00 AM'
+TALK_DURATION_MINUTES = 30
+TALK_END_TIME = DateValues.add_minutes_to_time(
+   TALK_START_TIME,
+   TALK_DURATION_MINUTES )
+ENCOUNTER_START_TIME = '1:00 PM'
+ENCOUNTER_DURATION_MINUTES = 45
+ENCOUNTER_END_TIME = DateValues.add_minutes_to_time(
+   ENCOUNTER_START_TIME,
+   ENCOUNTER_DURATION_MINUTES )
 
 
 @pytest.fixture
@@ -97,7 +149,7 @@ def unschedule_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, NULL, ?, ?, 1 );
       """,
-      ( 'African Lion', 'Africa Savanna', '10:00', '10:08' ) )
+      ( LION_SPECIES, LION_EXHIBIT, LION_START_TIME, LION_END_TIME ) )
    conn.execute(
       """   INSERT INTO ItineraryAttraction (
                ATTRACTION,
@@ -106,7 +158,7 @@ def unschedule_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ? );
       """,
-      ( CAROUSEL, '11:00', '11:20' ) )
+      ( CAROUSEL, CAROUSEL_START_TIME, CAROUSEL_END_TIME ) )
    conn.execute(
       """   INSERT INTO ItineraryEvent (
                EVENT_TYPE,
@@ -115,7 +167,7 @@ def unschedule_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ? );
       """,
-      ( ItineraryEventType.LUNCH.value, '12:00', '12:40' ) )
+      ( ItineraryEventType.LUNCH.value, LUNCH_START_TIME, LUNCH_END_TIME ) )
    conn.commit()
 
    yield conn
@@ -141,7 +193,12 @@ def zoomobile_unschedule_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, NULL, 3, 1, ?, ?, ?, 1 );
       """,
-      ( TransportationName.ZOOMOBILE, '10:00 AM', '11:15 AM', 'summer' ) )
+      (
+         TransportationName.ZOOMOBILE,
+         ZOOMOBILE_START_TIME,
+         ZOOMOBILE_END_TIME,
+         'summer',
+      ) )
    conn.execute(
       """   INSERT INTO ItineraryTransportationLeg (
                TRANSPORTATION,
@@ -153,7 +210,15 @@ def zoomobile_unschedule_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 1, ?, ?, ?, ? );
       """,
-      ( TransportationName.ZOOMOBILE, MAIN, CANADA, '10:00 AM', '10:20 AM' ) )
+      (
+         TransportationName.ZOOMOBILE,
+         MAIN,
+         CANADA,
+         ZOOMOBILE_START_TIME,
+         DateValues.add_minutes_to_time(
+            ZOOMOBILE_START_TIME,
+            LEG_DURATION_MINUTES ),
+      ) )
    conn.execute(
       """   INSERT INTO ItineraryTransportationRouteMarker (
                TRANSPORTATION,
@@ -162,31 +227,20 @@ def zoomobile_unschedule_conn() -> sqlite3.Connection:
                MARKER_ORDER,
                MARKER_ID
             )
-            VALUES ( ?, 1, 0, 0, ? );
+            VALUES ( ?, 1, ?, ?, ? );
       """,
-      ( TransportationName.ZOOMOBILE, 'm-a' ) )
+      (
+         TransportationName.ZOOMOBILE,
+         Position.FIRST,
+         Position.FIRST,
+         'm-a',
+      ) )
    conn.commit()
 
    yield conn
 
    conn.close()
 
-GUARDIANS_SCHEMA = """
-CREATE TABLE ItineraryGuardiansTalk (
-   TALK_NAME TEXT NOT NULL PRIMARY KEY,
-   START_TIME TEXT,
-   END_TIME TEXT,
-   IS_DELETED INTEGER NOT NULL DEFAULT 0
-);
-CREATE TABLE ItineraryWildEncounter (
-   WILD_ENCOUNTER TEXT NOT NULL,
-   START_TIME TEXT NOT NULL,
-   END_TIME TEXT,
-   IS_DELETED INTEGER NOT NULL DEFAULT 0,
-   PRIMARY KEY ( WILD_ENCOUNTER, START_TIME )
-);
-"""
-LION_TALK = 'African Lion'
 
 @pytest.fixture
 def guardians_unschedule_conn() -> sqlite3.Connection:
@@ -194,10 +248,10 @@ def guardians_unschedule_conn() -> sqlite3.Connection:
    conn.executescript( UNSCHEDULE_SCHEMA + GUARDIANS_SCHEMA )
    conn.execute(
       'INSERT INTO ItineraryGuardiansTalk ( TALK_NAME, START_TIME, END_TIME ) VALUES ( ?, ?, ? );',
-      ( LION_TALK, '10:00 AM', '10:30 AM' ) )
+      ( LION_TALK, TALK_START_TIME, TALK_END_TIME ) )
    conn.execute(
       'INSERT INTO ItineraryWildEncounter ( WILD_ENCOUNTER, START_TIME, END_TIME ) VALUES ( ?, ?, ? );',
-      ( 'White Rhinoceros', '1:00 PM', '1:45 PM' ) )
+      ( RHINO_ENCOUNTER, ENCOUNTER_START_TIME, ENCOUNTER_END_TIME ) )
    conn.commit()
    yield conn
    conn.close()
@@ -205,21 +259,23 @@ def guardians_unschedule_conn() -> sqlite3.Connection:
 
 def Test_ClearItineraryAnimalSchedule_TestScheduledAnimal_ExpectClearedTimes(
       unschedule_conn: sqlite3.Connection ) -> None:
+   species = LION_SPECIES
+   exhibit = LION_EXHIBIT
    cur = unschedule_conn.cursor()
+
    UnscheduleItineraryItemProvider.clear_itinerary_animal_schedule(
       cur,
-      species='African Lion',
-      exhibit='Africa Savanna' )
+      species=species,
+      exhibit=exhibit )
    unschedule_conn.commit()
    cur.close()
-
    row = unschedule_conn.execute(
       """   SELECT START_TIME, END_TIME, COVERED_BY_TALK
             FROM ItineraryAnimal
             WHERE SPECIES = ?
               AND EXHIBIT = ?;
       """,
-      ( 'African Lion', 'Africa Savanna' ),
+      ( species, exhibit ),
    ).fetchone()
 
    assert row is not None
@@ -230,19 +286,20 @@ def Test_ClearItineraryAnimalSchedule_TestScheduledAnimal_ExpectClearedTimes(
 
 def Test_ClearItineraryAttractionSchedule_TestScheduledAttraction_ExpectClearedTimes(
       unschedule_conn: sqlite3.Connection ) -> None:
+   name = CAROUSEL
    cur = unschedule_conn.cursor()
+
    UnscheduleItineraryItemProvider.clear_itinerary_attraction_schedule(
       cur,
-      name=CAROUSEL )
+      name=name )
    unschedule_conn.commit()
    cur.close()
-
    row = unschedule_conn.execute(
       """   SELECT START_TIME, END_TIME
             FROM ItineraryAttraction
             WHERE ATTRACTION = ?;
       """,
-      ( CAROUSEL, ),
+      ( name, ),
    ).fetchone()
 
    assert row is not None
@@ -252,19 +309,20 @@ def Test_ClearItineraryAttractionSchedule_TestScheduledAttraction_ExpectClearedT
 
 def Test_DeleteItineraryEventSchedule_TestScheduledEvent_ExpectRowDeleted(
       unschedule_conn: sqlite3.Connection ) -> None:
+   event_type = ItineraryEventType.LUNCH
    cur = unschedule_conn.cursor()
+
    UnscheduleItineraryItemProvider.delete_itinerary_event_schedule(
       cur,
-      event_type=ItineraryEventType.LUNCH )
+      event_type=event_type )
    unschedule_conn.commit()
    cur.close()
-
    row = unschedule_conn.execute(
       """   SELECT EVENT_TYPE
             FROM ItineraryEvent
             WHERE EVENT_TYPE = ?;
       """,
-      ( ItineraryEventType.LUNCH.value, ),
+      ( event_type.value, ),
    ).fetchone()
 
    assert row is None
@@ -272,21 +330,23 @@ def Test_DeleteItineraryEventSchedule_TestScheduledEvent_ExpectRowDeleted(
 
 def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClearedTimesLegsAndMarkers(
       zoomobile_unschedule_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
    cur = zoomobile_unschedule_conn.cursor()
+
    UnscheduleItineraryItemProvider.clear_itinerary_transportation_schedule(
       cur,
-      name=TransportationName.ZOOMOBILE,
-      added_as_attraction=True )
+      name=transportation,
+      added_as_attraction=added_as_attraction )
    zoomobile_unschedule_conn.commit()
    cur.close()
-
-   transportation = zoomobile_unschedule_conn.execute(
+   transportation_row = zoomobile_unschedule_conn.execute(
       """   SELECT START_TIME, END_TIME, ROUTE, BULK_TRANSIT_EVALUATED
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchone()
    leg_count = zoomobile_unschedule_conn.execute(
       """   SELECT COUNT(*) AS COUNT
@@ -294,7 +354,7 @@ def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClear
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchone()
    marker_count = zoomobile_unschedule_conn.execute(
       """   SELECT COUNT(*) AS COUNT
@@ -302,14 +362,14 @@ def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClear
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchone()
 
-   assert transportation is not None
-   assert transportation[ 'START_TIME' ] is None
-   assert transportation[ 'END_TIME' ] is None
-   assert transportation[ 'ROUTE' ] is None
-   assert transportation[ 'BULK_TRANSIT_EVALUATED' ] == 0
+   assert transportation_row is not None
+   assert transportation_row[ 'START_TIME' ] is None
+   assert transportation_row[ 'END_TIME' ] is None
+   assert transportation_row[ 'ROUTE' ] is None
+   assert transportation_row[ 'BULK_TRANSIT_EVALUATED' ] == 0
    assert leg_count is not None
    assert leg_count[ 'COUNT' ] == 0
    assert marker_count is not None
@@ -318,19 +378,29 @@ def Test_ClearItineraryTransportationSchedule_TestScheduledZoomobile_ExpectClear
 
 def Test_ClearItineraryGuardiansTalkSchedule_TestTalk_ExpectDeleted(
       guardians_unschedule_conn: sqlite3.Connection ) -> None:
+   talk_name = LION_TALK
    cur = guardians_unschedule_conn.cursor()
+
    UnscheduleItineraryItemProvider.clear_itinerary_guardians_talk_schedule(
-      cur, talk_name=LION_TALK )
+      cur,
+      talk_name=talk_name )
    guardians_unschedule_conn.commit()
-   assert guardians_unschedule_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryGuardiansTalk' ).fetchone()[ Position.FIRST ] == 0
+   remaining_count = guardians_unschedule_conn.execute(
+      'SELECT COUNT(*) FROM ItineraryGuardiansTalk' ).fetchone()[ Position.FIRST ]
+
+   assert remaining_count == 0
 
 
 def Test_ClearItineraryWildEncounterSchedule_TestEncounter_ExpectDeleted(
       guardians_unschedule_conn: sqlite3.Connection ) -> None:
+   wild_encounter = RHINO_ENCOUNTER
    cur = guardians_unschedule_conn.cursor()
+
    UnscheduleItineraryItemProvider.clear_itinerary_wild_encounter_schedule(
-      cur, wild_encounter='White Rhinoceros' )
+      cur,
+      wild_encounter=wild_encounter )
    guardians_unschedule_conn.commit()
-   assert guardians_unschedule_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryWildEncounter' ).fetchone()[ Position.FIRST ] == 0
+   remaining_count = guardians_unschedule_conn.execute(
+      'SELECT COUNT(*) FROM ItineraryWildEncounter' ).fetchone()[ Position.FIRST ]
+
+   assert remaining_count == 0

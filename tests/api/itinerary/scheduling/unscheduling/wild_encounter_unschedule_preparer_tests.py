@@ -12,6 +12,7 @@ from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.scheduling.unscheduling.wild_encounter_unschedule_preparer import WildEncounterUnschedulePreparer
 from api.models.animal_diff import AnimalDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 
 
@@ -34,8 +35,12 @@ def Test_TimeBlocks_TestTimedEncounter_ExpectTimeBlock() -> None:
       start_time='2:00 PM',
       end_time='2:45 PM' )
 
-   assert WildEncounterUnschedulePreparer.time_blocks( [ encounter ] ) == [
-      TimeBlock( start_seconds=14 * 3600, end_seconds=14 * 3600 + 45 * 60 ),
+   result = WildEncounterUnschedulePreparer.time_blocks( [ encounter ] )
+
+   assert result == [
+      TimeBlock(
+         start_seconds=DateValues.time_value_in_seconds( encounter.start_time ),
+         end_seconds=DateValues.time_value_in_seconds( encounter.end_time ) ),
    ]
 
 
@@ -46,43 +51,65 @@ def Test_NewlyAddedActive_TestNewTimedEncounter_ExpectEncounter() -> None:
       start_time='2:00 PM',
       end_time='2:45 PM' )
 
-   assert WildEncounterUnschedulePreparer.newly_added_active(
+   result = WildEncounterUnschedulePreparer.newly_added_active(
       _empty_saved(),
-      [ encounter ] ) == [ encounter ]
+      [ encounter ] )
+
+   assert result == [ encounter ]
 
 
-def Test_NewlyAddedActive_TestAlreadySavedOrDeletedOrUntimed_ExpectEmpty() -> None:
+def Test_NewlyAddedActive_TestAlreadySavedEncounter_ExpectEmpty() -> None:
+   encounter = WildEncounterDiff(
+      name=RAINFOREST,
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:45 PM' )
    saved = SavedItinerary(
       date_value='2026-06-15',
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
       wild_encounter_rows=[
          ItineraryWildEncounterRecord(
-            wild_encounter=RAINFOREST,
-            start_time='2:00 PM',
-            end_time='2:45 PM',
+            wild_encounter=encounter.name,
+            start_time=encounter.start_time,
+            end_time=encounter.end_time,
             is_deleted=False ),
       ],
    )
-   encounters = [
-      WildEncounterDiff(
-         name=RAINFOREST,
-         is_deleted=False,
-         start_time='2:00 PM',
-         end_time='2:45 PM' ),
-      WildEncounterDiff(
-         name=KANGAROO,
-         is_deleted=True,
-         start_time='1:00 PM',
-         end_time='1:45 PM' ),
-      WildEncounterDiff(
-         name='Guardians of White Rhinos',
-         is_deleted=False,
-         start_time=None,
-         end_time=None ),
-   ]
 
-   assert WildEncounterUnschedulePreparer.newly_added_active( saved, encounters ) == []
+   result = WildEncounterUnschedulePreparer.newly_added_active(
+      saved,
+      [ encounter ] )
+
+   assert result == []
+
+
+def Test_NewlyAddedActive_TestDeletedEncounter_ExpectEmpty() -> None:
+   encounter = WildEncounterDiff(
+      name=KANGAROO,
+      is_deleted=True,
+      start_time='1:00 PM',
+      end_time='1:45 PM' )
+
+   result = WildEncounterUnschedulePreparer.newly_added_active(
+      _empty_saved(),
+      [ encounter ] )
+
+   assert result == []
+
+
+def Test_NewlyAddedActive_TestUntimedEncounter_ExpectEmpty() -> None:
+   encounter = WildEncounterDiff(
+      name='Guardians of White Rhinos',
+      is_deleted=False,
+      start_time=None,
+      end_time=None )
+
+   result = WildEncounterUnschedulePreparer.newly_added_active(
+      _empty_saved(),
+      [ encounter ] )
+
+   assert result == []
 
 
 def Test_SavedItineraryHasOverlap_TestOverlappingAnimal_ExpectTrue() -> None:
@@ -106,9 +133,11 @@ def Test_SavedItineraryHasOverlap_TestOverlappingAnimal_ExpectTrue() -> None:
       start_time='2:00 PM',
       end_time='2:45 PM' )
 
-   assert WildEncounterUnschedulePreparer.saved_itinerary_has_overlap(
+   result = WildEncounterUnschedulePreparer.saved_itinerary_has_overlap(
       saved,
       [ encounter ] )
+
+   assert result
 
 
 def Test_PrepareValidatedForReschedule_TestClearsListedSchedules_ExpectValidatedItinerary() -> None:

@@ -38,9 +38,11 @@ def split_builder_conn() -> sqlite3.Connection:
 
 def Test_SplitNames_TestMixedAttractions_ExpectPlainAndTransportationLists(
       split_builder_conn: sqlite3.Connection ) -> None:
+   names = [ CAROUSEL, TransportationName.ZOOMOBILE, CAROUSEL ]
+
    plain_attractions, transportations = ItinerarySaveAttractionSplitBuilder.split_names(
       split_builder_conn,
-      [ CAROUSEL, TransportationName.ZOOMOBILE, CAROUSEL ] )
+      names )
 
    assert plain_attractions == [ CAROUSEL, CAROUSEL ]
    assert transportations == [ TransportationName.ZOOMOBILE ]
@@ -48,9 +50,11 @@ def Test_SplitNames_TestMixedAttractions_ExpectPlainAndTransportationLists(
 
 def Test_SplitNames_TestPlainAttractionsOnly_ExpectEmptyTransportations(
       split_builder_conn: sqlite3.Connection ) -> None:
+   names = [ CAROUSEL ]
+
    plain_attractions, transportations = ItinerarySaveAttractionSplitBuilder.split_names(
       split_builder_conn,
-      [ CAROUSEL ] )
+      names )
 
-   assert plain_attractions == [ CAROUSEL ]
+   assert plain_attractions == names
    assert transportations == []

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { ItineraryPanelSectionBuilder } from '../../../../../scripts/itinerary/panel/components/itineraryPanelSectionBuilder.js';
 import { ItineraryPanelSectionBuilderHelper } from '../../../../../scripts/itinerary/panel/components/itineraryPanelSectionBuilderHelper.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
@@ -28,18 +29,22 @@ installDomTestHooks({
    },
 });
 
+
 test('Test_MakeSection_TestHeaderToggleEditCleanup_ExpectSection', () => {
    const originalUpdate = ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight;
    const heights = [];
    const events = [];
+   const title = 'Animals';
+   const count = 2;
+   const stepKey = 'animals';
+   const observed = [];
+   const resizeCallbacks = [];
+
    ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight = (...args) => {
       heights.push(args);
    };
    const originalDispatch = globalThis.window.dispatchEvent;
    globalThis.window.dispatchEvent = (event) => { events.push(event); };
-
-   const observed = [];
-   const resizeCallbacks = [];
    globalThis.ResizeObserver = class ResizeObserver {
       constructor(callback) {
          this.callback = callback;
@@ -61,55 +66,53 @@ test('Test_MakeSection_TestHeaderToggleEditCleanup_ExpectSection', () => {
       const image = document.createElement('img');
       child.appendChild(image);
       const section = ItineraryPanelSectionBuilder.makeSection({
-         title: 'Animals',
-         count: 2,
+         title,
+         count,
          children: [child],
-         stepKey: 'animals',
+         stepKey,
          showEditButton: true,
       });
-
-      assert.equal(section.className, 'itin-panel-section');
-      assert.match(section.textContent, /Animals/);
-      assert.match(section.textContent, /\(2\)/);
-      assert.equal(observed.length, 1);
-
       image.listeners?.load?.();
       image.listeners?.error?.();
-      resizeCallbacks[0]?.();
-
+      resizeCallbacks.at(Position.FIRST)?.();
       const editBtn = section.querySelector('.itin-panel-section-edit-btn');
       editBtn.listeners.click({
          preventDefault() {},
          stopPropagation() {},
       });
-      assert.equal(events[0].type, 'tzg:editItinerarySection');
-      assert.deepEqual(events[0].detail, { step: 'animals' });
-
-      // Exercise collapse listeners (dom mock toggle ignores force-less calls).
       section.querySelector('.itin-panel-section-header').listeners.click();
       section.querySelector('.itin-panel-toggle').listeners.click({ stopPropagation() {} });
-
-      assert.equal(typeof section.__tzgCleanup, 'function');
       section.__tzgCleanup();
+
+      assert.equal(section.className, 'itin-panel-section');
+      assert.match(section.textContent, new RegExp(title));
+      assert.match(section.textContent, new RegExp(`\\(${count}\\)`));
+      assert.equal(observed.length, 1);
+      assert.equal(events.at(Position.FIRST).type, 'tzg:editItinerarySection');
+      assert.deepEqual(events.at(Position.FIRST).detail, { step: stepKey });
       assert.equal(section.__tzgCleanup, undefined);
       assert.ok(heights.length >= 1);
-      assert.equal(editBtn.getAttribute('aria-label'), Strings.itinerary.panel.editSectionAria('Animals'));
+      assert.equal(editBtn.getAttribute('aria-label'), Strings.itinerary.panel.editSectionAria(title));
    } finally {
       ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight = originalUpdate;
       globalThis.window.dispatchEvent = originalDispatch;
    }
 });
 
+
 test('Test_MakeSection_TestHideEditButton_ExpectNoEdit', () => {
    const originalUpdate = ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight;
+   const title = 'Date';
+
    ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight = () => {};
 
    try {
       const section = ItineraryPanelSectionBuilder.makeSection({
-         title: 'Date',
+         title,
          count: 0,
          showEditButton: false,
       });
+
       assert.equal(section.querySelector('.itin-panel-section-edit-btn'), null);
       section.__tzgCleanup?.();
    } finally {

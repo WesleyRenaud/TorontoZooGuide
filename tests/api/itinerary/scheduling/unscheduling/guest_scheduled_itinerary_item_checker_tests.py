@@ -10,11 +10,16 @@ from api.itinerary.scheduling.unscheduling.guest_scheduled_itinerary_item_checke
 from api.shared.enums import ItineraryEventType
 
 
+VISIT_DATE = '2026-06-15'
+ARRIVAL_TIME = '9:30 AM'
+DEPARTURE_TIME = '5:00 PM'
+
+
 def Test_HasItems_TestScheduledAnimal_ExpectTrue() -> None:
    saved = SavedItinerary(
-      date_value='2026-06-15',
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
+      date_value=VISIT_DATE,
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME,
       animal_rows=[
          ItineraryAnimalRecord(
             species='African Lion',
@@ -26,14 +31,16 @@ def Test_HasItems_TestScheduledAnimal_ExpectTrue() -> None:
       ],
    )
 
-   assert GuestScheduledItineraryItemChecker.has_items( saved )
+   has_items = GuestScheduledItineraryItemChecker.has_items( saved )
+
+   assert has_items
 
 
 def Test_HasItems_TestEventRowsOnly_ExpectTrue() -> None:
    saved = SavedItinerary(
-      date_value='2026-06-15',
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
+      date_value=VISIT_DATE,
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME,
       event_rows=[
          ItineraryEventRecord(
             event_type=ItineraryEventType.LUNCH,
@@ -42,14 +49,16 @@ def Test_HasItems_TestEventRowsOnly_ExpectTrue() -> None:
       ],
    )
 
-   assert GuestScheduledItineraryItemChecker.has_items( saved )
+   has_items = GuestScheduledItineraryItemChecker.has_items( saved )
+
+   assert has_items
 
 
 def Test_HasItems_TestUnscheduledOnly_ExpectFalse() -> None:
    saved = SavedItinerary(
-      date_value='2026-06-15',
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
+      date_value=VISIT_DATE,
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME,
       animal_rows=[
          ItineraryAnimalRecord(
             species='African Lion',
@@ -59,14 +68,16 @@ def Test_HasItems_TestUnscheduledOnly_ExpectFalse() -> None:
       ],
    )
 
-   assert not GuestScheduledItineraryItemChecker.has_items( saved )
+   has_items = GuestScheduledItineraryItemChecker.has_items( saved )
+
+   assert not has_items
 
 
 def Test_HasItems_TestScheduledAttraction_ExpectTrue() -> None:
    saved = SavedItinerary(
-      date_value='2026-06-15',
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
+      date_value=VISIT_DATE,
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME,
       attraction_rows=[
          ItineraryAttractionRecord(
             attraction='Conservation Carousel',
@@ -77,14 +88,16 @@ def Test_HasItems_TestScheduledAttraction_ExpectTrue() -> None:
       ],
    )
 
-   assert GuestScheduledItineraryItemChecker.has_items( saved )
+   has_items = GuestScheduledItineraryItemChecker.has_items( saved )
+
+   assert has_items
 
 
 def Test_HasItems_TestScheduledTransportation_ExpectTrue() -> None:
    saved = SavedItinerary(
-      date_value='2026-06-15',
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
+      date_value=VISIT_DATE,
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME,
       transportation_rows=[
          ItineraryTransportationRecord(
             transportation='Zoomobile',
@@ -96,14 +109,16 @@ def Test_HasItems_TestScheduledTransportation_ExpectTrue() -> None:
       ],
    )
 
-   assert GuestScheduledItineraryItemChecker.has_items( saved )
+   has_items = GuestScheduledItineraryItemChecker.has_items( saved )
+
+   assert has_items
 
 
 def Test_HasItems_TestGuardiansTalkOnly_ExpectFalse() -> None:
    saved = SavedItinerary(
-      date_value='2026-06-15',
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
+      date_value=VISIT_DATE,
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME,
       guardians_talk_rows=[
          ItineraryGuardiansTalkRecord(
             talk_name='African Lion',
@@ -113,4 +128,6 @@ def Test_HasItems_TestGuardiansTalkOnly_ExpectFalse() -> None:
       ],
    )
 
-   assert not GuestScheduledItineraryItemChecker.has_items( saved )
+   has_items = GuestScheduledItineraryItemChecker.has_items( saved )
+
+   assert not has_items

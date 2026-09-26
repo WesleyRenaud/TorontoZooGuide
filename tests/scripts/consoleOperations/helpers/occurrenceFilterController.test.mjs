@@ -2,14 +2,17 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { OccurrenceFilterController } from '../../../../scripts/consoleOperations/helpers/occurrenceFilterController.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateOccurrenceFilterController_TestSingleTime_ExpectAutoSelect', async () => {
+   const date = '2026-06-15';
+   const time = '10:00 AM';
    const dateEl = document.createElement('select');
    const timeEl = document.createElement('select');
-
    dateEl.appendChild(document.createElement('option'));
    timeEl.appendChild(document.createElement('option'));
 
@@ -23,23 +26,21 @@ test('Test_CreateOccurrenceFilterController_TestSingleTime_ExpectAutoSelect', as
       }),
       isSelectionReady: () => true,
       loadOccurrences: async () => ([
-         { date: '2026-06-15', time: '10:00 AM' },
+         { date, time },
       ]),
    });
-
    await controller.refresh();
-   dateEl.value = '2026-06-15';
+   dateEl.value = date;
    controller.refreshTimes();
 
-   assert.equal(timeEl.value, '10:00 AM');
+   assert.equal(timeEl.value, time);
 });
 
-test('Test_CreateOccurrenceFilterController_TestCustomPopulateNotReadyErrorAndEmptyDate_ExpectGuards', async () => {
+
+test('Test_CreateOccurrenceFilterController_TestNotReady_ExpectEmptyTimes', async () => {
    const dateEl = document.createElement('select');
    const timeEl = document.createElement('select');
    const populatedTimes = [];
-   let ready = false;
-
    dateEl.appendChild(document.createElement('option'));
    timeEl.appendChild(document.createElement('option'));
 
@@ -50,22 +51,64 @@ test('Test_CreateOccurrenceFilterController_TestCustomPopulateNotReadyErrorAndEm
          populatedTimes.push([...times]);
       },
       getSelectionValues: () => ({ talk: 'Lion' }),
-      isSelectionReady: () => ready,
+      isSelectionReady: () => false,
       loadOccurrences: async () => {
          throw new Error('load failed');
       },
    });
-
    await controller.refresh();
-   assert.deepEqual(populatedTimes.at(-1), []);
 
-   ready = true;
+   assert.deepEqual(populatedTimes.at(Position.LAST), []);
+});
+
+
+test('Test_CreateOccurrenceFilterController_TestLoadError_ExpectEmptyTimes', async () => {
+   const dateEl = document.createElement('select');
+   const timeEl = document.createElement('select');
+   const populatedTimes = [];
+   dateEl.appendChild(document.createElement('option'));
+   timeEl.appendChild(document.createElement('option'));
+
+   const controller = OccurrenceFilterController.createOccurrenceFilterController({
+      dateEl,
+      timeEl,
+      populateTimes: (times) => {
+         populatedTimes.push([...times]);
+      },
+      getSelectionValues: () => ({ talk: 'Lion' }),
+      isSelectionReady: () => true,
+      loadOccurrences: async () => {
+         throw new Error('load failed');
+      },
+   });
    await controller.refresh();
-   assert.deepEqual(populatedTimes.at(-1), []);
 
+   assert.deepEqual(populatedTimes.at(Position.LAST), []);
+});
+
+
+test('Test_CreateOccurrenceFilterController_TestEmptyDate_ExpectEmptyTimes', async () => {
+   const dateEl = document.createElement('select');
+   const timeEl = document.createElement('select');
+   const populatedTimes = [];
+   dateEl.appendChild(document.createElement('option'));
+   timeEl.appendChild(document.createElement('option'));
+
+   const controller = OccurrenceFilterController.createOccurrenceFilterController({
+      dateEl,
+      timeEl,
+      populateTimes: (times) => {
+         populatedTimes.push([...times]);
+      },
+      getSelectionValues: () => ({ talk: 'Lion' }),
+      isSelectionReady: () => true,
+      loadOccurrences: async () => [],
+   });
+   await controller.refresh();
    dateEl.value = '';
    const beforeEmptyDate = populatedTimes.length;
    controller.refreshTimes();
+
    assert.equal(populatedTimes.length, beforeEmptyDate + 1);
-   assert.deepEqual(populatedTimes.at(-1), []);
+   assert.deepEqual(populatedTimes.at(Position.LAST), []);
 });

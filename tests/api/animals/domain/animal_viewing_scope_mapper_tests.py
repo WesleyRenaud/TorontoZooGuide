@@ -5,10 +5,15 @@ from api.animals.domain.animal_viewing_scope_mapper import AnimalViewingScopeMap
 
 
 def Test_MapPayload_TestStrings_ExpectScopes() -> None:
-   assert AnimalViewingScopeMapper.map_payload(
-      [ 'Male Herd', '', '  Female Herd  ' ]
-   ) == [
-      AnimalViewingScope.from_enclosure_name( 'Male Herd' ),
-      AnimalViewingScope.from_enclosure_name( '' ),
-      AnimalViewingScope.from_enclosure_name( 'Female Herd' ),
+   male_herd = 'Male Herd'
+   unnamed = ''
+   female_herd = '  Female Herd  '
+   values = [ male_herd, unnamed, female_herd ]
+
+   scopes = AnimalViewingScopeMapper.map_payload( values )
+
+   assert scopes == [
+      AnimalViewingScope.from_enclosure_name( male_herd ),
+      AnimalViewingScope.from_enclosure_name( unnamed ),
+      AnimalViewingScope.from_enclosure_name( female_herd ),
    ]

@@ -54,28 +54,34 @@ def _preferred(
 def Test_EffectiveViewingLikelihood_TestSingleHabitatOutdoor_ExpectOutdoorLikelihood() -> None:
    outdoor = _animal( enclosure_type=OUTDOOR_ENCLOSURE_TYPE, likelihood=30 )
 
-   assert IndoorOutdoorViewingVisibilityBuilder.effective_viewing_likelihood(
+   result = IndoorOutdoorViewingVisibilityBuilder.effective_viewing_likelihood(
       outdoor,
       outdoor_likelihood=30,
-      single_habitat=True ) == 30
+      single_habitat=True )
+
+   assert result == 30
 
 
 def Test_EffectiveViewingLikelihood_TestSingleHabitatIndoor_ExpectComplementaryLikelihood() -> None:
    indoor = _animal( enclosure_type=INDOOR_ENCLOSURE_TYPE, likelihood=100 )
 
-   assert IndoorOutdoorViewingVisibilityBuilder.effective_viewing_likelihood(
+   result = IndoorOutdoorViewingVisibilityBuilder.effective_viewing_likelihood(
       indoor,
       outdoor_likelihood=30,
-      single_habitat=True ) == 70
+      single_habitat=True )
+
+   assert result == 70
 
 
 def Test_EffectiveViewingLikelihood_TestMultiHabitatIndoor_ExpectIndoorLikelihood() -> None:
    indoor = _animal( enclosure_type=INDOOR_ENCLOSURE_TYPE, likelihood=100 )
 
-   assert IndoorOutdoorViewingVisibilityBuilder.effective_viewing_likelihood(
+   result = IndoorOutdoorViewingVisibilityBuilder.effective_viewing_likelihood(
       indoor,
       outdoor_likelihood=30,
-      single_habitat=False ) == 100
+      single_habitat=False )
+
+   assert result == 100
 
 
 def Test_PreferredSingleHabitatViewingSpotBySpeciesExhibit_TestHigherIndoorLikelihood_ExpectIndoor() -> None:
@@ -147,15 +153,19 @@ def Test_Apply_TestExclusiveIndoorSpecies_ExpectIndoorOnly() -> None:
 def Test_SingleHabitatAlternateEnclosureViewingAlertMessage_TestOutdoorAnimal_ExpectIndoorAlternateMessage() -> None:
    outdoor = _animal( enclosure_type=OUTDOOR_ENCLOSURE_TYPE, likelihood=80 )
 
-   assert IndoorOutdoorViewingVisibilityBuilder.single_habitat_alternate_enclosure_viewing_alert_message(
-      outdoor ) == OUTDOOR_ALERT_MESSAGE
+   result = IndoorOutdoorViewingVisibilityBuilder.single_habitat_alternate_enclosure_viewing_alert_message(
+      outdoor )
+
+   assert result == OUTDOOR_ALERT_MESSAGE
 
 
 def Test_SingleHabitatAlternateEnclosureViewingAlertMessage_TestIndoorAnimal_ExpectOutdoorAlternateMessage() -> None:
    indoor = _animal( enclosure_type=INDOOR_ENCLOSURE_TYPE, likelihood=70 )
 
-   assert IndoorOutdoorViewingVisibilityBuilder.single_habitat_alternate_enclosure_viewing_alert_message(
-      indoor ) == INDOOR_ALERT_MESSAGE
+   result = IndoorOutdoorViewingVisibilityBuilder.single_habitat_alternate_enclosure_viewing_alert_message(
+      indoor )
+
+   assert result == INDOOR_ALERT_MESSAGE
 
 
 def Test_ApplySingleHabitatAlternateEnclosureViewingAlert_TestFullLikelihood_ExpectNoAlert() -> None:
@@ -248,8 +258,10 @@ def Test_Apply_TestClosedExhibit_ExpectZeroLikelihoodRetained() -> None:
 def Test_SingleHabitatAlternateEnclosureViewingAlertMessage_TestMissingEnclosureType_ExpectNone() -> None:
    animal = _animal( enclosure_type='', likelihood=80 )
 
-   assert IndoorOutdoorViewingVisibilityBuilder.single_habitat_alternate_enclosure_viewing_alert_message(
-      animal ) is None
+   result = IndoorOutdoorViewingVisibilityBuilder.single_habitat_alternate_enclosure_viewing_alert_message(
+      animal )
+
+   assert result is None
 
 
 def Test_ApplySingleHabitatAlternateEnclosureViewingAlert_TestMissingEnclosureType_ExpectNoAlert() -> None:

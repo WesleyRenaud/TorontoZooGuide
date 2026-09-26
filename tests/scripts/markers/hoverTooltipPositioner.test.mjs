@@ -3,31 +3,84 @@ import test from 'node:test';
 
 import { HoverTooltipPositioner } from '../../../scripts/markers/hoverTooltipPositioner.js';
 
-test('Test_IsTooltipVisible_TestDisplay_ExpectBoolean', () => {
-   assert.equal(HoverTooltipPositioner.isTooltipVisible({ style: { display: 'block' } }), true);
-   assert.equal(HoverTooltipPositioner.isTooltipVisible({ style: { display: 'none' } }), false);
-   assert.equal(HoverTooltipPositioner.isTooltipVisible(null), false);
+
+test('Test_IsTooltipVisible_TestBlock_ExpectTrue', () => {
+   const hoverTooltipEl = { style: { display: 'block' } };
+
+   const visible = HoverTooltipPositioner.isTooltipVisible(hoverTooltipEl);
+
+   assert.equal(visible, true);
 });
 
-test('Test_ClampToViewport_TestEdges_ExpectClamped', () => {
-   assert.equal(HoverTooltipPositioner.clampToViewport(-10, 50, 200), 14);
-   assert.equal(HoverTooltipPositioner.clampToViewport(190, 50, 200), 136);
+
+test('Test_IsTooltipVisible_TestNone_ExpectFalse', () => {
+   const hoverTooltipEl = { style: { display: 'none' } };
+
+   const visible = HoverTooltipPositioner.isTooltipVisible(hoverTooltipEl);
+
+   assert.equal(visible, false);
 });
+
+
+test('Test_IsTooltipVisible_TestNull_ExpectFalse', () => {
+   const hoverTooltipEl = null;
+
+   const visible = HoverTooltipPositioner.isTooltipVisible(hoverTooltipEl);
+
+   assert.equal(visible, false);
+});
+
+
+test('Test_ClampToViewport_TestBelowPadding_ExpectPadding', () => {
+   const value = -10;
+   const size = 50;
+   const viewportSize = 200;
+
+   const clamped = HoverTooltipPositioner.clampToViewport(value, size, viewportSize);
+
+   assert.equal(clamped, HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.viewportPadding);
+});
+
+
+test('Test_ClampToViewport_TestPastEdge_ExpectInnerEdge', () => {
+   const value = 190;
+   const size = 50;
+   const viewportSize = 200;
+
+   const clamped = HoverTooltipPositioner.clampToViewport(value, size, viewportSize);
+
+   assert.equal(
+      clamped,
+      viewportSize - size - HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.viewportPadding
+   );
+});
+
 
 test('Test_CalculateAndApplyTooltipPosition_TestEvent_ExpectStyle', () => {
-   globalThis.window = { ...(globalThis.window || {}), innerWidth: 400, innerHeight: 300 };
-   const position = HoverTooltipPositioner.calculateTooltipPosition(
-      { clientX: 100, clientY: 120 },
-      { width: 80, height: 40 }
-   );
+   const width = 400;
+   const height = 300;
+   globalThis.window = { ...(globalThis.window || {}), innerWidth: width, innerHeight: height };
+   const event = { clientX: 100, clientY: 120 };
+   const tooltipRect = { width: 80, height: 40 };
    const el = { style: {} };
+
+   const position = HoverTooltipPositioner.calculateTooltipPosition(event, tooltipRect);
    HoverTooltipPositioner.applyTooltipPosition(el, position);
+
    assert.match(el.style.left, /px$/);
    assert.match(el.style.top, /px$/);
+});
 
-   const flipped = HoverTooltipPositioner.calculateTooltipPosition(
-      { clientX: 100, clientY: 10 },
-      { width: 80, height: 40 }
-   );
-   assert.ok(flipped.y > 10);
+
+test('Test_CalculateTooltipPosition_TestNearTop_ExpectFlippedBelow', () => {
+   const width = 400;
+   const height = 300;
+   globalThis.window = { ...(globalThis.window || {}), innerWidth: width, innerHeight: height };
+   const clientY = 10;
+   const event = { clientX: 100, clientY };
+   const tooltipRect = { width: 80, height: 40 };
+
+   const position = HoverTooltipPositioner.calculateTooltipPosition(event, tooltipRect);
+
+   assert.ok(position.y > clientY);
 });

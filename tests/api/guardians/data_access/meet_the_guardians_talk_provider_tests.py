@@ -60,8 +60,10 @@ def _insert_talk(
 
 def Test_FetchGuardiansTalkLocations_TestEmpty_ExpectEmptyList(
       meet_the_guardians_talk_provider_conn: sqlite3.Connection ) -> None:
-   assert MeetTheGuardiansTalkProvider.fetch_guardians_talk_locations(
-      meet_the_guardians_talk_provider_conn ) == []
+   guardians_talk_locations = MeetTheGuardiansTalkProvider.fetch_guardians_talk_locations(
+      meet_the_guardians_talk_provider_conn )
+
+   assert guardians_talk_locations == []
 
 
 def Test_FetchGuardiansTalkLocations_TestDistinctOrderedAndNullFiltered_ExpectLocations(
@@ -105,8 +107,10 @@ def Test_FetchGuardiansTalkLocations_TestDistinctOrderedAndNullFiltered_ExpectLo
 
 def Test_FetchGuardiansTalkNames_TestEmpty_ExpectEmptyList(
       meet_the_guardians_talk_provider_conn: sqlite3.Connection ) -> None:
-   assert MeetTheGuardiansTalkProvider.fetch_guardians_talk_names(
-      meet_the_guardians_talk_provider_conn ) == []
+   guardians_talk_names = MeetTheGuardiansTalkProvider.fetch_guardians_talk_names(
+      meet_the_guardians_talk_provider_conn )
+
+   assert guardians_talk_names == []
 
 
 def Test_FetchGuardiansTalkNames_TestPopulated_ExpectNames(
@@ -176,15 +180,19 @@ def Test_FetchGuardiansTalkNamesAtLocation_TestUnknownLocation_ExpectEmptyList(
       maximum_duration=20 )
    meet_the_guardians_talk_provider_conn.commit()
 
-   assert MeetTheGuardiansTalkProvider.fetch_guardians_talk_names_at_location(
+   guardians_talk_names_at_location = MeetTheGuardiansTalkProvider.fetch_guardians_talk_names_at_location(
       meet_the_guardians_talk_provider_conn,
-      'Missing Location' ) == []
+      'Missing Location' )
+
+   assert guardians_talk_names_at_location == []
 
 
 def Test_FetchMeetTheGuardiansTalkRecords_TestEmpty_ExpectEmptyList(
       meet_the_guardians_talk_provider_conn: sqlite3.Connection ) -> None:
-   assert MeetTheGuardiansTalkProvider.fetch_meet_the_guardians_talk_records(
-      meet_the_guardians_talk_provider_conn ) == []
+   meet_the_guardians_talk_records = MeetTheGuardiansTalkProvider.fetch_meet_the_guardians_talk_records(
+      meet_the_guardians_talk_provider_conn )
+
+   assert meet_the_guardians_talk_records == []
 
 
 def Test_FetchMeetTheGuardiansTalkRecords_TestPopulated_ExpectMappedFields(

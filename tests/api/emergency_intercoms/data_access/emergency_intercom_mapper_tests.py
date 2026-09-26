@@ -10,11 +10,12 @@ Y_COORD = 67.5
 
 
 def Test_MapRecord_TestRow_ExpectCoordinatesMapped() -> None:
-   emergency_intercom = EmergencyIntercomMapper.map_record(
-      make_row( {
-         'X_COORD': X_COORD,
-         'Y_COORD': Y_COORD,
-      } ) )
+   row = make_row( {
+      'X_COORD': X_COORD,
+      'Y_COORD': Y_COORD,
+   } )
+
+   emergency_intercom = EmergencyIntercomMapper.map_record( row )
 
    assert emergency_intercom.x_coord == X_COORD
    assert emergency_intercom.y_coord == Y_COORD

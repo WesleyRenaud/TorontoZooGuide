@@ -629,12 +629,14 @@ def Test_WalkNodeIdForStop_TestTransportation_ExpectResolvedNode(
       'resolve',
       lambda transportation_name: 'n-zoomobile' )
 
-   assert LoopScheduleUnitBuilder.walk_node_id_for_stop(
+   result = LoopScheduleUnitBuilder.walk_node_id_for_stop(
       ItineraryTransportationRecord(
          transportation='Zoomobile',
          added_as_attraction=True,
          old_likelihood=None,
-         new_likelihood=100 ) ) == 'n-zoomobile'
+         new_likelihood=100 ) )
+
+   assert result == 'n-zoomobile'
 
 def Test_WalkNodeIdForStop_TestKnownAttraction_ExpectWalkNodeId(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -650,14 +652,18 @@ def Test_WalkNodeIdForStop_TestKnownAttraction_ExpectWalkNodeId(
          walk_node_id='n-carousel',
          snap_distance_px=0.0 ) )
 
-   assert LoopScheduleUnitBuilder.walk_node_id_for_stop(
+   result = LoopScheduleUnitBuilder.walk_node_id_for_stop(
       ItineraryAttractionRecord(
          attraction='Conservation Carousel',
          old_likelihood=None,
-         new_likelihood=100 ) ) == 'n-carousel'
+         new_likelihood=100 ) )
+
+   assert result == 'n-carousel'
 
 def Test_WalkEndpointNodeIdsForStops_TestEmptyStops_ExpectNoneEndpoints() -> None:
-   assert LoopScheduleUnitBuilder._walk_endpoint_node_ids_for_stops( [] ) == ( None, None )
+   result = LoopScheduleUnitBuilder._walk_endpoint_node_ids_for_stops( [] )
+
+   assert result == ( None, None )
 
 def Test_StopsInMasterRouteLoopOrder_TestNoMappedStops_ExpectOriginalOrder(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -676,11 +682,13 @@ def Test_WalkNodeIdForStop_TestUnknownAttraction_ExpectNone(
       'for_map_location',
       lambda kind, name: None )
 
-   assert LoopScheduleUnitBuilder.walk_node_id_for_stop(
+   result = LoopScheduleUnitBuilder.walk_node_id_for_stop(
       ItineraryAttractionRecord(
          attraction='Not A Real Attraction',
          old_likelihood=None,
-         new_likelihood=100 ) ) is None
+         new_likelihood=100 ) )
+
+   assert result is None
 
 def Test_Key_TestViewingSpot_ExpectNameKey() -> None:
    reference = ViewingSpotReference(
@@ -688,7 +696,9 @@ def Test_Key_TestViewingSpot_ExpectNameKey() -> None:
       exhibit='Africa Savanna',
       name='Outdoor' )
 
-   assert reference.key() == ViewingSpotNameKey(
+   result = reference.key()
+
+   assert result == ViewingSpotNameKey(
       'African Lion',
       'Africa Savanna',
       'Outdoor' )

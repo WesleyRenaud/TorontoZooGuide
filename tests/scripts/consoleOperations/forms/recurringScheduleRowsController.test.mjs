@@ -8,6 +8,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 function _createRowController({ rowIndex, allowRemove, initialRow = {} }) {
    const removeButtonEl = allowRemove ? document.createElement('button') : null;
    const dayInputEls = {};
@@ -100,6 +101,7 @@ test('Test_CreateRecurringScheduleRowsController_TestAddGetValidateReset_ExpectR
       RecurringScheduleBuilder.validateRecurringScheduleRows = originalValidate;
    }
 });
+
 
 test('Test_CreateRecurringScheduleRowsController_TestRemoveRow_ExpectKeepsFirst', () => {
    const originalCreate = RecurringScheduleRowsBuilder.createScheduleRow;

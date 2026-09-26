@@ -80,6 +80,7 @@ def stub_transportation_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubTr
 
 def Test_GetTransportations_TestHttpRequest_ExpectMapsVisitDateAndReturnsTransportations(
       stub_transportation_coordinator: StubTransportationCoordinator ) -> None:
+   transportation = _sample_transportation()
    handler = make_handler(
       '/get-transportations',
       {
@@ -94,7 +95,7 @@ def Test_GetTransportations_TestHttpRequest_ExpectMapsVisitDateAndReturnsTranspo
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'transportations' ] == [ _sample_transportation().to_dict() ]
+   assert result[ 'transportations' ] == [ transportation.to_dict() ]
 
 
 def Test_GetTransportationRoutes_TestDirectCall_ExpectWritesRoutesFromCoordinator(
@@ -111,6 +112,7 @@ def Test_GetTransportationRoutes_TestDirectCall_ExpectWritesRoutesFromCoordinato
 
 def Test_GetTransportationRoute_TestHttpRequest_ExpectMapsRouteRequestAndReturnsRoute(
       stub_transportation_coordinator: StubTransportationCoordinator ) -> None:
+   route = _sample_route()
    handler = make_handler(
       '/get-transportation-route',
       {
@@ -127,7 +129,7 @@ def Test_GetTransportationRoute_TestHttpRequest_ExpectMapsRouteRequestAndReturns
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result == _sample_route().to_dict()
+   assert result == route.to_dict()
    assert stub_transportation_coordinator.calls[ Position.LAST ] == (
       'get_transportation_route',
       {

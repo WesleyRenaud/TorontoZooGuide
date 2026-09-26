@@ -46,10 +46,12 @@ def Test_GetZooHours_TestPresentRecord_ExpectBuilt(
       'build',
       lambda record: ZOO_HOURS if record is zoo_hours_record else None )
 
-   assert ZooHoursCoordinator.get_zoo_hours(
+   zoo_hours = ZooHoursCoordinator.get_zoo_hours(
       day=VISIT_DAY,
       month=VISIT_MONTH,
-      year=VISIT_YEAR ) is ZOO_HOURS
+      year=VISIT_YEAR )
+
+   assert zoo_hours is ZOO_HOURS
 
 def Test_GetZooHours_TestMissingRecord_ExpectNone(
       stub_request_connection: None,
@@ -63,7 +65,9 @@ def Test_GetZooHours_TestMissingRecord_ExpectNone(
       'fetch_zoo_hours_record',
       lambda _conn, operating_date: None )
 
-   assert ZooHoursCoordinator.get_zoo_hours(
+   zoo_hours = ZooHoursCoordinator.get_zoo_hours(
       day=VISIT_DAY,
       month=VISIT_MONTH,
-      year=VISIT_YEAR ) is None
+      year=VISIT_YEAR )
+
+   assert zoo_hours is None

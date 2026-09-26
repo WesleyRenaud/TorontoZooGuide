@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { RegionStorageStore } from '../../../../../scripts/itinerary/selectors/regionSelector/regionStorageStore.js';
+import { AnimalIdentity } from '../../../../../scripts/itinerary/animalIdentity.js';
+import { ScheduleItemKeySeparator } from '../../../../../scripts/itinerary/scheduleItemKeySeparator.js';
 import { StorageKeys } from '../../../../../scripts/itinerary/storageKeys.js';
 import { createLocalStorageMock } from '../../../helpers/localStorageMock.mjs';
 
@@ -13,54 +15,105 @@ afterEach(() => {
    delete globalThis.localStorage;
 });
 
+
 test('Test_LoadSelectedNames_TestWhitespaceAndNonStrings_ExpectTrimmedNames', () => {
+   const savanna = 'Africa Savanna';
+   const eurasia = 'Eurasia Wilds';
+   const count = 42;
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify([' Africa Savanna ', '', 42, 'Eurasia Wilds'])
+      JSON.stringify([` ${savanna} `, '', count, eurasia])
    );
 
-   assert.deepEqual(RegionStorageStore.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY), [
-      'Africa Savanna',
-      '42',
-      'Eurasia Wilds',
-   ]);
+   const names = RegionStorageStore.loadSelectedNames(StorageKeys.SELECTED_EXHIBITS_KEY);
+
+   assert.deepEqual(names, [savanna, String(count), eurasia]);
 });
 
+
 test('Test_SaveSelectedNames_TestWhitespaceEntries_ExpectNormalizedPersist', () => {
+   const savanna = 'Africa Savanna';
+   const eurasia = 'Eurasia Wilds';
+
    RegionStorageStore.saveSelectedNames(
       StorageKeys.SELECTED_EXHIBITS_KEY,
-      new Set([' Africa Savanna ', '', 'Eurasia Wilds'])
+      new Set([` ${savanna} `, '', eurasia])
    );
 
    assert.deepEqual(
       JSON.parse(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY)),
-      ['Africa Savanna', 'Eurasia Wilds']
+      [savanna, eurasia]
    );
 });
 
-test('Test_RemovedAnimalKeys_TestAddRestoreClear_ExpectRoundTrip', () => {
-   RegionStorageStore.addRemovedAnimalKey('African Penguin||Africa Savanna');
-   RegionStorageStore.addRemovedAnimalKey('  Masai Giraffe||Africa Savanna  ');
 
-   const removedKeys = RegionStorageStore.loadRemovedAnimalKeys();
-   assert.equal(removedKeys.size, 2);
-   assert.equal(removedKeys.has('african penguin||africa savanna'), true);
+test('Test_AddRemovedAnimalKey_TestKeys_ExpectNormalized', () => {
+   const penguin = { species: 'African Penguin', exhibit: 'Africa Savanna' };
+   const giraffe = { species: 'Masai Giraffe', exhibit: 'Africa Savanna' };
 
-   RegionStorageStore.restoreRemovedAnimalKey('African Penguin||Africa Savanna');
-   assert.deepEqual(
-      [...RegionStorageStore.loadRemovedAnimalKeys()],
-      ['masai giraffe||africa savanna']
+   RegionStorageStore.addRemovedAnimalKey(
+      [penguin.species, penguin.exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
+   RegionStorageStore.addRemovedAnimalKey(
+      `  ${[giraffe.species, giraffe.exhibit].join(ScheduleItemKeySeparator.VALUE)}  `
    );
 
-   RegionStorageStore.restoreRemovedAnimalKey('unknown||nowhere');
+   const removedKeys = RegionStorageStore.loadRemovedAnimalKeys();
+
+   assert.equal(removedKeys.size, 2);
+   assert.equal(removedKeys.has(AnimalIdentity.buildAnimalIdentityStorageKey(penguin)), true);
+});
+
+
+test('Test_RestoreRemovedAnimalKey_TestKnownKey_ExpectRemoved', () => {
+   const penguin = { species: 'African Penguin', exhibit: 'Africa Savanna' };
+   const giraffe = { species: 'Masai Giraffe', exhibit: 'Africa Savanna' };
+   RegionStorageStore.addRemovedAnimalKey(
+      [penguin.species, penguin.exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
+   RegionStorageStore.addRemovedAnimalKey(
+      `  ${[giraffe.species, giraffe.exhibit].join(ScheduleItemKeySeparator.VALUE)}  `
+   );
+
+   RegionStorageStore.restoreRemovedAnimalKey(
+      [penguin.species, penguin.exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
+
    assert.deepEqual(
       [...RegionStorageStore.loadRemovedAnimalKeys()],
-      ['masai giraffe||africa savanna']
+      [AnimalIdentity.buildAnimalIdentityStorageKey(giraffe)]
+   );
+});
+
+
+test('Test_RestoreRemovedAnimalKey_TestUnknownKey_ExpectUnchanged', () => {
+   const giraffe = { species: 'Masai Giraffe', exhibit: 'Africa Savanna' };
+   RegionStorageStore.addRemovedAnimalKey(
+      [giraffe.species, giraffe.exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
+
+   RegionStorageStore.restoreRemovedAnimalKey(
+      ['unknown', 'nowhere'].join(ScheduleItemKeySeparator.VALUE)
+   );
+
+   assert.deepEqual(
+      [...RegionStorageStore.loadRemovedAnimalKeys()],
+      [AnimalIdentity.buildAnimalIdentityStorageKey(giraffe)]
+   );
+});
+
+
+test('Test_ClearRemovedAnimalKeys_TestPresent_ExpectEmpty', () => {
+   const giraffe = { species: 'Masai Giraffe', exhibit: 'Africa Savanna' };
+   RegionStorageStore.addRemovedAnimalKey(
+      [giraffe.species, giraffe.exhibit].join(ScheduleItemKeySeparator.VALUE)
    );
 
    RegionStorageStore.clearRemovedAnimalKeys();
+
    assert.equal(RegionStorageStore.loadRemovedAnimalKeys().size, 0);
 });
+
 
 test('Test_AddRemovedAnimalKey_TestBlankKeys_ExpectIgnored', () => {
    RegionStorageStore.addRemovedAnimalKey('');
@@ -70,21 +123,35 @@ test('Test_AddRemovedAnimalKey_TestBlankKeys_ExpectIgnored', () => {
    assert.equal(localStorage.getItem(StorageKeys.REMOVED_ANIMALS_KEY), null);
 });
 
-test('Test_ClearRemovedAnimalKeysForExhibit_TestMixedExhibits_ExpectOnlyTargetDropped', () => {
-   RegionStorageStore.addRemovedAnimalKey('African Penguin||Africa Savanna');
-   RegionStorageStore.addRemovedAnimalKey('Masai Giraffe||Africa Savanna');
-   RegionStorageStore.addRemovedAnimalKey('Amur Tiger||Eurasia Wilds');
 
-   RegionStorageStore.clearRemovedAnimalKeysForExhibit('Africa Savanna');
+test('Test_ClearRemovedAnimalKeysForExhibit_TestMixedExhibits_ExpectOnlyTargetDropped', () => {
+   const penguin = { species: 'African Penguin', exhibit: 'Africa Savanna' };
+   const giraffe = { species: 'Masai Giraffe', exhibit: 'Africa Savanna' };
+   const tiger = { species: 'Amur Tiger', exhibit: 'Eurasia Wilds' };
+   RegionStorageStore.addRemovedAnimalKey(
+      [penguin.species, penguin.exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
+   RegionStorageStore.addRemovedAnimalKey(
+      [giraffe.species, giraffe.exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
+   RegionStorageStore.addRemovedAnimalKey(
+      [tiger.species, tiger.exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
+
+   RegionStorageStore.clearRemovedAnimalKeysForExhibit(penguin.exhibit);
 
    assert.deepEqual(
       [...RegionStorageStore.loadRemovedAnimalKeys()].sort(),
-      ['amur tiger||eurasia wilds']
+      [AnimalIdentity.buildAnimalIdentityStorageKey(tiger)]
    );
 });
 
+
 test('Test_ClearRemovedAnimalKeysForExhibit_TestBlankExhibit_ExpectNoOp', () => {
-   RegionStorageStore.addRemovedAnimalKey('African Penguin||Africa Savanna');
+   const penguin = { species: 'African Penguin', exhibit: 'Africa Savanna' };
+   RegionStorageStore.addRemovedAnimalKey(
+      [penguin.species, penguin.exhibit].join(ScheduleItemKeySeparator.VALUE)
+   );
 
    RegionStorageStore.clearRemovedAnimalKeysForExhibit('');
    RegionStorageStore.clearRemovedAnimalKeysForExhibit('   ');

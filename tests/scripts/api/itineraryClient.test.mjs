@@ -3,7 +3,12 @@ import { afterEach, test } from 'node:test';
 
 import { ItineraryClient } from '../../../scripts/api/itineraryClient.js';
 import { mockJsonResponse } from '../helpers/fetchMock.mjs';
+import { ItineraryAdjustmentType } from '../../../scripts/shared/enums/itineraryAdjustmentType.js';
+import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
+import { ItineraryPathModel } from '../../../scripts/itinerary/itineraryPathModel.js';
 import { ItinerarySaveIssueItemType } from '../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+import { ScheduleItemKind } from '../../../scripts/shared/enums/scheduleItemKind.js';
 
 function _normalizedItineraryConfig(overrides = {}) {
    return {
@@ -30,20 +35,12 @@ function _normalizedItineraryResultFields(status, reasons = []) {
    };
 }
 
-function _normalizedItineraryPath(overrides = {}) {
-   return {
-      stops: overrides.stops ?? [],
-      legs: overrides.legs ?? [],
-      points: overrides.points ?? [],
-   };
-}
-
 function _mockItineraryPathResponse(overrides = {}) {
    return {
       itinerary_path: {
          stops: overrides.stops ?? [
             {
-               schedule_item_kind: 'animals',
+               schedule_item_kind: ScheduleItemKind.ANIMAL.itemType,
                item_key: 'African Lion||Africa Savanna',
                walk_node_id: 'v-0255',
                start_time: '10:00 AM',
@@ -55,7 +52,7 @@ function _mockItineraryPathResponse(overrides = {}) {
                from_item_key: 'arrival',
                to_item_key: 'African Lion||Africa Savanna',
                from_schedule_item_kind: 'visit_boundary',
-               to_schedule_item_kind: 'animals',
+               to_schedule_item_kind: ScheduleItemKind.ANIMAL.itemType,
                node_ids: ['n-0001', 'n-0002'],
             },
          ],
@@ -95,33 +92,49 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
-test('Test_GetItineraryDateRequest_TestEmptyDate_ExpectNull', async () => {
-   globalThis.fetch = async () => mockJsonResponse({ date: null });
 
-   assert.deepEqual(await ItineraryClient.getItineraryDateRequest(), {
-      date: null,
-   });
+test('Test_GetItineraryDateRequest_TestEmptyDate_ExpectNull', async () => {
+   const date = null;
+   globalThis.fetch = async () => mockJsonResponse({ date });
+
+   const result = await ItineraryClient.getItineraryDateRequest();
+
+   assert.deepEqual(result, { date });
 });
 
+
 test('Test_GetItineraryDateRequest_TestStoredDate_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/get-itinerary-date');
+   const date = '2026-06-15';
+   const url = '/get-itinerary-date';
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
       assert.equal(options.method, 'POST');
       assert.deepEqual(JSON.parse(options.body), {});
 
       return mockJsonResponse({
-         date: '  2026-06-15  ',
+         date: `  ${date}  `,
       });
    };
 
-   assert.deepEqual(await ItineraryClient.getItineraryDateRequest(), {
-      date: '2026-06-15',
-   });
+   const result = await ItineraryClient.getItineraryDateRequest();
+
+   assert.deepEqual(result, { date });
 });
 
+
 test('Test_GetItineraryRequest_TestSnakeCaseKeys_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/get-itinerary');
+   const date = '2026-06-15';
+   const arrivalTime = '09:30';
+   const departureTime = '17:00';
+   const animal = { species: 'African Lion' };
+   const attraction = { name: 'Conservation Carousel' };
+   const guardiansTalk = { name: 'Amur Tiger' };
+   const wildEncounter = { name: 'African Rainforest' };
+   const lunchEvent = { event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' };
+   const url = '/get-itinerary';
+   const pathResponse = _mockItineraryPathResponse();
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
       assert.equal(options.method, 'POST');
       assert.deepEqual(JSON.parse(options.body), {});
 
@@ -129,234 +142,261 @@ test('Test_GetItineraryRequest_TestSnakeCaseKeys_ExpectNormalized', async () => 
          success: true,
          error: '',
          itinerary: {
-            date: '  2026-06-15  ',
-            arrival_time: ' 09:30 ',
-            departure_time: ' 17:00 ',
-            animals: [{ species: 'African Lion' }],
-            attractions: [{ name: 'Conservation Carousel' }],
-            guardians_talks: [{ name: 'Amur Tiger' }],
-            wild_encounters: [{ name: 'African Rainforest' }],
-            events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
+            date: `  ${date}  `,
+            arrival_time: ` ${arrivalTime} `,
+            departure_time: ` ${departureTime} `,
+            animals: [animal],
+            attractions: [attraction],
+            guardians_talks: [guardiansTalk],
+            wild_encounters: [wildEncounter],
+            events: [lunchEvent],
          },
          ..._mockItineraryConfigResponse(),
-         ..._mockItineraryPathResponse(),
+         ...pathResponse,
       });
    };
 
-   assert.deepEqual(await ItineraryClient.getItineraryRequest(), {
-      ..._normalizedItineraryResultFields('success'),
+   const result = await ItineraryClient.getItineraryRequest();
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(ItineraryErrorType.SUCCESS),
       itinerary: {
-         date: '2026-06-15',
-         arrivalTime: '09:30',
-         departureTime: '17:00',
+         date,
+         arrivalTime,
+         departureTime,
          selectedExhibits: [],
-         animals: [{ species: 'African Lion' }],
-         attractions: [{ name: 'Conservation Carousel' }],
-         guardiansTalks: [{ name: 'Amur Tiger' }],
-         wildEncounters: [{ name: 'African Rainforest' }],
+         animals: [animal],
+         attractions: [attraction],
+         guardiansTalks: [guardiansTalk],
+         wildEncounters: [wildEncounter],
          transportations: [],
          transportationStations: [],
-         events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
+         events: [lunchEvent],
       },
-      itineraryPath: _normalizedItineraryPath({
-         stops: [
-            {
-               scheduleItemKind: 'animals',
-               itemKey: 'African Lion||Africa Savanna',
-               walkNodeId: 'v-0255',
-               startTime: '10:00 AM',
-               endTime: '10:30 AM',
-            },
-         ],
-         legs: [
-            {
-               fromItemKey: 'arrival',
-               toItemKey: 'African Lion||Africa Savanna',
-               fromScheduleItemKind: 'visit_boundary',
-               toScheduleItemKind: 'animals',
-               nodeIds: ['n-0001', 'n-0002'],
-            },
-         ],
-         points: [
-            {
-               nodeId: 'n-0001',
-               x: 1.5,
-               y: 2.5,
-               xPx: 150,
-               yPx: 250,
-            },
-         ],
-      }),
+      itineraryPath: ItineraryPathModel.normalizeItineraryPath(pathResponse.itinerary_path),
       itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
+
 test('Test_SetItineraryRequest_TestMissingPath_ExpectEmptyArrays', async () => {
+   const date = '2026-06-15';
    globalThis.fetch = async () => mockJsonResponse({
-      status: 'success',
+      status: ItineraryErrorType.SUCCESS,
       itinerary: {
-         date: '2026-06-15',
+         date,
          animals: [],
       },
       ..._mockItineraryConfigResponse(),
    });
 
-   assert.deepEqual(
-      (await ItineraryClient.setItineraryRequest({ date: '2026-06-15' })).itineraryPath,
-      _normalizedItineraryPath()
-   );
+   const result = await ItineraryClient.setItineraryRequest({ date });
+
+   assert.deepEqual(result.itineraryPath, ItineraryPathModel.EMPTY_ITINERARY_PATH);
 });
 
+
 test('Test_SetItineraryRequest_TestFailurePayload_ExpectItineraryKept', async () => {
+   const date = '2026-06-15';
+   const status = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+   const attraction = { name: 'Conservation Carousel' };
    globalThis.fetch = async () => mockJsonResponse({
       success: false,
-      status: 'arrivalDepartureTooClose',
+      status,
       itinerary: {
-         date: '2026-06-15',
+         date,
          animals: 'African Lion',
-         attractions: [{ name: 'Conservation Carousel' }],
+         attractions: [attraction],
       },
       ..._mockItineraryConfigResponse(),
    });
 
-   assert.deepEqual(await ItineraryClient.setItineraryRequest({ date: '2026-06-15' }), {
-      ..._normalizedItineraryResultFields('arrivalDepartureTooClose'),
+   const result = await ItineraryClient.setItineraryRequest({ date });
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(status),
       itinerary: {
-         date: '2026-06-15',
+         date,
          arrivalTime: '',
          departureTime: '',
          selectedExhibits: [],
          animals: [],
-         attractions: [{ name: 'Conservation Carousel' }],
+         attractions: [attraction],
          guardiansTalks: [],
          wildEncounters: [],
          transportations: [],
          transportationStations: [],
          events: [],
       },
-      itineraryPath: _normalizedItineraryPath(),
+      itineraryPath: ItineraryPathModel.EMPTY_ITINERARY_PATH,
       itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
-test('Test_SetItineraryArrivalTimeRequest_TestFocusedEndpoints_ExpectNormalized', async () => {
-   const calls = [];
 
-   globalThis.fetch = async (url, options) => {
-      calls.push([url, JSON.parse(options.body)]);
+test('Test_SetItineraryArrivalTimeRequest_TestTrimmedTime_ExpectNormalized', async () => {
+   const arrivalTime = '09:45';
+   const status = ItineraryErrorType.SUCCESS;
+   const url = '/set-itinerary-arrival-time';
+   const calls = [];
+   globalThis.fetch = async (requestedUrl, options) => {
+      calls.push([requestedUrl, JSON.parse(options.body)]);
       return mockJsonResponse({
-         status: 'success',
+         status,
          ..._mockItineraryConfigResponse(),
       });
    };
 
-   assert.deepEqual(await ItineraryClient.setItineraryArrivalTimeRequest(' 09:45 '), {
-      ..._normalizedItineraryResultFields('success'),
-      itineraryConfig: _normalizedItineraryConfig(),
-   });
-   assert.deepEqual(await ItineraryClient.setItineraryDepartureTimeRequest(''), {
-      ..._normalizedItineraryResultFields('success'),
+   const result = await ItineraryClient.setItineraryArrivalTimeRequest(` ${arrivalTime} `);
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(status),
       itineraryConfig: _normalizedItineraryConfig(),
    });
    assert.deepEqual(calls, [
       [
-         '/set-itinerary-arrival-time',
+         url,
          {
-            arrivalTime: '09:45',
+            arrivalTime,
             confirmingShortVisit: false,
             confirmingEarlyAdmission: false,
          },
       ],
+   ]);
+});
+
+
+test('Test_SetItineraryDepartureTimeRequest_TestEmptyTime_ExpectNormalized', async () => {
+   const departureTime = '';
+   const status = ItineraryErrorType.SUCCESS;
+   const url = '/set-itinerary-departure-time';
+   const calls = [];
+   globalThis.fetch = async (requestedUrl, options) => {
+      calls.push([requestedUrl, JSON.parse(options.body)]);
+      return mockJsonResponse({
+         status,
+         ..._mockItineraryConfigResponse(),
+      });
+   };
+
+   const result = await ItineraryClient.setItineraryDepartureTimeRequest(departureTime);
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(status),
+      itineraryConfig: _normalizedItineraryConfig(),
+   });
+   assert.deepEqual(calls, [
       [
-         '/set-itinerary-departure-time',
+         url,
          {
-            departureTime: '',
+            departureTime,
             confirmingShortVisit: false,
          },
       ],
    ]);
 });
 
+
 test('Test_SuppressItineraryWarningRequest_TestWarningType_ExpectPosted', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/suppress-itinerary-warning');
+   const warningType = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+   const status = ItineraryErrorType.SUCCESS;
+   const url = '/suppress-itinerary-warning';
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
       assert.deepEqual(JSON.parse(options.body), {
-         warningType: 'arrivalDepartureTooClose',
+         warningType,
       });
 
       return mockJsonResponse({
-         status: 'success',
+         status,
          suppressed_warnings: [],
          ..._mockItineraryConfigResponse({
-            suppressedErrorTypes: ['arrivalDepartureTooClose'],
+            suppressedErrorTypes: [warningType],
          }),
       });
    };
 
-   assert.deepEqual(
-      await ItineraryClient.suppressItineraryWarningRequest('arrivalDepartureTooClose'),
-      {
-         ..._normalizedItineraryResultFields('success'),
-         itineraryConfig: _normalizedItineraryConfig({
-            suppressedErrorTypes: ['arrivalDepartureTooClose'],
-         }),
-      }
-   );
+   const result = await ItineraryClient.suppressItineraryWarningRequest(warningType);
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(status),
+      itineraryConfig: _normalizedItineraryConfig({
+         suppressedErrorTypes: [warningType],
+      }),
+   });
 });
 
+
 test('Test_UnsuppressItineraryWarningRequest_TestWarningType_ExpectPosted', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/unsuppress-itinerary-warning');
+   const warningType = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+   const status = ItineraryErrorType.SUCCESS;
+   const url = '/unsuppress-itinerary-warning';
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
       assert.deepEqual(JSON.parse(options.body), {
-         warningType: 'arrivalDepartureTooClose',
+         warningType,
       });
 
       return mockJsonResponse({
-         status: 'success',
+         status,
          suppressed_warnings: [],
          ..._mockItineraryConfigResponse(),
       });
    };
 
-   assert.deepEqual(
-      await ItineraryClient.unsuppressItineraryWarningRequest('arrivalDepartureTooClose'),
-      {
-         ..._normalizedItineraryResultFields('success'),
-         itineraryConfig: _normalizedItineraryConfig(),
-      }
-   );
-});
+   const result = await ItineraryClient.unsuppressItineraryWarningRequest(warningType);
 
-test('Test_SetItineraryArrivalTimeRequest_TestSuppressedWarnings_ExpectNormalized', async () => {
-   globalThis.fetch = async () => mockJsonResponse({
-      status: 'success',
-      suppressed_warnings: ['arrivalDepartureTooClose'],
-      ..._mockItineraryConfigResponse(),
-   });
-
-   assert.deepEqual(await ItineraryClient.setItineraryArrivalTimeRequest('09:45'), {
-      ..._normalizedItineraryResultFields('success'),
-      suppressedWarnings: ['arrivalDepartureTooClose'],
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(status),
       itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
-test('Test_SetItineraryRequest_TestAdjustments_ExpectNormalized', async () => {
+
+test('Test_SetItineraryArrivalTimeRequest_TestSuppressedWarnings_ExpectNormalized', async () => {
+   const arrivalTime = '09:45';
+   const status = ItineraryErrorType.SUCCESS;
+   const warningType = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
    globalThis.fetch = async () => mockJsonResponse({
-      status: 'success',
+      status,
+      suppressed_warnings: [warningType],
+      ..._mockItineraryConfigResponse(),
+   });
+
+   const result = await ItineraryClient.setItineraryArrivalTimeRequest(arrivalTime);
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(status),
+      suppressedWarnings: [warningType],
+      itineraryConfig: _normalizedItineraryConfig(),
+   });
+});
+
+
+test('Test_SetItineraryRequest_TestAdjustments_ExpectNormalized', async () => {
+   const date = '2026-06-22';
+   const previousArrivalTime = '09:00';
+   const arrivalTime = '09:30';
+   const departureTime = '17:00';
+   const status = ItineraryErrorType.SUCCESS;
+   const adjustmentType = ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED;
+   const field = 'arrivalTime';
+   const reason = 'arrivalOutsideAdmissionHours';
+   globalThis.fetch = async () => mockJsonResponse({
+      status,
       reasons: [],
       adjustments: [
          {
-            type: 'arrivalTimeAdjusted',
-            field: 'arrivalTime',
-            previous_value: '09:00',
-            value: '09:30',
-            reason: 'arrivalOutsideAdmissionHours',
+            type: adjustmentType,
+            field,
+            previous_value: previousArrivalTime,
+            value: arrivalTime,
+            reason,
          },
       ],
       itinerary: {
-         date: '2026-06-22',
-         arrival_time: '09:30',
+         date,
+         arrival_time: arrivalTime,
          animals: [],
          attractions: [],
          guardians_talks: [],
@@ -366,9 +406,9 @@ test('Test_SetItineraryRequest_TestAdjustments_ExpectNormalized', async () => {
    });
 
    const result = await ItineraryClient.setItineraryRequest({
-      date: '2026-06-22',
-      arrivalTime: '09:00',
-      departureTime: '17:00',
+      date,
+      arrivalTime: previousArrivalTime,
+      departureTime,
       animals: [],
       attractions: [],
       guardiansTalks: [],
@@ -377,34 +417,69 @@ test('Test_SetItineraryRequest_TestAdjustments_ExpectNormalized', async () => {
 
    assert.deepEqual(result.adjustments, [
       {
-         type: 'arrivalTimeAdjusted',
-         field: 'arrivalTime',
-         previousValue: '09:00',
-         value: '09:30',
-         reason: 'arrivalOutsideAdmissionHours',
+         type: adjustmentType,
+         field,
+         previousValue: previousArrivalTime,
+         value: arrivalTime,
+         reason,
       },
    ]);
-   assert.equal(result.itinerary.arrivalTime, '09:30');
+   assert.equal(result.itinerary.arrivalTime, arrivalTime);
 });
 
+
 test('Test_SetItineraryArrivalTimeRequest_TestShortVisit_ExpectWarning', async () => {
+   const arrivalTime = '11:35';
+   const status = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+   const confirmingShortVisit = true;
    globalThis.fetch = async () => mockJsonResponse({
       success: false,
-      status: 'arrivalDepartureTooClose',
+      status,
       ..._mockItineraryConfigResponse(),
    });
 
-   assert.deepEqual(await ItineraryClient.setItineraryArrivalTimeRequest('11:35', {
-      confirmingShortVisit: true,
-   }), {
-      ..._normalizedItineraryResultFields('arrivalDepartureTooClose'),
+   const result = await ItineraryClient.setItineraryArrivalTimeRequest(arrivalTime, {
+      confirmingShortVisit,
+   });
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(status),
       itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
+
 test('Test_AcceptItineraryRequest_TestResponse_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/accept-itinerary');
+   const date = '2026-06-15';
+   const status = ItineraryErrorType.SUCCESS;
+   const code = ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT;
+   const rainforest = 'African Rainforest';
+   const rainforestStart = '14:00';
+   const rainforestEnd = '14:45';
+   const rainforestSpot = 'Wild Encounter - Africa Meeting Spot';
+   const rainforestLink = 'https://www.torontozoo.com/tickets/weafricarainforest';
+   const kangaroo = 'Kangaroo';
+   const kangarooStart = '14:30';
+   const kangarooEnd = '15:15';
+   const kangarooSpot = 'Wild Encounter - Eurasia Meeting Spot';
+   const kangarooLink = 'https://www.torontozoo.com/tickets/wekangaroo';
+   const url = '/accept-itinerary';
+   const rainforestItem = {
+      name: rainforest,
+      start_time: rainforestStart,
+      end_time: rainforestEnd,
+      meeting_spot: rainforestSpot,
+      link: rainforestLink,
+   };
+   const kangarooItem = {
+      name: kangaroo,
+      start_time: kangarooStart,
+      end_time: kangarooEnd,
+      meeting_spot: kangarooSpot,
+      link: kangarooLink,
+   };
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
       assert.equal(options.method, 'POST');
       assert.deepEqual(JSON.parse(options.body), {
          animalsToKeep: [],
@@ -415,27 +490,12 @@ test('Test_AcceptItineraryRequest_TestResponse_ExpectNormalized', async () => {
          success: true,
          reasons: [
             {
-               code: 'wildEncounterTimeConflict',
-               items: [
-                  {
-                     name: 'African Rainforest',
-                     start_time: '14:00',
-                     end_time: '14:45',
-                     meeting_spot: 'Wild Encounter - Africa Meeting Spot',
-                     link: 'https://www.torontozoo.com/tickets/weafricarainforest',
-                  },
-                  {
-                     name: 'Kangaroo',
-                     start_time: '14:30',
-                     end_time: '15:15',
-                     meeting_spot: 'Wild Encounter - Eurasia Meeting Spot',
-                     link: 'https://www.torontozoo.com/tickets/wekangaroo',
-                  },
-               ],
+               code,
+               items: [rainforestItem, kangarooItem],
             },
          ],
          itinerary: {
-            date: '2026-06-15',
+            date,
             animals: [],
             attractions: [],
             guardians_talks: [],
@@ -445,31 +505,18 @@ test('Test_AcceptItineraryRequest_TestResponse_ExpectNormalized', async () => {
       });
    };
 
-   assert.deepEqual(await ItineraryClient.acceptItineraryRequest(), {
-      ..._normalizedItineraryResultFields('success', [
+   const result = await ItineraryClient.acceptItineraryRequest();
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(status, [
          {
-            code: 'wildEncounterTimeConflict',
-            type: 'wildEncounterTimeConflict',
-            items: [
-               {
-                  name: 'African Rainforest',
-                  start_time: '14:00',
-                  end_time: '14:45',
-                  meeting_spot: 'Wild Encounter - Africa Meeting Spot',
-                  link: 'https://www.torontozoo.com/tickets/weafricarainforest',
-               },
-               {
-                  name: 'Kangaroo',
-                  start_time: '14:30',
-                  end_time: '15:15',
-                  meeting_spot: 'Wild Encounter - Eurasia Meeting Spot',
-                  link: 'https://www.torontozoo.com/tickets/wekangaroo',
-               },
-            ],
+            code,
+            type: code,
+            items: [rainforestItem, kangarooItem],
          },
       ]),
       itinerary: {
-         date: '2026-06-15',
+         date,
          arrivalTime: '',
          departureTime: '',
          selectedExhibits: [],
@@ -481,44 +528,52 @@ test('Test_AcceptItineraryRequest_TestResponse_ExpectNormalized', async () => {
          transportationStations: [],
          events: [],
       },
-      itineraryPath: _normalizedItineraryPath(),
+      itineraryPath: ItineraryPathModel.EMPTY_ITINERARY_PATH,
       itineraryConfig: _normalizedItineraryConfig(),
    });
 });
 
+
 test('Test_GetItineraryRequest_TestConfig_ExpectNormalized', async () => {
+   const date = '2026-06-15';
+   const emptyTime = '';
+   const visibilityThreshold = 25;
+   const minLikelihood = 40;
+   const eventTypes = [
+      'arrival',
+      'breakfast',
+      'break',
+      'departure',
+      'dinner',
+      'lunch',
+      'shopping',
+      'snack',
+   ];
    globalThis.fetch = async () => mockJsonResponse({
       itinerary: {
-         date: '2026-06-15',
-         arrivalTime: '',
-         departureTime: '',
+         date,
+         arrivalTime: emptyTime,
+         departureTime: emptyTime,
          animals: [],
          attractions: [],
          guardians_talks: [],
          wild_encounters: [],
       },
       ..._mockItineraryConfigResponse({
-         animalVisibilityChangeThreshold: 25,
-         itineraryAnimalMinLikelihood: 40,
-         eventTypes: [
-            'arrival',
-            'breakfast',
-            'break',
-            'departure',
-            'dinner',
-            'lunch',
-            'shopping',
-            'snack',
-         ],
+         animalVisibilityChangeThreshold: visibilityThreshold,
+         itineraryAnimalMinLikelihood: minLikelihood,
+         eventTypes,
       }),
    });
 
-   assert.deepEqual(await ItineraryClient.getItineraryRequest(), {
-      ..._normalizedItineraryResultFields('success'),
+   const result = await ItineraryClient.getItineraryRequest();
+
+   assert.deepEqual(result, {
+      ..._normalizedItineraryResultFields(ItineraryErrorType.SUCCESS),
       itinerary: {
-         date: '2026-06-15',
-         arrivalTime: '',
-         departureTime: '',
+         date,
+         arrivalTime: emptyTime,
+         departureTime: emptyTime,
          selectedExhibits: [],
          animals: [],
          attractions: [],
@@ -528,108 +583,110 @@ test('Test_GetItineraryRequest_TestConfig_ExpectNormalized', async () => {
          transportationStations: [],
          events: [],
       },
-      itineraryPath: _normalizedItineraryPath(),
+      itineraryPath: ItineraryPathModel.EMPTY_ITINERARY_PATH,
       itineraryConfig: _normalizedItineraryConfig({
-         animalVisibilityChangeThreshold: 25,
-         itineraryAnimalMinLikelihood: 40,
-         eventTypes: [
-            'arrival',
-            'breakfast',
-            'break',
-            'departure',
-            'dinner',
-            'lunch',
-            'shopping',
-            'snack',
-         ],
+         animalVisibilityChangeThreshold: visibilityThreshold,
+         itineraryAnimalMinLikelihood: minLikelihood,
+         eventTypes,
       }),
    });
 });
 
+
 test('Test_GetZooHoursRequest_TestResponse_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/get-zoo-hours');
+   const day = 20;
+   const month = 'JUN';
+   const year = 2026;
+   const date = '2026-06-20';
+   const earlyAdmissionTime = '09:00';
+   const openTime = '09:30';
+   const lastAdmissionTime = '18:00';
+   const closeTime = '19:00';
+   const url = '/get-zoo-hours';
+   const request = { day, month, year };
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
       assert.equal(options.method, 'POST');
-      assert.deepEqual(JSON.parse(options.body), {
-         day: 20,
-         month: 'JUN',
-         year: 2026,
-      });
+      assert.deepEqual(JSON.parse(options.body), request);
 
       return mockJsonResponse({
          hours: {
-            date: '  2026-06-20  ',
-            earlyAdmissionTime: ' 09:00 ',
-            openTime: ' 09:30 ',
-            lastAdmissionTime: ' 18:00',
-            closeTime: '19:00 ',
+            date: `  ${date}  `,
+            earlyAdmissionTime: ` ${earlyAdmissionTime} `,
+            openTime: ` ${openTime} `,
+            lastAdmissionTime: ` ${lastAdmissionTime}`,
+            closeTime: `${closeTime} `,
          },
       });
    };
 
-   assert.deepEqual(
-      await ItineraryClient.getZooHoursRequest({ day: 20, month: 'JUN', year: 2026 }),
-      {
+   const result = await ItineraryClient.getZooHoursRequest(request);
+
+   assert.deepEqual(result, {
       hours: {
-         date: '2026-06-20',
-         earlyAdmissionTime: '09:00',
-         openTime: '09:30',
-         lastAdmissionTime: '18:00',
-         closeTime: '19:00',
+         date,
+         earlyAdmissionTime,
+         openTime,
+         lastAdmissionTime,
+         closeTime,
       },
    });
 });
 
+
 test('Test_UnscheduleItineraryItemRequest_TestResponse_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/unschedule-itinerary-item');
-      assert.deepEqual(JSON.parse(options.body), {
-         itemType: 'animals',
-         key: 'African Lion||Africa Savanna',
-      });
+   const itemType = ScheduleItemKind.ANIMAL.itemType;
+   const key = 'African Lion||Africa Savanna';
+   const status = ItineraryErrorType.SUCCESS;
+   const url = '/unschedule-itinerary-item';
+   const request = { itemType, key };
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
+      assert.deepEqual(JSON.parse(options.body), request);
 
       return mockJsonResponse({
-         status: 'success',
+         status,
       });
    };
 
-   assert.deepEqual(
-      await ItineraryClient.unscheduleItineraryItemRequest({
-         itemType: 'animals',
-         key: 'African Lion||Africa Savanna',
-      }),
-      _normalizedItineraryResultFields('success')
-   );
+   const result = await ItineraryClient.unscheduleItineraryItemRequest(request);
+
+   assert.deepEqual(result, _normalizedItineraryResultFields(status));
 });
+
 
 test('Test_RemoveItemFromItineraryRequest_TestResponse_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/remove-item-from-itinerary');
-      assert.deepEqual(JSON.parse(options.body), {
-         itemType: 'attractions',
-         key: 'Conservation Carousel',
-      });
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+   const key = 'Conservation Carousel';
+   const status = ItineraryErrorType.SUCCESS;
+   const url = '/remove-item-from-itinerary';
+   const request = { itemType, key };
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
+      assert.deepEqual(JSON.parse(options.body), request);
 
       return mockJsonResponse({
-         status: 'success',
+         status,
       });
    };
 
-   assert.deepEqual(
-      await ItineraryClient.removeItemFromItineraryRequest({
-         itemType: 'attractions',
-         key: 'Conservation Carousel',
-      }),
-      _normalizedItineraryResultFields('success')
-   );
+   const result = await ItineraryClient.removeItemFromItineraryRequest(request);
+
+   assert.deepEqual(result, _normalizedItineraryResultFields(status));
 });
 
+
 test('Test_ScheduleItineraryItemRequest_TestResponse_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/schedule-itinerary-item');
+   const itemType = 'lunch';
+   const key = '';
+   const status = ItineraryErrorType.NO_AVAILABLE_SLOT;
+   const url = '/schedule-itinerary-item';
+   const request = { itemType, key };
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
       assert.deepEqual(JSON.parse(options.body), {
-         itemType: 'lunch',
-         key: '',
+         itemType,
+         key,
          confirmingScheduleItemNotOnItinerary: false,
          confirmingAttractionOutsideOperatingHours: false,
          confirmingGuardiansTalkUnschedule: false,
@@ -639,46 +696,53 @@ test('Test_ScheduleItineraryItemRequest_TestResponse_ExpectNormalized', async ()
       });
 
       return mockJsonResponse({
-         status: 'noAvailableSlot',
+         status,
       });
    };
 
-   assert.deepEqual(
-      await ItineraryClient.scheduleItineraryItemRequest({ itemType: 'lunch', key: '' }),
-      _normalizedItineraryResultFields('noAvailableSlot')
-   );
+   const result = await ItineraryClient.scheduleItineraryItemRequest(request);
+
+   assert.deepEqual(result, _normalizedItineraryResultFields(status));
 });
 
+
 test('Test_BulkScheduleItineraryRequest_TestAnimals_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/bulk-schedule-itinerary');
+   const temp = true;
+   const status = ItineraryErrorType.SUCCESS;
+   const code = ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME;
+   const species = 'African Lion';
+   const exhibit = 'Africa Savanna';
+   const date = '2026-06-20';
+   const url = '/bulk-schedule-itinerary';
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
       assert.deepEqual(JSON.parse(options.body), {
-         temp: true,
+         temp,
          confirmingFixedTimeItemLongWait: false,
       });
 
       return mockJsonResponse({
-         status: 'success',
+         status,
          reasons: [
             {
-               code: 'bulkScheduleItineraryNotEnoughTime',
+               code,
                items: [
                   {
-                     name: 'African Lion',
-                     location: 'Africa Savanna',
+                     name: species,
+                     location: exhibit,
                      item_type: ItinerarySaveIssueItemType.ANIMAL,
                   },
                ],
             },
          ],
          itinerary: {
-            date: '2026-06-20',
+            date,
             arrival_time: '9:30 AM',
             departure_time: '5:00 PM',
             animals: [
                {
-                  species: 'African Lion',
-                  exhibit: 'Africa Savanna',
+                  species,
+                  exhibit,
                   start_time: '',
                   end_time: '',
                },
@@ -692,24 +756,29 @@ test('Test_BulkScheduleItineraryRequest_TestAnimals_ExpectNormalized', async () 
       });
    };
 
-   const result = await ItineraryClient.bulkScheduleItineraryRequest(true);
+   const result = await ItineraryClient.bulkScheduleItineraryRequest(temp);
 
-   assert.equal(result.status, 'success');
+   assert.equal(result.status, status);
    assert.equal(result.reasons.length, 1);
-   assert.equal(result.reasons[0].code, 'bulkScheduleItineraryNotEnoughTime');
+   assert.equal(result.reasons[Position.FIRST].code, code);
    assert.equal(result.itinerary.animals.length, 1);
-   assert.equal(result.itinerary.animals[0].species, 'African Lion');
+   assert.equal(result.itinerary.animals[Position.FIRST].species, species);
 });
 
+
 test('Test_UnscheduleAllItineraryItemsRequest_TestResponse_ExpectNormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/unschedule-all-itinerary-items');
-      assert.deepEqual(JSON.parse(options.body), { temp: true });
+   const temp = true;
+   const status = ItineraryErrorType.SUCCESS;
+   const date = '2026-06-20';
+   const url = '/unschedule-all-itinerary-items';
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
+      assert.deepEqual(JSON.parse(options.body), { temp });
 
       return mockJsonResponse({
-         status: 'success',
+         status,
          itinerary: {
-            date: '2026-06-20',
+            date,
             arrival_time: '9:30 AM',
             departure_time: '5:00 PM',
             animals: [],
@@ -722,8 +791,8 @@ test('Test_UnscheduleAllItineraryItemsRequest_TestResponse_ExpectNormalized', as
       });
    };
 
-   const result = await ItineraryClient.unscheduleAllItineraryItemsRequest(true);
+   const result = await ItineraryClient.unscheduleAllItineraryItemsRequest(temp);
 
-   assert.equal(result.status, 'success');
-   assert.equal(result.itinerary.date, '2026-06-20');
+   assert.equal(result.status, status);
+   assert.equal(result.itinerary.date, date);
 });

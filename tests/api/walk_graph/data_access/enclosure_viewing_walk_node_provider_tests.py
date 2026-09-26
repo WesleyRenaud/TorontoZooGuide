@@ -33,4 +33,6 @@ def Test_FetchRecords_TestJsonFile_ExpectParsedRecords( tmp_path: Path ) -> None
    records_path = tmp_path / 'enclosure_viewing_walk_node.json'
    records_path.write_text( json.dumps( PROVIDER_RECORDS ), encoding='utf-8' )
 
-   assert EnclosureViewingWalkNodeProvider.fetch_records( path=records_path ) == PROVIDER_RECORDS
+   records = EnclosureViewingWalkNodeProvider.fetch_records( path=records_path )
+
+   assert records == PROVIDER_RECORDS

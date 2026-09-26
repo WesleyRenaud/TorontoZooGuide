@@ -111,10 +111,12 @@ def _insert_enclosure(
 
 def Test_FetchAnimalInformation_TestMissing_ExpectNone(
       animal_information_provider_conn: sqlite3.Connection ) -> None:
-   assert AnimalInformationProvider.fetch_animal_information(
+   animal_information = AnimalInformationProvider.fetch_animal_information(
       animal_information_provider_conn,
       SPECIES,
-      EXHIBIT ) is None
+      EXHIBIT )
+
+   assert animal_information is None
 
 
 def Test_FetchAnimalInformation_TestWrongExhibit_ExpectNone(
@@ -123,10 +125,12 @@ def Test_FetchAnimalInformation_TestWrongExhibit_ExpectNone(
    _insert_enclosure( animal_information_provider_conn )
    animal_information_provider_conn.commit()
 
-   assert AnimalInformationProvider.fetch_animal_information(
+   animal_information = AnimalInformationProvider.fetch_animal_information(
       animal_information_provider_conn,
       SPECIES,
-      OTHER_EXHIBIT ) is None
+      OTHER_EXHIBIT )
+
+   assert animal_information is None
 
 
 def Test_FetchAnimalInformation_TestMatching_ExpectMappedAnimal(

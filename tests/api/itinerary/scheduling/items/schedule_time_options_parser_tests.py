@@ -5,23 +5,36 @@ from api.itinerary.scheduling.items.schedule_time_options_parser import Schedule
 from api.shared.enums import ItineraryErrorType
 
 
-def Test_Parse_TestDurationWithoutTime_ExpectParsedOptions() -> None:
-   assert ScheduleTimeOptionsParser.parse( None, 30 ) == ParsedScheduleTimeOptions(
+def Test_Parse_TestMissingStartTime_ExpectDurationOnly() -> None:
+   duration_minutes = 30
+
+   options = ScheduleTimeOptionsParser.parse( None, duration_minutes )
+
+   assert options == ParsedScheduleTimeOptions(
       start_time=None,
-      duration_minutes=30,
-   )
-   assert ScheduleTimeOptionsParser.parse( '   ', 30 ) == ParsedScheduleTimeOptions(
+      duration_minutes=duration_minutes )
+
+
+def Test_Parse_TestBlankStartTime_ExpectDurationOnly() -> None:
+   duration_minutes = 30
+
+   options = ScheduleTimeOptionsParser.parse( '   ', duration_minutes )
+
+   assert options == ParsedScheduleTimeOptions(
       start_time=None,
-      duration_minutes=30,
-   )
+      duration_minutes=duration_minutes )
 
 
 def Test_Parse_TestInvalidStartTime_ExpectSaveFailed() -> None:
-   assert ScheduleTimeOptionsParser.parse( 'not-a-time', None ) == ItineraryErrorType.SAVE_FAILED
+   options = ScheduleTimeOptionsParser.parse( 'not-a-time', None )
+
+   assert options == ItineraryErrorType.SAVE_FAILED
 
 
 def Test_Parse_TestInvalidDuration_ExpectSaveFailed() -> None:
-   assert ScheduleTimeOptionsParser.parse(
-      '10:00 AM',
-      0,
-   ) == ItineraryErrorType.SAVE_FAILED
+   start_time = '10:00 AM'
+   duration_minutes = 0
+
+   options = ScheduleTimeOptionsParser.parse( start_time, duration_minutes )
+
+   assert options == ItineraryErrorType.SAVE_FAILED

@@ -3,17 +3,20 @@ import { test } from 'node:test';
 
 import { ItineraryServiceFormatter } from '../../../scripts/itinerary/itineraryServiceFormatter.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
+import { Strings } from '../../../scripts/strings.js';
 
 installItineraryServiceTestHooks();
 
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeConfirmsEarlyAdmissionWarningBeforeRetrying_ExpectOk', async () => {
    const requests = [];
-
+   const date = '2026-06-20';
+   const arrivalTime = '09:00';
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
@@ -25,7 +28,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-20' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -38,7 +41,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
                status: 'success',
                reasons: [],
                itinerary: {
-                  date: '2026-06-20',
+                  date,
                   animals: [],
                   attractions: [],
                   guardians_talks: [],
@@ -49,7 +52,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
       }
 
       const isConfirmed = Boolean(
-         requests.at(-1)?.body?.confirmingEarlyAdmission
+         requests.at(Position.LAST)?.body?.confirmingEarlyAdmission
       );
 
       return {
@@ -60,8 +63,8 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
             status: isConfirmed ? 'success' : 'earlyAdmissionRequiresMembership',
             reasons: [],
             itinerary: {
-               date: '2026-06-20',
-               arrival_time: isConfirmed ? '09:00' : '',
+               date,
+               arrival_time: isConfirmed ? arrivalTime : '',
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -71,48 +74,46 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
       };
    };
 
-   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime('09:00');
-
+   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime(arrivalTime);
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
 
-   assert.match(
-      document.querySelector('.tzg-popup-message')?.textContent ?? '',
-      /Early admission hours are only available/
+   assert.equal(
+      document.querySelector('.tzg-popup-message').textContent,
+      Strings.itinerary.confirmation.earlyAdmissionMessage
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await setPromise;
-
    const setRequests = requests.filter((request) => (
       request.url === '/set-itinerary-arrival-time'
    ));
 
    assert.equal(setRequests.length, 2);
-   assert.deepEqual(setRequests[0].body, {
-      arrivalTime: '09:00',
+   assert.deepEqual(setRequests[Position.FIRST].body, {
+      arrivalTime,
       confirmingShortVisit: false,
       confirmingEarlyAdmission: false,
    });
-   assert.deepEqual(setRequests[1].body, {
-      arrivalTime: '09:00',
+   assert.deepEqual(setRequests[Position.SECOND].body, {
+      arrivalTime,
       confirmingShortVisit: false,
       confirmingEarlyAdmission: true,
    });
 });
+
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTimeConfirmsShortVisitWarningBeforeRetrying_ExpectOk', async () => {
    const requests = [];
-
+   const date = '2026-06-20';
+   const departureTime = '16:00';
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
@@ -124,7 +125,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-20' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -137,7 +138,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
                status: 'success',
                reasons: [],
                itinerary: {
-                  date: '2026-06-20',
+                  date,
                   animals: [],
                   attractions: [],
                   guardians_talks: [],
@@ -148,7 +149,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
       }
 
       const isConfirmed = Boolean(
-         requests.at(-1)?.body?.confirmingShortVisit
+         requests.at(Position.LAST)?.body?.confirmingShortVisit
       );
 
       return {
@@ -159,8 +160,8 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
             status: isConfirmed ? 'success' : 'arrivalDepartureTooClose',
             reasons: [],
             itinerary: {
-               date: '2026-06-20',
-               departure_time: isConfirmed ? '16:00' : '',
+               date,
+               departure_time: isConfirmed ? departureTime : '',
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -170,48 +171,46 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
       };
    };
 
-   const setPromise = ItineraryServiceFormatter.setItineraryDepartureTime('16:00');
-
+   const setPromise = ItineraryServiceFormatter.setItineraryDepartureTime(departureTime);
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
 
-   assert.match(
-      document.querySelector('.tzg-popup-message')?.textContent ?? '',
-      /very close together/i
+   assert.equal(
+      document.querySelector('.tzg-popup-message').textContent,
+      Strings.itinerary.confirmation.shortVisitMessage
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await setPromise;
-
    const setRequests = requests.filter((request) => (
       request.url === '/set-itinerary-departure-time'
    ));
 
    assert.equal(setRequests.length, 2);
-   assert.deepEqual(setRequests[1].body, {
-      departureTime: '16:00',
+   assert.deepEqual(setRequests[Position.SECOND].body, {
+      departureTime,
       confirmingShortVisit: true,
    });
 });
 
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeRejectsWhenTheVisitorCancelsConfirmation_ExpectOk', async () => {
+   const date = '2026-06-20';
+   const arrivalTime = '09:00';
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
-
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return {
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-20' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -224,7 +223,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
                status: 'success',
                reasons: [],
                itinerary: {
-                  date: '2026-06-20',
+                  date,
                   animals: [],
                   attractions: [],
                   guardians_talks: [],
@@ -242,7 +241,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
             status: 'earlyAdmissionRequiresMembership',
             reasons: [],
             itinerary: {
-               date: '2026-06-20',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -252,12 +251,10 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
       };
    };
 
-   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime('09:00');
-
+   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime(arrivalTime);
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    document.querySelector('.tzg-popup-cancel')?.click();
 
    await assert.rejects(
@@ -266,18 +263,20 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
    );
 });
 
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeThrowsForNonConfirmationErrors_ExpectOk', async () => {
+   const date = '2026-06-20';
+   const arrivalTime = '09:00';
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
-
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return {
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-20' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -290,7 +289,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeT
                status: 'success',
                reasons: [],
                itinerary: {
-                  date: '2026-06-20',
+                  date,
                   animals: [],
                   attractions: [],
                   guardians_talks: [],
@@ -312,19 +311,23 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeT
    };
 
    await assert.rejects(
-      ItineraryServiceFormatter.setItineraryArrivalTime('09:00'),
+      ItineraryServiceFormatter.setItineraryArrivalTime(arrivalTime),
       /outside operating hours/i
    );
 });
 
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeReturnsTheRawAPIResultWhen_ExpectOk', async () => {
+   const date = '2026-06-20';
+   const arrivalTime = '09:30';
+   const errorType = 'success';
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return {
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-20' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -334,10 +337,10 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
             status: 200,
             statusText: 'OK',
             text: async () => JSON.stringify({
-               status: 'success',
+               status: errorType,
                reasons: [],
                itinerary: {
-                  date: '2026-06-20',
+                  date,
                   animals: [],
                   attractions: [],
                   guardians_talks: [],
@@ -352,25 +355,26 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            status: 'success',
+            status: errorType,
             reasons: [],
          }),
       };
    };
 
-   const result = await ItineraryServiceFormatter.setItineraryArrivalTime('09:30');
+   const result = await ItineraryServiceFormatter.setItineraryArrivalTime(arrivalTime);
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, errorType);
    assert.equal(result.itinerary, undefined);
 });
 
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimePersistsWarningSuppressionWhenDoNot_ExpectOk', async () => {
    const requests = [];
-
+   const date = '2026-06-20';
+   const arrivalTime = '09:00';
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
@@ -382,7 +386,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-20' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -395,7 +399,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
                status: 'success',
                reasons: [],
                itinerary: {
-                  date: '2026-06-20',
+                  date,
                   animals: [],
                   attractions: [],
                   guardians_talks: [],
@@ -415,7 +419,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
       }
 
       const isConfirmed = Boolean(
-         requests.filter((request) => request.url === '/set-itinerary-arrival-time').at(-1)?.body?.confirmingEarlyAdmission
+         requests.filter((request) => request.url === '/set-itinerary-arrival-time').at(Position.LAST)?.body?.confirmingEarlyAdmission
       );
 
       return {
@@ -426,8 +430,8 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
             status: isConfirmed ? 'success' : 'earlyAdmissionRequiresMembership',
             reasons: [],
             itinerary: {
-               date: '2026-06-20',
-               arrival_time: isConfirmed ? '09:00' : '',
+               date,
+               arrival_time: isConfirmed ? arrivalTime : '',
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -437,12 +441,10 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
       };
    };
 
-   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime('09:00');
-
+   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime(arrivalTime);
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    const doNotShowAgainLabel = document.querySelector('.tzg-popup-do-not-show-again');
    const checkbox = doNotShowAgainLabel?.children?.find(
       (child) => child.tagName === 'input'
@@ -451,11 +453,9 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
    assert.ok(checkbox);
    checkbox.checked = true;
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await setPromise;
 
    assert.equal(
@@ -464,20 +464,21 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeP
    );
 });
 
+
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeRejectsWhenTheConfirmedRetryFails_ExpectOk', async () => {
    let arrivalRequestCount = 0;
-
+   const date = '2026-06-20';
+   const arrivalTime = '09:00';
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
    });
-
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return {
             ok: true,
             status: 200,
             statusText: 'OK',
-            text: async () => JSON.stringify({ date: '2026-06-20' }),
+            text: async () => JSON.stringify({ date }),
          };
       }
 
@@ -490,7 +491,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
                status: 'success',
                reasons: [],
                itinerary: {
-                  date: '2026-06-20',
+                  date,
                   animals: [],
                   attractions: [],
                   guardians_talks: [],
@@ -514,7 +515,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
                : 'timeOutOfBounds',
             reasons: [],
             itinerary: {
-               date: '2026-06-20',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -525,7 +526,7 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
    };
 
    await assert.rejects(async () => {
-      const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime('09:00');
+      const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime(arrivalTime);
 
       await new Promise((resolve) => {
          setTimeout(resolve, 0);
@@ -536,4 +537,3 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeR
       await setPromise;
    }, /outside operating hours/i);
 });
-

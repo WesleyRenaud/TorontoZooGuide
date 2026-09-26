@@ -3,10 +3,11 @@ import { test } from 'node:test';
 
 import { ScheduleItemTimeFields } from '../../../../../scripts/itinerary/panel/components/scheduleItemTimeFields.js';
 import { ConsoleDateFactory } from '../../../../../scripts/datePickers/consoleDateFactory.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 function _getTimeInput(fields) {
-   const timeField = fields.fields[0];
+   const timeField = fields.fields[Position.FIRST];
 
    return timeField.children.find((child) => (
       child.className?.includes('schedule-item-time-input')
@@ -14,7 +15,7 @@ function _getTimeInput(fields) {
 }
 
 function _getDurationInput(fields) {
-   const durationField = fields.fields[1];
+   const durationField = fields.fields[Position.SECOND];
 
    return durationField.children.find((child) => (
       child.className?.includes('schedule-item-duration-input')
@@ -22,11 +23,11 @@ function _getDurationInput(fields) {
 }
 
 function _getTimeField(fields) {
-   return fields.fields[0];
+   return fields.fields[Position.FIRST];
 }
 
 function _getDurationField(fields) {
-   return fields.fields[1];
+   return fields.fields[Position.SECOND];
 }
 
 installDomTestHooks({
@@ -35,20 +36,24 @@ installDomTestHooks({
    },
 });
 
+
 test('Test_MakeScheduleItemTimeFields_TestSubmit_ExpectInputValue', () => {
+   const startTime = '12:00 PM';
+
    const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
    const timeInput = _getTimeInput(fields);
+   timeInput.value = startTime;
+   const options = fields.getScheduleTimeOptions();
 
-   timeInput.value = '12:00 PM';
-
-   assert.deepEqual(fields.getScheduleTimeOptions(), {
-      startTime: '12:00 PM',
+   assert.deepEqual(options, {
+      startTime,
       durationMinutes: null,
    });
 });
+
 
 test('Test_MakeScheduleItemTimeFields_TestFixedTime_ExpectDisabledEmpty', () => {
    const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
@@ -59,11 +64,11 @@ test('Test_MakeScheduleItemTimeFields_TestFixedTime_ExpectDisabledEmpty', () => 
    const durationInput = _getDurationInput(fields);
    const timeField = _getTimeField(fields);
    const durationField = _getDurationField(fields);
-
    timeInput.value = '12:00 PM';
    durationInput.value = '30';
 
    fields.setFixedTimeScheduleMode({ lockTimes: true });
+   const options = fields.getScheduleTimeOptions();
 
    assert.equal(timeInput.disabled, true);
    assert.equal(timeInput.value, '');
@@ -71,11 +76,12 @@ test('Test_MakeScheduleItemTimeFields_TestFixedTime_ExpectDisabledEmpty', () => 
    assert.equal(durationInput.value, '');
    assert.equal(timeField.classList.contains('is-disabled'), true);
    assert.equal(durationField.classList.contains('is-disabled'), true);
-   assert.deepEqual(fields.getScheduleTimeOptions(), {
+   assert.deepEqual(options, {
       startTime: '',
       durationMinutes: null,
    });
 });
+
 
 test('Test_MakeScheduleItemTimeFields_TestClearFixedTime_ExpectEnabled', () => {
    const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
@@ -98,23 +104,30 @@ test('Test_MakeScheduleItemTimeFields_TestClearFixedTime_ExpectEnabled', () => {
    assert.equal(durationField.classList.contains('is-disabled'), false);
 });
 
+
 test('Test_MakeScheduleItemTimeFields_TestDurationOnly_ExpectAllowed', () => {
+   const durationValue = '25';
+
    const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
    });
    const durationInput = _getDurationInput(fields);
-
-   durationInput.value = '25';
+   durationInput.value = durationValue;
+   const options = fields.getScheduleTimeOptions();
 
    assert.equal(durationInput.disabled, false);
-   assert.deepEqual(fields.getScheduleTimeOptions(), {
+   assert.deepEqual(options, {
       startTime: '',
-      durationMinutes: 25,
+      durationMinutes: Number(durationValue),
    });
 });
 
+
 test('Test_MakeScheduleItemTimeFields_TestFixedDuration_ExpectEditableStart', () => {
+   const startTime = '10:00 AM';
+   const durationMinutes = 75;
+
    const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
       timeLabel: 'Schedule time',
       durationLabel: 'Duration',
@@ -122,26 +135,63 @@ test('Test_MakeScheduleItemTimeFields_TestFixedDuration_ExpectEditableStart', ()
    const timeInput = _getTimeInput(fields);
    const durationInput = _getDurationInput(fields);
    const durationField = _getDurationField(fields);
-
-   timeInput.value = '10:00 AM';
+   timeInput.value = startTime;
    durationInput.value = '30';
 
    fields.setFixedDurationScheduleMode({
       lockDuration: true,
-      durationMinutes: 75,
+      durationMinutes,
    });
+   const options = fields.getScheduleTimeOptions();
 
    assert.equal(timeInput.disabled, false);
    assert.equal(durationInput.disabled, true);
-   assert.equal(durationInput.value, '75');
+   assert.equal(durationInput.value, String(durationMinutes));
    assert.equal(durationField.classList.contains('is-disabled'), true);
-   assert.deepEqual(fields.getScheduleTimeOptions(), {
-      startTime: '10:00 AM',
+   assert.deepEqual(options, {
+      startTime,
       durationMinutes: null,
    });
 });
 
-test('Test_MakeScheduleItemTimeFields_TestPickerReadyCommitAndLockedResolve_ExpectSynced', () => {
+
+test('Test_MakeScheduleItemTimeFields_TestPickerChange_ExpectSynced', () => {
+   const originalInit = ConsoleDateFactory.initTimePicker;
+   const changedTime = '2:30 PM';
+   let capturedOptions = null;
+   const calendarContainer = { classList: { add() {} } };
+   const instance = {
+      calendarContainer,
+      input: { value: '1:15 PM' },
+      clear() {},
+      set() {},
+   };
+
+   ConsoleDateFactory.initTimePicker = (_inputEl, options) => {
+      capturedOptions = options;
+      options.onReady([], '', instance);
+      return instance;
+   };
+
+   try {
+      const fields = ScheduleItemTimeFields.makeScheduleItemTimeFields({
+         timeLabel: 'Schedule time',
+         durationLabel: 'Duration',
+      });
+      capturedOptions.onChange([], changedTime, instance);
+      const options = fields.getScheduleTimeOptions();
+
+      assert.deepEqual(options, {
+         startTime: changedTime,
+         durationMinutes: null,
+      });
+   } finally {
+      ConsoleDateFactory.initTimePicker = originalInit;
+   }
+});
+
+
+test('Test_MakeScheduleItemTimeFields_TestPickerChangeWhileLocked_ExpectEmpty', () => {
    const originalInit = ConsoleDateFactory.initTimePicker;
    let capturedOptions = null;
    const calendarContainer = { classList: { add() {} } };
@@ -163,16 +213,11 @@ test('Test_MakeScheduleItemTimeFields_TestPickerReadyCommitAndLockedResolve_Expe
          timeLabel: 'Schedule time',
          durationLabel: 'Duration',
       });
-
-      capturedOptions.onChange([], '2:30 PM', instance);
-      assert.deepEqual(fields.getScheduleTimeOptions(), {
-         startTime: '2:30 PM',
-         durationMinutes: null,
-      });
-
       fields.setFixedTimeScheduleMode({ lockTimes: true });
       capturedOptions.onChange([], '3:00 PM', instance);
-      assert.deepEqual(fields.getScheduleTimeOptions(), {
+      const options = fields.getScheduleTimeOptions();
+
+      assert.deepEqual(options, {
          startTime: '',
          durationMinutes: null,
       });

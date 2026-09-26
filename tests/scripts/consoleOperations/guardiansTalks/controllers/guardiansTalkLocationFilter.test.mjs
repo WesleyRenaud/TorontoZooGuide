@@ -11,6 +11,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateGuardiansTalkLocationFilterController_TestRefreshLocations_ExpectSortedNames', async () => {
    const locationEl = document.createElement('select');
    const talkNameEl = document.createElement('select');
@@ -45,6 +46,7 @@ test('Test_CreateGuardiansTalkLocationFilterController_TestRefreshLocations_Expe
       ConsoleDropdownPopulator.populateValueDropdown = originalPopulate;
    }
 });
+
 
 test('Test_CreateGuardiansTalkLocationFilterController_TestRefreshTalks_ExpectPopulateOrClear', async () => {
    const locationEl = document.createElement('select');
@@ -87,6 +89,7 @@ test('Test_CreateGuardiansTalkLocationFilterController_TestRefreshTalks_ExpectPo
       ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulateTalks;
    }
 });
+
 
 test('Test_CreateGuardiansTalkLocationFilterController_TestInjectedLoaders_ExpectUsed', async () => {
    const locationEl = document.createElement('select');
@@ -135,6 +138,7 @@ test('Test_CreateGuardiansTalkLocationFilterController_TestInjectedLoaders_Expec
    }
 });
 
+
 test('Test_CreateGuardiansTalkLocationFilterController_TestChangeClearsTalk_ExpectRefresh', async () => {
    const locationEl = document.createElement('select');
    const talkNameEl = document.createElement('input');
@@ -163,6 +167,7 @@ test('Test_CreateGuardiansTalkLocationFilterController_TestChangeClearsTalk_Expe
       ConsoleOperationsClient.getGuardiansTalkNamesAtLocation = originalGetTalks;
    }
 });
+
 
 test('Test_CreateGuardiansTalkLocationFilterController_TestNonSelectAndErrors_ExpectNoThrow', async () => {
    const originalGetLocations = ConsoleOperationsClient.getGuardiansTalkLocations;

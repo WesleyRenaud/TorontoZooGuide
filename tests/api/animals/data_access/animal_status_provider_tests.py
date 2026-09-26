@@ -63,14 +63,16 @@ def _status_rows( conn: sqlite3.Connection ) -> list[ tuple ]:
 
 def Test_SaveAnimalOffDisplayStatus_TestSelectedEnclosures_ExpectPersistsRows(
       animal_status_conn: sqlite3.Connection ) -> None:
-   assert AnimalStatusProvider.save_animal_off_display_status(
+   result = AnimalStatusProvider.save_animal_off_display_status(
       animal_status_conn,
       species=SPECIES,
       exhibit=EXHIBIT,
       viewing_scopes=[ MALE_HERD, FEMALE_HERD ],
       start_date=START_DATE,
       end_date=END_DATE,
-      message=MESSAGE ) is True
+      message=MESSAGE )
+
+   assert result is True
 
    assert _status_rows( animal_status_conn ) == [
       ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE ),
@@ -89,14 +91,16 @@ def Test_SaveAnimalOffDisplayStatus_TestOneEnclosure_ExpectLeavesOtherStatus(
       end_date=END_DATE,
       message=MESSAGE )
 
-   assert AnimalStatusProvider.save_animal_off_display_status(
+   result = AnimalStatusProvider.save_animal_off_display_status(
       animal_status_conn,
       species=SPECIES,
       exhibit=EXHIBIT,
       viewing_scopes=[ MALE_HERD ],
       start_date='2026-07-01',
       end_date='2026-07-15',
-      message='Male paddock closed.' ) is True
+      message='Male paddock closed.' )
+
+   assert result is True
 
    assert _status_rows( animal_status_conn ) == [
       ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE ),
@@ -115,11 +119,13 @@ def Test_SaveAnimalOnDisplayStatus_TestSelectedEnclosures_ExpectClearsThoseStatu
       end_date=END_DATE,
       message=MESSAGE )
 
-   assert AnimalStatusProvider.save_animal_on_display_status(
+   result = AnimalStatusProvider.save_animal_on_display_status(
       animal_status_conn,
       species=SPECIES,
       exhibit=EXHIBIT,
-      viewing_scopes=[ MALE_HERD ] ) is True
+      viewing_scopes=[ MALE_HERD ] )
+
+   assert result is True
 
    assert _status_rows( animal_status_conn ) == [
       ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE ),
@@ -128,8 +134,10 @@ def Test_SaveAnimalOnDisplayStatus_TestSelectedEnclosures_ExpectClearsThoseStatu
 
 def Test_SaveAnimalOnDisplayStatus_TestNoMatchingStatus_ExpectFalse(
       animal_status_conn: sqlite3.Connection ) -> None:
-   assert AnimalStatusProvider.save_animal_on_display_status(
+   result = AnimalStatusProvider.save_animal_on_display_status(
       animal_status_conn,
       species=SPECIES,
       exhibit=EXHIBIT,
-      viewing_scopes=[ MALE_HERD ] ) is False
+      viewing_scopes=[ MALE_HERD ] )
+
+   assert result is False

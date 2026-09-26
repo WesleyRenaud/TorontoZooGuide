@@ -2,41 +2,88 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AnimalDetailViewBuilder } from '../../../scripts/animals/animalDetailViewBuilder.js';
+import { AssetKeyNormalizer } from '../../../scripts/assets/assetKeyNormalizer.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../scripts/strings.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_BuildBackButton_TestClick_ExpectCallback', () => {
    const clicks = [];
+
    const button = AnimalDetailViewBuilder.buildBackButton(() => { clicks.push(true); });
+   button.listeners.click();
+
    assert.equal(button.className, 'animal-info-back-button');
    assert.equal(button.textContent, Strings.animalsPage.backWithArrow);
-   button.listeners.click();
    assert.deepEqual(clicks, [true]);
 });
 
-test('Test_BuildDetailSectionAndHeading_TestEmpty_ExpectNull', () => {
-   assert.equal(AnimalDetailViewBuilder.buildDetailSection('Habitat', '  '), null);
-   assert.equal(AnimalDetailViewBuilder.buildHeading('h2', 'name', ''), null);
 
-   const section = AnimalDetailViewBuilder.buildDetailSection('Habitat', 'Savanna');
-   assert.match(section.textContent, /Habitat:/);
-   assert.match(section.textContent, /Savanna/);
+test('Test_BuildDetailSection_TestBlank_ExpectNull', () => {
+   const title = 'Habitat';
+   const value = '  ';
+
+   const section = AnimalDetailViewBuilder.buildDetailSection(title, value);
+
+   assert.equal(section, null);
 });
 
-test('Test_BuildAnimalImage_TestAnimal_ExpectSrcOrNull', () => {
-   assert.equal(AnimalDetailViewBuilder.buildAnimalImage({ species: 'Lion' }), null);
+
+test('Test_BuildHeading_TestEmpty_ExpectNull', () => {
+   const tagName = 'h2';
+   const className = 'name';
+   const text = '';
+
+   const heading = AnimalDetailViewBuilder.buildHeading(tagName, className, text);
+
+   assert.equal(heading, null);
+});
+
+
+test('Test_BuildDetailSection_TestValue_ExpectSection', () => {
+   const title = 'Habitat';
+   const value = 'Savanna';
+
+   const section = AnimalDetailViewBuilder.buildDetailSection(title, value);
+
+   assert.match(section.textContent, new RegExp(`${title}:`));
+   assert.match(section.textContent, new RegExp(value));
+});
+
+
+test('Test_BuildAnimalImage_TestMissingExhibit_ExpectNull', () => {
+   const animal = { species: 'Lion' };
+
+   const image = AnimalDetailViewBuilder.buildAnimalImage(animal);
+
+   assert.equal(image, null);
+});
+
+
+test('Test_BuildAnimalImage_TestAnimal_ExpectSrc', () => {
+   const species = 'African Lion';
+   const exhibit = 'African Savanna';
+
    const image = AnimalDetailViewBuilder.buildAnimalImage({
-      species: 'African Lion',
-      exhibit: 'African Savanna',
+      species,
+      exhibit,
    });
-   assert.match(image.src, /african-savanna\/african-lion\.png/);
-   assert.equal(image.alt, 'African Lion');
+
+   assert.match(
+      image.src,
+      new RegExp(`${AssetKeyNormalizer.normalize(exhibit)}/${AssetKeyNormalizer.normalize(species)}\\.png`)
+   );
+   assert.equal(image.alt, species);
 });
+
 
 test('Test_BuildViewOnMapButton_TestClick_ExpectNavigation', () => {
    const hrefs = [];
+   const species = 'African Lion';
+   const exhibit = 'African Savanna';
    const originalLocation = window.location;
    Object.defineProperty(window, 'location', {
       configurable: true,
@@ -52,14 +99,18 @@ test('Test_BuildViewOnMapButton_TestClick_ExpectNavigation', () => {
 
    try {
       const button = AnimalDetailViewBuilder.buildViewOnMapButton(
-         { species: 'African Lion', exhibit: 'Savanna' },
-         'African Savanna'
+         { species, exhibit: 'Savanna' },
+         exhibit
       );
       button.listeners.click();
-      assert.equal(hrefs.length, 1);
-      assert.match(hrefs[0], /map\.html/);
-      assert.match(hrefs[0], /focus=/);
-      assert.match(hrefs[0], /exhibit=/);
+      const href = hrefs.at(Position.FIRST);
+
+      const query = new URL(href).searchParams;
+
+      assert.equal(hrefs.length, Position.SECOND);
+      assert.match(href, /map\.html/);
+      assert.equal(query.get('focus'), species);
+      assert.equal(query.get('exhibit'), exhibit);
    } finally {
       Object.defineProperty(window, 'location', {
          configurable: true,
@@ -68,17 +119,22 @@ test('Test_BuildViewOnMapButton_TestClick_ExpectNavigation', () => {
    }
 });
 
+
 test('Test_BuildAnimalDetailContent_TestAnimal_ExpectFragmentChildren', () => {
+   const exhibit = 'African Savanna';
+
    const fragment = AnimalDetailViewBuilder.buildAnimalDetailContent({
       species: 'African Lion',
       latin_name: 'Panthera leo',
-      exhibit: 'African Savanna',
+      exhibit,
       habitat: 'Grassland',
       habitat_and_range: 'Africa',
       identification: 'Mane',
-   }, { exhibitName: 'African Savanna' });
+   }, { exhibitName: exhibit });
 
-   assert.ok(fragment.children.length >= 4);
-   assert.match(fragment.textContent, /Identification:/);
+   const minChildren = 4;
+
+   assert.ok(fragment.children.length >= minChildren);
+   assert.match(fragment.textContent, new RegExp(Strings.format.labelWithColon('Identification')));
    assert.match(fragment.textContent, /Habitat And Range:/);
 });

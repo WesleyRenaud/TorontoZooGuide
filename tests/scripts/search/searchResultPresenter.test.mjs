@@ -6,72 +6,110 @@ import { ResultRenderer } from '../../../scripts/itinerary/selectors/base/result
 import { StoredSelectionNormalizer } from '../../../scripts/itinerary/selectors/base/storedSelectionNormalizer.js';
 import { SearchResultPresenter } from '../../../scripts/search/searchResultPresenter.js';
 import { Strings } from '../../../scripts/strings.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_BuildSearchDetailImageSrc_TestDirectory_ExpectDetailBuilder', () => {
    const original = DetailImageBuilder.buildDetailImageSrc;
-   DetailImageBuilder.buildDetailImageSrc = (directory, name, options) => ({
-      directory,
-      name,
+   const directory = 'animals';
+   const name = 'African Lion';
+   DetailImageBuilder.buildDetailImageSrc = (imageDirectory, imageName, options) => ({
+      directory: imageDirectory,
+      name: imageName,
       options,
    });
 
    try {
-      assert.deepEqual(
-         SearchResultPresenter.buildSearchDetailImageSrc('animals', 'Lion'),
-         {
-            directory: 'animals',
-            name: 'Lion',
-            options: { basePath: SearchResultPresenter.SEARCH_DETAIL_IMAGE_BASE_PATH },
-         }
-      );
+      const src = SearchResultPresenter.buildSearchDetailImageSrc(directory, name);
+
+      assert.deepEqual(src, {
+         directory,
+         name,
+         options: { basePath: SearchResultPresenter.SEARCH_DETAIL_IMAGE_BASE_PATH },
+      });
    } finally {
       DetailImageBuilder.buildDetailImageSrc = original;
    }
 });
 
-test('Test_BuildDetailSummary_TestParts_ExpectJoinedOrFallback', () => {
-   assert.equal(SearchResultPresenter.buildDetailSummary([], 'fallback'), 'fallback');
-   assert.equal(
-      SearchResultPresenter.buildDetailSummary(['A', null, 'B'], 'fallback'),
-      'fallback\nA | B'
-   );
+
+test('Test_BuildDetailSummary_TestEmpty_ExpectFallback', () => {
+   const fallback = 'fallback';
+
+   const summary = SearchResultPresenter.buildDetailSummary([], fallback);
+
+   assert.equal(summary, fallback);
 });
+
+
+test('Test_BuildDetailSummary_TestParts_ExpectJoined', () => {
+   const fallback = 'fallback';
+   const first = 'A';
+   const second = 'B';
+
+   const summary = SearchResultPresenter.buildDetailSummary([first, null, second], fallback);
+
+   assert.equal(summary, `${fallback}\n${first} | ${second}`);
+});
+
 
 test('Test_BuildLocationSummary_TestLocationFields_ExpectJoined', () => {
-   assert.equal(
-      SearchResultPresenter.buildLocationSummary(
-         { location: 'Africa', sub_location: 'Savanna' },
-         'fallback'
-      ),
-      `${Strings.search.location('Africa')}, Savanna`
+   const location = 'Africa';
+   const subLocation = 'Savanna';
+   const fallback = 'fallback';
+
+   const summary = SearchResultPresenter.buildLocationSummary(
+      { location, sub_location: subLocation },
+      fallback
    );
-   assert.equal(
-      SearchResultPresenter.buildLocationSummary({}, 'fallback'),
-      'fallback'
-   );
+
+   assert.equal(summary, `${Strings.search.location(location)}, ${subLocation}`);
 });
 
-test('Test_GetSearchResultPresentation_TestTypes_ExpectPresentation', () => {
-   assert.equal(
-      SearchResultPresenter.getSearchResultPresentation({ type: 'restroom' }).getTitle({}),
-      Strings.entityLabels.restroom
-   );
-   assert.equal(
-      SearchResultPresenter.getSearchResultPresentation({ type: 'unknown' }),
-      SearchResultPresenter.DEFAULT_SEARCH_RESULT_PRESENTATION
-   );
-   assert.equal(
-      SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.attraction.getTitle({ name: 'Carousel' }),
-      'Carousel'
-   );
-   assert.equal(
-      SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.pavilion.getSubtitle({ region: 'Indo-Malaya' }),
-      Strings.search.region('Indo-Malaya')
-   );
+
+test('Test_BuildLocationSummary_TestMissing_ExpectFallback', () => {
+   const fallback = 'fallback';
+
+   const summary = SearchResultPresenter.buildLocationSummary({}, fallback);
+
+   assert.equal(summary, fallback);
 });
+
+
+test('Test_GetSearchResultPresentation_TestRestroom_ExpectLabel', () => {
+   const presentation = SearchResultPresenter.getSearchResultPresentation({ type: ItemType.RESTROOM });
+
+   assert.equal(presentation.getTitle({}), Strings.entityLabels.restroom);
+});
+
+
+test('Test_GetSearchResultPresentation_TestUnknown_ExpectDefault', () => {
+   const presentation = SearchResultPresenter.getSearchResultPresentation({ type: 'unknown' });
+
+   assert.equal(presentation, SearchResultPresenter.DEFAULT_SEARCH_RESULT_PRESENTATION);
+});
+
+
+test('Test_GetSearchResultPresentation_TestAttractionTitle_ExpectName', () => {
+   const name = 'Conservation Carousel';
+
+   const title = SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.attraction.getTitle({ name });
+
+   assert.equal(title, name);
+});
+
+
+test('Test_GetSearchResultPresentation_TestPavilionSubtitle_ExpectRegion', () => {
+   const region = 'Indo-Malaya';
+
+   const subtitle = SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.pavilion.getSubtitle({ region });
+
+   assert.equal(subtitle, Strings.search.region(region));
+});
+
 
 test('Test_CreateSearchImageRowRenderer_TestPresentation_ExpectRendererConfig', () => {
    const original = ResultRenderer.createDefaultSelectorRowLeftRenderer;
@@ -83,20 +121,29 @@ test('Test_CreateSearchImageRowRenderer_TestPresentation_ExpectRendererConfig', 
    };
 
    try {
+      const imageDirectory = 'wild-encounters';
+      const name = 'African Rainforest';
       const renderer = SearchResultPresenter.createSearchImageRowRenderer({
          presentation: SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.wildEncounter,
-         imageDirectory: 'wild-encounters',
+         imageDirectory,
       });
+      const imageSrc = captured.getImageSrc({ name });
 
       assert.equal(renderer.getTitle, captured.getTitle);
-      assert.match(captured.getImageSrc({ name: 'Encounter' }), /wild-encounters|Encounter/);
+      assert.equal(
+         imageSrc,
+         SearchResultPresenter.buildSearchDetailImageSrc(imageDirectory, name)
+      );
    } finally {
       ResultRenderer.createDefaultSelectorRowLeftRenderer = original;
    }
 });
 
+
 test('Test_CreateSearchImageRowRenderers_TestConfigs_ExpectMap', () => {
    const original = SearchResultPresenter.createSearchImageRowRenderer;
+   const attractionsDirectory = 'attractions';
+   const giftShopsDirectory = 'gift-shops';
    SearchResultPresenter.createSearchImageRowRenderer = ({ presentation, imageDirectory }) => ({
       presentation,
       imageDirectory,
@@ -104,26 +151,27 @@ test('Test_CreateSearchImageRowRenderers_TestConfigs_ExpectMap', () => {
 
    try {
       const renderers = SearchResultPresenter.createSearchImageRowRenderers([
-         { type: 'attraction', imageDirectory: 'attractions' },
-         { type: 'giftShop', imageDirectory: 'gift-shops' },
+         { type: ItemType.ATTRACTION, imageDirectory: attractionsDirectory },
+         { type: ItemType.GIFT_SHOP, imageDirectory: giftShopsDirectory },
       ]);
 
-      assert.equal(renderers.attraction.imageDirectory, 'attractions');
-      assert.equal(renderers.giftShop.imageDirectory, 'gift-shops');
+      assert.equal(renderers[ItemType.ATTRACTION].imageDirectory, attractionsDirectory);
+      assert.equal(renderers[ItemType.GIFT_SHOP].imageDirectory, giftShopsDirectory);
    } finally {
       SearchResultPresenter.createSearchImageRowRenderer = original;
    }
 });
 
+
 test('Test_GetRestaurantMenuLink_TestRow_ExpectNormalized', () => {
    const original = StoredSelectionNormalizer.normalizeStoredLink;
+   const menuLink = 'menu.pdf';
    StoredSelectionNormalizer.normalizeStoredLink = (link) => `normalized:${link}`;
 
    try {
-      assert.equal(
-         SearchResultPresenter.getRestaurantMenuLink({ menu_link: 'menu.pdf' }),
-         'normalized:menu.pdf'
-      );
+      const link = SearchResultPresenter.getRestaurantMenuLink({ menu_link: menuLink });
+
+      assert.equal(link, `normalized:${menuLink}`);
    } finally {
       StoredSelectionNormalizer.normalizeStoredLink = original;
    }

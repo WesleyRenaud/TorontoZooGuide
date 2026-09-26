@@ -29,8 +29,10 @@ def emergency_intercom_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchEmergencyIntercoms_TestEmpty_ExpectEmptyList(
       emergency_intercom_provider_conn: sqlite3.Connection ) -> None:
-   assert EmergencyIntercomProvider.fetch_emergency_intercoms(
-      emergency_intercom_provider_conn ) == []
+   emergency_intercoms = EmergencyIntercomProvider.fetch_emergency_intercoms(
+      emergency_intercom_provider_conn )
+
+   assert emergency_intercoms == []
 
 
 def Test_FetchEmergencyIntercoms_TestPopulated_ExpectMappedCoordinates(

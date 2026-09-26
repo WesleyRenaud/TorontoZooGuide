@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateRestaurantOpeningSchedulePanel_TestDefault_ExpectPanel', () => {
    const panelEl = RestaurantOpeningScheduleView.createRestaurantOpeningSchedulePanel();
 

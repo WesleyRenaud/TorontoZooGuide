@@ -12,32 +12,47 @@ END_DATE = '2026-06-30'
 
 
 def Test_Normalize_TestDisplayValue_ExpectCanonicalUpdateType() -> None:
-   assert UpdateTypeValueNormalizer.normalize( 'New Arrival' ) == UpdateType.NEW_ARRIVAL.value
+   value = UpdateType.NEW_ARRIVAL.value
+
+   normalized = UpdateTypeValueNormalizer.normalize( value )
+
+   assert normalized == UpdateType.NEW_ARRIVAL.value
 
 
 def Test_Normalize_TestAlias_ExpectCanonicalUpdateType() -> None:
-   assert UpdateTypeValueNormalizer.normalize( 'new_arrival' ) == UpdateType.NEW_ARRIVAL.value
+   alias = 'new_arrival'
+
+   normalized = UpdateTypeValueNormalizer.normalize( alias )
+
+   assert normalized == UpdateType.NEW_ARRIVAL.value
 
 
 def Test_Build_TestValidPayload_ExpectNormalizedCreateInput() -> None:
+   update_type = UpdateType.NEW_ARRIVAL.value
+
    create_input = UpdateCreateInputBuilder.build(
       title=UPDATE_TITLE,
       description=UPDATE_DESCRIPTION,
-      update_type='New Arrival',
+      update_type=update_type,
       start_date=START_DATE,
       end_date=END_DATE )
 
    assert create_input is not None
    assert create_input.title == UPDATE_TITLE
-   assert create_input.update_type == UpdateType.NEW_ARRIVAL.value
+   assert create_input.update_type == update_type
    assert create_input.start_date == START_DATE
    assert create_input.end_date == END_DATE
 
 
 def Test_Build_TestInvalidDateRange_ExpectNone() -> None:
-   assert UpdateCreateInputBuilder.build(
+   start_date = '2026-06-30'
+   end_date = '2026-06-01'
+
+   create_input = UpdateCreateInputBuilder.build(
       title=UPDATE_TITLE,
       description=UPDATE_DESCRIPTION,
-      update_type='Closure',
-      start_date='2026-06-30',
-      end_date='2026-06-01' ) is None
+      update_type=UpdateType.CLOSURE.value,
+      start_date=start_date,
+      end_date=end_date )
+
+   assert create_input is None

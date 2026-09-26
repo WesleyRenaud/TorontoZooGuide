@@ -9,13 +9,16 @@ import apiErrorTypeValues from '../../../../shared/enums/apiErrorType.json' with
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ApiErrorType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(apiErrorTypeValues)) {
-      assert.equal(ApiErrorType[key], value);
-   }
 
+test('Test_ApiErrorType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/apiErrorType.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(apiErrorTypeValues).map((key) => [key, ApiErrorType[key]])
+   );
+
+   assert.deepEqual(mapped, apiErrorTypeValues);
    assert.deepEqual(apiErrorTypeValues, diskValues);
 });

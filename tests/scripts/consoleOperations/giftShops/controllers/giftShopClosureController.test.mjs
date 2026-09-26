@@ -1,40 +1,82 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { GiftShopClosureController } from '../../../../../scripts/consoleOperations/giftShops/controllers/giftShopClosureController.js';
-import { EntityClosedFormController } from '../../../../../scripts/consoleOperations/forms/entityClosedFormController.js';
-import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
+import { EntityClosedFormController } from '../../../../../scripts/consoleOperations/forms/entityClosedFormController.js';
+import { GiftShopClosureController } from '../../../../../scripts/consoleOperations/giftShops/controllers/giftShopClosureController.js';
+import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { Strings } from '../../../../../scripts/strings.js';
 
-test('Test_CreateGiftShopClosureOverrideController_TestWiring_ExpectClosedForm', async () => {
+
+function _captureClosedForm() {
    const original = EntityClosedFormController.createEntityClosedFormController;
    let captured;
    EntityClosedFormController.createEntityClosedFormController = (options) => {
       captured = options;
       return { created: true };
    };
+   return {
+      getCaptured: () => captured,
+      restore: () => {
+         EntityClosedFormController.createEntityClosedFormController = original;
+      },
+   };
+}
+
+
+test('Test_CreateGiftShopClosureOverrideController_TestWiring_ExpectLoadOptions', () => {
+   const capture = _captureClosedForm();
 
    try {
       GiftShopClosureController.createGiftShopClosureOverrideController({ giftShopEl: {} });
-      assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadGiftShops);
-      assert.equal(captured.entityLabel, Strings.entityLabels.giftShop);
 
-      const originalSet = ConsoleOperationsClient.setGiftShopClosureOverride;
-      ConsoleOperationsClient.setGiftShopClosureOverride = async (payload) => payload;
-      try {
-         assert.deepEqual(
-            await captured.submitClosedStatus({ entity: 'Zootique', startDate: '', endDate: '', message: 'm' }),
-            { giftShop: 'Zootique', startDate: null, endDate: null, message: 'm' }
-         );
-         assert.equal(
-            captured.successMessage({ gift_shop: 'Zootique' }),
-            Strings.status.closureOverrideSaved('Zootique')
-         );
-      } finally {
-         ConsoleOperationsClient.setGiftShopClosureOverride = originalSet;
-      }
+      assert.equal(capture.getCaptured().loadOptions, ConsoleOptionsLoader.loadGiftShops);
+      assert.equal(capture.getCaptured().entityLabel, Strings.entityLabels.giftShop);
    } finally {
-      EntityClosedFormController.createEntityClosedFormController = original;
+      capture.restore();
+   }
+});
+
+
+test('Test_CreateGiftShopClosureOverrideController_TestSubmitClosedStatus_ExpectPayload', async () => {
+   const giftShop = 'Zootique';
+   const message = 'm';
+   const capture = _captureClosedForm();
+   const originalSet = ConsoleOperationsClient.setGiftShopClosureOverride;
+   ConsoleOperationsClient.setGiftShopClosureOverride = async (payload) => payload;
+
+   try {
+      GiftShopClosureController.createGiftShopClosureOverrideController({ giftShopEl: {} });
+      const payload = await capture.getCaptured().submitClosedStatus({
+         entity: giftShop,
+         startDate: '',
+         endDate: '',
+         message,
+      });
+
+      assert.deepEqual(payload, {
+         giftShop,
+         startDate: null,
+         endDate: null,
+         message,
+      });
+   } finally {
+      ConsoleOperationsClient.setGiftShopClosureOverride = originalSet;
+      capture.restore();
+   }
+});
+
+
+test('Test_CreateGiftShopClosureOverrideController_TestSuccessMessage_ExpectCatalogMessage', () => {
+   const giftShop = 'Zootique';
+   const capture = _captureClosedForm();
+
+   try {
+      GiftShopClosureController.createGiftShopClosureOverrideController({ giftShopEl: {} });
+      const status = capture.getCaptured().successMessage({ gift_shop: giftShop });
+
+      assert.equal(status, Strings.status.closureOverrideSaved(giftShop));
+   } finally {
+      capture.restore();
    }
 });

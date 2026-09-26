@@ -87,7 +87,10 @@ def Test_HasUnscheduledGuestItems_TestUnscheduledAnimalsAndAttractions_ExpectTru
       animals=[ SCHEDULED_LION, UNSCHEDULED_CHEETAH ],
       attractions=[ UNSCHEDULED_CAROUSEL ] )
 
-   assert GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
+   has_unscheduled = GuestItemScheduleStatusChecker.has_unscheduled_guest_items(
+      itinerary )
+
+   assert has_unscheduled
 
 
 def Test_HasUnscheduledGuestItems_TestUnscheduledTransportation_ExpectTrue() -> None:
@@ -95,7 +98,10 @@ def Test_HasUnscheduledGuestItems_TestUnscheduledTransportation_ExpectTrue() -> 
       animals=[ SCHEDULED_LION ],
       transportations=[ UNSCHEDULED_ZOOMOBILE ] )
 
-   assert GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
+   has_unscheduled = GuestItemScheduleStatusChecker.has_unscheduled_guest_items(
+      itinerary )
+
+   assert has_unscheduled
 
 
 def Test_HasUnscheduledGuestItems_TestBulkEvaluatedTransit_ExpectFalse() -> None:
@@ -103,7 +109,10 @@ def Test_HasUnscheduledGuestItems_TestBulkEvaluatedTransit_ExpectFalse() -> None
       animals=[ SCHEDULED_LION ],
       transportations=[ BULK_EVALUATED_ZOOMOBILE ] )
 
-   assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
+   has_unscheduled = GuestItemScheduleStatusChecker.has_unscheduled_guest_items(
+      itinerary )
+
+   assert not has_unscheduled
 
 
 def Test_HasUnscheduledGuestItems_TestFullyScheduledGuestItems_ExpectFalse() -> None:
@@ -112,21 +121,28 @@ def Test_HasUnscheduledGuestItems_TestFullyScheduledGuestItems_ExpectFalse() -> 
       attractions=[ SCHEDULED_CAROUSEL ],
       transportations=[ SCHEDULED_ZOOMOBILE ] )
 
-   assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
+   has_unscheduled = GuestItemScheduleStatusChecker.has_unscheduled_guest_items(
+      itinerary )
+
+   assert not has_unscheduled
 
 
 def Test_HasUnscheduledGuestItems_TestTransportationOnlyAnimal_ExpectFalse() -> None:
+   giraffe = Animal(
+      species='Masai Giraffe',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor',
+      added_by_transportation=True )
    itinerary = _itinerary(
       animals=[
          SCHEDULED_LION,
-         Animal(
-            species='Masai Giraffe',
-            exhibit='Africa Savanna',
-            enclosure_name='Outdoor',
-            added_by_transportation=True ),
+         giraffe,
       ] )
 
-   assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
+   has_unscheduled = GuestItemScheduleStatusChecker.has_unscheduled_guest_items(
+      itinerary )
+
+   assert not has_unscheduled
 
 
 def Test_HasUnscheduledGuestItems_TestLionAndPenguinFullyScheduled_ExpectFalse() -> None:
@@ -136,11 +152,18 @@ def Test_HasUnscheduledGuestItems_TestLionAndPenguinFullyScheduled_ExpectFalse()
          SCHEDULED_PENGUIN,
       ] )
 
-   assert not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( itinerary )
-   assert {
+   has_unscheduled = GuestItemScheduleStatusChecker.has_unscheduled_guest_items(
+      itinerary )
+   scheduled_species = {
       animal.species
       for animal in itinerary.animals
       if GuestItemScheduleStatusChecker.has_schedule_times(
          animal.start_time,
          animal.end_time )
-   } == { 'African Lion', 'African Penguin' }
+   }
+
+   assert not has_unscheduled
+   assert scheduled_species == {
+      SCHEDULED_LION.species,
+      SCHEDULED_PENGUIN.species,
+   }

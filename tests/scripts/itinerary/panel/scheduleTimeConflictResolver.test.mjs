@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { ScheduleTimeConflictResolver } from '../../../../scripts/itinerary/panel/scheduleTimeConflictResolver.js';
-import { Strings } from '../../../../scripts/strings.js';
 import { ScheduleConflictChecker } from '../../../../scripts/itinerary/wizard/scheduleConflictChecker.js';
+import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 const firstEncounter = {
@@ -31,6 +32,11 @@ const thirdEncounter = {
    meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
 };
 
+const withoutSelectionCall = 'without-selection';
+const unresolvedCall = 'unresolved';
+const additionalCall = 'additional';
+const confirmedCall = 'confirmed';
+
 function _createConfirmationRecorder() {
    const calls = [];
 
@@ -38,14 +44,14 @@ function _createConfirmationRecorder() {
       calls,
       confirmations: {
          showProceedWithoutSelection() {
-            calls.push('without-selection');
+            calls.push(withoutSelectionCall);
          },
          showProceedWithUnresolved({ onConfirm } = {}) {
-            calls.push('unresolved');
+            calls.push(unresolvedCall);
             return onConfirm?.();
          },
          showProceedWithAdditional({ onConfirm } = {}) {
-            calls.push('additional');
+            calls.push(additionalCall);
             return onConfirm?.();
          },
       },
@@ -58,6 +64,7 @@ installDomTestHooks({
       document.querySelector('.tzg-confirm')?.remove();
    },
 });
+
 
 test('Test_ResolveScheduleTimeConflictSelection_TestNothingSelected_ExpectPrompt', async () => {
    const { calls, confirmations } = _createConfirmationRecorder();
@@ -75,16 +82,16 @@ test('Test_ResolveScheduleTimeConflictSelection_TestNothingSelected_ExpectPrompt
    );
 
    assert.equal(resolved, false);
-   assert.deepEqual(calls, ['without-selection']);
+   assert.deepEqual(calls, [withoutSelectionCall]);
    assert.deepEqual(resolvedCalls, []);
 });
+
 
 test('Test_ResolveScheduleTimeConflictSelection_TestUnresolvedGroups_ExpectPrompt', async () => {
    const { calls, confirmations } = _createConfirmationRecorder();
    const resolvedCalls = [];
    const firstSelection = ScheduleConflictChecker.createConflictSelection();
    const secondSelection = ScheduleConflictChecker.createConflictSelection();
-
    firstSelection.items.push(firstEncounter);
 
    const resolved = await ScheduleTimeConflictResolver.resolveScheduleTimeConflictSelection(
@@ -99,21 +106,21 @@ test('Test_ResolveScheduleTimeConflictSelection_TestUnresolvedGroups_ExpectPromp
          },
       ],
       async (selectedItems) => {
-         resolvedCalls.push(selectedItems.map(item => item.name));
+         resolvedCalls.push(selectedItems.map((item) => item.name));
       },
       confirmations
    );
 
    assert.equal(resolved, false);
-   assert.deepEqual(calls, ['unresolved']);
-   assert.deepEqual(resolvedCalls, [['From Howls to Honks']]);
+   assert.deepEqual(calls, [unresolvedCall]);
+   assert.deepEqual(resolvedCalls, [[firstEncounter.name]]);
 });
+
 
 test('Test_ResolveScheduleTimeConflictSelection_TestAdditionalActivities_ExpectPrompt', async () => {
    const { calls, confirmations } = _createConfirmationRecorder();
    const resolvedCalls = [];
    const selection = ScheduleConflictChecker.createConflictSelection();
-
    selection.items.push(firstEncounter);
 
    const resolved = await ScheduleTimeConflictResolver.resolveScheduleTimeConflictSelection(
@@ -122,21 +129,21 @@ test('Test_ResolveScheduleTimeConflictSelection_TestAdditionalActivities_ExpectP
          items: [firstEncounter, thirdEncounter],
       }],
       async (selectedItems) => {
-         resolvedCalls.push(selectedItems.map(item => item.name));
+         resolvedCalls.push(selectedItems.map((item) => item.name));
       },
       confirmations
    );
 
    assert.equal(resolved, false);
-   assert.deepEqual(calls, ['additional']);
-   assert.deepEqual(resolvedCalls, [['From Howls to Honks']]);
+   assert.deepEqual(calls, [additionalCall]);
+   assert.deepEqual(resolvedCalls, [[firstEncounter.name]]);
 });
+
 
 test('Test_ResolveScheduleTimeConflictSelection_TestAllSettled_ExpectResolved', async () => {
    const { calls, confirmations } = _createConfirmationRecorder();
    const resolvedCalls = [];
    const selection = ScheduleConflictChecker.createConflictSelection();
-
    selection.items.push(firstEncounter, secondEncounter);
 
    const resolved = await ScheduleTimeConflictResolver.resolveScheduleTimeConflictSelection(
@@ -145,24 +152,21 @@ test('Test_ResolveScheduleTimeConflictSelection_TestAllSettled_ExpectResolved', 
          items: [firstEncounter, secondEncounter],
       }],
       async (selectedItems) => {
-         resolvedCalls.push(selectedItems.map(item => item.name));
+         resolvedCalls.push(selectedItems.map((item) => item.name));
       },
       confirmations
    );
 
    assert.equal(resolved, true);
    assert.deepEqual(calls, []);
-   assert.deepEqual(
-      resolvedCalls,
-      [['From Howls to Honks', 'Great Barrier Reef']]
-   );
+   assert.deepEqual(resolvedCalls, [[firstEncounter.name, secondEncounter.name]]);
 });
+
 
 test('Test_ShowProceedWithoutSelection_TestDefaultHandler_ExpectNoOp', () => {
    const confirmations = ScheduleTimeConflictResolver.createScheduleTimeConflictResolutionConfirmations();
 
    confirmations.showProceedWithoutSelection();
-
    const popup = document.querySelector('.tzg-confirm');
 
    assert.doesNotThrow(() => {
@@ -170,32 +174,29 @@ test('Test_ShowProceedWithoutSelection_TestDefaultHandler_ExpectNoOp', () => {
    });
 });
 
+
 test('Test_ShowProceedWithoutSelection_TestCustomHandler_ExpectConfirmation', () => {
    const confirmCalls = [];
    const confirmations = ScheduleTimeConflictResolver.createScheduleTimeConflictResolutionConfirmations();
 
    confirmations.showProceedWithoutSelection({
       onConfirm: () => {
-         confirmCalls.push('confirmed');
+         confirmCalls.push(confirmedCall);
       },
    });
-
    const popup = document.querySelector('.tzg-confirm');
    const confirmButton = popup?.querySelector('.tzg-popup-confirm');
+   const title = popup?.querySelector('.itin-top-title')?.textContent;
+   const message = popup?.querySelector('.tzg-popup-message')?.textContent;
 
-   assert.equal(
-      popup?.querySelector('.itin-top-title')?.textContent,
-      Strings.itinerary.confirmation.proceedWithoutConflictSelectionTitle
-   );
-   assert.equal(
-      popup?.querySelector('.tzg-popup-message')?.textContent,
-      Strings.itinerary.confirmation.proceedWithoutConflictSelectionMessage
-   );
+   assert.equal(title, Strings.itinerary.confirmation.proceedWithoutConflictSelectionTitle);
+   assert.equal(message, Strings.itinerary.confirmation.proceedWithoutConflictSelectionMessage);
 
    confirmButton?.click();
 
-   assert.deepEqual(confirmCalls, ['confirmed']);
+   assert.deepEqual(confirmCalls, [confirmedCall]);
 });
+
 
 test('Test_ShowProceedWithUnresolved_TestConfirm_ExpectConfirmation', () => {
    const confirmCalls = [];
@@ -203,25 +204,21 @@ test('Test_ShowProceedWithUnresolved_TestConfirm_ExpectConfirmation', () => {
 
    confirmations.showProceedWithUnresolved({
       onConfirm: () => {
-         confirmCalls.push('confirmed');
+         confirmCalls.push(confirmedCall);
       },
    });
-
    const popup = document.querySelector('.tzg-confirm');
+   const title = popup?.querySelector('.itin-top-title')?.textContent;
+   const message = popup?.querySelector('.tzg-popup-message')?.textContent;
 
-   assert.equal(
-      popup?.querySelector('.itin-top-title')?.textContent,
-      Strings.itinerary.confirmation.proceedWithUnresolvedConflictsTitle
-   );
-   assert.equal(
-      popup?.querySelector('.tzg-popup-message')?.textContent,
-      Strings.itinerary.confirmation.proceedWithUnresolvedConflictsMessage
-   );
+   assert.equal(title, Strings.itinerary.confirmation.proceedWithUnresolvedConflictsTitle);
+   assert.equal(message, Strings.itinerary.confirmation.proceedWithUnresolvedConflictsMessage);
 
    popup?.querySelector('.tzg-popup-confirm')?.click();
 
-   assert.deepEqual(confirmCalls, ['confirmed']);
+   assert.deepEqual(confirmCalls, [confirmedCall]);
 });
+
 
 test('Test_ShowProceedWithAdditional_TestConfirm_ExpectConfirmation', () => {
    const confirmCalls = [];
@@ -229,22 +226,17 @@ test('Test_ShowProceedWithAdditional_TestConfirm_ExpectConfirmation', () => {
 
    confirmations.showProceedWithAdditional({
       onConfirm: () => {
-         confirmCalls.push('confirmed');
+         confirmCalls.push(confirmedCall);
       },
    });
-
    const popup = document.querySelector('.tzg-confirm');
+   const title = popup?.querySelector('.itin-top-title')?.textContent;
+   const message = popup?.querySelector('.tzg-popup-message')?.textContent;
 
-   assert.equal(
-      popup?.querySelector('.itin-top-title')?.textContent,
-      Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesTitle
-   );
-   assert.equal(
-      popup?.querySelector('.tzg-popup-message')?.textContent,
-      Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesMessage
-   );
+   assert.equal(title, Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesTitle);
+   assert.equal(message, Strings.itinerary.confirmation.proceedWithAdditionalSelectableActivitiesMessage);
 
    popup?.querySelector('.tzg-popup-confirm')?.click();
 
-   assert.deepEqual(confirmCalls, ['confirmed']);
+   assert.deepEqual(confirmCalls, [confirmedCall]);
 });

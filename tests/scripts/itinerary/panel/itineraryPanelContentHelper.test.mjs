@@ -2,207 +2,284 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItineraryPanelContentHelper } from '../../../../scripts/itinerary/panel/itineraryPanelContentHelper.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
-installDomTestHooks();
-
-test('Test_AppendDayPlannerViewWithHours_TestScheduleAndRebuild_ExpectCallbacks', async () => {
+function _appendDayPlanner(deps) {
    const opens = [];
    const feedback = [];
    const refreshes = [];
+   const warnings = [];
+   const longWaits = [];
    let capturedOptions;
-
    const dayPlannerView = document.createElement('div');
+   const dayPlannerClass = 'day-planner';
+   const genericErrorMessage = 'generic';
+
    ItineraryPanelContentHelper.appendDayPlannerViewWithHours(
       dayPlannerView,
       { open: '9:00 AM', close: '6:00 PM' },
       { animals: [], itineraryConfig: {} },
       {},
       {
-         onPanelRefresh: async () => { refreshes.push(true); },
+         onPanelRefresh: async () => {
+            refreshes.push(true);
+         },
          deps: {
-            openModule: (options) => { opens.push(options); },
+            openModule: (options) => {
+               opens.push(options);
+            },
             bulkSchedule: async () => ({ itinerary: { date: '2026-06-01' } }),
             unscheduleAll: async () => ({ itinerary: { date: '2026-06-01' } }),
             hasNotEnoughTimeIssue: () => false,
             hasMultipleBuildWarnings: () => false,
-            showBuildWarningsConfirmation: async () => {},
+            showBuildWarningsConfirmation: (payload) => {
+               warnings.push(payload);
+            },
             requiresLongWaitConfirmation: () => false,
-            showLongWaitConfirmation: async () => {},
-            setActionFeedback: (value) => { feedback.push(value); },
+            showLongWaitConfirmation: (payload) => {
+               longWaits.push(payload);
+            },
+            setActionFeedback: (value) => {
+               feedback.push(value);
+            },
             buildEventTypes: () => ['animal'],
             buildScheduleHandlers: () => ({ unschedule: true }),
             makeDayPlanner: (_hours, _itin, _time, options) => {
                capturedOptions = options;
                const el = document.createElement('div');
-               el.className = 'day-planner';
+               el.className = dayPlannerClass;
                return el;
             },
-            genericErrorMessage: 'generic',
+            genericErrorMessage,
+            ...deps,
          },
       }
    );
 
-   assert.equal(dayPlannerView.children[0].className, 'day-planner');
+   return {
+      capturedOptions,
+      dayPlannerClass,
+      dayPlannerView,
+      feedback,
+      genericErrorMessage,
+      longWaits,
+      opens,
+      refreshes,
+      warnings,
+   };
+}
+
+installDomTestHooks();
+
+
+test('Test_AppendDayPlannerViewWithHours_TestScheduleItemClick_ExpectModuleOpened', () => {
+   const { capturedOptions, dayPlannerClass, dayPlannerView, opens } = _appendDayPlanner();
+
    capturedOptions.onScheduleItemClick();
-   assert.equal(opens.length, 1);
+   const opened = opens.at(Position.FIRST);
 
-   await capturedOptions.onRebuildScheduleClick();
-   assert.ok(refreshes.length >= 1);
-
-   let errorOptions;
-   ItineraryPanelContentHelper.appendDayPlannerViewWithHours(
-      document.createElement('div'),
-      {},
-      {},
-      {},
-      {
-         onPanelRefresh: async () => {},
-         deps: {
-            openModule: () => {},
-            bulkSchedule: async () => ({ errorType: 'bad', message: 'nope' }),
-            unscheduleAll: async () => ({}),
-            hasNotEnoughTimeIssue: () => false,
-            hasMultipleBuildWarnings: () => false,
-            showBuildWarningsConfirmation: async () => {},
-            requiresLongWaitConfirmation: () => false,
-            showLongWaitConfirmation: async () => {},
-            setActionFeedback: (value) => { feedback.push(value); },
-            buildEventTypes: () => [],
-            buildScheduleHandlers: () => ({}),
-            makeDayPlanner: (_h, _i, _t, options) => {
-               errorOptions = options;
-               return document.createElement('div');
-            },
-            genericErrorMessage: 'generic',
-         },
-      }
-   );
-
-   await errorOptions.onRebuildScheduleClick();
-   assert.ok(feedback.some((entry) => entry?.variant === 'error' && entry?.message === 'nope'));
+   assert.equal(dayPlannerView.children.at(Position.FIRST).className, dayPlannerClass);
+   assert.equal(opens.length, Position.SECOND);
+   assert.ok(opened);
 });
 
-test('Test_AppendDayPlannerViewWithHours_TestWarningsLongWaitNotEnoughAndErrors_ExpectBranches', async () => {
-   const feedback = [];
-   const warnings = [];
-   const longWaits = [];
-   const originalError = console.error;
-   console.error = () => {};
 
-   function _makeController(deps) {
-      let options;
-      ItineraryPanelContentHelper.appendDayPlannerViewWithHours(
-         document.createElement('div'),
-         {},
-         {},
-         {},
-         {
-            onPanelRefresh: async () => {},
-            deps: {
-               openModule: () => {},
-               hasNotEnoughTimeIssue: () => false,
-               hasMultipleBuildWarnings: () => false,
-               showBuildWarningsConfirmation: (payload) => { warnings.push(payload); },
-               requiresLongWaitConfirmation: () => false,
-               showLongWaitConfirmation: (payload) => { longWaits.push(payload); },
-               setActionFeedback: (value) => { feedback.push(value); },
-               buildEventTypes: () => [],
-               buildScheduleHandlers: () => ({}),
-               makeDayPlanner: (_h, _i, _t, captured) => {
-                  options = captured;
-                  return document.createElement('div');
-               },
-               genericErrorMessage: 'generic',
-               ...deps,
-            },
+test('Test_AppendDayPlannerViewWithHours_TestRebuildSuccess_ExpectPanelRefreshed', async () => {
+   const { capturedOptions, refreshes } = _appendDayPlanner();
+
+   await capturedOptions.onRebuildScheduleClick();
+
+   assert.ok(refreshes.length >= Position.SECOND);
+});
+
+
+test('Test_AppendDayPlannerViewWithHours_TestRebuildError_ExpectErrorFeedback', async () => {
+   const errorMessage = 'nope';
+   const errorType = ItineraryErrorType.SAVE_FAILED;
+   const { capturedOptions, feedback } = _appendDayPlanner({
+      bulkSchedule: async () => ({ errorType, message: errorMessage }),
+      unscheduleAll: async () => ({}),
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
+
+   await capturedOptions.onRebuildScheduleClick();
+   const errorFeedback = feedback.find((entry) => entry?.variant === 'error' && entry?.message === errorMessage);
+
+   assert.ok(errorFeedback);
+});
+
+
+test('Test_AppendDayPlannerViewWithHours_TestNotEnoughTime_ExpectErrorFeedback', async () => {
+   const { capturedOptions, feedback } = _appendDayPlanner({
+      bulkSchedule: async () => ({ issues: [ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME] }),
+      unscheduleAll: async () => ({}),
+      hasNotEnoughTimeIssue: () => true,
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
+
+   await capturedOptions.onRebuildScheduleClick();
+   const errorFeedback = feedback.find((entry) => entry?.variant === 'error');
+
+   assert.ok(errorFeedback);
+});
+
+
+test('Test_AppendDayPlannerViewWithHours_TestMultipleBuildWarnings_ExpectConfirmationThenRebuild', async () => {
+   const { capturedOptions, warnings } = _appendDayPlanner({
+      bulkSchedule: async (confirmed) => {
+         if (confirmed) {
+            return { itinerary: {} };
          }
-      );
-      return options;
-   }
+
+         return { issues: ['a', 'b'] };
+      },
+      unscheduleAll: async () => ({}),
+      hasMultipleBuildWarnings: (issues) => issues?.length > Position.SECOND,
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
+
+   await capturedOptions.onRebuildScheduleClick();
+   const warning = warnings.at(Position.FIRST);
+
+   assert.equal(warnings.length, Position.SECOND);
+
+   await warning.onConfirm();
+});
+
+
+test('Test_AppendDayPlannerViewWithHours_TestLongWait_ExpectConfirmationThenRebuild', async () => {
+   const errorType = ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT;
+   const { capturedOptions, longWaits } = _appendDayPlanner({
+      bulkSchedule: async (confirmed) => {
+         if (confirmed?.confirmingFixedTimeItemLongWait) {
+            return { itinerary: {} };
+         }
+
+         return { errorType, issues: [] };
+      },
+      unscheduleAll: async () => ({}),
+      requiresLongWaitConfirmation: (resultErrorType) => resultErrorType === errorType,
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
+
+   await capturedOptions.onRebuildScheduleClick();
+   const longWait = longWaits.at(Position.FIRST);
+
+   assert.equal(longWaits.length, Position.SECOND);
+
+   await longWait.onConfirm();
+});
+
+
+test('Test_AppendDayPlannerViewWithHours_TestRebuildThrows_ExpectErrorFeedback', async () => {
+   const originalError = console.error;
+   const failure = new Error('rebuild boom');
+   console.error = () => {};
+   const { capturedOptions, feedback } = _appendDayPlanner({
+      bulkSchedule: async () => {
+         throw failure;
+      },
+      unscheduleAll: async () => ({}),
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
 
    try {
-      const notEnough = _makeController({
-         bulkSchedule: async () => ({ issues: ['not-enough'] }),
-         unscheduleAll: async () => ({}),
-         hasNotEnoughTimeIssue: () => true,
-      });
-      await notEnough.onRebuildScheduleClick();
-      assert.ok(feedback.some((entry) => entry?.variant === 'error'));
+      await capturedOptions.onRebuildScheduleClick();
+      const errorFeedback = feedback.find((entry) => entry?.message === failure.message);
 
-      const warningOptions = _makeController({
-         bulkSchedule: async (confirmed) => {
-            if (confirmed) {
-               return { itinerary: {} };
-            }
-            return { issues: ['a', 'b'] };
-         },
-         unscheduleAll: async () => ({}),
-         hasMultipleBuildWarnings: (issues) => issues?.length > 1,
-      });
-      await warningOptions.onRebuildScheduleClick();
-      assert.equal(warnings.length, 1);
-      await warnings[0].onConfirm();
+      assert.ok(errorFeedback);
+   } finally {
+      console.error = originalError;
+   }
+});
 
-      const longWaitOptions = _makeController({
-         bulkSchedule: async (confirmed) => {
-            if (confirmed?.confirmingFixedTimeItemLongWait) {
-               return { itinerary: {} };
-            }
-            return { errorType: 'longWait', issues: [] };
-         },
-         unscheduleAll: async () => ({}),
-         requiresLongWaitConfirmation: (errorType) => errorType === 'longWait',
-      });
-      await longWaitOptions.onRebuildScheduleClick();
-      assert.equal(longWaits.length, 1);
-      await longWaits[0].onConfirm();
 
-      const rebuildThrow = _makeController({
-         bulkSchedule: async () => {
-            throw new Error('rebuild boom');
-         },
-         unscheduleAll: async () => ({}),
-      });
-      await rebuildThrow.onRebuildScheduleClick();
-      assert.ok(feedback.some((entry) => entry?.message === 'rebuild boom'));
+test('Test_AppendDayPlannerViewWithHours_TestConfirmThrows_ExpectErrorFeedback', async () => {
+   const originalError = console.error;
+   const failure = new Error('confirm boom');
+   console.error = () => {};
+   const { capturedOptions, feedback, warnings } = _appendDayPlanner({
+      bulkSchedule: async (confirmed) => {
+         if (confirmed) {
+            throw failure;
+         }
 
-      const confirmThrow = _makeController({
-         bulkSchedule: async (confirmed) => {
-            if (confirmed) {
-               throw new Error('confirm boom');
-            }
-            return { issues: ['a', 'b'] };
-         },
-         unscheduleAll: async () => ({}),
-         hasMultipleBuildWarnings: () => true,
-      });
-      await confirmThrow.onRebuildScheduleClick();
-      await warnings.at(-1).onConfirm();
-      assert.ok(feedback.some((entry) => entry?.message === 'confirm boom'));
+         return { issues: ['a', 'b'] };
+      },
+      unscheduleAll: async () => ({}),
+      hasMultipleBuildWarnings: () => true,
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
 
-      const unscheduleError = _makeController({
-         bulkSchedule: async () => ({}),
-         unscheduleAll: async () => ({ errorType: 'bad', message: 'unschedule failed' }),
-      });
-      await unscheduleError.onUnscheduleAllItemsClick();
-      assert.ok(feedback.some((entry) => entry?.message === 'unschedule failed'));
+   try {
+      await capturedOptions.onRebuildScheduleClick();
+      await warnings.at(Position.LAST).onConfirm();
+      const errorFeedback = feedback.find((entry) => entry?.message === failure.message);
 
-      const unscheduleOk = _makeController({
-         bulkSchedule: async () => ({}),
-         unscheduleAll: async () => ({}),
-      });
-      await unscheduleOk.onUnscheduleAllItemsClick();
-      assert.ok(feedback.some((entry) => entry?.variant === 'success'));
+      assert.ok(errorFeedback);
+   } finally {
+      console.error = originalError;
+   }
+});
 
-      const unscheduleThrow = _makeController({
-         bulkSchedule: async () => ({}),
-         unscheduleAll: async () => {
-            throw new Error('unschedule boom');
-         },
-      });
-      await unscheduleThrow.onUnscheduleAllItemsClick();
-      assert.ok(feedback.some((entry) => entry?.message === 'unschedule boom'));
+
+test('Test_AppendDayPlannerViewWithHours_TestUnscheduleError_ExpectErrorFeedback', async () => {
+   const errorMessage = 'unschedule failed';
+   const { capturedOptions, feedback } = _appendDayPlanner({
+      bulkSchedule: async () => ({}),
+      unscheduleAll: async () => ({ errorType: ItineraryErrorType.SAVE_FAILED, message: errorMessage }),
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
+
+   await capturedOptions.onUnscheduleAllItemsClick();
+   const errorFeedback = feedback.find((entry) => entry?.message === errorMessage);
+
+   assert.ok(errorFeedback);
+});
+
+
+test('Test_AppendDayPlannerViewWithHours_TestUnscheduleSuccess_ExpectSuccessFeedback', async () => {
+   const { capturedOptions, feedback } = _appendDayPlanner({
+      bulkSchedule: async () => ({}),
+      unscheduleAll: async () => ({}),
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
+
+   await capturedOptions.onUnscheduleAllItemsClick();
+   const successFeedback = feedback.find((entry) => entry?.variant === 'success');
+
+   assert.ok(successFeedback);
+});
+
+
+test('Test_AppendDayPlannerViewWithHours_TestUnscheduleThrows_ExpectErrorFeedback', async () => {
+   const originalError = console.error;
+   const failure = new Error('unschedule boom');
+   console.error = () => {};
+   const { capturedOptions, feedback } = _appendDayPlanner({
+      bulkSchedule: async () => ({}),
+      unscheduleAll: async () => {
+         throw failure;
+      },
+      buildEventTypes: () => [],
+      buildScheduleHandlers: () => ({}),
+   });
+
+   try {
+      await capturedOptions.onUnscheduleAllItemsClick();
+      const errorFeedback = feedback.find((entry) => entry?.message === failure.message);
+
+      assert.ok(errorFeedback);
    } finally {
       console.error = originalError;
    }

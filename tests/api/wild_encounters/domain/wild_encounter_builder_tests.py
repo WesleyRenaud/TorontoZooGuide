@@ -19,31 +19,37 @@ def _encounter_record( *, name: str, meeting_spot: str = 'Africa Savanna' ) -> W
 
 
 def Test_BuildDetails_TestNoIncludeFilter_ExpectAllEncountersSorted() -> None:
-   encounters = WildEncounterBuilder.build_details( [
-      _encounter_record( name='Zebra Encounter' ),
-      _encounter_record( name='Giraffe Feeding' ),
-   ] )
+   zebra_encounter = _encounter_record( name='Zebra Encounter' )
+   giraffe_feeding = _encounter_record( name='Giraffe Feeding' )
+   records = [ zebra_encounter, giraffe_feeding ]
+
+   encounters = WildEncounterBuilder.build_details( records )
 
    assert [ encounter.name for encounter in encounters ] == [
-      'Giraffe Feeding',
-      'Zebra Encounter',
+      giraffe_feeding.name,
+      zebra_encounter.name,
    ]
 
 
 def Test_BuildDetails_TestIncludeFilter_ExpectMatchingEncounterOnly() -> None:
-   encounters = WildEncounterBuilder.build_details(
-      [
-         _encounter_record( name='Giraffe Feeding' ),
-         _encounter_record( name='Zebra Encounter' ),
-      ],
-      wild_encounters_to_include=[ 'giraffe feeding' ] )
+   giraffe_feeding = _encounter_record( name='Giraffe Feeding' )
+   zebra_encounter = _encounter_record( name='Zebra Encounter' )
+   records = [ giraffe_feeding, zebra_encounter ]
+   include = [ giraffe_feeding.name.lower() ]
 
-   assert [ encounter.name for encounter in encounters ] == [ 'Giraffe Feeding' ]
+   encounters = WildEncounterBuilder.build_details(
+      records,
+      wild_encounters_to_include=include )
+
+   assert [ encounter.name for encounter in encounters ] == [ giraffe_feeding.name ]
 
 
 def Test_BuildDetails_TestEmptyIncludeList_ExpectNoEncounters() -> None:
+   giraffe_feeding = _encounter_record( name='Giraffe Feeding' )
+   records = [ giraffe_feeding ]
+
    encounters = WildEncounterBuilder.build_details(
-      [ _encounter_record( name='Giraffe Feeding' ) ],
+      records,
       wild_encounters_to_include=[] )
 
    assert encounters == []

@@ -76,7 +76,9 @@ def Test_GetAttractionNames_TestProviderNames_ExpectReturned(
       'fetch_attraction_names',
       lambda _conn: [ ATTRACTION_NAME ] )
 
-   assert AttractionCoordinator.get_attraction_names() == [ ATTRACTION_NAME ]
+   attraction_names = AttractionCoordinator.get_attraction_names()
+
+   assert attraction_names == [ ATTRACTION_NAME ]
 
 
 def Test_GetAttractions_TestProvidersAndBuilder_ExpectAttractions(
@@ -113,11 +115,13 @@ def Test_GetAttractions_TestProvidersAndBuilder_ExpectAttractions(
 
    monkeypatch.setattr( AttractionBuilder, 'build_attractions', build_attractions )
 
-   assert AttractionCoordinator.get_attractions(
+   attractions = AttractionCoordinator.get_attractions(
       day=VISIT_DAY,
       month=VISIT_MONTH,
       year=VISIT_YEAR,
-      include_closed_attractions=True ) == [ ATTRACTION ]
+      include_closed_attractions=True )
+
+   assert attractions == [ ATTRACTION ]
    assert captured[ 'attraction_records' ] is attraction_records
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'schedule_override_records' ] is override_records
@@ -137,12 +141,14 @@ def Test_GetAttractionsMatchingQuery_TestBuilder_ExpectMatches(
       'build',
       lambda rows, query: rows if query == QUERY else [] )
 
-   assert AttractionCoordinator.get_attractions_matching_query(
+   attractions_matching_query = AttractionCoordinator.get_attractions_matching_query(
       query=QUERY,
       day=VISIT_DAY,
       month=VISIT_MONTH,
       year=VISIT_YEAR,
-      include_closed_attractions=False ) == attractions
+      include_closed_attractions=False )
+
+   assert attractions_matching_query == attractions
 
 
 def Test_GetAttractionLikelihoodForVisitDate_TestMissingRecord_ExpectNone(
@@ -153,9 +159,11 @@ def Test_GetAttractionLikelihoodForVisitDate_TestMissingRecord_ExpectNone(
       'fetch_attraction_record_for_calendar_day',
       lambda *_args, **_kwargs: None )
 
-   assert AttractionCoordinator.get_attraction_likelihood_for_visit_date(
+   attraction_likelihood_for_visit_date = AttractionCoordinator.get_attraction_likelihood_for_visit_date(
       VISIT_DATE,
-      ATTRACTION_NAME ) is None
+      ATTRACTION_NAME )
+
+   assert attraction_likelihood_for_visit_date is None
 
 
 def Test_GetAttractionLikelihoodForVisitDate_TestPresentRecord_ExpectLikelihood(
@@ -188,9 +196,11 @@ def Test_GetAttractionLikelihoodForVisitDate_TestPresentRecord_ExpectLikelihood(
       'get_likelihood_and_message_for_date',
       get_likelihood_and_message )
 
-   assert AttractionCoordinator.get_attraction_likelihood_for_visit_date(
+   attraction_likelihood_for_visit_date = AttractionCoordinator.get_attraction_likelihood_for_visit_date(
       VISIT_DATE,
-      ATTRACTION_NAME ) == 80
+      ATTRACTION_NAME )
+
+   assert attraction_likelihood_for_visit_date == 80
    assert captured[ 'attraction_record' ] is attraction_record
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'schedule_override_records' ] is override_records
@@ -213,11 +223,13 @@ def Test_SetAttractionAsClosed_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
 
-   assert AttractionCoordinator.set_attraction_as_closed(
+   result = AttractionCoordinator.set_attraction_as_closed(
       ATTRACTION_NAME,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( ATTRACTION_NAME, START_DATE, END_DATE, MESSAGE )
 
 
@@ -237,11 +249,13 @@ def Test_SetAttractionClosureOverride_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
 
-   assert AttractionCoordinator.set_attraction_closure_override(
+   result = AttractionCoordinator.set_attraction_closure_override(
       ATTRACTION_NAME,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( ATTRACTION_NAME, START_DATE, END_DATE, MESSAGE )
 
 
@@ -256,7 +270,7 @@ def Test_SetAttractionOpeningSchedule_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
 
-   assert AttractionCoordinator.set_attraction_opening_schedule(
+   result = AttractionCoordinator.set_attraction_opening_schedule(
       ATTRACTION_NAME,
       START_DATE,
       END_DATE,
@@ -268,7 +282,9 @@ def Test_SetAttractionOpeningSchedule_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == (
       ATTRACTION_NAME,
       START_DATE,
@@ -292,7 +308,7 @@ def Test_ReplaceAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
 
-   assert AttractionCoordinator.replace_attraction_opening_schedule_overlaps(
+   result = AttractionCoordinator.replace_attraction_opening_schedule_overlaps(
       ATTRACTION_NAME,
       START_DATE,
       END_DATE,
@@ -304,7 +320,9 @@ def Test_ReplaceAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
 
 
 def Test_TrimAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
@@ -315,7 +333,7 @@ def Test_TrimAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
 
-   assert AttractionCoordinator.trim_attraction_opening_schedule_overlaps(
+   result = AttractionCoordinator.trim_attraction_opening_schedule_overlaps(
       ATTRACTION_NAME,
       START_DATE,
       END_DATE,
@@ -327,7 +345,9 @@ def Test_TrimAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
 
 
 def Test_GetAttractionHoursScheduleTimeBounds_TestBuilder_ExpectBounds(
@@ -338,9 +358,11 @@ def Test_GetAttractionHoursScheduleTimeBounds_TestBuilder_ExpectBounds(
       'fetch',
       lambda _conn, *, start_date=None, end_date=None: TIME_BOUNDS )
 
-   assert AttractionCoordinator.get_attraction_hours_schedule_time_bounds(
+   attraction_hours_schedule_time_bounds = AttractionCoordinator.get_attraction_hours_schedule_time_bounds(
       start_date=START_DATE,
-      end_date=END_DATE ) is TIME_BOUNDS
+      end_date=END_DATE )
+
+   assert attraction_hours_schedule_time_bounds is TIME_BOUNDS
 
 
 def Test_SetAttractionHoursSchedule_TestWithinBounds_ExpectSaved(
@@ -365,14 +387,16 @@ def Test_SetAttractionHoursSchedule_TestWithinBounds_ExpectSaved(
       'save_hours_schedule',
       lambda _conn, schedule: saved.append( schedule ) or True )
 
-   assert AttractionCoordinator.set_attraction_hours_schedule(
+   result = AttractionCoordinator.set_attraction_hours_schedule(
       ATTRACTION_NAME,
       START_DATE,
       END_DATE,
       WEEKDAY_START,
       WEEKDAY_END,
       WEEKEND_START,
-      WEEKEND_END ) is True
+      WEEKEND_END )
+
+   assert result is True
    assert saved == [ HOURS_SCHEDULE ]
 
 
@@ -425,14 +449,16 @@ def Test_ReplaceAttractionHoursScheduleOverlaps_TestResolver_ExpectCalled(
       'save_replacing_overlaps',
       lambda _conn, schedule: saved.append( schedule ) or True )
 
-   assert AttractionCoordinator.replace_attraction_hours_schedule_overlaps(
+   result = AttractionCoordinator.replace_attraction_hours_schedule_overlaps(
       ATTRACTION_NAME,
       START_DATE,
       END_DATE,
       WEEKDAY_START,
       WEEKDAY_END,
       WEEKEND_START,
-      WEEKEND_END ) is True
+      WEEKEND_END )
+
+   assert result is True
    assert saved == [ HOURS_SCHEDULE ]
 
 
@@ -458,24 +484,28 @@ def Test_TrimAttractionHoursScheduleOverlaps_TestResolver_ExpectCalled(
       'save_trimming_overlaps',
       lambda _conn, schedule: saved.append( schedule ) or True )
 
-   assert AttractionCoordinator.trim_attraction_hours_schedule_overlaps(
+   result = AttractionCoordinator.trim_attraction_hours_schedule_overlaps(
       ATTRACTION_NAME,
       START_DATE,
       END_DATE,
       WEEKDAY_START,
       WEEKDAY_END,
       WEEKEND_START,
-      WEEKEND_END ) is True
+      WEEKEND_END )
+
+   assert result is True
    assert saved == [ HOURS_SCHEDULE ]
 
 
 def Test_GetAttractionsForSavedItinerary_TestEmptySavedAttractions_ExpectEmpty() -> None:
-   assert AttractionCoordinator.get_attractions_for_saved_itinerary(
+   attractions_for_saved_itinerary = AttractionCoordinator.get_attractions_for_saved_itinerary(
       day=VISIT_DAY,
       month=VISIT_MONTH,
       year=VISIT_YEAR,
       saved_attractions=[],
-   ) == []
+   )
+
+   assert attractions_for_saved_itinerary == []
 
 
 def Test_GetAttractionsForSavedItinerary_TestSavedAttractions_ExpectBuilderFilteredAttractions(

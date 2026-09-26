@@ -72,11 +72,13 @@ def _insert_status(
 
 def Test_FetchOffDisplayViewingScopes_TestEmpty_ExpectEmptyList(
       off_display_scope_conn: sqlite3.Connection ) -> None:
-   assert AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
+   off_display_viewing_scopes = AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
       off_display_scope_conn,
       TODAY,
       ORANGUTAN,
-      PAVILION ) == []
+      PAVILION )
+
+   assert off_display_viewing_scopes == []
 
 
 def Test_FetchOffDisplayViewingScopes_TestCurrentClosedEnclosures_ExpectThoseScopes(
@@ -118,11 +120,13 @@ def Test_FetchOffDisplayViewingScopes_TestCurrentClosedEnclosures_ExpectThoseSco
       start_date='2026-09-01',
       end_date=None )
 
-   assert AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
+   off_display_viewing_scopes = AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
       off_display_scope_conn,
       TODAY,
       ORANGUTAN,
-      PAVILION ) == [
+      PAVILION )
+
+   assert off_display_viewing_scopes == [
       AnimalViewingScope.from_enclosure_name( 'Indoor' ),
       AnimalViewingScope.from_enclosure_name( 'Outdoor' ),
    ]
@@ -138,10 +142,12 @@ def Test_FetchOffDisplayViewingScopes_TestEndingToday_ExpectIncluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
+   off_display_viewing_scopes = AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
       off_display_scope_conn,
       TODAY,
       ORANGUTAN,
-      PAVILION ) == [
+      PAVILION )
+
+   assert off_display_viewing_scopes == [
       AnimalViewingScope.from_enclosure_name( None ),
    ]

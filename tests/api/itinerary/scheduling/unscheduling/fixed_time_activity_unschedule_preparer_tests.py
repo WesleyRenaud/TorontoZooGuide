@@ -16,29 +16,34 @@ from api.models.attraction_diff import AttractionDiff
 from api.models.itinerary_event import ItineraryEvent
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.models.transportation_diff import TransportationDiff
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryEventType, Position
 from api.types import Types
 
 def Test_OverlapsAnyTimeBlock_TestOverlappingTimes_ExpectTrue() -> None:
    blocks = [
-      TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ) ),
    ]
 
-   assert FixedTimeActivityUnschedulePreparer.overlaps_any_time_block(
+   result = FixedTimeActivityUnschedulePreparer.overlaps_any_time_block(
       '10:15 AM',
       '10:45 AM',
       blocks )
 
+   assert result
+
 
 def Test_OverlapsAnyTimeBlock_TestAdjacentTimes_ExpectFalse() -> None:
    blocks = [
-      TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ) ),
    ]
 
-   assert not FixedTimeActivityUnschedulePreparer.overlaps_any_time_block(
+   result = FixedTimeActivityUnschedulePreparer.overlaps_any_time_block(
       '10:30 AM',
       '11:00 AM',
       blocks )
+
+   assert not result
 
 
 def Test_SavedItineraryHasOverlap_TestOverlappingAnimal_ExpectTrue() -> None:
@@ -57,10 +62,12 @@ def Test_SavedItineraryHasOverlap_TestOverlappingAnimal_ExpectTrue() -> None:
       ],
    )
    blocks = [
-      TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ) ),
    ]
 
-   assert FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+   result = FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+
+   assert result
 
 
 def Test_SavedItineraryHasOverlap_TestNoOverlap_ExpectFalse() -> None:
@@ -79,10 +86,12 @@ def Test_SavedItineraryHasOverlap_TestNoOverlap_ExpectFalse() -> None:
       ],
    )
    blocks = [
-      TimeBlock( start_seconds=13 * 3600, end_seconds=13 * 3600 + 30 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '1:00 PM' ), end_seconds=DateValues.time_value_in_seconds( '1:30 PM' ) ),
    ]
 
-   assert not FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+   result = FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+
+   assert not result
 
 
 def Test_PrepareValidatedForReschedule_TestActivityBlocks_ExpectClearedGuestSchedules() -> None:
@@ -109,7 +118,7 @@ def Test_PrepareValidatedForReschedule_TestActivityBlocks_ExpectClearedGuestSche
       ],
    )
    blocks = [
-      TimeBlock( start_seconds=14 * 3600, end_seconds=14 * 3600 + 45 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '2:00 PM' ), end_seconds=DateValues.time_value_in_seconds( '2:45 PM' ) ),
    ]
 
    result = FixedTimeActivityUnschedulePreparer.prepare_validated_for_reschedule(
@@ -123,13 +132,15 @@ def Test_PrepareValidatedForReschedule_TestActivityBlocks_ExpectClearedGuestSche
 
 def Test_OverlapsAnyTimeBlock_TestInvalidScheduleTimes_ExpectFalse() -> None:
    blocks = [
-      TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ) ),
    ]
 
-   assert not FixedTimeActivityUnschedulePreparer.overlaps_any_time_block(
+   result = FixedTimeActivityUnschedulePreparer.overlaps_any_time_block(
       None,
       None,
       blocks )
+
+   assert not result
 
 
 def Test_SavedItineraryHasOverlap_TestOverlappingAttraction_ExpectTrue() -> None:
@@ -147,10 +158,12 @@ def Test_SavedItineraryHasOverlap_TestOverlappingAttraction_ExpectTrue() -> None
       ],
    )
    blocks = [
-      TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ) ),
    ]
 
-   assert FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+   result = FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+
+   assert result
 
 
 def Test_SavedItineraryHasOverlap_TestOverlappingTransportation_ExpectTrue() -> None:
@@ -169,10 +182,12 @@ def Test_SavedItineraryHasOverlap_TestOverlappingTransportation_ExpectTrue() -> 
       ],
    )
    blocks = [
-      TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ) ),
    ]
 
-   assert FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+   result = FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+
+   assert result
 
 
 def Test_SavedItineraryHasOverlap_TestOverlappingEvent_ExpectTrue() -> None:
@@ -188,10 +203,12 @@ def Test_SavedItineraryHasOverlap_TestOverlappingEvent_ExpectTrue() -> None:
       ],
    )
    blocks = [
-      TimeBlock( start_seconds=10 * 3600, end_seconds=10 * 3600 + 30 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ) ),
    ]
 
-   assert FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+   result = FixedTimeActivityUnschedulePreparer.saved_itinerary_has_overlap( saved, blocks )
+
+   assert result
 
 
 def Test_PrepareValidatedForReschedule_TestAttractionAndTransportation_ExpectCleared() -> None:
@@ -261,7 +278,7 @@ def Test_RemoveOverlappingEvents_TestLunchOverlaps_ExpectLunchRemoved() -> None:
       ],
    )
    blocks = [
-      TimeBlock( start_seconds=12 * 3600, end_seconds=12 * 3600 + 45 * 60 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '12:00 PM' ), end_seconds=DateValues.time_value_in_seconds( '12:45 PM' ) ),
    ]
 
    FixedTimeActivityUnschedulePreparer.remove_overlapping_events( validated, blocks )
@@ -328,7 +345,7 @@ def Test_ClearOverlappingSavedSchedules_TestAllRowKinds_ExpectClearCalls(
       ],
    )
    blocks = [
-      TimeBlock( start_seconds=10 * 3600, end_seconds=11 * 3600 ),
+      TimeBlock( start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ), end_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) ),
    ]
    cursor: Types.Cursor = object()
 

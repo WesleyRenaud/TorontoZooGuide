@@ -63,9 +63,11 @@ def _insert_status(
 
 def Test_FetchClosedRestroomNames_TestEmpty_ExpectEmptyList(
       closed_restroom_name_conn: sqlite3.Connection ) -> None:
-   assert ClosedRestroomNameProvider.fetch_closed_restroom_names(
+   closed_restroom_names = ClosedRestroomNameProvider.fetch_closed_restroom_names(
       closed_restroom_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_restroom_names == []
 
 
 def Test_FetchClosedRestroomNames_TestCurrentAndFuture_ExpectDistinctSortedRestrooms(
@@ -83,9 +85,11 @@ def Test_FetchClosedRestroomNames_TestCurrentAndFuture_ExpectDistinctSortedRestr
       start_date='2026-10-01',
       end_date='2026-10-15' )
 
-   assert ClosedRestroomNameProvider.fetch_closed_restroom_names(
+   closed_restroom_names = ClosedRestroomNameProvider.fetch_closed_restroom_names(
       closed_restroom_name_conn,
-      TODAY ) == [ AFRICA, ENTRANCE ]
+      TODAY )
+
+   assert closed_restroom_names == [ AFRICA, ENTRANCE ]
 
 
 def Test_FetchClosedRestroomNames_TestExpired_ExpectExcluded(
@@ -97,9 +101,11 @@ def Test_FetchClosedRestroomNames_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert ClosedRestroomNameProvider.fetch_closed_restroom_names(
+   closed_restroom_names = ClosedRestroomNameProvider.fetch_closed_restroom_names(
       closed_restroom_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_restroom_names == []
 
 
 def Test_FetchClosedRestroomNames_TestEndingToday_ExpectIncluded(
@@ -111,9 +117,11 @@ def Test_FetchClosedRestroomNames_TestEndingToday_ExpectIncluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert ClosedRestroomNameProvider.fetch_closed_restroom_names(
+   closed_restroom_names = ClosedRestroomNameProvider.fetch_closed_restroom_names(
       closed_restroom_name_conn,
-      TODAY ) == [ AFRICA ]
+      TODAY )
+
+   assert closed_restroom_names == [ AFRICA ]
 
 
 def Test_FetchClosedRestroomNames_TestOpenRow_ExpectExcluded(
@@ -125,6 +133,8 @@ def Test_FetchClosedRestroomNames_TestOpenRow_ExpectExcluded(
       start_date='2026-09-01',
       end_date=None )
 
-   assert ClosedRestroomNameProvider.fetch_closed_restroom_names(
+   closed_restroom_names = ClosedRestroomNameProvider.fetch_closed_restroom_names(
       closed_restroom_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_restroom_names == []

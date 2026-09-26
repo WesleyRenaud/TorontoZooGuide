@@ -1,82 +1,210 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { DayPlannerScheduleController } from '../../../../scripts/itinerary/panel/dayPlannerScheduleController.js';
 import { DayPlannerTimelineRenderer } from '../../../../scripts/itinerary/panel/dayPlannerTimelineRenderer.js';
+import { ItineraryEventTypes } from '../../../../scripts/itinerary/itineraryEventTypes.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+
 
 test('Test_BuildItineraryTimeMarkers_TestArrivalDeparture_ExpectMarkers', () => {
+   const arrivalTime = '10:00';
+   const departureTime = '16:00';
+   const arrivalLabel = 'Arrive';
+   const departureLabel = 'Depart';
+   const visitBoundaryEventTypes = {
+      arrival: 'arrival',
+      departure: 'departure',
+   };
+
    const markers = DayPlannerTimelineRenderer.buildItineraryTimeMarkers(
       {
-         arrivalTime: '10:00',
-         departureTime: '16:00',
-         itineraryConfig: {
-            visitBoundaryEventTypes: {
-               arrival: 'arrival',
-               departure: 'departure',
-            },
-         },
+         arrivalTime,
+         departureTime,
+         itineraryConfig: { visitBoundaryEventTypes },
+      },
+      { arrivalLabel, departureLabel }
+   );
+
+   const normalizedKinds = ItineraryEventTypes.normalizeVisitBoundaryEventTypes(visitBoundaryEventTypes);
+   assert.deepEqual(markers, [
+      {
+         startMinutes: DayPlannerScheduleController.parseClockTimeMinutes(arrivalTime),
+         label: arrivalLabel,
+         kind: normalizedKinds.arrival,
       },
       {
-         arrivalLabel: 'Arrive',
-         departureLabel: 'Depart',
-      }
-   );
-
-   assert.deepEqual(markers, [
-      { startMinutes: 600, label: 'Arrive', kind: 'arrival' },
-      { startMinutes: 960, label: 'Depart', kind: 'departure' },
+         startMinutes: DayPlannerScheduleController.parseClockTimeMinutes(departureTime),
+         label: departureLabel,
+         kind: normalizedKinds.departure,
+      },
    ]);
 });
+
 
 test('Test_BuildItineraryTimeMarkers_TestMissingParts_ExpectFiltered', () => {
-   assert.deepEqual(
-      DayPlannerTimelineRenderer.buildItineraryTimeMarkers(
-         { arrivalTime: 'bad', departureTime: '16:00' },
-         { arrivalLabel: 'Arrive', departureLabel: 'Depart' }
-      ),
-      []
+   const arrivalTime = 'bad';
+   const departureTime = '16:00';
+
+   const markers = DayPlannerTimelineRenderer.buildItineraryTimeMarkers(
+      { arrivalTime, departureTime },
+      { arrivalLabel: 'Arrive', departureLabel: 'Depart' }
    );
+
+   assert.deepEqual(markers, []);
 });
 
-test('Test_FindTimelineAnchorSlot_TestSlots_ExpectNearestNotAfter', () => {
-   assert.equal(DayPlannerTimelineRenderer.findTimelineAnchorSlot(75, [0, 30, 60, 90]), 60);
-   assert.equal(DayPlannerTimelineRenderer.findTimelineAnchorSlot(10, []), null);
-   assert.equal(DayPlannerTimelineRenderer.findTimelineAnchorSlot(NaN, [0, 30]), null);
+
+test('Test_FindTimelineAnchorSlot_TestMidSlot_ExpectPreceding', () => {
+   const startMinutes = 75;
+   const slotStarts = [0, 30, 60, 90];
+
+   const anchor = DayPlannerTimelineRenderer.findTimelineAnchorSlot(startMinutes, slotStarts);
+
+   assert.equal(anchor, slotStarts.at(Position.THIRD));
 });
 
-test('Test_FindTimelineSlotEndMinutes_TestAnchor_ExpectNextOrFallback', () => {
-   assert.equal(
-      DayPlannerTimelineRenderer.findTimelineSlotEndMinutes(30, [0, 30, 60], 99),
-      60
-   );
-   assert.equal(
-      DayPlannerTimelineRenderer.findTimelineSlotEndMinutes(60, [0, 30, 60], 99),
-      99
-   );
+
+test('Test_FindTimelineAnchorSlot_TestEmptySlots_ExpectNull', () => {
+   const startMinutes = 10;
+   const slotStarts = [];
+
+   const anchor = DayPlannerTimelineRenderer.findTimelineAnchorSlot(startMinutes, slotStarts);
+
+   assert.equal(anchor, null);
 });
 
-test('Test_ComputeMarkerOffsetFraction_TestSpan_ExpectFraction', () => {
-   assert.equal(DayPlannerTimelineRenderer.computeMarkerOffsetFraction(30, 30, 60), 0);
-   assert.equal(DayPlannerTimelineRenderer.computeMarkerOffsetFraction(45, 30, 60), 0.5);
-   assert.equal(DayPlannerTimelineRenderer.computeMarkerOffsetFraction(45, 30, 30), 0);
+
+test('Test_FindTimelineAnchorSlot_TestNaN_ExpectNull', () => {
+   const startMinutes = Number.NaN;
+   const slotStarts = [0, 30];
+
+   const anchor = DayPlannerTimelineRenderer.findTimelineAnchorSlot(startMinutes, slotStarts);
+
+   assert.equal(anchor, null);
 });
+
+
+test('Test_FindTimelineSlotEndMinutes_TestAnchor_ExpectNext', () => {
+   const anchorSlot = 30;
+   const slotStarts = [0, 30, 60];
+   const fallbackEndMinutes = 99;
+
+   const endMinutes = DayPlannerTimelineRenderer.findTimelineSlotEndMinutes(
+      anchorSlot,
+      slotStarts,
+      fallbackEndMinutes
+   );
+
+   assert.equal(endMinutes, slotStarts.at(Position.THIRD));
+});
+
+
+test('Test_FindTimelineSlotEndMinutes_TestLastSlot_ExpectFallback', () => {
+   const slotStarts = [0, 30, 60];
+   const anchorSlot = slotStarts.at(Position.LAST);
+   const fallbackEndMinutes = 99;
+
+   const endMinutes = DayPlannerTimelineRenderer.findTimelineSlotEndMinutes(
+      anchorSlot,
+      slotStarts,
+      fallbackEndMinutes
+   );
+
+   assert.equal(endMinutes, fallbackEndMinutes);
+});
+
+
+test('Test_ComputeMarkerOffsetFraction_TestAtAnchor_ExpectZero', () => {
+   const startMinutes = 30;
+   const anchorSlot = 30;
+   const slotEndMinutes = 60;
+
+   const fraction = DayPlannerTimelineRenderer.computeMarkerOffsetFraction(
+      startMinutes,
+      anchorSlot,
+      slotEndMinutes
+   );
+
+   assert.equal(fraction, 0);
+});
+
+
+test('Test_ComputeMarkerOffsetFraction_TestMidSpan_ExpectHalf', () => {
+   const startMinutes = 45;
+   const anchorSlot = 30;
+   const slotEndMinutes = 60;
+
+   const fraction = DayPlannerTimelineRenderer.computeMarkerOffsetFraction(
+      startMinutes,
+      anchorSlot,
+      slotEndMinutes
+   );
+
+   assert.equal(fraction, (startMinutes - anchorSlot) / (slotEndMinutes - anchorSlot));
+});
+
+
+test('Test_ComputeMarkerOffsetFraction_TestZeroSpan_ExpectZero', () => {
+   const startMinutes = 45;
+   const anchorSlot = 30;
+   const slotEndMinutes = 30;
+
+   const fraction = DayPlannerTimelineRenderer.computeMarkerOffsetFraction(
+      startMinutes,
+      anchorSlot,
+      slotEndMinutes
+   );
+
+   assert.equal(fraction, 0);
+});
+
 
 test('Test_BuildMarkersByAnchorSlot_TestMarkers_ExpectGroupedOffsets', () => {
+   const arriveMinutes = 45;
+   const departMinutes = 90;
+   const slotStarts = [0, 30, 60];
+   const closeMinutes = 120;
+   const arriveLabel = 'Arrive';
+   const departLabel = 'Depart';
+   const arrivalKind = 'arrival';
+   const departureKind = 'departure';
+
    const markersMap = DayPlannerTimelineRenderer.buildMarkersByAnchorSlot(
       [
-         { startMinutes: 45, label: 'Arrive', kind: 'arrival' },
-         { startMinutes: 90, label: 'Depart', kind: 'departure' },
+         { startMinutes: arriveMinutes, label: arriveLabel, kind: arrivalKind },
+         { startMinutes: departMinutes, label: departLabel, kind: departureKind },
       ],
-      [0, 30, 60],
-      120
+      slotStarts,
+      closeMinutes
    );
 
-   assert.deepEqual(markersMap.get(30), [
-      { label: 'Arrive', offsetFraction: 0.5, kind: 'arrival' },
+   const arriveAnchor = DayPlannerTimelineRenderer.findTimelineAnchorSlot(arriveMinutes, slotStarts);
+   const departAnchor = DayPlannerTimelineRenderer.findTimelineAnchorSlot(departMinutes, slotStarts);
+   assert.deepEqual(markersMap.get(arriveAnchor), [
+      {
+         label: arriveLabel,
+         offsetFraction: DayPlannerTimelineRenderer.computeMarkerOffsetFraction(
+            arriveMinutes,
+            arriveAnchor,
+            DayPlannerTimelineRenderer.findTimelineSlotEndMinutes(arriveAnchor, slotStarts, closeMinutes)
+         ),
+         kind: arrivalKind,
+      },
    ]);
-   assert.deepEqual(markersMap.get(60), [
-      { label: 'Depart', offsetFraction: 0.5, kind: 'departure' },
+   assert.deepEqual(markersMap.get(departAnchor), [
+      {
+         label: departLabel,
+         offsetFraction: DayPlannerTimelineRenderer.computeMarkerOffsetFraction(
+            departMinutes,
+            departAnchor,
+            DayPlannerTimelineRenderer.findTimelineSlotEndMinutes(departAnchor, slotStarts, closeMinutes)
+         ),
+         kind: departureKind,
+      },
    ]);
 });
+
 
 test('Test_BuildMarkersByAnchorSlot_TestNoAnchorSlot_ExpectUnchangedMap', () => {
    const markersMap = DayPlannerTimelineRenderer.buildMarkersByAnchorSlot(
@@ -88,12 +216,13 @@ test('Test_BuildMarkersByAnchorSlot_TestNoAnchorSlot_ExpectUnchangedMap', () => 
    assert.equal(markersMap.size, 0);
 });
 
-test('Test_ResolveTimelinePillLabel_TestBoundarySlots_ExpectLabels', () => {
+
+test('Test_ResolveTimelinePillLabel_TestEarlyAdmission_ExpectEarly', () => {
    const hours = {
-      earlyAdmissionMinutes: 480,
-      openMinutes: 540,
-      lastAdmissionMinutes: 960,
-      closeMinutes: 1020,
+      earlyAdmissionMinutes: 8 * 60,
+      openMinutes: 9 * 60,
+      lastAdmissionMinutes: 16 * 60,
+      closeMinutes: 17 * 60,
    };
    const strings = {
       earlyAdmissionLabel: 'Early',
@@ -102,9 +231,95 @@ test('Test_ResolveTimelinePillLabel_TestBoundarySlots_ExpectLabels', () => {
       closeLabel: 'Close',
    };
 
-   assert.equal(DayPlannerTimelineRenderer.resolveTimelinePillLabel(480, hours, strings), 'Early');
-   assert.equal(DayPlannerTimelineRenderer.resolveTimelinePillLabel(540, hours, strings), 'Open');
-   assert.equal(DayPlannerTimelineRenderer.resolveTimelinePillLabel(960, hours, strings), 'Last');
-   assert.equal(DayPlannerTimelineRenderer.resolveTimelinePillLabel(1020, hours, strings), 'Close');
-   assert.equal(DayPlannerTimelineRenderer.resolveTimelinePillLabel(600, hours, strings), null);
+   const label = DayPlannerTimelineRenderer.resolveTimelinePillLabel(
+      hours.earlyAdmissionMinutes,
+      hours,
+      strings
+   );
+
+   assert.equal(label, strings.earlyAdmissionLabel);
+});
+
+
+test('Test_ResolveTimelinePillLabel_TestOpen_ExpectOpen', () => {
+   const hours = {
+      earlyAdmissionMinutes: 8 * 60,
+      openMinutes: 9 * 60,
+      lastAdmissionMinutes: 16 * 60,
+      closeMinutes: 17 * 60,
+   };
+   const strings = {
+      earlyAdmissionLabel: 'Early',
+      openLabel: 'Open',
+      lastAdmissionLabel: 'Last',
+      closeLabel: 'Close',
+   };
+
+   const label = DayPlannerTimelineRenderer.resolveTimelinePillLabel(hours.openMinutes, hours, strings);
+
+   assert.equal(label, strings.openLabel);
+});
+
+
+test('Test_ResolveTimelinePillLabel_TestLastAdmission_ExpectLast', () => {
+   const hours = {
+      earlyAdmissionMinutes: 8 * 60,
+      openMinutes: 9 * 60,
+      lastAdmissionMinutes: 16 * 60,
+      closeMinutes: 17 * 60,
+   };
+   const strings = {
+      earlyAdmissionLabel: 'Early',
+      openLabel: 'Open',
+      lastAdmissionLabel: 'Last',
+      closeLabel: 'Close',
+   };
+
+   const label = DayPlannerTimelineRenderer.resolveTimelinePillLabel(
+      hours.lastAdmissionMinutes,
+      hours,
+      strings
+   );
+
+   assert.equal(label, strings.lastAdmissionLabel);
+});
+
+
+test('Test_ResolveTimelinePillLabel_TestClose_ExpectClose', () => {
+   const hours = {
+      earlyAdmissionMinutes: 8 * 60,
+      openMinutes: 9 * 60,
+      lastAdmissionMinutes: 16 * 60,
+      closeMinutes: 17 * 60,
+   };
+   const strings = {
+      earlyAdmissionLabel: 'Early',
+      openLabel: 'Open',
+      lastAdmissionLabel: 'Last',
+      closeLabel: 'Close',
+   };
+
+   const label = DayPlannerTimelineRenderer.resolveTimelinePillLabel(hours.closeMinutes, hours, strings);
+
+   assert.equal(label, strings.closeLabel);
+});
+
+
+test('Test_ResolveTimelinePillLabel_TestInterior_ExpectNull', () => {
+   const hours = {
+      earlyAdmissionMinutes: 8 * 60,
+      openMinutes: 9 * 60,
+      lastAdmissionMinutes: 16 * 60,
+      closeMinutes: 17 * 60,
+   };
+   const strings = {
+      earlyAdmissionLabel: 'Early',
+      openLabel: 'Open',
+      lastAdmissionLabel: 'Last',
+      closeLabel: 'Close',
+   };
+
+   const label = DayPlannerTimelineRenderer.resolveTimelinePillLabel(10 * 60, hours, strings);
+
+   assert.equal(label, null);
 });

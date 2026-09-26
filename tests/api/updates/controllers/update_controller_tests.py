@@ -63,6 +63,7 @@ def stub_update_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubUpdateCoor
 
 def Test_GetUpdates_TestHttpRequest_ExpectMapsVisitDateAndReturnsUpdates(
       stub_update_coordinator: StubUpdateCoordinator ) -> None:
+   update = _sample_update()
    handler = make_handler(
       '/get-updates',
       {
@@ -77,7 +78,7 @@ def Test_GetUpdates_TestHttpRequest_ExpectMapsVisitDateAndReturnsUpdates(
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'updates' ] == [ _sample_update().to_dict() ]
+   assert result[ 'updates' ] == [ update.to_dict() ]
 
 
 def Test_GetActiveUpdateOptions_TestDirectCall_ExpectWritesUnexpiredUpdates(

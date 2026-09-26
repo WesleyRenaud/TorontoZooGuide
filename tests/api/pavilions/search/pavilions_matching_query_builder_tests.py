@@ -5,52 +5,51 @@ from api.pavilions.search.pavilions_matching_query_builder import PavilionsMatch
 
 
 def Test_Build_TestMatchingQuery_ExpectMatchingPavilionOnly() -> None:
-   pavilions = [
-      Pavilion( 'Americas Pavilion', 'Americas' ),
-      Pavilion( 'Australasia Pavilion', 'Australasia' ),
-   ]
+   americas = Pavilion( 'Americas Pavilion', 'Americas' )
+   australasia = Pavilion( 'Australasia Pavilion', 'Australasia' )
+   pavilions = [ americas, australasia ]
+   query = 'americas'
 
-   matches = PavilionsMatchingQueryBuilder.build( pavilions, 'americas' )
+   matches = PavilionsMatchingQueryBuilder.build( pavilions, query )
 
-   assert [ pavilion.name for pavilion in matches ] == [ 'Americas Pavilion' ]
+   assert [ pavilion.name for pavilion in matches ] == [ americas.name ]
 
 
 def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingPavilionOnly() -> None:
-   pavilions = [
-      Pavilion( 'Americas Pavilion', 'Americas' ),
-      Pavilion( 'Australasia Pavilion', 'Australasia' ),
-   ]
+   americas = Pavilion( 'Americas Pavilion', 'Americas' )
+   australasia = Pavilion( 'Australasia Pavilion', 'Australasia' )
+   pavilions = [ americas, australasia ]
+   query = 'americas'
 
    matches = PavilionsMatchingQueryBuilder.filter_matching_query(
       pavilions,
-      'americas' )
+      query )
 
-   assert [ pavilion.name for pavilion in matches ] == [ 'Americas Pavilion' ]
+   assert [ pavilion.name for pavilion in matches ] == [ americas.name ]
 
 
 def Test_Build_TestEmptyQuery_ExpectAllPavilionsSortedByName() -> None:
-   pavilions = [
-      Pavilion( 'Americas Pavilion', 'Americas' ),
-      Pavilion( 'Australasia Pavilion', 'Australasia' ),
-   ]
+   americas = Pavilion( 'Americas Pavilion', 'Americas' )
+   australasia = Pavilion( 'Australasia Pavilion', 'Australasia' )
+   pavilions = [ americas, australasia ]
+   query = ''
 
-   matches = PavilionsMatchingQueryBuilder.build( pavilions, '' )
+   matches = PavilionsMatchingQueryBuilder.build( pavilions, query )
 
    assert [ pavilion.name for pavilion in matches ] == [
-      'Americas Pavilion',
-      'Australasia Pavilion',
+      americas.name,
+      australasia.name,
    ]
 
 
 def Test_SortByName_TestUnsortedPavilions_ExpectAlphabetical() -> None:
-   pavilions = [
-      Pavilion( 'Australasia Pavilion', 'Australasia' ),
-      Pavilion( 'Americas Pavilion', 'Americas' ),
-   ]
+   australasia = Pavilion( 'Australasia Pavilion', 'Australasia' )
+   americas = Pavilion( 'Americas Pavilion', 'Americas' )
+   pavilions = [ australasia, americas ]
 
    sorted_pavilions = PavilionsMatchingQueryBuilder.sort_by_name( pavilions )
 
    assert [ pavilion.name for pavilion in sorted_pavilions ] == [
-      'Americas Pavilion',
-      'Australasia Pavilion',
+      americas.name,
+      australasia.name,
    ]

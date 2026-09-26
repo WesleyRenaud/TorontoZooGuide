@@ -15,13 +15,21 @@ from api.models.itinerary_event import ItineraryEvent
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.models.transportation_diff import TransportationDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
+from api.shared.date_values import DateValues
 from api.shared.enums import ItineraryEventType
+from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
 
 
 KANGAROO = 'Kangaroo'
 KANGAROO_ENCOUNTER_TIME = '3:30 PM'
+KANGAROO_DURATION_MINUTES = 45
+KANGAROO_END_TIME = DateValues.add_minutes_to_time(
+   KANGAROO_ENCOUNTER_TIME,
+   KANGAROO_DURATION_MINUTES )
 VISIT_DATE = date( 2026, 6, 15 )
+ARRIVAL_TIME = '9:30 AM'
+DEPARTURE_TIME = '5:00 PM'
 AFRICA = 'Africa'
 AMERICAS = 'Americas'
 CAROUSEL = 'Conservation Carousel'
@@ -134,8 +142,8 @@ def save_provider_conn() -> sqlite3.Connection:
 
 def _empty_validated() -> ValidatedItinerary:
    return ValidatedItinerary(
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME,
       animals=[],
       attractions=[],
       guardians_talks=[],
@@ -146,57 +154,68 @@ def _empty_validated() -> ValidatedItinerary:
 
 def Test_SaveItineraryWildEncounters_Test24HourStartTime_ExpectDisplayFormat(
       save_provider_conn: sqlite3.Connection ) -> None:
+   encounter_name = 'Grizzly Bear'
+   start_time = '13:00'
+   duration_minutes = 45
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
    wild_encounters = [
       WildEncounterDiff(
-         name='Grizzly Bear',
+         name=encounter_name,
          is_deleted=False,
-         start_time='13:00',
-         end_time='1:45 PM',
+         start_time=start_time,
+         end_time=end_time,
          meeting_spot='Americas Pavilion',
          link='https://example.com/grizzly' ),
    ]
    cur = save_provider_conn.cursor()
+
    SaveItineraryProvider.save_itinerary_wild_encounters( cur, wild_encounters )
    save_provider_conn.commit()
    cur.close()
-
    encounter = save_provider_conn.execute(
       """   SELECT START_TIME, END_TIME
             FROM ItineraryWildEncounter
-            WHERE WILD_ENCOUNTER = 'Grizzly Bear';
-      """ ).fetchone()
+            WHERE WILD_ENCOUNTER = ?;
+      """,
+      ( encounter_name, ) ).fetchone()
 
    assert encounter is not None
    assert dict( encounter ) == {
-      'START_TIME': '1:00 PM',
-      'END_TIME': '1:45 PM',
+      'START_TIME': DateValues.normalize_itinerary_schedule_time( start_time ),
+      'END_TIME': DateValues.normalize_itinerary_schedule_time( end_time ),
    }
 
 
 def Test_SaveItineraryGuardiansTalks_TestScheduledTalk_ExpectDisplayFormat(
       save_provider_conn: sqlite3.Connection ) -> None:
+   talk_name = 'African Lion'
+   start_time = '10:00'
+   duration_minutes = 30
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
    guardians_talks = [
       GuardiansTalkDiff(
-         name='African Lion',
+         name=talk_name,
          is_deleted=False,
-         start_time='10:00',
-         end_time='10:30' ),
+         start_time=start_time,
+         end_time=DateValues.format_time_value( end_time ) ),
    ]
    cur = save_provider_conn.cursor()
+
    SaveItineraryProvider.save_itinerary_guardians_talks( cur, guardians_talks )
    save_provider_conn.commit()
    cur.close()
-
    talk = save_provider_conn.execute(
       """   SELECT START_TIME, END_TIME, IS_DELETED
             FROM ItineraryGuardiansTalk
-            WHERE TALK_NAME = 'African Lion';
-      """ ).fetchone()
+            WHERE TALK_NAME = ?;
+      """,
+      ( talk_name, ) ).fetchone()
 
    assert talk is not None
    assert dict( talk ) == {
-      'START_TIME': '10:00 AM',
-      'END_TIME': '10:30 AM',
+      'START_TIME': DateValues.normalize_itinerary_schedule_time( start_time ),
+      'END_TIME': DateValues.normalize_itinerary_schedule_time(
+         DateValues.format_time_value( end_time ) ),
       'IS_DELETED': 0,
    }
 
@@ -208,7 +227,7 @@ def Test_SaveItineraryWildEncounters_TestKangarooAt330Pm_ExpectPersistedActiveRo
          name=KANGAROO,
          is_deleted=False,
          start_time=KANGAROO_ENCOUNTER_TIME,
-         end_time='4:15 PM',
+         end_time=KANGAROO_END_TIME,
          meeting_spot='Wild Encounter - Eurasia Meeting Spot',
          link='https://example.test/kangaroo' ),
    ]
@@ -228,56 +247,62 @@ def Test_SaveItineraryWildEncounters_TestKangarooAt330Pm_ExpectPersistedActiveRo
    assert encounter is not None
    assert dict( encounter ) == {
       'START_TIME': KANGAROO_ENCOUNTER_TIME,
-      'END_TIME': '4:15 PM',
+      'END_TIME': KANGAROO_END_TIME,
       'IS_DELETED': 0,
    }
 
 
 def Test_SaveItineraryWildEncounters_TestScheduledEncounter_ExpectDisplayFormat(
       save_provider_conn: sqlite3.Connection ) -> None:
+   encounter_name = 'African Rainforest'
+   start_time = '14:00'
+   duration_minutes = 45
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
    wild_encounters = [
       WildEncounterDiff(
-         name='African Rainforest',
+         name=encounter_name,
          is_deleted=False,
-         start_time='14:00',
-         end_time='2:45 PM',
+         start_time=start_time,
+         end_time=end_time,
          meeting_spot='Rainforest Gate',
          link='african-rainforest' ),
    ]
    cur = save_provider_conn.cursor()
+
    SaveItineraryProvider.save_itinerary_wild_encounters( cur, wild_encounters )
    save_provider_conn.commit()
    cur.close()
-
    encounter = save_provider_conn.execute(
       """   SELECT START_TIME, END_TIME, IS_DELETED
             FROM ItineraryWildEncounter
-            WHERE WILD_ENCOUNTER = 'African Rainforest';
-      """ ).fetchone()
+            WHERE WILD_ENCOUNTER = ?;
+      """,
+      ( encounter_name, ) ).fetchone()
 
    assert encounter is not None
    assert dict( encounter ) == {
-      'START_TIME': '2:00 PM',
-      'END_TIME': '2:45 PM',
+      'START_TIME': DateValues.normalize_itinerary_schedule_time( start_time ),
+      'END_TIME': DateValues.normalize_itinerary_schedule_time( end_time ),
       'IS_DELETED': 0,
    }
 
 
 def Test_SaveItineraryTransportations_TestAttractionModeZoomobile_ExpectTransportationRow(
       save_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   transportations = [
+      TransportationDiff(
+         name=transportation,
+         old_likelihood=None,
+         new_likelihood=3,
+         added_as_attraction=added_as_attraction ),
+   ]
    cur = save_provider_conn.cursor()
-   SaveItineraryProvider.save_itinerary_transportations(
-      cur,
-      [
-         TransportationDiff(
-            name=TransportationName.ZOOMOBILE,
-            old_likelihood=None,
-            new_likelihood=3,
-            added_as_attraction=True ),
-      ] )
+
+   SaveItineraryProvider.save_itinerary_transportations( cur, transportations )
    save_provider_conn.commit()
    cur.close()
-
    row = save_provider_conn.execute(
       """   SELECT TRANSPORTATION, ADDED_AS_ATTRACTION
             FROM ItineraryTransportation;
@@ -288,8 +313,8 @@ def Test_SaveItineraryTransportations_TestAttractionModeZoomobile_ExpectTranspor
    ).fetchone()
 
    assert row is not None
-   assert row[ 'TRANSPORTATION' ] == TransportationName.ZOOMOBILE
-   assert row[ 'ADDED_AS_ATTRACTION' ] == 1
+   assert row[ 'TRANSPORTATION' ] == transportation
+   assert row[ 'ADDED_AS_ATTRACTION' ] == int( added_as_attraction )
    assert leg_count is not None
    assert leg_count[ 'COUNT' ] == 0
 
@@ -336,14 +361,14 @@ def Test_SaveItineraryTransportations_TestBothModes_ExpectTwoRows(
 def Test_SaveItineraryDate_TestVisitWindow_ExpectPersistedRow(
       save_provider_conn: sqlite3.Connection ) -> None:
    cur = save_provider_conn.cursor()
+
    SaveItineraryProvider.save_itinerary_date(
       cur,
       VISIT_DATE,
-      '9:30 AM',
-      '5:00 PM' )
+      ARRIVAL_TIME,
+      DEPARTURE_TIME )
    save_provider_conn.commit()
    cur.close()
-
    row = save_provider_conn.execute(
       """   SELECT ITINERARY_DATE, ARRIVAL_TIME, DEPARTURE_TIME
             FROM ItineraryDate;
@@ -353,31 +378,36 @@ def Test_SaveItineraryDate_TestVisitWindow_ExpectPersistedRow(
    assert row is not None
    assert dict( row ) == {
       'ITINERARY_DATE': str( VISIT_DATE ),
-      'ARRIVAL_TIME': '9:30 AM',
-      'DEPARTURE_TIME': '5:00 PM',
+      'ARRIVAL_TIME': ARRIVAL_TIME,
+      'DEPARTURE_TIME': DEPARTURE_TIME,
    }
 
 
 def Test_SaveItineraryAnimals_TestScheduledAnimal_ExpectPersistedRow(
       save_provider_conn: sqlite3.Connection ) -> None:
+   enclosure_name = 'Outdoor'
+   start_time = '10:00'
+   duration_minutes = 8
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
+   is_added = True
+   new_likelihood = 100
+   animals = [
+      AnimalDiff(
+         species=LION,
+         exhibit=SAVANNA,
+         enclosure_name=enclosure_name,
+         old_likelihood=None,
+         new_likelihood=new_likelihood,
+         is_added=is_added,
+         covered_by_talk=False,
+         start_time=start_time,
+         end_time=DateValues.format_time_value( end_time ) ),
+   ]
    cur = save_provider_conn.cursor()
-   SaveItineraryProvider.save_itinerary_animals(
-      cur,
-      [
-         AnimalDiff(
-            species=LION,
-            exhibit=SAVANNA,
-            enclosure_name='Outdoor',
-            old_likelihood=None,
-            new_likelihood=100,
-            is_added=True,
-            covered_by_talk=False,
-            start_time='10:00',
-            end_time='10:08' ),
-      ] )
+
+   SaveItineraryProvider.save_itinerary_animals( cur, animals )
    save_provider_conn.commit()
    cur.close()
-
    row = save_provider_conn.execute(
       """   SELECT SPECIES, EXHIBIT, ENCLOSURE_NAME, NEW_LIKELIHOOD,
                    IS_ADDED, COVERED_BY_TALK, START_TIME, END_TIME
@@ -389,17 +419,24 @@ def Test_SaveItineraryAnimals_TestScheduledAnimal_ExpectPersistedRow(
    assert dict( row ) == {
       'SPECIES': LION,
       'EXHIBIT': SAVANNA,
-      'ENCLOSURE_NAME': 'Outdoor',
-      'NEW_LIKELIHOOD': 100,
-      'IS_ADDED': 1,
+      'ENCLOSURE_NAME': enclosure_name,
+      'NEW_LIKELIHOOD': new_likelihood,
+      'IS_ADDED': int( is_added ),
       'COVERED_BY_TALK': 0,
-      'START_TIME': '10:00 AM',
-      'END_TIME': '10:08 AM',
+      'START_TIME': DateValues.normalize_itinerary_schedule_time( start_time ),
+      'END_TIME': end_time,
    }
 
 
 def Test_SaveValidatedItinerary_TestExistingTransportationAnimal_ExpectPromotedToGuest(
       save_provider_conn: sqlite3.Connection ) -> None:
+   species = 'Masai Giraffe'
+   enclosure_name = 'Outdoor'
+   old_likelihood = 80
+   new_likelihood = 65
+   start_time = '10:00'
+   duration_minutes = 8
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
    save_provider_conn.execute(
       """   INSERT INTO ItineraryAnimal (
                SPECIES,
@@ -410,7 +447,7 @@ def Test_SaveValidatedItinerary_TestExistingTransportationAnimal_ExpectPromotedT
             )
             VALUES ( ?, ?, ?, ?, ? );
       """,
-      ( 'Masai Giraffe', SAVANNA, 'Outdoor', 80, 1 ) )
+      ( species, SAVANNA, enclosure_name, old_likelihood, 1 ) )
    save_provider_conn.commit()
 
    result = SaveItineraryProvider.save_validated_itinerary(
@@ -420,18 +457,17 @@ def Test_SaveValidatedItinerary_TestExistingTransportationAnimal_ExpectPromotedT
          _empty_validated(),
          animals=[
             AnimalDiff(
-               species='Masai Giraffe',
+               species=species,
                exhibit=SAVANNA,
-               enclosure_name='Outdoor',
-               old_likelihood=80,
-               new_likelihood=65,
+               enclosure_name=enclosure_name,
+               old_likelihood=old_likelihood,
+               new_likelihood=new_likelihood,
                is_added=True,
                covered_by_talk=False,
-               start_time='10:00',
-               end_time='10:08' ),
+               start_time=start_time,
+               end_time=DateValues.format_time_value( end_time ) ),
          ],
       ) )
-
    row = save_provider_conn.execute(
       """   SELECT ADDED_BY_TRANSPORTATION, OLD_LIKELIHOOD, NEW_LIKELIHOOD,
                    IS_ADDED, START_TIME, END_TIME
@@ -440,18 +476,18 @@ def Test_SaveValidatedItinerary_TestExistingTransportationAnimal_ExpectPromotedT
               AND EXHIBIT = ?
               AND ENCLOSURE_NAME = ?;
       """,
-      ( 'Masai Giraffe', SAVANNA, 'Outdoor' ),
+      ( species, SAVANNA, enclosure_name ),
    ).fetchone()
 
    assert result is True
    assert row is not None
    assert dict( row ) == {
       'ADDED_BY_TRANSPORTATION': 0,
-      'OLD_LIKELIHOOD': 80,
-      'NEW_LIKELIHOOD': 65,
+      'OLD_LIKELIHOOD': old_likelihood,
+      'NEW_LIKELIHOOD': new_likelihood,
       'IS_ADDED': 1,
-      'START_TIME': '10:00 AM',
-      'END_TIME': '10:08 AM',
+      'START_TIME': DateValues.normalize_itinerary_schedule_time( start_time ),
+      'END_TIME': end_time,
    }
 
 
@@ -483,7 +519,8 @@ def Test_SaveItineraryAnimals_TestUnrelatedTransportationAnimal_ExpectUnrelatedR
             is_added=True,
             covered_by_talk=False,
             start_time='10:00',
-            end_time='10:08' ),
+            end_time=DateValues.format_time_value(
+               DateValues.add_minutes_to_time( '10:00', 8 ) ) ),
       ] )
    save_provider_conn.commit()
    cur.close()
@@ -541,7 +578,8 @@ def Test_SaveItineraryAttractions_TestScheduledAttraction_ExpectPersistedRow(
             old_likelihood=None,
             new_likelihood=3,
             start_time='11:00',
-            end_time='11:15' ),
+            end_time=DateValues.format_time_value(
+               DateValues.add_minutes_to_time( '11:00', 15 ) ) ),
       ] )
    save_provider_conn.commit()
    cur.close()
@@ -556,8 +594,8 @@ def Test_SaveItineraryAttractions_TestScheduledAttraction_ExpectPersistedRow(
    assert dict( row ) == {
       'ATTRACTION': CAROUSEL,
       'NEW_LIKELIHOOD': 3,
-      'START_TIME': '11:00 AM',
-      'END_TIME': '11:15 AM',
+      'START_TIME': DateValues.normalize_itinerary_schedule_time( '11:00' ),
+      'END_TIME': DateValues.add_minutes_to_time( '11:00', 15 ),
    }
 
 
@@ -654,9 +692,9 @@ def Test_SaveItineraryTransportations_TestLegsAndMarkers_ExpectPersistedChildren
       }
       for marker in markers
    ] == [
-      { 'SEQUENCE': 0, 'MARKER_ORDER': 0, 'MARKER_ID': 'm-1' },
-      { 'SEQUENCE': 0, 'MARKER_ORDER': 1, 'MARKER_ID': 'm-2' },
-      { 'SEQUENCE': 1, 'MARKER_ORDER': 0, 'MARKER_ID': 'm-3' },
+      { 'SEQUENCE': Position.FIRST, 'MARKER_ORDER': Position.FIRST, 'MARKER_ID': 'm-1' },
+      { 'SEQUENCE': Position.FIRST, 'MARKER_ORDER': Position.SECOND, 'MARKER_ID': 'm-2' },
+      { 'SEQUENCE': Position.SECOND, 'MARKER_ORDER': Position.FIRST, 'MARKER_ID': 'm-3' },
    ]
 
 
@@ -669,7 +707,8 @@ def Test_SaveItineraryEvents_TestLunchEvent_ExpectPersistedRow(
          ItineraryEvent(
             event_type=ItineraryEventType.LUNCH,
             start_time='12:00',
-            end_time='12:30' ),
+            end_time=DateValues.format_time_value(
+               DateValues.add_minutes_to_time( '12:00', 30 ) ) ),
       ] )
    save_provider_conn.commit()
    cur.close()
@@ -683,8 +722,8 @@ def Test_SaveItineraryEvents_TestLunchEvent_ExpectPersistedRow(
    assert row is not None
    assert dict( row ) == {
       'EVENT_TYPE': ItineraryEventType.LUNCH.value,
-      'START_TIME': '12:00 PM',
-      'END_TIME': '12:30 PM',
+      'START_TIME': DateValues.normalize_itinerary_schedule_time( '12:00' ),
+      'END_TIME': DateValues.add_minutes_to_time( '12:00', 30 ),
    }
 
 
@@ -744,7 +783,7 @@ def Test_SaveValidatedItinerary_TestOrchestration_ExpectSubSaversInvoked(
          ItineraryEvent(
             event_type=ItineraryEventType.LUNCH,
             start_time='12:00 PM',
-            end_time='12:30 PM' ),
+            end_time=DateValues.add_minutes_to_time( '12:00 PM', 30 ) ),
       ],
       transportations=[
          TransportationDiff(
@@ -828,8 +867,8 @@ def Test_SaveValidatedItinerary_TestEmptyPayload_ExpectDateAndCommit(
    assert date_row is not None
    assert dict( date_row ) == {
       'ITINERARY_DATE': str( VISIT_DATE ),
-      'ARRIVAL_TIME': '9:30 AM',
-      'DEPARTURE_TIME': '5:00 PM',
+      'ARRIVAL_TIME': ARRIVAL_TIME,
+      'DEPARTURE_TIME': DEPARTURE_TIME,
    }
    assert exhibit_row is not None
    assert exhibit_row[ 'EXHIBIT' ] == SAVANNA

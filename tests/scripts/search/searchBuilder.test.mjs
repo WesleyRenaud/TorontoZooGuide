@@ -2,27 +2,50 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { SearchBuilder } from '../../../scripts/search/searchBuilder.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
+import { ScheduleItemKind } from '../../../scripts/shared/enums/scheduleItemKind.js';
+
 
 test('Test_FlattenSearchRows_TestNormalizedGroups_ExpectTypedRows', () => {
-   const rows = SearchBuilder.flattenSearchRows({
-      animals: [{ species: 'African Lion' }],
-      gift_shops: [{ name: 'Zootique' }],
-      attractions: [{ name: 'Conservation Carousel' }],
-      guardians_talks: [{ name: 'Amur Tiger' }],
-      wild_encounters: [{ name: 'African Rainforest' }],
+   const lion = { species: 'African Lion' };
+   const shop = { name: 'Zootique' };
+   const carousel = { name: 'Conservation Carousel' };
+   const talk = { name: 'Amur Tiger' };
+   const encounter = { name: 'African Rainforest' };
+   const response = {
+      [ScheduleItemKind.ANIMAL.itemType]: [lion],
+      gift_shops: [shop],
+      [ScheduleItemKind.ATTRACTION.itemType]: [carousel],
+      [ScheduleItemKind.GUARDIANS_TALK.itemType]: [talk],
+      [ScheduleItemKind.WILD_ENCOUNTER.itemType]: [encounter],
       unsupported: [{ name: 'Not a search group' }],
-   });
+   };
+
+   const rows = SearchBuilder.flattenSearchRows(response);
 
    assert.deepEqual(rows, [
-      { species: 'African Lion', type: 'animal' },
-      { name: 'Zootique', type: 'giftShop' },
-      { name: 'Conservation Carousel', type: 'attraction' },
-      { name: 'Amur Tiger', type: 'guardiansTalk' },
-      { name: 'African Rainforest', type: 'wildEncounter' },
+      { ...lion, type: ItemType.ANIMAL },
+      { ...shop, type: ItemType.GIFT_SHOP },
+      { ...carousel, type: ItemType.ATTRACTION },
+      { ...talk, type: ItemType.GUARDIANS_TALK },
+      { ...encounter, type: ItemType.WILD_ENCOUNTER },
    ]);
 });
 
-test('Test_FlattenSearchRows_TestMissingGroups_ExpectEmpty', () => {
-   assert.deepEqual(SearchBuilder.flattenSearchRows(null), []);
-   assert.deepEqual(SearchBuilder.flattenSearchRows({ attractions: 'Conservation Carousel' }), []);
+
+test('Test_FlattenSearchRows_TestNull_ExpectEmpty', () => {
+   const response = null;
+
+   const rows = SearchBuilder.flattenSearchRows(response);
+
+   assert.deepEqual(rows, []);
+});
+
+
+test('Test_FlattenSearchRows_TestNonArrayGroup_ExpectEmpty', () => {
+   const response = { attractions: 'Conservation Carousel' };
+
+   const rows = SearchBuilder.flattenSearchRows(response);
+
+   assert.deepEqual(rows, []);
 });

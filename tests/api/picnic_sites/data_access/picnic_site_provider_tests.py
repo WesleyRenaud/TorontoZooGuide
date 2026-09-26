@@ -26,7 +26,9 @@ def picnic_site_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchPicnicSites_TestEmpty_ExpectEmptyList(
       picnic_site_provider_conn: sqlite3.Connection ) -> None:
-   assert PicnicSiteProvider.fetch_picnic_sites( picnic_site_provider_conn ) == []
+   picnic_sites = PicnicSiteProvider.fetch_picnic_sites( picnic_site_provider_conn )
+
+   assert picnic_sites == []
 
 def Test_FetchPicnicSites_TestPopulated_ExpectMappedCoordinates(
       picnic_site_provider_conn: sqlite3.Connection ) -> None:

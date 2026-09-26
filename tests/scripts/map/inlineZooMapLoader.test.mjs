@@ -2,77 +2,99 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { InlineZooMapLoader } from '../../../scripts/map/inlineZooMapLoader.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_GetZooMapMountAndMountedSvg_TestDom_ExpectNodesOrNull', () => {
-   assert.equal(InlineZooMapLoader.getZooMapMount(), null);
 
+test('Test_GetZooMapMount_TestMissing_ExpectNull', () => {
+   const mount = InlineZooMapLoader.getZooMapMount();
+
+   assert.equal(mount, null);
+});
+
+
+test('Test_GetZooMapMountAndMountedSvg_TestDom_ExpectNodes', () => {
    const mount = document.createElement('div');
    mount.id = 'zooMapMount';
    const svg = document.createElement('svg');
    mount.querySelector = (selector) => (selector === 'svg' ? svg : null);
-
    const originalGet = document.getElementById;
-   document.getElementById = (id) => (id === 'zooMapMount' ? mount : null);
+   document.getElementById = (id) => (id === mount.id ? mount : null);
 
    try {
-      assert.equal(InlineZooMapLoader.getZooMapMount(), mount);
-      assert.equal(InlineZooMapLoader.getMountedSvg(mount), svg);
+      const foundMount = InlineZooMapLoader.getZooMapMount();
+      const foundSvg = InlineZooMapLoader.getMountedSvg(mount);
+
+      assert.equal(foundMount, mount);
+      assert.equal(foundSvg, svg);
    } finally {
       document.getElementById = originalGet;
    }
 });
 
+
 test('Test_ConfigureInlineSvg_TestAttributes_ExpectSized', () => {
    const svg = document.createElement('svg');
+
    const configured = InlineZooMapLoader.configureInlineSvg(svg);
+
    assert.equal(configured.getAttribute('width'), '100%');
    assert.equal(configured.getAttribute('height'), '100%');
    assert.equal(configured.getAttribute('preserveAspectRatio'), 'xMidYMid slice');
 });
 
+
 test('Test_FetchZooMapSvgText_TestFetch_ExpectCachedText', async () => {
    const originalFetch = globalThis.fetch;
    const originalCache = InlineZooMapLoader.cachedSvgTextPromise;
+   const svgText = '<svg></svg>';
    let calls = 0;
    globalThis.fetch = async (url) => {
       calls += 1;
       assert.equal(url, InlineZooMapLoader.ZOO_MAP_SVG_URL);
       return {
          ok: true,
-         text: async () => '<svg></svg>',
+         text: async () => svgText,
       };
    };
    InlineZooMapLoader.cachedSvgTextPromise = null;
 
    try {
-      assert.equal(await InlineZooMapLoader.fetchZooMapSvgText(), '<svg></svg>');
-      assert.equal(await InlineZooMapLoader.fetchZooMapSvgText(), '<svg></svg>');
-      assert.equal(calls, 1);
+      const first = await InlineZooMapLoader.fetchZooMapSvgText();
+      const second = await InlineZooMapLoader.fetchZooMapSvgText();
+
+      assert.equal(first, svgText);
+      assert.equal(second, svgText);
+      assert.equal(calls, Position.SECOND);
    } finally {
       globalThis.fetch = originalFetch;
       InlineZooMapLoader.cachedSvgTextPromise = originalCache;
    }
 });
 
+
 test('Test_MountInlineSvg_TestMount_ExpectInnerHtmlAndSvg', async () => {
    const originalFetch = InlineZooMapLoader.fetchZooMapSvgText;
-   InlineZooMapLoader.fetchZooMapSvgText = async () => '<svg id="map"></svg>';
+   const svgMarkup = '<svg id="map"></svg>';
+   const mapId = 'map';
+   InlineZooMapLoader.fetchZooMapSvgText = async () => svgMarkup;
    const mount = document.createElement('div');
    mount.querySelector = (selector) => (
-      selector === 'svg' ? { id: 'map' } : null
+      selector === 'svg' ? { id: mapId } : null
    );
 
    try {
       const svg = await InlineZooMapLoader.mountInlineSvg(mount);
-      assert.equal(mount.innerHTML, '<svg id="map"></svg>');
-      assert.equal(svg.id, 'map');
+
+      assert.equal(mount.innerHTML, svgMarkup);
+      assert.equal(svg.id, mapId);
    } finally {
       InlineZooMapLoader.fetchZooMapSvgText = originalFetch;
    }
 });
+
 
 test('Test_FetchZooMapSvgText_TestFailedResponse_ExpectClearsCacheAndThrows', async () => {
    const originalFetch = globalThis.fetch;
@@ -86,6 +108,7 @@ test('Test_FetchZooMapSvgText_TestFailedResponse_ExpectClearsCacheAndThrows', as
 
    try {
       await assert.rejects(() => InlineZooMapLoader.fetchZooMapSvgText());
+
       assert.equal(InlineZooMapLoader.cachedSvgTextPromise, null);
    } finally {
       globalThis.fetch = originalFetch;

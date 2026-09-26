@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_stop_resolver import ItineraryStopResolver
@@ -31,6 +32,7 @@ ENCOUNTER_WALK_NODE_ID = 'n-3001'
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
 WALK_THRU_WALK_NODE_ID = 'n-walk-thru'
 MEETING_SPOT = 'Wild Encounter - Penguin Meeting Spot'
+MISSING_NODE_ID = 'missing-node'
 
 
 def _node( node_id: str, x: float, y: float ) -> WalkGraphNode:
@@ -148,16 +150,48 @@ DELETED_ENCOUNTER = WildEncounter(
 )
 TALK_MAP_LOCATION = MapLocationWalkNode(
    kind=MapLocationKind.GUARDIANS_TALK,
-   name='Turtle Talk',
-   location='Americas Pavilion',
+   name=SCHEDULED_TALK.name,
+   location=SCHEDULED_TALK.location,
    x=35.0,
    y=45.0,
    walk_node_id=TALK_WALK_NODE_ID,
    snap_distance_px=0.0,
 )
 
+
 def _clear_walk_graph_provider_cache() -> None:
    WalkGraphProvider.fetch.cache_clear()
+
+
+def _itinerary(
+      *,
+      animals: list[ Animal ] | None = None,
+      attractions: list[ Attraction ] | None = None,
+      guardians_talks: list[ GuardiansTalk ] | None = None,
+      wild_encounters: list[ WildEncounter ] | None = None ) -> Itinerary:
+   return ItineraryBuilder.build(
+      date=VISIT_DATE,
+      selected_exhibits=[],
+      animals=animals or [],
+      attractions=attractions or [],
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=guardians_talks or [],
+      wild_encounters=wild_encounters or [],
+      events=[],
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME )
+
+
+def _animal_item_key( animal: Animal ) -> str:
+   return AnimalScheduleItemKey.wire(
+      species=animal.species,
+      exhibit=animal.exhibit,
+      enclosure_name=animal.enclosure_name )
+
+
+def _graph_node( node_id: str ) -> WalkGraphNode:
+   return next( node for node in TEST_GRAPH[ 'nodes' ] if node[ 'id' ] == node_id )
 
 
 @pytest.fixture
@@ -178,44 +212,29 @@ def stub_itinerary_stop_dependencies( monkeypatch: pytest.MonkeyPatch ) -> None:
    yield
 
 
-def _itinerary(
-      *,
-      animals: list[ Animal ] | None = None,
-      attractions: list[ Attraction ] | None = None,
-      wild_encounters: list[ WildEncounter ] | None = None ) -> Itinerary:
-   return ItineraryBuilder.build(
-      date=VISIT_DATE,
-      selected_exhibits=[],
-      animals=animals or [],
-      attractions=attractions or [],
-      transportations=[],
-      transportation_stations=[],
-      guardians_talks=[],
-      wild_encounters=wild_encounters or [],
-      events=[],
-      arrival_time=ARRIVAL_TIME,
-      departure_time=DEPARTURE_TIME )
-
-
 def Test_Entrance_TestWalkGraph_ExpectEntranceStop(
       stub_itinerary_stop_dependencies: None ) -> None:
+   entrance_node = _graph_node( TEST_GRAPH[ 'entrance_node_id' ] )
+
    entrance_stop = ItineraryStopResolver.entrance()
 
    assert entrance_stop.schedule_item_kind == ScheduleItemKind.ENTRANCE
    assert entrance_stop.item_key == ENTRANCE_ITEM_KEY
-   assert entrance_stop.walk_node_ids == [ ENTRANCE_NODE_ID ]
-   assert entrance_stop.x_coord == 61.414
-   assert entrance_stop.y_coord == 91.366
+   assert entrance_stop.walk_node_ids == [ entrance_node[ 'id' ] ]
+   assert entrance_stop.x_coord == entrance_node[ 'x' ]
+   assert entrance_stop.y_coord == entrance_node[ 'y' ]
 
 
 def Test_Resolve_TestAnimal_ExpectEntranceAndAnimalStops(
       stub_itinerary_stop_dependencies: None ) -> None:
-   stops = ItineraryStopResolver.resolve(
-      _itinerary( animals=[ SCHEDULED_LION ] ) )
+   itinerary = _itinerary( animals=[ SCHEDULED_LION ] )
+   animal_item_key = _animal_item_key( SCHEDULED_LION )
+
+   stops = ItineraryStopResolver.resolve( itinerary )
    lion_stop = next(
       stop
       for stop in stops
-      if stop.item_key == 'African Lion||Africa Savanna||Outdoor' )
+      if stop.item_key == animal_item_key )
 
    assert stops[ Position.FIRST ].schedule_item_kind == ScheduleItemKind.ENTRANCE
    assert lion_stop.schedule_item_kind == ScheduleItemKind.ANIMAL
@@ -224,27 +243,32 @@ def Test_Resolve_TestAnimal_ExpectEntranceAndAnimalStops(
 
 def Test_Resolve_TestWildEncounter_ExpectMeetingSpotWalkNode(
       stub_itinerary_stop_dependencies: None ) -> None:
+   itinerary = _itinerary( wild_encounters=[ SCHEDULED_ENCOUNTER ] )
+
+   stops = ItineraryStopResolver.resolve( itinerary )
    encounter_stop = next(
       stop
-      for stop in ItineraryStopResolver.resolve(
-         _itinerary( wild_encounters=[ SCHEDULED_ENCOUNTER ] ) )
+      for stop in stops
       if stop.schedule_item_kind == ScheduleItemKind.WILD_ENCOUNTER )
 
-   assert encounter_stop.item_key == 'Guardians of White Rhinos'
-   assert encounter_stop.meeting_spot == MEETING_SPOT
-   assert encounter_stop.walk_node_ids == [ ENCOUNTER_WALK_NODE_ID ]
+   assert encounter_stop.item_key == SCHEDULED_ENCOUNTER.name
+   assert encounter_stop.meeting_spot == SCHEDULED_ENCOUNTER.meeting_spot
+   assert encounter_stop.walk_node_ids == [ ENCOUNTER_MAP_LOCATION.walk_node_id ]
    assert encounter_stop.is_fixed_time
-   assert encounter_stop.start_time == '11:00 AM'
-   assert encounter_stop.end_time == '11:45 AM'
+   assert encounter_stop.start_time == SCHEDULED_ENCOUNTER.start_time
+   assert encounter_stop.end_time == SCHEDULED_ENCOUNTER.end_time
 
 
 def Test_ResolveFixedTime_TestWildEncounter_ExpectOnlyFixedTimeStops(
       stub_itinerary_stop_dependencies: None ) -> None:
-   fixed_time_stops = ItineraryStopResolver.resolve_fixed_time(
-      _itinerary( wild_encounters=[ SCHEDULED_ENCOUNTER ] ) )
+   itinerary = _itinerary( wild_encounters=[ SCHEDULED_ENCOUNTER ] )
 
-   assert len( fixed_time_stops ) == 1
-   assert fixed_time_stops[ Position.FIRST ].item_key == 'Guardians of White Rhinos'
+   fixed_time_stops = ItineraryStopResolver.resolve_fixed_time( itinerary )
+
+   assert [
+      stop.item_key
+      for stop in fixed_time_stops
+   ] == [ SCHEDULED_ENCOUNTER.name ]
 
 
 def Test_Resolve_TestCoveredKangarooWithWalkThru_ExpectAttractionStopOnly(
@@ -255,51 +279,52 @@ def Test_Resolve_TestCoveredKangarooWithWalkThru_ExpectAttractionStopOnly(
       'for_map_location',
       lambda kind, name, *, location='': (
          WALK_THRU_MAP_LOCATION
-         if kind == MapLocationKind.ATTRACTION and name == KANGAROO_WALK_THRU
+         if kind == MapLocationKind.ATTRACTION and name == SCHEDULED_WALK_THRU.name
          else (
             ENCOUNTER_MAP_LOCATION
             if kind == MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT
             else None
          ) ) )
+   itinerary = _itinerary(
+      animals=[ COVERED_KANGAROO ],
+      attractions=[ SCHEDULED_WALK_THRU ] )
 
-   stops = ItineraryStopResolver.resolve(
-      _itinerary(
-         animals=[ COVERED_KANGAROO ],
-         attractions=[ SCHEDULED_WALK_THRU ],
-      ) )
-
+   stops = ItineraryStopResolver.resolve( itinerary )
    animal_stops = [
       stop
       for stop in stops
       if (
          stop.schedule_item_kind == ScheduleItemKind.ANIMAL
-         and 'Western Grey Kangaroo' in stop.item_key )
+         and COVERED_KANGAROO.species in stop.item_key )
    ]
    attraction_stops = [
       stop
       for stop in stops
       if (
          stop.schedule_item_kind == ScheduleItemKind.ATTRACTION
-         and stop.item_key == KANGAROO_WALK_THRU )
+         and stop.item_key == SCHEDULED_WALK_THRU.name )
    ]
 
    assert animal_stops == []
-   assert len( attraction_stops ) == 1
-   assert attraction_stops[ Position.FIRST ].start_time == '11:00 AM'
-   assert attraction_stops[ Position.FIRST ].end_time == '11:30 AM'
-   assert attraction_stops[ Position.FIRST ].walk_node_ids == [ WALK_THRU_WALK_NODE_ID ]
+   assert [ stop.item_key for stop in attraction_stops ] == [ SCHEDULED_WALK_THRU.name ]
+   assert attraction_stops[ Position.FIRST ].start_time == SCHEDULED_WALK_THRU.start_time
+   assert attraction_stops[ Position.FIRST ].end_time == SCHEDULED_WALK_THRU.end_time
+   assert attraction_stops[ Position.FIRST ].walk_node_ids == [
+      WALK_THRU_MAP_LOCATION.walk_node_id
+   ]
 
 
 def Test_Resolve_TestCoveredLionTalk_ExpectNoAnimalStop(
       stub_itinerary_stop_dependencies: None ) -> None:
-   stops = ItineraryStopResolver.resolve(
-      _itinerary( animals=[ COVERED_LION ] ) )
+   itinerary = _itinerary( animals=[ COVERED_LION ] )
+
+   stops = ItineraryStopResolver.resolve( itinerary )
    animal_stops = [
       stop
       for stop in stops
       if (
          stop.schedule_item_kind == ScheduleItemKind.ANIMAL
-         and 'African Lion' in stop.item_key )
+         and COVERED_LION.species in stop.item_key )
    ]
 
    assert animal_stops == []
@@ -313,60 +338,40 @@ def Test_Resolve_TestGuardiansTalk_ExpectTalkStop(
          name: str,
          *,
          location: str = '' ) -> MapLocationWalkNode | None:
-      if kind == MapLocationKind.GUARDIANS_TALK and name == 'Turtle Talk':
+      if kind == MapLocationKind.GUARDIANS_TALK and name == SCHEDULED_TALK.name:
          return TALK_MAP_LOCATION
       return None
 
    monkeypatch.setattr( MapLocationWalkNodeLookup, 'for_map_location', for_map_location )
+   itinerary = _itinerary( guardians_talks=[ SCHEDULED_TALK, DELETED_TALK ] )
 
-   stops = ItineraryStopResolver.resolve(
-      ItineraryBuilder.build(
-         date=VISIT_DATE,
-         selected_exhibits=[],
-         animals=[],
-         attractions=[],
-         transportations=[],
-         transportation_stations=[],
-         guardians_talks=[ SCHEDULED_TALK, DELETED_TALK ],
-         wild_encounters=[],
-         events=[],
-         arrival_time=ARRIVAL_TIME,
-         departure_time=DEPARTURE_TIME ) )
-
+   stops = ItineraryStopResolver.resolve( itinerary )
    talk_stops = [
       stop
       for stop in stops
       if stop.schedule_item_kind == ScheduleItemKind.GUARDIANS_TALK
    ]
 
-   assert len( talk_stops ) == 1
-   assert talk_stops[ Position.FIRST ].item_key == 'Turtle Talk'
-   assert talk_stops[ Position.FIRST ].walk_node_ids == [ TALK_WALK_NODE_ID ]
+   assert [ stop.item_key for stop in talk_stops ] == [ SCHEDULED_TALK.name ]
+   assert talk_stops[ Position.FIRST ].walk_node_ids == [ TALK_MAP_LOCATION.walk_node_id ]
 
 
 def Test_Resolve_TestDeletedWildEncounter_ExpectSkipped(
       stub_itinerary_stop_dependencies: None ) -> None:
-   stops = ItineraryStopResolver.resolve(
-      ItineraryBuilder.build(
-         date=VISIT_DATE,
-         selected_exhibits=[],
-         animals=[],
-         attractions=[],
-         transportations=[],
-         transportation_stations=[],
-         guardians_talks=[],
-         wild_encounters=[ DELETED_ENCOUNTER ],
-         events=[],
-         arrival_time=ARRIVAL_TIME,
-         departure_time=DEPARTURE_TIME ) )
+   itinerary = _itinerary( wild_encounters=[ DELETED_ENCOUNTER ] )
 
-   assert [
+   stops = ItineraryStopResolver.resolve( itinerary )
+   encounter_stops = [
       stop
       for stop in stops
       if stop.schedule_item_kind == ScheduleItemKind.WILD_ENCOUNTER
-   ] == []
+   ]
+
+   assert encounter_stops == []
 
 
 def Test_WalkGraphNodeById_TestMissingNode_ExpectValueError() -> None:
+   missing_node_id = MISSING_NODE_ID
+
    with pytest.raises( ValueError, match='not found' ):
-      ItineraryStopResolver._walk_graph_node_by_id( TEST_GRAPH, 'missing-node' )
+      ItineraryStopResolver._walk_graph_node_by_id( TEST_GRAPH, missing_node_id )

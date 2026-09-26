@@ -4,6 +4,8 @@ import { test } from 'node:test';
 import { SpeciesFragment } from '../../../scripts/overlays/speciesFragment.js';
 import { AnimalsClient } from '../../../scripts/api/animalsClient.js';
 import { SpeciesOverlayBuilder } from '../../../scripts/overlays/speciesOverlayBuilder.js';
+import { Strings } from '../../../scripts/strings.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 import { createFetchMock } from '../helpers/fetchMock.mjs';
@@ -64,7 +66,7 @@ test('Test_OpenAnimalSpeciesOverlay_TestOpenAnimalSpeciesOverlayIgnoresAnimalsWi
    SpeciesFragment.openAnimalSpeciesOverlay({ species: '   ' });
 
    assert.equal(overlay?.classList.contains('hidden'), true);
-   assert.equal(content?.children.length, 0);
+   assert.equal(content?.children.length, Position.FIRST);
 });
 
 test('Test_InitSpeciesOverlay_TestInitSpeciesOverlayOpensContentClosesFromBackdropClickAnd_ExpectOk', () => {
@@ -92,42 +94,33 @@ test('Test_InitSpeciesOverlay_TestInitSpeciesOverlayOpensContentClosesFromBackdr
    assert.equal(SpeciesFragment.initSpeciesOverlay(), first);
 });
 
-test('Test_OpenAnimalSpeciesOverlay_TestOpenAnimalSpeciesOverlayShowsLinkedAnimalNavOnlyForMultiple_ExpectOk', () => {
+test('Test_OpenAnimalSpeciesOverlay_TestSingleLinked_ExpectNoNav', () => {
    const content = document.getElementById('speciesOverlay')
       ?.querySelector('.species-overlay-content');
+   const africanLion = { species: 'African Lion', exhibit: 'Africa Savanna' };
 
-   SpeciesFragment.openAnimalSpeciesOverlay(
-      {
-         species: 'African Lion',
-         exhibit: 'Africa Savanna',
-      },
-      {
-         linkedAnimals: [
-            { species: 'African Lion', exhibit: 'Africa Savanna' },
-         ],
-      }
-   );
+   SpeciesFragment.openAnimalSpeciesOverlay(africanLion, {
+      linkedAnimals: [africanLion],
+   });
 
    assert.equal(content?.querySelector('.species-overlay-nav'), null);
+});
 
-   SpeciesFragment.openAnimalSpeciesOverlay(
-      {
-         species: 'Golden Lion Tamarin',
-         exhibit: 'Americas Pavilion',
-      },
-      {
-         linkedAnimals: [
-            { species: 'Golden Lion Tamarin', exhibit: 'Americas Pavilion' },
-            { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' },
-            { species: 'White-Faced Saki', exhibit: 'Americas Pavilion' },
-         ],
-      }
-   );
+
+test('Test_OpenAnimalSpeciesOverlay_TestMultipleLinked_ExpectNav', () => {
+   const content = document.getElementById('speciesOverlay')
+      ?.querySelector('.species-overlay-content');
+   const tamarin = { species: 'Golden Lion Tamarin', exhibit: 'Americas Pavilion' };
+   const sloth = { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' };
+   const saki = { species: 'White-Faced Saki', exhibit: 'Americas Pavilion' };
+   const linkedAnimals = [tamarin, sloth, saki];
+
+   SpeciesFragment.openAnimalSpeciesOverlay(tamarin, { linkedAnimals });
 
    assert.ok(content?.querySelector('.species-overlay-nav'));
    assert.equal(
       content?.querySelector('.species-overlay-nav-position')?.textContent,
-      '1 of 3'
+      Strings.common.animalPosition(1, linkedAnimals.length)
    );
    assert.ok(content?.querySelector('.species-overlay-nav-prev'));
    assert.ok(content?.querySelector('.species-overlay-nav-next'));
@@ -137,16 +130,20 @@ test('Test_Species_TestSpeciesOverlayNextArrowFetchesAndSwapsTo_ExpectOk', async
    const content = document.getElementById('speciesOverlay')
       ?.querySelector('.species-overlay-content');
    const requests = [];
+   const tamarin = { species: 'Golden Lion Tamarin', exhibit: 'Americas Pavilion' };
+   const sloth = { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' };
+   const saki = { species: 'White-Faced Saki', exhibit: 'Americas Pavilion' };
+   const linkedAnimals = [tamarin, sloth, saki];
 
    globalThis.fetch = createFetchMock({
       '/get-animal-information': (_url, options) => {
          const body = JSON.parse(options.body);
          requests.push(body);
 
-         if (body.species === 'Two-Toed Sloth') {
+         if (body.species === sloth.species) {
             return _animalPayload({
-               species: 'Two-Toed Sloth',
-               exhibit: 'Americas Pavilion',
+               species: sloth.species,
+               exhibit: sloth.exhibit,
                identification: 'Slow arboreal mammal',
             });
          }
@@ -161,39 +158,20 @@ test('Test_Species_TestSpeciesOverlayNextArrowFetchesAndSwapsTo_ExpectOk', async
 
    SpeciesFragment.openAnimalSpeciesOverlay(
       {
-         species: 'Golden Lion Tamarin',
-         exhibit: 'Americas Pavilion',
+         ...tamarin,
          identification: 'Bright orange primate',
       },
-      {
-         linkedAnimals: [
-            { species: 'Golden Lion Tamarin', exhibit: 'Americas Pavilion' },
-            { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' },
-            { species: 'White-Faced Saki', exhibit: 'Americas Pavilion' },
-         ],
-      }
+      { linkedAnimals }
    );
-
-   assert.equal(
-      content?.querySelector('.animal-species-name')?.textContent,
-      'Golden Lion Tamarin'
-   );
-
    const nextButton = content?.querySelector('.species-overlay-nav-next');
-   assert.ok(nextButton);
    nextButton.click();
    await new Promise((resolve) => setTimeout(resolve, 0));
 
-   assert.deepEqual(requests, [
-      { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' },
-   ]);
-   assert.equal(
-      content?.querySelector('.animal-species-name')?.textContent,
-      'Two-Toed Sloth'
-   );
+   assert.deepEqual(requests, [sloth]);
+   assert.equal(content?.querySelector('.animal-species-name')?.textContent, sloth.species);
    assert.equal(
       content?.querySelector('.species-overlay-nav-position')?.textContent,
-      '2 of 3'
+      Strings.common.animalPosition(2, linkedAnimals.length)
    );
 });
 

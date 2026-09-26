@@ -86,10 +86,12 @@ STALE_INTERMEDIATE_GRAPH: WalkGraph = {
 
 
 def Test_Distance_TestSameNode_ExpectZero() -> None:
-   assert ShortestPathCalculator.distance(
+   result = ShortestPathCalculator.distance(
       BIDIRECTIONAL_GRAPH,
       'n-1',
-      'n-1' ) == 0.0
+      'n-1' )
+
+   assert result == 0.0
 
 
 def Test_Distance_TestKnownNodes_ExpectSymmetricDistance() -> None:
@@ -112,63 +114,110 @@ def Test_Find_TestSameNode_ExpectZeroLengthPath() -> None:
 
 
 def Test_Find_TestNeighborPath_ExpectLengthMatchesDistanceLookup() -> None:
-   path = ShortestPathCalculator.find( BIDIRECTIONAL_GRAPH, 'n-1', 'n-2' )
+   start_node_id = 'n-1'
+   end_node_id = 'n-2'
+   distances = ShortestPathCalculator.distances( BIDIRECTIONAL_GRAPH, start_node_id )
+
+   path = ShortestPathCalculator.find( BIDIRECTIONAL_GRAPH, start_node_id, end_node_id )
 
    assert path is not None
-   assert path.node_ids == [ 'n-1', 'n-2' ]
-   assert path.length_px == ShortestPathCalculator.distances( BIDIRECTIONAL_GRAPH, 'n-1' )[ 'n-2' ]
-   assert ShortestPathCalculator.node_ids( BIDIRECTIONAL_GRAPH, 'n-1', 'n-2' ) == path.node_ids
+   assert path.node_ids == [ start_node_id, end_node_id ]
+   assert path.length_px == distances[ end_node_id ]
 
 
-def Test_Find_TestOneWayChain_ExpectForwardPathAndNoReverseRoute() -> None:
-   path_to_end = ShortestPathCalculator.node_ids(
+def Test_NodeIds_TestNeighborPath_ExpectSameNodesAsFind() -> None:
+   start_node_id = 'n-1'
+   end_node_id = 'n-2'
+   path = ShortestPathCalculator.find( BIDIRECTIONAL_GRAPH, start_node_id, end_node_id )
+
+   node_ids = ShortestPathCalculator.node_ids(
+      BIDIRECTIONAL_GRAPH,
+      start_node_id,
+      end_node_id )
+
+   assert node_ids == path.node_ids
+
+
+def Test_NodeIds_TestOneWayChain_ExpectForwardPath() -> None:
+   node_ids = ShortestPathCalculator.node_ids(
       ONE_WAY_CHAIN_GRAPH,
       'n-1',
       'n-4' )
-   path_to_middle = ShortestPathCalculator.node_ids(
+
+   assert node_ids == [ 'n-1', 'n-2', 'n-3', 'n-4' ]
+
+
+def Test_NodeIds_TestOneWayChainMiddle_ExpectPartialPath() -> None:
+   node_ids = ShortestPathCalculator.node_ids(
       ONE_WAY_CHAIN_GRAPH,
       'n-1',
       'n-2' )
-   reverse_path = ShortestPathCalculator.node_ids(
+
+   assert node_ids == [ 'n-1', 'n-2' ]
+
+
+def Test_NodeIds_TestOneWayChainReverse_ExpectNone() -> None:
+   node_ids = ShortestPathCalculator.node_ids(
       ONE_WAY_CHAIN_GRAPH,
       'n-2',
       'n-1' )
 
-   assert path_to_end == [ 'n-1', 'n-2', 'n-3', 'n-4' ]
-   assert path_to_middle == [ 'n-1', 'n-2' ]
-   assert reverse_path is None
-   assert ShortestPathCalculator.distance(
+   assert node_ids is None
+
+
+def Test_Distance_TestOneWayChain_ExpectShorterThanFullPath() -> None:
+   near_distance = ShortestPathCalculator.distance(
       ONE_WAY_CHAIN_GRAPH,
       'n-1',
-      'n-2' ) < ShortestPathCalculator.distance(
-         ONE_WAY_CHAIN_GRAPH,
-         'n-1',
-         'n-4' )
+      'n-2' )
+   far_distance = ShortestPathCalculator.distance(
+      ONE_WAY_CHAIN_GRAPH,
+      'n-1',
+      'n-4' )
+
+   assert near_distance < far_distance
 
 
 def Test_Distances_TestStaleQueueEntry_ExpectShortestDistance() -> None:
-   assert ShortestPathCalculator.distances(
-      STALE_QUEUE_GRAPH,
-      'n-1' )[ 'n-2' ] == 2.0
+   start_node_id = 'n-1'
+   end_node_id = 'n-2'
+   short_edge = 1.0
+   expected_distance = short_edge + short_edge
+
+   distances = ShortestPathCalculator.distances( STALE_QUEUE_GRAPH, start_node_id )
+
+   assert distances[ end_node_id ] == expected_distance
 
 
 def Test_Find_TestStaleQueueEntry_ExpectShortestPath() -> None:
+   start_node_id = 'n-1'
+   via_node_id = 'n-3'
+   end_node_id = 'n-2'
+   short_edge = 1.0
+
    path = ShortestPathCalculator.find(
       STALE_QUEUE_GRAPH,
-      'n-1',
-      'n-2' )
+      start_node_id,
+      end_node_id )
 
    assert path is not None
-   assert path.length_px == 2.0
-   assert path.node_ids == [ 'n-1', 'n-3', 'n-2' ]
+   assert path.length_px == short_edge + short_edge
+   assert path.node_ids == [ start_node_id, via_node_id, end_node_id ]
 
 
 def Test_Find_TestStaleIntermediateNode_ExpectShortestPath() -> None:
+   start_node_id = 'n-1'
+   via_node_id = 'n-2'
+   middle_node_id = 'n-3'
+   end_node_id = 'n-5'
+   short_edge = 1.0
+   long_edge = 50.0
+
    path = ShortestPathCalculator.find(
       STALE_INTERMEDIATE_GRAPH,
-      'n-1',
-      'n-5' )
+      start_node_id,
+      end_node_id )
 
    assert path is not None
-   assert path.length_px == 52.0
-   assert path.node_ids == [ 'n-1', 'n-2', 'n-3', 'n-5' ]
+   assert path.length_px == short_edge + short_edge + long_edge
+   assert path.node_ids == [ start_node_id, via_node_id, middle_node_id, end_node_id ]

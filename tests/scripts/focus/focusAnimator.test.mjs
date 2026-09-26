@@ -3,13 +3,20 @@ import test from 'node:test';
 
 import { FocusAnimator } from '../../../scripts/focus/focusAnimator.js';
 import { MapCenterHelper } from '../../../scripts/focus/mapCenterHelper.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_FocusMarker_TestMissingArgs_ExpectNoOp', () => {
-   FocusAnimator.focusMarker({});
+   const options = {};
+
+   const focus = () => FocusAnimator.focusMarker(options);
+
+   assert.doesNotThrow(focus);
 });
+
 
 test('Test_FocusMarker_TestMarker_ExpectZoomCenterAndTooltip', () => {
    const zooms = [];
@@ -35,8 +42,8 @@ test('Test_FocusMarker_TestMarker_ExpectZoomCenterAndTooltip', () => {
 
       assert.deepEqual(zooms, [[FocusAnimator.FOCUS_ZOOM_LEVEL, { animate: false }]]);
       assert.equal(centers.length, 2);
-      assert.equal(opens.length, 1);
-      assert.equal(jumps.length, 1);
+      assert.equal(opens.length, Position.SECOND);
+      assert.equal(jumps.length, Position.SECOND);
    } finally {
       MapCenterHelper.centerMarkerWithContain = originalCenter;
    }

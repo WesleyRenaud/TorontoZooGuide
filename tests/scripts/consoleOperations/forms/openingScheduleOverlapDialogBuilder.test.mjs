@@ -21,15 +21,22 @@ installDomTestHooks({
    },
 });
 
+
 test('Test_CreateDialogButton_TestText_ExpectButton', () => {
-   const button = OpeningScheduleOverlapDialogBuilder.createDialogButton('btn', 'Cancel');
+   const className = 'btn';
+   const text = 'Cancel';
+
+   const button = OpeningScheduleOverlapDialogBuilder.createDialogButton(className, text);
+
    assert.equal(button.type, 'button');
-   assert.equal(button.className, 'btn');
-   assert.equal(button.textContent, 'Cancel');
+   assert.equal(button.className, className);
+   assert.equal(button.textContent, text);
 });
+
 
 test('Test_CreateDialogLayout_TestDefaults_ExpectDialogParts', () => {
    const layout = OpeningScheduleOverlapDialogBuilder.createDialogLayout();
+
    assert.equal(layout.root.className, 'console-overlap-dialog-root');
    assert.equal(layout.buttons.cancel.textContent, Strings.itinerary.actions.cancel);
    assert.equal(layout.buttons.replace.textContent, Strings.confirm.deleteOldSchedules);

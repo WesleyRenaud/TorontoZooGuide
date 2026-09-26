@@ -72,14 +72,19 @@ def Test_Apply_TestNoTransportationAnimals_ExpectUnchanged() -> None:
 def Test_Apply_TestMatchingHop_ExpectTransportationAnimalKept(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    giraffe = _animal(
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE_LINK.species,
+      exhibit=GIRAFFE_LINK.exhibit,
+      enclosure_name=GIRAFFE_LINK.enclosure_name,
       added_by_transportation=True )
    lion = _animal(
       species='African Lion',
       exhibit='Africa Savanna',
       enclosure_name='Outdoor' )
+   matching_leg = _leg(
+      from_station=GIRAFFE_LINK.from_station,
+      to_station=GIRAFFE_LINK.to_station,
+      start_time='10:20 AM',
+      end_time='10:30 AM' )
    monkeypatch.setattr(
       TransportationAnimalProvider,
       'fetch_all',
@@ -87,13 +92,7 @@ def Test_Apply_TestMatchingHop_ExpectTransportationAnimalKept(
 
    animals = ItineraryTransportationAnimalVisibilityFilter.apply(
       [ giraffe, lion ],
-      itinerary_legs=[
-         _leg(
-            from_station='Canadian Domain Zoomobile Station',
-            to_station='Africa Zoomobile Station',
-            start_time='10:20 AM',
-            end_time='10:30 AM' ),
-      ] )
+      itinerary_legs=[ matching_leg ] )
 
    assert animals == [ giraffe, lion ]
 
@@ -101,9 +100,9 @@ def Test_Apply_TestMatchingHop_ExpectTransportationAnimalKept(
 def Test_Apply_TestMissingHop_ExpectTransportationAnimalHidden(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    giraffe = _animal(
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE_LINK.species,
+      exhibit=GIRAFFE_LINK.exhibit,
+      enclosure_name=GIRAFFE_LINK.enclosure_name,
       added_by_transportation=True )
    lion = _animal(
       species='African Lion',
@@ -124,10 +123,15 @@ def Test_Apply_TestMissingHop_ExpectTransportationAnimalHidden(
 def Test_Apply_TestUnknownCatalogSpot_ExpectTransportationAnimalHidden(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    giraffe = _animal(
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE_LINK.species,
+      exhibit=GIRAFFE_LINK.exhibit,
+      enclosure_name=GIRAFFE_LINK.enclosure_name,
       added_by_transportation=True )
+   unmatched_leg = _leg(
+      from_station=GIRAFFE_LINK.from_station,
+      to_station=GIRAFFE_LINK.to_station,
+      start_time='10:20 AM',
+      end_time='10:30 AM' )
    monkeypatch.setattr(
       TransportationAnimalProvider,
       'fetch_all',
@@ -135,12 +139,6 @@ def Test_Apply_TestUnknownCatalogSpot_ExpectTransportationAnimalHidden(
 
    animals = ItineraryTransportationAnimalVisibilityFilter.apply(
       [ giraffe ],
-      itinerary_legs=[
-         _leg(
-            from_station='Canadian Domain Zoomobile Station',
-            to_station='Africa Zoomobile Station',
-            start_time='10:20 AM',
-            end_time='10:30 AM' ),
-      ] )
+      itinerary_legs=[ unmatched_leg ] )
 
    assert animals == []

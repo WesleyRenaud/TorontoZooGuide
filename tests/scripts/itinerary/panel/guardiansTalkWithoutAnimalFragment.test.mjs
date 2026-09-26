@@ -3,72 +3,73 @@ import { test } from 'node:test';
 
 import { GuardiansTalkWithoutAnimalFragment } from '../../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalFragment.js';
 import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
+import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_HasGuardiansTalkWithoutAnimalIssue_TestMatching_ExpectDetected', () => {
-   assert.equal(
-      GuardiansTalkWithoutAnimalFragment.hasGuardiansTalkWithoutAnimalIssue([
-         { type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL },
-      ]),
-      true
-   );
-   assert.equal(
-      GuardiansTalkWithoutAnimalFragment.hasGuardiansTalkWithoutAnimalIssue([
-         { type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT },
-      ]),
-      false
-   );
+
+test('Test_HasGuardiansTalkWithoutAnimalIssue_TestMatching_ExpectTrue', () => {
+   const issues = [{ type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL }];
+
+   const hasIssue = GuardiansTalkWithoutAnimalFragment.hasGuardiansTalkWithoutAnimalIssue(issues);
+
+   assert.equal(hasIssue, true);
 });
+
+
+test('Test_HasGuardiansTalkWithoutAnimalIssue_TestOtherType_ExpectFalse', () => {
+   const issues = [{ type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT }];
+
+   const hasIssue = GuardiansTalkWithoutAnimalFragment.hasGuardiansTalkWithoutAnimalIssue(issues);
+
+   assert.equal(hasIssue, false);
+});
+
 
 test('Test_GetPrimaryGuardiansTalkFromWithoutAnimalIssues_TestTalk_ExpectNoTime', () => {
-   assert.deepEqual(
-      GuardiansTalkWithoutAnimalFragment.getPrimaryGuardiansTalkFromWithoutAnimalIssues([
-         {
-            type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-            items: [{ name: 'Komodo Dragon' }],
-         },
-      ]),
-      { talkName: 'Komodo Dragon' }
-   );
+   const talkName = 'Komodo Dragon';
+   const issues = [{
+      type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+      items: [{ name: talkName }],
+   }];
+
+   const talk = GuardiansTalkWithoutAnimalFragment.getPrimaryGuardiansTalkFromWithoutAnimalIssues(issues);
+
+   assert.deepEqual(talk, { talkName });
 });
+
 
 test('Test_GetGuardiansTalksFromWithoutAnimalIssues_TestNamedTalks_ExpectAll', () => {
-   assert.deepEqual(
-      GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues([{
-         type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-         items: [
-            {
-               name: 'Western Grey Kangaroo',
-               start_time: '11:00 AM',
-            },
-            {
-               name: 'African Lion',
-               start_time: '2:00 PM',
-            },
-         ],
-      }]),
-      [
-         {
-            talkName: 'Western Grey Kangaroo',
-            talkTime: '11:00 AM',
-         },
-         {
-            talkName: 'African Lion',
-            talkTime: '2:00 PM',
-         },
-      ]
-   );
+   const kangaroo = 'Western Grey Kangaroo';
+   const kangarooTime = '11:00 AM';
+   const lion = 'African Lion';
+   const lionTime = '2:00 PM';
+   const issues = [{
+      type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+      items: [
+         { name: kangaroo, start_time: kangarooTime },
+         { name: lion, start_time: lionTime },
+      ],
+   }];
+
+   const talks = GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues(issues);
+
+   assert.deepEqual(talks, [
+      { talkName: kangaroo, talkTime: kangarooTime },
+      { talkName: lion, talkTime: lionTime },
+   ]);
 });
 
+
 test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMessage_ExpectNoTime', () => {
+   const talkName = 'Komodo Dragon';
    let confirmed = false;
 
    GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation({
       issues: [{
          type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-         items: [{ name: 'Komodo Dragon' }],
+         items: [{ name: talkName }],
       }],
       onConfirm: () => {
          confirmed = true;
@@ -76,16 +77,15 @@ test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMessage_ExpectNoTime',
    });
 
    const popupMessage = document.querySelector('.tzg-popup-message');
+   document.querySelector('.tzg-popup-confirm')?.click();
 
    assert.equal(
       popupMessage?.textContent,
-      'The Komodo Dragon guardians talk does not match an animal on your itinerary. Do you still want to keep it on your plan?'
+      Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessageWithoutTime(talkName)
    );
-
-   document.querySelector('.tzg-popup-confirm')?.click();
-
    assert.equal(confirmed, true);
 });
+
 
 test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMultiple_ExpectNoOp', () => {
    GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation({
@@ -101,8 +101,11 @@ test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMultiple_ExpectNoOp', 
       },
    });
 
-   assert.equal(document.querySelector('.tzg-popup'), null);
+   const popup = document.querySelector('.tzg-popup');
+
+   assert.equal(popup, null);
 });
+
 
 test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', () => {
    GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation({
@@ -112,19 +115,25 @@ test('Test_ShowGuardiansTalkWithoutAnimalConfirmation_TestMissingName_ExpectNoOp
       },
    });
 
-   assert.equal(document.querySelector('.tzg-popup'), null);
+   const popup = document.querySelector('.tzg-popup');
+
+   assert.equal(popup, null);
 });
 
+
 test('Test_GetGuardiansTalkNamesFromWithoutAnimalIssues_TestNamesAndBlanks_ExpectFiltered', () => {
-   assert.deepEqual(
-      GuardiansTalkWithoutAnimalFragment.getGuardiansTalkNamesFromWithoutAnimalIssues([{
-         type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-         items: [
-            { name: '  Komodo Dragon  ', start_time: '11:00 AM' },
-            { name: '' },
-            { name: 'African Lion' },
-         ],
-      }]),
-      ['Komodo Dragon', 'African Lion']
-   );
+   const komodo = 'Komodo Dragon';
+   const lion = 'African Lion';
+   const issues = [{
+      type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+      items: [
+         { name: `  ${komodo}  `, start_time: '11:00 AM' },
+         { name: '' },
+         { name: lion },
+      ],
+   }];
+
+   const names = GuardiansTalkWithoutAnimalFragment.getGuardiansTalkNamesFromWithoutAnimalIssues(issues);
+
+   assert.deepEqual(names, [komodo, lion]);
 });

@@ -62,7 +62,9 @@ def _insert_restroom(
 
 def Test_FetchRestroomNames_TestEmpty_ExpectEmptyList(
       restroom_provider_conn: sqlite3.Connection ) -> None:
-   assert RestroomProvider.fetch_restroom_names( restroom_provider_conn ) == []
+   restroom_names = RestroomProvider.fetch_restroom_names( restroom_provider_conn )
+
+   assert restroom_names == []
 
 
 def Test_FetchRestroomNames_TestPopulated_ExpectTitles(
@@ -78,7 +80,9 @@ def Test_FetchRestroomNames_TestPopulated_ExpectTitles(
 
 def Test_FetchRestroomRecords_TestEmpty_ExpectEmptyList(
       restroom_provider_conn: sqlite3.Connection ) -> None:
-   assert RestroomProvider.fetch_restroom_records( restroom_provider_conn ) == []
+   restroom_records = RestroomProvider.fetch_restroom_records( restroom_provider_conn )
+
+   assert restroom_records == []
 
 
 def Test_FetchRestroomRecords_TestWithoutStatusOrAlert_ExpectNullJoinedFields(

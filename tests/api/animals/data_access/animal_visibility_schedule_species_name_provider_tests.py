@@ -72,9 +72,11 @@ def _insert_schedule(
 
 def Test_FetchVisibilityScheduleSpeciesNames_TestEmpty_ExpectEmptyList(
       visibility_schedule_species_conn: sqlite3.Connection ) -> None:
-   assert AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names(
+   visibility_schedule_species_names = AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names(
       visibility_schedule_species_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert visibility_schedule_species_names == []
 
 
 def Test_FetchVisibilityScheduleSpeciesNames_TestCurrentAndFuture_ExpectIncluded(
@@ -98,9 +100,11 @@ def Test_FetchVisibilityScheduleSpeciesNames_TestCurrentAndFuture_ExpectIncluded
       start_date='2026-09-01',
       end_date=None )
 
-   assert AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names(
+   visibility_schedule_species_names = AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names(
       visibility_schedule_species_conn,
-      TODAY ) == [ LION, TIGER, GIRAFFE ]
+      TODAY )
+
+   assert visibility_schedule_species_names == [ LION, TIGER, GIRAFFE ]
 
 
 def Test_FetchVisibilityScheduleSpeciesNames_TestExpired_ExpectExcluded(
@@ -112,9 +116,11 @@ def Test_FetchVisibilityScheduleSpeciesNames_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names(
+   visibility_schedule_species_names = AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names(
       visibility_schedule_species_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert visibility_schedule_species_names == []
 
 
 def Test_FetchVisibilityScheduleSpeciesNames_TestEndingToday_ExpectIncluded(
@@ -126,9 +132,11 @@ def Test_FetchVisibilityScheduleSpeciesNames_TestEndingToday_ExpectIncluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names(
+   visibility_schedule_species_names = AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names(
       visibility_schedule_species_conn,
-      TODAY ) == [ LION ]
+      TODAY )
+
+   assert visibility_schedule_species_names == [ LION ]
 
 
 def Test_FetchVisibilityScheduleSpeciesNamesInExhibit_TestMatchingExhibit_ExpectMatchingExhibit(
@@ -146,7 +154,9 @@ def Test_FetchVisibilityScheduleSpeciesNamesInExhibit_TestMatchingExhibit_Expect
       start_date='2026-09-01',
       end_date=None )
 
-   assert AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names_in_exhibit(
+   visibility_schedule_species_names_in_exhibit = AnimalVisibilityScheduleSpeciesNameProvider.fetch_visibility_schedule_species_names_in_exhibit(
       visibility_schedule_species_conn,
       TODAY,
-      SAVANNA ) == [ LION ]
+      SAVANNA )
+
+   assert visibility_schedule_species_names_in_exhibit == [ LION ]

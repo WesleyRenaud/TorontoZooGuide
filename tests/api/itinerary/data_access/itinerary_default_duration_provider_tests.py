@@ -5,7 +5,9 @@ import sqlite3
 import pytest
 
 from api.itinerary.data_access.itinerary_default_duration_provider import ItineraryDefaultDurationProvider
+from api.shared.duration_values import DurationValues
 from api.shared.enums import ItineraryEventType
+
 
 DEFAULT_DURATION_SCHEMA = """
 CREATE TABLE EnclosureViewing (
@@ -28,6 +30,14 @@ CREATE TABLE ItineraryEventDefault (
 );
 """
 
+LION_SPECIES = 'African Lion'
+LION_EXHIBIT = 'Africa Savanna'
+LION_ENCLOSURE = 'Outdoor'
+LION_DURATION_MINUTES = 0.5
+SPLASH_ISLAND = 'Splash Island'
+SPLASH_ISLAND_DURATION_MINUTES = 15
+LUNCH_DURATION_MINUTES = 30
+
 
 @pytest.fixture
 def default_duration_conn() -> sqlite3.Connection:
@@ -43,7 +53,7 @@ def default_duration_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, NULL, ? );
       """,
-      ( 'African Lion', 'Africa Savanna', 0.5 ) )
+      ( LION_SPECIES, LION_EXHIBIT, LION_DURATION_MINUTES ) )
    conn.commit()
 
    yield conn
@@ -66,7 +76,7 @@ def extended_default_duration_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ?, NULL );
       """,
-      ( 'African Lion', 'Africa Savanna', 'Outdoor' ) )
+      ( LION_SPECIES, LION_EXHIBIT, LION_ENCLOSURE ) )
    conn.execute(
       """   INSERT INTO Attraction (
                NAME,
@@ -74,7 +84,7 @@ def extended_default_duration_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ? );
       """,
-      ( 'Splash Island', 15 ) )
+      ( SPLASH_ISLAND, SPLASH_ISLAND_DURATION_MINUTES ) )
    conn.execute(
       """   INSERT INTO ItineraryEventDefault (
                EVENT_TYPE,
@@ -82,7 +92,7 @@ def extended_default_duration_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ? );
       """,
-      ( ItineraryEventType.LUNCH.value, 30 ) )
+      ( ItineraryEventType.LUNCH.value, LUNCH_DURATION_MINUTES ) )
    conn.commit()
 
    yield conn
@@ -94,54 +104,75 @@ def Test_FetchEnclosureViewingDefaultDurationSeconds_TestHalfMinute_ExpectThirty
       default_duration_conn: sqlite3.Connection ) -> None:
    duration = ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
       default_duration_conn,
-      species='African Lion',
-      exhibit='Africa Savanna',
+      species=LION_SPECIES,
+      exhibit=LION_EXHIBIT,
       enclosure_name=None )
 
-   assert duration == 30
+   assert duration == DurationValues.normalize_seconds( LION_DURATION_MINUTES )
 
 
 def Test_FetchEnclosureViewingDefaultDurationSeconds_TestNamedEnclosureMissing_ExpectNone(
       extended_default_duration_conn: sqlite3.Connection ) -> None:
-   assert ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
+   enclosure_name = 'Missing Enclosure'
+
+   duration = ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
       extended_default_duration_conn,
-      species='African Lion',
-      exhibit='Africa Savanna',
-      enclosure_name='Missing Enclosure' ) is None
+      species=LION_SPECIES,
+      exhibit=LION_EXHIBIT,
+      enclosure_name=enclosure_name )
+
+   assert duration is None
 
 
 def Test_FetchEnclosureViewingDefaultDurationSeconds_TestNamedEnclosureNullMinutes_ExpectNone(
       extended_default_duration_conn: sqlite3.Connection ) -> None:
-   assert ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
+   duration = ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds(
       extended_default_duration_conn,
-      species='African Lion',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor' ) is None
+      species=LION_SPECIES,
+      exhibit=LION_EXHIBIT,
+      enclosure_name=LION_ENCLOSURE )
+
+   assert duration is None
 
 
 def Test_FetchAttractionDefaultDurationSeconds_TestMissingAttraction_ExpectNone(
       extended_default_duration_conn: sqlite3.Connection ) -> None:
-   assert ItineraryDefaultDurationProvider.fetch_attraction_default_duration_seconds(
+   attraction = 'Unknown Ride'
+
+   duration = ItineraryDefaultDurationProvider.fetch_attraction_default_duration_seconds(
       extended_default_duration_conn,
-      'Unknown Ride' ) is None
+      attraction )
+
+   assert duration is None
 
 
 def Test_FetchAttractionDefaultDurationSeconds_TestPresent_ExpectSeconds(
       extended_default_duration_conn: sqlite3.Connection ) -> None:
-   assert ItineraryDefaultDurationProvider.fetch_attraction_default_duration_seconds(
+   duration = ItineraryDefaultDurationProvider.fetch_attraction_default_duration_seconds(
       extended_default_duration_conn,
-      'Splash Island' ) == 15 * 60
+      SPLASH_ISLAND )
+
+   assert duration == DurationValues.normalize_seconds(
+      SPLASH_ISLAND_DURATION_MINUTES )
 
 
 def Test_FetchEventDefaultDurationSeconds_TestLunchPresent_ExpectSeconds(
       extended_default_duration_conn: sqlite3.Connection ) -> None:
-   assert ItineraryDefaultDurationProvider.fetch_event_default_duration_seconds(
+   event_type = ItineraryEventType.LUNCH
+
+   duration = ItineraryDefaultDurationProvider.fetch_event_default_duration_seconds(
       extended_default_duration_conn,
-      ItineraryEventType.LUNCH ) == 30 * 60
+      event_type )
+
+   assert duration == DurationValues.normalize_seconds( LUNCH_DURATION_MINUTES )
 
 
 def Test_FetchEventDefaultDurationSeconds_TestMissingEvent_ExpectNone(
       extended_default_duration_conn: sqlite3.Connection ) -> None:
-   assert ItineraryDefaultDurationProvider.fetch_event_default_duration_seconds(
+   event_type = ItineraryEventType.ARRIVAL
+
+   duration = ItineraryDefaultDurationProvider.fetch_event_default_duration_seconds(
       extended_default_duration_conn,
-      ItineraryEventType.ARRIVAL ) is None
+      event_type )
+
+   assert duration is None

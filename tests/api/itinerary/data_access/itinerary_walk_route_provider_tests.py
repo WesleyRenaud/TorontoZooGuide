@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.data_access.itinerary_walk_route_matcher import ItineraryWalkRouteMatcher
 from api.itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from api.itinerary.routing.itinerary_walk_route import ItineraryWalkRoute
@@ -11,40 +12,58 @@ from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRout
 from api.itinerary.routing.itinerary_walk_route_stop import ItineraryWalkRouteStop
 from api.itinerary.routing.walk_route_leg import WalkRouteLeg
 from api.itinerary.routing.walk_route_point import WalkRoutePoint
+from api.shared.date_values import DateValues
 from api.shared.enums import ScheduleItemKind
 
+
+ENTRANCE_ITEM_KEY = 'entrance'
+ENTRANCE_NODE_ID = 'n-1'
+LION_NODE_ID = 'n-2'
+LION_SPECIES = 'African Lion'
+LION_EXHIBIT = 'Africa Savanna'
+LION_ENCLOSURE = 'Outdoor'
+LION_ITEM_KEY = AnimalScheduleItemKey.wire(
+   species=LION_SPECIES,
+   exhibit=LION_EXHIBIT,
+   enclosure_name=LION_ENCLOSURE )
+LION_START_TIME = '10:00 AM'
+LION_DURATION_MINUTES = 30
+LION_END_TIME = DateValues.add_minutes_to_time(
+   LION_START_TIME,
+   LION_DURATION_MINUTES )
+TRAVEL_TIME_MINUTES = 5
 
 SAMPLE_ROUTE = ItineraryWalkRoute(
    stops=[
       ItineraryWalkRouteStop(
          schedule_item_kind=ScheduleItemKind.ENTRANCE,
-         item_key='entrance',
-         walk_node_id='n-1' ),
+         item_key=ENTRANCE_ITEM_KEY,
+         walk_node_id=ENTRANCE_NODE_ID ),
       ItineraryWalkRouteStop(
          schedule_item_kind=ScheduleItemKind.ANIMAL,
-         item_key='African Lion||Africa Savanna||Outdoor',
-         walk_node_id='n-2',
-         start_time='10:00 AM',
-         end_time='10:30 AM' ),
+         item_key=LION_ITEM_KEY,
+         walk_node_id=LION_NODE_ID,
+         start_time=LION_START_TIME,
+         end_time=LION_END_TIME ),
    ],
    legs=[
       WalkRouteLeg(
-         from_item_key='entrance',
-         to_item_key='African Lion||Africa Savanna||Outdoor',
+         from_item_key=ENTRANCE_ITEM_KEY,
+         to_item_key=LION_ITEM_KEY,
          from_schedule_item_kind=ScheduleItemKind.ENTRANCE,
          to_schedule_item_kind=ScheduleItemKind.ANIMAL,
-         node_ids=[ 'n-1', 'n-2' ],
-         travel_time_minutes=5 ),
+         node_ids=[ ENTRANCE_NODE_ID, LION_NODE_ID ],
+         travel_time_minutes=TRAVEL_TIME_MINUTES ),
    ],
    points=[
       WalkRoutePoint(
-         node_id='n-1',
+         node_id=ENTRANCE_NODE_ID,
          x=0.0,
          y=0.0,
          x_px=0.0,
          y_px=0.0 ),
       WalkRoutePoint(
-         node_id='n-2',
+         node_id=LION_NODE_ID,
          x=10.0,
          y=10.0,
          x_px=10.0,
@@ -100,30 +119,36 @@ def walk_route_conn() -> sqlite3.Connection:
 
 def Test_FetchItineraryWalkRoute_TestNoLegRows_ExpectEmpty(
       walk_route_conn: sqlite3.Connection ) -> None:
-   assert ItineraryWalkRouteProvider.fetch_itinerary_walk_route(
-      walk_route_conn ) == ItineraryWalkRouteBuilder.empty()
+   route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route(
+      walk_route_conn )
+
+   assert route == ItineraryWalkRouteBuilder.empty()
 
 
 def Test_SaveItineraryWalkRoute_TestRoute_ExpectRoundTrip(
       walk_route_conn: sqlite3.Connection ) -> None:
-   assert ItineraryWalkRouteProvider.save_itinerary_walk_route(
+   saved = ItineraryWalkRouteProvider.save_itinerary_walk_route(
       walk_route_conn,
       SAMPLE_ROUTE )
-
    persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route(
       walk_route_conn )
 
+   assert saved
    assert ItineraryWalkRouteMatcher.matches( SAMPLE_ROUTE, persisted_route )
 
 
 def Test_SaveItineraryWalkRoute_TestEmptyRoute_ExpectClearedTables(
       walk_route_conn: sqlite3.Connection ) -> None:
-   assert ItineraryWalkRouteProvider.save_itinerary_walk_route(
+   empty_route = ItineraryWalkRouteBuilder.empty()
+   ItineraryWalkRouteProvider.save_itinerary_walk_route(
       walk_route_conn,
       SAMPLE_ROUTE )
-   assert ItineraryWalkRouteProvider.save_itinerary_walk_route(
-      walk_route_conn,
-      ItineraryWalkRouteBuilder.empty() )
 
-   assert ItineraryWalkRouteProvider.fetch_itinerary_walk_route(
-      walk_route_conn ) == ItineraryWalkRouteBuilder.empty()
+   saved = ItineraryWalkRouteProvider.save_itinerary_walk_route(
+      walk_route_conn,
+      empty_route )
+   persisted_route = ItineraryWalkRouteProvider.fetch_itinerary_walk_route(
+      walk_route_conn )
+
+   assert saved
+   assert persisted_route == empty_route

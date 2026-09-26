@@ -33,8 +33,10 @@ def transportation_route_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchTransportationRoutesByName_TestEmpty_ExpectEmptyList(
       transportation_route_provider_conn: sqlite3.Connection ) -> None:
-   assert TransportationRouteProvider.fetch_transportation_routes_by_name(
-      transportation_route_provider_conn ) == []
+   transportation_routes_by_name = TransportationRouteProvider.fetch_transportation_routes_by_name(
+      transportation_route_provider_conn )
+
+   assert transportation_routes_by_name == []
 
 def Test_FetchTransportationRoutesByName_TestPopulated_ExpectMappedRoutes(
       transportation_route_provider_conn: sqlite3.Connection ) -> None:

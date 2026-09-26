@@ -78,11 +78,13 @@ def Test_IsIsolatedAfterAdding_TestNotIsolatedOnCurrentItinerary_ExpectFalse(
       'api.itinerary.scheduling.bulk.bulk_reschedule_long_wait_simulator.FixedTimeItemLongWaitWarningBuilder.is_isolated_after_adding',
       lambda itinerary, new_item: False )
 
-   assert BulkRescheduleLongWaitSimulator.is_isolated_after_adding(
+   result = BulkRescheduleLongWaitSimulator.is_isolated_after_adding(
       long_wait_conn,
       ISOLATED_TALK,
       propose_on_itinerary=lambda itinerary, new_item, context: itinerary,
-      itinerary_context=ITINERARY_CONTEXT ) is False
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is False
 
 
 def Test_IsIsolatedAfterAdding_TestIsolatedWithNoAnimalsToPack_ExpectTrue(
@@ -107,11 +109,13 @@ def Test_IsIsolatedAfterAdding_TestIsolatedWithNoAnimalsToPack_ExpectTrue(
       'api.itinerary.scheduling.bulk.bulk_reschedule_long_wait_simulator.BulkScheduleStopSelector.animals',
       lambda saved_itinerary, *, only_previously_scheduled: [] )
 
-   assert BulkRescheduleLongWaitSimulator.is_isolated_after_adding(
+   result = BulkRescheduleLongWaitSimulator.is_isolated_after_adding(
       long_wait_conn,
       ISOLATED_TALK,
       propose_on_itinerary=lambda itinerary, new_item, context: itinerary,
-      itinerary_context=ITINERARY_CONTEXT ) is True
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is True
 
 
 def Test_IsIsolatedAfterAdding_TestProposedItineraryMissing_ExpectTrue(
@@ -139,11 +143,13 @@ def Test_IsIsolatedAfterAdding_TestProposedItineraryMissing_ExpectTrue(
          ),
       ] )
 
-   assert BulkRescheduleLongWaitSimulator.is_isolated_after_adding(
+   result = BulkRescheduleLongWaitSimulator.is_isolated_after_adding(
       long_wait_conn,
       ISOLATED_TALK,
       propose_on_itinerary=lambda itinerary, new_item, context: None,
-      itinerary_context=ITINERARY_CONTEXT ) is True
+      itinerary_context=ITINERARY_CONTEXT )
+
+   assert result is True
 
 
 def Test_NewlyAddedReason_TestNoIsolatedNewItems_ExpectNone(
@@ -166,7 +172,7 @@ def Test_NewlyAddedReason_TestNoIsolatedNewItems_ExpectNone(
       events=[],
    )
 
-   assert BulkRescheduleLongWaitSimulator.newly_added_reason(
+   result = BulkRescheduleLongWaitSimulator.newly_added_reason(
       long_wait_conn,
       validated,
       visit_date=VISIT_DATE,
@@ -175,7 +181,9 @@ def Test_NewlyAddedReason_TestNoIsolatedNewItems_ExpectNone(
          date_value='2026-06-14',
          arrival_time='9:30 AM',
          departure_time='5:00 PM',
-      ) ) is None
+      ) )
+
+   assert result is None
 
 
 def Test_NewlyAddedReason_TestIsolatedNewTalk_ExpectLongWaitReason(

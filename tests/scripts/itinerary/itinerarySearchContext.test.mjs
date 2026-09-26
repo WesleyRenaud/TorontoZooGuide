@@ -17,24 +17,32 @@ installDomTestHooks({
    },
 });
 
+
 test('Test_GetItineraryDateSearchContext_TestStoredDate_ExpectContext', async () => {
-   DraftStore.setStoredItineraryDate('2026-06-18');
+   const year = '2026';
+   const month = '06';
+   const day = '18';
+   const date = `${year}-${month}-${day}`;
+   DraftStore.setStoredItineraryDate(date);
 
    const context = await ItinerarySearchContext.getItineraryDateSearchContext({ includeTemp: false });
 
-   assert.equal(context.date, '2026-06-18');
+   assert.equal(context.date, date);
    assert.equal(context.month, 'JUN');
-   assert.equal(context.day, 18);
-   assert.equal(context.year, 2026);
+   assert.equal(context.day, Number(day));
+   assert.equal(context.year, Number(year));
 });
 
+
 test('Test_GetItineraryDateSearchContext_TestNoStoredDate_ExpectEffectiveDate', async () => {
+   const openTime = '09:30';
+   const closeTime = '19:00';
    globalThis.fetch = async (url) => {
       if (url === '/get-zoo-hours') {
          return mockJsonResponse({
             hours: {
-               openTime: '09:30',
-               closeTime: '19:00',
+               openTime,
+               closeTime,
             },
          });
       }

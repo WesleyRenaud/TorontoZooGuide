@@ -6,14 +6,20 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateButton_TestConfig_ExpectButton', () => {
+   const className = 'date-nav';
+   const text = 'Next';
+   const ariaLabel = 'Next day';
+
    const button = DateSelectorViewHelper.createButton({
-      className: 'date-nav',
-      text: 'Next',
-      ariaLabel: 'Next day',
+      className,
+      text,
+      ariaLabel,
    });
+
    assert.equal(button.type, 'button');
-   assert.equal(button.className, 'date-nav');
-   assert.equal(button.textContent, 'Next');
-   assert.equal(button.getAttribute('aria-label'), 'Next day');
+   assert.equal(button.className, className);
+   assert.equal(button.textContent, text);
+   assert.equal(button.getAttribute('aria-label'), ariaLabel);
 });

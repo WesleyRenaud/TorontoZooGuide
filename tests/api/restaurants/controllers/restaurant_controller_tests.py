@@ -101,6 +101,7 @@ def stub_restaurant_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubRestau
 
 def Test_GetRestaurants_TestHttpRequest_ExpectMapsVisitDateAndReturnsRestaurants(
       stub_restaurant_coordinator: StubRestaurantCoordinator ) -> None:
+   restaurant = _sample_restaurant()
    handler = make_handler(
       '/get-restaurants',
       {
@@ -117,7 +118,7 @@ def Test_GetRestaurants_TestHttpRequest_ExpectMapsVisitDateAndReturnsRestaurants
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'restaurants' ] == [ _sample_restaurant().to_dict() ]
+   assert result[ 'restaurants' ] == [ restaurant.to_dict() ]
    assert stub_restaurant_coordinator.calls == [
       (
          'get_restaurants',

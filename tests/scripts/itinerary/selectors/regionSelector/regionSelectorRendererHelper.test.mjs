@@ -6,8 +6,12 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateEmptyState_TestMessage_ExpectEmptyElement', () => {
-   const emptyEl = RegionSelectorRendererHelper.createEmptyState('No regions');
+   const message = 'No regions';
+
+   const emptyEl = RegionSelectorRendererHelper.createEmptyState(message);
+
    assert.equal(emptyEl.className, 'itin-empty');
-   assert.equal(emptyEl.textContent, 'No regions');
+   assert.equal(emptyEl.textContent, message);
 });

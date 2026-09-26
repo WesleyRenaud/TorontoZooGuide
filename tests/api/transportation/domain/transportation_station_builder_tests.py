@@ -16,7 +16,7 @@ def Test_BuildTransportationStation_TestRecord_ExpectMappedModel() -> None:
 
    station = TransportationStationBuilder.build_transportation_station( record )
 
-   assert station.name == 'Africa Station'
-   assert station.description == 'Africa Zoomobile stop'
-   assert station.x_coord == STATION_COORD
-   assert station.y_coord == STATION_COORD
+   assert station.name == record.name
+   assert station.description == record.description
+   assert station.x_coord == record.x_coord
+   assert station.y_coord == record.y_coord

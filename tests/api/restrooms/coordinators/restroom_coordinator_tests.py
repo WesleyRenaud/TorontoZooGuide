@@ -52,7 +52,9 @@ def Test_GetRestroomNames_TestProviderNames_ExpectReturned(
       'fetch_restroom_names',
       lambda _conn: [ RESTROOM_TITLE ] )
 
-   assert RestroomCoordinator.get_restroom_names() == [ RESTROOM_TITLE ]
+   restroom_names = RestroomCoordinator.get_restroom_names()
+
+   assert restroom_names == [ RESTROOM_TITLE ]
 
 def Test_GetClosedRestroomOptions_TestProviderNames_ExpectReturned(
       stub_request_connection: None,
@@ -74,7 +76,9 @@ def Test_GetClosedRestroomOptions_TestProviderNames_ExpectReturned(
       'fetch_closed_restroom_names',
       fetch_closed_restroom_names )
 
-   assert RestroomCoordinator.get_closed_restroom_options() == [ RESTROOM_TITLE ]
+   closed_restroom_options = RestroomCoordinator.get_closed_restroom_options()
+
+   assert closed_restroom_options == [ RESTROOM_TITLE ]
    assert captured == { 'today': '2026-09-16' }
 
 def Test_GetRestroomAlertOptions_TestProviderNames_ExpectReturned(
@@ -97,7 +101,9 @@ def Test_GetRestroomAlertOptions_TestProviderNames_ExpectReturned(
       'fetch_restroom_alert_names',
       fetch_restroom_alert_names )
 
-   assert RestroomCoordinator.get_restroom_alert_options() == [ RESTROOM_TITLE ]
+   restroom_alert_options = RestroomCoordinator.get_restroom_alert_options()
+
+   assert restroom_alert_options == [ RESTROOM_TITLE ]
    assert captured == { 'today': '2026-09-16' }
 
 def Test_GetRestrooms_TestProvidersAndBuilder_ExpectRestrooms(
@@ -122,11 +128,13 @@ def Test_GetRestrooms_TestProvidersAndBuilder_ExpectRestrooms(
 
    monkeypatch.setattr( RestroomBuilder, 'build_restrooms', build_restrooms )
 
-   assert RestroomCoordinator.get_restrooms(
+   restrooms = RestroomCoordinator.get_restrooms(
       day=VISIT_DAY,
       month=VISIT_MONTH,
       year=VISIT_YEAR,
-      include_closed_restrooms=True ) == [ RESTROOM ]
+      include_closed_restrooms=True )
+
+   assert restrooms == [ RESTROOM ]
    assert captured[ 'restroom_records' ] is restroom_records
    assert captured[ 'context' ] is context
    assert captured[ 'include_closed_restrooms' ] is True
@@ -144,12 +152,14 @@ def Test_GetRestroomsMatchingQuery_TestBuilder_ExpectMatches(
       'build',
       lambda rows, query: rows if query == QUERY else [] )
 
-   assert RestroomCoordinator.get_restrooms_matching_query(
+   restrooms_matching_query = RestroomCoordinator.get_restrooms_matching_query(
       query=QUERY,
       day=VISIT_DAY,
       month=VISIT_MONTH,
       year=VISIT_YEAR,
-      include_closed_restrooms=False ) == restrooms
+      include_closed_restrooms=False )
+
+   assert restrooms_matching_query == restrooms
 
 def Test_SetRestroomAsClosed_TestBuilderAndProvider_ExpectDelegated(
       stub_request_connection: None,
@@ -173,11 +183,13 @@ def Test_SetRestroomAsClosed_TestBuilderAndProvider_ExpectDelegated(
 
    monkeypatch.setattr( RestroomStatusProvider, 'save_closed_status', save_closed_status )
 
-   assert RestroomCoordinator.set_restroom_as_closed(
+   result = RestroomCoordinator.set_restroom_as_closed(
       RESTROOM_TITLE,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( RESTROOM_TITLE, START_DATE, END_DATE, MESSAGE )
 
 def Test_SetRestroomAsOpen_TestProvider_ExpectDelegated(
@@ -201,10 +213,12 @@ def Test_SetRestroomAsOpen_TestProvider_ExpectDelegated(
 
    monkeypatch.setattr( RestroomStatusProvider, 'save_open_status', save_open_status )
 
-   assert RestroomCoordinator.set_restroom_as_open(
+   result = RestroomCoordinator.set_restroom_as_open(
       RESTROOM_TITLE,
       START_DATE,
-      END_DATE ) is True
+      END_DATE )
+
+   assert result is True
    assert captured[ 'args' ] == ( RESTROOM_TITLE, START_DATE, END_DATE )
 
 def Test_SetRestroomAlert_TestBuilderAndProvider_ExpectDelegated(
@@ -229,11 +243,13 @@ def Test_SetRestroomAlert_TestBuilderAndProvider_ExpectDelegated(
 
    monkeypatch.setattr( RestroomAlertProvider, 'save_alert', save_alert )
 
-   assert RestroomCoordinator.set_restroom_alert(
+   result = RestroomCoordinator.set_restroom_alert(
       RESTROOM_TITLE,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( RESTROOM_TITLE, START_DATE, END_DATE, MESSAGE )
 
 def Test_RemoveRestroomAlert_TestProvider_ExpectDelegated(
@@ -247,5 +263,7 @@ def Test_RemoveRestroomAlert_TestProvider_ExpectDelegated(
 
    monkeypatch.setattr( RestroomAlertProvider, 'delete_alert', delete_alert )
 
-   assert RestroomCoordinator.remove_restroom_alert( RESTROOM_TITLE ) is True
+   result = RestroomCoordinator.remove_restroom_alert( RESTROOM_TITLE )
+
+   assert result is True
    assert captured[ 'restroom' ] == RESTROOM_TITLE

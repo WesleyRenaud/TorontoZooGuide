@@ -9,13 +9,19 @@ import openingScheduleOverlapResolutionValues from '../../../../shared/enums/ope
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_OpeningScheduleOverlapResolution_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(openingScheduleOverlapResolutionValues)) {
-      assert.equal(OpeningScheduleOverlapResolution[key], value);
-   }
 
+test('Test_OpeningScheduleOverlapResolution_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/openingScheduleOverlapResolution.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(openingScheduleOverlapResolutionValues).map((key) => [
+         key,
+         OpeningScheduleOverlapResolution[key],
+      ])
+   );
+
+   assert.deepEqual(mapped, openingScheduleOverlapResolutionValues);
    assert.deepEqual(openingScheduleOverlapResolutionValues, diskValues);
 });

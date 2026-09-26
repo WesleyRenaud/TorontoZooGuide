@@ -95,10 +95,12 @@ def Test_GetDrinkingFountains_TestStatusApplies_ExpectStatusBuilt(
       'build_drinking_fountains',
       build_drinking_fountains )
 
-   assert DrinkingFountainCoordinator.get_drinking_fountains(
+   fountains = DrinkingFountainCoordinator.get_drinking_fountains(
       month=VISIT_MONTH,
       day=VISIT_DAY,
-      year=VISIT_YEAR ) == [ FOUNTAIN ]
+      year=VISIT_YEAR )
+
+   assert fountains == [ FOUNTAIN ]
    assert captured[ 'records' ] is fountain_records
    assert captured[ 'is_closed' ] is True
    assert captured[ 'closed_message' ] == MESSAGE
@@ -148,10 +150,12 @@ def Test_GetDrinkingFountains_TestStatusMissing_ExpectSeasonalFallback(
       'build_drinking_fountains',
       build_drinking_fountains )
 
-   assert DrinkingFountainCoordinator.get_drinking_fountains(
+   fountains = DrinkingFountainCoordinator.get_drinking_fountains(
       month=VISIT_MONTH,
       day=VISIT_DAY,
-      year=VISIT_YEAR ) == [ FOUNTAIN ]
+      year=VISIT_YEAR )
+
+   assert fountains == [ FOUNTAIN ]
    assert captured[ 'records' ] is fountain_records
    assert captured[ 'is_closed' ] is False
    assert captured[ 'closed_message' ] is None
@@ -172,10 +176,12 @@ def Test_SetDrinkingFountainsAsClosed_TestBuilderAndProvider_ExpectDelegated(
       'save_drinking_fountain_closed_status',
       lambda _conn, *, status: saved.append( status ) or True )
 
-   assert DrinkingFountainCoordinator.set_drinking_fountains_as_closed(
+   saved_closed = DrinkingFountainCoordinator.set_drinking_fountains_as_closed(
       start_date=START_DATE,
       end_date=END_DATE,
-      message=MESSAGE ) is True
+      message=MESSAGE )
+
+   assert saved_closed is True
    assert saved == [ CLOSED_STATUS ]
 
 
@@ -193,7 +199,9 @@ def Test_SetDrinkingFountainsAsOpen_TestBuilderAndProvider_ExpectDelegated(
       'save_drinking_fountain_open_status',
       lambda _conn, *, status: saved.append( status ) or True )
 
-   assert DrinkingFountainCoordinator.set_drinking_fountains_as_open(
+   saved_open = DrinkingFountainCoordinator.set_drinking_fountains_as_open(
       start_date=START_DATE,
-      end_date=END_DATE ) is True
+      end_date=END_DATE )
+
+   assert saved_open is True
    assert saved == [ OPEN_STATUS ]

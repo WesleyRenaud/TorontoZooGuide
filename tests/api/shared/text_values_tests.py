@@ -4,8 +4,17 @@ from api.shared.text_values import TextValues
 
 
 def Test_NormalizeForMatching_TestMixedCaseAndWhitespace_ExpectLowercaseTrimmed() -> None:
-   assert TextValues.normalize_for_matching( '  African Lion  ' ) == 'african lion'
+   name = 'African Lion'
+   value = f'  { name }  '
+
+   normalized = TextValues.normalize_for_matching( value )
+
+   assert normalized == name.lower()
 
 
 def Test_NormalizeForMatching_TestNone_ExpectEmptyString() -> None:
-   assert TextValues.normalize_for_matching( None ) == ''
+   value = None
+
+   normalized = TextValues.normalize_for_matching( value )
+
+   assert normalized == ''

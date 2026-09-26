@@ -5,21 +5,20 @@ from api.transportation.domain.transportation_route_builder import Transportatio
 
 
 def Test_GroupTransportationRoutes_TestMultipleTransportations_ExpectGroupedRoutes() -> None:
-   route_records = [
-      TransportationRouteRecord( transportation='Zoomobile', route='summer' ),
-      TransportationRouteRecord( transportation='Zoomobile', route='winter' ),
-      TransportationRouteRecord( transportation='Gondola', route='summer' ),
-   ]
+   zoomobile_summer = TransportationRouteRecord( transportation='Zoomobile', route='summer' )
+   zoomobile_winter = TransportationRouteRecord( transportation='Zoomobile', route='winter' )
+   gondola_summer = TransportationRouteRecord( transportation='Gondola', route='summer' )
+   route_records = [ zoomobile_summer, zoomobile_winter, gondola_summer ]
 
    grouped_routes = TransportationRouteBuilder.group_transportation_routes( route_records )
 
    assert grouped_routes == [
       {
-         'name': 'Zoomobile',
-         'routes': [ 'summer', 'winter' ],
+         'name': zoomobile_summer.transportation,
+         'routes': [ zoomobile_summer.route, zoomobile_winter.route ],
       },
       {
-         'name': 'Gondola',
-         'routes': [ 'summer' ],
+         'name': gondola_summer.transportation,
+         'routes': [ gondola_summer.route ],
       },
    ]

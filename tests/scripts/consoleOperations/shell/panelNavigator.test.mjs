@@ -83,6 +83,7 @@ function _createUrlState(href = 'https://example.test/console-operations.html') 
    };
 }
 
+
 test('Test_CreateConsolePanelNavigator_TestActivate_ExpectUrlAndRestore', () => {
    const urlState = _createUrlState();
    const restaurantPanel = _createPanel('restaurantOpeningSchedulePanel');
@@ -104,6 +105,7 @@ test('Test_CreateConsolePanelNavigator_TestActivate_ExpectUrlAndRestore', () => 
       url.searchParams.get(PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM),
       'giftShopOpeningSchedulePanel'
    );
+
    assert.equal(giftShopPanel.classList.contains('active'), true);
    assert.equal(giftShopButton.classList.contains('active'), true);
    assert.equal(giftShopButton.ariaCurrent, 'page');
@@ -114,6 +116,7 @@ test('Test_CreateConsolePanelNavigator_TestActivate_ExpectUrlAndRestore', () => 
    assert.equal(giftShopButton.clickCount, 1);
    assert.equal(restaurantButton.clickCount, 0);
 });
+
 
 test('Test_CreateConsolePanelNavigator_TestHide_ExpectUrlCleared', () => {
    const urlState = _createUrlState();
@@ -134,9 +137,11 @@ test('Test_CreateConsolePanelNavigator_TestHide_ExpectUrlCleared', () => {
       ),
       false
    );
+
    assert.equal(panel.classList.contains('active'), false);
    assert.equal(button.classList.contains('active'), false);
 });
+
 
 test('Test_ClearConsolePanelUrlParam_TestClear_ExpectRemoved', () => {
    const urlState = _createUrlState(

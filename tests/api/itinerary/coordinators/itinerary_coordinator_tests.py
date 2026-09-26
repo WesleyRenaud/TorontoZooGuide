@@ -40,6 +40,9 @@ ARRIVAL_TIME = '10:00 AM'
 DEPARTURE_TIME = '4:00 PM'
 WARNING_TYPE = 'arrivalDepartureTooClose'
 VISIT_DATE_TEMP = 22.0
+LION_SPECIES = 'African Lion'
+LION_EXHIBIT = 'Africa Savanna'
+CAROUSEL = 'Conservation Carousel'
 
 ITINERARY = Itinerary(
    date=ITINERARY_DATE,
@@ -52,6 +55,7 @@ SAVED_ITINERARY = SavedItinerary(
    departure_time=DEPARTURE_TIME )
 ZOO_HOURS_RECORD = object()
 
+
 def Test_GetItineraryDate_TestProviderDate_ExpectReturned(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -60,7 +64,9 @@ def Test_GetItineraryDate_TestProviderDate_ExpectReturned(
       'fetch_itinerary_date',
       lambda _conn: ITINERARY_DATE )
 
-   assert ItineraryCoordinator.get_itinerary_date() == ITINERARY_DATE
+   itinerary_date = ItineraryCoordinator.get_itinerary_date()
+
+   assert itinerary_date == ITINERARY_DATE
 
 
 def Test_GetItinerary_TestBuilder_ExpectItinerary(
@@ -79,7 +85,9 @@ def Test_GetItinerary_TestBuilder_ExpectItinerary(
 
    monkeypatch.setattr( ItineraryBuilder, 'build_current', build_current )
 
-   assert ItineraryCoordinator.get_itinerary( visit_date_temp=VISIT_DATE_TEMP ) is ITINERARY
+   itinerary = ItineraryCoordinator.get_itinerary( visit_date_temp=VISIT_DATE_TEMP )
+
+   assert itinerary is ITINERARY
    assert captured[ 'saved_itinerary' ] is SAVED_ITINERARY
    assert captured[ 'visit_date_temp' ] == VISIT_DATE_TEMP
 
@@ -88,6 +96,8 @@ def Test_SetItinerary_TestSetter_ExpectDelegated(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
+   animals = [ { 'species': LION_SPECIES, 'exhibit': LION_EXHIBIT } ]
+   confirming_short_visit = True
 
    def set_itinerary( conn: Types.Connection, **kwargs: object ) -> ItinerarySaveResult:
       captured[ 'conn' ] = conn
@@ -96,13 +106,15 @@ def Test_SetItinerary_TestSetter_ExpectDelegated(
 
    monkeypatch.setattr( ItinerarySetter, 'set', set_itinerary )
 
-   assert ItineraryCoordinator.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date=ITINERARY_DATE,
-      animals=[ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ],
-      confirming_short_visit=True ) is SAVE_RESULT
+      animals=animals,
+      confirming_short_visit=confirming_short_visit )
+
+   assert result is SAVE_RESULT
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'kwargs' ][ 'date' ] == ITINERARY_DATE
-   assert captured[ 'kwargs' ][ 'confirming_short_visit' ] is True
+   assert captured[ 'kwargs' ][ 'confirming_short_visit' ] is confirming_short_visit
 
 
 def Test_ScheduleItineraryItem_TestScheduler_ExpectDelegated(
@@ -110,6 +122,7 @@ def Test_ScheduleItineraryItem_TestScheduler_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    schedule_key: ScheduleItemKey.Key | None = None
    captured: dict[ str, object ] = {}
+   confirming_fixed_time_item_long_wait = True
 
    def schedule(
          conn: Types.Connection,
@@ -122,14 +135,16 @@ def Test_ScheduleItineraryItem_TestScheduler_ExpectDelegated(
 
    monkeypatch.setattr( ItineraryItemScheduler, 'schedule', schedule )
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       schedule_key,
       start_time=ARRIVAL_TIME,
-      confirming_fixed_time_item_long_wait=True ) is SAVE_RESULT
+      confirming_fixed_time_item_long_wait=confirming_fixed_time_item_long_wait )
+
+   assert result is SAVE_RESULT
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'key' ] is schedule_key
    assert captured[ 'kwargs' ][ 'start_time' ] == ARRIVAL_TIME
-   assert captured[ 'kwargs' ][ 'confirming_fixed_time_item_long_wait' ] is True
+   assert captured[ 'kwargs' ][ 'confirming_fixed_time_item_long_wait' ] is confirming_fixed_time_item_long_wait
 
 
 def Test_BulkScheduleItinerary_TestRunner_ExpectDelegated(
@@ -137,6 +152,7 @@ def Test_BulkScheduleItinerary_TestRunner_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    stops = [ object() ]
    captured: dict[ str, object ] = {}
+   confirming_fixed_time_item_long_wait = True
 
    monkeypatch.setattr(
       ItineraryProvider,
@@ -156,13 +172,15 @@ def Test_BulkScheduleItinerary_TestRunner_ExpectDelegated(
 
    monkeypatch.setattr( BulkScheduleItineraryRunner, 'run', run )
 
-   assert ItineraryCoordinator.bulk_schedule_itinerary(
+   result = ItineraryCoordinator.bulk_schedule_itinerary(
       visit_date_temp=VISIT_DATE_TEMP,
-      confirming_fixed_time_item_long_wait=True ) is SAVE_RESULT
+      confirming_fixed_time_item_long_wait=confirming_fixed_time_item_long_wait )
+
+   assert result is SAVE_RESULT
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'kwargs' ][ 'stops_to_schedule' ] is stops
    assert captured[ 'kwargs' ][ 'visit_date_temp' ] == VISIT_DATE_TEMP
-   assert captured[ 'kwargs' ][ 'confirming_fixed_time_item_long_wait' ] is True
+   assert captured[ 'kwargs' ][ 'confirming_fixed_time_item_long_wait' ] is confirming_fixed_time_item_long_wait
 
 
 def Test_ClearItinerary_TestProvider_ExpectCleared(
@@ -173,7 +191,9 @@ def Test_ClearItinerary_TestProvider_ExpectCleared(
       'clear_itinerary',
       lambda conn: conn is STUB_REQUEST_CONNECTION )
 
-   assert ItineraryCoordinator.clear_itinerary() is True
+   cleared = ItineraryCoordinator.clear_itinerary()
+
+   assert cleared is True
 
 
 def Test_UnscheduleAllItineraryItems_TestUnscheduler_ExpectDelegated(
@@ -191,8 +211,10 @@ def Test_UnscheduleAllItineraryItems_TestUnscheduler_ExpectDelegated(
       'unschedule_all',
       unschedule_all )
 
-   assert ItineraryCoordinator.unschedule_all_itinerary_items(
-      visit_date_temp=VISIT_DATE_TEMP ) is SAVE_RESULT
+   result = ItineraryCoordinator.unschedule_all_itinerary_items(
+      visit_date_temp=VISIT_DATE_TEMP )
+
+   assert result is SAVE_RESULT
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'kwargs' ][ 'visit_date_temp' ] == VISIT_DATE_TEMP
 
@@ -212,7 +234,9 @@ def Test_UnscheduleItineraryItem_TestUnscheduler_ExpectDelegated(
 
    monkeypatch.setattr( ItineraryItemUnscheduler, 'unschedule', unschedule )
 
-   assert ItineraryCoordinator.unschedule_itinerary_item( schedule_key ) is SAVE_RESULT
+   result = ItineraryCoordinator.unschedule_itinerary_item( schedule_key )
+
+   assert result is SAVE_RESULT
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'key' ] is schedule_key
 
@@ -232,7 +256,9 @@ def Test_RemoveItineraryItem_TestRemover_ExpectDelegated(
 
    monkeypatch.setattr( ItineraryItemRemover, 'remove', remove )
 
-   assert ItineraryCoordinator.remove_itinerary_item( schedule_key ) is SAVE_RESULT
+   result = ItineraryCoordinator.remove_itinerary_item( schedule_key )
+
+   assert result is SAVE_RESULT
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'key' ] is schedule_key
 
@@ -252,7 +278,9 @@ def Test_SuppressItineraryWarning_TestSuppressor_ExpectDelegated(
 
    monkeypatch.setattr( ItineraryWarningSuppressor, 'suppress', suppress )
 
-   assert ItineraryCoordinator.suppress_itinerary_warning( WARNING_TYPE ) is expected
+   result = ItineraryCoordinator.suppress_itinerary_warning( WARNING_TYPE )
+
+   assert result is expected
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'warning_type' ] == WARNING_TYPE
 
@@ -272,7 +300,9 @@ def Test_UnsuppressItineraryWarning_TestSuppressor_ExpectDelegated(
 
    monkeypatch.setattr( ItineraryWarningSuppressor, 'unsuppress', unsuppress )
 
-   assert ItineraryCoordinator.unsuppress_itinerary_warning( WARNING_TYPE ) is expected
+   result = ItineraryCoordinator.unsuppress_itinerary_warning( WARNING_TYPE )
+
+   assert result is expected
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'warning_type' ] == WARNING_TYPE
 
@@ -280,10 +310,10 @@ def Test_UnsuppressItineraryWarning_TestSuppressor_ExpectDelegated(
 def Test_AcceptItinerary_TestProvider_ExpectMappedKeepLists(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   animals_to_keep = [ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ]
-   attractions_to_keep = [ 'Conservation Carousel' ]
+   animals_to_keep = [ { 'species': LION_SPECIES, 'exhibit': LION_EXHIBIT } ]
+   attractions_to_keep = [ CAROUSEL ]
    mapped_animals = [ object() ]
-   mapped_attractions = [ 'Conservation Carousel' ]
+   mapped_attractions = [ CAROUSEL ]
    captured: dict[ str, object ] = {}
 
    monkeypatch.setattr(
@@ -307,9 +337,11 @@ def Test_AcceptItinerary_TestProvider_ExpectMappedKeepLists(
 
    monkeypatch.setattr( AcceptItineraryProvider, 'accept_itinerary', accept )
 
-   assert ItineraryCoordinator.accept_itinerary(
+   accepted = ItineraryCoordinator.accept_itinerary(
       animals_to_keep=animals_to_keep,
-      attractions_to_keep=attractions_to_keep ) is True
+      attractions_to_keep=attractions_to_keep )
+
+   assert accepted is True
    assert captured[ 'conn' ] is STUB_REQUEST_CONNECTION
    assert captured[ 'animals' ] is mapped_animals
    assert captured[ 'attractions' ] is mapped_attractions
@@ -318,6 +350,7 @@ def Test_AcceptItinerary_TestProvider_ExpectMappedKeepLists(
 def Test_SetArrivalTime_TestClearedTime_ExpectClearsAndReturnsItinerary(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   arrival_time = None
    cleared: list[ object ] = []
    cleared_schedules: list[ object ] = []
 
@@ -339,19 +372,25 @@ def Test_SetArrivalTime_TestClearedTime_ExpectClearsAndReturnsItinerary(
       'build_current',
       lambda *_args, **_kwargs: ITINERARY )
 
-   result = ItineraryCoordinator.set_arrival_time( None )
+   result = ItineraryCoordinator.set_arrival_time( arrival_time )
 
    assert result.success is True
    assert result.itinerary is ITINERARY
-   assert cleared == [ ( STUB_REQUEST_CONNECTION, None ) ]
+   assert cleared == [ ( STUB_REQUEST_CONNECTION, arrival_time ) ]
    assert cleared_schedules == [
-      ( STUB_REQUEST_CONNECTION, ARRIVAL_TIME, DEPARTURE_TIME ),
+      (
+         STUB_REQUEST_CONNECTION,
+         SAVED_ITINERARY.arrival_time,
+         SAVED_ITINERARY.departure_time,
+      ),
    ]
 
 
 def Test_SetArrivalTime_TestValidationFailure_ExpectStatusOnly(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   validation_error = ItineraryErrorType.TIME_OUT_OF_BOUNDS
+
    monkeypatch.setattr(
       ItineraryProvider,
       'fetch_saved_itinerary',
@@ -371,11 +410,11 @@ def Test_SetArrivalTime_TestValidationFailure_ExpectStatusOnly(
    monkeypatch.setattr(
       ItineraryArrivalTimeValidator,
       'validate_for_zoo_hours',
-      lambda *_args, **_kwargs: ItineraryErrorType.TIME_OUT_OF_BOUNDS )
+      lambda *_args, **_kwargs: validation_error )
 
    result = ItineraryCoordinator.set_arrival_time( ARRIVAL_TIME )
 
-   assert result.status == ItineraryErrorType.TIME_OUT_OF_BOUNDS
+   assert result.status == validation_error
    assert result.itinerary is None
 
 
@@ -505,6 +544,7 @@ def Test_SetArrivalTime_TestValidTime_ExpectPersistedAndItinerary(
 def Test_SetDepartureTime_TestClearedTime_ExpectClearsAndReturnsItinerary(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   departure_time = None
    cleared: list[ object ] = []
 
    monkeypatch.setattr(
@@ -524,16 +564,18 @@ def Test_SetDepartureTime_TestClearedTime_ExpectClearsAndReturnsItinerary(
       'build_current',
       lambda *_args, **_kwargs: ITINERARY )
 
-   result = ItineraryCoordinator.set_departure_time( None )
+   result = ItineraryCoordinator.set_departure_time( departure_time )
 
    assert result.success is True
    assert result.itinerary is ITINERARY
-   assert cleared == [ ( STUB_REQUEST_CONNECTION, None ) ]
+   assert cleared == [ ( STUB_REQUEST_CONNECTION, departure_time ) ]
 
 
 def Test_SetDepartureTime_TestValidationFailure_ExpectStatusOnly(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   validation_error = ItineraryErrorType.TIME_ORDER_INVALID
+
    monkeypatch.setattr(
       ItineraryProvider,
       'fetch_saved_itinerary',
@@ -549,11 +591,11 @@ def Test_SetDepartureTime_TestValidationFailure_ExpectStatusOnly(
    monkeypatch.setattr(
       ItineraryDepartureTimeValidator,
       'validate_for_zoo_hours',
-      lambda *_args, **_kwargs: ItineraryErrorType.TIME_ORDER_INVALID )
+      lambda *_args, **_kwargs: validation_error )
 
    result = ItineraryCoordinator.set_departure_time( DEPARTURE_TIME )
 
-   assert result.status == ItineraryErrorType.TIME_ORDER_INVALID
+   assert result.status == validation_error
    assert result.itinerary is None
 
 

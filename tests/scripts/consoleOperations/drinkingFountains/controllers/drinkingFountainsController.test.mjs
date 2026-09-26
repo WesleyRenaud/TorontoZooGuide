@@ -11,6 +11,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateDrinkingFountainsClosedController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -53,6 +54,7 @@ test('Test_CreateDrinkingFountainsClosedController_TestShowAndSubmitSuccess_Expe
       ControllerHelper.resetFormFields = originalReset;
    }
 });
+
 
 test('Test_CreateDrinkingFountainsClosedController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

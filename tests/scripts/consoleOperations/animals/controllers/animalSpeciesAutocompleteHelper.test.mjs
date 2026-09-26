@@ -3,15 +3,19 @@ import test from 'node:test';
 
 import { AnimalSpeciesAutocompleteHelper } from '../../../../../scripts/consoleOperations/animals/controllers/animalSpeciesAutocompleteHelper.js';
 
+
 test('Test_Debounce_TestRapidCalls_ExpectSingleLateInvocation', async () => {
    let calls = 0;
+   const waitMs = 20;
    const debounced = AnimalSpeciesAutocompleteHelper.debounce(() => {
       calls += 1;
-   }, 20);
+   }, waitMs);
 
    debounced();
    debounced();
-   assert.equal(calls, 0);
-   await new Promise((resolve) => setTimeout(resolve, 40));
+   const callsBeforeWait = calls;
+   await new Promise((resolve) => setTimeout(resolve, waitMs * 2));
+
+   assert.equal(callsBeforeWait, 0);
    assert.equal(calls, 1);
 });

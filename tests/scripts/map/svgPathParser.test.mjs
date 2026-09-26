@@ -3,50 +3,110 @@ import test from 'node:test';
 
 import { SvgPathParser } from '../../../scripts/map/svgPathParser.js';
 
-test('Test_PointsNear_TestWithinTolerance_ExpectTrue', () => {
-   assert.equal(SvgPathParser.pointsNear({ x: 0, y: 0 }, { x: 1, y: 0 }), true);
-   assert.equal(SvgPathParser.pointsNear({ x: 0, y: 0 }, { x: 3, y: 0 }, 1.5), false);
+
+test('Test_PointsNear_TestWithinDefaultTolerance_ExpectTrue', () => {
+   const left = { x: 0, y: 0 };
+   const right = { x: 1, y: 0 };
+
+   const near = SvgPathParser.pointsNear(left, right);
+
+   assert.equal(near, true);
 });
 
+
+test('Test_PointsNear_TestOutsideTolerance_ExpectFalse', () => {
+   const left = { x: 0, y: 0 };
+   const right = { x: 3, y: 0 };
+   const tolerance = 1.5;
+
+   const near = SvgPathParser.pointsNear(left, right, tolerance);
+
+   assert.equal(near, false);
+});
+
+
 test('Test_ParseSvgPathD_TestMoveLineHVCZ_ExpectSegments', () => {
-   const segments = SvgPathParser.parseSvgPathD('M 10 20 L 30 40 H 50 V 60 C 1 2 3 4 5 6 Z');
+   const startX = 10;
+   const startY = 20;
+   const lineX = 30;
+   const lineY = 40;
+   const horizontalX = 50;
+   const verticalY = 60;
+   const control1X = 1;
+   const control1Y = 2;
+   const control2X = 3;
+   const control2Y = 4;
+   const curveX = 5;
+   const curveY = 6;
+   const path = `M ${startX} ${startY} L ${lineX} ${lineY} H ${horizontalX} V ${verticalY} C ${control1X} ${control1Y} ${control2X} ${control2Y} ${curveX} ${curveY} Z`;
+
+   const segments = SvgPathParser.parseSvgPathD(path);
 
    assert.deepEqual(segments, [
-      { tag: 'M', x: 10, y: 20, d: 'M 10 20' },
-      { tag: 'L', x: 30, y: 40, d: 'L 30 40' },
-      { tag: 'H', x: 50, y: 40, d: 'L 50 40' },
-      { tag: 'V', x: 50, y: 60, d: 'L 50 60' },
+      { tag: 'M', x: startX, y: startY, d: `M ${startX} ${startY}` },
+      { tag: 'L', x: lineX, y: lineY, d: `L ${lineX} ${lineY}` },
+      { tag: 'H', x: horizontalX, y: lineY, d: `L ${horizontalX} ${lineY}` },
+      { tag: 'V', x: horizontalX, y: verticalY, d: `L ${horizontalX} ${verticalY}` },
       {
          tag: 'C',
-         x: 5,
-         y: 6,
-         controlPoint1X: 1,
-         controlPoint1Y: 2,
-         controlPoint2X: 3,
-         controlPoint2Y: 4,
-         d: 'C 1 2 3 4 5 6',
+         x: curveX,
+         y: curveY,
+         controlPoint1X: control1X,
+         controlPoint1Y: control1Y,
+         controlPoint2X: control2X,
+         controlPoint2Y: control2Y,
+         d: `C ${control1X} ${control1Y} ${control2X} ${control2Y} ${curveX} ${curveY}`,
       },
    ]);
 });
 
+
 test('Test_ParseSvgPathD_TestImplicitLineAfterMove_ExpectLineSegment', () => {
-   const segments = SvgPathParser.parseSvgPathD('M 0 0 10 10');
+   const startX = 0;
+   const startY = 0;
+   const lineX = 10;
+   const lineY = 10;
+   const path = `M ${startX} ${startY} ${lineX} ${lineY}`;
+
+   const segments = SvgPathParser.parseSvgPathD(path);
 
    assert.deepEqual(segments, [
-      { tag: 'M', x: 0, y: 0, d: 'M 0 0' },
-      { tag: 'L', x: 10, y: 10, d: 'L 10 10' },
+      { tag: 'M', x: startX, y: startY, d: `M ${startX} ${startY}` },
+      { tag: 'L', x: lineX, y: lineY, d: `L ${lineX} ${lineY}` },
    ]);
 });
 
-test('Test_ParseSvgPathD_TestEmptyAndLeadingNumbers_ExpectEmptyOrSkip', () => {
-   assert.deepEqual(SvgPathParser.parseSvgPathD(''), []);
-   assert.deepEqual(SvgPathParser.parseSvgPathD('1 2 M 3 4'), [
-      { tag: 'M', x: 3, y: 4, d: 'M 3 4' },
+
+test('Test_ParseSvgPathD_TestEmpty_ExpectEmpty', () => {
+   const path = '';
+
+   const segments = SvgPathParser.parseSvgPathD(path);
+
+   assert.deepEqual(segments, []);
+});
+
+
+test('Test_ParseSvgPathD_TestLeadingNumbers_ExpectMoveOnly', () => {
+   const x = 3;
+   const y = 4;
+   const path = `1 2 M ${x} ${y}`;
+
+   const segments = SvgPathParser.parseSvgPathD(path);
+
+   assert.deepEqual(segments, [
+      { tag: 'M', x, y, d: `M ${x} ${y}` },
    ]);
 });
+
 
 test('Test_ParseSvgPathD_TestUnknownCommand_ExpectSkipsWithoutSegment', () => {
-   assert.deepEqual(SvgPathParser.parseSvgPathD('M 0 0 X'), [
-      { tag: 'M', x: 0, y: 0, d: 'M 0 0' },
+   const x = 0;
+   const y = 0;
+   const path = `M ${x} ${y} X`;
+
+   const segments = SvgPathParser.parseSvgPathD(path);
+
+   assert.deepEqual(segments, [
+      { tag: 'M', x, y, d: `M ${x} ${y}` },
    ]);
 });

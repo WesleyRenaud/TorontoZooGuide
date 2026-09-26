@@ -16,24 +16,22 @@ def _attraction( name: str ) -> Attraction:
 
 
 def Test_Build_TestMatchingQuery_ExpectMatchingAttractionsOnly() -> None:
-   attractions = [
-      _attraction( CAROUSEL_NAME ),
-      _attraction( ZOOMOBILE_NAME ),
-   ]
+   carousel = _attraction( CAROUSEL_NAME )
+   zoomobile = _attraction( ZOOMOBILE_NAME )
+   attractions = [ carousel, zoomobile ]
 
    matches = AttractionsMatchingQueryBuilder.build( attractions, SEARCH_QUERY )
 
-   assert [ attraction.name for attraction in matches ] == [ CAROUSEL_NAME ]
+   assert [ attraction.name for attraction in matches ] == [ carousel.name ]
 
 
 def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingAttractionsOnly() -> None:
-   attractions = [
-      _attraction( CAROUSEL_NAME ),
-      _attraction( ZOOMOBILE_NAME ),
-   ]
+   carousel = _attraction( CAROUSEL_NAME )
+   zoomobile = _attraction( ZOOMOBILE_NAME )
+   attractions = [ carousel, zoomobile ]
 
    matches = AttractionsMatchingQueryBuilder.filter_matching_query(
       attractions,
       SEARCH_QUERY )
 
-   assert [ attraction.name for attraction in matches ] == [ CAROUSEL_NAME ]
+   assert [ attraction.name for attraction in matches ] == [ carousel.name ]

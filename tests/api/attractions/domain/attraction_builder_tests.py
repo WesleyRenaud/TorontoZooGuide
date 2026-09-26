@@ -97,18 +97,28 @@ def _override_record( **overrides: object ) -> AttractionScheduleOverrideRecord:
 
 
 def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() -> None:
-   assert AttractionBuilder.calculate_likelihood( None ) == 100
-   assert AttractionBuilder.calculate_likelihood( -0.5 ) == 0
-   assert AttractionBuilder.calculate_likelihood( 0.444 ) == 44
-   assert AttractionBuilder.calculate_likelihood( 1.5 ) == 100
+   result = AttractionBuilder.calculate_likelihood( None )
+
+   assert result == 100
+   result = AttractionBuilder.calculate_likelihood( -0.5 )
+
+   assert result == 0
+   result = AttractionBuilder.calculate_likelihood( 0.444 )
+
+   assert result == 44
+   result = AttractionBuilder.calculate_likelihood( 1.5 )
+
+   assert result == 100
 
 
 def Test_BuildClosedScheduleMessage_TestCustomMessage_ExpectScheduleMessageRetained() -> None:
    schedule_record = _schedule_record( schedule_message=CUSTOM_SCHEDULE_MESSAGE )
 
-   assert AttractionBuilder.build_closed_schedule_message(
+   closed_schedule_message = AttractionBuilder.build_closed_schedule_message(
       ATTRACTION_NAME,
-      schedule_record ) == CUSTOM_SCHEDULE_MESSAGE
+      schedule_record )
+
+   assert closed_schedule_message == CUSTOM_SCHEDULE_MESSAGE
 
 
 def Test_BuildClosedScheduleMessage_TestWeekendsAndHolidaysOnly_ExpectDefaultMessage() -> None:
@@ -117,17 +127,21 @@ def Test_BuildClosedScheduleMessage_TestWeekendsAndHolidaysOnly_ExpectDefaultMes
       sunday=True,
       holidays_only=True )
 
-   assert AttractionBuilder.build_closed_schedule_message(
+   closed_schedule_message = AttractionBuilder.build_closed_schedule_message(
       ATTRACTION_NAME,
-      schedule_record ) == WEEKENDS_ONLY_MESSAGE
+      schedule_record )
+
+   assert closed_schedule_message == WEEKENDS_ONLY_MESSAGE
 
 
 def Test_BuildClosedScheduleMessage_TestNoCustomMessage_ExpectNotScheduledTodayMessage() -> None:
    schedule_record = _schedule_record()
 
-   assert AttractionBuilder.build_closed_schedule_message(
+   closed_schedule_message = AttractionBuilder.build_closed_schedule_message(
       ATTRACTION_NAME,
-      schedule_record ) == NOT_SCHEDULED_MESSAGE
+      schedule_record )
+
+   assert closed_schedule_message == NOT_SCHEDULED_MESSAGE
 
 
 def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
@@ -246,10 +260,12 @@ def Test_ResolveContext_TestVisitDay_ExpectVisitContext() -> None:
 def Test_IsOpenOnDay_TestMondaySchedule_ExpectOpenOnMonday() -> None:
    schedule = _schedule_record( monday=True )
 
-   assert AttractionBuilder.is_open_on_day(
+   flag = AttractionBuilder.is_open_on_day(
       schedule,
       weekday=WEEKDAY_VISIT_DATE.weekday(),
-      is_holiday=False ) is True
+      is_holiday=False )
+
+   assert flag is True
 
 
 def Test_GetActiveScheduleOverrideStatus_TestClosedOverride_ExpectClosed() -> None:

@@ -70,10 +70,12 @@ def _insert_status(
 
 def Test_FetchClosedTransportationStationNames_TestEmpty_ExpectEmptyList(
       closed_transportation_station_name_conn: sqlite3.Connection ) -> None:
-   assert ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
+   closed_transportation_station_names = ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
       closed_transportation_station_name_conn,
       TransportationName.ZOOMOBILE,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_transportation_station_names == []
 
 
 def Test_FetchClosedTransportationStationNames_TestCurrentAndFuture_ExpectDistinctSortedStations(
@@ -91,10 +93,12 @@ def Test_FetchClosedTransportationStationNames_TestCurrentAndFuture_ExpectDistin
       start_date='2026-10-01',
       end_date='2026-10-15' )
 
-   assert ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
+   closed_transportation_station_names = ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
       closed_transportation_station_name_conn,
       TransportationName.ZOOMOBILE,
-      TODAY ) == [ AFRICA, EURASIA ]
+      TODAY )
+
+   assert closed_transportation_station_names == [ AFRICA, EURASIA ]
 
 
 def Test_FetchClosedTransportationStationNames_TestExpired_ExpectExcluded(
@@ -106,10 +110,12 @@ def Test_FetchClosedTransportationStationNames_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
+   closed_transportation_station_names = ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
       closed_transportation_station_name_conn,
       TransportationName.ZOOMOBILE,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_transportation_station_names == []
 
 
 def Test_FetchClosedTransportationStationNames_TestEndingToday_ExpectIncluded(
@@ -121,10 +127,12 @@ def Test_FetchClosedTransportationStationNames_TestEndingToday_ExpectIncluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
+   closed_transportation_station_names = ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
       closed_transportation_station_name_conn,
       TransportationName.ZOOMOBILE,
-      TODAY ) == [ AFRICA ]
+      TODAY )
+
+   assert closed_transportation_station_names == [ AFRICA ]
 
 
 def Test_FetchClosedTransportationStationNames_TestOpenRow_ExpectExcluded(
@@ -136,10 +144,12 @@ def Test_FetchClosedTransportationStationNames_TestOpenRow_ExpectExcluded(
       start_date='2026-09-01',
       end_date=None )
 
-   assert ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
+   closed_transportation_station_names = ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
       closed_transportation_station_name_conn,
       TransportationName.ZOOMOBILE,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_transportation_station_names == []
 
 
 def Test_FetchClosedTransportationStationNames_TestOtherTransportation_ExpectExcluded(
@@ -152,7 +162,9 @@ def Test_FetchClosedTransportationStationNames_TestOtherTransportation_ExpectExc
       end_date='2026-09-30',
       transportation=OTHER_TRANSPORTATION )
 
-   assert ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
+   closed_transportation_station_names = ClosedTransportationStationNameProvider.fetch_closed_transportation_station_names(
       closed_transportation_station_name_conn,
       TransportationName.ZOOMOBILE,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_transportation_station_names == []

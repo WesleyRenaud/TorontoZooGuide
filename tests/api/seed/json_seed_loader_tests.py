@@ -23,10 +23,14 @@ def _cursor() -> tuple[ StubCursor, Types.Cursor ]:
    return stub, cast( Types.Cursor, stub )
 
 def Test_SeedDataPath_TestFilename_ExpectUnderSeedDataDir() -> None:
-   assert JsonSeedLoader.seed_data_path( 'animals.json' ) == SEED_DATA_DIR / 'animals.json'
+   result = JsonSeedLoader.seed_data_path( 'animals.json' )
+
+   assert result == SEED_DATA_DIR / 'animals.json'
 
 def Test_SeedDataDir_TestDirname_ExpectUnderSeedDataDir() -> None:
-   assert JsonSeedLoader.seed_data_dir( 'curves' ) == SEED_DATA_DIR / 'curves'
+   result = JsonSeedLoader.seed_data_dir( 'curves' )
+
+   assert result == SEED_DATA_DIR / 'curves'
 
 def Test_LoadJsonRecords_TestValidRecords_ExpectFieldRows(
       tmp_path: Path ) -> None:
@@ -38,9 +42,11 @@ def Test_LoadJsonRecords_TestValidRecords_ExpectFieldRows(
       ] ),
       encoding='utf-8' )
 
-   assert JsonSeedLoader.load_json_records(
+   result = JsonSeedLoader.load_json_records(
       path,
-      fields=[ 'name', 'exhibit' ] ) == [
+      fields=[ 'name', 'exhibit' ] )
+
+   assert result == [
       [ 'Lion', 'Africa' ],
       [ 'Giraffe', 'Africa' ],
    ]
@@ -78,7 +84,9 @@ def Test_LoadJsonRows_TestValidRows_ExpectCopiedLists(
       json.dumps( [ [ 'Lion', 'Africa' ], [ 'Giraffe', 'Africa' ] ] ),
       encoding='utf-8' )
 
-   assert JsonSeedLoader.load_json_rows( path ) == [
+   result = JsonSeedLoader.load_json_rows( path )
+
+   assert result == [
       [ 'Lion', 'Africa' ],
       [ 'Giraffe', 'Africa' ],
    ]
@@ -105,10 +113,12 @@ def Test_LoadDayCurveFile_TestValidPayload_ExpectEntityPlusDayRows(
       } ),
       encoding='utf-8' )
 
-   assert JsonSeedLoader.load_day_curve_file(
+   result = JsonSeedLoader.load_day_curve_file(
       path,
       entity_fields=[ 'species', 'exhibit' ],
-      day_fields=[ 'day', 'value' ] ) == [
+      day_fields=[ 'day', 'value' ] )
+
+   assert result == [
       [ 'Lion', 'Africa', 1, 0.5 ],
       [ 'Lion', 'Africa', 2, 0.8 ],
    ]
@@ -194,10 +204,12 @@ def Test_LoadDayCurveDirectory_TestMultipleFiles_ExpectSortedCombinedRows(
       } ),
       encoding='utf-8' )
 
-   assert JsonSeedLoader.load_day_curve_directory(
+   result = JsonSeedLoader.load_day_curve_directory(
       tmp_path,
       entity_fields=[ 'name' ],
-      day_fields=[ 'day', 'value' ] ) == [
+      day_fields=[ 'day', 'value' ] )
+
+   assert result == [
       [ 'A', 1, 1 ],
       [ 'B', 2, 2 ],
    ]

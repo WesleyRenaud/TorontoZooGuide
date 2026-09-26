@@ -13,40 +13,40 @@ import api.http_request_handler as server
 from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.attraction_schedule_item_key import AttractionScheduleItemKey
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.data_access.itinerary_transportation_input import ItineraryTransportationInput
 from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustment
 from api.itinerary.domain.itinerary_adjustment_reason import ItineraryAdjustmentReason
+from api.itinerary.operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
+from api.itinerary.results.itinerary_path_builder import ItineraryPathBuilder
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.results.itinerary_save_result_response_builder import ItinerarySaveResultResponseBuilder
+from api.itinerary.results.itinerary_time_set_result import ItineraryTimeSetResult
+from api.itinerary.results.itinerary_time_set_result_response_builder import ItineraryTimeSetResultResponseBuilder
+from api.itinerary.results.suppress_itinerary_warning_result_response_builder import SuppressItineraryWarningResultResponseBuilder
+from api.itinerary.scheduling.items.schedule_item_key_mapper import ScheduleItemKeyMapper
+from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
 from api.models import Itinerary
 import api.request_connection_provider as request_connection
+from api.shared.api_error_response_applier import ApiErrorResponseApplier
 from api.shared.enums import ItineraryAdjustmentType
 from api.shared.enums import ItineraryErrorType, Position
 from api.shared.enums.api_error_type import ApiErrorType
+from api.shared.enums.schedule_item_kind import ScheduleItemKind
 from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 from api.types import Types
 
 
 ANIMAL_EXHIBIT = 'Africa Savanna'
+ANIMAL_SPECIES = 'African Lion'
+ATTRACTION_NAME = 'Conservation Carousel'
 VISIT_DATE = '2026-06-15'
+VISIT_DATE_TEMP = 22.5
+WARNING_TYPE = 'arrivalDepartureTooClose'
 
-EMPTY_ITINERARY_PATH = {
-   'stops': [],
-   'legs': [],
-   'points': [],
-}
 
-EMPTY_ITINERARY = {
-   'date': VISIT_DATE,
-   'arrival_time': None,
-   'departure_time': None,
-   'selected_exhibits': [],
-   'animals': [],
-   'attractions': [],
-   'transportations': [],
-   'transportation_stations': [],
-   'guardians_talks': [],
-   'wild_encounters': [],
-   'events': [],
-}
+def _post_json( handler: server.HttpRequestHandler ) -> dict[ str, Any ]:
+   server.HttpRequestHandler.do_POST( handler )
+   return response_json( handler )
 
 
 @pytest.fixture
@@ -73,49 +73,53 @@ def stub_itinerary_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubItinera
 
 def Test_SetItineraryArrivalTime_TestHttpRequest_ExpectOnlyArrivalUpdated(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
-   arrival_handler = make_handler(
+   arrival_time = '9:45 AM'
+   confirming_short_visit = False
+   confirming_early_admission = False
+   expected_result = ItineraryTimeSetResult(
+      itinerary=Itinerary(
+         date=VISIT_DATE,
+         arrival_time=arrival_time ) )
+   handler = make_handler(
       '/set-itinerary-arrival-time',
-      { 'arrivalTime': '9:45 AM' } )
-   departure_handler = make_handler(
-      '/set-itinerary-departure-time',
-      { 'departureTime': None } )
+      { 'arrivalTime': arrival_time } )
 
-   server.HttpRequestHandler.do_POST( arrival_handler )
-   server.HttpRequestHandler.do_POST( departure_handler )
+   result = _post_json( handler )
 
-   assert response_json( arrival_handler ) == {
-      'status': 'success',
-      'reasons': [],
-      'suppressed_warnings': [],
-      'itinerary_config': ItineraryConfigBuilder.to_dict(),
-      'itinerary_path': EMPTY_ITINERARY_PATH,
-      'itinerary': {
-         **EMPTY_ITINERARY,
-         'arrival_time': '9:45 AM',
-      },
-   }
-   assert response_json( departure_handler ) == {
-      'status': 'success',
-      'reasons': [],
-      'suppressed_warnings': [],
-      'itinerary_config': ItineraryConfigBuilder.to_dict(),
-      'itinerary_path': EMPTY_ITINERARY_PATH,
-      'itinerary': EMPTY_ITINERARY,
-   }
+   assert result == ItineraryTimeSetResultResponseBuilder.to_dict( expected_result )
    assert stub_itinerary_coordinator.calls == [
       (
          'set_arrival_time',
          {
-            'arrival_time': '9:45 AM',
-            'confirming_short_visit': False,
-            'confirming_early_admission': False,
+            'arrival_time': arrival_time,
+            'confirming_short_visit': confirming_short_visit,
+            'confirming_early_admission': confirming_early_admission,
          },
       ),
+   ]
+
+
+def Test_SetItineraryDepartureTime_TestClearedTime_ExpectEmptyItinerary(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   departure_time = None
+   confirming_short_visit = False
+   expected_result = ItineraryTimeSetResult(
+      itinerary=Itinerary(
+         date=VISIT_DATE,
+         departure_time=departure_time ) )
+   handler = make_handler(
+      '/set-itinerary-departure-time',
+      { 'departureTime': departure_time } )
+
+   result = _post_json( handler )
+
+   assert result == ItineraryTimeSetResultResponseBuilder.to_dict( expected_result )
+   assert stub_itinerary_coordinator.calls == [
       (
          'set_departure_time',
          {
-            'departure_time': None,
-            'confirming_short_visit': False,
+            'departure_time': departure_time,
+            'confirming_short_visit': confirming_short_visit,
          },
       ),
    ]
@@ -123,135 +127,174 @@ def Test_SetItineraryArrivalTime_TestHttpRequest_ExpectOnlyArrivalUpdated(
 
 def Test_SuppressItineraryWarning_TestHttpRequest_ExpectMapsWarningType(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   expected_result = SuppressItineraryWarningResult()
    handler = make_handler(
       '/suppress-itinerary-warning',
-      { 'warningType': 'arrivalDepartureTooClose' } )
+      { 'warningType': WARNING_TYPE } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   assert response_json( handler ) == {
-      'status': 'success',
-      'reasons': [],
-      'suppressed_warnings': [],
-      'itinerary_config': ItineraryConfigBuilder.to_dict(),
-   }
+   assert result == SuppressItineraryWarningResultResponseBuilder.to_dict(
+      expected_result )
    assert stub_itinerary_coordinator.calls == [
       (
          'suppress_itinerary_warning',
-         { 'warning_type': 'arrivalDepartureTooClose' },
+         { 'warning_type': WARNING_TYPE },
       ),
    ]
 
 
 def Test_UnsuppressItineraryWarning_TestHttpRequest_ExpectMapsWarningType(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   expected_result = SuppressItineraryWarningResult()
    handler = make_handler(
       '/unsuppress-itinerary-warning',
-      { 'warningType': 'arrivalDepartureTooClose' } )
+      { 'warningType': WARNING_TYPE } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   assert response_json( handler ) == {
-      'status': 'success',
-      'reasons': [],
-      'suppressed_warnings': [],
-      'itinerary_config': ItineraryConfigBuilder.to_dict(),
-   }
+   assert result == SuppressItineraryWarningResultResponseBuilder.to_dict(
+      expected_result )
    assert stub_itinerary_coordinator.calls == [
       (
          'unsuppress_itinerary_warning',
-         { 'warning_type': 'arrivalDepartureTooClose' },
+         { 'warning_type': WARNING_TYPE },
       ),
    ]
 
 
-def Test_SetItinerary_TestHttpRequest_ExpectSuccessPayloads(
+def Test_SetItinerary_TestHttpRequest_ExpectSuccessPayload(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
-   set_handler = make_handler(
+   arrival_time = '09:30'
+   departure_time = '17:00'
+   selected_exhibits = [ ANIMAL_EXHIBIT ]
+   animals: list[ object ] = []
+   attractions: list[ object ] = []
+   guardians_talks: list[ object ] = []
+   wild_encounters: list[ object ] = []
+   save_result = ItinerarySaveResult( itinerary=Itinerary( date=VISIT_DATE ) )
+   handler = make_handler(
       '/set-itinerary',
       {
          'date': VISIT_DATE,
-         'arrivalTime': '09:30',
-         'departureTime': '17:00',
-         'selectedExhibits': [ ANIMAL_EXHIBIT ],
-         'animals': [],
-         'attractions': [],
-         'guardiansTalks': [],
-         'wildEncounters': [],
+         'arrivalTime': arrival_time,
+         'departureTime': departure_time,
+         'selectedExhibits': selected_exhibits,
+         'animals': animals,
+         'attractions': attractions,
+         'guardiansTalks': guardians_talks,
+         'wildEncounters': wild_encounters,
       } )
-   get_handler = make_handler( '/get-itinerary' )
-   clear_handler = make_handler( '/clear-itinerary' )
-   accept_handler = make_handler( '/accept-itinerary' )
 
-   server.HttpRequestHandler.do_POST( set_handler )
-   server.HttpRequestHandler.do_POST( get_handler )
-   server.HttpRequestHandler.do_POST( clear_handler )
-   server.HttpRequestHandler.do_POST( accept_handler )
+   result = _post_json( handler )
 
-   set_response = response_json( set_handler )
-   assert set_response[ 'status' ] == 'success'
-   assert set_response[ 'reasons' ] == []
-   assert set_response[ 'itinerary_path' ] == EMPTY_ITINERARY_PATH
+   assert result == ItinerarySaveResultResponseBuilder.to_dict(
+      save_result,
+      include_config=True )
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'set_itinerary',
+         {
+            'date': VISIT_DATE,
+            'arrival_time': arrival_time,
+            'departure_time': departure_time,
+            'selected_exhibits': selected_exhibits,
+            'animals': animals,
+            'attractions': attractions,
+            'transportations': ItineraryTransportationInput.from_wires( None ),
+            'guardians_talks': guardians_talks,
+            'wild_encounters': WildEncounterScheduleItemKey.from_wires(
+               wild_encounters ),
+            'visit_date_temp': None,
+            'overriding_conflicting_guardians_talks': False,
+            'confirming_short_visit': False,
+            'confirming_early_admission': False,
+            'confirming_guardians_talk_unschedule': False,
+            'confirming_wild_encounter_unschedule': False,
+            'confirming_fixed_time_item_long_wait': False,
+            'confirming_guardians_talk_without_animal': False,
+            'confirming_attraction_without_animal': False,
+         },
+      ),
+   ]
+
+
+def Test_GetItinerary_TestHttpRequest_ExpectItinerary(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   itinerary = Itinerary( date=VISIT_DATE )
+   handler = make_handler( '/get-itinerary' )
+
+   result = _post_json( handler )
+
+   assert result[ 'itinerary' ] == itinerary.to_dict()
+   assert result[ 'itinerary_path' ] == ItineraryPathBuilder.build( None )
+   assert result[ 'itinerary_config' ] == ItineraryConfigBuilder.to_dict()
+   assert stub_itinerary_coordinator.calls == [
+      (
+         'get_itinerary',
+         { 'visit_date_temp': None },
+      ),
+   ]
+
+
+def Test_ClearItinerary_TestHttpRequest_ExpectCleared(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   handler = make_handler( '/clear-itinerary' )
+
+   result = _post_json( handler )
+
+   assert result[ 'success' ] is StubItineraryCoordinator.default_success
+   assert stub_itinerary_coordinator.calls == [
+      ( 'ClearItineraryProvider.clear_itinerary', {} ),
+   ]
+
+
+def Test_AcceptItinerary_TestHttpRequest_ExpectAccepted(
+      stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   itinerary = Itinerary( date=VISIT_DATE )
+   animals_to_keep = None
+   attractions_to_keep = None
+   handler = make_handler( '/accept-itinerary' )
+
+   result = _post_json( handler )
+
+   assert result[ 'success' ] is StubItineraryCoordinator.default_success
+   assert result[ 'itinerary' ] == itinerary.to_dict()
+   assert result[ 'itinerary_path' ] == ItineraryPathBuilder.build( None )
+   assert result[ 'itinerary_config' ] == ItineraryConfigBuilder.to_dict()
    assert stub_itinerary_coordinator.calls[ Position.FIRST ] == (
-      'set_itinerary',
-      {
-         'date': VISIT_DATE,
-         'arrival_time': '09:30',
-         'departure_time': '17:00',
-         'selected_exhibits': [ ANIMAL_EXHIBIT ],
-         'animals': [],
-         'attractions': [],
-         'transportations': [],
-         'guardians_talks': [],
-         'wild_encounters': [],
-         'visit_date_temp': None,
-         'overriding_conflicting_guardians_talks': False,
-         'confirming_short_visit': False,
-         'confirming_early_admission': False,
-         'confirming_guardians_talk_unschedule': False,
-         'confirming_wild_encounter_unschedule': False,
-         'confirming_fixed_time_item_long_wait': False,
-         'confirming_guardians_talk_without_animal': False,
-         'confirming_attraction_without_animal': False,
-      },
-   )
-   assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == VISIT_DATE
-   assert response_json( get_handler )[ 'itinerary_path' ] == EMPTY_ITINERARY_PATH
-   assert response_json( clear_handler )[ 'success' ] is True
-   assert response_json( accept_handler )[ 'success' ] is True
-   assert response_json( accept_handler )[ 'itinerary' ][ 'date' ] == VISIT_DATE
-   assert response_json( accept_handler )[ 'itinerary_path' ] == EMPTY_ITINERARY_PATH
-   assert stub_itinerary_coordinator.calls[ -2 ] == (
       'AcceptItineraryProvider.accept_itinerary',
       {
-         'animals_to_keep': None,
-         'attractions_to_keep': None,
+         'animals_to_keep': animals_to_keep,
+         'attractions_to_keep': attractions_to_keep,
       },
+   )
+   assert stub_itinerary_coordinator.calls[ Position.SECOND ] == (
+      'get_itinerary',
+      { 'visit_date_temp': None },
    )
 
 
 def Test_UnscheduleItineraryItem_TestHttpRequest_ExpectMapsAnimalKey(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   item_type = ScheduleItemKind.ANIMAL.item_type
+   key = AnimalScheduleItemKey.wire( ANIMAL_SPECIES, ANIMAL_EXHIBIT )
+   save_result = ItinerarySaveResult( itinerary=Itinerary( date=VISIT_DATE ) )
    handler = make_handler(
       '/unschedule-itinerary-item',
       {
-         'itemType': 'animals',
-         'key': 'African Lion||Africa Savanna',
+         'itemType': item_type,
+         'key': key,
       } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'status' ] == 'success'
-   assert response[ 'reasons' ] == []
-   assert response[ 'itinerary' ] is not None
+   assert result == ItinerarySaveResultResponseBuilder.to_dict( save_result )
    assert stub_itinerary_coordinator.calls == [
       (
          'unschedule_itinerary_item',
          {
-            'schedule_item_key': AnimalScheduleItemKey(
-               species='African Lion',
-               exhibit='Africa Savanna' ),
+            'schedule_item_key': ScheduleItemKeyMapper.from_wire( item_type, key ),
          },
       ),
    ]
@@ -259,24 +302,24 @@ def Test_UnscheduleItineraryItem_TestHttpRequest_ExpectMapsAnimalKey(
 
 def Test_UnscheduleAllItineraryItems_TestHttpRequest_ExpectMapsTemp(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   visit_date_temp = True
+   save_result = ItinerarySaveResult( itinerary=Itinerary( date=VISIT_DATE ) )
    handler = make_handler(
       '/unschedule-all-itinerary-items',
       {
-         'temp': True,
+         'temp': visit_date_temp,
       } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'status' ] == 'success'
-   assert response[ 'reasons' ] == []
-   assert response[ 'itinerary' ] is not None
-   assert response[ 'itinerary_config' ] is not None
+   assert result == ItinerarySaveResultResponseBuilder.to_dict(
+      save_result,
+      include_config=True )
    assert stub_itinerary_coordinator.calls == [
       (
          'unschedule_all_itinerary_items',
          {
-            'visit_date_temp': True,
+            'visit_date_temp': visit_date_temp,
          },
       ),
    ]
@@ -284,25 +327,24 @@ def Test_UnscheduleAllItineraryItems_TestHttpRequest_ExpectMapsTemp(
 
 def Test_RemoveItemFromItinerary_TestHttpRequest_ExpectMapsAttractionKey(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   item_type = ScheduleItemKind.ATTRACTION.item_type
+   key = AttractionScheduleItemKey( name=ATTRACTION_NAME ).to_wire()
+   save_result = ItinerarySaveResult( itinerary=Itinerary( date=VISIT_DATE ) )
    handler = make_handler(
       '/remove-item-from-itinerary',
       {
-         'itemType': 'attractions',
-         'key': 'Conservation Carousel',
+         'itemType': item_type,
+         'key': key,
       } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'status' ] == 'success'
-   assert response[ 'reasons' ] == []
-   assert response[ 'itinerary' ] is not None
+   assert result == ItinerarySaveResultResponseBuilder.to_dict( save_result )
    assert stub_itinerary_coordinator.calls == [
       (
          'remove_itinerary_item',
          {
-            'schedule_item_key': AttractionScheduleItemKey(
-               name='Conservation Carousel' ),
+            'schedule_item_key': ScheduleItemKeyMapper.from_wire( item_type, key ),
          },
       ),
    ]
@@ -310,103 +352,109 @@ def Test_RemoveItemFromItinerary_TestHttpRequest_ExpectMapsAttractionKey(
 
 def Test_AcceptItinerary_TestAnimalsToKeep_ExpectMapsPayload(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   visit_date_temp = VISIT_DATE_TEMP
+   animals_to_keep = [
+      {
+         'species': ANIMAL_SPECIES,
+         'exhibit': ANIMAL_EXHIBIT,
+      },
+   ]
+   attractions_to_keep = None
+   itinerary = Itinerary( date=VISIT_DATE )
    handler = make_handler(
       '/accept-itinerary',
       {
-         'temp': 22.5,
-         'animalsToKeep': [
-            {
-               'species': 'African Lion',
-               'exhibit': 'Africa Savanna',
-            },
-         ],
+         'temp': visit_date_temp,
+         'animalsToKeep': animals_to_keep,
       },
    )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-
-   assert response[ 'success' ] is True
-   assert response[ 'itinerary' ][ 'date' ] == VISIT_DATE
+   assert result[ 'success' ] is StubItineraryCoordinator.default_success
+   assert result[ 'itinerary' ][ 'date' ] == itinerary.date
    assert stub_itinerary_coordinator.calls[ Position.FIRST ] == (
       'AcceptItineraryProvider.accept_itinerary',
       {
-         'animals_to_keep': [
-            {
-               'species': 'African Lion',
-               'exhibit': 'Africa Savanna',
-            },
-         ],
-         'attractions_to_keep': None,
+         'animals_to_keep': animals_to_keep,
+         'attractions_to_keep': attractions_to_keep,
       },
    )
    assert stub_itinerary_coordinator.calls[ Position.SECOND ] == (
       'get_itinerary',
-      { 'visit_date_temp': 22.5 },
+      { 'visit_date_temp': visit_date_temp },
    )
 
 
 def Test_AcceptItinerary_TestAttractionsToKeep_ExpectMapsPayload(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   attractions_to_keep = [ ATTRACTION_NAME ]
+   animals_to_keep = None
    handler = make_handler(
       '/accept-itinerary',
       {
-         'attractionsToKeep': [ 'Conservation Carousel' ],
+         'attractionsToKeep': attractions_to_keep,
       },
    )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-
-   assert response[ 'success' ] is True
+   assert result[ 'success' ] is StubItineraryCoordinator.default_success
    assert stub_itinerary_coordinator.calls[ Position.FIRST ] == (
       'AcceptItineraryProvider.accept_itinerary',
       {
-         'animals_to_keep': None,
-         'attractions_to_keep': [ 'Conservation Carousel' ],
+         'animals_to_keep': animals_to_keep,
+         'attractions_to_keep': attractions_to_keep,
       },
    )
 
 
 def Test_ScheduleItineraryItem_TestHttpRequest_ExpectMapsPayload(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   item_type = ScheduleItemKind.ANIMAL.item_type
+   key = AnimalScheduleItemKey.wire( ANIMAL_SPECIES, ANIMAL_EXHIBIT )
+   start_time = '14:00'
+   duration_minutes = 20
+   confirming_schedule_item_not_on_itinerary = True
+   confirming_attraction_outside_operating_hours = True
+   confirming_guardians_talk_unschedule = True
+   confirming_wild_encounter_unschedule = True
+   confirming_fixed_time_item_long_wait = True
+   confirming_guardians_talk_without_animal = True
+   save_result = ItinerarySaveResult( itinerary=Itinerary( date=VISIT_DATE ) )
    handler = make_handler(
       '/schedule-itinerary-item',
       {
-         'itemType': 'animals',
-         'key': 'African Lion||Africa Savanna',
-         'startTime': '14:00',
-         'durationMinutes': 20,
-         'confirmingScheduleItemNotOnItinerary': True,
-         'confirmingAttractionOutsideOperatingHours': True,
-         'confirmingGuardiansTalkUnschedule': True,
-         'confirmingWildEncounterUnschedule': True,
-         'confirmingFixedTimeItemLongWait': True,
-         'confirmingGuardiansTalkWithoutAnimal': True,
+         'itemType': item_type,
+         'key': key,
+         'startTime': start_time,
+         'durationMinutes': duration_minutes,
+         'confirmingScheduleItemNotOnItinerary': confirming_schedule_item_not_on_itinerary,
+         'confirmingAttractionOutsideOperatingHours': confirming_attraction_outside_operating_hours,
+         'confirmingGuardiansTalkUnschedule': confirming_guardians_talk_unschedule,
+         'confirmingWildEncounterUnschedule': confirming_wild_encounter_unschedule,
+         'confirmingFixedTimeItemLongWait': confirming_fixed_time_item_long_wait,
+         'confirmingGuardiansTalkWithoutAnimal': confirming_guardians_talk_without_animal,
       } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'status' ] == 'success'
-   assert response[ 'itinerary' ] is not None
+   assert result == ItinerarySaveResultResponseBuilder.to_dict(
+      save_result,
+      include_config=True )
    assert stub_itinerary_coordinator.calls == [
       (
          'schedule_itinerary_item',
          {
-            'schedule_item_key': AnimalScheduleItemKey(
-               species='African Lion',
-               exhibit='Africa Savanna' ),
-            'start_time': '14:00',
-            'duration_minutes': 20,
-            'confirming_schedule_item_not_on_itinerary': True,
-            'confirming_attraction_outside_operating_hours': True,
-            'confirming_guardians_talk_unschedule': True,
-            'confirming_wild_encounter_unschedule': True,
-            'confirming_fixed_time_item_long_wait': True,
-            'confirming_guardians_talk_without_animal': True,
+            'schedule_item_key': ScheduleItemKeyMapper.from_wire( item_type, key ),
+            'start_time': start_time,
+            'duration_minutes': duration_minutes,
+            'confirming_schedule_item_not_on_itinerary': confirming_schedule_item_not_on_itinerary,
+            'confirming_attraction_outside_operating_hours': confirming_attraction_outside_operating_hours,
+            'confirming_guardians_talk_unschedule': confirming_guardians_talk_unschedule,
+            'confirming_wild_encounter_unschedule': confirming_wild_encounter_unschedule,
+            'confirming_fixed_time_item_long_wait': confirming_fixed_time_item_long_wait,
+            'confirming_guardians_talk_without_animal': confirming_guardians_talk_without_animal,
          },
       ),
    ]
@@ -414,24 +462,27 @@ def Test_ScheduleItineraryItem_TestHttpRequest_ExpectMapsPayload(
 
 def Test_BulkScheduleItinerary_TestHttpRequest_ExpectMapsPayload(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   visit_date_temp = VISIT_DATE_TEMP
+   confirming_fixed_time_item_long_wait = True
+   save_result = ItinerarySaveResult( itinerary=Itinerary( date=VISIT_DATE ) )
    handler = make_handler(
       '/bulk-schedule-itinerary',
       {
-         'temp': 22.5,
-         'confirmingFixedTimeItemLongWait': True,
+         'temp': visit_date_temp,
+         'confirmingFixedTimeItemLongWait': confirming_fixed_time_item_long_wait,
       } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'status' ] == 'success'
-   assert response[ 'itinerary' ] is not None
+   assert result == ItinerarySaveResultResponseBuilder.to_dict(
+      save_result,
+      include_config=True )
    assert stub_itinerary_coordinator.calls == [
       (
          'bulk_schedule_itinerary',
          {
-            'visit_date_temp': 22.5,
-            'confirming_fixed_time_item_long_wait': True,
+            'visit_date_temp': visit_date_temp,
+            'confirming_fixed_time_item_long_wait': confirming_fixed_time_item_long_wait,
          },
       ),
    ]
@@ -441,9 +492,9 @@ def Test_GetItineraryDate_TestHttpRequest_ExpectDatePayload(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
    handler = make_handler( '/get-itinerary-date', {} )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   assert response_json( handler ) == { 'date': VISIT_DATE }
+   assert result == { 'date': VISIT_DATE }
    assert stub_itinerary_coordinator.calls == [
       ( 'get_itinerary_date', {} ),
    ]
@@ -451,32 +502,28 @@ def Test_GetItineraryDate_TestHttpRequest_ExpectDatePayload(
 
 def Test_SetItineraryDepartureTime_TestHttpRequest_ExpectMappedDeparture(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   departure_time = '16:30'
+   confirming_short_visit = True
+   expected_result = ItineraryTimeSetResult(
+      itinerary=Itinerary(
+         date=VISIT_DATE,
+         departure_time=departure_time ) )
    handler = make_handler(
       '/set-itinerary-departure-time',
       {
-         'departureTime': '16:30',
-         'confirmingShortVisit': True,
+         'departureTime': departure_time,
+         'confirmingShortVisit': confirming_short_visit,
       } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   assert response_json( handler ) == {
-      'status': 'success',
-      'reasons': [],
-      'suppressed_warnings': [],
-      'itinerary_config': ItineraryConfigBuilder.to_dict(),
-      'itinerary_path': EMPTY_ITINERARY_PATH,
-      'itinerary': {
-         **EMPTY_ITINERARY,
-         'departure_time': '16:30',
-      },
-   }
+   assert result == ItineraryTimeSetResultResponseBuilder.to_dict( expected_result )
    assert stub_itinerary_coordinator.calls == [
       (
          'set_departure_time',
          {
-            'departure_time': '16:30',
-            'confirming_short_visit': True,
+            'departure_time': departure_time,
+            'confirming_short_visit': confirming_short_visit,
          },
       ),
    ]
@@ -484,23 +531,24 @@ def Test_SetItineraryDepartureTime_TestHttpRequest_ExpectMappedDeparture(
 
 def Test_GetItinerary_TestHttpRequest_ExpectMapsTemp(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
+   visit_date_temp = VISIT_DATE_TEMP
+   itinerary = Itinerary( date=VISIT_DATE )
    handler = make_handler(
       '/get-itinerary',
       {
-         'temp': 22.5,
+         'temp': visit_date_temp,
       } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'itinerary' ][ 'date' ] == VISIT_DATE
-   assert response[ 'itinerary_path' ] == EMPTY_ITINERARY_PATH
-   assert response[ 'itinerary_config' ] == ItineraryConfigBuilder.to_dict()
+   assert result[ 'itinerary' ][ 'date' ] == itinerary.date
+   assert result[ 'itinerary_path' ] == ItineraryPathBuilder.build( None )
+   assert result[ 'itinerary_config' ] == ItineraryConfigBuilder.to_dict()
    assert stub_itinerary_coordinator.calls == [
       (
          'get_itinerary',
          {
-            'visit_date_temp': 22.5,
+            'visit_date_temp': visit_date_temp,
          },
       ),
    ]
@@ -509,13 +557,15 @@ def Test_GetItinerary_TestHttpRequest_ExpectMapsTemp(
 def Test_ClearItinerary_TestHttpRequest_ExpectCouldNotClearApiError(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
    StubItineraryCoordinator.default_success = False
+   expected = { 'success': StubItineraryCoordinator.default_success }
+   ApiErrorResponseApplier.apply_error(
+      expected,
+      ApiErrorType.COULD_NOT_CLEAR_ITINERARY )
    handler = make_handler( '/clear-itinerary' )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'success' ] is False
-   assert response[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CLEAR_ITINERARY.value
+   assert result == expected
    assert stub_itinerary_coordinator.calls == [
       ( 'ClearItineraryProvider.clear_itinerary', {} ),
    ]
@@ -524,20 +574,28 @@ def Test_ClearItinerary_TestHttpRequest_ExpectCouldNotClearApiError(
 def Test_AcceptItinerary_TestHttpRequest_ExpectCouldNotAcceptApiError(
       stub_itinerary_coordinator: StubItineraryCoordinator ) -> None:
    StubItineraryCoordinator.default_success = False
+   animals_to_keep = None
+   attractions_to_keep = None
+   expected = {
+      'success': StubItineraryCoordinator.default_success,
+      'itinerary': None,
+      'itinerary_config': ItineraryConfigBuilder.to_dict(),
+      'itinerary_path': ItineraryPathBuilder.build( None ),
+   }
+   ApiErrorResponseApplier.apply_error(
+      expected,
+      ApiErrorType.COULD_NOT_ACCEPT_ITINERARY_CHANGES )
    handler = make_handler( '/accept-itinerary' )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'success' ] is False
-   assert response[ 'itinerary' ] is None
-   assert response[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_ACCEPT_ITINERARY_CHANGES.value
+   assert result == expected
    assert stub_itinerary_coordinator.calls == [
       (
          'AcceptItineraryProvider.accept_itinerary',
          {
-            'animals_to_keep': None,
-            'attractions_to_keep': None,
+            'animals_to_keep': animals_to_keep,
+            'attractions_to_keep': attractions_to_keep,
          },
       ),
    ]
@@ -546,18 +604,29 @@ def Test_AcceptItinerary_TestHttpRequest_ExpectCouldNotAcceptApiError(
 def Test_SetItinerary_TestSaveResultAdjustments_ExpectResponseAdjustments(
       stub_itinerary_coordinator: StubItineraryCoordinator,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   visit_date = '2026-06-22'
+   requested_arrival_time = '09:15'
+   previous_arrival_time = '9:15 AM'
+   adjusted_arrival_value = '09:30'
+   itinerary_arrival_time = '9:30 AM'
+   departure_time = '17:00'
+   animals: list[ object ] = []
+   attractions: list[ object ] = []
+   transportations: list[ object ] = []
+   guardians_talks: list[ object ] = []
+   wild_encounters: list[ object ] = []
    adjustment = ItineraryAdjustment(
       type=ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED,
       field='arrivalTime',
-      previous_value='9:15 AM',
-      value='09:30',
+      previous_value=previous_arrival_time,
+      value=adjusted_arrival_value,
       reason=ItineraryAdjustmentReason.ARRIVAL_OUTSIDE_ADMISSION_HOURS,
    )
    save_result = ItinerarySaveResult(
       status=ItineraryErrorType.SUCCESS,
       itinerary=Itinerary(
-         date='2026-06-22',
-         arrival_time='9:30 AM',
+         date=visit_date,
+         arrival_time=itinerary_arrival_time,
       ),
       adjustments=[ adjustment ],
    )
@@ -567,32 +636,21 @@ def Test_SetItinerary_TestSaveResultAdjustments_ExpectResponseAdjustments(
       return save_result
 
    monkeypatch.setattr( ItineraryCoordinator, 'set_itinerary', stub_set_itinerary )
-
    handler = make_handler(
       '/set-itinerary',
       {
-         'date': '2026-06-22',
-         'arrivalTime': '09:15',
-         'departureTime': '17:00',
-         'animals': [],
-         'attractions': [],
-         'transportations': [],
-         'guardiansTalks': [],
-         'wildEncounters': [],
+         'date': visit_date,
+         'arrivalTime': requested_arrival_time,
+         'departureTime': departure_time,
+         'animals': animals,
+         'attractions': attractions,
+         'transportations': transportations,
+         'guardiansTalks': guardians_talks,
+         'wildEncounters': wild_encounters,
       } )
 
-   server.HttpRequestHandler.do_POST( handler )
+   result = _post_json( handler )
 
-   response = response_json( handler )
-   assert response[ 'status' ] == 'success'
-   assert response[ 'itinerary' ][ 'date' ] == '2026-06-22'
-   assert response[ 'itinerary' ][ 'arrival_time' ] == '9:30 AM'
-   assert response[ 'adjustments' ] == [
-      {
-         'type': 'arrivalTimeAdjusted',
-         'field': 'arrivalTime',
-         'previous_value': '9:15 AM',
-         'value': '09:30',
-         'reason': 'arrivalOutsideAdmissionHours',
-      },
-   ]
+   assert result == ItinerarySaveResultResponseBuilder.to_dict(
+      save_result,
+      include_config=True )

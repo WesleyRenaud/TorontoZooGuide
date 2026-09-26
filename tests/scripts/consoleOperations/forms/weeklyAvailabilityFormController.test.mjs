@@ -11,6 +11,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 function _createDayEls() {
    return {
       mondayEl: document.createElement('input'),
@@ -107,6 +108,7 @@ test('Test_CreateWeeklyAvailabilityFormController_TestShowAndSubmitSuccess_Expec
    }
 });
 
+
 test('Test_CreateWeeklyAvailabilityFormController_TestPresets_ExpectDayState', () => {
    const originalStatus = ConsoleStatusPresenter.setStatus;
    const originalReset = ControllerHelper.resetFormFields;
@@ -157,6 +159,7 @@ test('Test_CreateWeeklyAvailabilityFormController_TestPresets_ExpectDayState', (
       ControllerHelper.resetFormFields = originalReset;
    }
 });
+
 
 test('Test_CreateWeeklyAvailabilityFormController_TestValidationOverlapAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

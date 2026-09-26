@@ -9,6 +9,7 @@ import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperati
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { ConsoleTextareaFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleTextareaFieldBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateRestroomAlertPanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -35,18 +36,17 @@ test('Test_CreateRestroomAlertPanel_TestWiring_ExpectShellOptions', () => {
       const result = RestroomAlertView.createRestroomAlertPanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'restroomAlertPanel');
       assert.equal(captured.title, Strings.panelTitles.restroomAlert);
       assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'restroomAlertRestroom');
-      assert.equal(captured.bodyChildren[1].startDateId, 'restroomAlertStartDate');
-      assert.equal(captured.bodyChildren[1].endDateId, 'restroomAlertEndDate');
-      assert.equal(captured.bodyChildren[1].endHelpText, Strings.help.keepAlertActiveUntilRemoved);
-      assert.equal(captured.bodyChildren[2].inputId, 'restroomAlertMessage');
-      assert.equal(captured.bodyChildren[2].label, Strings.labels.alertMessage);
-      assert.equal(captured.bodyChildren[2].placeholder, Strings.placeholders.restroomAlertExample);
-      assert.equal(captured.bodyChildren[3].submitId, 'submitRestroomAlert');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'restroomAlertRestroom');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).startDateId, 'restroomAlertStartDate');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).endDateId, 'restroomAlertEndDate');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).endHelpText, Strings.help.keepAlertActiveUntilRemoved);
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'restroomAlertMessage');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).label, Strings.labels.alertMessage);
+      assert.equal(captured.bodyChildren.at(Position.THIRD).placeholder, Strings.placeholders.restroomAlertExample);
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).submitId, 'submitRestroomAlert');
       assert.equal(captured.bodyChildren[4].statusId, 'restroomAlertStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;

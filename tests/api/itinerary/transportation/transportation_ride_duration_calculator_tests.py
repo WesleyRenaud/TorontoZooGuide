@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from api.itinerary.transportation.transportation_day_loop import TransportationDayLoop
+from api.itinerary.transportation.transportation_day_loop_leg_selector import TransportationDayLoopLegSelector
 from api.itinerary.transportation.transportation_ride_duration_calculator import TransportationRideDurationCalculator
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from api.shared.duration_values import DurationValues
 
 
 MAIN = 'Main Zoomobile Station'
@@ -23,18 +25,42 @@ DAY_LOOP = TransportationDayLoop(
 
 
 def Test_Seconds_TestMultiHopPath_ExpectSummedMinutesAsSeconds() -> None:
-   assert TransportationRideDurationCalculator.seconds(
+   from_station = CANADA
+   to_station = TUNDRA
+
+   seconds = TransportationRideDurationCalculator.seconds(
       DAY_LOOP,
-      CANADA,
-      TUNDRA ) == ( 10 + 15 ) * 60
+      from_station,
+      to_station )
+
+   assert seconds == DurationValues.minutes_to_seconds(
+      sum(
+         leg.duration_minutes
+         for leg in TransportationDayLoopLegSelector.select(
+            DAY_LOOP,
+            from_station,
+            to_station ) ) )
 
 
 def Test_Seconds_TestSameStation_ExpectZero() -> None:
-   assert TransportationRideDurationCalculator.seconds( DAY_LOOP, MAIN, MAIN ) == 0
+   from_station = MAIN
+   to_station = MAIN
+
+   seconds = TransportationRideDurationCalculator.seconds(
+      DAY_LOOP,
+      from_station,
+      to_station )
+
+   assert seconds == 0
 
 
 def Test_Seconds_TestMissingPath_ExpectZero() -> None:
-   assert TransportationRideDurationCalculator.seconds(
+   from_station = TUNDRA
+   to_station = MAIN
+
+   seconds = TransportationRideDurationCalculator.seconds(
       DAY_LOOP,
-      TUNDRA,
-      MAIN ) == 0
+      from_station,
+      to_station )
+
+   assert seconds == 0

@@ -6,13 +6,18 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateButton_TestConfig_ExpectButton', () => {
+   const className = 'shell-btn';
+   const text = 'Done';
+
    const button = SelectorShellBuilderHelper.createButton({
-      className: 'shell-btn',
-      text: 'Done',
+      className,
+      text,
    });
+
    assert.equal(button.type, 'button');
-   assert.equal(button.className, 'shell-btn');
-   assert.equal(button.textContent, 'Done');
+   assert.equal(button.className, className);
+   assert.equal(button.textContent, text);
    assert.equal(button.getAttribute('aria-label'), null);
 });

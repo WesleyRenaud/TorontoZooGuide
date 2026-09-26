@@ -82,129 +82,67 @@ CREATE TABLE TransportationAnimal (
 );
 """
 
+ARRIVAL_TIME = '09:30 AM'
+DEPARTURE_TIME = '05:00 PM'
+LION_SPECIES = 'African Lion'
+LION_EXHIBIT = 'Africa Savanna'
+CHEETAH_SPECIES = 'Cheetah'
+CAROUSEL_NAME = 'Conservation Carousel'
+RAINFOREST_NAME = 'African Rainforest'
+ZOOMOBILE_NAME = 'Zoomobile'
+SPLASH_NAME = 'Splash Island'
 
-@pytest.fixture
-def visit_window_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( VISIT_WINDOW_SCHEMA )
-   conn.execute(
-      """   INSERT INTO ItineraryAnimal (
-               SPECIES,
-               EXHIBIT,
-               ENCLOSURE_NAME,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, NULL, ?, ? );
-      """,
-      ( 'African Lion', 'Africa Savanna', '08:30 AM', '08:45 AM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryWildEncounter (
-               WILD_ENCOUNTER,
-               START_TIME,
-               END_TIME,
-               IS_DELETED
-            )
-            VALUES ( ?, ?, ?, 0 );
-      """,
-      ( 'African Rainforest', '08:45 AM', '09:30 AM' ) )
-   conn.commit()
+OUTSIDE_LION_START = '08:30 AM'
+OUTSIDE_LION_END = '08:45 AM'
+IN_WINDOW_ENCOUNTER_START = '08:45 AM'
+IN_WINDOW_ENCOUNTER_END = '09:30 AM'
 
-   yield conn
+DEPARTURE_LION_START = '3:45 PM'
+DEPARTURE_LION_END = '3:53 PM'
+AFTER_DEPARTURE_CHEETAH_START = '4:30 PM'
+AFTER_DEPARTURE_CHEETAH_END = '4:38 PM'
+DEPARTURE_CAROUSEL_START = '4:00 PM'
+DEPARTURE_CAROUSEL_END = '4:08 PM'
+AFTER_DEPARTURE_LUNCH_START = '4:30 PM'
+AFTER_DEPARTURE_LUNCH_END = '5:00 PM'
+EARLY_DEPARTURE_TIME = '04:15 PM'
 
-   conn.close()
+BEFORE_ARRIVAL_LUNCH_START = '9:00 AM'
+BEFORE_ARRIVAL_LUNCH_END = '9:30 AM'
+LATER_ARRIVAL_TIME = '10:15 AM'
 
+LATER_LION_START = '10:00 AM'
+LATER_LION_END = '10:08 AM'
+LATER_CHEETAH_START = '10:30 AM'
+LATER_CHEETAH_END = '10:38 AM'
+LATER_CAROUSEL_START = '11:00 AM'
+LATER_CAROUSEL_END = '11:15 AM'
+LATER_ENCOUNTER_START = '9:45 AM'
+LATER_ENCOUNTER_END = '10:30 AM'
 
-@pytest.fixture
-def departure_window_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( VISIT_WINDOW_SCHEMA )
-   conn.execute(
-      """   INSERT INTO ItineraryAnimal (
-               SPECIES,
-               EXHIBIT,
-               ENCLOSURE_NAME,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, NULL, ?, ? );
-      """,
-      ( 'African Lion', 'Africa Savanna', '3:45 PM', '3:53 PM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryAnimal (
-               SPECIES,
-               EXHIBIT,
-               ENCLOSURE_NAME,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, NULL, ?, ? );
-      """,
-      ( 'Cheetah', 'Africa Savanna', '4:30 PM', '4:38 PM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryAttraction (
-               ATTRACTION,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, ? );
-      """,
-      ( 'Conservation Carousel', '4:00 PM', '4:08 PM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryEvent (
-               EVENT_TYPE,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, ? );
-      """,
-      ( ItineraryEventType.LUNCH.value, '4:30 PM', '5:00 PM' ) )
-   conn.commit()
+OUTSIDE_SPLASH_START = '8:00 AM'
+OUTSIDE_SPLASH_END = '8:30 AM'
+OUTSIDE_ZOOMOBILE_START = '7:30 AM'
+OUTSIDE_ZOOMOBILE_END = '8:00 AM'
+EVENT_ARRIVAL_START = '7:00 AM'
+EVENT_ARRIVAL_END = '7:15 AM'
+EVENT_DEPARTURE_START = '6:00 PM'
+EVENT_DEPARTURE_END = '6:15 PM'
+IN_WINDOW_LUNCH_START = '12:00 PM'
+IN_WINDOW_LUNCH_END = '12:30 PM'
 
-   yield conn
-
-   conn.close()
+IN_WINDOW_ZOOMOBILE_START = '11:00 AM'
+IN_WINDOW_ZOOMOBILE_END = '11:30 AM'
 
 
-@pytest.fixture
-def arrival_window_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( VISIT_WINDOW_SCHEMA )
-   conn.execute(
-      """   INSERT INTO ItineraryEvent (
-               EVENT_TYPE,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, ? );
-      """,
-      ( ItineraryEventType.LUNCH.value, '9:00 AM', '9:30 AM' ) )
-   conn.commit()
-
-   yield conn
-
-   conn.close()
-
-
-@pytest.fixture
-def later_arrival_window_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( VISIT_WINDOW_SCHEMA )
-   conn.execute(
-      """   INSERT INTO ItineraryAnimal (
-               SPECIES,
-               EXHIBIT,
-               ENCLOSURE_NAME,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, NULL, ?, ? );
-      """,
-      ( 'African Lion', 'Africa Savanna', '10:00 AM', '10:08 AM' ) )
+def _seed_animal(
+      conn: sqlite3.Connection,
+      *,
+      species: str,
+      exhibit: str,
+      start_time: str,
+      end_time: str,
+      enclosure_name: str | None = None ) -> None:
    conn.execute(
       """   INSERT INTO ItineraryAnimal (
                SPECIES,
@@ -215,16 +153,15 @@ def later_arrival_window_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ?, ?, ? );
       """,
-      ( 'Cheetah', 'Africa Savanna', None, '10:30 AM', '10:38 AM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryAttraction (
-               ATTRACTION,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, ? );
-      """,
-      ( 'Conservation Carousel', '11:00 AM', '11:15 AM' ) )
+      ( species, exhibit, enclosure_name, start_time, end_time ) )
+
+
+def _seed_encounter(
+      conn: sqlite3.Connection,
+      *,
+      name: str,
+      start_time: str,
+      end_time: str ) -> None:
    conn.execute(
       """   INSERT INTO ItineraryWildEncounter (
                WILD_ENCOUNTER,
@@ -234,19 +171,15 @@ def later_arrival_window_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ?, 0 );
       """,
-      ( 'African Rainforest', '9:45 AM', '10:30 AM' ) )
-   conn.commit()
-
-   yield conn
-
-   conn.close()
+      ( name, start_time, end_time ) )
 
 
-@pytest.fixture
-def outside_attraction_transport_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( VISIT_WINDOW_SCHEMA )
+def _seed_attraction(
+      conn: sqlite3.Connection,
+      *,
+      name: str,
+      start_time: str,
+      end_time: str ) -> None:
    conn.execute(
       """   INSERT INTO ItineraryAttraction (
                ATTRACTION,
@@ -255,7 +188,15 @@ def outside_attraction_transport_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ? );
       """,
-      ( 'Splash Island', '8:00 AM', '8:30 AM' ) )
+      ( name, start_time, end_time ) )
+
+
+def _seed_transportation(
+      conn: sqlite3.Connection,
+      *,
+      name: str,
+      start_time: str,
+      end_time: str ) -> None:
    conn.execute(
       """   INSERT INTO ItineraryTransportation (
                TRANSPORTATION,
@@ -265,7 +206,15 @@ def outside_attraction_transport_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 0, ?, ? );
       """,
-      ( 'Zoomobile', '7:30 AM', '8:00 AM' ) )
+      ( name, start_time, end_time ) )
+
+
+def _seed_event(
+      conn: sqlite3.Connection,
+      *,
+      event_type: str,
+      start_time: str,
+      end_time: str ) -> None:
    conn.execute(
       """   INSERT INTO ItineraryEvent (
                EVENT_TYPE,
@@ -274,100 +223,273 @@ def outside_attraction_transport_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ? );
       """,
-      ( ItineraryEventType.ARRIVAL.value, '7:00 AM', '7:15 AM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryEvent (
-               EVENT_TYPE,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, ? );
+      ( event_type, start_time, end_time ) )
+
+
+def _connect() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( VISIT_WINDOW_SCHEMA )
+   return conn
+
+
+def _fetch_times(
+      conn: sqlite3.Connection,
+      table: str,
+      column: str,
+      value: str ) -> sqlite3.Row | None:
+   return conn.execute(
+      f"""   SELECT START_TIME, END_TIME
+            FROM { table }
+            WHERE { column } = ?;
       """,
-      ( ItineraryEventType.DEPARTURE.value, '6:00 PM', '6:15 PM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryEvent (
-               EVENT_TYPE,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, ? );
+      ( value, ),
+   ).fetchone()
+
+
+def _event_start(
+      conn: sqlite3.Connection,
+      event_type: str ) -> sqlite3.Row | None:
+   return conn.execute(
+      """   SELECT START_TIME
+            FROM ItineraryEvent
+            WHERE EVENT_TYPE = ?;
       """,
-      ( ItineraryEventType.LUNCH.value, '12:00 PM', '12:30 PM' ) )
+      ( event_type, ),
+   ).fetchone()
+
+
+def _event_count(
+      conn: sqlite3.Connection,
+      event_type: str ) -> sqlite3.Row | None:
+   return conn.execute(
+      """   SELECT COUNT(*) AS COUNT
+            FROM ItineraryEvent
+            WHERE EVENT_TYPE = ?;
+      """,
+      ( event_type, ),
+   ).fetchone()
+
+
+@pytest.fixture
+def visit_window_conn() -> sqlite3.Connection:
+   conn = _connect()
+   _seed_animal(
+      conn,
+      species=LION_SPECIES,
+      exhibit=LION_EXHIBIT,
+      start_time=OUTSIDE_LION_START,
+      end_time=OUTSIDE_LION_END )
+   _seed_encounter(
+      conn,
+      name=RAINFOREST_NAME,
+      start_time=IN_WINDOW_ENCOUNTER_START,
+      end_time=IN_WINDOW_ENCOUNTER_END )
    conn.commit()
-
    yield conn
+   conn.close()
 
+
+@pytest.fixture
+def departure_window_conn() -> sqlite3.Connection:
+   conn = _connect()
+   _seed_animal(
+      conn,
+      species=LION_SPECIES,
+      exhibit=LION_EXHIBIT,
+      start_time=DEPARTURE_LION_START,
+      end_time=DEPARTURE_LION_END )
+   _seed_animal(
+      conn,
+      species=CHEETAH_SPECIES,
+      exhibit=LION_EXHIBIT,
+      start_time=AFTER_DEPARTURE_CHEETAH_START,
+      end_time=AFTER_DEPARTURE_CHEETAH_END )
+   _seed_attraction(
+      conn,
+      name=CAROUSEL_NAME,
+      start_time=DEPARTURE_CAROUSEL_START,
+      end_time=DEPARTURE_CAROUSEL_END )
+   _seed_event(
+      conn,
+      event_type=ItineraryEventType.LUNCH.value,
+      start_time=AFTER_DEPARTURE_LUNCH_START,
+      end_time=AFTER_DEPARTURE_LUNCH_END )
+   conn.commit()
+   yield conn
+   conn.close()
+
+
+@pytest.fixture
+def arrival_window_conn() -> sqlite3.Connection:
+   conn = _connect()
+   _seed_event(
+      conn,
+      event_type=ItineraryEventType.LUNCH.value,
+      start_time=BEFORE_ARRIVAL_LUNCH_START,
+      end_time=BEFORE_ARRIVAL_LUNCH_END )
+   conn.commit()
+   yield conn
+   conn.close()
+
+
+@pytest.fixture
+def later_arrival_window_conn() -> sqlite3.Connection:
+   conn = _connect()
+   _seed_animal(
+      conn,
+      species=LION_SPECIES,
+      exhibit=LION_EXHIBIT,
+      start_time=LATER_LION_START,
+      end_time=LATER_LION_END )
+   _seed_animal(
+      conn,
+      species=CHEETAH_SPECIES,
+      exhibit=LION_EXHIBIT,
+      start_time=LATER_CHEETAH_START,
+      end_time=LATER_CHEETAH_END )
+   _seed_attraction(
+      conn,
+      name=CAROUSEL_NAME,
+      start_time=LATER_CAROUSEL_START,
+      end_time=LATER_CAROUSEL_END )
+   _seed_encounter(
+      conn,
+      name=RAINFOREST_NAME,
+      start_time=LATER_ENCOUNTER_START,
+      end_time=LATER_ENCOUNTER_END )
+   conn.commit()
+   yield conn
+   conn.close()
+
+
+@pytest.fixture
+def outside_attraction_transport_conn() -> sqlite3.Connection:
+   conn = _connect()
+   _seed_attraction(
+      conn,
+      name=SPLASH_NAME,
+      start_time=OUTSIDE_SPLASH_START,
+      end_time=OUTSIDE_SPLASH_END )
+   _seed_transportation(
+      conn,
+      name=ZOOMOBILE_NAME,
+      start_time=OUTSIDE_ZOOMOBILE_START,
+      end_time=OUTSIDE_ZOOMOBILE_END )
+   _seed_event(
+      conn,
+      event_type=ItineraryEventType.ARRIVAL.value,
+      start_time=EVENT_ARRIVAL_START,
+      end_time=EVENT_ARRIVAL_END )
+   _seed_event(
+      conn,
+      event_type=ItineraryEventType.DEPARTURE.value,
+      start_time=EVENT_DEPARTURE_START,
+      end_time=EVENT_DEPARTURE_END )
+   _seed_event(
+      conn,
+      event_type=ItineraryEventType.LUNCH.value,
+      start_time=IN_WINDOW_LUNCH_START,
+      end_time=IN_WINDOW_LUNCH_END )
+   conn.commit()
+   yield conn
    conn.close()
 
 
 @pytest.fixture
 def in_window_transport_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( VISIT_WINDOW_SCHEMA )
-   conn.execute(
-      """   INSERT INTO ItineraryTransportation (
-               TRANSPORTATION,
-               ADDED_AS_ATTRACTION,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, 0, ?, ? );
-      """,
-      ( 'Zoomobile', '11:00 AM', '11:30 AM' ) )
+   conn = _connect()
+   _seed_transportation(
+      conn,
+      name=ZOOMOBILE_NAME,
+      start_time=IN_WINDOW_ZOOMOBILE_START,
+      end_time=IN_WINDOW_ZOOMOBILE_END )
    conn.commit()
-
    yield conn
-
    conn.close()
 
 
 def Test_ScheduleTimeOccursOutside_TestBeforeArrival_ExpectTrue() -> None:
-   assert ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
-      '9:00 AM',
-      '9:30 AM',
-      arrival_time='10:00 AM',
-      departure_time='5:00 PM' )
+   start_time = '9:00 AM'
+   end_time = '9:30 AM'
+   arrival_time = '10:00 AM'
+   departure_time = '5:00 PM'
+
+   occurs_outside = ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
+      start_time,
+      end_time,
+      arrival_time=arrival_time,
+      departure_time=departure_time )
+
+   assert occurs_outside is True
 
 
 def Test_ScheduleTimeOccursOutside_TestAfterDeparture_ExpectTrue() -> None:
-   assert ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
-      '4:30 PM',
-      '5:30 PM',
-      arrival_time='10:00 AM',
-      departure_time='5:00 PM' )
+   start_time = '4:30 PM'
+   end_time = '5:30 PM'
+   arrival_time = '10:00 AM'
+   departure_time = '5:00 PM'
+
+   occurs_outside = ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
+      start_time,
+      end_time,
+      arrival_time=arrival_time,
+      departure_time=departure_time )
+
+   assert occurs_outside is True
 
 
 def Test_ScheduleTimeOccursOutside_TestInsideWindow_ExpectFalse() -> None:
-   assert not ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
-      '11:00 AM',
-      '11:30 AM',
-      arrival_time='10:00 AM',
-      departure_time='5:00 PM' )
+   start_time = '11:00 AM'
+   end_time = '11:30 AM'
+   arrival_time = '10:00 AM'
+   departure_time = '5:00 PM'
+
+   occurs_outside = ItineraryVisitWindowBuilder.schedule_time_occurs_outside(
+      start_time,
+      end_time,
+      arrival_time=arrival_time,
+      departure_time=departure_time )
+
+   assert occurs_outside is False
 
 
 def Test_ClearedScheduleTimes_TestOutsideWindow_ExpectCleared() -> None:
-   assert ItineraryVisitWindowBuilder.cleared_schedule_times(
-      '9:00 AM',
-      '9:30 AM',
-      arrival_time='10:00 AM',
-      departure_time='5:00 PM' ) == ( None, None )
+   start_time = '9:00 AM'
+   end_time = '9:30 AM'
+   arrival_time = '10:00 AM'
+   departure_time = '5:00 PM'
+
+   cleared = ItineraryVisitWindowBuilder.cleared_schedule_times(
+      start_time,
+      end_time,
+      arrival_time=arrival_time,
+      departure_time=departure_time )
+
+   assert cleared == ( None, None )
 
 
 def Test_ClearedScheduleTimes_TestInsideWindow_ExpectUnchanged() -> None:
-   assert ItineraryVisitWindowBuilder.cleared_schedule_times(
-      '11:00 AM',
-      '11:30 AM',
-      arrival_time='10:00 AM',
-      departure_time='5:00 PM' ) == ( '11:00 AM', '11:30 AM' )
+   start_time = '11:00 AM'
+   end_time = '11:30 AM'
+   arrival_time = '10:00 AM'
+   departure_time = '5:00 PM'
+
+   cleared = ItineraryVisitWindowBuilder.cleared_schedule_times(
+      start_time,
+      end_time,
+      arrival_time=arrival_time,
+      departure_time=departure_time )
+
+   assert cleared == ( start_time, end_time )
 
 
 def Test_ClearSchedulesOutside_TestOutsideAnimal_ExpectClearedAnimalOnly(
       visit_window_conn: sqlite3.Connection ) -> None:
-   ItineraryVisitWindowBuilder.clear_schedules_outside(
+   did_clear = ItineraryVisitWindowBuilder.clear_schedules_outside(
       visit_window_conn,
-      arrival_time='09:30 AM',
-      departure_time='05:00 PM' )
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME )
 
    animal = visit_window_conn.execute(
       """   SELECT START_TIME, END_TIME
@@ -375,205 +497,169 @@ def Test_ClearSchedulesOutside_TestOutsideAnimal_ExpectClearedAnimalOnly(
             WHERE SPECIES = ?
               AND EXHIBIT = ?;
       """,
-      ( 'African Lion', 'Africa Savanna' ),
+      ( LION_SPECIES, LION_EXHIBIT ),
    ).fetchone()
-   encounter = visit_window_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryWildEncounter
-            WHERE WILD_ENCOUNTER = ?;
-      """,
-      ( 'African Rainforest', ),
-   ).fetchone()
+   encounter = _fetch_times(
+      visit_window_conn,
+      'ItineraryWildEncounter',
+      'WILD_ENCOUNTER',
+      RAINFOREST_NAME )
 
+   assert did_clear is True
    assert animal is not None
    assert animal[ 'START_TIME' ] is None
    assert animal[ 'END_TIME' ] is None
    assert encounter is not None
-   assert encounter[ 'START_TIME' ] == '08:45 AM'
-   assert encounter[ 'END_TIME' ] == '09:30 AM'
+   assert encounter[ 'START_TIME' ] == IN_WINDOW_ENCOUNTER_START
+   assert encounter[ 'END_TIME' ] == IN_WINDOW_ENCOUNTER_END
 
 
 def Test_ClearSchedulesOutside_TestAfterDepartureAnimal_ExpectClearedCheetahOnly(
       departure_window_conn: sqlite3.Connection ) -> None:
-   ItineraryVisitWindowBuilder.clear_schedules_outside(
+   did_clear = ItineraryVisitWindowBuilder.clear_schedules_outside(
       departure_window_conn,
-      arrival_time='09:30 AM',
-      departure_time='04:15 PM' )
+      arrival_time=ARRIVAL_TIME,
+      departure_time=EARLY_DEPARTURE_TIME )
 
-   lion = departure_window_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryAnimal
-            WHERE SPECIES = ?;
-      """,
-      ( 'African Lion', ),
-   ).fetchone()
-   cheetah = departure_window_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryAnimal
-            WHERE SPECIES = ?;
-      """,
-      ( 'Cheetah', ),
-   ).fetchone()
-   carousel = departure_window_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryAttraction
-            WHERE ATTRACTION = ?;
-      """,
-      ( 'Conservation Carousel', ),
-   ).fetchone()
-   lunch_count = departure_window_conn.execute(
-      """   SELECT COUNT(*) AS COUNT
-            FROM ItineraryEvent
-            WHERE EVENT_TYPE = ?;
-      """,
-      ( ItineraryEventType.LUNCH.value, ),
-   ).fetchone()
+   lion = _fetch_times(
+      departure_window_conn,
+      'ItineraryAnimal',
+      'SPECIES',
+      LION_SPECIES )
+   cheetah = _fetch_times(
+      departure_window_conn,
+      'ItineraryAnimal',
+      'SPECIES',
+      CHEETAH_SPECIES )
+   carousel = _fetch_times(
+      departure_window_conn,
+      'ItineraryAttraction',
+      'ATTRACTION',
+      CAROUSEL_NAME )
+   lunch_count = _event_count(
+      departure_window_conn,
+      ItineraryEventType.LUNCH.value )
 
+   assert did_clear is True
    assert lion is not None
-   assert lion[ 'START_TIME' ] == '3:45 PM'
+   assert lion[ 'START_TIME' ] == DEPARTURE_LION_START
    assert cheetah is not None
    assert cheetah[ 'START_TIME' ] is None
    assert carousel is not None
-   assert carousel[ 'START_TIME' ] == '4:00 PM'
+   assert carousel[ 'START_TIME' ] == DEPARTURE_CAROUSEL_START
    assert lunch_count is not None
    assert lunch_count[ 'COUNT' ] == 0
 
 
 def Test_ClearSchedulesOutside_TestBeforeArrivalEvent_ExpectLunchDeleted(
       arrival_window_conn: sqlite3.Connection ) -> None:
-   ItineraryVisitWindowBuilder.clear_schedules_outside(
+   did_clear = ItineraryVisitWindowBuilder.clear_schedules_outside(
       arrival_window_conn,
-      arrival_time='10:15 AM',
-      departure_time='05:00 PM' )
+      arrival_time=LATER_ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME )
 
-   lunch_count = arrival_window_conn.execute(
-      """   SELECT COUNT(*) AS COUNT
-            FROM ItineraryEvent
-            WHERE EVENT_TYPE = ?;
-      """,
-      ( ItineraryEventType.LUNCH.value, ),
-   ).fetchone()
+   lunch_count = _event_count(
+      arrival_window_conn,
+      ItineraryEventType.LUNCH.value )
 
+   assert did_clear is True
    assert lunch_count is not None
    assert lunch_count[ 'COUNT' ] == 0
 
 
 def Test_ClearSchedulesOutside_TestLaterArrival_ExpectBeforeArrivalAnimalCleared(
       later_arrival_window_conn: sqlite3.Connection ) -> None:
-   ItineraryVisitWindowBuilder.clear_schedules_outside(
+   did_clear = ItineraryVisitWindowBuilder.clear_schedules_outside(
       later_arrival_window_conn,
-      arrival_time='10:15 AM',
-      departure_time='05:00 PM' )
+      arrival_time=LATER_ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME )
 
-   lion = later_arrival_window_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryAnimal
-            WHERE SPECIES = ?;
-      """,
-      ( 'African Lion', ),
-   ).fetchone()
-   cheetah = later_arrival_window_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryAnimal
-            WHERE SPECIES = ?;
-      """,
-      ( 'Cheetah', ),
-   ).fetchone()
-   carousel = later_arrival_window_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryAttraction
-            WHERE ATTRACTION = ?;
-      """,
-      ( 'Conservation Carousel', ),
-   ).fetchone()
-   encounter = later_arrival_window_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryWildEncounter
-            WHERE WILD_ENCOUNTER = ?;
-      """,
-      ( 'African Rainforest', ),
-   ).fetchone()
+   lion = _fetch_times(
+      later_arrival_window_conn,
+      'ItineraryAnimal',
+      'SPECIES',
+      LION_SPECIES )
+   cheetah = _fetch_times(
+      later_arrival_window_conn,
+      'ItineraryAnimal',
+      'SPECIES',
+      CHEETAH_SPECIES )
+   carousel = _fetch_times(
+      later_arrival_window_conn,
+      'ItineraryAttraction',
+      'ATTRACTION',
+      CAROUSEL_NAME )
+   encounter = _fetch_times(
+      later_arrival_window_conn,
+      'ItineraryWildEncounter',
+      'WILD_ENCOUNTER',
+      RAINFOREST_NAME )
 
+   assert did_clear is True
    assert lion is not None
    assert lion[ 'START_TIME' ] is None
    assert lion[ 'END_TIME' ] is None
    assert cheetah is not None
-   assert cheetah[ 'START_TIME' ] == '10:30 AM'
+   assert cheetah[ 'START_TIME' ] == LATER_CHEETAH_START
    assert carousel is not None
-   assert carousel[ 'START_TIME' ] == '11:00 AM'
+   assert carousel[ 'START_TIME' ] == LATER_CAROUSEL_START
    assert encounter is not None
-   assert encounter[ 'START_TIME' ] == '9:45 AM'
+   assert encounter[ 'START_TIME' ] == LATER_ENCOUNTER_START
 
 
 def Test_ClearSchedulesOutside_TestOutsideAttractionAndTransport_ExpectCleared(
       outside_attraction_transport_conn: sqlite3.Connection ) -> None:
-   ItineraryVisitWindowBuilder.clear_schedules_outside(
+   did_clear = ItineraryVisitWindowBuilder.clear_schedules_outside(
       outside_attraction_transport_conn,
-      arrival_time='09:30 AM',
-      departure_time='05:00 PM' )
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME )
 
-   splash = outside_attraction_transport_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryAttraction
-            WHERE ATTRACTION = ?;
-      """,
-      ( 'Splash Island', ),
-   ).fetchone()
-   zoomobile = outside_attraction_transport_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryTransportation
-            WHERE TRANSPORTATION = ?;
-      """,
-      ( 'Zoomobile', ),
-   ).fetchone()
-   arrival = outside_attraction_transport_conn.execute(
-      """   SELECT START_TIME
-            FROM ItineraryEvent
-            WHERE EVENT_TYPE = ?;
-      """,
-      ( ItineraryEventType.ARRIVAL.value, ),
-   ).fetchone()
-   departure = outside_attraction_transport_conn.execute(
-      """   SELECT START_TIME
-            FROM ItineraryEvent
-            WHERE EVENT_TYPE = ?;
-      """,
-      ( ItineraryEventType.DEPARTURE.value, ),
-   ).fetchone()
-   lunch = outside_attraction_transport_conn.execute(
-      """   SELECT START_TIME
-            FROM ItineraryEvent
-            WHERE EVENT_TYPE = ?;
-      """,
-      ( ItineraryEventType.LUNCH.value, ),
-   ).fetchone()
+   splash = _fetch_times(
+      outside_attraction_transport_conn,
+      'ItineraryAttraction',
+      'ATTRACTION',
+      SPLASH_NAME )
+   zoomobile = _fetch_times(
+      outside_attraction_transport_conn,
+      'ItineraryTransportation',
+      'TRANSPORTATION',
+      ZOOMOBILE_NAME )
+   arrival = _event_start(
+      outside_attraction_transport_conn,
+      ItineraryEventType.ARRIVAL.value )
+   departure = _event_start(
+      outside_attraction_transport_conn,
+      ItineraryEventType.DEPARTURE.value )
+   lunch = _event_start(
+      outside_attraction_transport_conn,
+      ItineraryEventType.LUNCH.value )
 
+   assert did_clear is True
    assert splash is not None
    assert splash[ 'START_TIME' ] is None
    assert zoomobile is not None
    assert zoomobile[ 'START_TIME' ] is None
    assert arrival is not None
-   assert arrival[ 'START_TIME' ] == '7:00 AM'
+   assert arrival[ 'START_TIME' ] == EVENT_ARRIVAL_START
    assert departure is not None
-   assert departure[ 'START_TIME' ] == '6:00 PM'
+   assert departure[ 'START_TIME' ] == EVENT_DEPARTURE_START
    assert lunch is not None
-   assert lunch[ 'START_TIME' ] == '12:00 PM'
+   assert lunch[ 'START_TIME' ] == IN_WINDOW_LUNCH_START
 
 
 def Test_ClearSchedulesOutside_TestInWindowTransportation_ExpectKept(
       in_window_transport_conn: sqlite3.Connection ) -> None:
-   ItineraryVisitWindowBuilder.clear_schedules_outside(
+   did_clear = ItineraryVisitWindowBuilder.clear_schedules_outside(
       in_window_transport_conn,
-      arrival_time='09:30 AM',
-      departure_time='05:00 PM' )
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME )
 
-   zoomobile = in_window_transport_conn.execute(
-      """   SELECT START_TIME, END_TIME
-            FROM ItineraryTransportation
-            WHERE TRANSPORTATION = ?;
-      """,
-      ( 'Zoomobile', ),
-   ).fetchone()
+   zoomobile = _fetch_times(
+      in_window_transport_conn,
+      'ItineraryTransportation',
+      'TRANSPORTATION',
+      ZOOMOBILE_NAME )
 
+   assert did_clear is False
    assert zoomobile is not None
-   assert zoomobile[ 'START_TIME' ] == '11:00 AM'
+   assert zoomobile[ 'START_TIME' ] == IN_WINDOW_ZOOMOBILE_START

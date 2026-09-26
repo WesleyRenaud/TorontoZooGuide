@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from api.animals.status.animal_viewing_alert_builder import AnimalViewingAlertBuilder
+from api.app_string_provider import AppStringProvider
 
 
 SPECIES = 'African Lion'
@@ -34,4 +35,6 @@ def Test_Build_TestMissingMessage_ExpectDefaultGuestMessage() -> None:
       message='' )
 
    assert alert.end_date is None
-   assert SPECIES in alert.message
+   assert alert.message == AppStringProvider.format(
+      'guestStatus.animals.viewingAlert',
+      species=SPECIES )

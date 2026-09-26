@@ -4,6 +4,8 @@ import test from 'node:test';
 import { CoordinateEditingStore } from '../../../scripts/markers/coordinateEditingStore.js';
 import { CoordinateEditor } from '../../../scripts/markers/coordinateEditor.js';
 import { ItemType } from '../../../scripts/shared/enums/itemType.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+
 
 function _createMarkerEl() {
    const listeners = {};
@@ -16,8 +18,9 @@ function _createMarkerEl() {
    };
 }
 
-test('Test_EnableMarkerCoordinateEditing_TestPointerLifecycle_ExpectStoreCalls', () => {
-   const originals = {
+
+function _storeOriginals() {
+   return {
       createDragState: CoordinateEditingStore.createDragState,
       applyMarkerEditingStyles: CoordinateEditingStore.applyMarkerEditingStyles,
       beginDragging: CoordinateEditingStore.beginDragging,
@@ -26,74 +29,166 @@ test('Test_EnableMarkerCoordinateEditing_TestPointerLifecycle_ExpectStoreCalls',
       stopMarkerEvent: CoordinateEditingStore.stopMarkerEvent,
       finishDragging: CoordinateEditingStore.finishDragging,
    };
-   const calls = {
-      styles: [],
-      begin: [],
-      finish: [],
-      stop: [],
-      move: [],
-   };
+}
+
+
+test('Test_EnableMarkerCoordinateEditing_TestStyles_ExpectApplied', () => {
+   const originals = _storeOriginals();
+   const styles = [];
    const state = { activePointerId: 1, didDrag: false };
 
    CoordinateEditingStore.createDragState = () => state;
-   CoordinateEditingStore.applyMarkerEditingStyles = (el) => { calls.styles.push(el); };
-   CoordinateEditingStore.beginDragging = (...args) => { calls.begin.push(args); };
-   CoordinateEditingStore.isActivePointer = () => true;
-   CoordinateEditingStore.updateMarkerPosition = (...args) => {
-      calls.move.push(args);
-      return { x: 10, y: 20 };
+   CoordinateEditingStore.applyMarkerEditingStyles = (el) => {
+      styles.push(el);
    };
-   CoordinateEditingStore.stopMarkerEvent = (event) => { calls.stop.push(event); };
-   CoordinateEditingStore.finishDragging = (args) => { calls.finish.push(args); };
 
    try {
       const markerEl = _createMarkerEl();
-      const itemsAtPoint = [{ type: ItemType.ANIMAL }];
-      const mapInner = { id: 'map' };
 
-      CoordinateEditor.enableMarkerCoordinateEditing(markerEl, itemsAtPoint, mapInner);
+      CoordinateEditor.enableMarkerCoordinateEditing(markerEl, [{ type: ItemType.ANIMAL }], { id: 'map' });
 
-      assert.equal(calls.styles.length, 1);
-
-      markerEl.listeners.pointerdown({ button: 1, pointerId: 1 });
-      assert.equal(calls.begin.length, 0);
-
-      markerEl.listeners.pointerdown({ button: 0, pointerId: 1 });
-      assert.equal(calls.begin.length, 1);
-
-      markerEl.listeners.pointermove({ pointerId: 1 });
-      assert.equal(state.didDrag, true);
-      assert.equal(calls.stop.length, 1);
-
-      markerEl.listeners.pointerup({ pointerId: 1 });
-      markerEl.listeners.pointercancel({ pointerId: 1 });
-      assert.equal(calls.finish.length, 2);
-      assert.equal(calls.finish[0].itemsAtPoint, itemsAtPoint);
-
-      markerEl.listeners.click({ type: 'click' });
-      assert.equal(calls.stop.length, 2);
+      assert.deepEqual(styles, [markerEl]);
    } finally {
       Object.assign(CoordinateEditingStore, originals);
    }
 });
 
-test('Test_EnableMarkerCoordinateEditing_TestInactiveOrMissingPosition_ExpectEarlyReturn', () => {
-   const originals = {
-      createDragState: CoordinateEditingStore.createDragState,
-      applyMarkerEditingStyles: CoordinateEditingStore.applyMarkerEditingStyles,
-      isActivePointer: CoordinateEditingStore.isActivePointer,
-      updateMarkerPosition: CoordinateEditingStore.updateMarkerPosition,
-      stopMarkerEvent: CoordinateEditingStore.stopMarkerEvent,
-      beginDragging: CoordinateEditingStore.beginDragging,
-      finishDragging: CoordinateEditingStore.finishDragging,
+
+test('Test_EnableMarkerCoordinateEditing_TestNonPrimaryPointer_ExpectNoBegin', () => {
+   const originals = _storeOriginals();
+   const begins = [];
+   const state = { activePointerId: 1, didDrag: false };
+
+   CoordinateEditingStore.createDragState = () => state;
+   CoordinateEditingStore.applyMarkerEditingStyles = () => {};
+   CoordinateEditingStore.beginDragging = (...args) => {
+      begins.push(args);
    };
+
+   try {
+      const markerEl = _createMarkerEl();
+      CoordinateEditor.enableMarkerCoordinateEditing(markerEl, [{ type: ItemType.ANIMAL }], { id: 'map' });
+
+      markerEl.listeners.pointerdown({ button: 1, pointerId: 1 });
+
+      assert.equal(begins.length, Position.FIRST);
+   } finally {
+      Object.assign(CoordinateEditingStore, originals);
+   }
+});
+
+
+test('Test_EnableMarkerCoordinateEditing_TestPrimaryPointer_ExpectBegin', () => {
+   const originals = _storeOriginals();
+   const begins = [];
+   const state = { activePointerId: 1, didDrag: false };
+
+   CoordinateEditingStore.createDragState = () => state;
+   CoordinateEditingStore.applyMarkerEditingStyles = () => {};
+   CoordinateEditingStore.beginDragging = (...args) => {
+      begins.push(args);
+   };
+
+   try {
+      const markerEl = _createMarkerEl();
+      CoordinateEditor.enableMarkerCoordinateEditing(markerEl, [{ type: ItemType.ANIMAL }], { id: 'map' });
+
+      markerEl.listeners.pointerdown({ button: 0, pointerId: 1 });
+
+      assert.equal(begins.length, Position.SECOND);
+   } finally {
+      Object.assign(CoordinateEditingStore, originals);
+   }
+});
+
+
+test('Test_EnableMarkerCoordinateEditing_TestMove_ExpectDragged', () => {
+   const originals = _storeOriginals();
+   const stops = [];
+   const state = { activePointerId: 1, didDrag: false };
+
+   CoordinateEditingStore.createDragState = () => state;
+   CoordinateEditingStore.applyMarkerEditingStyles = () => {};
+   CoordinateEditingStore.beginDragging = () => {};
+   CoordinateEditingStore.isActivePointer = () => true;
+   CoordinateEditingStore.updateMarkerPosition = () => ({ x: 10, y: 20 });
+   CoordinateEditingStore.stopMarkerEvent = (event) => {
+      stops.push(event);
+   };
+
+   try {
+      const markerEl = _createMarkerEl();
+      CoordinateEditor.enableMarkerCoordinateEditing(markerEl, [{ type: ItemType.ANIMAL }], { id: 'map' });
+      markerEl.listeners.pointermove({ pointerId: 1 });
+
+      assert.equal(state.didDrag, true);
+      assert.equal(stops.length, Position.SECOND);
+   } finally {
+      Object.assign(CoordinateEditingStore, originals);
+   }
+});
+
+
+test('Test_EnableMarkerCoordinateEditing_TestUpAndCancel_ExpectFinish', () => {
+   const originals = _storeOriginals();
+   const finishes = [];
+   const itemsAtPoint = [{ type: ItemType.ANIMAL }];
+   const state = { activePointerId: 1, didDrag: false };
+
+   CoordinateEditingStore.createDragState = () => state;
+   CoordinateEditingStore.applyMarkerEditingStyles = () => {};
+   CoordinateEditingStore.finishDragging = (args) => {
+      finishes.push(args);
+   };
+
+   try {
+      const markerEl = _createMarkerEl();
+      CoordinateEditor.enableMarkerCoordinateEditing(markerEl, itemsAtPoint, { id: 'map' });
+      markerEl.listeners.pointerup({ pointerId: 1 });
+      markerEl.listeners.pointercancel({ pointerId: 1 });
+
+      assert.equal(finishes.length, 2);
+      assert.equal(finishes.at(Position.FIRST).itemsAtPoint, itemsAtPoint);
+   } finally {
+      Object.assign(CoordinateEditingStore, originals);
+   }
+});
+
+
+test('Test_EnableMarkerCoordinateEditing_TestClickAfterDrag_ExpectStopped', () => {
+   const originals = _storeOriginals();
+   const stops = [];
+   const state = { activePointerId: 1, didDrag: true };
+
+   CoordinateEditingStore.createDragState = () => state;
+   CoordinateEditingStore.applyMarkerEditingStyles = () => {};
+   CoordinateEditingStore.stopMarkerEvent = (event) => {
+      stops.push(event);
+   };
+
+   try {
+      const markerEl = _createMarkerEl();
+      CoordinateEditor.enableMarkerCoordinateEditing(markerEl, [{ type: ItemType.ANIMAL }], { id: 'map' });
+      markerEl.listeners.click({ type: 'click' });
+
+      assert.equal(stops.length, Position.SECOND);
+   } finally {
+      Object.assign(CoordinateEditingStore, originals);
+   }
+});
+
+
+test('Test_EnableMarkerCoordinateEditing_TestInactivePointer_ExpectNoStop', () => {
+   const originals = _storeOriginals();
    let stopCalls = 0;
 
    CoordinateEditingStore.createDragState = () => ({ activePointerId: null, didDrag: false });
    CoordinateEditingStore.applyMarkerEditingStyles = () => {};
    CoordinateEditingStore.beginDragging = () => {};
    CoordinateEditingStore.finishDragging = () => {};
-   CoordinateEditingStore.stopMarkerEvent = () => { stopCalls += 1; };
+   CoordinateEditingStore.stopMarkerEvent = () => {
+      stopCalls += 1;
+   };
    CoordinateEditingStore.isActivePointer = () => false;
    CoordinateEditingStore.updateMarkerPosition = () => ({ x: 1, y: 2 });
 
@@ -101,12 +196,32 @@ test('Test_EnableMarkerCoordinateEditing_TestInactiveOrMissingPosition_ExpectEar
       const markerEl = _createMarkerEl();
       CoordinateEditor.enableMarkerCoordinateEditing(markerEl, [], {});
       markerEl.listeners.pointermove({ pointerId: 9 });
-      assert.equal(stopCalls, 0);
 
-      CoordinateEditingStore.isActivePointer = () => true;
-      CoordinateEditingStore.updateMarkerPosition = () => null;
+      assert.equal(stopCalls, Position.FIRST);
+   } finally {
+      Object.assign(CoordinateEditingStore, originals);
+   }
+});
+
+
+test('Test_EnableMarkerCoordinateEditing_TestMissingPosition_ExpectNoStop', () => {
+   const originals = _storeOriginals();
+   let stopCalls = 0;
+
+   CoordinateEditingStore.createDragState = () => ({ activePointerId: null, didDrag: false });
+   CoordinateEditingStore.applyMarkerEditingStyles = () => {};
+   CoordinateEditingStore.stopMarkerEvent = () => {
+      stopCalls += 1;
+   };
+   CoordinateEditingStore.isActivePointer = () => true;
+   CoordinateEditingStore.updateMarkerPosition = () => null;
+
+   try {
+      const markerEl = _createMarkerEl();
+      CoordinateEditor.enableMarkerCoordinateEditing(markerEl, [], {});
       markerEl.listeners.pointermove({ pointerId: 9 });
-      assert.equal(stopCalls, 0);
+
+      assert.equal(stopCalls, Position.FIRST);
    } finally {
       Object.assign(CoordinateEditingStore, originals);
    }

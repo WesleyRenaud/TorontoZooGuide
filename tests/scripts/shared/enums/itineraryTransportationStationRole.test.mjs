@@ -9,30 +9,39 @@ import itineraryTransportationStationRoleValues from '../../../../shared/enums/i
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryTransportationStationRole_TestRoleValueHelpers_ExpectKinds', () => {
-   assert.deepEqual(
-      ItineraryTransportationStationRole.onboardingRoleValues(),
-      [
-         ItineraryTransportationStationRole.ONBOARDING.kind,
-         ItineraryTransportationStationRole.ROUND_TRIP.kind,
-      ]
-   );
-   assert.deepEqual(
-      ItineraryTransportationStationRole.offboardingRoleValues(),
-      [
-         ItineraryTransportationStationRole.OFFBOARDING.kind,
-         ItineraryTransportationStationRole.ROUND_TRIP.kind,
-      ]
-   );
+
+test('Test_OnboardingRoleValues_TestRoles_ExpectOnboardingKinds', () => {
+   const roles = ItineraryTransportationStationRole.onboardingRoleValues();
+
+   assert.deepEqual(roles, [
+      ItineraryTransportationStationRole.ONBOARDING.kind,
+      ItineraryTransportationStationRole.ROUND_TRIP.kind,
+   ]);
 });
 
-test('Test_ItineraryTransportationStationRole_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(itineraryTransportationStationRoleValues)) {
-      assert.deepEqual(ItineraryTransportationStationRole[key], value);
-   }
 
+test('Test_OffboardingRoleValues_TestRoles_ExpectOffboardingKinds', () => {
+   const roles = ItineraryTransportationStationRole.offboardingRoleValues();
+
+   assert.deepEqual(roles, [
+      ItineraryTransportationStationRole.OFFBOARDING.kind,
+      ItineraryTransportationStationRole.ROUND_TRIP.kind,
+   ]);
+});
+
+
+test('Test_ItineraryTransportationStationRole_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/itineraryTransportationStationRole.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(itineraryTransportationStationRoleValues).map((key) => [
+         key,
+         ItineraryTransportationStationRole[key],
+      ])
+   );
+
+   assert.deepEqual(mapped, itineraryTransportationStationRoleValues);
    assert.deepEqual(itineraryTransportationStationRoleValues, diskValues);
 });

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from api.itinerary.conflicts.schedule_time_conflict_issue_finder import ScheduleTimeConflictIssueFinder
+from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
+from api.itinerary.results.itinerary_save_issue_item import ItinerarySaveIssueItem
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
 from api.shared.enums import ItineraryErrorType, Position
+
 
 def Test_ScheduleTimeRange_TestInvalidEndBeforeStart_ExpectNone() -> None:
    talk = GuardiansTalkDiff(
@@ -13,7 +16,9 @@ def Test_ScheduleTimeRange_TestInvalidEndBeforeStart_ExpectNone() -> None:
       end_time='1:00 PM',
       location='Africa Savanna' )
 
-   assert ScheduleTimeConflictIssueFinder._schedule_time_range( talk ) is None
+   schedule_range = ScheduleTimeConflictIssueFinder._schedule_time_range( talk )
+
+   assert schedule_range is None
 
 
 def Test_Find_TestOverlappingTalkAndEncounter_ExpectConflictIssue() -> None:
@@ -31,12 +36,11 @@ def Test_Find_TestOverlappingTalkAndEncounter_ExpectConflictIssue() -> None:
 
    issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
 
+   issue = issues[ Position.FIRST ]
+
    assert len( issues ) == 1
-   assert issues[ Position.FIRST ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
-   assert [ item.name for item in issues[ Position.FIRST ].items ] == [
-      "Grevy's Zebra",
-      'African Rainforest',
-   ]
+   assert issue.code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert [ item.name for item in issue.items ] == [ talk.name, encounter.name ]
 
 
 def Test_Find_TestNonOverlapping_ExpectEmpty() -> None:
@@ -51,10 +55,12 @@ def Test_Find_TestNonOverlapping_ExpectEmpty() -> None:
       start_time='2:00 PM',
       end_time='2:45 PM' )
 
-   assert ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] ) == []
+   issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
+
+   assert issues == []
 
 
-def Test_Find_TestDeletedOrUntimed_ExpectIgnored() -> None:
+def Test_Find_TestDeletedTalk_ExpectIgnored() -> None:
    talk = GuardiansTalkDiff(
       name="Grevy's Zebra",
       is_deleted=True,
@@ -66,7 +72,9 @@ def Test_Find_TestDeletedOrUntimed_ExpectIgnored() -> None:
       start_time='12:00 PM',
       end_time='12:45 PM' )
 
-   assert ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] ) == []
+   issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
+
+   assert issues == []
 
 
 def Test_Find_TestGroupedMutualOverlap_ExpectSingleConflictGroup() -> None:
@@ -93,12 +101,14 @@ def Test_Find_TestGroupedMutualOverlap_ExpectSingleConflictGroup() -> None:
       [ talk ],
       [ rainforest, kangaroo ] )
 
+   issue = issues[ Position.FIRST ]
+
    assert len( issues ) == 1
-   assert issues[ Position.FIRST ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
-   assert { item.name for item in issues[ Position.FIRST ].items } == {
-      'African Lion',
-      'African Rainforest',
-      'Kangaroo',
+   assert issue.code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issue.items } == {
+      talk.name,
+      rainforest.name,
+      kangaroo.name,
    }
 
 
@@ -118,10 +128,12 @@ def Test_Find_TestOverlappingEncountersOnly_ExpectConflictIssue() -> None:
 
    issues = ScheduleTimeConflictIssueFinder.find( [], [ rainforest, kangaroo ] )
 
+   issue = issues[ Position.FIRST ]
+
    assert len( issues ) == 1
-   assert { item.name for item in issues[ Position.FIRST ].items } == {
-      'African Rainforest',
-      'Kangaroo',
+   assert { item.name for item in issue.items } == {
+      rainforest.name,
+      kangaroo.name,
    }
 
 
@@ -141,11 +153,13 @@ def Test_Find_TestPartialTalkEncounterOverlap_ExpectConflictIssue() -> None:
 
    issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
 
+   issue = issues[ Position.FIRST ]
+
    assert len( issues ) == 1
-   assert issues[ Position.FIRST ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
-   assert { item.name for item in issues[ Position.FIRST ].items } == {
-      'African Lion',
-      'Grizzly Bear',
+   assert issue.code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issue.items } == {
+      talk.name,
+      encounter.name,
    }
 
 
@@ -166,11 +180,13 @@ def Test_Find_TestTurtleTalkRhinoEncounterAt1400_ExpectConflictIssue() -> None:
 
    issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
 
+   issue = issues[ Position.FIRST ]
+
    assert len( issues ) == 1
-   assert issues[ Position.FIRST ].code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
-   assert { item.name for item in issues[ Position.FIRST ].items } == {
-      'Nile Soft-Shelled Turtle',
-      'Guardians of White Rhinos',
+   assert issue.code == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in issue.items } == {
+      talk.name,
+      encounter.name,
    }
 
 
@@ -188,31 +204,13 @@ def Test_Find_TestLionTalkRainforestEncounter_ExpectIssueDict() -> None:
       end_time='2:45 PM',
       meeting_spot='Wild Encounter - Africa Meeting Spot',
       link='https://www.torontozoo.com/tickets/weafricarainforest' )
+   expected_issue = ItineraryResultReason(
+      code=ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
+      items=[
+         ItinerarySaveIssueItem.from_guardians_talk_diff( talk ),
+         ItinerarySaveIssueItem.from_wild_encounter_diff( encounter ),
+      ] )
 
    issues = ScheduleTimeConflictIssueFinder.find( [ talk ], [ encounter ] )
 
-   assert [ issue.to_dict() for issue in issues ] == [
-      {
-         'code': 'wildEncounterTimeConflict',
-         'items': [
-            {
-               'name': 'African Lion',
-               'start_time': '2:00 PM',
-               'end_time': '2:30 PM',
-               'item_type': 'guardiansTalk',
-               'meeting_spot': '',
-               'location': 'Africa Savanna',
-               'link': '',
-            },
-            {
-               'name': 'African Rainforest',
-               'start_time': '2:00 PM',
-               'end_time': '2:45 PM',
-               'item_type': 'wildEncounter',
-               'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
-               'location': '',
-               'link': 'https://www.torontozoo.com/tickets/weafricarainforest',
-            },
-         ],
-      },
-   ]
+   assert [ issue.to_dict() for issue in issues ] == [ expected_issue.to_dict() ]

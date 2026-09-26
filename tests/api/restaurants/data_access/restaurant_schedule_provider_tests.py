@@ -131,9 +131,11 @@ def restaurant_schedule_conn() -> sqlite3.Connection:
 
 def Test_SaveOpeningSchedule_TestNewSchedule_ExpectPersistsRow(
       restaurant_schedule_conn: sqlite3.Connection ) -> None:
-   assert RestaurantScheduleProvider.save_opening_schedule(
+   result = RestaurantScheduleProvider.save_opening_schedule(
       restaurant_schedule_conn,
-      _opening_schedule() ) is True
+      _opening_schedule() )
+
+   assert result is True
 
    row = _fetch_opening_row( restaurant_schedule_conn, START_DATE )
 
@@ -159,13 +161,15 @@ def Test_SaveOpeningSchedule_TestSameStartDate_ExpectUpdatesRow(
       restaurant_schedule_conn,
       _opening_schedule() )
 
-   assert RestaurantScheduleProvider.save_opening_schedule(
+   result = RestaurantScheduleProvider.save_opening_schedule(
       restaurant_schedule_conn,
       _opening_schedule(
          end_date='2026-07-15',
          saturday=True,
          sunday=True,
-         message='Updated patio hours.' ) ) is True
+         message='Updated patio hours.' ) )
+
+   assert result is True
 
    row = _fetch_opening_row( restaurant_schedule_conn, START_DATE )
 
@@ -191,12 +195,14 @@ def Test_SaveOpeningSchedule_TestOverlappingDates_ExpectReturnsFalse(
       restaurant_schedule_conn,
       _opening_schedule() )
 
-   assert RestaurantScheduleProvider.save_opening_schedule(
+   result = RestaurantScheduleProvider.save_opening_schedule(
       restaurant_schedule_conn,
       _opening_schedule(
          start_date='2026-06-15',
          end_date='2026-07-15',
-         message='Overlapping.' ) ) is False
+         message='Overlapping.' ) )
+
+   assert result is False
 
    assert _fetch_opening_row( restaurant_schedule_conn, '2026-06-15' ) is None
 
@@ -310,9 +316,11 @@ def Test_SaveScheduleOverride_TestNewOverride_ExpectPersistsRow(
       is_closed=True,
       message=OVERRIDE_MESSAGE )
 
-   assert RestaurantScheduleProvider.save_schedule_override(
+   result = RestaurantScheduleProvider.save_schedule_override(
       restaurant_schedule_conn,
-      override ) is True
+      override )
+
+   assert result is True
 
    row = restaurant_schedule_conn.execute(
       """   SELECT
@@ -347,14 +355,16 @@ def Test_SaveScheduleOverride_TestExistingOverride_ExpectUpdatesRow(
          is_closed=True,
          message=OVERRIDE_MESSAGE ) )
 
-   assert RestaurantScheduleProvider.save_schedule_override(
+   result = RestaurantScheduleProvider.save_schedule_override(
       restaurant_schedule_conn,
       RestaurantScheduleOverride(
          restaurant=RESTAURANT,
          start_date=OVERRIDE_START,
          end_date='2026-06-14',
          is_closed=False,
-         message='Special open day.' ) ) is True
+         message='Special open day.' ) )
+
+   assert result is True
 
    row = restaurant_schedule_conn.execute(
       """   SELECT OVERRIDE_END_DATE, IS_CLOSED, OVERRIDE_MESSAGE

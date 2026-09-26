@@ -7,6 +7,7 @@ import pytest
 from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.data_access.remove_itinerary_item_provider import RemoveItineraryItemProvider
 from api.itinerary.operations.itinerary_item_remover import ItineraryItemRemover
+from api.shared.date_values import DateValues
 from api.shared.enums import ItineraryEventType
 
 
@@ -53,9 +54,16 @@ CREATE TABLE ItineraryEvent (
 );
 """
 
+LION_SPECIES = 'African Lion'
+LION_EXHIBIT = 'Africa Savanna'
 CAROUSEL = 'Conservation Carousel'
 GUARDIANS_TALK = 'African Lion'
 WILD_ENCOUNTER = 'African Rainforest'
+LUNCH_START_TIME = '12:00 PM'
+LUNCH_DURATION_MINUTES = 30
+LUNCH_END_TIME = DateValues.add_minutes_to_time(
+   LUNCH_START_TIME,
+   LUNCH_DURATION_MINUTES )
 
 
 @pytest.fixture
@@ -71,7 +79,7 @@ def remove_provider_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, NULL );
       """,
-      ( 'African Lion', 'Africa Savanna' ) )
+      ( LION_SPECIES, LION_EXHIBIT ) )
    conn.execute(
       """   INSERT INTO ItineraryAttraction ( ATTRACTION )
             VALUES ( ? );
@@ -95,7 +103,7 @@ def remove_provider_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ? );
       """,
-      ( ItineraryEventType.LUNCH.value, '12:00 PM', '12:30 PM' ) )
+      ( ItineraryEventType.LUNCH.value, LUNCH_START_TIME, LUNCH_END_TIME ) )
    conn.commit()
 
    yield conn
@@ -105,14 +113,16 @@ def remove_provider_conn() -> sqlite3.Connection:
 
 def Test_DeleteItineraryAnimal_TestAnimalRow_ExpectRowRemoved(
       remove_provider_conn: sqlite3.Connection ) -> None:
+   species = LION_SPECIES
+   exhibit = LION_EXHIBIT
    cur = remove_provider_conn.cursor()
+
    RemoveItineraryItemProvider.delete_itinerary_animal(
       cur,
-      species='African Lion',
-      exhibit='Africa Savanna' )
+      species=species,
+      exhibit=exhibit )
    remove_provider_conn.commit()
    cur.close()
-
    count = remove_provider_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryAnimal;' ).fetchone()
 
@@ -122,13 +132,14 @@ def Test_DeleteItineraryAnimal_TestAnimalRow_ExpectRowRemoved(
 
 def Test_DeleteItineraryAttraction_TestAttractionRow_ExpectRowRemoved(
       remove_provider_conn: sqlite3.Connection ) -> None:
+   name = CAROUSEL
    cur = remove_provider_conn.cursor()
+
    RemoveItineraryItemProvider.delete_itinerary_attraction(
       cur,
-      name=CAROUSEL )
+      name=name )
    remove_provider_conn.commit()
    cur.close()
-
    count = remove_provider_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryAttraction;' ).fetchone()
 
@@ -138,13 +149,14 @@ def Test_DeleteItineraryAttraction_TestAttractionRow_ExpectRowRemoved(
 
 def Test_DeleteItineraryGuardiansTalk_TestTalkRow_ExpectRowRemoved(
       remove_provider_conn: sqlite3.Connection ) -> None:
+   talk_name = GUARDIANS_TALK
    cur = remove_provider_conn.cursor()
+
    RemoveItineraryItemProvider.delete_itinerary_guardians_talk(
       cur,
-      talk_name=GUARDIANS_TALK )
+      talk_name=talk_name )
    remove_provider_conn.commit()
    cur.close()
-
    count = remove_provider_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryGuardiansTalk;' ).fetchone()
 
@@ -154,13 +166,14 @@ def Test_DeleteItineraryGuardiansTalk_TestTalkRow_ExpectRowRemoved(
 
 def Test_DeleteItineraryWildEncounter_TestEncounterRow_ExpectRowRemoved(
       remove_provider_conn: sqlite3.Connection ) -> None:
+   wild_encounter = WILD_ENCOUNTER
    cur = remove_provider_conn.cursor()
+
    RemoveItineraryItemProvider.delete_itinerary_wild_encounter(
       cur,
-      wild_encounter=WILD_ENCOUNTER )
+      wild_encounter=wild_encounter )
    remove_provider_conn.commit()
    cur.close()
-
    count = remove_provider_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryWildEncounter;' ).fetchone()
 
@@ -170,13 +183,14 @@ def Test_DeleteItineraryWildEncounter_TestEncounterRow_ExpectRowRemoved(
 
 def Test_DeleteItineraryEvent_TestLunchRow_ExpectRowRemoved(
       remove_provider_conn: sqlite3.Connection ) -> None:
+   event_type = ItineraryEventType.LUNCH
    cur = remove_provider_conn.cursor()
+
    RemoveItineraryItemProvider.delete_itinerary_event(
       cur,
-      event_type=ItineraryEventType.LUNCH )
+      event_type=event_type )
    remove_provider_conn.commit()
    cur.close()
-
    count = remove_provider_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryEvent;' ).fetchone()
 
@@ -186,17 +200,14 @@ def Test_DeleteItineraryEvent_TestLunchRow_ExpectRowRemoved(
 
 def Test_ApplyViaRemover_TestAnimalKey_ExpectProviderDeletesRow(
       remove_provider_conn: sqlite3.Connection ) -> None:
-
+   animal_key = AnimalScheduleItemKey(
+      species=LION_SPECIES,
+      exhibit=LION_EXHIBIT )
    cur = remove_provider_conn.cursor()
-   ItineraryItemRemover.apply(
-      cur,
-      AnimalScheduleItemKey(
-         species='African Lion',
-         exhibit='Africa Savanna',
-      ) )
+
+   ItineraryItemRemover.apply( cur, animal_key )
    remove_provider_conn.commit()
    cur.close()
-
    count = remove_provider_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryAnimal;' ).fetchone()
 

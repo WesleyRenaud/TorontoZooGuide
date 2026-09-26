@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.app_string_provider import AppStringProvider
 from api.attractions.status.attraction_status_builder import AttractionStatusBuilder
 
 
@@ -7,7 +8,6 @@ ATTRACTION_NAME = 'Conservation Carousel'
 CLOSURE_START_DATE = '2026-06-01'
 CLOSURE_END_DATE = '2026-06-30'
 CUSTOM_CLOSED_MESSAGE = 'Closed for maintenance.'
-DEFAULT_CLOSED_MESSAGE = 'The Conservation Carousel is temporarily closed.'
 
 
 def Test_BuildClosedSchedule_TestEmptyMessage_ExpectDefaultGuestStatusMessage() -> None:
@@ -20,7 +20,9 @@ def Test_BuildClosedSchedule_TestEmptyMessage_ExpectDefaultGuestStatusMessage() 
    assert schedule.attraction == ATTRACTION_NAME
    assert schedule.start_date == CLOSURE_START_DATE
    assert schedule.end_date == CLOSURE_END_DATE
-   assert schedule.message == DEFAULT_CLOSED_MESSAGE
+   assert schedule.message == AppStringProvider.format(
+      'guestStatus.locations.temporarilyClosed',
+      name=ATTRACTION_NAME )
 
 
 def Test_BuildClosedSchedule_TestCustomMessage_ExpectMessageRetained() -> None:
@@ -34,13 +36,16 @@ def Test_BuildClosedSchedule_TestCustomMessage_ExpectMessageRetained() -> None:
 
 
 def Test_BuildOpeningSchedule_TestWeekdayFlags_ExpectMappedSchedule() -> None:
+   monday = True
+   wednesday = True
+
    schedule = AttractionStatusBuilder.build_opening_schedule(
       attraction=ATTRACTION_NAME,
       start_date=CLOSURE_START_DATE,
       end_date=CLOSURE_END_DATE,
-      monday=True,
+      monday=monday,
       tuesday=False,
-      wednesday=True,
+      wednesday=wednesday,
       thursday=False,
       friday=False,
       saturday=False,
@@ -49,8 +54,8 @@ def Test_BuildOpeningSchedule_TestWeekdayFlags_ExpectMappedSchedule() -> None:
       message=CUSTOM_CLOSED_MESSAGE )
 
    assert schedule.attraction == ATTRACTION_NAME
-   assert schedule.monday is True
-   assert schedule.wednesday is True
+   assert schedule.monday is monday
+   assert schedule.wednesday is wednesday
    assert schedule.message == CUSTOM_CLOSED_MESSAGE
 
 

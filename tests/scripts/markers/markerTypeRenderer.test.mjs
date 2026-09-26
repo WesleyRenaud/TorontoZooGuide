@@ -5,49 +5,64 @@ import { MarkerTypeRenderer } from '../../../scripts/markers/markerTypeRenderer.
 import { MarkerTypeRendererFactory } from '../../../scripts/markers/markerTypeRendererFactory.js';
 import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 
+
 test('Test_RenderMarkerByType_TestUnknownType_ExpectFalse', () => {
-   assert.equal(MarkerTypeRenderer.renderMarkerByType({}, [{ type: 'unknown' }]), false);
-   assert.equal(MarkerTypeRenderer.renderMarkerByType({}, []), false);
+   const rendered = MarkerTypeRenderer.renderMarkerByType({}, [{ type: 'unknown' }]);
+
+   assert.equal(rendered, false);
 });
+
+
+test('Test_RenderMarkerByType_TestEmptyItems_ExpectFalse', () => {
+   const rendered = MarkerTypeRenderer.renderMarkerByType({}, []);
+
+   assert.equal(rendered, false);
+});
+
 
 test('Test_RenderMarkerByType_TestKnownType_ExpectRendererCalled', () => {
    const calls = [];
    const markerEl = { id: 'marker' };
    const original = MarkerTypeRenderer.MARKER_TYPE_RENDERERS[ItemType.PAVILION];
+   const items = [{ type: ItemType.PAVILION, name: 'African Pavilion' }];
 
-   MarkerTypeRenderer.MARKER_TYPE_RENDERERS[ItemType.PAVILION] = (el, items) => {
-      calls.push([el, items]);
+   MarkerTypeRenderer.MARKER_TYPE_RENDERERS[ItemType.PAVILION] = (el, nextItems) => {
+      calls.push([el, nextItems]);
    };
 
    try {
-      const items = [{ type: ItemType.PAVILION, name: 'African Pavilion' }];
-      assert.equal(MarkerTypeRenderer.renderMarkerByType(markerEl, items), true);
+      const rendered = MarkerTypeRenderer.renderMarkerByType(markerEl, items);
+
+      assert.equal(rendered, true);
       assert.deepEqual(calls, [[markerEl, items]]);
    } finally {
       MarkerTypeRenderer.MARKER_TYPE_RENDERERS[ItemType.PAVILION] = original;
    }
 });
 
+
 test('Test_RenderAnimalIcon_TestAnimal_ExpectFactoryCall', () => {
    const original = MarkerTypeRendererFactory.renderAnimalMarker;
    const calls = [];
+   const markerEl = { id: 'animal-marker' };
+   const animal = { species: 'African Lion' };
 
    MarkerTypeRendererFactory.renderAnimalMarker = (...args) => {
       calls.push(args);
    };
 
    try {
-      const markerEl = { id: 'animal-marker' };
-      const animal = { species: 'Lion' };
       MarkerTypeRenderer.renderAnimalIcon(markerEl, animal);
+
       assert.deepEqual(calls, [[markerEl, [animal]]]);
    } finally {
       MarkerTypeRendererFactory.renderAnimalMarker = original;
    }
 });
 
+
 test('Test_MarkerTypeRenderers_TestMap_ExpectExpectedKeys', () => {
-   for (const key of [
+   const keys = [
       ItemType.ANIMAL,
       ItemType.PAVILION,
       ItemType.RESTAURANT,
@@ -64,7 +79,9 @@ test('Test_MarkerTypeRenderers_TestMap_ExpectExpectedKeys', () => {
       ItemType.GUEST_SERVICE,
       ItemType.PICNIC_SITE,
       ItemType.EVENT_SITE,
-   ]) {
+   ];
+
+   for (const key of keys) {
       assert.equal(typeof MarkerTypeRenderer.MARKER_TYPE_RENDERERS[key], 'function');
    }
 
@@ -78,15 +95,16 @@ test('Test_MarkerTypeRenderers_TestMap_ExpectExpectedKeys', () => {
    );
 });
 
+
 test('Test_AttractionMarkerRenderer_TestIconAndSize_ExpectCallbacks', () => {
    const markerEl = {
       style: { setProperty() {} },
       classList: { add() {}, remove() {} },
       setAttribute() {},
    };
-   assert.doesNotThrow(() => {
-      MarkerTypeRenderer.attractionMarkerRenderer(markerEl, [
-         { type: ItemType.ATTRACTION, name: 'Conservation Carousel' },
-      ]);
-   });
+   const items = [{ type: ItemType.ATTRACTION, name: 'Conservation Carousel' }];
+
+   const render = () => MarkerTypeRenderer.attractionMarkerRenderer(markerEl, items);
+
+   assert.doesNotThrow(render);
 });

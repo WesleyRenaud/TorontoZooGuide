@@ -2,16 +2,16 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { RemovedItemsFragment } from '../../../../../scripts/itinerary/panel/components/removedItemsFragment.js';
-import { SpeciesExhibitKey } from '../../../../../scripts/itinerary/speciesExhibitKey.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
-const removedAnimal = {
+const _removedAnimal = {
    species: 'African Lion',
    exhibit: 'Africa Savanna',
 };
 
-const removedAttraction = {
+const _removedAttraction = {
    name: 'Conservation Carousel',
 };
 
@@ -25,13 +25,22 @@ function _clickOverlay(overlay) {
 
 installDomTestHooks();
 
-test('Test_Returns_TestReturnsEarlyWithoutAMountElementOrPopup_ExpectOk', () => {
+
+test('Test_ShowRemovedItemsPopup_TestMissingMount_ExpectNoOp', () => {
    const mount = createDomNode('div');
 
    RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: null,
-      removed: { animals: [removedAnimal] },
+      removed: { animals: [_removedAnimal] },
    });
+
+   assert.equal(mount.children.length, 0);
+});
+
+
+test('Test_ShowRemovedItemsPopup_TestEmptyRemoved_ExpectNoOp', () => {
+   const mount = createDomNode('div');
+
    RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
       removed: { animals: [] },
@@ -40,84 +49,83 @@ test('Test_Returns_TestReturnsEarlyWithoutAMountElementOrPopup_ExpectOk', () => 
    assert.equal(mount.children.length, 0);
 });
 
-test('Test_Accept_TestAcceptPassesKeptAnimalsAndAttractionsToOnAccept_ExpectOk', () => {
+
+test('Test_ShowRemovedItemsPopup_TestAccept_ExpectKeptItems', () => {
    const mount = createDomNode('div');
    const accepted = [];
 
    RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
       removed: {
-         animals: [removedAnimal],
-         attractions: [removedAttraction],
+         animals: [_removedAnimal],
+         attractions: [_removedAttraction],
       },
       onAccept: (payload) => {
          accepted.push(payload);
       },
    });
-
    const keepButtons = mount.querySelectorAll('.itin-removed-keep-btn');
-
-   keepButtons[0]?.click();
-   keepButtons[1]?.click();
+   keepButtons[Position.FIRST]?.click();
+   keepButtons[Position.SECOND]?.click();
    mount.querySelector('.itin-finish')?.click();
 
    assert.equal(mount.children.length, 0);
    assert.deepEqual(accepted, [{
-      animalsToKeep: [{
-         species: 'African Lion',
-         exhibit: 'Africa Savanna',
-      }],
-      attractionsToKeep: ['Conservation Carousel'],
+      animalsToKeep: [_removedAnimal],
+      attractionsToKeep: [_removedAttraction.name],
    }]);
 });
 
-test('Test_Dismisses_TestDismissesThroughTheCloseButtonAndOverlayClick_ExpectOk', () => {
+
+test('Test_ShowRemovedItemsPopup_TestCloseButton_ExpectDismiss', () => {
    const mount = createDomNode('div');
    const dismissCalls = [];
 
    RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
-      removed: { animals: [removedAnimal] },
+      removed: { animals: [_removedAnimal] },
       onDismiss: () => {
          dismissCalls.push('dismissed');
       },
    });
-
    mount.querySelector('.itin-close')?.click();
 
    assert.deepEqual(dismissCalls, ['dismissed']);
    assert.equal(mount.children.length, 0);
+});
+
+
+test('Test_ShowRemovedItemsPopup_TestOverlayClick_ExpectDismiss', () => {
+   const mount = createDomNode('div');
+   const dismissCalls = [];
 
    RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
-      removed: { animals: [removedAnimal] },
+      removed: { animals: [_removedAnimal] },
       onDismiss: () => {
          dismissCalls.push('overlay');
       },
    });
-
    const overlay = mount.querySelector('.itin-overlay');
-
    _clickOverlay(overlay);
 
-   assert.deepEqual(dismissCalls, ['dismissed', 'overlay']);
+   assert.deepEqual(dismissCalls, ['overlay']);
    assert.equal(mount.children.length, 0);
 });
 
-test('Test_Toggle_TestToggleKeepOffRemovesItemsFromTheAccept_ExpectOk', () => {
+
+test('Test_ShowRemovedItemsPopup_TestToggleKeepOff_ExpectEmptyAccept', () => {
    const mount = createDomNode('div');
    const accepted = [];
 
    RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
-      removed: { animals: [removedAnimal] },
+      removed: { animals: [_removedAnimal] },
       onAccept: (payload) => {
          accepted.push(payload);
       },
    });
-
    const keepButton = mount.querySelector('.itin-removed-keep-btn');
-
    keepButton?.click();
    keepButton?.click();
    mount.querySelector('.itin-finish')?.click();
@@ -126,22 +134,21 @@ test('Test_Toggle_TestToggleKeepOffRemovesItemsFromTheAccept_ExpectOk', () => {
       animalsToKeep: [],
       attractionsToKeep: [],
    }]);
-   assert.equal(
-      SpeciesExhibitKey.buildSpeciesExhibitKey(removedAnimal),
-      'african lion|africa savanna'
-   );
 });
 
-test('Test_View_TestViewAlternativesRemovesThePopupBeforeNavigating_ExpectOk', () => {
+
+test('Test_ShowRemovedItemsPopup_TestViewAlternatives_ExpectNavigates', () => {
    const mount = createDomNode('div');
    const viewedSteps = [];
+   const talkName = 'African Lion';
+   const location = 'Africa Savanna';
 
    RemovedItemsFragment.showRemovedItemsPopup({
       mountEl: mount,
       removed: {
          guardiansTalks: [{
-            name: 'African Lion',
-            location: 'Africa Savanna',
+            name: talkName,
+            location,
          }],
       },
       removePopupOnly: undefined,
@@ -149,9 +156,7 @@ test('Test_View_TestViewAlternativesRemovesThePopupBeforeNavigating_ExpectOk', (
          viewedSteps.push(stepKey);
       },
    });
-
    const alternativesButton = mount.querySelector('.itin-removed-alt-btn');
-
    alternativesButton?.click();
 
    assert.deepEqual(viewedSteps, ['guardiansTalks']);

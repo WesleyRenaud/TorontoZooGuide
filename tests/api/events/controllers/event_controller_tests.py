@@ -62,6 +62,7 @@ def stub_event_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubEventCoordi
 
 def Test_GetEvents_TestHttpRequest_ExpectMapsVisitDateAndReturnsEvents(
       stub_event_coordinator: StubEventCoordinator ) -> None:
+   event = _sample_event()
    handler = make_handler(
       '/get-events',
       {
@@ -76,7 +77,7 @@ def Test_GetEvents_TestHttpRequest_ExpectMapsVisitDateAndReturnsEvents(
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert result[ 'events' ] == [ _sample_event().to_dict() ]
+   assert result[ 'events' ] == [ event.to_dict() ]
 
 
 def Test_CreateEvent_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

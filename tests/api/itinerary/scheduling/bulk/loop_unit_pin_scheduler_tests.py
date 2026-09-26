@@ -18,6 +18,7 @@ from api.itinerary.scheduling.bulk.loop_unit_pin_scheduler import LoopUnitPinSch
 from api.itinerary.scheduling.bulk.loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 
@@ -37,12 +38,12 @@ CHEETAH = ItineraryAnimalRecord(
 
 LOOP_ID = 'africa_savanna'
 
-PIN_START_SECONDS = 12 * 3600
-PIN_END_SECONDS = 12 * 3600 + 30 * 60
+PIN_START_SECONDS = DateValues.time_value_in_seconds( '12:00 PM' )
+PIN_END_SECONDS = DateValues.time_value_in_seconds( '12:30 PM' )
 ANIMAL_DURATION_SECONDS = 30 * 60
-WINDOW_START_SECONDS = 9 * 3600
-WINDOW_END_SECONDS = 17 * 3600
-CURSOR_SECONDS = 10 * 3600
+WINDOW_START_SECONDS = DateValues.time_value_in_seconds( '9:00 AM' )
+WINDOW_END_SECONDS = DateValues.time_value_in_seconds( '5:00 PM' )
+CURSOR_SECONDS = DateValues.time_value_in_seconds( '10:00 AM' )
 
 
 def _raise_persist_error() -> None:
@@ -105,14 +106,14 @@ def pin_scheduler_conn() -> sqlite3.Connection:
 
 def Test_PinsForUnit_TestMixedLoopIds_ExpectSortedUnitPins() -> None:
    pins = [
-      _pin( loop_id=LOOP_ID, start_seconds=11 * 3600 ),
-      _pin( loop_id='other-loop', start_seconds=9 * 3600 ),
-      _pin( loop_id=LOOP_ID, start_seconds=10 * 3600 ),
+      _pin( loop_id=LOOP_ID, start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) ),
+      _pin( loop_id='other-loop', start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) ),
+      _pin( loop_id=LOOP_ID, start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ) ),
    ]
 
    unit_pins = LoopUnitPinScheduler.pins_for_unit( LOOP_ID, pins )
 
-   assert [ pin.start_seconds for pin in unit_pins ] == [ 10 * 3600, 11 * 3600 ]
+   assert [ pin.start_seconds for pin in unit_pins ] == [ DateValues.time_value_in_seconds( '10:00 AM' ), DateValues.time_value_in_seconds( '11:00 AM' ) ]
 
 
 def Test_Schedule_TestNoLoopId_ExpectStopsAndCursorUnchanged(
@@ -139,7 +140,7 @@ def Test_Schedule_TestNoPinsForUnit_ExpectStopsAndCursorUnchanged(
    still_unscheduled, cursor_seconds = LoopUnitPinScheduler.schedule(
       pin_scheduler_conn,
       prepared_unit,
-      [ _pin( loop_id='other-loop', start_seconds=10 * 3600 ) ],
+      [ _pin( loop_id='other-loop', start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ) ) ],
       blockers=[],
       window_start_seconds=WINDOW_START_SECONDS,
       window_end_seconds=WINDOW_END_SECONDS,
@@ -162,7 +163,7 @@ def Test_Schedule_TestPersistError_ExpectErrorStopsReturned(
    still_unscheduled, cursor_seconds = LoopUnitPinScheduler.schedule(
       pin_scheduler_conn,
       prepared_unit,
-      [ _pin( loop_id=LOOP_ID, start_seconds=10 * 3600 ) ],
+      [ _pin( loop_id=LOOP_ID, start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ) ) ],
       blockers=[],
       window_start_seconds=WINDOW_START_SECONDS,
       window_end_seconds=WINDOW_END_SECONDS,
@@ -174,18 +175,22 @@ def Test_Schedule_TestPersistError_ExpectErrorStopsReturned(
 
 def Test_EarliestStartSeconds_TestNoLoopId_ExpectNone(
       pin_scheduler_conn: sqlite3.Connection ) -> None:
-   assert LoopUnitPinScheduler.earliest_start_seconds(
+   result = LoopUnitPinScheduler.earliest_start_seconds(
       pin_scheduler_conn,
       _prepared_unit( loop_id=None, stops=[ LION ] ),
-      [ _pin( loop_id=LOOP_ID, start_seconds=PIN_START_SECONDS ) ] ) is None
+      [ _pin( loop_id=LOOP_ID, start_seconds=PIN_START_SECONDS ) ] )
+
+   assert result is None
 
 
 def Test_EarliestStartSeconds_TestNoUnitPins_ExpectNone(
       pin_scheduler_conn: sqlite3.Connection ) -> None:
-   assert LoopUnitPinScheduler.earliest_start_seconds(
+   result = LoopUnitPinScheduler.earliest_start_seconds(
       pin_scheduler_conn,
       _prepared_unit( loop_id=LOOP_ID, stops=[ LION ] ),
-      [ _pin( loop_id='other-loop', start_seconds=PIN_START_SECONDS ) ] ) is None
+      [ _pin( loop_id='other-loop', start_seconds=PIN_START_SECONDS ) ] )
+
+   assert result is None
 
 
 def Test_EarliestStartSeconds_TestNoAnimalsBeforePin_ExpectPinStart(
@@ -196,11 +201,13 @@ def Test_EarliestStartSeconds_TestNoAnimalsBeforePin_ExpectPinStart(
       'animals_before_first_pin',
       lambda *_args, **_kwargs: [] )
 
-   assert LoopUnitPinScheduler.earliest_start_seconds(
+   result = LoopUnitPinScheduler.earliest_start_seconds(
       pin_scheduler_conn,
       _prepared_unit( loop_id=LOOP_ID, stops=[ LION ] ),
       [ _pin( loop_id=LOOP_ID, start_seconds=PIN_START_SECONDS ) ]
-   ) == PIN_START_SECONDS
+   )
+
+   assert result == PIN_START_SECONDS
 
 
 def Test_EarliestStartSeconds_TestPrepareStopsFails_ExpectNone(
@@ -216,10 +223,12 @@ def Test_EarliestStartSeconds_TestPrepareStopsFails_ExpectNone(
       'prepare_stops',
       lambda *_args, **_kwargs: None )
 
-   assert LoopUnitPinScheduler.earliest_start_seconds(
+   result = LoopUnitPinScheduler.earliest_start_seconds(
       pin_scheduler_conn,
       _prepared_unit( loop_id=LOOP_ID, stops=[ LION ] ),
-      [ _pin( loop_id=LOOP_ID, start_seconds=PIN_START_SECONDS ) ] ) is None
+      [ _pin( loop_id=LOOP_ID, start_seconds=PIN_START_SECONDS ) ] )
+
+   assert result is None
 
 
 def Test_EarliestStartSeconds_TestAnimalsBeforePin_ExpectPinMinusOccupied(
@@ -238,11 +247,13 @@ def Test_EarliestStartSeconds_TestAnimalsBeforePin_ExpectPinMinusOccupied(
          _timed_stop( CHEETAH, duration_seconds=10 * 60 ),
       ] )
 
-   assert LoopUnitPinScheduler.earliest_start_seconds(
+   result = LoopUnitPinScheduler.earliest_start_seconds(
       pin_scheduler_conn,
       _prepared_unit( loop_id=LOOP_ID, stops=[ LION, CHEETAH ] ),
       [ _pin( loop_id=LOOP_ID, start_seconds=PIN_START_SECONDS ) ]
-   ) == PIN_START_SECONDS - 30 * 60
+   )
+
+   assert result == PIN_START_SECONDS - 30 * 60
 
 
 def Test_Schedule_TestAroundPinsHappyPath_ExpectAnimalsScheduledAndCursorAtPinEnd(
@@ -530,11 +541,11 @@ def Test_Schedule_TestForwardDoesNotFit_ExpectUnscheduledKept(
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'prepare_stops',
-      lambda *_args, **_kwargs: [ _timed_stop( LION, duration_seconds=8 * 3600 ) ] )
+      lambda *_args, **_kwargs: [ _timed_stop( LION, duration_seconds=DateValues.time_value_in_seconds( '8:00 AM' ) ) ] )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'total_occupied_seconds',
-      lambda prepared_stops: 8 * 3600 )
+      lambda prepared_stops: DateValues.time_value_in_seconds( '8:00 AM' ) )
 
    still_unscheduled, cursor_seconds = LoopUnitPinScheduler.schedule(
       pin_scheduler_conn,
@@ -675,13 +686,15 @@ def Test_Schedule_TestForwardSaveFails_ExpectPersistErrorStops(
 
 
 def Test_ShouldSkipAnimalSegmentStep_TestNoPinsForward_ExpectFalse() -> None:
-   assert not LoopUnitPinScheduler._should_skip_animal_segment_step(
+   result = LoopUnitPinScheduler._should_skip_animal_segment_step(
       LoopPinStopSegment(
          stops=[ LION ],
          end_before_seconds=PIN_START_SECONDS,
          anchor_at_end=False ),
       loop_pins=[],
       schedule_cursor_seconds=CURSOR_SECONDS )
+
+   assert not result
 
 
 def Test_ScheduleAnimalSegmentStep_TestAlreadyScheduledStops_ExpectCursorUnchanged(

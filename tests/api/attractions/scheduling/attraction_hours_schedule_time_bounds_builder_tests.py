@@ -38,7 +38,9 @@ def Test_ResolveDateRange_TestExplicitDates_ExpectNormalizedRange() -> None:
 
 
 def Test_BuildTimeBounds_TestEmptyRecords_ExpectNone() -> None:
-   assert AttractionHoursScheduleTimeBoundsBuilder._build_time_bounds( [] ) is None
+   result = AttractionHoursScheduleTimeBoundsBuilder._build_time_bounds( [] )
+
+   assert result is None
 
 
 def Test_BuildTimeBounds_TestMultipleRecords_ExpectLatestOpenAndEarliestClose() -> None:
@@ -93,12 +95,14 @@ def Test_TimesAreWithinBounds_TestValidTimes_ExpectTrue() -> None:
          operating_date=WEEKEND_OPERATING_DATE ),
    )
 
-   assert AttractionHoursScheduleTimeBoundsBuilder.times_are_within_bounds(
+   result = AttractionHoursScheduleTimeBoundsBuilder.times_are_within_bounds(
       bounds,
       weekday_start_time='10:00 AM',
       weekday_end_time='4:00 PM',
       weekend_holiday_start_time='11:00 AM',
       weekend_holiday_end_time='5:00 PM' )
+
+   assert result
 
 
 def Test_TimesAreWithinBounds_TestOutOfRangeWeekdayEnd_ExpectFalse() -> None:
@@ -113,12 +117,14 @@ def Test_TimesAreWithinBounds_TestOutOfRangeWeekdayEnd_ExpectFalse() -> None:
          operating_date=WEEKEND_OPERATING_DATE ),
    )
 
-   assert not AttractionHoursScheduleTimeBoundsBuilder.times_are_within_bounds(
+   result = AttractionHoursScheduleTimeBoundsBuilder.times_are_within_bounds(
       bounds,
       weekday_start_time='10:00 AM',
       weekday_end_time='8:00 PM',
       weekend_holiday_start_time='11:00 AM',
       weekend_holiday_end_time='5:00 PM' )
+
+   assert not result
 
 
 def Test_Fetch_TestWeekdayAndWeekendRecords_ExpectScheduleBounds(

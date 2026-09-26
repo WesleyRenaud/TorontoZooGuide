@@ -9,6 +9,7 @@ import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperati
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { ConsoleTextareaFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleTextareaFieldBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateAttractionClosureOverridePanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -35,24 +36,23 @@ test('Test_CreateAttractionClosureOverridePanel_TestWiring_ExpectShellOptions', 
       const result = AttractionClosureOverrideView.createAttractionClosureOverridePanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'attractionClosureOverridePanel');
       assert.equal(captured.title, Strings.panelTitles.attractionClosureOverride);
       assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'attractionClosureOverrideAttraction');
-      assert.equal(captured.bodyChildren[0].label, Strings.entityLabels.attraction);
-      assert.equal(captured.bodyChildren[0].emptyOptionLabel, Strings.placeholders.attraction);
-      assert.equal(captured.bodyChildren[1].startDateId, 'attractionClosureOverrideStartDate');
-      assert.equal(captured.bodyChildren[1].startHelpText, Strings.help.startImmediately);
-      assert.equal(captured.bodyChildren[1].endDateId, 'attractionClosureOverrideEndDate');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'attractionClosureOverrideAttraction');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).label, Strings.entityLabels.attraction);
+      assert.equal(captured.bodyChildren.at(Position.FIRST).emptyOptionLabel, Strings.placeholders.attraction);
+      assert.equal(captured.bodyChildren.at(Position.SECOND).startDateId, 'attractionClosureOverrideStartDate');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).startHelpText, Strings.help.startImmediately);
+      assert.equal(captured.bodyChildren.at(Position.SECOND).endDateId, 'attractionClosureOverrideEndDate');
       assert.equal(
-         captured.bodyChildren[1].endHelpText,
+         captured.bodyChildren.at(Position.SECOND).endHelpText,
          Strings.help.keepClosedUntilManuallyReopened('attraction')
       );
-      assert.equal(captured.bodyChildren[2].inputId, 'attractionClosureOverrideMessage');
-      assert.equal(captured.bodyChildren[2].label, Strings.labels.closureMessage);
-      assert.equal(captured.bodyChildren[2].placeholder, Strings.textareas.closureMessage);
-      assert.equal(captured.bodyChildren[3].submitId, 'submitAttractionClosureOverride');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'attractionClosureOverrideMessage');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).label, Strings.labels.closureMessage);
+      assert.equal(captured.bodyChildren.at(Position.THIRD).placeholder, Strings.textareas.closureMessage);
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).submitId, 'submitAttractionClosureOverride');
       assert.equal(captured.bodyChildren[4].statusId, 'attractionClosureOverrideStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;

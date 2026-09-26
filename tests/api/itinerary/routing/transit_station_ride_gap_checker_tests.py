@@ -32,18 +32,27 @@ OTHER_RIDE_OFFBOARDING_ANCHOR = WalkRouteAnchor(
 
 
 def Test_IsGap_TestOnboardThenOffboardSameRide_ExpectTrue() -> None:
-   assert TransitStationRideGapChecker.is_gap(
-      ONBOARDING_ANCHOR,
-      OFFBOARDING_ANCHOR )
+   previous = ONBOARDING_ANCHOR
+   current = OFFBOARDING_ANCHOR
+
+   is_gap = TransitStationRideGapChecker.is_gap( previous, current )
+
+   assert is_gap is True
 
 
 def Test_IsGap_TestOffboardThenOnboard_ExpectFalse() -> None:
-   assert not TransitStationRideGapChecker.is_gap(
-      OFFBOARDING_ANCHOR,
-      ONBOARDING_ANCHOR )
+   previous = OFFBOARDING_ANCHOR
+   current = ONBOARDING_ANCHOR
+
+   is_gap = TransitStationRideGapChecker.is_gap( previous, current )
+
+   assert is_gap is False
 
 
 def Test_IsGap_TestDifferentRideKeys_ExpectFalse() -> None:
-   assert not TransitStationRideGapChecker.is_gap(
-      ONBOARDING_ANCHOR,
-      OTHER_RIDE_OFFBOARDING_ANCHOR )
+   previous = ONBOARDING_ANCHOR
+   current = OTHER_RIDE_OFFBOARDING_ANCHOR
+
+   is_gap = TransitStationRideGapChecker.is_gap( previous, current )
+
+   assert is_gap is False

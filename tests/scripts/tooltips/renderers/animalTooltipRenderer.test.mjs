@@ -8,133 +8,155 @@ import { CardFactory } from '../../../../scripts/tooltips/renderers/cardFactory.
 import { LikelihoodPresenter } from '../../../../scripts/likelihood/likelihoodPresenter.js';
 import { SpeciesLinkTitleBuilder } from '../../../../scripts/animals/speciesLinkTitleBuilder.js';
 import { Strings } from '../../../../scripts/strings.js';
+import { ItemType } from '../../../../scripts/shared/enums/itemType.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_IsMatch_TestSpeciesAndExhibit_ExpectMatchRules', () => {
-   assert.equal(
-      AnimalTooltipRenderer.isMatch(
-         { species: 'Lion', exhibit: 'Savanna' },
-         { species: 'Lion', exhibit: 'Savanna' }
-      ),
-      true
-   );
-   assert.equal(
-      AnimalTooltipRenderer.isMatch(
-         { species: 'Lion', exhibit: 'Savanna' },
-         { species: 'Lion' }
-      ),
-      true
-   );
-   assert.equal(
-      AnimalTooltipRenderer.isMatch(
-         { species: 'Lion', exhibit: 'Savanna' },
-         { species: 'Tiger', exhibit: 'Savanna' }
-      ),
-      false
-   );
-   assert.equal(
-      AnimalTooltipRenderer.isMatch(
-         { species: 'Lion', exhibit: 'Savanna' },
-         { species: 'Lion', exhibit: 'Indo-Malaya' }
-      ),
-      false
-   );
-});
+const africanLion = 'African Lion';
+const africaSavanna = 'Africa Savanna';
 
-test('Test_CreateCard_TestAnimal_ExpectCardFactoryPayload', () => {
-   const originalNormalize = AssetKeyNormalizer.normalize;
-   const originalCreateCard = CardFactory.createTooltipCard;
-   const originalTitle = SpeciesLinkTitleBuilder.createAnimalTitleLinkElement;
-   const originalSpecies = AnimalSelectorModel.getAnimalSpecies;
-   const originalEnclosure = AnimalSelectorModel.getAnimalEnclosureName;
-   const originalSubtitle = AnimalSelectorModel.getAnimalSubtitle;
-   const originalPhrase = LikelihoodPresenter.getLikelihoodPhrase;
-   let captured;
+
+function _stubCardFactory() {
+   const originals = {
+      normalize: AssetKeyNormalizer.normalize,
+      createCard: CardFactory.createTooltipCard,
+      title: SpeciesLinkTitleBuilder.createAnimalTitleLinkElement,
+      species: AnimalSelectorModel.getAnimalSpecies,
+      enclosure: AnimalSelectorModel.getAnimalEnclosureName,
+      subtitle: AnimalSelectorModel.getAnimalSubtitle,
+      phrase: LikelihoodPresenter.getLikelihoodPhrase,
+   };
+   const captured = {};
 
    AssetKeyNormalizer.normalize = (value) => String(value).toLowerCase().replace(/\s+/g, '-');
    SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = (options) => ({ title: options });
-   AnimalSelectorModel.getAnimalSpecies = () => 'African Lion';
-   AnimalSelectorModel.getAnimalEnclosureName = () => 'Lion Enclosure';
-   AnimalSelectorModel.getAnimalSubtitle = () => 'Africa Savanna';
-   LikelihoodPresenter.getLikelihoodPhrase = () => 'High';
    CardFactory.createTooltipCard = (payload) => {
-      captured = payload;
+      captured.payload = payload;
       return { card: true };
    };
 
+   return { originals, captured };
+}
+
+
+function _restoreCardFactory(originals) {
+   AssetKeyNormalizer.normalize = originals.normalize;
+   CardFactory.createTooltipCard = originals.createCard;
+   SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = originals.title;
+   AnimalSelectorModel.getAnimalSpecies = originals.species;
+   AnimalSelectorModel.getAnimalEnclosureName = originals.enclosure;
+   AnimalSelectorModel.getAnimalSubtitle = originals.subtitle;
+   LikelihoodPresenter.getLikelihoodPhrase = originals.phrase;
+}
+
+
+test('Test_IsMatch_TestSameSpeciesAndExhibit_ExpectTrue', () => {
+   const item = { species: africanLion, exhibit: africaSavanna };
+   const row = { species: africanLion, exhibit: africaSavanna };
+
+   const isMatch = AnimalTooltipRenderer.isMatch(item, row);
+
+   assert.equal(isMatch, true);
+});
+
+
+test('Test_IsMatch_TestSpeciesOnlyRow_ExpectTrue', () => {
+   const item = { species: africanLion, exhibit: africaSavanna };
+   const row = { species: africanLion };
+
+   const isMatch = AnimalTooltipRenderer.isMatch(item, row);
+
+   assert.equal(isMatch, true);
+});
+
+
+test('Test_IsMatch_TestDifferentSpecies_ExpectFalse', () => {
+   const item = { species: africanLion, exhibit: africaSavanna };
+   const row = { species: 'Amur Tiger', exhibit: africaSavanna };
+
+   const isMatch = AnimalTooltipRenderer.isMatch(item, row);
+
+   assert.equal(isMatch, false);
+});
+
+
+test('Test_IsMatch_TestDifferentExhibit_ExpectFalse', () => {
+   const item = { species: africanLion, exhibit: africaSavanna };
+   const row = { species: africanLion, exhibit: 'Indo-Malaya' };
+
+   const isMatch = AnimalTooltipRenderer.isMatch(item, row);
+
+   assert.equal(isMatch, false);
+});
+
+
+test('Test_CreateCard_TestAnimal_ExpectCardFactoryPayload', () => {
+   const { originals, captured } = _stubCardFactory();
+   const species = africanLion;
+   const exhibit = africaSavanna;
+   const enclosure = 'Lion Enclosure';
+   const likelihoodPhrase = 'High';
+   const likelihood = 85;
+   const index = 3;
+   AnimalSelectorModel.getAnimalSpecies = () => species;
+   AnimalSelectorModel.getAnimalEnclosureName = () => enclosure;
+   AnimalSelectorModel.getAnimalSubtitle = () => exhibit;
+   LikelihoodPresenter.getLikelihoodPhrase = () => likelihoodPhrase;
+
    try {
-      assert.equal(AnimalTooltipRenderer.key, 'animal');
-      assert.deepEqual(
-         AnimalTooltipRenderer.createCard({
-            species: 'African Lion',
-            exhibit: 'Africa Savanna',
-            enclosure_type: 'outdoor',
-            likelihood: 85,
-         }, 3),
-         { card: true }
+      const card = AnimalTooltipRenderer.createCard({
+         species,
+         exhibit,
+         enclosure_type: 'outdoor',
+         likelihood,
+      }, index);
+
+      assert.equal(AnimalTooltipRenderer.key, ItemType.ANIMAL);
+      assert.deepEqual(card, { card: true });
+      assert.equal(captured.payload.index, index);
+      assert.equal(
+         captured.payload.image.src,
+         `images/details/animals/${AssetKeyNormalizer.normalize(exhibit)}/${AssetKeyNormalizer.normalize(species)}.png`
       );
-      assert.equal(captured.index, 3);
-      assert.equal(captured.image.src, 'images/details/animals/africa-savanna/african-lion.png');
-      assert.equal(captured.image.alt, 'African Lion');
-      assert.deepEqual(captured.details, [
-         'Africa Savanna',
-         Strings.tooltips.likelihoodDetail('High', 85),
+      assert.equal(captured.payload.image.alt, species);
+      assert.deepEqual(captured.payload.details, [
+         exhibit,
+         Strings.tooltips.likelihoodDetail(likelihoodPhrase, likelihood),
       ]);
-      assert.equal(captured.title.element.title.tagName, 'strong');
-      assert.equal(captured.title.element.title.dataset.index, 3);
+      assert.equal(captured.payload.title.element.title.tagName, 'strong');
+      assert.equal(captured.payload.title.element.title.dataset.index, index);
    } finally {
-      AssetKeyNormalizer.normalize = originalNormalize;
-      CardFactory.createTooltipCard = originalCreateCard;
-      SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = originalTitle;
-      AnimalSelectorModel.getAnimalSpecies = originalSpecies;
-      AnimalSelectorModel.getAnimalEnclosureName = originalEnclosure;
-      AnimalSelectorModel.getAnimalSubtitle = originalSubtitle;
-      LikelihoodPresenter.getLikelihoodPhrase = originalPhrase;
+      _restoreCardFactory(originals);
    }
 });
 
-test('Test_CreateCard_TestTransportationOnlyAnimal_ExpectStandardDetails', () => {
-   const originalNormalize = AssetKeyNormalizer.normalize;
-   const originalCreateCard = CardFactory.createTooltipCard;
-   const originalTitle = SpeciesLinkTitleBuilder.createAnimalTitleLinkElement;
-   const originalSpecies = AnimalSelectorModel.getAnimalSpecies;
-   const originalEnclosure = AnimalSelectorModel.getAnimalEnclosureName;
-   const originalSubtitle = AnimalSelectorModel.getAnimalSubtitle;
-   const originalPhrase = LikelihoodPresenter.getLikelihoodPhrase;
-   let captured;
 
-   AssetKeyNormalizer.normalize = (value) => String(value).toLowerCase().replace(/\s+/g, '-');
-   SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = (options) => ({ title: options });
-   AnimalSelectorModel.getAnimalSpecies = () => 'Masai Giraffe';
+test('Test_CreateCard_TestTransportationOnlyAnimal_ExpectStandardDetails', () => {
+   const { originals, captured } = _stubCardFactory();
+   const species = 'Masai Giraffe';
+   const exhibit = africaSavanna;
+   const likelihoodPhrase = 'High';
+   const likelihood = 85;
+   AnimalSelectorModel.getAnimalSpecies = () => species;
    AnimalSelectorModel.getAnimalEnclosureName = () => 'Outdoor';
-   AnimalSelectorModel.getAnimalSubtitle = () => 'Africa Savanna';
-   LikelihoodPresenter.getLikelihoodPhrase = () => 'High';
-   CardFactory.createTooltipCard = (payload) => {
-      captured = payload;
-      return { card: true };
-   };
+   AnimalSelectorModel.getAnimalSubtitle = () => exhibit;
+   LikelihoodPresenter.getLikelihoodPhrase = () => likelihoodPhrase;
 
    try {
       AnimalTooltipRenderer.createCard({
-         species: 'Masai Giraffe',
-         exhibit: 'Africa Savanna',
-         likelihood: 85,
+         species,
+         exhibit,
+         likelihood,
          added_by_transportation: true,
          transportation: 'Zoomobile',
       }, 0);
-      assert.deepEqual(captured.details, [
-         'Africa Savanna',
-         Strings.tooltips.likelihoodDetail('High', 85),
+
+      assert.deepEqual(captured.payload.details, [
+         exhibit,
+         Strings.tooltips.likelihoodDetail(likelihoodPhrase, likelihood),
       ]);
    } finally {
-      AssetKeyNormalizer.normalize = originalNormalize;
-      CardFactory.createTooltipCard = originalCreateCard;
-      SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = originalTitle;
-      AnimalSelectorModel.getAnimalSpecies = originalSpecies;
-      AnimalSelectorModel.getAnimalEnclosureName = originalEnclosure;
-      AnimalSelectorModel.getAnimalSubtitle = originalSubtitle;
-      LikelihoodPresenter.getLikelihoodPhrase = originalPhrase;
+      _restoreCardFactory(originals);
    }
 });

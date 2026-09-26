@@ -84,8 +84,10 @@ def _insert_encounter(
 
 def Test_FetchWildEncounterNames_TestEmpty_ExpectEmptyList(
       wild_encounter_provider_conn: sqlite3.Connection ) -> None:
-   assert WildEncounterProvider.fetch_wild_encounter_names(
-      wild_encounter_provider_conn ) == []
+   wild_encounter_names = WildEncounterProvider.fetch_wild_encounter_names(
+      wild_encounter_provider_conn )
+
+   assert wild_encounter_names == []
 
 
 def Test_FetchWildEncounterNames_TestPopulated_ExpectNames(
@@ -124,8 +126,10 @@ def Test_FetchWildEncounterNames_TestPopulated_ExpectNames(
 
 def Test_FetchWildEncounterRecords_TestEmpty_ExpectEmptyList(
       wild_encounter_provider_conn: sqlite3.Connection ) -> None:
-   assert WildEncounterProvider.fetch_wild_encounter_records(
-      wild_encounter_provider_conn ) == []
+   wild_encounter_records = WildEncounterProvider.fetch_wild_encounter_records(
+      wild_encounter_provider_conn )
+
+   assert wild_encounter_records == []
 
 
 def Test_FetchWildEncounterRecords_TestJoinedMeetingSpot_ExpectMappedFields(

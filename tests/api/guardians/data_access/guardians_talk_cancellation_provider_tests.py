@@ -66,10 +66,12 @@ def _insert_cancellation(
 
 def Test_FetchCancellationRecords_TestEmpty_ExpectEmptyList(
       cancellation_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkCancellationProvider.fetch_cancellation_records(
+   cancellation_records = GuardiansTalkCancellationProvider.fetch_cancellation_records(
       cancellation_provider_conn,
       TALK_NAME,
-      LOCATION ) == []
+      LOCATION )
+
+   assert cancellation_records == []
 
 
 def Test_FetchCancellationRecords_TestMatchingTalk_ExpectMappedRecords(
@@ -101,12 +103,14 @@ def Test_FetchCancellationRecords_TestMatchingTalk_ExpectMappedRecords(
 
 def Test_FetchOccurrenceIsCancelled_TestMissing_ExpectFalse(
       cancellation_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(
+   occurrence_is_cancelled = GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(
       cancellation_provider_conn,
       TALK_NAME,
       LOCATION,
       CANCELLATION_DATE,
-      TALK_TIME ) is False
+      TALK_TIME )
+
+   assert occurrence_is_cancelled is False
 
 
 def Test_FetchOccurrenceIsCancelled_TestMatching_ExpectTrue(
@@ -114,12 +118,14 @@ def Test_FetchOccurrenceIsCancelled_TestMatching_ExpectTrue(
    _insert_cancellation( cancellation_provider_conn )
    cancellation_provider_conn.commit()
 
-   assert GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(
+   occurrence_is_cancelled = GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(
       cancellation_provider_conn,
       TALK_NAME,
       LOCATION,
       CANCELLATION_DATE,
-      TALK_TIME ) is True
+      TALK_TIME )
+
+   assert occurrence_is_cancelled is True
 
 
 def Test_FetchOccurrenceIsCancelled_TestDifferentTime_ExpectFalse(
@@ -127,26 +133,32 @@ def Test_FetchOccurrenceIsCancelled_TestDifferentTime_ExpectFalse(
    _insert_cancellation( cancellation_provider_conn )
    cancellation_provider_conn.commit()
 
-   assert GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(
+   occurrence_is_cancelled = GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(
       cancellation_provider_conn,
       TALK_NAME,
       LOCATION,
       CANCELLATION_DATE,
-      SECOND_TALK_TIME ) is False
+      SECOND_TALK_TIME )
+
+   assert occurrence_is_cancelled is False
 
 
 def Test_SaveCancellation_TestNewRow_ExpectTrueAndPersisted(
       cancellation_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkCancellationProvider.save_cancellation(
+   result = GuardiansTalkCancellationProvider.save_cancellation(
       cancellation_provider_conn,
-      _cancellation_input() ) is True
+      _cancellation_input() )
 
-   assert GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(
+   assert result is True
+
+   occurrence_is_cancelled = GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(
       cancellation_provider_conn,
       TALK_NAME,
       LOCATION,
       CANCELLATION_DATE,
-      TALK_TIME ) is True
+      TALK_TIME )
+
+   assert occurrence_is_cancelled is True
 
 
 def Test_SaveCancellation_TestDuplicate_ExpectFalse(
@@ -155,6 +167,8 @@ def Test_SaveCancellation_TestDuplicate_ExpectFalse(
       cancellation_provider_conn,
       _cancellation_input() )
 
-   assert GuardiansTalkCancellationProvider.save_cancellation(
+   result = GuardiansTalkCancellationProvider.save_cancellation(
       cancellation_provider_conn,
-      _cancellation_input() ) is False
+      _cancellation_input() )
+
+   assert result is False

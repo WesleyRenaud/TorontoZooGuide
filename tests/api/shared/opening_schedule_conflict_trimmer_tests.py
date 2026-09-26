@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+from datetime import timedelta
 from typing import cast
 
 from api.shared.opening_schedule_conflict_delete_enclosed_trimmer import OpeningScheduleConflictDeleteEnclosedTrimmer
@@ -9,6 +10,7 @@ from api.shared.opening_schedule_conflict_shorten_end_trimmer import OpeningSche
 from api.shared.opening_schedule_conflict_shorten_start_trimmer import OpeningScheduleConflictShortenStartTrimmer
 from api.shared.opening_schedule_conflict_split_wrap_trimmer import OpeningScheduleConflictSplitWrapTrimmer
 from api.shared.opening_schedule_conflict_trimmer import OpeningScheduleConflictTrimmer
+from api.shared.opening_schedule_date_resolver import OpeningScheduleDateResolver
 from api.types import Types
 
 
@@ -28,18 +30,22 @@ STUB_CONNECTION = cast( Types.Connection, None )
 
 
 def Test_DeleteEnclosedTrimmer_TestFullyEnclosedConflict_ExpectDeleteCalled() -> None:
+   conflict_start_date = date( 2026, 6, 10 )
+   conflict_end_date = date( 2026, 6, 20 )
+   new_start_date = date( 2026, 6, 1 )
+   new_end_date = date( 2026, 6, 30 )
    conflict = SampleConflict(
-      schedule_start_date='2026-06-10',
-      schedule_end_date='2026-06-20' )
+      schedule_start_date=conflict_start_date.isoformat(),
+      schedule_end_date=conflict_end_date.isoformat() )
    deleted: list[ SampleConflict ] = []
 
    trimmed = OpeningScheduleConflictDeleteEnclosedTrimmer.try_trim(
       STUB_CONNECTION,
       conflict,
-      conflict_start_date=date( 2026, 6, 10 ),
-      conflict_end_date=date( 2026, 6, 20 ),
-      new_start_date=date( 2026, 6, 1 ),
-      new_end_date=date( 2026, 6, 30 ),
+      conflict_start_date=conflict_start_date,
+      conflict_end_date=conflict_end_date,
+      new_start_date=new_start_date,
+      new_end_date=new_end_date,
       delete_conflict=lambda _conn, item: deleted.append( item ) )
 
    assert trimmed is True
@@ -47,63 +53,86 @@ def Test_DeleteEnclosedTrimmer_TestFullyEnclosedConflict_ExpectDeleteCalled() ->
 
 
 def Test_DeleteEnclosedTrimmer_TestPartialOverlap_ExpectNoTrim() -> None:
+   conflict_start_date = date( 2026, 6, 1 )
+   conflict_end_date = date( 2026, 6, 30 )
+   new_start_date = date( 2026, 6, 10 )
+   new_end_date = date( 2026, 6, 20 )
+
    trimmed = OpeningScheduleConflictDeleteEnclosedTrimmer.try_trim(
       STUB_CONNECTION,
       SampleConflict(
-         schedule_start_date='2026-06-01',
-         schedule_end_date='2026-06-30' ),
-      conflict_start_date=date( 2026, 6, 1 ),
-      conflict_end_date=date( 2026, 6, 30 ),
-      new_start_date=date( 2026, 6, 10 ),
-      new_end_date=date( 2026, 6, 20 ),
+         schedule_start_date=conflict_start_date.isoformat(),
+         schedule_end_date=conflict_end_date.isoformat() ),
+      conflict_start_date=conflict_start_date,
+      conflict_end_date=conflict_end_date,
+      new_start_date=new_start_date,
+      new_end_date=new_end_date,
       delete_conflict=lambda _conn, _item: None )
 
    assert trimmed is False
 
 
 def Test_ShortenEndTrimmer_TestOverlapAtStart_ExpectEndShortened() -> None:
+   conflict_start_date = date( 2026, 6, 1 )
+   conflict_end_date = date( 2026, 6, 15 )
+   new_start_date = date( 2026, 6, 10 )
+   new_end_date = date( 2026, 6, 30 )
    conflict = SampleConflict(
-      schedule_start_date='2026-06-01',
-      schedule_end_date='2026-06-15' )
+      schedule_start_date=conflict_start_date.isoformat(),
+      schedule_end_date=conflict_end_date.isoformat() )
    updates: list[ tuple[ str | None, str | None ] ] = []
 
    trimmed = OpeningScheduleConflictShortenEndTrimmer.try_trim(
       STUB_CONNECTION,
       conflict,
-      conflict_start_date=date( 2026, 6, 1 ),
-      conflict_end_date=date( 2026, 6, 15 ),
-      new_start_date=date( 2026, 6, 10 ),
-      new_end_date=date( 2026, 6, 30 ),
+      conflict_start_date=conflict_start_date,
+      conflict_end_date=conflict_end_date,
+      new_start_date=new_start_date,
+      new_end_date=new_end_date,
       conflict_start_attr='schedule_start_date',
       update_dates=lambda _conn, _item, start_date, end_date: updates.append(
          ( start_date, end_date ) ) )
 
    assert trimmed is True
-   assert updates == [ ( '2026-06-01', '2026-06-09' ) ]
+   assert updates == [ (
+      conflict.schedule_start_date,
+      OpeningScheduleDateResolver.format_date(
+         new_start_date - timedelta( days=1 ) ),
+   ) ]
 
 
 def Test_ShortenStartTrimmer_TestOverlapAtEnd_ExpectStartMovedForward() -> None:
+   conflict_start_date = date( 2026, 6, 15 )
+   conflict_end_date = date( 2026, 6, 30 )
+   new_start_date = date( 2026, 6, 1 )
+   new_end_date = date( 2026, 6, 20 )
    conflict = SampleConflict(
-      schedule_start_date='2026-06-15',
-      schedule_end_date='2026-06-30' )
+      schedule_start_date=conflict_start_date.isoformat(),
+      schedule_end_date=conflict_end_date.isoformat() )
    updates: list[ tuple[ str | None, str | None ] ] = []
 
    trimmed = OpeningScheduleConflictShortenStartTrimmer.try_trim(
       STUB_CONNECTION,
       conflict,
-      conflict_start_date=date( 2026, 6, 15 ),
-      conflict_end_date=date( 2026, 6, 30 ),
-      new_start_date=date( 2026, 6, 1 ),
-      new_end_date=date( 2026, 6, 20 ),
+      conflict_start_date=conflict_start_date,
+      conflict_end_date=conflict_end_date,
+      new_start_date=new_start_date,
+      new_end_date=new_end_date,
       conflict_end_attr='schedule_end_date',
       update_dates=lambda _conn, _item, start_date, end_date: updates.append(
          ( start_date, end_date ) ) )
 
    assert trimmed is True
-   assert updates == [ ( '2026-06-21', '2026-06-30' ) ]
+   assert updates == [ (
+      OpeningScheduleDateResolver.format_date(
+         new_end_date + timedelta( days=1 ) ),
+      conflict.schedule_end_date,
+   ) ]
 
 
 def Test_SplitWrapTrimmer_TestConflictWrapsNewSchedule_ExpectSplitAroundNewRange() -> None:
+   new_start_date = date( 2026, 6, 10 )
+   new_end_date = date( 2026, 6, 20 )
    conflict = SampleConflict(
       schedule_start_date='2026-06-01',
       schedule_end_date='2026-06-30' )
@@ -113,8 +142,8 @@ def Test_SplitWrapTrimmer_TestConflictWrapsNewSchedule_ExpectSplitAroundNewRange
    OpeningScheduleConflictSplitWrapTrimmer.trim(
       STUB_CONNECTION,
       conflict,
-      new_start_date=date( 2026, 6, 10 ),
-      new_end_date=date( 2026, 6, 20 ),
+      new_start_date=new_start_date,
+      new_end_date=new_end_date,
       conflict_start_attr='schedule_start_date',
       conflict_end_attr='schedule_end_date',
       update_dates=lambda _conn, _item, start_date, end_date: updates.append(
@@ -122,8 +151,16 @@ def Test_SplitWrapTrimmer_TestConflictWrapsNewSchedule_ExpectSplitAroundNewRange
       insert_copy=lambda _conn, _item, start_date, end_date: copies.append(
          ( start_date, end_date ) ) )
 
-   assert updates == [ ( '2026-06-01', '2026-06-09' ) ]
-   assert copies == [ ( '2026-06-21', '2026-06-30' ) ]
+   assert updates == [ (
+      conflict.schedule_start_date,
+      OpeningScheduleDateResolver.format_date(
+         new_start_date - timedelta( days=1 ) ),
+   ) ]
+   assert copies == [ (
+      OpeningScheduleDateResolver.format_date(
+         new_end_date + timedelta( days=1 ) ),
+      conflict.schedule_end_date,
+   ) ]
 
 
 def Test_ConflictTrimmer_TestEnclosedConflict_ExpectDeletePath() -> None:
@@ -147,11 +184,12 @@ def Test_ConflictTrimmer_TestEnclosedConflict_ExpectDeletePath() -> None:
 
 
 def Test_ConflictTrimmer_TestOverlapAtStart_ExpectShortenEndPath() -> None:
+   new_start_date = date( 2026, 6, 10 )
    conflict = SampleConflict(
       schedule_start_date='2026-06-01',
       schedule_end_date='2026-06-15' )
    schedule = SampleSchedule(
-      start_date='2026-06-10',
+      start_date=new_start_date.isoformat(),
       end_date='2026-06-30' )
    updates: list[ tuple[ str | None, str | None ] ] = []
 
@@ -164,16 +202,21 @@ def Test_ConflictTrimmer_TestOverlapAtStart_ExpectShortenEndPath() -> None:
          ( start_date, end_date ) ),
       insert_copy=lambda *_args: None )
 
-   assert updates == [ ( '2026-06-01', '2026-06-09' ) ]
+   assert updates == [ (
+      conflict.schedule_start_date,
+      OpeningScheduleDateResolver.format_date(
+         new_start_date - timedelta( days=1 ) ),
+   ) ]
 
 
 def Test_ConflictTrimmer_TestOverlapAtEnd_ExpectShortenStartPath() -> None:
+   new_end_date = date( 2026, 6, 20 )
    conflict = SampleConflict(
       schedule_start_date='2026-06-15',
       schedule_end_date='2026-06-30' )
    schedule = SampleSchedule(
       start_date='2026-06-01',
-      end_date='2026-06-20' )
+      end_date=new_end_date.isoformat() )
    updates: list[ tuple[ str | None, str | None ] ] = []
 
    OpeningScheduleConflictTrimmer.trim(
@@ -185,16 +228,22 @@ def Test_ConflictTrimmer_TestOverlapAtEnd_ExpectShortenStartPath() -> None:
          ( start_date, end_date ) ),
       insert_copy=lambda *_args: None )
 
-   assert updates == [ ( '2026-06-21', '2026-06-30' ) ]
+   assert updates == [ (
+      OpeningScheduleDateResolver.format_date(
+         new_end_date + timedelta( days=1 ) ),
+      conflict.schedule_end_date,
+   ) ]
 
 
 def Test_ConflictTrimmer_TestConflictWrapsSchedule_ExpectSplitWrapPath() -> None:
+   new_start_date = date( 2026, 6, 10 )
+   new_end_date = date( 2026, 6, 20 )
    conflict = SampleConflict(
       schedule_start_date='2026-06-01',
       schedule_end_date='2026-06-30' )
    schedule = SampleSchedule(
-      start_date='2026-06-10',
-      end_date='2026-06-20' )
+      start_date=new_start_date.isoformat(),
+      end_date=new_end_date.isoformat() )
    updates: list[ tuple[ str | None, str | None ] ] = []
    copies: list[ tuple[ str | None, str | None ] ] = []
 
@@ -208,11 +257,20 @@ def Test_ConflictTrimmer_TestConflictWrapsSchedule_ExpectSplitWrapPath() -> None
       insert_copy=lambda _conn, _item, start_date, end_date: copies.append(
          ( start_date, end_date ) ) )
 
-   assert updates == [ ( '2026-06-01', '2026-06-09' ) ]
-   assert copies == [ ( '2026-06-21', '2026-06-30' ) ]
+   assert updates == [ (
+      conflict.schedule_start_date,
+      OpeningScheduleDateResolver.format_date(
+         new_start_date - timedelta( days=1 ) ),
+   ) ]
+   assert copies == [ (
+      OpeningScheduleDateResolver.format_date(
+         new_end_date + timedelta( days=1 ) ),
+      conflict.schedule_end_date,
+   ) ]
 
 
 def Test_SplitWrapTrimmer_TestOpenEndedNewSchedule_ExpectNoTrailingCopy() -> None:
+   new_start_date = date( 2026, 6, 10 )
    conflict = SampleConflict(
       schedule_start_date='2026-06-01',
       schedule_end_date='2026-06-30' )
@@ -222,7 +280,7 @@ def Test_SplitWrapTrimmer_TestOpenEndedNewSchedule_ExpectNoTrailingCopy() -> Non
    OpeningScheduleConflictSplitWrapTrimmer.trim(
       STUB_CONNECTION,
       conflict,
-      new_start_date=date( 2026, 6, 10 ),
+      new_start_date=new_start_date,
       new_end_date=date.max,
       conflict_start_attr='schedule_start_date',
       conflict_end_attr='schedule_end_date',
@@ -231,5 +289,9 @@ def Test_SplitWrapTrimmer_TestOpenEndedNewSchedule_ExpectNoTrailingCopy() -> Non
       insert_copy=lambda _conn, _item, start_date, end_date: copies.append(
          ( start_date, end_date ) ) )
 
-   assert updates == [ ( '2026-06-01', '2026-06-09' ) ]
+   assert updates == [ (
+      conflict.schedule_start_date,
+      OpeningScheduleDateResolver.format_date(
+         new_start_date - timedelta( days=1 ) ),
+   ) ]
    assert copies == []

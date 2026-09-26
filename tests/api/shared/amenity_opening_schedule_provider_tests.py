@@ -6,14 +6,16 @@ from api.shared.enums.amenity_name_field import AmenityNameField
 
 
 def Test_AmenityOpeningScheduleProvider_TestRestaurantConfig_ExpectOwnerColumnAndTables() -> None:
+   name_field = AmenityNameField.RESTAURANT
+   opening_table = 'RestaurantOpeningSchedule'
+   override_table = 'RestaurantScheduleOverride'
    provider = AmenityOpeningScheduleProvider(
-      name_field=AmenityNameField.RESTAURANT,
-      opening_table='RestaurantOpeningSchedule',
-      override_table='RestaurantScheduleOverride',
-      map_records=RestaurantScheduleMapper.map_records,
-   )
+      name_field=name_field,
+      opening_table=opening_table,
+      override_table=override_table,
+      map_records=RestaurantScheduleMapper.map_records )
 
-   assert provider.owner_column == 'RESTAURANT'
-   assert provider.opening_table == 'RestaurantOpeningSchedule'
-   assert provider.override_table == 'RestaurantScheduleOverride'
-   assert provider.name_field is AmenityNameField.RESTAURANT
+   assert provider.owner_column == name_field.value.upper()
+   assert provider.opening_table == opening_table
+   assert provider.override_table == override_table
+   assert provider.name_field is name_field

@@ -74,9 +74,11 @@ def _insert_status(
 
 def Test_FetchOffDisplaySpeciesNames_TestEmpty_ExpectEmptyList(
       off_display_species_conn: sqlite3.Connection ) -> None:
-   assert AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
+   off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert off_display_species_names == []
 
 
 def Test_FetchOffDisplaySpeciesNames_TestCurrentAndFuture_ExpectIncluded(
@@ -100,9 +102,11 @@ def Test_FetchOffDisplaySpeciesNames_TestCurrentAndFuture_ExpectIncluded(
       start_date='2026-09-01',
       end_date=None )
 
-   assert AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
+   off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY ) == [ LION, TIGER, GIRAFFE ]
+      TODAY )
+
+   assert off_display_species_names == [ LION, TIGER, GIRAFFE ]
 
 
 def Test_FetchOffDisplaySpeciesNames_TestExpiredAndOnDisplay_ExpectExcluded(
@@ -121,9 +125,11 @@ def Test_FetchOffDisplaySpeciesNames_TestExpiredAndOnDisplay_ExpectExcluded(
       start_date='2026-09-01',
       end_date='2026-09-30' )
 
-   assert AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
+   off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert off_display_species_names == []
 
 
 def Test_FetchOffDisplaySpeciesNames_TestEndingToday_ExpectIncluded(
@@ -135,9 +141,11 @@ def Test_FetchOffDisplaySpeciesNames_TestEndingToday_ExpectIncluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
+   off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY ) == [ LION ]
+      TODAY )
+
+   assert off_display_species_names == [ LION ]
 
 
 def Test_FetchOffDisplaySpeciesNames_TestDuplicateScopes_ExpectDistinctSpecies(
@@ -157,9 +165,11 @@ def Test_FetchOffDisplaySpeciesNames_TestDuplicateScopes_ExpectDistinctSpecies(
       start_date='2026-10-01',
       end_date='2026-10-31' )
 
-   assert AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
+   off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY ) == [ LION ]
+      TODAY )
+
+   assert off_display_species_names == [ LION ]
 
 
 def Test_FetchOffDisplaySpeciesNamesInExhibit_TestMatchingExhibit_ExpectMatchingExhibit(
@@ -177,7 +187,9 @@ def Test_FetchOffDisplaySpeciesNamesInExhibit_TestMatchingExhibit_ExpectMatching
       start_date='2026-09-01',
       end_date=None )
 
-   assert AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names_in_exhibit(
+   off_display_species_names_in_exhibit = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names_in_exhibit(
       off_display_species_conn,
       TODAY,
-      SAVANNA ) == [ LION ]
+      SAVANNA )
+
+   assert off_display_species_names_in_exhibit == [ LION ]

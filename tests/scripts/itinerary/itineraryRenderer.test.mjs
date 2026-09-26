@@ -7,9 +7,13 @@ import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_GetItineraryPanelBody_TestMissingPanel_ExpectNull', () => {
-   assert.equal(ItineraryRenderer.getItineraryPanelBody(), null);
+   const body = ItineraryRenderer.getItineraryPanelBody();
+
+   assert.equal(body, null);
 });
+
 
 test('Test_GetItineraryPanelBody_TestPresentPanel_ExpectBody', () => {
    const body = document.createElement('div');
@@ -22,24 +26,29 @@ test('Test_GetItineraryPanelBody_TestPresentPanel_ExpectBody', () => {
    };
 
    try {
-      assert.equal(ItineraryRenderer.getItineraryPanelBody(), body);
+      const panelBody = ItineraryRenderer.getItineraryPanelBody();
+
+      assert.equal(panelBody, body);
    } finally {
       document.querySelector = originalQuery;
    }
 });
 
+
 test('Test_RenderItineraryPanel_TestBodyEl_ExpectDelegatesToRenderView', () => {
    const originalRender = RenderView.renderItineraryPanelInto;
    const calls = [];
-
+   const rendered = 'rendered';
    RenderView.renderItineraryPanelInto = (bodyEl) => {
       calls.push(bodyEl);
-      return 'rendered';
+      return rendered;
    };
+   const bodyEl = document.createElement('div');
 
    try {
-      const bodyEl = document.createElement('div');
-      assert.equal(ItineraryRenderer.renderItineraryPanel(bodyEl), 'rendered');
+      const result = ItineraryRenderer.renderItineraryPanel(bodyEl);
+
+      assert.equal(result, rendered);
       assert.deepEqual(calls, [bodyEl]);
    } finally {
       RenderView.renderItineraryPanelInto = originalRender;

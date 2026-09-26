@@ -5,43 +5,51 @@ import { RemovedItemsPopupKeepButtonStore } from '../../../../../scripts/itinera
 import { Strings } from '../../../../../scripts/strings.js';
 import { createDomNode } from '../../../helpers/domNodeMock.mjs';
 
+
 test('Test_GetKeepOverrideButtonState_TestUnselected_ExpectKeepLabels', () => {
-   assert.deepEqual(RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(false), {
-      selected: false,
-      textContent: Strings.itinerary.removedItems.keepInItinerary,
-      title: '',
-      ariaPressed: 'false',
-   });
+   const isSelected = false;
+
+   const state = RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(isSelected);
+
+   assert.equal(state.selected, isSelected);
+   assert.equal(state.textContent, Strings.itinerary.removedItems.keepInItinerary);
+   assert.equal(state.title, '');
+   assert.equal(state.ariaPressed, String(isSelected));
 });
+
 
 test('Test_GetKeepOverrideButtonState_TestSelected_ExpectRemoveLabels', () => {
-   assert.deepEqual(RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(true), {
-      selected: true,
-      textContent: Strings.itinerary.dayPlanner.remove,
-      title: Strings.itinerary.removedItems.removeFromItineraryHint,
-      ariaPressed: 'true',
-   });
+   const isSelected = true;
+
+   const state = RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(isSelected);
+
+   assert.equal(state.selected, isSelected);
+   assert.equal(state.textContent, Strings.itinerary.dayPlanner.remove);
+   assert.equal(state.title, Strings.itinerary.removedItems.removeFromItineraryHint);
+   assert.equal(state.ariaPressed, String(isSelected));
 });
 
-test('Test_ApplyKeepOverrideButtonState_TestToggle_ExpectSyncedPresentation', () => {
+
+test('Test_ApplyKeepOverrideButtonState_TestUnselected_ExpectKeepPresentation', () => {
    const button = createDomNode('button', 'itin-removed-keep-btn');
+   const state = RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(false);
 
-   RemovedItemsPopupKeepButtonStore.applyKeepOverrideButtonState(button, RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(false));
+   RemovedItemsPopupKeepButtonStore.applyKeepOverrideButtonState(button, state);
 
-   assert.equal(
-      button.textContent,
-      Strings.itinerary.removedItems.keepInItinerary
-   );
-   assert.equal(button.getAttribute('aria-pressed'), 'false');
-   assert.equal(button.classList.contains('is-selected'), false);
+   assert.equal(button.textContent, state.textContent);
+   assert.equal(button.getAttribute('aria-pressed'), state.ariaPressed);
+   assert.equal(button.classList.contains('is-selected'), state.selected);
+});
 
-   RemovedItemsPopupKeepButtonStore.applyKeepOverrideButtonState(button, RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(true));
 
-   assert.equal(button.textContent, Strings.itinerary.dayPlanner.remove);
-   assert.equal(button.getAttribute('aria-pressed'), 'true');
-   assert.equal(button.classList.contains('is-selected'), true);
-   assert.equal(
-      button.title,
-      Strings.itinerary.removedItems.removeFromItineraryHint
-   );
+test('Test_ApplyKeepOverrideButtonState_TestSelected_ExpectRemovePresentation', () => {
+   const button = createDomNode('button', 'itin-removed-keep-btn');
+   const state = RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState(true);
+
+   RemovedItemsPopupKeepButtonStore.applyKeepOverrideButtonState(button, state);
+
+   assert.equal(button.textContent, state.textContent);
+   assert.equal(button.getAttribute('aria-pressed'), state.ariaPressed);
+   assert.equal(button.classList.contains('is-selected'), state.selected);
+   assert.equal(button.title, state.title);
 });

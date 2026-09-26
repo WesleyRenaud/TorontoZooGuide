@@ -1,3 +1,4 @@
+import { ScheduleItemKeySeparator } from '../../../scripts/itinerary/scheduleItemKeySeparator.js';
 import { ScheduleItemKind } from '../../../scripts/shared/enums/scheduleItemKind.js';
 
 export function makeScheduledItem(
@@ -20,7 +21,7 @@ export function makeScheduledItem(
          viewing_walk_node_id: viewingWalkNodeId,
       },
       scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
-      scheduleItemKey: `${label}||Exhibit`,
+      scheduleItemKey: [label, 'Exhibit'].join(ScheduleItemKeySeparator.VALUE),
       viewingWalkNodeId,
    };
 }

@@ -42,7 +42,9 @@ def Test_Build_TestNullExhibitName_ExpectRegionExcludedWhenOnlyNullExhibits() ->
       RegionExhibitRecord( region_name=REGION_NAME, exhibit_name=None ),
    ]
 
-   assert RegionOptionsBuilder.build( rows ) == []
+   result = RegionOptionsBuilder.build( rows )
+
+   assert result == []
 
 
 def Test_Build_TestNullExhibitName_ExpectListedWhenRegionHasNamedExhibits() -> None:

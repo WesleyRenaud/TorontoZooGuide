@@ -15,12 +15,13 @@ installDomTestHooks({
    },
 });
 
-test('Test_Mounts_TestMountsTheSchedulePopupWithFormFields_ExpectOk', () => {
+
+test('Test_ShowScheduleItemModule_TestFormFields_ExpectMounted', () => {
    const popup = ShowScheduleItemFragment.showScheduleItemModule({
       eventTypes: ['lunch', 'break'],
    });
-
    const root = document.querySelector('.schedule-item-module');
+
    assert.ok(popup);
    assert.ok(root);
    assert.equal(root?.querySelector('.itin-top-title')?.textContent, Strings.itinerary.scheduleItem.title);
@@ -34,95 +35,113 @@ test('Test_Mounts_TestMountsTheSchedulePopupWithFormFields_ExpectOk', () => {
    assert.ok(root?.querySelector('.schedule-item-duration-input'));
    assert.ok(root?.querySelector('.schedule-item-results'));
    assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), null);
-   assert.equal(root?.querySelector('.itin-finish')?.textContent, Strings.itinerary.scheduleItem.scheduleButton);
+   assert.equal(
+      root?.querySelector('.itin-finish')?.textContent,
+      Strings.itinerary.scheduleItem.scheduleButton
+   );
    assert.equal(
       root?.querySelector('.itin-prev')?.textContent,
       Strings.itinerary.actions.cancel
    );
 });
 
-test('Test_Preselects_TestPreselectsUnscheduledZoomobileAsAnAttraction_ExpectOk', () => {
+
+test('Test_ShowScheduleItemModule_TestUnscheduledZoomobileAttraction_ExpectPreselected', () => {
+   const rideName = 'Zoomobile';
+   const durationMinutes = 75;
+
    ShowScheduleItemFragment.showScheduleItemModule({
       eventTypes: ['lunch'],
       itinerary: {
          transportations: [{
-            name: 'Zoomobile',
+            name: rideName,
             added_as_attraction: true,
          }],
       },
       preselectedRow: ScheduleItemSearcher.tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
-         name: 'Zoomobile',
+         name: rideName,
          added_as_attraction: true,
-         route_duration_minutes: 75,
+         route_duration_minutes: durationMinutes,
       }),
    });
-
    const root = document.querySelector('.schedule-item-module');
-   const resultText = root?.querySelector('.schedule-item-results')?.textContent ?? '';
+   const resultText = root.querySelector('.schedule-item-results').textContent;
 
    assert.equal(
       root?.querySelector('.schedule-item-select')?.value,
       ScheduleItemKind.ATTRACTION.itemType
    );
-   assert.equal(root?.querySelector('.schedule-item-search-input')?.value, 'Zoomobile');
+   assert.equal(root?.querySelector('.schedule-item-search-input')?.value, rideName);
    assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
    assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
    assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
    assert.equal(root?.querySelector('.schedule-item-duration-input')?.disabled, true);
-   assert.equal(root?.querySelector('.schedule-item-duration-input')?.value, '75');
+   assert.equal(
+      root?.querySelector('.schedule-item-duration-input')?.value,
+      String(durationMinutes)
+   );
    assert.equal(root?.querySelector('.schedule-item-time-input')?.disabled, false);
    assert.equal(root?.querySelector('.itin-card')?.getAttribute('tabindex'), '-1');
-   assert.match(resultText, /Zoomobile/);
+   assert.match(resultText, new RegExp(rideName));
    assert.match(resultText, new RegExp(Strings.search.extraCharge));
    assert.doesNotMatch(resultText, /round trip/);
    assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
 });
 
-test('Test_Preselects_TestPreselectsTransportationWithStationSubtext_ExpectOk', () => {
+
+test('Test_ShowScheduleItemModule_TestTransportationStations_ExpectPreselected', () => {
+   const rideName = 'Zoomobile';
+   const durationMinutes = 75;
+   const mainStation = 'Main Zoomobile Station';
+   const domainStation = 'Canadian Domain Zoomobile Station';
+
    ShowScheduleItemFragment.showScheduleItemModule({
       eventTypes: ['lunch'],
       itinerary: {
          transportations: [{
-            name: 'Zoomobile',
+            name: rideName,
             added_as_attraction: false,
          }],
       },
       preselectedRow: ScheduleItemSearcher.tagScheduleItemRow(ScheduleItemKind.TRANSPORTATION.itemType, {
-         name: 'Zoomobile',
+         name: rideName,
          added_as_attraction: false,
-         route_duration_minutes: 75,
+         route_duration_minutes: durationMinutes,
          legs: [
             {
-               from_station: 'Main Zoomobile Station',
-               to_station: 'Canadian Domain Zoomobile Station',
+               from_station: mainStation,
+               to_station: domainStation,
             },
             {
-               from_station: 'Canadian Domain Zoomobile Station',
-               to_station: 'Main Zoomobile Station',
+               from_station: domainStation,
+               to_station: mainStation,
             },
          ],
       }),
    });
-
    const root = document.querySelector('.schedule-item-module');
-   const resultText = root?.querySelector('.schedule-item-results')?.textContent ?? '';
+   const resultText = root.querySelector('.schedule-item-results').textContent;
 
    assert.equal(
       root?.querySelector('.schedule-item-select')?.value,
       ScheduleItemKind.TRANSPORTATION.itemType
    );
-   assert.equal(root?.querySelector('.schedule-item-search-input')?.value, 'Zoomobile');
+   assert.equal(root?.querySelector('.schedule-item-search-input')?.value, rideName);
    assert.equal(root?.querySelector('.schedule-item-select')?.disabled, true);
    assert.equal(root?.querySelector('.schedule-item-search-input')?.disabled, true);
    assert.equal(root?.querySelector('.schedule-item-only-itinerary-checkbox')?.disabled, true);
    assert.equal(root?.querySelector('.schedule-item-duration-input')?.disabled, true);
-   assert.equal(root?.querySelector('.schedule-item-duration-input')?.value, '75');
-   assert.match(resultText, /Zoomobile/);
-   assert.match(resultText, /Main Zoomobile Station \(round trip\)/);
+   assert.equal(
+      root?.querySelector('.schedule-item-duration-input')?.value,
+      String(durationMinutes)
+   );
+   assert.match(resultText, new RegExp(rideName));
+   assert.match(resultText, new RegExp(`${mainStation} \\(round trip\\)`));
    assert.equal(root?.querySelector('.itin-finish')?.disabled, false);
 });
 
-test('Test_ShowScheduleItemModule_TestCancelCloseAndDebouncedSearch_ExpectHandlers', () => {
+
+test('Test_ShowScheduleItemModule_TestCancel_ExpectClosed', () => {
    const originalDebounce = ShowScheduleItemModuleHelper.debounce;
    let capturedSearchFn = null;
 
@@ -136,26 +155,38 @@ test('Test_ShowScheduleItemModule_TestCancelCloseAndDebouncedSearch_ExpectHandle
    try {
       ShowScheduleItemFragment.showScheduleItemModule({ eventTypes: ['lunch'] });
       const root = document.querySelector('.schedule-item-module');
+      capturedSearchFn();
+      root.querySelector('.itin-prev')?.listeners?.click?.();
+
       assert.ok(root);
       assert.equal(typeof capturedSearchFn, 'function');
-      capturedSearchFn();
-
-      root.querySelector('.itin-prev')?.listeners?.click?.();
       assert.equal(document.querySelector('.schedule-item-module'), null);
+   } finally {
+      ShowScheduleItemModuleHelper.debounce = originalDebounce;
+   }
+});
 
-      capturedSearchFn = null;
-      ShowScheduleItemModuleHelper.debounce = (fn) => {
-         capturedSearchFn = fn;
-         return () => fn();
-      };
+
+test('Test_ShowScheduleItemModule_TestClose_ExpectClosed', () => {
+   const originalDebounce = ShowScheduleItemModuleHelper.debounce;
+   let capturedSearchFn = null;
+
+   ShowScheduleItemModuleHelper.debounce = (fn) => {
+      capturedSearchFn = fn;
+      return () => fn();
+   };
+
+   try {
       ShowScheduleItemFragment.showScheduleItemModule({ eventTypes: ['lunch'] });
-      const root2 = document.querySelector('.schedule-item-module');
-      const closeButton = root2?.querySelector('.itin-close')
-         || [...(root2?.querySelectorAll('button') || [])].find((button) => (
+      const root = document.querySelector('.schedule-item-module');
+      const closeButton = root?.querySelector('.itin-close')
+         || [...(root?.querySelectorAll('button') || [])].find((button) => (
             String(button.className || '').includes('close')
             || button.getAttribute?.('aria-label')?.toLowerCase?.().includes('close')
          ));
       closeButton?.listeners?.click?.();
+
+      assert.equal(typeof capturedSearchFn, 'function');
       assert.equal(document.querySelector('.schedule-item-module'), null);
    } finally {
       ShowScheduleItemModuleHelper.debounce = originalDebounce;

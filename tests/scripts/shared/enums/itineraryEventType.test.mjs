@@ -9,13 +9,16 @@ import itineraryEventTypeValues from '../../../../shared/enums/itineraryEventTyp
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryEventType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(itineraryEventTypeValues)) {
-      assert.equal(ItineraryEventType[key], value);
-   }
 
+test('Test_ItineraryEventType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/itineraryEventType.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(itineraryEventTypeValues).map((key) => [key, ItineraryEventType[key]])
+   );
+
+   assert.deepEqual(mapped, itineraryEventTypeValues);
    assert.deepEqual(itineraryEventTypeValues, diskValues);
 });

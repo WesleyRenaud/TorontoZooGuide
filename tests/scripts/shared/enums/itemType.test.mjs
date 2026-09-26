@@ -9,14 +9,18 @@ import itemTypeValues from '../../../../shared/enums/itemType.json' with { type:
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItemType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(itemTypeValues)) {
-      assert.equal(ItemType[key], value);
-   }
 
+test('Test_ItemType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/itemType.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(itemTypeValues).map((key) => [key, ItemType[key]])
+   );
+   const enumKeys = Object.keys(ItemType).filter((key) => key === key.toUpperCase());
+
+   assert.deepEqual(mapped, itemTypeValues);
    assert.deepEqual(itemTypeValues, diskValues);
-   assert.deepEqual(Object.keys(itemTypeValues).sort(), Object.keys(ItemType).filter((key) => key === key.toUpperCase()).sort());
+   assert.deepEqual(Object.keys(itemTypeValues).sort(), enumKeys.sort());
 });

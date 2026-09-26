@@ -8,28 +8,38 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateDayCheckbox_TestChecked_ExpectOption', () => {
+   const rowIndex = 1;
+   const dayKey = 'monday';
+   const label = 'Monday';
+   const checked = true;
+
    const { inputEl, optionLabelEl } = RecurringScheduleRowsBuilder.createDayCheckbox({
-      rowIndex: 1,
-      dayKey: 'monday',
-      label: 'Monday',
-      checked: true,
+      rowIndex,
+      dayKey,
+      label,
+      checked,
    });
 
-   assert.equal(inputEl.id, 'wildEncounterScheduleRow1monday');
-   assert.equal(inputEl.checked, true);
-   assert.match(optionLabelEl.textContent, /Monday/);
+   assert.equal(inputEl.id, `wildEncounterScheduleRow${rowIndex}${dayKey}`);
+   assert.equal(inputEl.checked, checked);
+   assert.match(optionLabelEl.textContent, new RegExp(label));
 });
+
 
 test('Test_CreateScheduleRow_TestAllowRemove_ExpectRowParts', () => {
    const original = ConsoleDateFactory.initTimePicker;
    const inits = [];
-   ConsoleDateFactory.initTimePicker = (el) => { inits.push(el); };
+   const time = '11:00 AM';
+   ConsoleDateFactory.initTimePicker = (el) => {
+      inits.push(el);
+   };
 
    try {
       const row = RecurringScheduleRowsBuilder.createScheduleRow({
          rowIndex: 0,
-         initialRow: { time: '11:00 AM', monday: true },
+         initialRow: { time, monday: true },
          allowRemove: true,
       });
 
@@ -38,12 +48,23 @@ test('Test_CreateScheduleRow_TestAllowRemove_ExpectRowParts', () => {
       assert.equal(row.dayInputEls.monday.checked, true);
       assert.ok(row.removeButtonEl);
       assert.equal(inits.length, 1);
+   } finally {
+      ConsoleDateFactory.initTimePicker = original;
+   }
+});
 
-      const noRemove = RecurringScheduleRowsBuilder.createScheduleRow({
+
+test('Test_CreateScheduleRow_TestDisallowRemove_ExpectNoRemoveButton', () => {
+   const original = ConsoleDateFactory.initTimePicker;
+   ConsoleDateFactory.initTimePicker = () => {};
+
+   try {
+      const row = RecurringScheduleRowsBuilder.createScheduleRow({
          rowIndex: 2,
          allowRemove: false,
       });
-      assert.equal(noRemove.removeButtonEl, null);
+
+      assert.equal(row.removeButtonEl, null);
    } finally {
       ConsoleDateFactory.initTimePicker = original;
    }

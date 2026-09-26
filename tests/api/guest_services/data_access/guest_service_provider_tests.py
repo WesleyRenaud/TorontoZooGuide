@@ -32,8 +32,10 @@ def guest_service_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchGuestServices_TestEmpty_ExpectEmptyList(
       guest_service_provider_conn: sqlite3.Connection ) -> None:
-   assert GuestServiceProvider.fetch_guest_services(
-      guest_service_provider_conn ) == []
+   guest_services = GuestServiceProvider.fetch_guest_services(
+      guest_service_provider_conn )
+
+   assert guest_services == []
 
 
 def Test_FetchGuestServices_TestPopulated_ExpectMappedFields(

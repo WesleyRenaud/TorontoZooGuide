@@ -2,27 +2,47 @@ from __future__ import annotations
 
 from api.itinerary.data_access.itinerary_guardians_talk_mapper import ItineraryGuardiansTalkMapper
 from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from api.shared.date_values import DateValues
 from api.shared.enums.position import Position
-
-
-TALK_ROW = {
-   'TALK_NAME': 'African Lion',
-   'START_TIME': '2:00 PM',
-   'END_TIME': '2:30 PM',
-   'IS_DELETED': 0,
-}
+from api.shared.value_conversion import ValueConversion
 
 
 def Test_MapRecord_TestRow_ExpectGuardiansTalkRecord() -> None:
-   assert ItineraryGuardiansTalkMapper.map_record( TALK_ROW ) == ItineraryGuardiansTalkRecord(
-      talk_name='African Lion',
-      start_time='2:00 PM',
-      end_time='2:30 PM',
-      is_deleted=False,
-   )
+   talk_name = 'African Lion'
+   start_time = '2:00 PM'
+   duration_minutes = 30
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
+   is_deleted = 0
+   row = {
+      'TALK_NAME': talk_name,
+      'START_TIME': start_time,
+      'END_TIME': end_time,
+      'IS_DELETED': is_deleted,
+   }
+
+   record = ItineraryGuardiansTalkMapper.map_record( row )
+
+   assert record == ItineraryGuardiansTalkRecord(
+      talk_name=talk_name,
+      start_time=start_time,
+      end_time=end_time,
+      is_deleted=ValueConversion.as_boolean( is_deleted ) )
 
 
 def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
-   records = ItineraryGuardiansTalkMapper.map_records( [ TALK_ROW ] )
+   talk_name = 'African Lion'
+   start_time = '2:00 PM'
+   duration_minutes = 30
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
+   is_deleted = 0
+   row = {
+      'TALK_NAME': talk_name,
+      'START_TIME': start_time,
+      'END_TIME': end_time,
+      'IS_DELETED': is_deleted,
+   }
+   rows = [ row ]
 
-   assert records[ Position.FIRST ].talk_name == 'African Lion'
+   records = ItineraryGuardiansTalkMapper.map_records( rows )
+
+   assert records[ Position.FIRST ].talk_name == talk_name

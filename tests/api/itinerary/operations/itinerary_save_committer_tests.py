@@ -34,15 +34,13 @@ RHINO_ENCOUNTER = 'Guardians of White Rhinos'
 PRE_OPEN_ENCOUNTER = 'African Rainforest'
 PRE_OPEN_ENCOUNTER_TIME = '8:45 AM'
 
-
-def _controller_kwargs() -> dict[ str, object ]:
-   return {
-      'animal_coordinator': AnimalCoordinator,
-      'attraction_coordinator': AttractionCoordinator,
-      'guardians_coordinator': GuardiansCoordinator,
-      'wild_encounter_coordinator': WildEncounterCoordinator,
-      'visit_date_temp': None,
-   }
+CONTROLLER_KWARGS = {
+   'animal_coordinator': AnimalCoordinator,
+   'attraction_coordinator': AttractionCoordinator,
+   'guardians_coordinator': GuardiansCoordinator,
+   'wild_encounter_coordinator': WildEncounterCoordinator,
+   'visit_date_temp': None,
+}
 
 
 def _save_context(
@@ -50,22 +48,26 @@ def _save_context(
       *,
       validated_itinerary: ValidatedItinerary,
       unschedule_requirements: ItineraryUnscheduleRequirements | None = None,
-      saved_itinerary: SavedItinerary | None = None ) -> ItinerarySaveContext:
+      saved_itinerary: SavedItinerary | None = None,
+      old_visit_date: str | None = None,
+      adjustments: list[ ItineraryAdjustment ] | None = None,
+      save_input: ItinerarySaveInput | None = None ) -> ItinerarySaveContext:
    return ItinerarySaveContext(
       conn=conn,
-      save_input=ItinerarySaveInput(
+      save_input=save_input or ItinerarySaveInput(
          date=date( 2026, 6, 15 ),
          arrival_time='09:00',
          departure_time='17:00',
       ),
       validated_itinerary=validated_itinerary,
       current_itinerary=ItineraryBuilder.empty(),
-      old_visit_date=None,
+      old_visit_date=old_visit_date,
       saved_itinerary=saved_itinerary,
       unschedule_requirements=(
          unschedule_requirements
          or ItineraryUnscheduleRequirements( talks=[], encounters=[] ) ),
-      itinerary_controller_kwargs=_controller_kwargs(),
+      itinerary_controller_kwargs=CONTROLLER_KWARGS,
+      adjustments=adjustments or [],
    )
 
 
@@ -96,39 +98,8 @@ def _talk_and_encounter_validated() -> ValidatedItinerary:
    )
 
 
-@pytest.fixture
-def committer_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   yield conn
-   conn.close()
-
-
-def Test_Commit_TestOverlappingWithoutOverride_ExpectConflictResult(
-      committer_conn: sqlite3.Connection,
-      monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
-      lambda conn: pytest.fail( 'save should not run on conflict' ) )
-
-   result = ItinerarySaveCommitter.commit(
-      _save_context(
-         committer_conn,
-         validated_itinerary=_talk_and_encounter_validated() ),
-      overriding_conflicting_guardians_talks=False )
-
-   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert len( result.reasons ) == 1
-   assert { item.name for item in result.reasons[ Position.FIRST ].items } == {
-      TURTLE_TALK,
-      RHINO_ENCOUNTER,
-   }
-
-
-def Test_Commit_TestOverrideTrimsTalk_ExpectSavedWithTrimmedTalk(
-      committer_conn: sqlite3.Connection,
-      monkeypatch: pytest.MonkeyPatch ) -> None:
+def _stub_successful_save( monkeypatch: pytest.MonkeyPatch ) -> dict[ str, object ]:
    captured: dict[ str, object ] = {}
-
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
       lambda conn: None )
@@ -149,7 +120,42 @@ def Test_Commit_TestOverrideTrimsTalk_ExpectSavedWithTrimmedTalk(
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_committer.ItinerarySaveResultBuilder.persist_walk_route',
       lambda *args, **kwargs: None )
+   return captured
 
+
+@pytest.fixture
+def committer_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   yield conn
+   conn.close()
+
+
+def Test_Commit_TestOverlappingWithoutOverride_ExpectConflictResult(
+      committer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   validated = _talk_and_encounter_validated()
+   expected_names = {
+      validated.guardians_talks[ Position.FIRST ].name,
+      validated.wild_encounters[ Position.FIRST ].name,
+   }
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
+      lambda conn: pytest.fail( 'save should not run on conflict' ) )
+
+   result = ItinerarySaveCommitter.commit(
+      _save_context( committer_conn, validated_itinerary=validated ),
+      overriding_conflicting_guardians_talks=False )
+
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert len( result.reasons ) == 1
+   assert {
+      item.name for item in result.reasons[ Position.FIRST ].items
+   } == expected_names
+
+
+def Test_Commit_TestOverrideTrimsTalk_ExpectSavedWithTrimmedTalk(
+      committer_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
    validated = ValidatedItinerary(
       arrival_time='9:00 AM',
       departure_time='5:00 PM',
@@ -174,6 +180,9 @@ def Test_Commit_TestOverrideTrimsTalk_ExpectSavedWithTrimmedTalk(
       ],
       events=[],
    )
+   talk = validated.guardians_talks[ Position.FIRST ]
+   encounter = validated.wild_encounters[ Position.FIRST ]
+   captured = _stub_successful_save( monkeypatch )
 
    result = ItinerarySaveCommitter.commit(
       _save_context( committer_conn, validated_itinerary=validated ),
@@ -182,37 +191,14 @@ def Test_Commit_TestOverrideTrimsTalk_ExpectSavedWithTrimmedTalk(
    saved = captured[ 'validated_itinerary' ]
    assert isinstance( saved, ValidatedItinerary )
    assert result.status == ItineraryErrorType.SUCCESS
-   assert saved.guardians_talks[ Position.FIRST ].start_time == '1:45 PM'
-   assert saved.guardians_talks[ Position.FIRST ].end_time == '2:00 PM'
-   assert saved.wild_encounters[ Position.FIRST ].name == 'Grizzly Bear'
+   assert saved.guardians_talks[ Position.FIRST ].start_time == encounter.end_time
+   assert saved.guardians_talks[ Position.FIRST ].end_time == talk.end_time
+   assert saved.wild_encounters[ Position.FIRST ].name == encounter.name
 
 
 def Test_Commit_TestUnscheduleRequirements_ExpectAnimalSchedulesCleared(
       committer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   captured: dict[ str, object ] = {}
-
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
-      lambda conn: None )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.SaveItineraryProvider.save_validated_itinerary',
-      lambda conn, visit_date, validated_itinerary, **kwargs: captured.__setitem__(
-         'validated_itinerary',
-         validated_itinerary ) )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ItinerarySaveContextBuilder.current_itinerary',
-      lambda conn, kwargs: ItineraryBuilder.empty() )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ScheduledEndpointVisitTimesSyncer.seed_if_complete',
-      lambda *args, **kwargs: None )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete',
-      lambda *args, **kwargs: None )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ItinerarySaveResultBuilder.persist_walk_route',
-      lambda *args, **kwargs: None )
-
    lion = AnimalDiff(
       species='African Lion',
       exhibit='Africa Savanna',
@@ -248,6 +234,7 @@ def Test_Commit_TestUnscheduleRequirements_ExpectAnimalSchedulesCleared(
             link='https://example.com/rhino' ),
       ],
    )
+   captured = _stub_successful_save( monkeypatch )
 
    result = ItinerarySaveCommitter.commit(
       _save_context(
@@ -272,7 +259,16 @@ def Test_Commit_TestNeedsReschedule_ExpectReschedulerCalled(
       committer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
-
+   validated = ValidatedItinerary(
+      arrival_time='9:00 AM',
+      departure_time='5:00 PM',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      needs_schedule_reschedule=True,
+   )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
       lambda conn: None )
@@ -291,31 +287,17 @@ def Test_Commit_TestNeedsReschedule_ExpectReschedulerCalled(
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_committer.ItinerarySaveResultBuilder.persist_walk_route',
       lambda *args, **kwargs: None )
-
-   def reschedule_after_add( conn: sqlite3.Connection, **kwargs: object ) -> ItinerarySaveResult:
-      captured[ 'reschedule_called' ] = True
-      return ItinerarySaveResult(
-         status=ItineraryErrorType.SUCCESS,
-         reasons=[],
-         itinerary=ItineraryBuilder.empty() )
-
    monkeypatch.setattr(
       FixedTimeActivityRescheduler,
       'reschedule_after_add',
-      reschedule_after_add )
+      lambda conn, **kwargs: (
+         captured.__setitem__( 'reschedule_called', True )
+         or ItinerarySaveResult(
+            status=ItineraryErrorType.SUCCESS,
+            reasons=[],
+            itinerary=ItineraryBuilder.empty() ) ) )
 
-   validated = ValidatedItinerary(
-      arrival_time='9:00 AM',
-      departure_time='5:00 PM',
-      animals=[],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-      events=[],
-      needs_schedule_reschedule=True,
-   )
-
-   ItinerarySaveCommitter.commit(
+   result = ItinerarySaveCommitter.commit(
       _save_context(
          committer_conn,
          validated_itinerary=validated,
@@ -326,6 +308,7 @@ def Test_Commit_TestNeedsReschedule_ExpectReschedulerCalled(
          ) ),
       overriding_conflicting_guardians_talks=False )
 
+   assert result.status == ItineraryErrorType.SUCCESS
    assert captured[ 'reschedule_called' ] is True
 
 
@@ -333,8 +316,10 @@ def Test_Commit_TestDateChangeNeedsReschedule_ExpectEndpointSync(
       committer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
+   visit_date = date( 2026, 6, 22 )
+   old_visit_date = '2026-06-20'
    rescheduled_itinerary = ItineraryBuilder.build(
-      date='2026-06-22',
+      date=visit_date.isoformat(),
       selected_exhibits=[],
       animals=[],
       attractions=[],
@@ -345,7 +330,28 @@ def Test_Commit_TestDateChangeNeedsReschedule_ExpectEndpointSync(
       events=[],
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
-
+   saved_itinerary = SavedItinerary(
+      date_value=old_visit_date,
+      arrival_time='9:15 AM',
+      departure_time='5:00 PM',
+   )
+   validated = ValidatedItinerary(
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      events=[],
+      needs_schedule_reschedule=True,
+   )
+   adjustment = ItineraryAdjustment(
+      type=ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED,
+      field='arrivalTime',
+      previous_value=saved_itinerary.arrival_time,
+      value='09:30',
+      reason=ItineraryAdjustmentReason.ARRIVAL_OUTSIDE_ADMISSION_HOURS,
+   )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
       lambda conn: None )
@@ -385,80 +391,29 @@ def Test_Commit_TestDateChangeNeedsReschedule_ExpectEndpointSync(
       'seed_if_complete',
       seed_if_complete )
 
-   saved_itinerary = SavedItinerary(
-      date_value='2026-06-20',
-      arrival_time='9:15 AM',
-      departure_time='5:00 PM',
-   )
-   validated = ValidatedItinerary(
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
-      animals=[],
-      attractions=[],
-      guardians_talks=[],
-      wild_encounters=[],
-      events=[],
-      needs_schedule_reschedule=True,
-   )
-
    result = ItinerarySaveCommitter.commit(
-      ItinerarySaveContext(
-         conn=committer_conn,
+      _save_context(
+         committer_conn,
+         validated_itinerary=validated,
+         saved_itinerary=saved_itinerary,
+         old_visit_date=old_visit_date,
+         adjustments=[ adjustment ],
          save_input=ItinerarySaveInput(
-            date=date( 2026, 6, 22 ),
+            date=visit_date,
             arrival_time='09:30',
             departure_time='17:00',
-         ),
-         validated_itinerary=validated,
-         current_itinerary=ItineraryBuilder.empty(),
-         old_visit_date='2026-06-20',
-         saved_itinerary=saved_itinerary,
-         unschedule_requirements=ItineraryUnscheduleRequirements( talks=[], encounters=[] ),
-         itinerary_controller_kwargs=_controller_kwargs(),
-         adjustments=[
-            ItineraryAdjustment(
-               type=ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED,
-               field='arrivalTime',
-               previous_value='9:15 AM',
-               value='09:30',
-               reason=ItineraryAdjustmentReason.ARRIVAL_OUTSIDE_ADMISSION_HOURS,
-            ),
-         ],
-      ),
+         ) ),
       overriding_conflicting_guardians_talks=False )
 
    assert captured[ 'saved_itinerary_before_clear' ] == saved_itinerary
    assert captured[ 'seed_if_complete_called' ] is True
-   assert result.adjustments[ Position.FIRST ].type == ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
+   assert result.adjustments[ Position.FIRST ] == adjustment
    assert result.status == ItineraryErrorType.SUCCESS
 
 
 def Test_Commit_TestDateChangeDeletedTalk_ExpectSavedAsDeleted(
       committer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   captured: dict[ str, object ] = {}
-
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ClearItineraryProvider.clear_itinerary',
-      lambda conn: None )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.SaveItineraryProvider.save_validated_itinerary',
-      lambda conn, visit_date, validated_itinerary, **kwargs: captured.__setitem__(
-         'validated_itinerary',
-         validated_itinerary ) )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ItinerarySaveContextBuilder.current_itinerary',
-      lambda conn, kwargs: ItineraryBuilder.empty() )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ScheduledEndpointVisitTimesSyncer.seed_if_complete',
-      lambda *args, **kwargs: None )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete',
-      lambda *args, **kwargs: None )
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_committer.ItinerarySaveResultBuilder.persist_walk_route',
-      lambda *args, **kwargs: None )
-
    validated = ValidatedItinerary(
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
@@ -495,6 +450,9 @@ def Test_Commit_TestDateChangeDeletedTalk_ExpectSavedAsDeleted(
       ],
       events=[],
    )
+   talk = validated.guardians_talks[ Position.FIRST ]
+   encounter = validated.wild_encounters[ Position.FIRST ]
+   captured = _stub_successful_save( monkeypatch )
 
    result = ItinerarySaveCommitter.commit(
       _save_context( committer_conn, validated_itinerary=validated ),
@@ -503,5 +461,5 @@ def Test_Commit_TestDateChangeDeletedTalk_ExpectSavedAsDeleted(
    saved = captured[ 'validated_itinerary' ]
    assert isinstance( saved, ValidatedItinerary )
    assert result.status == ItineraryErrorType.SUCCESS
-   assert saved.guardians_talks[ Position.FIRST ].is_deleted is True
-   assert saved.wild_encounters[ Position.FIRST ].is_deleted is True
+   assert saved.guardians_talks[ Position.FIRST ].is_deleted is talk.is_deleted
+   assert saved.wild_encounters[ Position.FIRST ].is_deleted is encounter.is_deleted

@@ -44,21 +44,27 @@ def Test_Build_TestZooHoursRecord_ExpectMapsOperatingHours() -> None:
 
 
 def Test_Build_TestSeededOperatingDates_ExpectToDict() -> None:
-   assert ZooHoursBuilder.build( JUNE_20_RECORD ).to_dict() == {
+   result = ZooHoursBuilder.build( JUNE_20_RECORD ).to_dict()
+
+   assert result == {
       'date': '2026-06-20',
       'earlyAdmissionTime': '09:00',
       'openTime': '09:30',
       'lastAdmissionTime': '18:00',
       'closeTime': '19:00',
    }
-   assert ZooHoursBuilder.build( JUNE_22_RECORD ).to_dict() == {
+   result = ZooHoursBuilder.build( JUNE_22_RECORD ).to_dict()
+
+   assert result == {
       'date': '2026-06-22',
       'earlyAdmissionTime': None,
       'openTime': '09:30',
       'lastAdmissionTime': '17:00',
       'closeTime': '18:00',
    }
-   assert ZooHoursBuilder.build( DECEMBER_25_RECORD ).to_dict() == {
+   result = ZooHoursBuilder.build( DECEMBER_25_RECORD ).to_dict()
+
+   assert result == {
       'date': '2026-12-25',
       'earlyAdmissionTime': None,
       'openTime': '11:00',

@@ -6,6 +6,7 @@ from api.defibrillators.coordinators.defibrillator_coordinator import Defibrilla
 from api.defibrillators.data_access.defibrillator_provider import DefibrillatorProvider
 from api.models.defibrillator import Defibrillator
 
+
 DEFIBRILLATOR = Defibrillator( x_coord=12.5, y_coord=67.5 )
 
 
@@ -17,4 +18,6 @@ def Test_GetDefibrillators_TestProviderRecords_ExpectReturned(
       'fetch_defibrillators',
       lambda _conn: [ DEFIBRILLATOR ] )
 
-   assert DefibrillatorCoordinator.get_defibrillators() == [ DEFIBRILLATOR ]
+   defibrillators = DefibrillatorCoordinator.get_defibrillators()
+
+   assert defibrillators == [ DEFIBRILLATOR ]

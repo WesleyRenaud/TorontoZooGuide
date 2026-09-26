@@ -5,17 +5,22 @@ import { MarkerBuilder } from '../../../scripts/markers/markerBuilder.js';
 import { MarkerHelper } from '../../../scripts/markers/markerHelper.js';
 import { MarkerHoverFormatter } from '../../../scripts/markers/markerHoverFormatter.js';
 import { ItemType } from '../../../scripts/shared/enums/itemType.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
 
 test('Test_CreateMarkerElement_TestGroup_ExpectPositionedMarker', () => {
    const originalHover = MarkerHoverFormatter.buildHoverText;
    const originalVisual = MarkerHelper.applyMarkerVisual;
    const originalCreateElement = document.createElement;
    const visualCalls = [];
+   const hoverText = 'African Lion';
+   const x = 12.5;
+   const y = 40;
 
-   MarkerHoverFormatter.buildHoverText = () => 'African Lion';
+   MarkerHoverFormatter.buildHoverText = () => hoverText;
    MarkerHelper.applyMarkerVisual = (el, items) => {
       visualCalls.push({ el, items });
    };
@@ -27,18 +32,19 @@ test('Test_CreateMarkerElement_TestGroup_ExpectPositionedMarker', () => {
 
    try {
       const group = {
-         x: 12.5,
-         y: 40,
-         items: [{ type: ItemType.ANIMAL, species: 'African Lion' }],
+         x,
+         y,
+         items: [{ type: ItemType.ANIMAL, species: hoverText }],
       };
+
       const markerEl = MarkerBuilder.createMarkerElement(group);
 
       assert.equal(markerEl.className, 'marker');
-      assert.equal(markerEl.style.left, '12.5%');
-      assert.equal(markerEl.style.top, '40%');
-      assert.equal(markerEl.dataset.hover, 'African Lion');
+      assert.equal(markerEl.style.left, `${x}%`);
+      assert.equal(markerEl.style.top, `${y}%`);
+      assert.equal(markerEl.dataset.hover, hoverText);
       assert.equal(markerEl.__items, group.items);
-      assert.equal(visualCalls.length, 1);
+      assert.equal(visualCalls.length, Position.SECOND);
    } finally {
       document.createElement = originalCreateElement;
       MarkerHoverFormatter.buildHoverText = originalHover;
@@ -46,13 +52,20 @@ test('Test_CreateMarkerElement_TestGroup_ExpectPositionedMarker', () => {
    }
 });
 
+
 test('Test_BindMarkerInteractions_TestCoordinateEditing_ExpectEditor', () => {
    const calls = [];
+   const markerId = 'm1';
+
    MarkerBuilder.bindMarkerInteractions({
-      markerEl: { id: 'm1' },
+      markerEl: { id: markerId },
       group: { items: [{ type: ItemType.ANIMAL }] },
       mapInner: { id: 'map' },
-      tooltip: { attachToMarker() { assert.fail('should not attach'); } },
+      tooltip: {
+         attachToMarker() {
+            assert.fail('should not attach');
+         },
+      },
       hover: {},
       enableCoordinateEditing: true,
       enableMarkerCoordinateEditing: (markerEl, items, mapInner) => {
@@ -60,12 +73,14 @@ test('Test_BindMarkerInteractions_TestCoordinateEditing_ExpectEditor', () => {
       },
    });
 
-   assert.equal(calls.length, 1);
-   assert.equal(calls[0].markerEl.id, 'm1');
+   assert.equal(calls.length, Position.SECOND);
+   assert.equal(calls.at(Position.FIRST).markerEl.id, markerId);
 });
+
 
 test('Test_BindMarkerInteractions_TestTooltip_ExpectAttached', () => {
    const attaches = [];
+
    MarkerBuilder.bindMarkerInteractions({
       markerEl: { id: 'm2' },
       group: { items: [{ type: ItemType.PAVILION }] },
@@ -80,6 +95,6 @@ test('Test_BindMarkerInteractions_TestTooltip_ExpectAttached', () => {
       enableMarkerCoordinateEditing: () => {},
    });
 
-   assert.equal(attaches.length, 1);
-   assert.equal(attaches[0].hover.active, true);
+   assert.equal(attaches.length, Position.SECOND);
+   assert.equal(attaches.at(Position.FIRST).hover.active, true);
 });

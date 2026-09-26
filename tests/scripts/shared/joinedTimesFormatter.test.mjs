@@ -2,19 +2,44 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { JoinedTimesFormatter } from '../../../scripts/shared/joinedTimesFormatter.js';
+import { Strings } from '../../../scripts/strings.js';
+
 
 test('Test_Format_TestTrimmedTimes_ExpectJoined', () => {
-   assert.equal(
-      JoinedTimesFormatter.format(['11:00 AM', '2:00 PM']),
-      '11:00 AM, 2:00 PM'
-   );
-   assert.equal(
-      JoinedTimesFormatter.format([' 11:00 AM ', '', '2:00 PM']),
-      '11:00 AM, 2:00 PM'
-   );
+   const morning = '11:00 AM';
+   const afternoon = '2:00 PM';
+   const times = [morning, afternoon];
+
+   const formatted = JoinedTimesFormatter.format(times);
+
+   assert.equal(formatted, `${morning}${Strings.format.listJoin}${afternoon}`);
 });
 
-test('Test_Format_TestMissingTimes_ExpectEmptyString', () => {
-   assert.equal(JoinedTimesFormatter.format(null), '');
-   assert.equal(JoinedTimesFormatter.format(undefined), '');
+
+test('Test_Format_TestWhitespaceAndBlank_ExpectTrimmedJoined', () => {
+   const morning = '11:00 AM';
+   const afternoon = '2:00 PM';
+   const times = [` ${morning} `, '', afternoon];
+
+   const formatted = JoinedTimesFormatter.format(times);
+
+   assert.equal(formatted, `${morning}${Strings.format.listJoin}${afternoon}`);
+});
+
+
+test('Test_Format_TestNull_ExpectEmptyString', () => {
+   const times = null;
+
+   const formatted = JoinedTimesFormatter.format(times);
+
+   assert.equal(formatted, '');
+});
+
+
+test('Test_Format_TestUndefined_ExpectEmptyString', () => {
+   const times = undefined;
+
+   const formatted = JoinedTimesFormatter.format(times);
+
+   assert.equal(formatted, '');
 });

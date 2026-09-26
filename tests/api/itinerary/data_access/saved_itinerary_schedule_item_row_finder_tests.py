@@ -13,331 +13,377 @@ from api.itinerary.data_access.saved_itinerary_schedule_item_row_finder import S
 from api.itinerary.guardians_talk_schedule_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.transportation_schedule_item_key import TransportationScheduleItemKey
 from api.itinerary.wild_encounter_schedule_item_key import WildEncounterScheduleItemKey
+from api.shared.date_values import DateValues
 from api.shared.enums import ItineraryEventType
+from api.shared.enums.transportation_name import TransportationName
+
+
+VISIT_DATE = '2026-06-15'
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestAnimalKey_ExpectAnimalRow() -> None:
+   species = 'Masai Giraffe'
+   exhibit = 'Africa Savanna'
+   start_time = '10:15 AM'
+   duration_minutes = 15
+   animal_row = ItineraryAnimalRecord(
+      species=species,
+      exhibit=exhibit,
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ) )
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
-      animal_rows=(
-         ItineraryAnimalRecord(
-            species='Masai Giraffe',
-            exhibit='Africa Savanna',
-            start_time='10:15 AM',
-            end_time='10:30 AM',
-         ),
-      ),
+      animal_rows=( animal_row, ),
       attraction_rows=(),
       guardians_talk_rows=(),
-      wild_encounter_rows=(),
-   )
+      wild_encounter_rows=() )
    schedule_item_key = AnimalScheduleItemKey(
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-   )
+      species=species,
+      exhibit=exhibit )
 
    row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
       schedule_item_key )
 
    assert row is not None
-   assert row.species == 'Masai Giraffe'
+   assert row.species == animal_row.species
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestAttractionKey_ExpectAttractionRow() -> None:
+   attraction = 'Conservation Carousel'
+   attraction_row = ItineraryAttractionRecord(
+      attraction=attraction,
+      old_likelihood=None,
+      new_likelihood=None )
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
       animal_rows=(),
-      attraction_rows=(
-         ItineraryAttractionRecord(
-            attraction='Conservation Carousel',
-            old_likelihood=None,
-            new_likelihood=None,
-         ),
-      ),
+      attraction_rows=( attraction_row, ),
       guardians_talk_rows=(),
-      wild_encounter_rows=(),
-   )
+      wild_encounter_rows=() )
+   schedule_item_key = AttractionScheduleItemKey( name=attraction )
 
    row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      AttractionScheduleItemKey( name='Conservation Carousel' ),
-   )
+      schedule_item_key )
 
    assert row is not None
-   assert row.attraction == 'Conservation Carousel'
+   assert row.attraction == attraction_row.attraction
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestAttractionTransport_ExpectAttractionModeRow() -> None:
+   transportation = TransportationName.ZOOMOBILE
+   attraction_mode_row = ItineraryTransportationRecord(
+      transportation=transportation,
+      old_likelihood=None,
+      new_likelihood=3,
+      added_as_attraction=True )
+   transit_row = ItineraryTransportationRecord(
+      transportation=transportation,
+      old_likelihood=None,
+      new_likelihood=3,
+      added_as_attraction=False )
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
-      transportation_rows=(
-         ItineraryTransportationRecord(
-            transportation='Zoomobile',
-            old_likelihood=None,
-            new_likelihood=3,
-            added_as_attraction=True ),
-         ItineraryTransportationRecord(
-            transportation='Zoomobile',
-            old_likelihood=None,
-            new_likelihood=3,
-            added_as_attraction=False ),
-      ),
-   )
+      transportation_rows=( attraction_mode_row, transit_row ) )
+   schedule_item_key = AttractionScheduleItemKey( name=transportation )
 
    row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      AttractionScheduleItemKey( name='Zoomobile' ),
-   )
+      schedule_item_key )
 
    assert isinstance( row, ItineraryTransportationRecord )
-   assert row.added_as_attraction is True
+   assert row.added_as_attraction is attraction_mode_row.added_as_attraction
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestPureTransportAsAttraction_ExpectNone() -> None:
+   transportation = TransportationName.ZOOMOBILE
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
       transportation_rows=(
          ItineraryTransportationRecord(
-            transportation='Zoomobile',
+            transportation=transportation,
             old_likelihood=None,
             new_likelihood=3,
             added_as_attraction=False ),
-      ),
-   )
+      ) )
+   schedule_item_key = AttractionScheduleItemKey( name=transportation )
 
    row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      AttractionScheduleItemKey( name='Zoomobile' ),
-   )
+      schedule_item_key )
 
    assert row is None
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestTransportationKey_ExpectTransitRow() -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = False
+   attraction_mode_row = ItineraryTransportationRecord(
+      transportation=transportation,
+      old_likelihood=None,
+      new_likelihood=3,
+      added_as_attraction=True )
+   transit_row = ItineraryTransportationRecord(
+      transportation=transportation,
+      old_likelihood=None,
+      new_likelihood=3,
+      added_as_attraction=added_as_attraction )
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
-      transportation_rows=(
-         ItineraryTransportationRecord(
-            transportation='Zoomobile',
-            old_likelihood=None,
-            new_likelihood=3,
-            added_as_attraction=True ),
-         ItineraryTransportationRecord(
-            transportation='Zoomobile',
-            old_likelihood=None,
-            new_likelihood=3,
-            added_as_attraction=False ),
-      ),
-   )
+      transportation_rows=( attraction_mode_row, transit_row ) )
+   schedule_item_key = TransportationScheduleItemKey(
+      name=transportation,
+      added_as_attraction=added_as_attraction )
 
    row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      TransportationScheduleItemKey(
-         name='Zoomobile',
-         added_as_attraction=False ),
-   )
+      schedule_item_key )
 
    assert isinstance( row, ItineraryTransportationRecord )
-   assert row.added_as_attraction is False
+   assert row.added_as_attraction is added_as_attraction
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestEventType_ExpectEventRow() -> None:
+   event_type = ItineraryEventType.LUNCH
+   start_time = '12:00 PM'
+   duration_minutes = 30
+   event_row = ItineraryEventRecord(
+      event_type=event_type,
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ) )
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
       animal_rows=(),
       attraction_rows=(),
       guardians_talk_rows=(),
       wild_encounter_rows=(),
-      event_rows=(
-         ItineraryEventRecord(
-            event_type=ItineraryEventType.LUNCH,
-            start_time='12:00 PM',
-            end_time='12:30 PM',
-         ),
-      ),
-   )
+      event_rows=( event_row, ) )
 
    row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      ItineraryEventType.LUNCH,
-   )
+      event_type )
 
    assert row is not None
-   assert row.event_type == ItineraryEventType.LUNCH
+   assert row.event_type == event_row.event_type
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestWildEncounterKey_ExpectMatchingStart() -> None:
+   encounter_name = 'African Rainforest'
+   start_time = '3:30 PM'
+   duration_minutes = 45
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
+   encounter_row = ItineraryWildEncounterRecord(
+      wild_encounter=encounter_name,
+      start_time=start_time,
+      end_time=end_time,
+      is_deleted=False )
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
       animal_rows=(),
       attraction_rows=(),
       guardians_talk_rows=(),
-      wild_encounter_rows=(
-         ItineraryWildEncounterRecord(
-            wild_encounter='African Rainforest',
-            start_time='3:30 PM',
-            end_time='4:15 PM',
-            is_deleted=False,
-         ),
-      ),
-   )
+      wild_encounter_rows=( encounter_row, ) )
+   schedule_item_key = WildEncounterScheduleItemKey(
+      name=encounter_name,
+      start_time=DateValues.format_time_value( start_time ) )
 
    row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      WildEncounterScheduleItemKey(
-         name='African Rainforest',
-         start_time='15:30',
-      ),
-   )
+      schedule_item_key )
 
    assert row is not None
-   assert row.wild_encounter == 'African Rainforest'
-   assert row.end_time == '4:15 PM'
+   assert row.wild_encounter == encounter_row.wild_encounter
+   assert row.end_time == encounter_row.end_time
 
-   missing = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+
+def Test_FindSavedItineraryScheduleItemRow_TestWildEncounterDifferentStart_ExpectNone() -> None:
+   encounter_name = 'African Rainforest'
+   start_time = '3:30 PM'
+   duration_minutes = 45
+   other_start_time = '2:00 PM'
+   encounter_row = ItineraryWildEncounterRecord(
+      wild_encounter=encounter_name,
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
+      is_deleted=False )
+   saved_itinerary = SavedItinerary(
+      date_value=VISIT_DATE,
+      arrival_time=None,
+      departure_time=None,
+      animal_rows=(),
+      attraction_rows=(),
+      guardians_talk_rows=(),
+      wild_encounter_rows=( encounter_row, ) )
+   schedule_item_key = WildEncounterScheduleItemKey(
+      name=encounter_name,
+      start_time=DateValues.format_time_value( other_start_time ) )
+
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      WildEncounterScheduleItemKey(
-         name='African Rainforest',
-         start_time='14:00',
-      ),
-   )
+      schedule_item_key )
 
-   assert missing is None
+   assert row is None
 
 
 def Test_SavedScheduleItemIsAlreadyScheduled_TestScheduledAnimal_ExpectTrue() -> None:
+   species = 'African Lion'
+   exhibit = 'Africa Savanna'
+   start_time = '10:00 AM'
+   duration_minutes = 8
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
       animal_rows=[
          ItineraryAnimalRecord(
-            species='African Lion',
-            exhibit='Africa Savanna',
-            start_time='10:00 AM',
-            end_time='10:08 AM',
-         ),
-      ],
-   )
+            species=species,
+            exhibit=exhibit,
+            start_time=start_time,
+            end_time=DateValues.add_minutes_to_time(
+               start_time,
+               duration_minutes ) ),
+      ] )
+   schedule_item_key = AnimalScheduleItemKey(
+      species=species,
+      exhibit=exhibit )
 
-   assert SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
+   is_scheduled = SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
       saved_itinerary,
-      AnimalScheduleItemKey(
-         species='African Lion',
-         exhibit='Africa Savanna',
-      ) )
+      schedule_item_key )
+
+   assert is_scheduled
 
 
 def Test_SavedScheduleItemIsAlreadyScheduled_TestUnscheduledAnimal_ExpectFalse() -> None:
+   species = 'African Lion'
+   exhibit = 'Africa Savanna'
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
       animal_rows=[
          ItineraryAnimalRecord(
-            species='African Lion',
-            exhibit='Africa Savanna',
-         ),
-      ],
-   )
+            species=species,
+            exhibit=exhibit ),
+      ] )
+   schedule_item_key = AnimalScheduleItemKey(
+      species=species,
+      exhibit=exhibit )
 
-   assert not SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
+   is_scheduled = SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
       saved_itinerary,
-      AnimalScheduleItemKey(
-         species='African Lion',
-         exhibit='Africa Savanna',
-      ) )
+      schedule_item_key )
+
+   assert not is_scheduled
 
 
 def Test_SavedScheduleItemIsAlreadyScheduled_TestScheduledLunch_ExpectTrue() -> None:
+   event_type = ItineraryEventType.LUNCH
+   start_time = '12:00 PM'
+   duration_minutes = 40
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
       event_rows=[
          ItineraryEventRecord(
-            event_type=ItineraryEventType.LUNCH,
-            start_time='12:00 PM',
-            end_time='12:40 PM',
-         ),
-      ],
-   )
+            event_type=event_type,
+            start_time=start_time,
+            end_time=DateValues.add_minutes_to_time(
+               start_time,
+               duration_minutes ) ),
+      ] )
 
-   assert SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
+   is_scheduled = SavedItineraryScheduleItemRowFinder.saved_schedule_item_is_already_scheduled(
       saved_itinerary,
-      ItineraryEventType.LUNCH )
+      event_type )
+
+   assert is_scheduled
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestDeletedGuardiansTalk_ExpectNone() -> None:
+   talk_name = 'African Lion'
+   start_time = '2:00 PM'
+   duration_minutes = 30
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
       guardians_talk_rows=[
          ItineraryGuardiansTalkRecord(
-            talk_name='African Lion',
-            start_time='2:00 PM',
-            end_time='2:30 PM',
+            talk_name=talk_name,
+            start_time=start_time,
+            end_time=DateValues.add_minutes_to_time(
+               start_time,
+               duration_minutes ),
             is_deleted=True ),
-      ],
-   )
+      ] )
+   schedule_item_key = GuardiansTalkScheduleItemKey(
+      name=talk_name,
+      start_time=start_time )
 
-   assert SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      GuardiansTalkScheduleItemKey(
-         name='African Lion',
-         start_time='2:00 PM',
-      ),
-   ) is None
+      schedule_item_key )
+
+   assert row is None
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestDeletedWildEncounter_ExpectNone() -> None:
+   encounter_name = 'Kangaroo'
+   start_time = '1:00 PM'
+   duration_minutes = 45
    saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
+      date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None,
       wild_encounter_rows=[
          ItineraryWildEncounterRecord(
-            wild_encounter='Kangaroo',
-            start_time='1:00 PM',
-            end_time='1:45 PM',
+            wild_encounter=encounter_name,
+            start_time=start_time,
+            end_time=DateValues.add_minutes_to_time(
+               start_time,
+               duration_minutes ),
             is_deleted=True ),
-      ],
-   )
+      ] )
+   schedule_item_key = WildEncounterScheduleItemKey(
+      name=encounter_name,
+      start_time=start_time )
 
-   assert SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,
-      WildEncounterScheduleItemKey(
-         name='Kangaroo',
-         start_time='1:00 PM',
-      ),
-   ) is None
+      schedule_item_key )
+
+   assert row is None
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestUnknownKeyType_ExpectNone() -> None:
    class UnknownScheduleItemKey:
       pass
 
-   assert SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
-      SavedItinerary(
-         date_value='2026-06-15',
-         arrival_time=None,
-         departure_time=None,
-      ),
-      UnknownScheduleItemKey(),  # type: ignore[arg-type]
-   ) is None
+   saved_itinerary = SavedItinerary(
+      date_value=VISIT_DATE,
+      arrival_time=None,
+      departure_time=None )
+   schedule_item_key = UnknownScheduleItemKey()
+
+   row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      schedule_item_key )  # type: ignore[arg-type]
+
+   assert row is None

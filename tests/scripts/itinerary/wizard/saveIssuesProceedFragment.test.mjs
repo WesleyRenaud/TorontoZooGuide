@@ -12,14 +12,18 @@ installDomTestHooks({
    },
 });
 
+
 test('Test_ShowSaveIssuesProceedConfirmation_TestProceed_ExpectConfirmPopup', () => {
    const confirmCalls = [];
+   const titleText = 'Save issues title';
+   const messageText = 'Save issues message';
+   const confirmed = 'confirmed';
 
    SaveIssuesProceedFragment.showSaveIssuesProceedConfirmation({
-      title: 'Save issues title',
-      message: 'Save issues message',
+      title: titleText,
+      message: messageText,
       onConfirm: () => {
-         confirmCalls.push('confirmed');
+         confirmCalls.push(confirmed);
       },
    });
 
@@ -29,8 +33,8 @@ test('Test_ShowSaveIssuesProceedConfirmation_TestProceed_ExpectConfirmPopup', ()
    const confirmButton = popup?.querySelector('.tzg-popup-confirm');
 
    assert.ok(popup);
-   assert.equal(title?.textContent, 'Save issues title');
-   assert.equal(message?.textContent, 'Save issues message');
+   assert.equal(title?.textContent, titleText);
+   assert.equal(message?.textContent, messageText);
    assert.equal(
       confirmButton?.textContent,
       Strings.itinerary.confirmation.proceedAnyway
@@ -39,5 +43,5 @@ test('Test_ShowSaveIssuesProceedConfirmation_TestProceed_ExpectConfirmPopup', ()
 
    confirmButton?.click();
 
-   assert.deepEqual(confirmCalls, ['confirmed']);
+   assert.deepEqual(confirmCalls, [confirmed]);
 });

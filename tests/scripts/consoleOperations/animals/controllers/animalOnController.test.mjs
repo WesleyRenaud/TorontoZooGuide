@@ -1,37 +1,58 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { AnimalOnController } from '../../../../../scripts/consoleOperations/animals/controllers/animalOnController.js';
-import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
-import { AnimalViewingScopeController } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingScopeController.js';
 import { AnimalsClient } from '../../../../../scripts/api/animalsClient.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
+import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
+import { AnimalOnController } from '../../../../../scripts/consoleOperations/animals/controllers/animalOnController.js';
+import { AnimalViewingScopeController } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingScopeController.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
-import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
-import { Position } from '../../../../../scripts/shared/enums/position.js';
+import { ConsoleOptionsLoader } from '../../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
-   const statuses = [];
-   const activations = [];
-   const resets = [];
-   const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
-   const originalReload = ControllerHelper.reloadOptions;
-   const originalStatus = ConsoleStatusPresenter.setStatus;
-   const originalGet = ControllerHelper.getFieldValue;
-   const originalReset = ControllerHelper.resetFormFields;
-   const originalBind = ControllerHelper.bindResetValueOnChange;
-   const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
-   const originalSet = ConsoleOperationsClient.setAnimalOnDisplay;
-   const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;
-   const autofillArgs = [];
-   const scopeArgs = [];
+function _restore(originals) {
+   ControllerHelper.loadOptionsAndShowPanel = originals.load;
+   ControllerHelper.reloadOptions = originals.reload;
+   ControllerHelper.getFieldValue = originals.get;
+   ControllerHelper.resetFormFields = originals.reset;
+   ControllerHelper.bindResetValueOnChange = originals.bind;
+   ControllerHelper.hideConsolePanel = originals.hide;
+   ConsoleStatusPresenter.setStatus = originals.status;
+   AnimalViewingScopeController.createAnimalViewingScopeControl = originals.scope;
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originals.autofill;
+   ConsoleOperationsClient.setAnimalOnDisplay = originals.set;
+   ApiErrorMessageResolver.resolveConsoleMutationError = originals.resolve;
+}
+
+function _installBaseStubs({
+   statuses = [],
+   activations = [],
+   hides = [],
+   resets = [],
+   autofillArgs = [],
+   scopeArgs = [],
+   viewingScopes = ['Male Herd'],
+} = {}) {
+   const originals = {
+      load: ControllerHelper.loadOptionsAndShowPanel,
+      reload: ControllerHelper.reloadOptions,
+      get: ControllerHelper.getFieldValue,
+      reset: ControllerHelper.resetFormFields,
+      bind: ControllerHelper.bindResetValueOnChange,
+      hide: ControllerHelper.hideConsolePanel,
+      status: ConsoleStatusPresenter.setStatus,
+      scope: AnimalViewingScopeController.createAnimalViewingScopeControl,
+      autofill: AnimalExhibitAutofillController.createAnimalExhibitAutofillController,
+      set: ConsoleOperationsClient.setAnimalOnDisplay,
+      resolve: ApiErrorMessageResolver.resolveConsoleMutationError,
+   };
 
    ControllerHelper.loadOptionsAndShowPanel = async (options) => {
       activations.push(options.panelEl);
@@ -41,12 +62,15 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
    ControllerHelper.reloadOptions = async (options) => {
       options.resetForm?.();
    };
-   ConsoleStatusPresenter.setStatus = (...args) => {
-      statuses.push(args);
-   };
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
    ControllerHelper.bindResetValueOnChange = () => {};
+   ControllerHelper.hideConsolePanel = (args) => {
+      hides.push(args);
+   };
+   ConsoleStatusPresenter.setStatus = (...args) => {
+      statuses.push(args);
+   };
    AnimalViewingScopeController.createAnimalViewingScopeControl = (args) => {
       scopeArgs.push(args);
       return {
@@ -54,165 +78,201 @@ test('Test_CreateAnimalOnDisplayController_TestShowAndSubmitSuccess_ExpectStatus
             resets.push(true);
          },
          refresh: async () => {},
-         selectedEnclosureNames: () => [ 'Male Herd' ],
+         selectedEnclosureNames: () => viewingScopes,
       };
    };
    AnimalExhibitAutofillController.createAnimalExhibitAutofillController = (args) => {
       autofillArgs.push(args);
-      return originalAutofill(args);
+      return originals.autofill(args);
    };
+
+   return originals;
+}
+
+function _createController({
+   panelEl = { id: 'animal-on' },
+   species = 'Lion',
+   exhibit = 'Savanna',
+} = {}) {
+   const showButtonEl = document.createElement('button');
+   const submitButtonEl = document.createElement('button');
+   const cancelButtonEl = document.createElement('button');
+   const speciesEl = document.createElement('input');
+   const exhibitEl = document.createElement('select');
+   speciesEl.value = species;
+   exhibitEl.value = exhibit;
+
+   const controller = AnimalOnController.createAnimalOnDisplayController({
+      showButtonEl,
+      submitButtonEl,
+      cancelButtonEl,
+      panelEl,
+      statusEl: {},
+      speciesEl,
+      exhibitEl,
+      viewingScopeEl: document.createElement('select'),
+      activatePanel: () => {},
+   });
+
+   return {
+      controller,
+      showButtonEl,
+      submitButtonEl,
+      cancelButtonEl,
+      speciesEl,
+      exhibitEl,
+      panelEl,
+   };
+}
+
+
+test('Test_CreateAnimalOnDisplayController_TestShow_ExpectPanelActivated', async () => {
+   const activations = [];
+   const autofillArgs = [];
+   const scopeArgs = [];
+   const originals = _installBaseStubs({ activations, autofillArgs, scopeArgs });
+   const panelEl = { id: 'animal-on' };
+
+   try {
+      const { controller } = _createController({ panelEl });
+
+      await controller.show();
+
+      assert.deepEqual(activations, [panelEl]);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadOffDisplayExhibits);
+      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadOffDisplayExhibits);
+      assert.equal(scopeArgs[Position.FIRST].loadViewingScopes, ConsoleOptionsLoader.loadOffDisplayViewingScopes);
+      assert.equal(scopeArgs[Position.FIRST].loadAnimalViewingScopes, AnimalsClient.getAnimalViewingScopes);
+   } finally {
+      _restore(originals);
+   }
+});
+
+
+test('Test_CreateAnimalOnDisplayController_TestSubmitSuccess_ExpectStatus', async () => {
+   const statuses = [];
+   const resets = [];
+   const species = 'Lion';
+   const exhibit = 'Savanna';
+   const viewingScopes = ['Male Herd'];
+   const originals = _installBaseStubs({ statuses, resets, viewingScopes });
+
    ConsoleOperationsClient.setAnimalOnDisplay = async (payload) => {
-      assert.deepEqual(payload, {
-         species: 'Lion',
-         exhibit: 'Savanna',
-         viewingScopes: [ 'Male Herd' ],
-      });
-      return { success: true, species: 'Lion', exhibit: 'Savanna' };
+      assert.deepEqual(payload, { species, exhibit, viewingScopes });
+      return { success: true, species, exhibit };
    };
 
    try {
-      const showButtonEl = document.createElement('button');
-      const submitButtonEl = document.createElement('button');
-      const speciesEl = document.createElement('input');
-      const exhibitEl = document.createElement('select');
-      speciesEl.value = 'Lion';
-      exhibitEl.value = 'Savanna';
-
-      const controller = AnimalOnController.createAnimalOnDisplayController({
-         showButtonEl,
-         submitButtonEl,
-         cancelButtonEl: document.createElement('button'),
-         panelEl: { id: 'animal-on' },
-         statusEl: {},
-         speciesEl,
-         exhibitEl,
-         viewingScopeEl: document.createElement('select'),
-         activatePanel: () => {},
-      });
-
-      await controller.show();
-      assert.deepEqual(activations, [{ id: 'animal-on' }]);
-      assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadOffDisplayExhibits);
-      assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadOffDisplayExhibits);
-      assert.equal(
-         scopeArgs[Position.FIRST].loadViewingScopes,
-         ConsoleOptionsLoader.loadOffDisplayViewingScopes
-      );
-      assert.equal(
-         scopeArgs[Position.FIRST].loadAnimalViewingScopes,
-         AnimalsClient.getAnimalViewingScopes
-      );
+      const { submitButtonEl } = _createController({ species, exhibit });
 
       await submitButtonEl.listeners.click();
+
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === Strings.status.animalOnDisplay({ species: 'Lion', exhibit: 'Savanna' })
-            && entry[2] === 'is-success'
+            entry[Position.SECOND] === Strings.status.animalOnDisplay({ species, exhibit })
+            && entry[Position.THIRD] === 'is-success'
          ))
       );
       assert.ok(resets.length >= 1);
    } finally {
-      ControllerHelper.loadOptionsAndShowPanel = originalLoad;
-      ControllerHelper.reloadOptions = originalReload;
-      ConsoleStatusPresenter.setStatus = originalStatus;
-      ControllerHelper.getFieldValue = originalGet;
-      ControllerHelper.resetFormFields = originalReset;
-      ControllerHelper.bindResetValueOnChange = originalBind;
-      AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
-      ConsoleOperationsClient.setAnimalOnDisplay = originalSet;
-      AnimalExhibitAutofillController.createAnimalExhibitAutofillController = originalAutofill;
+      _restore(originals);
    }
 });
 
-test('Test_CreateAnimalOnDisplayController_TestValidationAndFailures_ExpectErrorStatus', async () => {
-   const statuses = [];
-   const hides = [];
-   const originalStatus = ConsoleStatusPresenter.setStatus;
-   const originalGet = ControllerHelper.getFieldValue;
-   const originalReset = ControllerHelper.resetFormFields;
-   const originalBind = ControllerHelper.bindResetValueOnChange;
-   const originalHide = ControllerHelper.hideConsolePanel;
-   const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
-   const originalSet = ConsoleOperationsClient.setAnimalOnDisplay;
-   const originalResolve = ApiErrorMessageResolver.resolveConsoleMutationError;
 
-   ConsoleStatusPresenter.setStatus = (...args) => {
-      statuses.push(args);
-   };
-   ControllerHelper.resetFormFields = () => {};
-   ControllerHelper.bindResetValueOnChange = () => {};
-   ControllerHelper.hideConsolePanel = (args) => {
-      hides.push(args);
-   };
-   AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
-      reset: () => {},
-      refresh: async () => {},
-      selectedEnclosureNames: () => [ 'Male Herd' ],
-   });
-   ApiErrorMessageResolver.resolveConsoleMutationError = () => 'mutation failed';
+test('Test_CreateAnimalOnDisplayController_TestMissingSpecies_ExpectErrorStatus', async () => {
+   const statuses = [];
+   const originals = _installBaseStubs({ statuses });
 
    try {
-      const submitButtonEl = document.createElement('button');
-      const cancelButtonEl = document.createElement('button');
-      const speciesEl = document.createElement('input');
-      const exhibitEl = document.createElement('select');
-      const controller = AnimalOnController.createAnimalOnDisplayController({
-         showButtonEl: document.createElement('button'),
-         submitButtonEl,
-         cancelButtonEl,
-         panelEl: {},
-         statusEl: {},
-         speciesEl,
-         exhibitEl,
-         viewingScopeEl: document.createElement('select'),
-         activatePanel: () => {},
-      });
-
+      const { submitButtonEl } = _createController({ species: '', exhibit: '' });
       ControllerHelper.getFieldValue = () => '';
+
       await submitButtonEl.listeners.click();
+
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === Strings.validation.entityRequired(Strings.labels.species)
+            entry[Position.SECOND] === Strings.validation.entityRequired(Strings.labels.species)
          ))
       );
+   } finally {
+      _restore(originals);
+   }
+});
 
-      statuses.length = 0;
-      ControllerHelper.getFieldValue = (el) => (el === speciesEl ? 'Lion' : '');
+
+test('Test_CreateAnimalOnDisplayController_TestMissingExhibit_ExpectErrorStatus', async () => {
+   const statuses = [];
+   const species = 'Lion';
+   const originals = _installBaseStubs({ statuses });
+
+   try {
+      const { submitButtonEl, speciesEl } = _createController({ species, exhibit: '' });
+      ControllerHelper.getFieldValue = (el) => (el === speciesEl ? species : '');
+
       await submitButtonEl.listeners.click();
+
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === Strings.validation.entityRequired(Strings.entityLabels.exhibit)
+            entry[Position.SECOND] === Strings.validation.entityRequired(Strings.entityLabels.exhibit)
          ))
       );
+   } finally {
+      _restore(originals);
+   }
+});
 
-      statuses.length = 0;
-      ControllerHelper.getFieldValue = (el) => {
-         if (el === speciesEl) return 'Lion';
-         if (el === exhibitEl) return 'Savanna';
-         return '';
-      };
-      ConsoleOperationsClient.setAnimalOnDisplay = async () => ({ success: false });
-      await submitButtonEl.listeners.click();
-      assert.ok(statuses.some((entry) => entry[1] === 'mutation failed'));
 
-      statuses.length = 0;
-      ConsoleOperationsClient.setAnimalOnDisplay = async () => {
-         throw new Error('network');
-      };
+test('Test_CreateAnimalOnDisplayController_TestMutationFailure_ExpectErrorStatus', async () => {
+   const statuses = [];
+   const mutationFailed = 'mutation failed';
+   const originals = _installBaseStubs({ statuses });
+   ApiErrorMessageResolver.resolveConsoleMutationError = () => mutationFailed;
+   ConsoleOperationsClient.setAnimalOnDisplay = async () => ({ success: false });
+
+   try {
+      const { submitButtonEl } = _createController();
+
       await submitButtonEl.listeners.click();
-      assert.ok(statuses.some((entry) => entry[1] === Strings.common.requestFailed));
+
+      assert.ok(statuses.some((entry) => entry[Position.SECOND] === mutationFailed));
+   } finally {
+      _restore(originals);
+   }
+});
+
+
+test('Test_CreateAnimalOnDisplayController_TestNetworkError_ExpectRequestFailed', async () => {
+   const statuses = [];
+   const originals = _installBaseStubs({ statuses });
+   ConsoleOperationsClient.setAnimalOnDisplay = async () => {
+      throw new Error('network');
+   };
+
+   try {
+      const { submitButtonEl } = _createController();
+
+      await submitButtonEl.listeners.click();
+
+      assert.ok(statuses.some((entry) => entry[Position.SECOND] === Strings.common.requestFailed));
+   } finally {
+      _restore(originals);
+   }
+});
+
+
+test('Test_CreateAnimalOnDisplayController_TestHideAndCancel_ExpectPanelHidden', () => {
+   const hides = [];
+   const originals = _installBaseStubs({ hides });
+
+   try {
+      const { controller, cancelButtonEl } = _createController();
 
       controller.hide();
       cancelButtonEl.listeners.click();
+
       assert.equal(hides.length, 2);
    } finally {
-      ConsoleStatusPresenter.setStatus = originalStatus;
-      ControllerHelper.getFieldValue = originalGet;
-      ControllerHelper.resetFormFields = originalReset;
-      ControllerHelper.bindResetValueOnChange = originalBind;
-      ControllerHelper.hideConsolePanel = originalHide;
-      AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
-      ConsoleOperationsClient.setAnimalOnDisplay = originalSet;
-      ApiErrorMessageResolver.resolveConsoleMutationError = originalResolve;
+      _restore(originals);
    }
 });

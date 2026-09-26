@@ -4,7 +4,6 @@ import pytest
 
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from api.itinerary.data_access.itinerary_transportation_record import ItineraryTransportationRecord
 from api.itinerary.scheduling.bulk.master_route_stop_sorter import MasterRouteStopSorter
 from api.shared.enums.position import Position
 from api.walk_graph.master_route_provider import MasterRouteProvider
@@ -43,19 +42,23 @@ def Test_Sort_TestUnmappedAttractions_ExpectMappedFirstThenNameOrder(
 
    ordered = MasterRouteStopSorter.sort( [ unmapped_b, LION, unmapped_a ] )
 
-   assert ordered[ Position.FIRST ].species == 'African Lion'
+   assert ordered[ Position.FIRST ].species == LION.species
    assert [
       stop.attraction
-      for stop in ordered[ 1: ]
+      for stop in ordered[ Position.SECOND: ]
    ] == [
-      'AAA Unmapped Attraction A',
-      'ZZZ Unmapped Attraction B',
+      unmapped_a.attraction,
+      unmapped_b.attraction,
    ]
 
 
 def Test_Sort_TestEmptyStops_ExpectEmpty(
       stub_master_route_indexes: None ) -> None:
-   assert MasterRouteStopSorter.sort( [] ) == []
+   stops: list[ ItineraryAnimalRecord ] = []
+
+   ordered = MasterRouteStopSorter.sort( stops )
+
+   assert ordered == []
 
 
 def Test_Sort_TestUnmappedAnimal_ExpectExhibitNameOrder(

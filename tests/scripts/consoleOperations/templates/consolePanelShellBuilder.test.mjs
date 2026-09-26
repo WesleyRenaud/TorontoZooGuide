@@ -6,14 +6,19 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreatePanelShell_TestConfig_ExpectSection', () => {
+   const panelId = 'animals';
+   const title = 'Animals';
    const child = document.createElement('div');
+
    const panelEl = ConsolePanelShellBuilder.createPanelShell({
-      panelId: 'animals',
-      title: 'Animals',
+      panelId,
+      title,
       bodyChildren: [child],
    });
+
    assert.equal(panelEl.tagName.toUpperCase(), 'SECTION');
-   assert.equal(panelEl.id, 'animals');
-   assert.match(panelEl.textContent, /Animals/);
+   assert.equal(panelEl.id, panelId);
+   assert.match(panelEl.textContent, new RegExp(title));
 });

@@ -61,21 +61,21 @@ CREATE TABLE TransportationAnimal (
 );
 """
 
-GIRAFFE = (
-   'Zoomobile',
-   'Canadian Domain Zoomobile Station',
-   'Africa Zoomobile Station',
-   'Masai Giraffe',
-   'Africa Savanna',
-   'Outdoor',
+GIRAFFE = TransportationAnimalRecord(
+   transportation='Zoomobile',
+   from_station='Canadian Domain Zoomobile Station',
+   to_station='Africa Zoomobile Station',
+   species='Masai Giraffe',
+   exhibit='Africa Savanna',
+   enclosure_name='Outdoor',
 )
-ZEBRA = (
-   'Zoomobile',
-   'Main Zoomobile Station',
-   'Canadian Domain Zoomobile Station',
-   "Grevy's Zebra",
-   'Canadian Domain',
-   'Savanna Grasslands',
+ZEBRA = TransportationAnimalRecord(
+   transportation='Zoomobile',
+   from_station='Main Zoomobile Station',
+   to_station='Canadian Domain Zoomobile Station',
+   species="Grevy's Zebra",
+   exhibit='Canadian Domain',
+   enclosure_name='Savanna Grasslands',
 )
 
 
@@ -91,29 +91,6 @@ def _likelihood_lookup(
             likelihood=likelihood )
          for link in links
       ] )
-
-
-@pytest.fixture
-def sync_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( SYNC_SCHEMA )
-   conn.executemany(
-      """   INSERT INTO TransportationAnimal (
-               TRANSPORTATION,
-               FROM_STATION,
-               TO_STATION,
-               SPECIES,
-               EXHIBIT,
-               ENCLOSURE_NAME
-            )
-            VALUES ( ?, ?, ?, ?, ?, ? );
-      """,
-      [ GIRAFFE, ZEBRA ],
-   )
-   conn.commit()
-   yield conn
-   conn.close()
 
 
 def _insert_leg(
@@ -135,7 +112,7 @@ def _insert_leg(
             VALUES ( ?, ?, ?, ?, ?, ? );
       """,
       (
-         'Zoomobile',
+         GIRAFFE.transportation,
          0,
          from_station,
          to_station,
@@ -147,7 +124,7 @@ def _insert_leg(
 
 def _insert_transportation(
       conn: sqlite3.Connection,
-      transportation: str = 'Zoomobile' ) -> None:
+      transportation: str = GIRAFFE.transportation ) -> None:
    conn.execute(
       """   INSERT INTO ItineraryTransportation (
                TRANSPORTATION,
@@ -196,6 +173,69 @@ def _insert_animal(
    )
 
 
+def _insert_giraffe_leg( conn: sqlite3.Connection ) -> None:
+   _insert_leg(
+      conn,
+      from_station=GIRAFFE.from_station,
+      to_station=GIRAFFE.to_station,
+      start_time='11:00 AM',
+      end_time='11:10 AM' )
+
+
+def _stub_likelihood(
+      monkeypatch: pytest.MonkeyPatch,
+      likelihood: int | None ) -> int | None:
+   monkeypatch.setattr(
+      'api.itinerary.domain.itinerary_transportation_animal_syncer.'
+      'ItineraryTransportationAnimalLikelihoodResolver.resolve',
+      lambda conn, links: (
+         ItineraryTransportationAnimalLikelihoodLookup( [] )
+         if likelihood is None
+         else _likelihood_lookup( links, likelihood )
+      ) )
+   return likelihood
+
+
+@pytest.fixture
+def sync_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( SYNC_SCHEMA )
+   conn.executemany(
+      """   INSERT INTO TransportationAnimal (
+               TRANSPORTATION,
+               FROM_STATION,
+               TO_STATION,
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME
+            )
+            VALUES ( ?, ?, ?, ?, ?, ? );
+      """,
+      [
+         (
+            GIRAFFE.transportation,
+            GIRAFFE.from_station,
+            GIRAFFE.to_station,
+            GIRAFFE.species,
+            GIRAFFE.exhibit,
+            GIRAFFE.enclosure_name,
+         ),
+         (
+            ZEBRA.transportation,
+            ZEBRA.from_station,
+            ZEBRA.to_station,
+            ZEBRA.species,
+            ZEBRA.exhibit,
+            ZEBRA.enclosure_name,
+         ),
+      ],
+   )
+   conn.commit()
+   yield conn
+   conn.close()
+
+
 def Test_FetchAll_TestSeededLinks_ExpectEnclosureKeys( sync_conn: sqlite3.Connection ) -> None:
    links = TransportationAnimalProvider.fetch_all( sync_conn )
 
@@ -203,16 +243,8 @@ def Test_FetchAll_TestSeededLinks_ExpectEnclosureKeys( sync_conn: sqlite3.Connec
       ( link.species, link.exhibit, link.enclosure_name )
       for link in links
    } == {
-      (
-         'Masai Giraffe',
-         'Africa Savanna',
-         'Outdoor',
-      ),
-      (
-         "Grevy's Zebra",
-         'Canadian Domain',
-         'Savanna Grasslands',
-      ),
+      ( GIRAFFE.species, GIRAFFE.exhibit, GIRAFFE.enclosure_name ),
+      ( ZEBRA.species, ZEBRA.exhibit, ZEBRA.enclosure_name ),
    }
 
 
@@ -231,12 +263,12 @@ def Test_FetchAll_TestDuplicateEnclosure_ExpectPrimaryKeyRejectsSecondRow(
                VALUES ( ?, ?, ?, ?, ?, ? );
          """,
          (
-            'Zoomobile',
-            'Africa Zoomobile Station',
+            GIRAFFE.transportation,
+            GIRAFFE.to_station,
             'Tundra Zoomobile Station',
-            'Masai Giraffe',
-            'Africa Savanna',
-            'Outdoor',
+            GIRAFFE.species,
+            GIRAFFE.exhibit,
+            GIRAFFE.enclosure_name,
          ),
       )
 
@@ -244,29 +276,20 @@ def Test_FetchAll_TestDuplicateEnclosure_ExpectPrimaryKeyRejectsSecondRow(
 def Test_Apply_TestMatchingLegs_ExpectInsertedWithoutTimes(
       sync_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   _insert_leg(
-      sync_conn,
-      from_station='Canadian Domain Zoomobile Station',
-      to_station='Africa Zoomobile Station',
-      start_time='11:00 AM',
-      end_time='11:10 AM' )
+   _insert_giraffe_leg( sync_conn )
    sync_conn.commit()
-
-   monkeypatch.setattr(
-      'api.itinerary.domain.itinerary_transportation_animal_syncer.'
-      'ItineraryTransportationAnimalLikelihoodResolver.resolve',
-      lambda conn, links: ItineraryTransportationAnimalLikelihoodLookup( [] ) )
+   _stub_likelihood( monkeypatch, None )
 
    ItineraryTransportationAnimalSyncer.apply( sync_conn )
-
    rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
+
    giraffe = rows[ Position.FIRST ]
 
    assert len( rows ) == 1
-   assert giraffe.species == 'Masai Giraffe'
-   assert giraffe.enclosure_name == 'Outdoor'
+   assert giraffe.species == GIRAFFE.species
+   assert giraffe.enclosure_name == GIRAFFE.enclosure_name
    assert giraffe.added_by_transportation is True
-   assert giraffe.transportation == 'Zoomobile'
+   assert giraffe.transportation == GIRAFFE.transportation
    assert giraffe.old_likelihood is None
    assert giraffe.new_likelihood == 0
    assert giraffe.start_time is None
@@ -276,60 +299,44 @@ def Test_Apply_TestMatchingLegs_ExpectInsertedWithoutTimes(
 def Test_Apply_TestGuestOwnedRow_ExpectSkipped(
       sync_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   _insert_leg(
-      sync_conn,
-      from_station='Canadian Domain Zoomobile Station',
-      to_station='Africa Zoomobile Station',
-      start_time='11:00 AM',
-      end_time='11:10 AM' )
+   start_time = '10:00 AM'
+   end_time = '10:10 AM'
+   _insert_giraffe_leg( sync_conn )
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
       added_by_transportation=0,
-      start_time='10:00 AM',
-      end_time='10:10 AM' )
+      start_time=start_time,
+      end_time=end_time )
    sync_conn.commit()
-
-   monkeypatch.setattr(
-      'api.itinerary.domain.itinerary_transportation_animal_syncer.'
-      'ItineraryTransportationAnimalLikelihoodResolver.resolve',
-      lambda conn, links: ItineraryTransportationAnimalLikelihoodLookup( [] ) )
+   _stub_likelihood( monkeypatch, None )
 
    ItineraryTransportationAnimalSyncer.apply( sync_conn )
-
    rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
+
    giraffe = rows[ Position.FIRST ]
 
    assert len( rows ) == 1
    assert giraffe.added_by_transportation is False
-   assert giraffe.start_time == '10:00 AM'
-   assert giraffe.end_time == '10:10 AM'
+   assert giraffe.start_time == start_time
+   assert giraffe.end_time == end_time
    assert giraffe.new_likelihood is None
 
 
 def Test_Apply_TestMatchingLegs_ExpectCalculatedLikelihood(
       sync_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   _insert_leg(
-      sync_conn,
-      from_station='Canadian Domain Zoomobile Station',
-      to_station='Africa Zoomobile Station',
-      start_time='11:00 AM',
-      end_time='11:10 AM' )
+   likelihood = 80
+   _insert_giraffe_leg( sync_conn )
    sync_conn.commit()
-
-   monkeypatch.setattr(
-      'api.itinerary.domain.itinerary_transportation_animal_syncer.'
-      'ItineraryTransportationAnimalLikelihoodResolver.resolve',
-      lambda conn, links: _likelihood_lookup( links, 80 ) )
+   _stub_likelihood( monkeypatch, likelihood )
 
    ItineraryTransportationAnimalSyncer.apply( sync_conn )
-
    giraffe = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )[ Position.FIRST ]
 
-   assert giraffe.new_likelihood == 80
+   assert giraffe.new_likelihood == likelihood
    assert giraffe.old_likelihood is None
    assert giraffe.start_time is None
 
@@ -337,117 +344,102 @@ def Test_Apply_TestMatchingLegs_ExpectCalculatedLikelihood(
 def Test_Apply_TestExistingTransportationAnimal_ExpectLikelihoodRefreshed(
       sync_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   _insert_leg(
-      sync_conn,
-      from_station='Canadian Domain Zoomobile Station',
-      to_station='Africa Zoomobile Station',
-      start_time='11:00 AM',
-      end_time='11:10 AM' )
+   likelihood = 65
+   _insert_giraffe_leg( sync_conn )
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
       added_by_transportation=1 )
    sync_conn.commit()
-
-   monkeypatch.setattr(
-      'api.itinerary.domain.itinerary_transportation_animal_syncer.'
-      'ItineraryTransportationAnimalLikelihoodResolver.resolve',
-      lambda conn, links: _likelihood_lookup( links, 65 ) )
+   _stub_likelihood( monkeypatch, likelihood )
 
    ItineraryTransportationAnimalSyncer.apply( sync_conn )
-
    rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
+
    giraffe = rows[ Position.FIRST ]
 
    assert len( rows ) == 1
    assert giraffe.added_by_transportation is True
-   assert giraffe.new_likelihood == 65
+   assert giraffe.new_likelihood == likelihood
    assert giraffe.old_likelihood is None
    assert giraffe.start_time is None
 
 
-def Test_Apply_TestStaleTransportationAnimal_ExpectDeleted( sync_conn: sqlite3.Connection ) -> None:
+def Test_Apply_TestStaleTransportationAnimal_ExpectDeleted(
+      sync_conn: sqlite3.Connection ) -> None:
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
       added_by_transportation=1 )
    _insert_animal(
       sync_conn,
-      species="Grevy's Zebra",
-      exhibit='Canadian Domain',
-      enclosure_name='Savanna Grasslands',
+      species=ZEBRA.species,
+      exhibit=ZEBRA.exhibit,
+      enclosure_name=ZEBRA.enclosure_name,
       added_by_transportation=0 )
    sync_conn.commit()
 
    ItineraryTransportationAnimalSyncer.apply( sync_conn )
-
    rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
 
    assert [
       ( row.species, row.added_by_transportation )
       for row in rows
    ] == [
-      ( "Grevy's Zebra", False ),
+      ( ZEBRA.species, False ),
    ]
 
 
 def Test_Apply_TestExistingTransportationAnimal_ExpectOldLikelihoodRolledFromPreviousNew(
       sync_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   _insert_leg(
-      sync_conn,
-      from_station='Canadian Domain Zoomobile Station',
-      to_station='Africa Zoomobile Station',
-      start_time='11:00 AM',
-      end_time='11:10 AM' )
+   previous_likelihood = 80
+   likelihood = 65
+   _insert_giraffe_leg( sync_conn )
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
       added_by_transportation=1,
-      new_likelihood=80 )
+      new_likelihood=previous_likelihood )
    sync_conn.commit()
-
-   monkeypatch.setattr(
-      'api.itinerary.domain.itinerary_transportation_animal_syncer.'
-      'ItineraryTransportationAnimalLikelihoodResolver.resolve',
-      lambda conn, links: _likelihood_lookup( links, 65 ) )
+   _stub_likelihood( monkeypatch, likelihood )
 
    ItineraryTransportationAnimalSyncer.apply( sync_conn )
-
    giraffe = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )[ Position.FIRST ]
 
    assert giraffe.added_by_transportation is True
-   assert giraffe.old_likelihood == 80
-   assert giraffe.new_likelihood == 65
+   assert giraffe.old_likelihood == previous_likelihood
+   assert giraffe.new_likelihood == likelihood
 
 
 def Test_Apply_TestParentWithoutMatchingLeg_ExpectTransportationAnimalKept(
       sync_conn: sqlite3.Connection ) -> None:
+   likelihood = 80
    _insert_transportation( sync_conn )
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
       added_by_transportation=1,
-      new_likelihood=80 )
+      new_likelihood=likelihood )
    sync_conn.commit()
 
    ItineraryTransportationAnimalSyncer.apply( sync_conn )
-
    rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
+
    giraffe = rows[ Position.FIRST ]
 
    assert len( rows ) == 1
-   assert giraffe.species == 'Masai Giraffe'
+   assert giraffe.species == GIRAFFE.species
    assert giraffe.added_by_transportation is True
-   assert giraffe.new_likelihood == 80
+   assert giraffe.new_likelihood == likelihood
    assert giraffe.old_likelihood is None
 
 
@@ -464,23 +456,24 @@ def Test_Apply_TestUnknownCatalogTransportationAnimal_ExpectDeleted(
    sync_conn.commit()
 
    ItineraryTransportationAnimalSyncer.apply( sync_conn )
+   rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
 
-   assert ItineraryProvider.fetch_itinerary_animal_rows( sync_conn ) == []
+   assert rows == []
 
 
 def Test_PromoteSavedAnimals_TestEmptyList_ExpectTransportationRowKept(
       sync_conn: sqlite3.Connection ) -> None:
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
       added_by_transportation=1 )
    sync_conn.commit()
 
    ItineraryTransportationAnimalSyncer.promote_saved_animals( sync_conn, [] )
-
    rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
+
    giraffe = rows[ Position.FIRST ]
 
    assert len( rows ) == 1
@@ -489,83 +482,83 @@ def Test_PromoteSavedAnimals_TestEmptyList_ExpectTransportationRowKept(
 
 def Test_PromoteSavedAnimals_TestTransportationRow_ExpectDeleted(
       sync_conn: sqlite3.Connection ) -> None:
+   saved_animal = AnimalDiff(
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
+      old_likelihood=80,
+      new_likelihood=65 )
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=saved_animal.species,
+      exhibit=saved_animal.exhibit,
+      enclosure_name=saved_animal.enclosure_name,
       added_by_transportation=1 )
    sync_conn.commit()
 
    ItineraryTransportationAnimalSyncer.promote_saved_animals(
       sync_conn,
-      [
-         AnimalDiff(
-            species='Masai Giraffe',
-            exhibit='Africa Savanna',
-            enclosure_name='Outdoor',
-            old_likelihood=80,
-            new_likelihood=65 ),
-      ] )
+      [ saved_animal ] )
+   rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
 
-   assert ItineraryProvider.fetch_itinerary_animal_rows( sync_conn ) == []
+   assert rows == []
 
 
 def Test_PromoteSavedAnimals_TestGuestRow_ExpectKept(
       sync_conn: sqlite3.Connection ) -> None:
+   start_time = '10:00 AM'
+   end_time = '10:10 AM'
+   saved_animal = AnimalDiff(
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
+      old_likelihood=None,
+      new_likelihood=65 )
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=saved_animal.species,
+      exhibit=saved_animal.exhibit,
+      enclosure_name=saved_animal.enclosure_name,
       added_by_transportation=0,
-      start_time='10:00 AM',
-      end_time='10:10 AM' )
+      start_time=start_time,
+      end_time=end_time )
    sync_conn.commit()
 
    ItineraryTransportationAnimalSyncer.promote_saved_animals(
       sync_conn,
-      [
-         AnimalDiff(
-            species='Masai Giraffe',
-            exhibit='Africa Savanna',
-            enclosure_name='Outdoor',
-            old_likelihood=None,
-            new_likelihood=65 ),
-      ] )
-
+      [ saved_animal ] )
    rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
+
    giraffe = rows[ Position.FIRST ]
 
    assert len( rows ) == 1
    assert giraffe.added_by_transportation is False
-   assert giraffe.start_time == '10:00 AM'
+   assert giraffe.start_time == start_time
 
 
 def Test_PromoteSavedAnimals_TestUnrelatedAnimal_ExpectTransportationRowKept(
       sync_conn: sqlite3.Connection ) -> None:
+   saved_animal = AnimalDiff(
+      species='African Lion',
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
+      old_likelihood=None,
+      new_likelihood=100 )
    _insert_animal(
       sync_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Outdoor',
+      species=GIRAFFE.species,
+      exhibit=GIRAFFE.exhibit,
+      enclosure_name=GIRAFFE.enclosure_name,
       added_by_transportation=1 )
    sync_conn.commit()
 
    ItineraryTransportationAnimalSyncer.promote_saved_animals(
       sync_conn,
-      [
-         AnimalDiff(
-            species='African Lion',
-            exhibit='Africa Savanna',
-            enclosure_name='Outdoor',
-            old_likelihood=None,
-            new_likelihood=100 ),
-      ] )
-
+      [ saved_animal ] )
    rows = ItineraryProvider.fetch_itinerary_animal_rows( sync_conn )
+
    giraffe = rows[ Position.FIRST ]
 
    assert len( rows ) == 1
-   assert giraffe.species == 'Masai Giraffe'
+   assert giraffe.species == GIRAFFE.species
    assert giraffe.added_by_transportation is True

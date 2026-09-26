@@ -6,15 +6,20 @@ from api.shared.enums import ItineraryErrorType
 
 
 def Test_Success_TestSuccessStatus_ExpectTrue() -> None:
-   result = ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
+   date = '2026-06-15'
+   result = ItinerarySaveResult( itinerary=Itinerary( date=date ) )
 
-   assert result.success is True
+   success = result.success
+
+   assert success is True
 
 
 def Test_Success_TestFailureStatus_ExpectFalse() -> None:
+   date = '2026-06-15'
    result = ItinerarySaveResult(
       status=ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-      itinerary=Itinerary( date='2026-06-15' ),
-   )
+      itinerary=Itinerary( date=date ) )
 
-   assert result.success is False
+   success = result.success
+
+   assert success is False

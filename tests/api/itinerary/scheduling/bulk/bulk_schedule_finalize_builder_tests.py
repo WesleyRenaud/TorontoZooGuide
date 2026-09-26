@@ -157,19 +157,19 @@ def Test_Finalize_TestRemainingStops_ExpectNotEnoughTimeIssue(
       result.reasons[ Position.FIRST ].code
       == ItineraryErrorType.BULK_SCHEDULE_ITINERARY_NOT_ENOUGH_TIME )
    assert [ item.name for item in result.reasons[ Position.FIRST ].items ] == [
-      'African Penguin',
-      'African Lion',
+      PENGUIN.species,
+      LION.species,
    ]
    assert [ item.location for item in result.reasons[ Position.FIRST ].items ] == [
-      'Africa Savanna',
-      'Africa Savanna',
+      PENGUIN.exhibit,
+      LION.exhibit,
    ]
    assert result.reasons[ Position.FIRST ].items[ Position.FIRST ].item_type == ItinerarySaveIssueItemType.ANIMAL
    assert {
       animal.species
       for animal in result.itinerary.animals
       if animal.start_time is not None and animal.end_time is not None
-   } == { 'Cheetah' }
+   } == { CHEETAH.species }
 
 
 def Test_Finalize_TestRemainingStops_ExpectVisitTimesClearedWhenIncomplete(

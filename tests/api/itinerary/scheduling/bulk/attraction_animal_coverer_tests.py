@@ -11,6 +11,7 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.scheduling.bulk.attraction_animal_coverer import AttractionAnimalCoverer
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.models.animal_diff import AnimalDiff
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
@@ -200,9 +201,12 @@ def Test_KeysToCover_TestWalkThruAnimal_ExpectLinkedKangaroo(
 def Test_RestoreAfterRemoved_TestCoveredKangaroo_ExpectDefaultDurationSchedule(
       coverer_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   start_time = '11:00 AM'
+   attraction_end_time = '11:30 AM'
+   viewing_minutes = 5
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.attraction_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
-      lambda conn, species, exhibit, enclosure_name: 5 * 60 )
+      lambda conn, species, exhibit, enclosure_name: viewing_minutes * 60 )
 
    cur = coverer_conn.cursor()
    restored = AttractionAnimalCoverer.restore_after_removed(
@@ -210,8 +214,8 @@ def Test_RestoreAfterRemoved_TestCoveredKangaroo_ExpectDefaultDurationSchedule(
       coverer_conn,
       attraction_name=KANGAROO_WALK_THRU,
       attraction_block=TimeBlock(
-         start_seconds=11 * 3600,
-         end_seconds=11 * 3600 + 30 * 60 ),
+         start_seconds=DateValues.time_value_in_seconds( start_time ),
+         end_seconds=DateValues.time_value_in_seconds( attraction_end_time ) ),
       animal_rows=[ KANGAROO_ROW, TIGER_ROW ] )
    coverer_conn.commit()
    cur.close()
@@ -224,11 +228,13 @@ def Test_RestoreAfterRemoved_TestCoveredKangaroo_ExpectDefaultDurationSchedule(
       """,
       ( 'Western Grey Kangaroo', 'Australasia Outdoor' ),
    ).fetchone()
+   viewing_end_time = DateValues.add_minutes_to_time( start_time, viewing_minutes )
 
-   assert restored.replacement_end_seconds == 11 * 3600 + 5 * 60
+   assert restored.replacement_end_seconds == DateValues.time_value_in_seconds(
+      viewing_end_time )
    assert row is not None
-   assert row[ 'START_TIME' ] == '11:00 AM'
-   assert row[ 'END_TIME' ] == '11:05 AM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == viewing_end_time
    assert row[ 'COVERED_BY_TALK' ] == 0
 
 
@@ -360,8 +366,8 @@ def Test_RestoreAfterRemoved_TestMissingDuration_ExpectCleared(
       coverer_conn,
       attraction_name=KANGAROO_WALK_THRU,
       attraction_block=TimeBlock(
-         start_seconds=11 * 3600,
-         end_seconds=11 * 3600 + 30 * 60 ),
+         start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ) ),
       animal_rows=[ KANGAROO_ROW ] )
    coverer_conn.commit()
    cur.close()
@@ -503,8 +509,8 @@ def Test_RestoreAfterRemoved_TestUncoveredAnimal_ExpectSkipped(
       coverer_conn,
       attraction_name=KANGAROO_WALK_THRU,
       attraction_block=TimeBlock(
-         start_seconds=11 * 3600,
-         end_seconds=11 * 3600 + 30 * 60 ),
+         start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ) ),
       animal_rows=[ uncovered ] )
    cur.close()
 

@@ -13,6 +13,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -39,27 +40,31 @@ test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectSt
    };
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
+   const viewingScopes = ['Male Herd'];
    AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
       reset: () => {
          resets.push(true);
       },
       refresh: async () => {},
-      selectedEnclosureNames: () => [ 'Male Herd' ],
+      selectedEnclosureNames: () => viewingScopes,
    });
 
    try {
+      const species = 'Lion';
+      const exhibit = 'Savanna';
+      const panelEl = { id: 'animal-display' };
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
       const speciesEl = document.createElement('input');
       const exhibitEl = document.createElement('select');
-      speciesEl.value = 'Lion';
-      exhibitEl.value = 'Savanna';
+      speciesEl.value = species;
+      exhibitEl.value = exhibit;
 
       const controller = AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
          showButtonEl,
          submitButtonEl,
          cancelButtonEl: document.createElement('button'),
-         panelEl: { id: 'animal-display' },
+         panelEl,
          statusEl: {},
          speciesEl,
          exhibitEl,
@@ -67,25 +72,25 @@ test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectSt
          activatePanel: () => {},
          submitDisplayStatus: async (payload) => {
             assert.deepEqual(payload, {
-               species: 'Lion',
-               exhibit: 'Savanna',
-               viewingScopes: [ 'Male Herd' ],
+               species,
+               exhibit,
+               viewingScopes,
                startDate: '',
                endDate: '',
                message: '',
             });
-            return { success: true, species: 'Lion', exhibit: 'Savanna' };
+            return { success: true, species, exhibit };
          },
          successMessage: result => `On display: ${result.species}`,
       });
 
       await controller.show();
-      assert.deepEqual(activations, [{ id: 'animal-display' }]);
-
       await submitButtonEl.listeners.click();
+
+      assert.deepEqual(activations, [panelEl]);
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === 'On display: Lion'
+            entry[1] === `On display: ${species}`
             && entry[2] === 'is-success'
          ))
       );
@@ -100,6 +105,7 @@ test('Test_CreateAnimalDisplayStatusController_TestShowAndSubmitSuccess_ExpectSt
       AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
    }
 });
+
 
 test('Test_CreateAnimalDisplayStatusController_TestDateRangeAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];
@@ -181,6 +187,7 @@ test('Test_CreateAnimalDisplayStatusController_TestDateRangeAndFailures_ExpectEr
    }
 });
 
+
 test('Test_CreateAnimalDisplayStatusController_TestMissingSpecies_ExpectValidationError', async () => {
    const statuses = [];
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -233,6 +240,7 @@ test('Test_CreateAnimalDisplayStatusController_TestMissingSpecies_ExpectValidati
       AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
    }
 });
+
 
 test('Test_CreateAnimalDisplayStatusController_TestMissingViewingScope_ExpectValidationError', async () => {
    const statuses = [];
@@ -288,6 +296,7 @@ test('Test_CreateAnimalDisplayStatusController_TestMissingViewingScope_ExpectVal
    }
 });
 
+
 test('Test_CreateAnimalDisplayStatusController_TestInjectedLoadExhibits_ExpectUsed', async () => {
    const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -333,6 +342,7 @@ test('Test_CreateAnimalDisplayStatusController_TestInjectedLoadExhibits_ExpectUs
    }
 });
 
+
 test('Test_CreateAnimalDisplayStatusController_TestUniqueSpecies_ExpectFillsExhibitAndRefreshesScope', async () => {
    const refreshes = [];
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -376,6 +386,7 @@ test('Test_CreateAnimalDisplayStatusController_TestUniqueSpecies_ExpectFillsExhi
       AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
    }
 });
+
 
 test('Test_CreateAnimalDisplayStatusController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
    const resets = [];

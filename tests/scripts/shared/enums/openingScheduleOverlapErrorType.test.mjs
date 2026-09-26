@@ -9,13 +9,19 @@ import openingScheduleOverlapErrorTypeValues from '../../../../shared/enums/open
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_OpeningScheduleOverlapErrorType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(openingScheduleOverlapErrorTypeValues)) {
-      assert.equal(OpeningScheduleOverlapErrorType[key], value);
-   }
 
+test('Test_OpeningScheduleOverlapErrorType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/openingScheduleOverlapErrorType.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(openingScheduleOverlapErrorTypeValues).map((key) => [
+         key,
+         OpeningScheduleOverlapErrorType[key],
+      ])
+   );
+
+   assert.deepEqual(mapped, openingScheduleOverlapErrorTypeValues);
    assert.deepEqual(openingScheduleOverlapErrorTypeValues, diskValues);
 });

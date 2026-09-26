@@ -8,6 +8,7 @@ from api.itinerary.routing.attraction_hours_soft_pin import AttractionHoursSoftP
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver import AttractionHoursSoftPinResolver
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 from api.shared.operating_hours import OperatingHours
 
@@ -27,26 +28,30 @@ def _loop_unit(
 
 
 def Test_Resolve_TestInvalidVisitDate_ExpectEmpty() -> None:
-   assert AttractionHoursSoftPinResolver.resolve(
+   result = AttractionHoursSoftPinResolver.resolve(
       object(),
       attractions=[],
       loop_units=[],
       visit_date=None,
       zoo_operating_hours=OperatingHours(
-         open_seconds=9 * 3600,
-         close_seconds=19 * 3600 ) ) == []
+         open_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         close_seconds=DateValues.time_value_in_seconds( '7:00 PM' ) ) )
+
+   assert result == []
 
 
 def Test_AttachToWindows_TestNoPins_ExpectSameWindows() -> None:
    windows = [
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=12 * 3600 ),
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '12:00 PM' ) ),
    ]
 
-   assert AttractionHoursSoftPinResolver.attach_to_windows(
+   result = AttractionHoursSoftPinResolver.attach_to_windows(
       windows,
-      [] ) is windows
+      [] )
+
+   assert result is windows
 
 
 def Test_AttachToWindows_TestOverlappingPins_ExpectFilteredByWindow() -> None:
@@ -54,14 +59,14 @@ def Test_AttachToWindows_TestOverlappingPins_ExpectFilteredByWindow() -> None:
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name='Zoomobile',
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    morning = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=10 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '10:00 AM' ) )
    afternoon = ItineraryScheduleWindow(
-      start_seconds=11 * 3600,
-      end_seconds=15 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '3:00 PM' ) )
 
    attached = AttractionHoursSoftPinResolver.attach_to_windows(
       [ morning, afternoon ],
@@ -94,17 +99,19 @@ def Test_StopsBefore_TestUnknownLoop_ExpectEmpty() -> None:
       loop_id='unknown-loop',
       viewing_spot_index=2,
       attraction_name='Zoomobile',
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    attraction = ItineraryAttractionRecord(
       attraction='Zoomobile',
       old_likelihood=None,
       new_likelihood=100 )
 
-   assert AttractionHoursSoftPinResolver.stops_before(
+   result = AttractionHoursSoftPinResolver.stops_before(
       [ attraction ],
       loop_id='unknown-loop',
-      soft_pin=soft_pin ) == []
+      soft_pin=soft_pin )
+
+   assert result == []
 
 
 def Test_Resolve_TestAttractionNotOnLoop_ExpectEmpty() -> None:
@@ -119,8 +126,8 @@ def Test_Resolve_TestAttractionNotOnLoop_ExpectEmpty() -> None:
       loop_units=[],
       visit_date='2026-06-20',
       zoo_operating_hours=OperatingHours(
-         open_seconds=9 * 3600,
-         close_seconds=19 * 3600 ) )
+         open_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         close_seconds=DateValues.time_value_in_seconds( '7:00 PM' ) ) )
 
    assert soft_pins == []
 
@@ -132,8 +139,8 @@ def Test_Resolve_TestSplashOnLoopWithHours_ExpectSoftPin(
       old_likelihood=None,
       new_likelihood=100 )
    hours = OperatingHours(
-      open_seconds=12 * 3600,
-      close_seconds=17 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+      close_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
    loop_units = [
       _loop_unit(
          'splash',
@@ -153,16 +160,16 @@ def Test_Resolve_TestSplashOnLoopWithHours_ExpectSoftPin(
       loop_units=loop_units,
       visit_date='2026-06-20',
       zoo_operating_hours=OperatingHours(
-         open_seconds=9 * 3600,
-         close_seconds=19 * 3600 ) )
+         open_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         close_seconds=DateValues.time_value_in_seconds( '7:00 PM' ) ) )
 
    assert soft_pins == [
       AttractionHoursSoftPin(
          loop_id='splash',
          viewing_spot_index=0,
          attraction_name='Splash Island',
-         open_seconds=12 * 3600,
-         close_seconds=17 * 3600 ),
+         open_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+         close_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
    ]
 
 
@@ -176,33 +183,37 @@ def Test_Resolve_TestHoursClosedOrInvalid_ExpectEmpty(
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
       lambda conn, attraction, *, visit_date, zoo_operating_hours: OperatingHours(
-         open_seconds=12 * 3600,
-         close_seconds=12 * 3600 ) )
+         open_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+         close_seconds=DateValues.time_value_in_seconds( '12:00 PM' ) ) )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.LoopPinSegmentSplitter.viewing_spot_index_for_stop',
       lambda loop_id, stop: 0 )
 
-   assert AttractionHoursSoftPinResolver.resolve(
+   result = AttractionHoursSoftPinResolver.resolve(
       object(),
       attractions=[ splash ],
       loop_units=[ _loop_unit( 'splash', [ splash ] ) ],
       visit_date='2026-06-20',
       zoo_operating_hours=OperatingHours(
-         open_seconds=9 * 3600,
-         close_seconds=19 * 3600 ) ) == []
+         open_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         close_seconds=DateValues.time_value_in_seconds( '7:00 PM' ) ) )
+
+   assert result == []
 
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
       lambda conn, attraction, *, visit_date, zoo_operating_hours: None )
 
-   assert AttractionHoursSoftPinResolver.resolve(
+   result = AttractionHoursSoftPinResolver.resolve(
       object(),
       attractions=[ splash ],
       loop_units=[ _loop_unit( 'splash', [ splash ] ) ],
       visit_date='2026-06-20',
       zoo_operating_hours=OperatingHours(
-         open_seconds=9 * 3600,
-         close_seconds=19 * 3600 ) ) == []
+         open_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         close_seconds=DateValues.time_value_in_seconds( '7:00 PM' ) ) )
+
+   assert result == []
 
 
 def Test_Resolve_TestAttractionWithoutViewingSpotIndex_ExpectEmpty(
@@ -215,17 +226,19 @@ def Test_Resolve_TestAttractionWithoutViewingSpotIndex_ExpectEmpty(
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.AttractionOperatingHoursResolver.fetch_configured_operating_hours_seconds',
       lambda conn, attraction, *, visit_date, zoo_operating_hours: OperatingHours(
-         open_seconds=12 * 3600,
-         close_seconds=17 * 3600 ) )
+         open_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+         close_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ) )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.attraction_hours_soft_pin_resolver.LoopPinSegmentSplitter.viewing_spot_index_for_stop',
       lambda loop_id, stop: None )
 
-   assert AttractionHoursSoftPinResolver.resolve(
+   result = AttractionHoursSoftPinResolver.resolve(
       object(),
       attractions=[ splash ],
       loop_units=[ _loop_unit( 'splash', [ splash ] ) ],
       visit_date='2026-06-20',
       zoo_operating_hours=OperatingHours(
-         open_seconds=9 * 3600,
-         close_seconds=19 * 3600 ) ) == []
+         open_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         close_seconds=DateValues.time_value_in_seconds( '7:00 PM' ) ) )
+
+   assert result == []

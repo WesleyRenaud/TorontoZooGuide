@@ -6,7 +6,9 @@ import pytest
 
 from api.itinerary.data_access.itinerary_provider import ItineraryProvider
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.date_values import DateValues
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 ITINERARY_PROVIDER_SCHEMA = """
@@ -114,11 +116,17 @@ def itinerary_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchItineraryDate_TestEmptyDatabase_ExpectNone(
       itinerary_provider_conn: sqlite3.Connection ) -> None:
-   assert ItineraryProvider.fetch_itinerary_date( itinerary_provider_conn ) is None
+   itinerary_date = ItineraryProvider.fetch_itinerary_date(
+      itinerary_provider_conn )
+
+   assert itinerary_date is None
 
 
 def Test_FetchItineraryDate_TestSavedDate_ExpectVisitDate(
       itinerary_provider_conn: sqlite3.Connection ) -> None:
+   visit_date = '2026-06-15'
+   arrival_time = '9:30 AM'
+   departure_time = '5:00 PM'
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryDate (
                ITINERARY_DATE,
@@ -127,11 +135,13 @@ def Test_FetchItineraryDate_TestSavedDate_ExpectVisitDate(
             )
             VALUES ( ?, ?, ? );
       """,
-      ( '2026-06-15', '9:30 AM', '5:00 PM' ) )
+      ( visit_date, arrival_time, departure_time ) )
    itinerary_provider_conn.commit()
 
-   assert ItineraryProvider.fetch_itinerary_date(
-      itinerary_provider_conn ) == '2026-06-15'
+   itinerary_date = ItineraryProvider.fetch_itinerary_date(
+      itinerary_provider_conn )
+
+   assert itinerary_date == visit_date
 
 
 def Test_FetchSavedItinerary_TestEmptyDatabase_ExpectEmpty(
@@ -146,6 +156,24 @@ def Test_FetchSavedItinerary_TestEmptyDatabase_ExpectEmpty(
 
 def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
       itinerary_provider_conn: sqlite3.Connection ) -> None:
+   visit_date = '2026-06-15'
+   arrival_time = '9:30 AM'
+   departure_time = '5:00 PM'
+   species = 'African Lion'
+   exhibit = 'Africa Savanna'
+   attraction = 'Conservation Carousel'
+   talk_name = 'African Lion'
+   talk_start_time = '10:00 AM'
+   talk_duration_minutes = 30
+   talk_end_time = DateValues.add_minutes_to_time(
+      talk_start_time,
+      talk_duration_minutes )
+   encounter_name = 'African Rainforest'
+   encounter_start_time = '2:00 PM'
+   encounter_duration_minutes = 45
+   encounter_end_time = DateValues.add_minutes_to_time(
+      encounter_start_time,
+      encounter_duration_minutes )
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryDate (
                ITINERARY_DATE,
@@ -154,7 +182,7 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
             )
             VALUES ( ?, ?, ? );
       """,
-      ( '2026-06-15', '9:30 AM', '5:00 PM' ) )
+      ( visit_date, arrival_time, departure_time ) )
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryAnimal (
                SPECIES,
@@ -164,7 +192,7 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
             )
             VALUES ( ?, ?, ?, ? );
       """,
-      ( 'African Lion', 'Africa Savanna', None, 100 ) )
+      ( species, exhibit, None, 100 ) )
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryAttraction (
                ATTRACTION,
@@ -173,7 +201,7 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
             )
             VALUES ( ?, ?, ? );
       """,
-      ( 'Conservation Carousel', None, 100 ) )
+      ( attraction, None, 100 ) )
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryGuardiansTalk (
                TALK_NAME,
@@ -183,7 +211,7 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
             )
             VALUES ( ?, ?, ?, ? );
       """,
-      ( 'African Lion', '10:00 AM', '10:30 AM', 0 ) )
+      ( talk_name, talk_start_time, talk_end_time, 0 ) )
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryWildEncounter (
                WILD_ENCOUNTER,
@@ -193,25 +221,31 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
             )
             VALUES ( ?, ?, ?, ? );
       """,
-      ( 'African Rainforest', '2:00 PM', '2:45 PM', 0 ) )
+      ( encounter_name, encounter_start_time, encounter_end_time, 0 ) )
    itinerary_provider_conn.commit()
 
    saved = ItineraryProvider.fetch_saved_itinerary( itinerary_provider_conn )
 
-   assert saved.date_value == '2026-06-15'
-   assert saved.arrival_time == '9:30 AM'
-   assert saved.departure_time == '5:00 PM'
-   assert saved.animal_rows[ Position.FIRST ].species == 'African Lion'
+   assert saved.date_value == visit_date
+   assert saved.arrival_time == arrival_time
+   assert saved.departure_time == departure_time
+   assert saved.animal_rows[ Position.FIRST ].species == species
    assert saved.animal_rows[ Position.FIRST ].transportation is None
-   assert saved.attraction_rows[ Position.FIRST ].attraction == 'Conservation Carousel'
-   assert saved.guardians_talk_rows[ Position.FIRST ].talk_name == 'African Lion'
-   assert saved.guardians_talk_rows[ Position.FIRST ].start_time == '10:00 AM'
-   assert saved.wild_encounter_rows[ Position.FIRST ].wild_encounter == 'African Rainforest'
-   assert saved.wild_encounter_rows[ Position.FIRST ].start_time == '2:00 PM'
+   assert saved.attraction_rows[ Position.FIRST ].attraction == attraction
+   assert saved.guardians_talk_rows[ Position.FIRST ].talk_name == talk_name
+   assert saved.guardians_talk_rows[ Position.FIRST ].start_time == talk_start_time
+   assert saved.wild_encounter_rows[ Position.FIRST ].wild_encounter == encounter_name
+   assert saved.wild_encounter_rows[ Position.FIRST ].start_time == encounter_start_time
 
 
 def Test_FetchItineraryAnimalRows_TestAddedByTransportation_ExpectCatalogTransportation(
       itinerary_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   from_station = 'Canadian Domain Zoomobile Station'
+   to_station = 'Africa Zoomobile Station'
+   species = 'Masai Giraffe'
+   exhibit = 'Africa Savanna'
+   enclosure_name = 'Outdoor'
    itinerary_provider_conn.execute(
       """   INSERT INTO TransportationAnimal (
                TRANSPORTATION,
@@ -224,12 +258,12 @@ def Test_FetchItineraryAnimalRows_TestAddedByTransportation_ExpectCatalogTranspo
             VALUES ( ?, ?, ?, ?, ?, ? );
       """,
       (
-         'Zoomobile',
-         'Canadian Domain Zoomobile Station',
-         'Africa Zoomobile Station',
-         'Masai Giraffe',
-         'Africa Savanna',
-         'Outdoor',
+         transportation,
+         from_station,
+         to_station,
+         species,
+         exhibit,
+         enclosure_name,
       ) )
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryAnimal (
@@ -240,18 +274,31 @@ def Test_FetchItineraryAnimalRows_TestAddedByTransportation_ExpectCatalogTranspo
             )
             VALUES ( ?, ?, ?, 1 );
       """,
-      ( 'Masai Giraffe', 'Africa Savanna', 'Outdoor' ) )
+      ( species, exhibit, enclosure_name ) )
    itinerary_provider_conn.commit()
 
    giraffe = ItineraryProvider.fetch_itinerary_animal_rows(
       itinerary_provider_conn )[ Position.FIRST ]
 
    assert giraffe.added_by_transportation is True
-   assert giraffe.transportation == 'Zoomobile'
+   assert giraffe.transportation == transportation
 
 
 def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
       itinerary_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   main_station = 'Main Zoomobile Station'
+   canada_station = 'Canadian Domain Zoomobile Station'
+   africa_station = 'Africa Zoomobile Station'
+   start_time = '10:00 AM'
+   first_duration_minutes = 20
+   first_end_time = DateValues.add_minutes_to_time(
+      start_time,
+      first_duration_minutes )
+   second_duration_minutes = 10
+   second_end_time = DateValues.add_minutes_to_time(
+      first_end_time,
+      second_duration_minutes )
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryTransportationLeg (
                TRANSPORTATION,
@@ -264,11 +311,11 @@ def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
             VALUES ( ?, 1, ?, ?, ?, ? );
       """,
       (
-         'Zoomobile',
-         'Main Zoomobile Station',
-         'Canadian Domain Zoomobile Station',
-         '10:00 AM',
-         '10:20 AM',
+         transportation,
+         main_station,
+         canada_station,
+         start_time,
+         first_end_time,
       ) )
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryTransportationLeg (
@@ -282,11 +329,11 @@ def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
             VALUES ( ?, 1, ?, ?, ?, ? );
       """,
       (
-         'Zoomobile',
-         'Canadian Domain Zoomobile Station',
-         'Africa Zoomobile Station',
-         '10:20 AM',
-         '10:30 AM',
+         transportation,
+         canada_station,
+         africa_station,
+         first_end_time,
+         second_end_time,
       ) )
    itinerary_provider_conn.commit()
 
@@ -295,13 +342,15 @@ def Test_FetchItineraryTransportationLegRows_TestSavedLegs_ExpectMappedLegs(
 
    assert len( legs ) == 2
    assert all( isinstance( leg, ItineraryTransportationLeg ) for leg in legs )
-   assert legs[ Position.FIRST ].transportation == 'Zoomobile'
-   assert legs[ Position.FIRST ].from_station == 'Main Zoomobile Station'
-   assert legs[ Position.LAST ].to_station == 'Africa Zoomobile Station'
+   assert legs[ Position.FIRST ].transportation == transportation
+   assert legs[ Position.FIRST ].from_station == main_station
+   assert legs[ Position.LAST ].to_station == africa_station
 
 
 def Test_FetchItineraryTransportationNames_TestSavedRows_ExpectTransportationNames(
       itinerary_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = 0
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryTransportation (
                TRANSPORTATION,
@@ -309,8 +358,10 @@ def Test_FetchItineraryTransportationNames_TestSavedRows_ExpectTransportationNam
             )
             VALUES ( ?, ? );
       """,
-      ( 'Zoomobile', 0 ) )
+      ( transportation, added_as_attraction ) )
    itinerary_provider_conn.commit()
 
-   assert ItineraryProvider.fetch_itinerary_transportation_names(
-      itinerary_provider_conn ) == { 'Zoomobile' }
+   names = ItineraryProvider.fetch_itinerary_transportation_names(
+      itinerary_provider_conn )
+
+   assert names == { transportation }

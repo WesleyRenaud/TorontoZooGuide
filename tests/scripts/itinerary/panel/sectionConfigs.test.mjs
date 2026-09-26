@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
-import { TransportationSequenceItems } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationSequenceItems.js';
+import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { TransportationSelectorModel } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.js';
+import { TransportationSequenceItems } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationSequenceItems.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
+
 
 test('Test_BuildSectionConfigs_TestFilteredKeys_ExpectSections', () => {
    const originalExpand = TransportationSequenceItems.expandTransportationListItems;
@@ -15,10 +17,13 @@ test('Test_BuildSectionConfigs_TestFilteredKeys_ExpectSections', () => {
    const originalGuardians = ItineraryPanelRowsBuilder.buildGuardiansRows;
    const originalWild = ItineraryPanelRowsBuilder.buildWildRows;
    const originalIsAttraction = TransportationSelectorModel.isTransportationAddedAsAttraction;
-
+   const animalRow = { id: 'animal' };
+   const attractionRow = { id: 'attraction' };
+   const attractionRide = { id: 'ride-attr', asAttraction: true };
+   const transitRide = { id: 'ride', asAttraction: false };
    TransportationSequenceItems.expandTransportationListItems = (items) => items;
-   ItineraryPanelRowsBuilder.buildAnimalRows = () => [{ id: 'animal' }];
-   ItineraryPanelRowsBuilder.buildAttractionRows = () => [{ id: 'attraction' }];
+   ItineraryPanelRowsBuilder.buildAnimalRows = () => [animalRow];
+   ItineraryPanelRowsBuilder.buildAttractionRows = () => [attractionRow];
    ItineraryPanelRowsBuilder.buildTransportationRows = (items) => items.map((item) => ({ id: item.id }));
    ItineraryPanelRowsBuilder.buildGuardiansRows = () => [{ id: 'talk' }];
    ItineraryPanelRowsBuilder.buildWildRows = () => [{ id: 'wild' }];
@@ -31,10 +36,7 @@ test('Test_BuildSectionConfigs_TestFilteredKeys_ExpectSections', () => {
             attractions: [{}],
             guardiansTalks: [{}],
             wildEncounters: [{}],
-            transportations: [
-               { id: 'ride-attr', asAttraction: true },
-               { id: 'ride', asAttraction: false },
-            ],
+            transportations: [attractionRide, transitRide],
          },
          {
             keys: [
@@ -46,12 +48,15 @@ test('Test_BuildSectionConfigs_TestFilteredKeys_ExpectSections', () => {
       );
 
       assert.equal(sections.length, 3);
-      assert.equal(sections[0].title, Strings.site.nav.animals);
-      assert.equal(sections[0].count, 1);
-      assert.equal(sections[1].key, 'attractions');
-      assert.ok(sections[1].children.some((row) => row.id === 'attraction'));
-      assert.ok(sections[1].children.some((row) => row.id === 'ride-attr'));
-      assert.deepEqual(sections[2].children, [{ id: 'ride' }]);
+      assert.equal(sections.at(Position.FIRST).title, Strings.site.nav.animals);
+      assert.equal(sections.at(Position.FIRST).count, 1);
+      assert.equal(
+         sections.at(Position.SECOND).key,
+         SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.attractions
+      );
+      assert.ok(sections.at(Position.SECOND).children.some((row) => row.id === attractionRow.id));
+      assert.ok(sections.at(Position.SECOND).children.some((row) => row.id === attractionRide.id));
+      assert.deepEqual(sections.at(Position.THIRD).children, [{ id: transitRide.id }]);
    } finally {
       TransportationSequenceItems.expandTransportationListItems = originalExpand;
       ItineraryPanelRowsBuilder.buildAnimalRows = originalAnimals;
@@ -63,9 +68,12 @@ test('Test_BuildSectionConfigs_TestFilteredKeys_ExpectSections', () => {
    }
 });
 
-test('Test_SectionKeyConstants_TestSets_ExpectMembership', () => {
+
+test('Test_ScheduledDayPlannerSectionKeys_TestSets_ExpectMembership', () => {
+   const scheduledKeys = SectionConfigs.SCHEDULED_DAY_PLANNER_SECTION_KEYS;
+
    assert.deepEqual(
-      SectionConfigs.SCHEDULED_DAY_PLANNER_SECTION_KEYS,
+      scheduledKeys,
       [
          SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.animals,
          SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.attractions,
@@ -74,13 +82,21 @@ test('Test_SectionKeyConstants_TestSets_ExpectMembership', () => {
          SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.transportations,
       ]
    );
-   assert.ok(
-      !SectionConfigs.UNSCHEDULED_DAY_PLANNER_SECTION_KEYS.includes(
-         SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks
-      )
-   );
+});
+
+
+test('Test_UnscheduledDayPlannerSectionKeys_TestGuardiansTalks_ExpectOmitted', () => {
+   const unscheduledKeys = SectionConfigs.UNSCHEDULED_DAY_PLANNER_SECTION_KEYS;
+
+   assert.ok(!unscheduledKeys.includes(SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks));
+});
+
+
+test('Test_ScheduledDayPlannerEditSectionKeys_TestTalksAndWild_ExpectKeys', () => {
+   const editKeys = SectionConfigs.SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS;
+
    assert.deepEqual(
-      SectionConfigs.SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
+      editKeys,
       [
          SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
          SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters,

@@ -5,11 +5,11 @@ from api.transportation.search.transportations_matching_query_builder import Tra
 
 
 def Test_Build_TestMatchingQuery_ExpectMatchingTransportationOnly() -> None:
-   transportations = [
-      Transportation( name='Zoomobile' ),
-      Transportation( name='Gondola' ),
-   ]
+   zoomobile = Transportation( name='Zoomobile' )
+   gondola = Transportation( name='Gondola' )
+   transportations = [ zoomobile, gondola ]
+   query = 'zoomobile'
 
-   matches = TransportationsMatchingQueryBuilder.build( transportations, 'zoomobile' )
+   matches = TransportationsMatchingQueryBuilder.build( transportations, query )
 
-   assert [ transportation.name for transportation in matches ] == [ 'Zoomobile' ]
+   assert [ transportation.name for transportation in matches ] == [ zoomobile.name ]

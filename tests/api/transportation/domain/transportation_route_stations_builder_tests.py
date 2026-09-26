@@ -53,9 +53,11 @@ def Test_IsTransportationStationOnRoute_TestIncludedOffRouteStation_ExpectTrue()
       stations_on_route=[ 'Africa Station' ],
       transportation_stations_to_include=[ 'Americas Station' ] )
 
-   assert TransportationRouteStationsBuilder.is_transportation_station_on_route(
+   flag = TransportationRouteStationsBuilder.is_transportation_station_on_route(
       station_record,
       context )
+
+   assert flag
 
 
 def Test_IsTransportationStationClosed_TestActiveClosure_ExpectTrue() -> None:
@@ -68,9 +70,11 @@ def Test_IsTransportationStationClosed_TestActiveClosure_ExpectTrue() -> None:
          closed_message='Closed for maintenance.' ),
    ]
 
-   assert TransportationRouteStationsBuilder.is_transportation_station_closed(
+   flag = TransportationRouteStationsBuilder.is_transportation_station_closed(
       status_records,
       VISIT_DATE )
+
+   assert flag
 
 
 def Test_BuildRouteTransportationStations_TestClosedOnRouteStation_ExpectExcluded() -> None:

@@ -3,26 +3,36 @@ import test from 'node:test';
 
 import { ScheduledPillViewingWalkModel } from '../../../../../scripts/itinerary/panel/components/scheduledPillViewingWalkModel.js';
 
+
 test('Test_GetAnimalViewingWalkNodeId_TestAnimal_ExpectTrimmed', () => {
-   assert.equal(
-      ScheduledPillViewingWalkModel.getAnimalViewingWalkNodeId({
-         viewing_walk_node_id: '  node-1  ',
-      }),
-      'node-1'
-   );
+   const nodeId = 'node-lion';
+   const animal = { viewing_walk_node_id: `  ${nodeId}  ` };
+
+   const viewingWalkNodeId = ScheduledPillViewingWalkModel.getAnimalViewingWalkNodeId(animal);
+
+   assert.equal(viewingWalkNodeId, nodeId);
 });
 
-test('Test_GetScheduledItemViewingWalkNodeId_TestSources_ExpectResolved', () => {
-   assert.equal(
-      ScheduledPillViewingWalkModel.getScheduledItemViewingWalkNodeId({
-         viewingWalkNodeId: '  node-2  ',
-      }),
-      'node-2'
+
+test('Test_GetScheduledItemViewingWalkNodeId_TestItemField_ExpectTrimmed', () => {
+   const nodeId = 'node-tiger';
+   const scheduledItem = { viewingWalkNodeId: `  ${nodeId}  ` };
+
+   const viewingWalkNodeId = ScheduledPillViewingWalkModel.getScheduledItemViewingWalkNodeId(
+      scheduledItem
    );
-   assert.equal(
-      ScheduledPillViewingWalkModel.getScheduledItemViewingWalkNodeId({
-         item: { viewing_walk_node_id: '  node-3  ' },
-      }),
-      'node-3'
+
+   assert.equal(viewingWalkNodeId, nodeId);
+});
+
+
+test('Test_GetScheduledItemViewingWalkNodeId_TestNestedAnimal_ExpectTrimmed', () => {
+   const nodeId = 'node-gorilla';
+   const scheduledItem = { item: { viewing_walk_node_id: `  ${nodeId}  ` } };
+
+   const viewingWalkNodeId = ScheduledPillViewingWalkModel.getScheduledItemViewingWalkNodeId(
+      scheduledItem
    );
+
+   assert.equal(viewingWalkNodeId, nodeId);
 });

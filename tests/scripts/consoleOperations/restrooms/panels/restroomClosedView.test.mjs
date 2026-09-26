@@ -9,6 +9,7 @@ import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperati
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { ConsoleTextareaFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleTextareaFieldBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateRestroomClosedPanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -35,20 +36,19 @@ test('Test_CreateRestroomClosedPanel_TestWiring_ExpectShellOptions', () => {
       const result = RestroomClosedView.createRestroomClosedPanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'restroomClosedPanel');
       assert.equal(captured.title, Strings.panelTitles.restroomClosed);
       assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'restroomClosedRestroom');
-      assert.equal(captured.bodyChildren[1].startDateId, 'restroomClosedStartDate');
-      assert.equal(captured.bodyChildren[1].endDateId, 'restroomClosedEndDate');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'restroomClosedRestroom');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).startDateId, 'restroomClosedStartDate');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).endDateId, 'restroomClosedEndDate');
       assert.equal(
-         captured.bodyChildren[1].endHelpText,
+         captured.bodyChildren.at(Position.SECOND).endHelpText,
          Strings.help.continueUntilReopened('restroom')
       );
-      assert.equal(captured.bodyChildren[2].inputId, 'restroomClosedMessage');
-      assert.equal(captured.bodyChildren[2].placeholder, Strings.textareas.closedMessage('restroom'));
-      assert.equal(captured.bodyChildren[3].submitId, 'submitRestroomClosed');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'restroomClosedMessage');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).placeholder, Strings.textareas.closedMessage('restroom'));
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).submitId, 'submitRestroomClosed');
       assert.equal(captured.bodyChildren[4].statusId, 'restroomClosedStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;

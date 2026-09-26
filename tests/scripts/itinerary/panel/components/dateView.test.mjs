@@ -5,29 +5,42 @@ import { DateView } from '../../../../../scripts/itinerary/panel/components/date
 import { DraftStore } from '../../../../../scripts/itinerary/draftStore.js';
 import { ItineraryItemFormatter } from '../../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
 import { ItineraryPanelHelper } from '../../../../../scripts/itinerary/panel/itineraryPanelHelper.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
+function _prettyDate(date) {
+   return `pretty:${date}`;
+}
+
 installDomTestHooks();
+
 
 test('Test_MakeDateCard_TestMissingPrettyDate_ExpectNull', () => {
    const originalFormat = ItineraryItemFormatter.formatISODateLong;
+   const date = '2026-06-01';
+
    ItineraryItemFormatter.formatISODateLong = () => '';
+
    try {
-      assert.equal(DateView.makeDateCard({ date: '2026-06-01' }), null);
+      const card = DateView.makeDateCard({ date });
+
+      assert.equal(card, null);
    } finally {
       ItineraryItemFormatter.formatISODateLong = originalFormat;
    }
 });
 
-test('Test_MakeDateCard_TestUsesItineraryDate_ExpectCardAndEditEvent', () => {
+
+test('Test_MakeDateCard_TestItineraryDate_ExpectCardAndEditEvent', () => {
    const originalFormat = ItineraryItemFormatter.formatISODateLong;
    const originalGet = DraftStore.getStoredItineraryDate;
    const originalEl = ItineraryPanelHelper.el;
    const originalCustomEvent = globalThis.CustomEvent;
+   const date = '2026-06-15';
    const dispatched = [];
 
-   ItineraryItemFormatter.formatISODateLong = (date) => `pretty:${date}`;
+   ItineraryItemFormatter.formatISODateLong = _prettyDate;
    DraftStore.getStoredItineraryDate = () => 'should-not-use';
    ItineraryPanelHelper.el = (tag, className, text) => {
       const el = document.createElement(tag);
@@ -47,16 +60,19 @@ test('Test_MakeDateCard_TestUsesItineraryDate_ExpectCardAndEditEvent', () => {
    };
 
    try {
-      const card = DateView.makeDateCard({ date: '2026-06-15' });
+      const card = DateView.makeDateCard({ date });
+      const editBtn = card.children.at(Position.FIRST)
+         .children.at(Position.SECOND)
+         .children.at(Position.FIRST);
+      editBtn.listeners.click({ preventDefault() {}, stopPropagation() {} });
+      const event = dispatched.at(Position.FIRST);
+
       assert.equal(card.className, 'itin-panel-date');
       assert.ok(card.textContent.includes(Strings.itinerary.selectors.visitDate));
-      assert.ok(card.textContent.includes('pretty:2026-06-15'));
-
-      const editBtn = card.children[0].children[1].children[0];
-      editBtn.listeners.click({ preventDefault() {}, stopPropagation() {} });
+      assert.ok(card.textContent.includes(_prettyDate(date)));
       assert.equal(dispatched.length, 1);
-      assert.equal(dispatched[0].type, 'tzg:editItinerarySection');
-      assert.deepEqual(dispatched[0].detail, { step: 'date' });
+      assert.equal(event.type, 'tzg:editItinerarySection');
+      assert.deepEqual(event.detail, { step: 'date' });
    } finally {
       ItineraryItemFormatter.formatISODateLong = originalFormat;
       DraftStore.getStoredItineraryDate = originalGet;
@@ -65,12 +81,15 @@ test('Test_MakeDateCard_TestUsesItineraryDate_ExpectCardAndEditEvent', () => {
    }
 });
 
-test('Test_MakeDateCard_TestFallsBackToStoredDate_ExpectPrettyStored', () => {
+
+test('Test_MakeDateCard_TestStoredDate_ExpectPrettyStored', () => {
    const originalFormat = ItineraryItemFormatter.formatISODateLong;
    const originalGet = DraftStore.getStoredItineraryDate;
    const originalEl = ItineraryPanelHelper.el;
-   ItineraryItemFormatter.formatISODateLong = (date) => `pretty:${date}`;
-   DraftStore.getStoredItineraryDate = () => '2026-09-01';
+   const storedDate = '2026-09-01';
+
+   ItineraryItemFormatter.formatISODateLong = _prettyDate;
+   DraftStore.getStoredItineraryDate = () => storedDate;
    ItineraryPanelHelper.el = (tag, className, text) => {
       const el = document.createElement(tag);
       if (className) el.className = className;
@@ -80,7 +99,8 @@ test('Test_MakeDateCard_TestFallsBackToStoredDate_ExpectPrettyStored', () => {
 
    try {
       const card = DateView.makeDateCard({});
-      assert.ok(card.textContent.includes('pretty:2026-09-01'));
+
+      assert.ok(card.textContent.includes(_prettyDate(storedDate)));
    } finally {
       ItineraryItemFormatter.formatISODateLong = originalFormat;
       DraftStore.getStoredItineraryDate = originalGet;

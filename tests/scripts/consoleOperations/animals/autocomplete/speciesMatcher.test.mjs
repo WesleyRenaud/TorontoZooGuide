@@ -2,31 +2,56 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { SpeciesMatcher } from '../../../../../scripts/consoleOperations/animals/autocomplete/speciesMatcher.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
-const SPECIES = ['African Lion', 'Amur Tiger', 'Giant Panda', 'Snow Leopard'];
+const AFRICAN_LION = 'African Lion';
+const AMUR_TIGER = 'Amur Tiger';
+const GIANT_PANDA = 'Giant Panda';
+const SNOW_LEOPARD = 'Snow Leopard';
+const SPECIES = [AFRICAN_LION, AMUR_TIGER, GIANT_PANDA, SNOW_LEOPARD];
+
 
 test('Test_FilterSpeciesMatches_TestBlankQuery_ExpectEmpty', () => {
-   assert.deepEqual(SpeciesMatcher.filterSpeciesMatches(SPECIES, '  '), []);
-   assert.deepEqual(SpeciesMatcher.filterSpeciesMatches(SPECIES, ''), []);
+   const query = '  ';
+
+   const matches = SpeciesMatcher.filterSpeciesMatches(SPECIES, query);
+
+   assert.deepEqual(matches, []);
 });
+
+
+test('Test_FilterSpeciesMatches_TestEmptyQuery_ExpectEmpty', () => {
+   const query = '';
+
+   const matches = SpeciesMatcher.filterSpeciesMatches(SPECIES, query);
+
+   assert.deepEqual(matches, []);
+});
+
 
 test('Test_FilterSpeciesMatches_TestStartsWithBeforeContains_ExpectOrdered', () => {
-   assert.deepEqual(
-      SpeciesMatcher.filterSpeciesMatches(SPECIES, 'a'),
-      ['African Lion', 'Amur Tiger', 'Giant Panda', 'Snow Leopard']
-   );
+   const query = 'a';
+
+   const matches = SpeciesMatcher.filterSpeciesMatches(SPECIES, query);
+
+   assert.deepEqual(matches, SPECIES);
 });
+
 
 test('Test_FilterSpeciesMatches_TestMaxResults_ExpectSliced', () => {
-   assert.deepEqual(
-      SpeciesMatcher.filterSpeciesMatches(SPECIES, 'a', 2),
-      ['African Lion', 'Amur Tiger']
-   );
+   const query = 'a';
+   const maxResults = 2;
+
+   const matches = SpeciesMatcher.filterSpeciesMatches(SPECIES, query, maxResults);
+
+   assert.deepEqual(matches, SPECIES.slice(Position.FIRST, maxResults));
 });
 
+
 test('Test_FilterSpeciesMatches_TestContainsOnly_ExpectMatches', () => {
-   assert.deepEqual(
-      SpeciesMatcher.filterSpeciesMatches(SPECIES, 'opard'),
-      ['Snow Leopard']
-   );
+   const query = 'opard';
+
+   const matches = SpeciesMatcher.filterSpeciesMatches(SPECIES, query);
+
+   assert.deepEqual(matches, [SNOW_LEOPARD]);
 });

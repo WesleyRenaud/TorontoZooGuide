@@ -63,27 +63,53 @@ Default pattern:
 
 ```js
 test('Test_Format_TestTrimmedTimes_ExpectJoined', () => {
-   assert.equal(
-      JoinedTimesFormatter.format(['11:00 AM', '2:00 PM']),
-      '11:00 AM, 2:00 PM'
-   );
+   const morning = '11:00 AM';
+   const afternoon = '2:00 PM';
+   const times = [morning, afternoon];
+
+   const formatted = JoinedTimesFormatter.format(times);
+
+   assert.equal(formatted, `${morning}, ${afternoon}`);
 });
 ```
+
+Separate tests with two blank lines. Do not pack unrelated scenarios into one
+`test()`; give each its own `Test_[Method]_Test[Scenario]_Expect[Outcome]` name.
 
 Table-driven tests may use the short form `Test_[Method]` when a single test
-covers multiple input/output pairs:
+covers a true mapping table (for example boolean conversions). Prefer a named
+AAA case when the expected value is the same data as the input, just transformed.
+
+## Arrange, act, assert
+
+Every non-table test uses blank-line arrange / act / assert. Assign the act to a
+named result. Do not label the sections with comments.
+
+Expected values must come from arranged inputs or production constants — never
+from a second copy of the same literal, and never from a number that was
+calculated by hand.
 
 ```js
-test('Test_AsBoolean', () => {
-   const cases = [
-      [true, true],
-      [0, false],
-   ];
+test('Test_AsTrimmedString_TestWhitespace_ExpectTrimmed', () => {
+   const name = 'Amur Tiger';
+   const value = `  ${name}  `;
 
-   for (const [value, expected] of cases) {
-      assert.equal(ValueNormalizer.asBoolean(value), expected);
-   }
+   const trimmed = ValueNormalizer.asTrimmedString(value);
+
+   assert.equal(trimmed, name);
+});
+
+
+test('Test_AsFiniteNumber_TestNumericString_ExpectNumber', () => {
+   const value = '34';
+
+   const number = ValueNormalizer.asFiniteNumber(value);
+
+   assert.equal(number, Number(value));
 });
 ```
+
+Use `Position.FIRST` / `Position.LAST` and module constants instead of `0`, `-1`,
+or copied hex/color/string literals that already live on the production object.
 
 Enforcement covers every `tests/scripts/**/*.test.mjs` file.

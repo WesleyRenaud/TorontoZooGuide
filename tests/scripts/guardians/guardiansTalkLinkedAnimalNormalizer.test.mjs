@@ -3,27 +3,35 @@ import test from 'node:test';
 
 import { GuardiansTalkLinkedAnimalNormalizer } from '../../../scripts/guardians/guardiansTalkLinkedAnimalNormalizer.js';
 
+
 test('Test_NormalizeGuardiansTalkLinkedAnimals_TestValidRows_ExpectTrimmed', () => {
-   assert.deepEqual(
-      GuardiansTalkLinkedAnimalNormalizer.normalizeGuardiansTalkLinkedAnimals([
-         { species: '  African Lion  ', exhibit: '  African Savanna  ' },
-         { species: 'Amur Tiger', exhibit: 'Eurasia' },
-      ]),
-      [
-         { species: 'African Lion', exhibit: 'African Savanna' },
-         { species: 'Amur Tiger', exhibit: 'Eurasia' },
-      ]
-   );
+   const lion = 'African Lion';
+   const savanna = 'African Savanna';
+   const tiger = 'Amur Tiger';
+   const eurasia = 'Eurasia';
+   const rows = [
+      { species: `  ${lion}  `, exhibit: `  ${savanna}  ` },
+      { species: tiger, exhibit: eurasia },
+   ];
+
+   const linked = GuardiansTalkLinkedAnimalNormalizer.normalizeGuardiansTalkLinkedAnimals(rows);
+
+   assert.deepEqual(linked, [
+      { species: lion, exhibit: savanna },
+      { species: tiger, exhibit: eurasia },
+   ]);
 });
 
+
 test('Test_NormalizeGuardiansTalkLinkedAnimals_TestIncompleteRows_ExpectFiltered', () => {
-   assert.deepEqual(
-      GuardiansTalkLinkedAnimalNormalizer.normalizeGuardiansTalkLinkedAnimals([
-         { species: 'African Lion', exhibit: '' },
-         { species: '', exhibit: 'Eurasia' },
-         null,
-         'skip',
-      ]),
-      []
-   );
+   const rows = [
+      { species: 'African Lion', exhibit: '' },
+      { species: '', exhibit: 'Eurasia' },
+      null,
+      'skip',
+   ];
+
+   const linked = GuardiansTalkLinkedAnimalNormalizer.normalizeGuardiansTalkLinkedAnimals(rows);
+
+   assert.deepEqual(linked, []);
 });

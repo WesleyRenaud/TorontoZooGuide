@@ -8,6 +8,7 @@ import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../../../../scripts
 import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateCancelGuardiansTalkOccurrencePanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -32,15 +33,14 @@ test('Test_CreateCancelGuardiansTalkOccurrencePanel_TestWiring_ExpectShellOption
       const result = CancelGuardiansTalkOccurrenceView.createCancelGuardiansTalkOccurrencePanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'cancelGuardiansTalkOccurrencePanel');
       assert.equal(captured.title, Strings.panelTitles.cancelGuardiansTalkOccurrence);
       assert.equal(captured.bodyChildren.length, 6);
-      assert.equal(captured.bodyChildren[0].inputId, 'cancelGuardiansTalkOccurrenceLocation');
-      assert.equal(captured.bodyChildren[1].inputId, 'cancelGuardiansTalkOccurrenceTalkName');
-      assert.equal(captured.bodyChildren[2].inputId, 'cancelGuardiansTalkOccurrenceDate');
-      assert.equal(captured.bodyChildren[3].inputId, 'cancelGuardiansTalkOccurrenceTimes');
-      assert.equal(captured.bodyChildren[3].helpText, Strings.help.cancelOccurrenceTimes);
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'cancelGuardiansTalkOccurrenceLocation');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).inputId, 'cancelGuardiansTalkOccurrenceTalkName');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'cancelGuardiansTalkOccurrenceDate');
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).inputId, 'cancelGuardiansTalkOccurrenceTimes');
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).helpText, Strings.help.cancelOccurrenceTimes);
       assert.equal(captured.bodyChildren[4].submitId, 'submitCancelGuardiansTalkOccurrence');
       assert.equal(captured.bodyChildren[5].statusId, 'cancelGuardiansTalkOccurrenceStatus');
    } finally {

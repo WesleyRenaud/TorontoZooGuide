@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.itinerary_stop_walk_route_sorter import ItineraryStopWalkRouteSorter
@@ -14,13 +15,17 @@ ENTRANCE_STOP = ItineraryStop(
 
 UNSCHEDULED_LION_STOP = ItineraryStop(
    schedule_item_kind=ScheduleItemKind.ANIMAL,
-   item_key='African Lion||Africa Savanna',
+   item_key=AnimalScheduleItemKey.wire(
+      species='African Lion',
+      exhibit='Africa Savanna' ),
    walk_node_ids=[ 'n-2' ],
 )
 
 SCHEDULED_LION_STOP = ItineraryStop(
    schedule_item_kind=ScheduleItemKind.ANIMAL,
-   item_key='African Lion||Africa Savanna',
+   item_key=AnimalScheduleItemKey.wire(
+      species='African Lion',
+      exhibit='Africa Savanna' ),
    walk_node_ids=[ 'n-2' ],
    is_fixed_time=True,
    start_time='2:00 PM',
@@ -39,26 +44,31 @@ SCHEDULED_ENCOUNTER_STOP = ItineraryStop(
 
 
 def Test_Sort_TestUnscheduledStopsOnly_ExpectEmptyList() -> None:
-   assert ItineraryStopWalkRouteSorter.sort(
-      [ ENTRANCE_STOP, UNSCHEDULED_LION_STOP ] ) == []
+   stops = [ ENTRANCE_STOP, UNSCHEDULED_LION_STOP ]
+
+   ordered_stops = ItineraryStopWalkRouteSorter.sort( stops )
+
+   assert ordered_stops == []
 
 
 def Test_Sort_TestScheduledStops_ExpectEntranceFirstThenStartTimeOrder() -> None:
-   ordered_stops = ItineraryStopWalkRouteSorter.sort(
-      [ ENTRANCE_STOP, SCHEDULED_LION_STOP, SCHEDULED_ENCOUNTER_STOP ] )
+   stops = [ ENTRANCE_STOP, SCHEDULED_LION_STOP, SCHEDULED_ENCOUNTER_STOP ]
+
+   ordered_stops = ItineraryStopWalkRouteSorter.sort( stops )
 
    assert [ stop.item_key for stop in ordered_stops ] == [
-      ENTRANCE_ITEM_KEY,
-      'Guardians of White Rhinos',
-      'African Lion||Africa Savanna',
+      ENTRANCE_STOP.item_key,
+      SCHEDULED_ENCOUNTER_STOP.item_key,
+      SCHEDULED_LION_STOP.item_key,
    ]
 
 
 def Test_Sort_TestScheduledStopsWithoutEntrance_ExpectScheduledOnly() -> None:
-   ordered_stops = ItineraryStopWalkRouteSorter.sort(
-      [ SCHEDULED_ENCOUNTER_STOP, SCHEDULED_LION_STOP ] )
+   stops = [ SCHEDULED_ENCOUNTER_STOP, SCHEDULED_LION_STOP ]
+
+   ordered_stops = ItineraryStopWalkRouteSorter.sort( stops )
 
    assert [ stop.item_key for stop in ordered_stops ] == [
-      'Guardians of White Rhinos',
-      'African Lion||Africa Savanna',
+      SCHEDULED_ENCOUNTER_STOP.item_key,
+      SCHEDULED_LION_STOP.item_key,
    ]

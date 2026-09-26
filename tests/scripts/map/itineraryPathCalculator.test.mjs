@@ -5,187 +5,239 @@ import { ItineraryPathRenderer } from '../../../scripts/map/itineraryPathRendere
 import { ItineraryPathCalculator } from '../../../scripts/map/itineraryPathCalculator.js';
 import { SvgPathParser } from '../../../scripts/map/svgPathParser.js';
 import { WalkGraphPathCalculator } from '../../../scripts/map/walkGraphPathCalculator.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+
+const start = { x: 2515.53, y: 2434.92 };
+const curveEnd = { x: 2511.03, y: 2411.92 };
+const sourcePathD = `M${start.x} ${start.y}C${start.x} ${start.y} 2513.03 2420.85 ${curveEnd.x} ${curveEnd.y}`;
+
 
 test('Test_ParseSvgPathD_TestMoveAndCubic_ExpectParsedSegments', () => {
-   const segments = SvgPathParser.parseSvgPathD(
-      'M2515.53 2434.92C2515.53 2434.92 2513.03 2420.85 2511.03 2411.92'
-   );
+   const segments = SvgPathParser.parseSvgPathD(sourcePathD);
 
    assert.equal(segments.length, 2);
-   assert.equal(segments[0].tag, 'M');
-   assert.equal(segments[1].tag, 'C');
-   assert.equal(segments[1].x, 2511.03);
-   assert.equal(segments[1].y, 2411.92);
+   assert.equal(segments.at(Position.FIRST).tag, 'M');
+   assert.equal(segments.at(Position.SECOND).tag, 'C');
+   assert.equal(segments.at(Position.SECOND).x, curveEnd.x);
+   assert.equal(segments.at(Position.SECOND).y, curveEnd.y);
 });
+
 
 test('Test_BuildPathDFromWalkGraphSegments_TestSourceCurve_ExpectReusedGeometry', () => {
-   const segments = SvgPathParser.parseSvgPathD(
-      'M2515.53 2434.92C2515.53 2434.92 2513.03 2420.85 2511.03 2411.92'
-   );
+   const segments = SvgPathParser.parseSvgPathD(sourcePathD);
 
-   assert.equal(
-      WalkGraphPathCalculator.buildPathDFromWalkGraphSegments(segments, [
-         { x: 2515.53, y: 2434.92 },
-         { x: 2511.03, y: 2411.92 },
-      ]),
-      'M 2515.53 2434.92 C 2515.53 2434.92 2513.03 2420.85 2511.03 2411.92'
-   );
-});
-
-test('Test_BuildSmoothedPathD_TestThreePoints_ExpectCubicPath', () => {
-   const pathD = ItineraryPathCalculator.buildSmoothedPathD([
-      { x: 0, y: 0 },
-      { x: 100, y: 0 },
-      { x: 100, y: 100 },
+   const pathD = WalkGraphPathCalculator.buildPathDFromWalkGraphSegments(segments, [
+      start,
+      curveEnd,
    ]);
 
-   assert.match(pathD, /^M 0 0 C .+ 100 100$/);
+   assert.equal(
+      pathD,
+      `M ${start.x} ${start.y} C ${start.x} ${start.y} 2513.03 2420.85 ${curveEnd.x} ${curveEnd.y}`
+   );
 });
+
+
+test('Test_BuildSmoothedPathD_TestThreePoints_ExpectCubicPath', () => {
+   const origin = { x: 0, y: 0 };
+   const mid = { x: 100, y: 0 };
+   const end = { x: 100, y: 100 };
+
+   const pathD = ItineraryPathCalculator.buildSmoothedPathD([origin, mid, end]);
+
+   assert.match(pathD, new RegExp(`^M ${origin.x} ${origin.y} C .+ ${end.x} ${end.y}$`));
+});
+
 
 test('Test_BuildSmoothedPathD_TestTwoPoints_ExpectLine', () => {
-   assert.equal(
-      ItineraryPathCalculator.buildSmoothedPathD([
-         { x: 10, y: 20 },
-         { x: 30, y: 40 },
-      ]),
-      'M 10 20 L 30 40'
-   );
+   const first = { x: 10, y: 20 };
+   const second = { x: 30, y: 40 };
+
+   const pathD = ItineraryPathCalculator.buildSmoothedPathD([first, second]);
+
+   assert.equal(pathD, `M ${first.x} ${first.y} L ${second.x} ${second.y}`);
 });
+
 
 test('Test_BuildPathArrowPlacements_TestStraightPath_ExpectSpacedArrows', () => {
+   const expectedCount = 6;
+   const firstX = 60;
+
    const placements = ItineraryPathRenderer.buildPathArrowPlacements('M 0 0 L 400 0');
 
-   assert.equal(placements.length, 6);
-   assert.equal(placements[0].x, 60);
-   assert.equal(placements[0].angleDeg, 0);
+   assert.equal(placements.length, expectedCount);
+   assert.equal(placements.at(Position.FIRST).x, firstX);
+   assert.equal(placements.at(Position.FIRST).angleDeg, 0);
 });
+
 
 test('Test_BuildPathArrowPlacements_TestShortPath_ExpectEmpty', () => {
-   assert.deepEqual(ItineraryPathRenderer.buildPathArrowPlacements('M 0 0 L 20 0'), []);
+   const placements = ItineraryPathRenderer.buildPathArrowPlacements('M 0 0 L 20 0');
+
+   assert.deepEqual(placements, []);
 });
+
 
 test('Test_BuildItineraryPathDFromWalkLegs_TestTransitGaps_ExpectDiscontinuous', () => {
+   const first = { nodeId: 'a', x: 0, y: 0 };
+   const second = { nodeId: 'b', x: 10, y: 0 };
+   const third = { nodeId: 'c', x: 100, y: 100 };
+   const fourth = { nodeId: 'd', x: 110, y: 100 };
+
    const pathD = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
       [
-         {
-            nodeIds: ['a', 'b'],
-         },
-         {
-            nodeIds: ['c', 'd'],
-         },
+         { nodeIds: [first.nodeId, second.nodeId] },
+         { nodeIds: [third.nodeId, fourth.nodeId] },
       ],
-      [
-         { nodeId: 'a', x: 0, y: 0 },
-         { nodeId: 'b', x: 10, y: 0 },
-         { nodeId: 'c', x: 100, y: 100 },
-         { nodeId: 'd', x: 110, y: 100 },
-      ],
+      [first, second, third, fourth],
       {
          pointToMapPx: (point) => ({ x: point.x, y: point.y }),
       }
    );
 
-   assert.equal(pathD, 'M 0 0 L 10 0 M 100 100 L 110 100');
+   assert.equal(
+      pathD,
+      `M ${first.x} ${first.y} L ${second.x} ${second.y} M ${third.x} ${third.y} L ${fourth.x} ${fourth.y}`
+   );
 });
+
 
 test('Test_BuildItineraryPathDFromWalkLegs_TestTransitStation_ExpectContinuousLeg', () => {
+   const exhibit = { nodeId: 'exhibit', x: 0, y: 0 };
+   const path = { nodeId: 'path', x: 10, y: 0 };
+   const domainStation = { nodeId: 'domain-station', x: 20, y: 0 };
+   const africaStation = { nodeId: 'africa-station', x: 200, y: 200 };
+   const nextExhibit = { nodeId: 'next-exhibit', x: 210, y: 200 };
+
    const pathD = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
       [
-         {
-            nodeIds: ['exhibit', 'path', 'domain-station'],
-         },
-         {
-            nodeIds: ['africa-station', 'next-exhibit'],
-         },
+         { nodeIds: [exhibit.nodeId, path.nodeId, domainStation.nodeId] },
+         { nodeIds: [africaStation.nodeId, nextExhibit.nodeId] },
       ],
-      [
-         { nodeId: 'exhibit', x: 0, y: 0 },
-         { nodeId: 'path', x: 10, y: 0 },
-         { nodeId: 'domain-station', x: 20, y: 0 },
-         { nodeId: 'africa-station', x: 200, y: 200 },
-         { nodeId: 'next-exhibit', x: 210, y: 200 },
-      ],
+      [exhibit, path, domainStation, africaStation, nextExhibit],
       {
          pointToMapPx: (point) => ({ x: point.x, y: point.y }),
       }
    );
 
-   assert.match(pathD, /^M 0 0[\s\S]*20 0 M 200 200 L 210 200$/);
-   assert.equal(pathD.includes('L 200 200'), false);
+   assert.match(
+      pathD,
+      new RegExp(`^M ${exhibit.x} ${exhibit.y}[\\s\\S]*${domainStation.x} ${domainStation.y} M ${africaStation.x} ${africaStation.y} L ${nextExhibit.x} ${nextExhibit.y}$`)
+   );
+   assert.equal(pathD.includes(`L ${africaStation.x} ${africaStation.y}`), false);
 });
 
-test('Test_BuildSmoothedPathD_TestTooFewPoints_ExpectEmpty', () => {
-   assert.equal(ItineraryPathCalculator.buildSmoothedPathD([]), '');
-   assert.equal(ItineraryPathCalculator.buildSmoothedPathD([{ x: 1, y: 1 }]), '');
+
+test('Test_BuildSmoothedPathD_TestEmpty_ExpectEmpty', () => {
+   const pathD = ItineraryPathCalculator.buildSmoothedPathD([]);
+
+   assert.equal(pathD, '');
 });
+
+
+test('Test_BuildSmoothedPathD_TestSinglePoint_ExpectEmpty', () => {
+   const pathD = ItineraryPathCalculator.buildSmoothedPathD([{ x: 1, y: 1 }]);
+
+   assert.equal(pathD, '');
+});
+
+
+test('Test_BuildExactPathD_TestSinglePoint_ExpectEmpty', () => {
+   const pathD = ItineraryPathCalculator.buildExactPathD([{ x: 1, y: 1 }]);
+
+   assert.equal(pathD, '');
+});
+
 
 test('Test_BuildExactPathD_TestPoints_ExpectPolyline', () => {
-   assert.equal(ItineraryPathCalculator.buildExactPathD([{ x: 1, y: 1 }]), '');
-   assert.equal(
-      ItineraryPathCalculator.buildExactPathD([
-         { x: 0, y: 0 },
-         { x: 5, y: 5 },
-         { x: 10, y: 0 },
-      ]),
-      'M 0 0 L 5 5 L 10 0'
-   );
+   const first = { x: 0, y: 0 };
+   const mid = { x: 5, y: 5 };
+   const last = { x: 10, y: 0 };
+
+   const pathD = ItineraryPathCalculator.buildExactPathD([first, mid, last]);
+
+   assert.equal(pathD, `M ${first.x} ${first.y} L ${mid.x} ${mid.y} L ${last.x} ${last.y}`);
 });
+
+
+test('Test_BuildRouteMapPoints_TestSinglePoint_ExpectEmpty', () => {
+   const points = ItineraryPathCalculator.buildRouteMapPoints([{ x: 1, y: 1 }], {
+      withEntranceLandmark: (nextPoints) => nextPoints,
+   });
+
+   assert.deepEqual(points, []);
+});
+
 
 test('Test_BuildRouteMapPoints_TestFilterAndEntrance_ExpectMapped', () => {
-   assert.deepEqual(
-      ItineraryPathCalculator.buildRouteMapPoints([{ x: 1, y: 1 }], {
-         withEntranceLandmark: (points) => points,
-      }),
-      []
+   const entrance = { x: 0, y: 0 };
+   const kept = { x: 2, y: 2 };
+   const scale = 10;
+
+   const points = ItineraryPathCalculator.buildRouteMapPoints(
+      [{ x: 1, y: 1 }, kept],
+      {
+         withEntranceLandmark: (nextPoints) => [entrance, ...nextPoints],
+         pointToMapPx: (point) => (point.x === 1 ? null : { x: point.x * scale, y: point.y * scale }),
+      }
    );
-   assert.deepEqual(
-      ItineraryPathCalculator.buildRouteMapPoints(
-         [{ x: 1, y: 1 }, { x: 2, y: 2 }],
-         {
-            withEntranceLandmark: (points) => [{ x: 0, y: 0 }, ...points],
-            pointToMapPx: (point) => (point.x === 1 ? null : { x: point.x * 10, y: point.y * 10 }),
-         }
-      ),
-      [
-         { x: 0, y: 0 },
-         { x: 20, y: 20 },
-      ]
-   );
+
+   assert.deepEqual(points, [
+      entrance,
+      { x: kept.x * scale, y: kept.y * scale },
+   ]);
 });
 
-test('Test_BuildItineraryPathD_TestWalkGraphAndFallback_ExpectPath', () => {
+
+test('Test_BuildItineraryPathD_TestSinglePoint_ExpectEmpty', () => {
+   const pathD = ItineraryPathCalculator.buildItineraryPathD([{ x: 0, y: 0 }]);
+
+   assert.equal(pathD, '');
+});
+
+
+test('Test_BuildItineraryPathD_TestWalkGraph_ExpectPath', () => {
+   const routePoints = [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+   ];
+   const walkPath = 'M 0 0 L 10 0';
+   const originalGet = WalkGraphPathCalculator.getWalkGraphPathSegments;
+   const originalBuild = WalkGraphPathCalculator.buildPathDFromWalkGraphSegments;
+   WalkGraphPathCalculator.getWalkGraphPathSegments = () => [{ tag: 'M' }];
+   WalkGraphPathCalculator.buildPathDFromWalkGraphSegments = () => walkPath;
+
+   try {
+      const pathD = ItineraryPathCalculator.buildItineraryPathD(routePoints);
+
+      assert.equal(pathD, walkPath);
+   } finally {
+      WalkGraphPathCalculator.getWalkGraphPathSegments = originalGet;
+      WalkGraphPathCalculator.buildPathDFromWalkGraphSegments = originalBuild;
+   }
+});
+
+
+test('Test_BuildItineraryPathD_TestFallback_ExpectExact', () => {
    const routePoints = [
       { x: 0, y: 0 },
       { x: 10, y: 0 },
    ];
 
-   assert.equal(ItineraryPathCalculator.buildItineraryPathD([{ x: 0, y: 0 }]), '');
+   const pathD = ItineraryPathCalculator.buildItineraryPathD(routePoints, []);
 
-   const originalGet = WalkGraphPathCalculator.getWalkGraphPathSegments;
-   const originalBuild = WalkGraphPathCalculator.buildPathDFromWalkGraphSegments;
-
-   WalkGraphPathCalculator.getWalkGraphPathSegments = () => [{ tag: 'M' }];
-   WalkGraphPathCalculator.buildPathDFromWalkGraphSegments = () => 'M 0 0 L 10 0';
-
-   try {
-      assert.equal(ItineraryPathCalculator.buildItineraryPathD(routePoints), 'M 0 0 L 10 0');
-   } finally {
-      WalkGraphPathCalculator.getWalkGraphPathSegments = originalGet;
-      WalkGraphPathCalculator.buildPathDFromWalkGraphSegments = originalBuild;
-   }
-
-   assert.equal(
-      ItineraryPathCalculator.buildItineraryPathD(routePoints, []),
-      'M 0 0 L 10 0'
-   );
+   assert.equal(pathD, ItineraryPathCalculator.buildExactPathD(routePoints));
 });
 
-test('Test_BuildItineraryPathDFromWalkLegs_TestEmptyMappedAndSharedJoin_ExpectBranches', () => {
-   assert.equal(
-      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs([], [{ x: 0, y: 0 }]),
-      ''
-   );
 
+test('Test_BuildItineraryPathDFromWalkLegs_TestEmptyLegs_ExpectEmpty', () => {
+   const pathD = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs([], [{ x: 0, y: 0 }]);
+
+   assert.equal(pathD, '');
+});
+
+
+test('Test_BuildItineraryPathDFromWalkLegs_TestSharedJoin_ExpectStart', () => {
    const sharedPath = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
       [
          { nodeIds: ['a', 'b'] },
@@ -197,38 +249,45 @@ test('Test_BuildItineraryPathDFromWalkLegs_TestEmptyMappedAndSharedJoin_ExpectBr
          { nodeId: 'c', x: 20, y: 0 },
       ]
    );
+
    assert.match(sharedPath, /M 0 0/);
+});
 
-   assert.equal(
-      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
-         [{ nodeIds: ['a', 'b', 'c'] }],
-         [
-            { nodeId: 'a', x: 0, y: 0 },
-            { nodeId: 'b', x: 10, y: 0 },
-         ]
-      ),
-      ''
+
+test('Test_BuildItineraryPathDFromWalkLegs_TestMissingNode_ExpectEmpty', () => {
+   const pathD = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
+      [{ nodeIds: ['a', 'b', 'c'] }],
+      [
+         { nodeId: 'a', x: 0, y: 0 },
+         { nodeId: 'b', x: 10, y: 0 },
+      ]
    );
 
-   assert.equal(
-      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
-         [{ nodeIds: ['a', 'b'] }],
-         [
-            { nodeId: 'a', x: 0, y: 0 },
-            { nodeId: 'b', x: 10, y: 0 },
-         ],
-         {
-            pointToMapPx: (point) => (point.nodeId === 'b' ? null : point),
-         }
-      ),
-      ''
+   assert.equal(pathD, '');
+});
+
+
+test('Test_BuildItineraryPathDFromWalkLegs_TestUnmappedPoint_ExpectEmpty', () => {
+   const pathD = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
+      [{ nodeIds: ['a', 'b'] }],
+      [
+         { nodeId: 'a', x: 0, y: 0 },
+         { nodeId: 'b', x: 10, y: 0 },
+      ],
+      {
+         pointToMapPx: (point) => (point.nodeId === 'b' ? null : point),
+      }
    );
 
-   assert.equal(
-      ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
-         [{ nodeIds: ['a'] }],
-         [{ nodeId: 'a', x: 0, y: 0 }]
-      ),
-      ''
+   assert.equal(pathD, '');
+});
+
+
+test('Test_BuildItineraryPathDFromWalkLegs_TestSingleNode_ExpectEmpty', () => {
+   const pathD = ItineraryPathCalculator.buildItineraryPathDFromWalkLegs(
+      [{ nodeIds: ['a'] }],
+      [{ nodeId: 'a', x: 0, y: 0 }]
    );
+
+   assert.equal(pathD, '');
 });

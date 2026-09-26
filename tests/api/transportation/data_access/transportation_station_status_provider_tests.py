@@ -42,21 +42,25 @@ def transportation_station_status_conn() -> sqlite3.Connection:
 
 def Test_FetchTransportationStationStatusRecords_TestEmpty_ExpectEmptyList(
       transportation_station_status_conn: sqlite3.Connection ) -> None:
-   assert TransportationStationStatusProvider.fetch_transportation_station_status_records(
+   transportation_station_status_records = TransportationStationStatusProvider.fetch_transportation_station_status_records(
       transportation_station_status_conn,
-      TransportationName.ZOOMOBILE ) == []
+      TransportationName.ZOOMOBILE )
+
+   assert transportation_station_status_records == []
 
 
 def Test_SaveClosedStatus_TestNewStation_ExpectPersistsAndFetches(
       transportation_station_status_conn: sqlite3.Connection ) -> None:
-   assert TransportationStationStatusProvider.save_transportation_station_closed_status(
+   result = TransportationStationStatusProvider.save_transportation_station_closed_status(
       transportation_station_status_conn,
       TransportationName.ZOOMOBILE,
       TransportationStationClosedStatus(
          transportation_station=STATION,
          start_date=START_DATE,
          end_date=END_DATE,
-         message=CLOSED_MESSAGE ) ) is True
+         message=CLOSED_MESSAGE ) )
+
+   assert result is True
 
    records = TransportationStationStatusProvider.fetch_transportation_station_status_records(
       transportation_station_status_conn,
@@ -89,10 +93,12 @@ def Test_SaveOpenStatus_TestClosedStation_ExpectDeletesRow(
          end_date=END_DATE,
          message=CLOSED_MESSAGE ) )
 
-   assert TransportationStationStatusProvider.save_transportation_station_open_status(
+   result = TransportationStationStatusProvider.save_transportation_station_open_status(
       transportation_station_status_conn,
       TransportationName.ZOOMOBILE,
-      STATION ) is True
+      STATION )
+
+   assert result is True
 
    records = TransportationStationStatusProvider.fetch_transportation_station_status_records(
       transportation_station_status_conn,
@@ -103,7 +109,9 @@ def Test_SaveOpenStatus_TestClosedStation_ExpectDeletesRow(
 
 def Test_SaveOpenStatus_TestMissingStation_ExpectFalse(
       transportation_station_status_conn: sqlite3.Connection ) -> None:
-   assert TransportationStationStatusProvider.save_transportation_station_open_status(
+   result = TransportationStationStatusProvider.save_transportation_station_open_status(
       transportation_station_status_conn,
       TransportationName.ZOOMOBILE,
-      STATION ) is False
+      STATION )
+
+   assert result is False

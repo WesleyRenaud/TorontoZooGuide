@@ -34,24 +34,38 @@ def Test_BuildClosedSchedule_TestCustomMessage_ExpectRestaurantOpeningSchedule()
 
 
 def Test_BuildOpeningSchedule_TestWeekdayFlags_ExpectRestaurantOpeningSchedule() -> None:
+   monday = True
+   tuesday = False
+   wednesday = True
+   thursday = False
+   friday = True
+   saturday = False
+   sunday = False
+   holidays_only = False
+
    schedule = BUILDERS.build_opening_schedule(
       RESTAURANT_NAME,
       START_DATE,
       END_DATE,
-      monday=True,
-      tuesday=False,
-      wednesday=True,
-      thursday=False,
-      friday=True,
-      saturday=False,
-      sunday=False,
-      holidays_only=False,
+      monday=monday,
+      tuesday=tuesday,
+      wednesday=wednesday,
+      thursday=thursday,
+      friday=friday,
+      saturday=saturday,
+      sunday=sunday,
+      holidays_only=holidays_only,
       message=CUSTOM_MESSAGE )
 
    assert schedule.restaurant == RESTAURANT_NAME
-   assert schedule.monday is True
-   assert schedule.wednesday is True
-   assert schedule.friday is True
+   assert schedule.monday is monday
+   assert schedule.tuesday is tuesday
+   assert schedule.wednesday is wednesday
+   assert schedule.thursday is thursday
+   assert schedule.friday is friday
+   assert schedule.saturday is saturday
+   assert schedule.sunday is sunday
+   assert schedule.holidays_only is holidays_only
    assert schedule.message == CUSTOM_MESSAGE
 
 
