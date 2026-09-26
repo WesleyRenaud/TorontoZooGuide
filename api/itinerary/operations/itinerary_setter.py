@@ -3,6 +3,7 @@ from __future__ import annotations
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..conflicts.itinerary_save_restrictive_hours_adjuster import ItinerarySaveRestrictiveHoursAdjuster
+from ..conflicts.visit_window_overflow_keep_item import VisitWindowOverflowKeepItem
 from ..data_access.itinerary_provider import ItineraryProvider
 from ..data_access.itinerary_save_input_mapper import ItinerarySaveInputMapper
 from ..data_access.itinerary_transportation_input import ItineraryTransportationInput
@@ -45,7 +46,9 @@ class ItinerarySetter():
          confirming_wild_encounter_unschedule: bool,
          confirming_fixed_time_item_long_wait: bool = False,
          confirming_guardians_talk_without_animal: bool = False,
-         confirming_attraction_without_animal: bool = False ) -> ItinerarySaveResult:
+         confirming_attraction_without_animal: bool = False,
+         confirming_visit_window_overflow: bool = False,
+         kept_visit_window_overflow_items: list[ VisitWindowOverflowKeepItem ] | None = None ) -> ItinerarySaveResult:
       save_input = ItinerarySaveInputMapper.map_itinerary_save_input(
          date,
          arrival_time,
@@ -101,7 +104,9 @@ class ItinerarySetter():
          confirming_attraction_without_animal=(
             confirming_attraction_without_animal ),
          overriding_conflicting_guardians_talks=(
-            overriding_conflicting_guardians_talks ) )
+            overriding_conflicting_guardians_talks ),
+         confirming_visit_window_overflow=confirming_visit_window_overflow,
+         kept_visit_window_overflow_items=kept_visit_window_overflow_items )
 
       if save_warning is not None:
          return save_warning

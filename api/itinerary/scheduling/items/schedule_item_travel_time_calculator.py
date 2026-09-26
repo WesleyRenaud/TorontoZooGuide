@@ -52,9 +52,9 @@ class ScheduleItemTravelTimeCalculator():
 
 
    @classmethod
-   def entrance_travel_seconds_to_earliest_item( cls, itinerary: Itinerary ) -> int:
-      walk_node_id = cls.walk_node_id_for_earliest_scheduled_item( itinerary )
-
+   def entrance_travel_seconds_to_walk_node(
+         cls,
+         walk_node_id: str | None ) -> int:
       if walk_node_id is None:
          return 0
 
@@ -67,9 +67,9 @@ class ScheduleItemTravelTimeCalculator():
 
 
    @classmethod
-   def entrance_travel_seconds_from_latest_item( cls, itinerary: Itinerary ) -> int:
-      walk_node_id = cls.walk_node_id_for_latest_scheduled_item( itinerary )
-
+   def entrance_travel_seconds_from_walk_node(
+         cls,
+         walk_node_id: str | None ) -> int:
       if walk_node_id is None:
          return 0
 
@@ -79,6 +79,18 @@ class ScheduleItemTravelTimeCalculator():
          walk_graph,
          walk_node_id,
          str( walk_graph[ 'entrance_node_id' ] ) )
+
+
+   @classmethod
+   def entrance_travel_seconds_to_earliest_item( cls, itinerary: Itinerary ) -> int:
+      return cls.entrance_travel_seconds_to_walk_node(
+         cls.walk_node_id_for_earliest_scheduled_item( itinerary ) )
+
+
+   @classmethod
+   def entrance_travel_seconds_from_latest_item( cls, itinerary: Itinerary ) -> int:
+      return cls.entrance_travel_seconds_from_walk_node(
+         cls.walk_node_id_for_latest_scheduled_item( itinerary ) )
 
 
    @classmethod
@@ -96,9 +108,43 @@ class ScheduleItemTravelTimeCalculator():
 
    @classmethod
    def walk_node_id_for_attraction( cls, attraction_name: str ) -> str | None:
-      walk_node = MapLocationWalkNodeLookup.for_map_location(
+      return cls._walk_node_id_for_map_location(
          MapLocationKind.ATTRACTION,
          attraction_name )
+
+
+   @classmethod
+   def walk_node_id_for_guardians_talk(
+         cls,
+         talk_name: str,
+         *,
+         location: str = '' ) -> str | None:
+      return cls._walk_node_id_for_map_location(
+         MapLocationKind.GUARDIANS_TALK,
+         talk_name,
+         location=location )
+
+
+   @classmethod
+   def walk_node_id_for_wild_encounter(
+         cls,
+         meeting_spot: str ) -> str | None:
+      return cls._walk_node_id_for_map_location(
+         MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT,
+         meeting_spot )
+
+
+   @classmethod
+   def _walk_node_id_for_map_location(
+         cls,
+         kind: MapLocationKind,
+         name: str,
+         *,
+         location: str = '' ) -> str | None:
+      walk_node = MapLocationWalkNodeLookup.for_map_location(
+         kind,
+         name,
+         location=location )
 
       if walk_node is None:
          return None
@@ -191,32 +237,24 @@ class ScheduleItemTravelTimeCalculator():
          if talk.is_deleted:
             continue
 
-         walk_node = MapLocationWalkNodeLookup.for_map_location(
-            MapLocationKind.GUARDIANS_TALK,
-            talk.name,
-            location=talk.location )
-
          cls._append_scheduled_stop_with_walk_node(
             stops,
             start_time=talk.start_time,
             end_time=talk.end_time,
-            walk_node_id=(
-               None if walk_node is None else walk_node.walk_node_id ) )
+            walk_node_id=cls.walk_node_id_for_guardians_talk(
+               talk.name,
+               location=talk.location or '' ) )
 
       for encounter in itinerary.wild_encounters:
          if encounter.is_deleted:
             continue
 
-         walk_node = MapLocationWalkNodeLookup.for_map_location(
-            MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT,
-            encounter.meeting_spot )
-
          cls._append_scheduled_stop_with_walk_node(
             stops,
             start_time=encounter.start_time,
             end_time=encounter.end_time,
-            walk_node_id=(
-               None if walk_node is None else walk_node.walk_node_id ) )
+            walk_node_id=cls.walk_node_id_for_wild_encounter(
+               encounter.meeting_spot or '' ) )
 
       return stops
 

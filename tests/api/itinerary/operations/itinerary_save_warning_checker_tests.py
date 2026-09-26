@@ -16,10 +16,12 @@ from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.operations.itinerary_save_context import ItinerarySaveContext
 from api.itinerary.operations.itinerary_save_warning_checker import ItinerarySaveWarningChecker
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
+from api.itinerary.results.itinerary_save_issue_item import ItinerarySaveIssueItem
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.models.attraction_diff import AttractionDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ItinerarySaveIssueItemType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -189,6 +191,100 @@ def Test_Check_TestOverflowRequired_ExpectWarningResult(
 
    assert warning is overflow_warning
    assert warning.status == status
+   assert updated_context.suppressed_warnings == []
+
+
+def Test_Check_TestOverflowConfirmedDropAll_ExpectNoWarning(
+      warning_checker_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   talk = GuardiansTalkDiff(
+      name='African Lion',
+      is_deleted=False,
+      start_time='10:00 AM',
+      end_time='10:30 AM' )
+   overflow_item = ItinerarySaveIssueItem(
+      name=talk.name,
+      start_time=talk.start_time,
+      end_time=talk.end_time,
+      item_type=ItinerarySaveIssueItemType.GUARDIANS_TALK,
+      overflow_end=None )
+   overflow_warning = ItinerarySaveResult(
+      status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+      reasons=[
+         ItineraryResultReason(
+            code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+            items=[ overflow_item ] ),
+      ],
+      itinerary=ItineraryBuilder.empty() )
+   _base_warning_stubs( monkeypatch )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.VisitWindowOverflowWarningBuilder.build',
+      lambda *args, **kwargs: overflow_warning )
+   context = _save_context(
+      warning_checker_conn,
+      validated_itinerary=ValidatedItinerary(
+         arrival_time='11:00 AM',
+         departure_time='1:00 PM',
+         animals=[],
+         attractions=[],
+         guardians_talks=[ talk ],
+         wild_encounters=[],
+         events=[] ) )
+
+   updated_context, warning = ItinerarySaveWarningChecker.check(
+      context,
+      confirming_short_visit=False,
+      confirming_early_admission=False,
+      confirming_guardians_talk_unschedule=False,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=False,
+      confirming_guardians_talk_without_animal=False,
+      confirming_attraction_without_animal=False,
+      overriding_conflicting_guardians_talks=False,
+      confirming_visit_window_overflow=True,
+      kept_visit_window_overflow_items=[] )
+
+   assert warning is None
+   assert updated_context.validated_itinerary.guardians_talks == []
+
+
+def Test_Check_TestOverflowConfirmedThenShortVisit_ExpectTooClose(
+      warning_checker_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   overflow_warning = ItinerarySaveResult(
+      status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.VisitWindowOverflowWarningBuilder.build',
+      lambda *args, **kwargs: overflow_warning )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ZooHoursProvider.fetch_zoo_hours_record',
+      lambda conn, date_value: object() )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.EarlyAdmissionWarningBuilder.is_required',
+      lambda conn, arrival_time, zoo_hours_record, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ShortVisitWarningBuilder.is_required',
+      lambda conn, arrival_time, departure_time, **kwargs: True )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItinerarySaveContextBuilder.error_result',
+      _error_result_from_status )
+
+   updated_context, warning = ItinerarySaveWarningChecker.check(
+      _save_context( warning_checker_conn ),
+      confirming_short_visit=False,
+      confirming_early_admission=False,
+      confirming_guardians_talk_unschedule=False,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=False,
+      confirming_guardians_talk_without_animal=False,
+      confirming_attraction_without_animal=False,
+      overriding_conflicting_guardians_talks=False,
+      confirming_visit_window_overflow=True )
+
+   assert warning is not None
+   assert warning.status == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
    assert updated_context.suppressed_warnings == []
 
 

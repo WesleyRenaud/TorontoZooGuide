@@ -326,6 +326,55 @@ def Test_WalkNodeIdForAttraction_TestUnknownAttraction_ExpectNone(
    assert result is None
 
 
+def Test_WalkNodeIdForGuardiansTalk_TestKnownTalk_ExpectResolvedNode(
+      stub_schedule_item_travel_time_calculator: None ) -> None:
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_guardians_talk(
+      ZEBRA_TALK,
+      location='Africa Savanna' )
+
+   assert result == TALK_NODE_ID
+
+
+def Test_WalkNodeIdForGuardiansTalk_TestUnknownTalk_ExpectNone(
+      stub_schedule_item_travel_time_calculator: None ) -> None:
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_guardians_talk(
+      'Unknown Talk' )
+
+   assert result is None
+
+
+def Test_WalkNodeIdForWildEncounter_TestKnownMeetingSpot_ExpectResolvedNode(
+      stub_schedule_item_travel_time_calculator: None ) -> None:
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_wild_encounter(
+      MEETING_SPOT )
+
+   assert result == ENCOUNTER_NODE_ID
+
+
+def Test_WalkNodeIdForWildEncounter_TestUnknownMeetingSpot_ExpectNone(
+      stub_schedule_item_travel_time_calculator: None ) -> None:
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_wild_encounter(
+      'Unknown Spot' )
+
+   assert result is None
+
+
+def Test_EntranceTravelSecondsToWalkNode_TestNone_ExpectZero(
+      stub_schedule_item_travel_time_calculator: None ) -> None:
+   result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_walk_node(
+      None )
+
+   assert result == 0
+
+
+def Test_EntranceTravelSecondsFromWalkNode_TestNone_ExpectZero(
+      stub_schedule_item_travel_time_calculator: None ) -> None:
+   result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_walk_node(
+      None )
+
+   assert result == 0
+
+
 def Test_EntranceTravelSecondsToEarliestItem_TestScheduledLion_ExpectTravelFromEntrance(
       stub_schedule_item_travel_time_calculator: None ) -> None:
    result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item(

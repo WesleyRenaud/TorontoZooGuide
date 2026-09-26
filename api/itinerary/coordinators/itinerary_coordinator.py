@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from ..conflicts.visit_window_overflow_change_applier import VisitWindowOverflowChangeApplier
 from ..conflicts.visit_window_overflow_issue_finder import VisitWindowOverflowIssueFinder
+from ..conflicts.visit_window_overflow_keep_item import VisitWindowOverflowKeepItem
 from ..data_access.accept_itinerary_provider import AcceptItineraryProvider
 from ..data_access.clear_itinerary_provider import ClearItineraryProvider
 from ..data_access.itinerary_provider import ItineraryProvider
@@ -20,6 +22,7 @@ from ..operations.itinerary_setter import ItinerarySetter
 from ..operations.itinerary_warning_suppressor import ItineraryWarningSuppressor
 from ..operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
 from ...request_connection_provider import RequestConnectionProvider
+from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ..scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
@@ -103,7 +106,9 @@ class ItineraryCoordinator():
          confirming_wild_encounter_unschedule: bool = False,
          confirming_fixed_time_item_long_wait: bool = False,
          confirming_guardians_talk_without_animal: bool = False,
-         confirming_attraction_without_animal: bool = False ) -> ItinerarySaveResult:
+         confirming_attraction_without_animal: bool = False,
+         confirming_visit_window_overflow: bool = False,
+         kept_visit_window_overflow_items: list[ VisitWindowOverflowKeepItem ] | None = None ) -> ItinerarySaveResult:
       return ItinerarySetter.set(
          RequestConnectionProvider.get(),
          date=date,
@@ -128,6 +133,8 @@ class ItineraryCoordinator():
             confirming_guardians_talk_without_animal ),
          confirming_attraction_without_animal=(
             confirming_attraction_without_animal ),
+         confirming_visit_window_overflow=confirming_visit_window_overflow,
+         kept_visit_window_overflow_items=kept_visit_window_overflow_items,
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
@@ -259,7 +266,9 @@ class ItineraryCoordinator():
          arrival_time: Types.TimeInput,
          *,
          confirming_short_visit: bool = False,
-         confirming_early_admission: bool = False ) -> ItineraryTimeSetResult:
+         confirming_early_admission: bool = False,
+         confirming_visit_window_overflow: bool = False,
+         kept_visit_window_overflow_items: list[ VisitWindowOverflowKeepItem ] | None = None ) -> ItineraryTimeSetResult:
       conn = RequestConnectionProvider.get()
       normalized_arrival_time = DateValues.normalize_itinerary_schedule_time(
          arrival_time )
@@ -290,15 +299,29 @@ class ItineraryCoordinator():
          saved_itinerary.departure_time,
          saved_itinerary )
 
+      resolved_arrival_time = normalized_arrival_time
+      resolved_departure_time = saved_itinerary.departure_time
+      dropped_overflow_items: list[ ItinerarySaveIssueItem ] = []
+
       if overflow_issues:
-         return ItineraryTimeSetResult(
-            status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
-            reasons=overflow_issues,
-            suppressed_warnings=suppressed_warnings )
+         if not confirming_visit_window_overflow:
+            return ItineraryTimeSetResult(
+               status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+               reasons=overflow_issues,
+               suppressed_warnings=suppressed_warnings )
+
+         resolution = VisitWindowOverflowChangeApplier.resolve(
+            VisitWindowOverflowChangeApplier.overflow_items( overflow_issues ),
+            kept_visit_window_overflow_items or [],
+            resolved_arrival_time,
+            resolved_departure_time )
+         resolved_arrival_time = resolution.arrival_time
+         resolved_departure_time = resolution.departure_time
+         dropped_overflow_items = resolution.dropped_items
 
       if EarlyAdmissionWarningBuilder.is_required(
             conn,
-            normalized_arrival_time,
+            resolved_arrival_time,
             zoo_hours_record,
             confirming_early_admission=confirming_early_admission,
             suppressed_warnings=suppressed_warnings ):
@@ -308,15 +331,23 @@ class ItineraryCoordinator():
 
       if ShortVisitWarningBuilder.is_required(
             conn,
-            normalized_arrival_time,
-            saved_itinerary.departure_time,
+            resolved_arrival_time,
+            resolved_departure_time,
             confirming_short_visit=confirming_short_visit,
             suppressed_warnings=suppressed_warnings ):
          return ItineraryTimeSetResult(
             status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
             suppressed_warnings=suppressed_warnings )
 
-      ItineraryTimeProvider.set_itinerary_arrival_time( conn, normalized_arrival_time )
+      VisitWindowOverflowChangeApplier.drop_saved_items(
+         conn,
+         dropped_overflow_items )
+      ItineraryTimeProvider.set_itinerary_arrival_time( conn, resolved_arrival_time )
+
+      if resolved_departure_time != saved_itinerary.departure_time:
+         ItineraryTimeProvider.set_itinerary_departure_time(
+            conn,
+            resolved_departure_time )
 
       return cls._time_set_result(
          conn,
@@ -328,7 +359,9 @@ class ItineraryCoordinator():
          cls,
          departure_time: Types.TimeInput,
          *,
-         confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
+         confirming_short_visit: bool = False,
+         confirming_visit_window_overflow: bool = False,
+         kept_visit_window_overflow_items: list[ VisitWindowOverflowKeepItem ] | None = None ) -> ItineraryTimeSetResult:
       conn = RequestConnectionProvider.get()
       normalized_departure_time = DateValues.normalize_itinerary_schedule_time(
          departure_time )
@@ -356,23 +389,47 @@ class ItineraryCoordinator():
          normalized_departure_time,
          saved_itinerary )
 
+      resolved_arrival_time = saved_itinerary.arrival_time
+      resolved_departure_time = normalized_departure_time
+      dropped_overflow_items: list[ ItinerarySaveIssueItem ] = []
+
       if overflow_issues:
-         return ItineraryTimeSetResult(
-            status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
-            reasons=overflow_issues,
-            suppressed_warnings=suppressed_warnings )
+         if not confirming_visit_window_overflow:
+            return ItineraryTimeSetResult(
+               status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+               reasons=overflow_issues,
+               suppressed_warnings=suppressed_warnings )
+
+         resolution = VisitWindowOverflowChangeApplier.resolve(
+            VisitWindowOverflowChangeApplier.overflow_items( overflow_issues ),
+            kept_visit_window_overflow_items or [],
+            resolved_arrival_time,
+            resolved_departure_time )
+         resolved_arrival_time = resolution.arrival_time
+         resolved_departure_time = resolution.departure_time
+         dropped_overflow_items = resolution.dropped_items
 
       if ShortVisitWarningBuilder.is_required(
             conn,
-            saved_itinerary.arrival_time,
-            normalized_departure_time,
+            resolved_arrival_time,
+            resolved_departure_time,
             confirming_short_visit=confirming_short_visit,
             suppressed_warnings=suppressed_warnings ):
          return ItineraryTimeSetResult(
             status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
             suppressed_warnings=suppressed_warnings )
 
-      ItineraryTimeProvider.set_itinerary_departure_time( conn, normalized_departure_time )
+      VisitWindowOverflowChangeApplier.drop_saved_items(
+         conn,
+         dropped_overflow_items )
+      ItineraryTimeProvider.set_itinerary_departure_time(
+         conn,
+         resolved_departure_time )
+
+      if resolved_arrival_time != saved_itinerary.arrival_time:
+         ItineraryTimeProvider.set_itinerary_arrival_time(
+            conn,
+            resolved_arrival_time )
 
       return cls._time_set_result(
          conn,
