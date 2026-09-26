@@ -75,6 +75,25 @@ test('Test_CreateDateSelectionModel_TestTomorrow_ExpectAccepted', () => {
 });
 
 
+test('Test_CreateDateSelectionModel_TestOnDateChanged_ExpectCallback', () => {
+   const changedDates = [];
+   const tomorrow = makeNoonDate(2026, 5, 16);
+   const model = DateSelectionModel.createDateSelectionModel({
+      earliestDateFloor: floor,
+      getTodayFn: () => floor,
+      daysAhead: 2,
+      onDateChanged: (date) => {
+         changedDates.push(VisitDateValidator.toISODate(date));
+      },
+   });
+
+   model.setDate(tomorrow);
+   model.setDate(tomorrow);
+
+   assert.deepEqual(changedDates, [VisitDateValidator.toISODate(tomorrow)]);
+});
+
+
 test('Test_CreateDateSelectionModel_TestBeyondMax_ExpectRejected', () => {
    const model = DateSelectionModel.createDateSelectionModel({
       earliestDateFloor: floor,

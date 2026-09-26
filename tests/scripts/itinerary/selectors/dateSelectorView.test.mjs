@@ -19,4 +19,5 @@ test('Test_BuildDateSelectorView_TestDefaultStrings_ExpectDialogParts', () => {
    assert.equal(view.nextButtonEl.textContent, Strings.itinerary.actions.next);
    assert.equal(view.finishButtonEl.textContent, Strings.itinerary.actions.finish);
    assert.equal(view.closeButtonEl.getAttribute('aria-label'), Strings.itinerary.aria.closeBuilder);
+   assert.equal(view.timesMountEl.className, 'itin-date-time-fields');
 });

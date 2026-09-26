@@ -1,6 +1,9 @@
 import { DateSelectionModel } from './dateSelectionModel.js';
 import { DateSelectorPickerBinder } from './dateSelectorPickerBinder.js';
+import { DateSelectorTimeFields } from './dateSelectorTimeFields.js';
 import { DateSelectorView } from './dateSelectorView.js';
+import { ItineraryService } from '../itineraryService.js';
+import { ItineraryTimeView } from '../panel/components/itineraryTimeView.js';
 import { Strings } from '../../strings.js';
 import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 
@@ -8,6 +11,8 @@ export class DateSelector {
    static createItineraryDateSelectorController({
    mountEl,
    initialDate = null,
+   initialArrivalTime = null,
+   initialDepartureTime = null,
    earliestSelectableDate = null,
    hideNextButton = false,
    titleText = null,
@@ -21,24 +26,66 @@ export class DateSelector {
          buildView = DateSelectorView.buildDateSelectorView,
          createPicker = DateSelectorPickerBinder.createDatePickerBinding,
          getTodayFn = VisitDateValidator.getToday,
+         getZooHoursFn = ItineraryService.getZooHours,
+         makeTimeInput = ItineraryTimeView.makeItineraryTimeInput,
       } = deps;
 
       let elements = null;
       let picker = null;
+      let arrivalTime = initialArrivalTime;
+      let departureTime = initialDepartureTime;
+      let zooHours = null;
 
       const earliestFloor = earliestSelectableDate ?? getTodayFn();
 
       function syncInputValue(date = model.getDate()) {
-         if (!elements?.inputEl) {
+         if (!elements?.inputEl || !date) {
             return;
          }
 
-         elements.inputEl.value = date ? DateSelectionModel.formatVisitDateLong(date) : '';
+         elements.inputEl.value = DateSelectionModel.formatVisitDateLong(date);
+      }
+
+      function mountTimeFields() {
+         DateSelectorTimeFields.mount({
+            containerEl: elements?.timesMountEl,
+            arrivalTime,
+            departureTime,
+            zooHours,
+            strings: Strings,
+            makeTimeInput,
+            onArrivalTimeChange: (nextArrivalTime) => {
+               arrivalTime = nextArrivalTime;
+            },
+            onDepartureTimeChange: (nextDepartureTime) => {
+               departureTime = nextDepartureTime;
+            },
+            getArrivalTime: () => arrivalTime,
+            getDepartureTime: () => departureTime,
+         });
+      }
+
+      async function refreshTimeFields(date) {
+         if (!elements?.timesMountEl) {
+            return;
+         }
+
+         const nextZooHours = await getZooHoursFn(VisitDateValidator.toISODate(date));
+
+         if (date.getTime() !== model.getDate().getTime()) {
+            return;
+         }
+
+         zooHours = nextZooHours;
+         mountTimeFields();
       }
 
       const model = DateSelectionModel.createDateSelectionModel({
          initialDate,
          syncInputValue,
+         onDateChanged: (date) => {
+            void refreshTimeFields(date);
+         },
          earliestDateFloor: earliestFloor,
          getTodayFn,
       });
@@ -47,6 +94,14 @@ export class DateSelector {
          const saved = model.persistCurrentDate();
 
          if (!saved) {
+            return;
+         }
+
+         if (!DateSelectorTimeFields.areVisitTimesValid(
+            arrivalTime,
+            departureTime,
+            zooHours
+         )) {
             return;
          }
 
@@ -101,8 +156,8 @@ export class DateSelector {
             return;
          }
 
-         model.setDate(model.getDisplayDate(), { updateInput: false, persist: false });
          ensureView();
+         model.setDate(model.getDisplayDate(), { updateInput: false, persist: false });
          syncInputValue();
          picker?.syncBounds();
 
@@ -128,6 +183,8 @@ export class DateSelector {
          hide,
          getDate: model.getDate,
          setDate: model.setDate,
+         getArrivalTime: () => arrivalTime,
+         getDepartureTime: () => departureTime,
       };
    }
 }

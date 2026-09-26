@@ -49,7 +49,10 @@ export class DateSelectorView {
       inputEl.autocomplete = 'off';
       inputEl.readOnly = true;
 
-      body.append(heading, subtitle, fieldLabel, inputEl);
+      const timesMountEl = document.createElement('div');
+      timesMountEl.className = 'itin-date-time-fields';
+
+      body.append(heading, subtitle, fieldLabel, inputEl, timesMountEl);
 
       const actions = document.createElement('div');
       actions.className = 'itin-card-actions';
@@ -75,6 +78,7 @@ export class DateSelectorView {
       return {
          root,
          inputEl,
+         timesMountEl,
          nextButtonEl,
          finishButtonEl,
          closeButtonEl,
