@@ -7,31 +7,95 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_ReadCssLengthPx_TestValidAndInvalid_ExpectParsedOrNull', () => {
+
+test('Test_ReadCssLengthPx_TestPixelValue_ExpectParsed', () => {
+   const rawValue = ' 42px ';
+   const property = '--ok';
    const style = {
-      getPropertyValue(property) {
-         if (property === '--ok') return ' 42px ';
-         if (property === '--zero') return '0';
-         if (property === '--bad') return 'auto';
+      getPropertyValue(name) {
+         return name === property ? rawValue : '';
+      },
+   };
+
+   const length = DayPlannerTimelinePlacer.readCssLengthPx(style, property);
+
+   assert.equal(length, Number.parseFloat(rawValue));
+});
+
+
+test('Test_ReadCssLengthPx_TestZero_ExpectNull', () => {
+   const property = '--zero';
+   const style = {
+      getPropertyValue(name) {
+         return name === property ? '0' : '';
+      },
+   };
+
+   const length = DayPlannerTimelinePlacer.readCssLengthPx(style, property);
+
+   assert.equal(length, null);
+});
+
+
+test('Test_ReadCssLengthPx_TestNonNumeric_ExpectNull', () => {
+   const property = '--bad';
+   const style = {
+      getPropertyValue(name) {
+         return name === property ? 'auto' : '';
+      },
+   };
+
+   const length = DayPlannerTimelinePlacer.readCssLengthPx(style, property);
+
+   assert.equal(length, null);
+});
+
+
+test('Test_ReadCssLengthPx_TestMissing_ExpectNull', () => {
+   const property = '--missing';
+   const style = {
+      getPropertyValue() {
          return '';
       },
    };
 
-   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(style, '--ok'), 42);
-   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(style, '--zero'), null);
-   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(style, '--bad'), null);
-   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(style, '--missing'), null);
-   assert.equal(DayPlannerTimelinePlacer.readCssLengthPx(null, '--ok'), null);
+   const length = DayPlannerTimelinePlacer.readCssLengthPx(style, property);
+
+   assert.equal(length, null);
 });
 
-test('Test_ResolveTimelineElement_TestClosestAndWalk_ExpectTimeline', () => {
+
+test('Test_ReadCssLengthPx_TestNullStyle_ExpectNull', () => {
+   const style = null;
+   const property = '--ok';
+
+   const length = DayPlannerTimelinePlacer.readCssLengthPx(style, property);
+
+   assert.equal(length, null);
+});
+
+
+test('Test_ResolveTimelineElement_TestClosest_ExpectTimeline', () => {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
    const gridLine = createDomNode('div', 'itinerary-day-grid-line');
    timeline.appendChild(gridLine);
 
-   assert.equal(DayPlannerTimelinePlacer.resolveTimelineElement(gridLine), timeline);
-   assert.equal(DayPlannerTimelinePlacer.resolveTimelineElement(null), null);
+   const resolved = DayPlannerTimelinePlacer.resolveTimelineElement(gridLine);
 
+   assert.equal(resolved, timeline);
+});
+
+
+test('Test_ResolveTimelineElement_TestNull_ExpectNull', () => {
+   const gridLine = null;
+
+   const resolved = DayPlannerTimelinePlacer.resolveTimelineElement(gridLine);
+
+   assert.equal(resolved, null);
+});
+
+
+test('Test_ResolveTimelineElement_TestWalkParents_ExpectTimeline', () => {
    const nestedTimeline = createDomNode('div', 'itinerary-day-timeline');
    const row = createDomNode('div', 'row');
    const child = {
@@ -44,50 +108,103 @@ test('Test_ResolveTimelineElement_TestClosestAndWalk_ExpectTimeline', () => {
    nestedTimeline.classList = { contains: (name) => name === 'itinerary-day-timeline' };
    row.classList = { contains: () => false };
 
-   assert.equal(DayPlannerTimelinePlacer.resolveTimelineElement(child), nestedTimeline);
+   const resolved = DayPlannerTimelinePlacer.resolveTimelineElement(child);
 
+   assert.equal(resolved, nestedTimeline);
+});
+
+
+test('Test_ResolveTimelineElement_TestOrphan_ExpectNull', () => {
    const orphan = {
       parentElement: { classList: { contains: () => false }, parentElement: null, parent: null },
       parent: null,
    };
-   assert.equal(DayPlannerTimelinePlacer.resolveTimelineElement(orphan), null);
+
+   const resolved = DayPlannerTimelinePlacer.resolveTimelineElement(orphan);
+
+   assert.equal(resolved, null);
 });
 
-test('Test_ParseStripTopOffsetFromProbeTop_TestValues_ExpectOffsetOrNull', () => {
-   assert.equal(DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(-12), 12);
-   assert.equal(DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(0), null);
-   assert.equal(DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(Number.NaN), null);
+
+test('Test_ParseStripTopOffsetFromProbeTop_TestNegative_ExpectAbsolute', () => {
+   const topPx = -12;
+
+   const offset = DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(topPx);
+
+   assert.equal(offset, Math.abs(topPx));
 });
 
-test('Test_ComputePointPillVerticalSpanFraction_TestInputs_ExpectFractionOrNull', () => {
-   assert.equal(DayPlannerTimelinePlacer.computePointPillVerticalSpanFraction(20, 5), 0.25);
-   assert.equal(DayPlannerTimelinePlacer.computePointPillVerticalSpanFraction(0, 5), null);
+
+test('Test_ParseStripTopOffsetFromProbeTop_TestZero_ExpectNull', () => {
+   const topPx = 0;
+
+   const offset = DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(topPx);
+
+   assert.equal(offset, null);
 });
 
-test('Test_ComputePointPillStripPlacementBand_TestMeasuredAndFallback_ExpectBand', () => {
-   assert.deepEqual(
-      DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
-         slotHeight: 100,
-         pillHeight: 20,
-         stripTopOffset: 10,
-         offsetFraction: 0.5,
-      }),
-      {
-         offsetFraction: 0.4,
-         durationFraction: 0.2,
-      }
-   );
 
-   assert.deepEqual(
-      DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
-         slotHeight: null,
-         pillHeight: 20,
-         stripTopOffset: 10,
-         offsetFraction: 0.25,
-      }),
-      {
-         offsetFraction: 0.25,
-         durationFraction: 0,
-      }
-   );
+test('Test_ParseStripTopOffsetFromProbeTop_TestNaN_ExpectNull', () => {
+   const topPx = Number.NaN;
+
+   const offset = DayPlannerTimelinePlacer.parseStripTopOffsetFromProbeTop(topPx);
+
+   assert.equal(offset, null);
+});
+
+
+test('Test_ComputePointPillVerticalSpanFraction_TestHeights_ExpectFraction', () => {
+   const slotHeight = 20;
+   const pillHeight = 5;
+
+   const fraction = DayPlannerTimelinePlacer.computePointPillVerticalSpanFraction(slotHeight, pillHeight);
+
+   assert.equal(fraction, pillHeight / slotHeight);
+});
+
+
+test('Test_ComputePointPillVerticalSpanFraction_TestZeroSlot_ExpectNull', () => {
+   const slotHeight = 0;
+   const pillHeight = 5;
+
+   const fraction = DayPlannerTimelinePlacer.computePointPillVerticalSpanFraction(slotHeight, pillHeight);
+
+   assert.equal(fraction, null);
+});
+
+
+test('Test_ComputePointPillStripPlacementBand_TestMeasured_ExpectBand', () => {
+   const slotHeight = 100;
+   const pillHeight = 20;
+   const stripTopOffset = 10;
+   const offsetFraction = 0.5;
+
+   const band = DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
+      slotHeight,
+      pillHeight,
+      stripTopOffset,
+      offsetFraction,
+   });
+
+   assert.deepEqual(band, {
+      offsetFraction: ((offsetFraction * slotHeight) - stripTopOffset) / slotHeight,
+      durationFraction: pillHeight / slotHeight,
+   });
+});
+
+
+test('Test_ComputePointPillStripPlacementBand_TestMissingSlot_ExpectFallback', () => {
+   const offsetFraction = 0.25;
+
+   const band = DayPlannerTimelinePlacer.computePointPillStripPlacementBand({
+      slotHeight: null,
+      pillHeight: 20,
+      stripTopOffset: 10,
+      offsetFraction,
+   });
+
+   assert.deepEqual(band, {
+      offsetFraction,
+      durationFraction: 0,
+   });
 });

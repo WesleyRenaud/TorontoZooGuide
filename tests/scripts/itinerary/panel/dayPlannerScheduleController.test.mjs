@@ -3,252 +3,529 @@ import test from 'node:test';
 
 import { DayPlannerScheduleController } from '../../../../scripts/itinerary/panel/dayPlannerScheduleController.js';
 import { DayPlannerScheduleHelper } from '../../../../scripts/itinerary/panel/dayPlannerScheduleHelper.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { TimelineLayoutConstants } from '../../../../scripts/shared/timelineLayoutConstants.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_ParseClockTimeMinutes_TestFormats_ExpectMinutes', () => {
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('09:30'), 9 * 60 + 30);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('09:30:30'), 9 * 60 + 30.5);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('1:00 PM'), 13 * 60);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('12:15 AM'), 15);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('25:00'), null);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('bad'), null);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes(''), null);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('1:99 PM'), null);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('0:00 AM'), null);
-   assert.equal(DayPlannerScheduleController.parseClockTimeMinutes('1:00:99 PM'), null);
+
+test('Test_ParseClockTimeMinutes_TestHoursMinutes_ExpectMinutes', () => {
+   const hour = 9;
+   const minute = 30;
+   const clockTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, hour * 60 + minute);
 });
 
-test('Test_FormatMinutesHelpers_TestKeysAndClock_ExpectStrings', () => {
-   assert.equal(DayPlannerScheduleController.formatMinutesAsScheduleTimeKey(9 * 60 + 5), '09:05');
-   assert.match(
-      DayPlannerScheduleController.formatMinutesAsClockTime(13 * 60),
-      /1:00\s*PM/i
+
+test('Test_ParseClockTimeMinutes_TestHoursMinutesSeconds_ExpectFractionalMinutes', () => {
+   const hour = 9;
+   const minute = 30;
+   const second = 30;
+   const clockTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, hour * 60 + minute + second / 60);
+});
+
+
+test('Test_ParseClockTimeMinutes_TestAfternoon_ExpectMinutes', () => {
+   const clockTime = '1:00 PM';
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, 13 * 60);
+});
+
+
+test('Test_ParseClockTimeMinutes_TestMidnightMinutes_ExpectMinutes', () => {
+   const clockTime = '12:15 AM';
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, 15);
+});
+
+
+test('Test_ParseClockTimeMinutes_TestInvalidHour_ExpectNull', () => {
+   const clockTime = '25:00';
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, null);
+});
+
+
+test('Test_ParseClockTimeMinutes_TestNonClock_ExpectNull', () => {
+   const clockTime = 'bad';
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, null);
+});
+
+
+test('Test_ParseClockTimeMinutes_TestEmpty_ExpectNull', () => {
+   const clockTime = '';
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, null);
+});
+
+
+test('Test_ParseClockTimeMinutes_TestInvalidMinute_ExpectNull', () => {
+   const clockTime = '1:99 PM';
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, null);
+});
+
+
+test('Test_ParseClockTimeMinutes_TestZeroHourAm_ExpectNull', () => {
+   const clockTime = '0:00 AM';
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, null);
+});
+
+
+test('Test_ParseClockTimeMinutes_TestInvalidSecond_ExpectNull', () => {
+   const clockTime = '1:00:99 PM';
+
+   const minutes = DayPlannerScheduleController.parseClockTimeMinutes(clockTime);
+
+   assert.equal(minutes, null);
+});
+
+
+test('Test_FormatMinutesAsScheduleTimeKey_TestMinutes_ExpectKey', () => {
+   const hour = 9;
+   const minute = 5;
+   const minutes = hour * 60 + minute;
+
+   const key = DayPlannerScheduleController.formatMinutesAsScheduleTimeKey(minutes);
+
+   assert.equal(key, `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
+});
+
+
+test('Test_FormatMinutesAsClockTime_TestAfternoon_ExpectClock', () => {
+   const minutes = 13 * 60;
+
+   const clockTime = DayPlannerScheduleController.formatMinutesAsClockTime(minutes);
+
+   assert.match(clockTime, /1:00\s*PM/i);
+});
+
+
+test('Test_CollectFixedZooScheduleStartMinutes_TestItems_ExpectMinutes', () => {
+   const talkTime = '1:00 PM';
+   const encounterTime = '10:30';
+   const itinerary = {
+      guardiansTalks: [
+         { start_time: '11:00', is_deleted: true },
+         { start_time: talkTime },
+      ],
+      wildEncounters: [
+         { start_time: encounterTime },
+         { start_time: 'bad' },
+      ],
+   };
+
+   const minutes = DayPlannerScheduleController.collectFixedZooScheduleStartMinutes(itinerary);
+
+   assert.deepEqual(
+      minutes.sort((left, right) => left - right),
+      [
+         DayPlannerScheduleController.parseClockTimeMinutes(encounterTime),
+         DayPlannerScheduleController.parseClockTimeMinutes(talkTime),
+      ]
    );
 });
 
-test('Test_CollectAndEarliestFixedZooScheduleStartMinutes_TestItems_ExpectMinutes', () => {
+
+test('Test_EarliestFixedZooScheduleStartMinutes_TestItems_ExpectEarliest', () => {
+   const encounterTime = '10:30';
    const itinerary = {
       guardiansTalks: [
          { start_time: '11:00', is_deleted: true },
          { start_time: '1:00 PM' },
       ],
       wildEncounters: [
-         { start_time: '10:30' },
+         { start_time: encounterTime },
          { start_time: 'bad' },
       ],
    };
 
-   assert.deepEqual(
-      DayPlannerScheduleController.collectFixedZooScheduleStartMinutes(itinerary).sort((a, b) => a - b),
-      [10 * 60 + 30, 13 * 60]
-   );
-   assert.equal(
-      DayPlannerScheduleController.earliestFixedZooScheduleStartMinutes(itinerary),
-      10 * 60 + 30
-   );
-   assert.equal(DayPlannerScheduleController.earliestFixedZooScheduleStartMinutes({}), null);
+   const minutes = DayPlannerScheduleController.earliestFixedZooScheduleStartMinutes(itinerary);
+
+   assert.equal(minutes, DayPlannerScheduleController.parseClockTimeMinutes(encounterTime));
 });
 
-test('Test_ResolveDayPlannerTimelineStartMinutes_TestCandidates_ExpectEarliest', () => {
-   assert.equal(
-      DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes(
-         { earlyAdmissionTime: '09:00', openTime: '09:30' },
-         { arrivalTime: '10:00' }
-      ),
-      9 * 60
-   );
-   assert.equal(
-      DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes(
-         { openTime: '09:30' },
-         {
-            arrivalTime: '10:00',
-            guardiansTalks: [{ start_time: '08:45' }],
-         }
-      ),
-      8 * 60 + 45
-   );
-   assert.equal(
-      DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes({}, {}),
-      null
-   );
+
+test('Test_EarliestFixedZooScheduleStartMinutes_TestEmpty_ExpectNull', () => {
+   const itinerary = {};
+
+   const minutes = DayPlannerScheduleController.earliestFixedZooScheduleStartMinutes(itinerary);
+
+   assert.equal(minutes, null);
 });
 
-test('Test_BuildArrivalAndDepartureTimeBounds_TestHours_ExpectBoundsOrNull', () => {
-   const arrival = DayPlannerScheduleController.buildArrivalTimeBounds({
-      earlyAdmissionTime: '09:00',
+
+test('Test_ResolveDayPlannerTimelineStartMinutes_TestEarlyAdmission_ExpectEarly', () => {
+   const earlyAdmissionTime = '09:00';
+   const hours = { earlyAdmissionTime, openTime: '09:30' };
+   const itinerary = { arrivalTime: '10:00' };
+
+   const minutes = DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes(hours, itinerary);
+
+   assert.equal(minutes, DayPlannerScheduleController.parseClockTimeMinutes(earlyAdmissionTime));
+});
+
+
+test('Test_ResolveDayPlannerTimelineStartMinutes_TestEarlierTalk_ExpectTalk', () => {
+   const talkTime = '08:45';
+   const hours = { openTime: '09:30' };
+   const itinerary = {
+      arrivalTime: '10:00',
+      guardiansTalks: [{ start_time: talkTime }],
+   };
+
+   const minutes = DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes(hours, itinerary);
+
+   assert.equal(minutes, DayPlannerScheduleController.parseClockTimeMinutes(talkTime));
+});
+
+
+test('Test_ResolveDayPlannerTimelineStartMinutes_TestEmpty_ExpectNull', () => {
+   const hours = {};
+   const itinerary = {};
+
+   const minutes = DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes(hours, itinerary);
+
+   assert.equal(minutes, null);
+});
+
+
+test('Test_BuildArrivalTimeBounds_TestHours_ExpectBounds', () => {
+   const earlyAdmissionTime = '09:00';
+   const lastAdmissionTime = '18:00';
+   const hours = {
+      earlyAdmissionTime,
       openTime: '09:30',
-      lastAdmissionTime: '18:00',
-   });
-   assert.equal(arrival.minMinutes, 9 * 60);
-   assert.equal(arrival.maxMinutes, 18 * 60);
-   assert.equal(arrival.minScheduleTime, '09:00');
-   assert.equal(arrival.maxScheduleTime, '18:00');
+      lastAdmissionTime,
+   };
 
-   assert.equal(
-      DayPlannerScheduleController.buildArrivalTimeBounds({
-         openTime: '10:00',
-         lastAdmissionTime: '09:00',
-      }),
-      null
-   );
+   const bounds = DayPlannerScheduleController.buildArrivalTimeBounds(hours);
 
-   const departure = DayPlannerScheduleController.buildDepartureTimeBounds({
-      openTime: '09:30',
-      closeTime: '19:00',
-   });
-   assert.equal(departure.minMinutes, 9 * 60 + 30);
-   assert.equal(departure.maxMinutes, 19 * 60);
-
-   assert.equal(
-      DayPlannerScheduleController.buildDepartureTimeBounds({
-         openTime: '19:00',
-         closeTime: '09:00',
-      }),
-      null
-   );
+   assert.equal(bounds.minMinutes, DayPlannerScheduleController.parseClockTimeMinutes(earlyAdmissionTime));
+   assert.equal(bounds.maxMinutes, DayPlannerScheduleController.parseClockTimeMinutes(lastAdmissionTime));
+   assert.equal(bounds.minScheduleTime, earlyAdmissionTime);
+   assert.equal(bounds.maxScheduleTime, lastAdmissionTime);
 });
 
-test('Test_IsArrivalAndDepartureWithinBounds_TestDelegates_ExpectBoolean', () => {
+
+test('Test_BuildArrivalTimeBounds_TestInvertedHours_ExpectNull', () => {
+   const hours = {
+      openTime: '10:00',
+      lastAdmissionTime: '09:00',
+   };
+
+   const bounds = DayPlannerScheduleController.buildArrivalTimeBounds(hours);
+
+   assert.equal(bounds, null);
+});
+
+
+test('Test_BuildDepartureTimeBounds_TestHours_ExpectBounds', () => {
+   const openTime = '09:30';
+   const closeTime = '19:00';
+   const hours = { openTime, closeTime };
+
+   const bounds = DayPlannerScheduleController.buildDepartureTimeBounds(hours);
+
+   assert.equal(bounds.minMinutes, DayPlannerScheduleController.parseClockTimeMinutes(openTime));
+   assert.equal(bounds.maxMinutes, DayPlannerScheduleController.parseClockTimeMinutes(closeTime));
+});
+
+
+test('Test_BuildDepartureTimeBounds_TestInvertedHours_ExpectNull', () => {
+   const hours = {
+      openTime: '19:00',
+      closeTime: '09:00',
+   };
+
+   const bounds = DayPlannerScheduleController.buildDepartureTimeBounds(hours);
+
+   assert.equal(bounds, null);
+});
+
+
+test('Test_IsArrivalTimeWithinBounds_TestDelegates_ExpectTrue', () => {
    const original = DayPlannerScheduleHelper.isTimeWithinBounds;
    const calls = [];
+   const timeValue = '10:00';
+   const bounds = { minMinutes: 9 * 60, maxMinutes: 18 * 60 };
    DayPlannerScheduleHelper.isTimeWithinBounds = (...args) => {
       calls.push(args);
       return true;
    };
 
    try {
-      const bounds = { minMinutes: 540, maxMinutes: 1080 };
-      assert.equal(DayPlannerScheduleController.isArrivalTimeWithinBounds('10:00', bounds), true);
-      assert.equal(DayPlannerScheduleController.isDepartureTimeWithinBounds('16:00', bounds), true);
-      assert.equal(calls.length, 2);
+      const isWithin = DayPlannerScheduleController.isArrivalTimeWithinBounds(timeValue, bounds);
+
+      assert.equal(isWithin, true);
+      assert.deepEqual(calls.at(Position.FIRST), [timeValue, bounds]);
    } finally {
       DayPlannerScheduleHelper.isTimeWithinBounds = original;
    }
 });
 
-test('Test_AreItineraryScheduleTimesOrdered_TestPairs_ExpectBoolean', () => {
-   assert.equal(
-      DayPlannerScheduleController.areItineraryScheduleTimesOrdered('10:00', '16:00'),
-      true
-   );
-   assert.equal(
-      DayPlannerScheduleController.areItineraryScheduleTimesOrdered('16:00', '10:00'),
-      false
-   );
-   assert.equal(
-      DayPlannerScheduleController.areItineraryScheduleTimesOrdered('bad', '10:00'),
-      true
-   );
+
+test('Test_IsDepartureTimeWithinBounds_TestDelegates_ExpectTrue', () => {
+   const original = DayPlannerScheduleHelper.isTimeWithinBounds;
+   const timeValue = '16:00';
+   const bounds = { minMinutes: 9 * 60, maxMinutes: 18 * 60 };
+   DayPlannerScheduleHelper.isTimeWithinBounds = () => true;
+
+   try {
+      const isWithin = DayPlannerScheduleController.isDepartureTimeWithinBounds(timeValue, bounds);
+
+      assert.equal(isWithin, true);
+   } finally {
+      DayPlannerScheduleHelper.isTimeWithinBounds = original;
+   }
 });
 
-test('Test_ResolveArrivalAndDepartureTimeValidationError_TestMessages_ExpectErrors', () => {
-   const originalArrival = DayPlannerScheduleController.isArrivalTimeWithinBounds;
-   const originalDeparture = DayPlannerScheduleController.isDepartureTimeWithinBounds;
-   const originalOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered;
 
+test('Test_AreItineraryScheduleTimesOrdered_TestArrivalBeforeDeparture_ExpectTrue', () => {
+   const arrivalTime = '10:00';
+   const departureTime = '16:00';
+
+   const isOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered(
+      arrivalTime,
+      departureTime
+   );
+
+   assert.equal(isOrdered, true);
+});
+
+
+test('Test_AreItineraryScheduleTimesOrdered_TestArrivalAfterDeparture_ExpectFalse', () => {
+   const arrivalTime = '16:00';
+   const departureTime = '10:00';
+
+   const isOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered(
+      arrivalTime,
+      departureTime
+   );
+
+   assert.equal(isOrdered, false);
+});
+
+
+test('Test_AreItineraryScheduleTimesOrdered_TestInvalidArrival_ExpectTrue', () => {
+   const arrivalTime = 'bad';
+   const departureTime = '10:00';
+
+   const isOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered(
+      arrivalTime,
+      departureTime
+   );
+
+   assert.equal(isOrdered, true);
+});
+
+
+test('Test_ResolveArrivalTimeValidationError_TestOutOfBounds_ExpectArrivalError', () => {
+   const originalArrival = DayPlannerScheduleController.isArrivalTimeWithinBounds;
+   const originalOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered;
+   const arrivalTimeInvalid = 'arrival bad';
    DayPlannerScheduleController.isArrivalTimeWithinBounds = () => false;
-   DayPlannerScheduleController.isDepartureTimeWithinBounds = () => true;
    DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => true;
 
    try {
-      assert.equal(
-         DayPlannerScheduleController.resolveArrivalTimeValidationError(
-            '08:00',
-            {},
-            '16:00',
-            { arrivalTimeInvalid: 'arrival bad' }
-         ),
-         'arrival bad'
+      const error = DayPlannerScheduleController.resolveArrivalTimeValidationError(
+         '08:00',
+         {},
+         '16:00',
+         { arrivalTimeInvalid }
       );
 
-      DayPlannerScheduleController.isArrivalTimeWithinBounds = () => true;
-      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => false;
-      assert.equal(
-         DayPlannerScheduleController.resolveArrivalTimeValidationError(
-            '17:00',
-            {},
-            '16:00',
-            { timeOrderInvalid: 'order bad' }
-         ),
-         'order bad'
-      );
-
-      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => true;
-      assert.equal(
-         DayPlannerScheduleController.resolveArrivalTimeValidationError(
-            '10:00',
-            {},
-            '16:00',
-            {}
-         ),
-         null
-      );
-
-      DayPlannerScheduleController.isDepartureTimeWithinBounds = () => false;
-      assert.equal(
-         DayPlannerScheduleController.resolveDepartureTimeValidationError(
-            '20:00',
-            {},
-            '10:00',
-            { departureTimeInvalid: 'departure bad' }
-         ),
-         'departure bad'
-      );
-
-      DayPlannerScheduleController.isDepartureTimeWithinBounds = () => true;
-      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => false;
-      assert.equal(
-         DayPlannerScheduleController.resolveDepartureTimeValidationError(
-            '09:00',
-            {},
-            '10:00',
-            { departureTimeAfterArrivalInvalid: 'after arrival' }
-         ),
-         'after arrival'
-      );
-
-      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => true;
-      assert.equal(
-         DayPlannerScheduleController.resolveDepartureTimeValidationError(
-            '16:00',
-            {},
-            '10:00',
-            {}
-         ),
-         null
-      );
+      assert.equal(error, arrivalTimeInvalid);
    } finally {
       DayPlannerScheduleController.isArrivalTimeWithinBounds = originalArrival;
+      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = originalOrdered;
+   }
+});
+
+
+test('Test_ResolveArrivalTimeValidationError_TestOrder_ExpectOrderError', () => {
+   const originalArrival = DayPlannerScheduleController.isArrivalTimeWithinBounds;
+   const originalOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered;
+   const timeOrderInvalid = 'order bad';
+   DayPlannerScheduleController.isArrivalTimeWithinBounds = () => true;
+   DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => false;
+
+   try {
+      const error = DayPlannerScheduleController.resolveArrivalTimeValidationError(
+         '17:00',
+         {},
+         '16:00',
+         { timeOrderInvalid }
+      );
+
+      assert.equal(error, timeOrderInvalid);
+   } finally {
+      DayPlannerScheduleController.isArrivalTimeWithinBounds = originalArrival;
+      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = originalOrdered;
+   }
+});
+
+
+test('Test_ResolveArrivalTimeValidationError_TestValid_ExpectNull', () => {
+   const originalArrival = DayPlannerScheduleController.isArrivalTimeWithinBounds;
+   const originalOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered;
+   DayPlannerScheduleController.isArrivalTimeWithinBounds = () => true;
+   DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => true;
+
+   try {
+      const error = DayPlannerScheduleController.resolveArrivalTimeValidationError(
+         '10:00',
+         {},
+         '16:00',
+         {}
+      );
+
+      assert.equal(error, null);
+   } finally {
+      DayPlannerScheduleController.isArrivalTimeWithinBounds = originalArrival;
+      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = originalOrdered;
+   }
+});
+
+
+test('Test_ResolveDepartureTimeValidationError_TestOutOfBounds_ExpectDepartureError', () => {
+   const originalDeparture = DayPlannerScheduleController.isDepartureTimeWithinBounds;
+   const originalOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered;
+   const departureTimeInvalid = 'departure bad';
+   DayPlannerScheduleController.isDepartureTimeWithinBounds = () => false;
+   DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => true;
+
+   try {
+      const error = DayPlannerScheduleController.resolveDepartureTimeValidationError(
+         '20:00',
+         {},
+         '10:00',
+         { departureTimeInvalid }
+      );
+
+      assert.equal(error, departureTimeInvalid);
+   } finally {
       DayPlannerScheduleController.isDepartureTimeWithinBounds = originalDeparture;
       DayPlannerScheduleController.areItineraryScheduleTimesOrdered = originalOrdered;
    }
 });
 
-test('Test_BuildHalfHourSlotStarts_TestRange_ExpectSlots', () => {
-   assert.deepEqual(DayPlannerScheduleController.buildHalfHourSlotStarts(null, 600), []);
-   assert.deepEqual(DayPlannerScheduleController.buildHalfHourSlotStarts(600, 600), []);
 
-   const slots = DayPlannerScheduleController.buildHalfHourSlotStarts(9 * 60 + 15, 11 * 60);
-   assert.equal(slots[0], 9 * 60 + 15);
+test('Test_ResolveDepartureTimeValidationError_TestOrder_ExpectAfterArrivalError', () => {
+   const originalDeparture = DayPlannerScheduleController.isDepartureTimeWithinBounds;
+   const originalOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered;
+   const departureTimeAfterArrivalInvalid = 'after arrival';
+   DayPlannerScheduleController.isDepartureTimeWithinBounds = () => true;
+   DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => false;
+
+   try {
+      const error = DayPlannerScheduleController.resolveDepartureTimeValidationError(
+         '09:00',
+         {},
+         '10:00',
+         { departureTimeAfterArrivalInvalid }
+      );
+
+      assert.equal(error, departureTimeAfterArrivalInvalid);
+   } finally {
+      DayPlannerScheduleController.isDepartureTimeWithinBounds = originalDeparture;
+      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = originalOrdered;
+   }
+});
+
+
+test('Test_ResolveDepartureTimeValidationError_TestValid_ExpectNull', () => {
+   const originalDeparture = DayPlannerScheduleController.isDepartureTimeWithinBounds;
+   const originalOrdered = DayPlannerScheduleController.areItineraryScheduleTimesOrdered;
+   DayPlannerScheduleController.isDepartureTimeWithinBounds = () => true;
+   DayPlannerScheduleController.areItineraryScheduleTimesOrdered = () => true;
+
+   try {
+      const error = DayPlannerScheduleController.resolveDepartureTimeValidationError(
+         '16:00',
+         {},
+         '10:00',
+         {}
+      );
+
+      assert.equal(error, null);
+   } finally {
+      DayPlannerScheduleController.isDepartureTimeWithinBounds = originalDeparture;
+      DayPlannerScheduleController.areItineraryScheduleTimesOrdered = originalOrdered;
+   }
+});
+
+
+test('Test_BuildHalfHourSlotStarts_TestNullStart_ExpectEmpty', () => {
+   const startMinutes = null;
+   const endMinutes = 10 * 60;
+
+   const slots = DayPlannerScheduleController.buildHalfHourSlotStarts(startMinutes, endMinutes);
+
+   assert.deepEqual(slots, []);
+});
+
+
+test('Test_BuildHalfHourSlotStarts_TestEqualRange_ExpectEmpty', () => {
+   const minutes = 10 * 60;
+
+   const slots = DayPlannerScheduleController.buildHalfHourSlotStarts(minutes, minutes);
+
+   assert.deepEqual(slots, []);
+});
+
+
+test('Test_BuildHalfHourSlotStarts_TestOffsetOpen_ExpectSlots', () => {
+   const startMinutes = 9 * 60 + 15;
+   const endMinutes = 11 * 60;
+
+   const slots = DayPlannerScheduleController.buildHalfHourSlotStarts(startMinutes, endMinutes);
+
+   assert.equal(slots.at(Position.FIRST), startMinutes);
    assert.ok(slots.includes(9 * 60 + 30));
    assert.ok(slots.includes(10 * 60));
    assert.ok(slots.includes(10 * 60 + 30));
    assert.equal(
-      slots.every((slot) => slot < 11 * 60 || slot === 9 * 60 + 15),
+      slots.every((slot) => slot < endMinutes || slot === startMinutes),
       true
    );
    assert.equal(
-      slots.at(-1),
-      Math.floor((11 * 60 - 1) / TimelineLayoutConstants.TIMELINE_SLOT_MINUTES)
+      slots.at(Position.LAST),
+      Math.floor((endMinutes - 1) / TimelineLayoutConstants.TIMELINE_SLOT_MINUTES)
          * TimelineLayoutConstants.TIMELINE_SLOT_MINUTES
    );
+});
 
-   // Open on a half-hour boundary so the first loop candidate equals openMinutes.
-   assert.deepEqual(
-      DayPlannerScheduleController.buildHalfHourSlotStarts(9 * 60, 10 * 60 + 30),
-      [9 * 60, 9 * 60 + 30, 10 * 60]
-   );
+
+test('Test_BuildHalfHourSlotStarts_TestHalfHourOpen_ExpectSlots', () => {
+   const startMinutes = 9 * 60;
+   const endMinutes = 10 * 60 + 30;
+
+   const slots = DayPlannerScheduleController.buildHalfHourSlotStarts(startMinutes, endMinutes);
+
+   assert.deepEqual(slots, [startMinutes, startMinutes + TimelineLayoutConstants.TIMELINE_SLOT_MINUTES, 10 * 60]);
 });

@@ -7,7 +7,9 @@ import pytest
 from api.itinerary.data_access.accept_itinerary_provider import AcceptItineraryProvider
 from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
 from api.shared.constants import Constants
+from api.shared.date_values import DateValues
 from api.shared.enums.position import Position
+from api.shared.enums.transportation_name import TransportationName
 
 
 ACCEPT_ITINERARY_SCHEMA = """
@@ -166,52 +168,75 @@ def _insert_transportation(
 
 def Test_AcceptItinerary_TestAddedAnimalFlags_ExpectCleared(
       accept_itinerary_conn: sqlite3.Connection ) -> None:
+   lion_species = 'African Lion'
+   penguin_species = 'African Penguin'
+   exhibit = 'Africa Savanna'
    _insert_animal(
       accept_itinerary_conn,
-      species='African Lion',
-      exhibit='Africa Savanna',
+      species=lion_species,
+      exhibit=exhibit,
       old_likelihood=90,
       new_likelihood=90,
       is_added=1 )
    _insert_animal(
       accept_itinerary_conn,
-      species='African Penguin',
-      exhibit='Africa Savanna',
+      species=penguin_species,
+      exhibit=exhibit,
       old_likelihood=80,
       new_likelihood=80 )
 
-   assert AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn ) is True
-
-   assert accept_itinerary_conn.execute(
+   accepted = AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn )
+   added_count = accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryAnimal WHERE IS_ADDED = 1;'
-   ).fetchone()[ Position.FIRST ] == 0
-   assert accept_itinerary_conn.execute(
+   ).fetchone()[ Position.FIRST ]
+   old_likelihood_count = accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryAnimal WHERE OLD_LIKELIHOOD IS NOT NULL;'
-   ).fetchone()[ Position.FIRST ] == 0
+   ).fetchone()[ Position.FIRST ]
+
+   assert accepted is True
+   assert added_count == 0
+   assert old_likelihood_count == 0
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodAndDeletedItems_ExpectDeclinedRemoved(
       accept_itinerary_conn: sqlite3.Connection ) -> None:
+   lion_species = 'African Lion'
+   penguin_species = 'African Penguin'
+   exhibit = 'Africa Savanna'
+   carousel = 'Conservation Carousel'
+   greenhouse = 'Greenhouse'
+   deleted_talk = 'African Lion'
+   kept_talk = 'Amur Tiger'
+   talk_start_time = '10:00 AM'
+   talk_duration_minutes = 30
+   kept_talk_start_time = '11:00'
+   kept_talk_duration_minutes = 30
+   deleted_encounter = 'African Rainforest'
+   kept_encounter = 'Kangaroo'
+   encounter_start_time = '2:00 PM'
+   encounter_duration_minutes = 45
+   kept_encounter_start_time = '1:00 PM'
+   kept_encounter_duration_minutes = 45
    _insert_animal(
       accept_itinerary_conn,
-      species='African Lion',
-      exhibit='Africa Savanna',
+      species=lion_species,
+      exhibit=exhibit,
       old_likelihood=90,
       new_likelihood=60 )
    _insert_animal(
       accept_itinerary_conn,
-      species='African Penguin',
-      exhibit='Africa Savanna',
+      species=penguin_species,
+      exhibit=exhibit,
       old_likelihood=40,
       new_likelihood=80 )
    _insert_attraction(
       accept_itinerary_conn,
-      attraction='Conservation Carousel',
+      attraction=carousel,
       old_likelihood=100,
       new_likelihood=0 )
    _insert_attraction(
       accept_itinerary_conn,
-      attraction='Greenhouse',
+      attraction=greenhouse,
       old_likelihood=50,
       new_likelihood=75 )
    accept_itinerary_conn.executemany(
@@ -224,10 +249,21 @@ def Test_AcceptItinerary_TestZeroLikelihoodAndDeletedItems_ExpectDeclinedRemoved
             VALUES ( ?, ?, ?, ? );
       """,
       [
-         ( 'African Lion', '10:00 AM', '10:30 AM', 1 ),
-         ( 'Amur Tiger', '11:00', '11:30', 0 ),
-      ],
-   )
+         (
+            deleted_talk,
+            talk_start_time,
+            DateValues.add_minutes_to_time( talk_start_time, talk_duration_minutes ),
+            1,
+         ),
+         (
+            kept_talk,
+            kept_talk_start_time,
+            DateValues.add_minutes_to_time(
+               kept_talk_start_time,
+               kept_talk_duration_minutes ),
+            0,
+         ),
+      ] )
    accept_itinerary_conn.executemany(
       """   INSERT INTO ItineraryWildEncounter (
                WILD_ENCOUNTER,
@@ -238,133 +274,167 @@ def Test_AcceptItinerary_TestZeroLikelihoodAndDeletedItems_ExpectDeclinedRemoved
             VALUES ( ?, ?, ?, ? );
       """,
       [
-         ( 'African Rainforest', '2:00 PM', '2:45 PM', 1 ),
-         ( 'Kangaroo', '1:00 PM', '1:45 PM', 0 ),
-      ],
-   )
+         (
+            deleted_encounter,
+            encounter_start_time,
+            DateValues.add_minutes_to_time(
+               encounter_start_time,
+               encounter_duration_minutes ),
+            1,
+         ),
+         (
+            kept_encounter,
+            kept_encounter_start_time,
+            DateValues.add_minutes_to_time(
+               kept_encounter_start_time,
+               kept_encounter_duration_minutes ),
+            0,
+         ),
+      ] )
    accept_itinerary_conn.commit()
 
-   assert AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn ) is True
-
-   assert [
+   accepted = AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn )
+   animal_names = [
       row[ 'SPECIES' ]
       for row in accept_itinerary_conn.execute( 'SELECT SPECIES FROM ItineraryAnimal;' )
-   ] == [ 'African Lion', 'African Penguin' ]
-   assert [
+   ]
+   attraction_names = [
       row[ 'ATTRACTION' ]
       for row in accept_itinerary_conn.execute( 'SELECT ATTRACTION FROM ItineraryAttraction;' )
-   ] == [ 'Greenhouse' ]
-   assert [
+   ]
+   talk_names = [
       row[ 'TALK_NAME' ]
       for row in accept_itinerary_conn.execute( 'SELECT TALK_NAME FROM ItineraryGuardiansTalk;' )
-   ] == [ 'Amur Tiger' ]
-   assert [
+   ]
+   encounter_names = [
       row[ 'WILD_ENCOUNTER' ]
       for row in accept_itinerary_conn.execute(
          'SELECT WILD_ENCOUNTER FROM ItineraryWildEncounter;' )
-   ] == [ 'Kangaroo' ]
+   ]
+
+   assert accepted is True
+   assert animal_names == [ lion_species, penguin_species ]
+   assert attraction_names == [ greenhouse ]
+   assert talk_names == [ kept_talk ]
+   assert encounter_names == [ kept_encounter ]
 
 
 def Test_AcceptItinerary_TestBelowMinLikelihoodAnimals_ExpectDeclinedRemoved(
       accept_itinerary_conn: sqlite3.Connection ) -> None:
+   declined_species = 'Spotted Hyena'
+   kept_species = 'Masai Giraffe'
+   exhibit = 'Africa Savanna'
+   enclosure_name = 'Giraffe House'
    _insert_animal(
       accept_itinerary_conn,
-      species='Spotted Hyena',
-      exhibit='Africa Savanna',
+      species=declined_species,
+      exhibit=exhibit,
       old_likelihood=80,
       new_likelihood=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD - 1 )
    _insert_animal(
       accept_itinerary_conn,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna',
-      enclosure_name='Giraffe House',
+      species=kept_species,
+      exhibit=exhibit,
+      enclosure_name=enclosure_name,
       old_likelihood=80,
       new_likelihood=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD )
 
-   assert AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn ) is True
-
+   accepted = AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn )
    remaining_species = {
       row[ 'SPECIES' ]
       for row in accept_itinerary_conn.execute( 'SELECT SPECIES FROM ItineraryAnimal;' )
    }
-   assert remaining_species == { 'Masai Giraffe' }
+
+   assert accepted is True
+   assert remaining_species == { kept_species }
 
 
 def Test_AcceptItinerary_TestBelowMinLikelihoodWithoutOverride_ExpectThresholdSplit(
       accept_itinerary_conn: sqlite3.Connection ) -> None:
+   lion_species = 'African Lion'
+   hyena_species = 'Spotted Hyena'
+   penguin_species = 'African Penguin'
+   exhibit = 'Africa Savanna'
    _insert_animal(
       accept_itinerary_conn,
-      species='African Lion',
-      exhibit='Africa Savanna',
+      species=lion_species,
+      exhibit=exhibit,
       old_likelihood=80,
       new_likelihood=0 )
    _insert_animal(
       accept_itinerary_conn,
-      species='Spotted Hyena',
-      exhibit='Africa Savanna',
+      species=hyena_species,
+      exhibit=exhibit,
       old_likelihood=70,
       new_likelihood=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD - 1 )
    _insert_animal(
       accept_itinerary_conn,
-      species='African Penguin',
-      exhibit='Africa Savanna',
+      species=penguin_species,
+      exhibit=exhibit,
       old_likelihood=90,
       new_likelihood=Constants.ITINERARY_ANIMAL_MIN_LIKELIHOOD )
 
-   assert AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn ) is True
-
-   assert [
+   accepted = AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn )
+   remaining_species = [
       row[ 'SPECIES' ]
       for row in accept_itinerary_conn.execute(
          'SELECT SPECIES FROM ItineraryAnimal ORDER BY SPECIES;' )
-   ] == [ 'African Penguin' ]
+   ]
+
+   assert accepted is True
+   assert remaining_species == [ penguin_species ]
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodAnimals_ExpectAllRemoved(
       accept_itinerary_conn: sqlite3.Connection ) -> None:
+   exhibit = 'Africa Savanna'
    _insert_animal(
       accept_itinerary_conn,
       species='African Lion',
-      exhibit='Africa Savanna',
+      exhibit=exhibit,
       old_likelihood=80,
       new_likelihood=0 )
    _insert_animal(
       accept_itinerary_conn,
       species='African Penguin',
-      exhibit='Africa Savanna',
+      exhibit=exhibit,
       old_likelihood=70,
       new_likelihood=0 )
 
-   assert AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn ) is True
-
-   assert accept_itinerary_conn.execute(
+   accepted = AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn )
+   remaining_count = accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryAnimal;'
-   ).fetchone()[ Position.FIRST ] == 0
+   ).fetchone()[ Position.FIRST ]
+
+   assert accepted is True
+   assert remaining_count == 0
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodAnimalsWithOverride_ExpectKeptAnimal(
       accept_itinerary_conn: sqlite3.Connection ) -> None:
+   species = 'African Lion'
+   exhibit = 'Africa Savanna'
+   animals_to_keep = [
+      ItineraryAnimalInput(
+         species=species,
+         exhibit=exhibit ),
+   ]
    _insert_animal(
       accept_itinerary_conn,
-      species='African Lion',
-      exhibit='Africa Savanna',
+      species=species,
+      exhibit=exhibit,
       old_likelihood=80,
       new_likelihood=0 )
    _insert_animal(
       accept_itinerary_conn,
       species='African Penguin',
-      exhibit='Africa Savanna',
+      exhibit=exhibit,
       old_likelihood=70,
       new_likelihood=0 )
 
-   assert AcceptItineraryProvider.accept_itinerary(
+   accepted = AcceptItineraryProvider.accept_itinerary(
       accept_itinerary_conn,
-      animals_to_keep=[
-         ItineraryAnimalInput(
-            species='African Lion',
-            exhibit='Africa Savanna' ),
-      ] ) is True
-
+      animals_to_keep=animals_to_keep )
    rows = accept_itinerary_conn.execute(
       """   SELECT SPECIES, EXHIBIT, OLD_LIKELIHOOD
             FROM ItineraryAnimal
@@ -372,9 +442,11 @@ def Test_AcceptItinerary_TestZeroLikelihoodAnimalsWithOverride_ExpectKeptAnimal(
       """
    ).fetchall()
 
-   assert len( rows ) == 1
-   assert rows[ Position.FIRST ][ 'SPECIES' ] == 'African Lion'
-   assert rows[ Position.FIRST ][ 'EXHIBIT' ] == 'Africa Savanna'
+   kept_animal = animals_to_keep[ Position.FIRST ]
+   assert accepted is True
+   assert len( rows ) == len( animals_to_keep )
+   assert rows[ Position.FIRST ][ 'SPECIES' ] == kept_animal.species
+   assert rows[ Position.FIRST ][ 'EXHIBIT' ] == kept_animal.exhibit
    assert rows[ Position.FIRST ][ 'OLD_LIKELIHOOD' ] is None
 
 
@@ -391,18 +463,22 @@ def Test_AcceptItinerary_TestZeroLikelihoodAttractions_ExpectAllRemoved(
       old_likelihood=80,
       new_likelihood=0 )
 
-   assert AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn ) is True
-
-   assert accept_itinerary_conn.execute(
+   accepted = AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn )
+   remaining_count = accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryAttraction;'
-   ).fetchone()[ Position.FIRST ] == 0
+   ).fetchone()[ Position.FIRST ]
+
+   assert accepted is True
+   assert remaining_count == 0
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodAttractionsWithOverride_ExpectKeptAttraction(
       accept_itinerary_conn: sqlite3.Connection ) -> None:
+   kept_attraction = 'Conservation Carousel'
+   attractions_to_keep = [ kept_attraction ]
    _insert_attraction(
       accept_itinerary_conn,
-      attraction='Conservation Carousel',
+      attraction=kept_attraction,
       old_likelihood=100,
       new_likelihood=0 )
    _insert_attraction(
@@ -411,10 +487,9 @@ def Test_AcceptItinerary_TestZeroLikelihoodAttractionsWithOverride_ExpectKeptAtt
       old_likelihood=80,
       new_likelihood=0 )
 
-   assert AcceptItineraryProvider.accept_itinerary(
+   accepted = AcceptItineraryProvider.accept_itinerary(
       accept_itinerary_conn,
-      attractions_to_keep=[ 'Conservation Carousel' ] ) is True
-
+      attractions_to_keep=attractions_to_keep )
    rows = accept_itinerary_conn.execute(
       """   SELECT ATTRACTION, OLD_LIKELIHOOD
             FROM ItineraryAttraction
@@ -422,28 +497,32 @@ def Test_AcceptItinerary_TestZeroLikelihoodAttractionsWithOverride_ExpectKeptAtt
       """
    ).fetchall()
 
-   assert len( rows ) == 1
-   assert rows[ Position.FIRST ][ 'ATTRACTION' ] == 'Conservation Carousel'
+   assert accepted is True
+   assert len( rows ) == len( attractions_to_keep )
+   assert rows[ Position.FIRST ][ 'ATTRACTION' ] == kept_attraction
    assert rows[ Position.FIRST ][ 'OLD_LIKELIHOOD' ] is None
 
 
 def Test_AcceptItinerary_TestZeroLikelihoodTransportations_ExpectAllRemoved(
       accept_itinerary_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
    _insert_transportation(
       accept_itinerary_conn,
-      transportation='Zoomobile',
+      transportation=transportation,
       added_as_attraction=0,
       old_likelihood=100,
       new_likelihood=0 )
    _insert_transportation(
       accept_itinerary_conn,
-      transportation='Zoomobile',
+      transportation=transportation,
       added_as_attraction=1,
       old_likelihood=80,
       new_likelihood=0 )
 
-   assert AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn ) is True
-
-   assert accept_itinerary_conn.execute(
+   accepted = AcceptItineraryProvider.accept_itinerary( accept_itinerary_conn )
+   remaining_count = accept_itinerary_conn.execute(
       'SELECT COUNT(*) FROM ItineraryTransportation;'
-   ).fetchone()[ Position.FIRST ] == 0
+   ).fetchone()[ Position.FIRST ]
+
+   assert accepted is True
+   assert remaining_count == 0

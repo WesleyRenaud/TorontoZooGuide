@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateAttractionClosedPanel_TestDefault_ExpectPanel', () => {
    const panelEl = AttractionClosedView.createAttractionClosedPanel();
 

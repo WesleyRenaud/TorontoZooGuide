@@ -55,13 +55,23 @@ function _createUpdaterDeps(overrides = {}) {
    };
 }
 
+
 test('Test_BuildUniqueTypes_TestDuplicates_ExpectUnique', () => {
-   assert.deepEqual(MapUpdater.buildUniqueTypes(['animal', 'animal', 'restaurant']), [
-      'animal',
-      'restaurant',
-   ]);
-   assert.deepEqual(MapUpdater.buildUniqueTypes(), []);
+   const animal = ItemType.ANIMAL;
+   const restaurant = ItemType.RESTAURANT;
+
+   const types = MapUpdater.buildUniqueTypes([animal, animal, restaurant]);
+
+   assert.deepEqual(types, [animal, restaurant]);
 });
+
+
+test('Test_BuildUniqueTypes_TestMissing_ExpectEmpty', () => {
+   const types = MapUpdater.buildUniqueTypes();
+
+   assert.deepEqual(types, []);
+});
+
 
 test('Test_CreateMapUpdater_TestUpdateMapLayers_ExpectRenderAndFocus', async () => {
    const deps = _createUpdaterDeps();
@@ -113,9 +123,10 @@ test('Test_CreateMapUpdater_TestUpdateMapLayers_ExpectRenderAndFocus', async () 
          onDateContextChange: (ctx) => dateContexts.push(ctx),
       });
 
-      await updater.updateMap('today', null, { focus: { type: 'animal', row: { species: 'Lion' } } });
+      const focus = { type: ItemType.ANIMAL, row: { species: 'African Lion' } };
+      await updater.updateMap('today', null, { focus });
 
-      assert.equal(dateContexts.length, 1);
+      assert.equal(dateContexts.length, Position.SECOND);
       assert.equal(closedSyncs.length, 1);
       assert.ok(pathClears.length >= 1);
       assert.ok(routeHides.length >= 1);
@@ -123,7 +134,7 @@ test('Test_CreateMapUpdater_TestUpdateMapLayers_ExpectRenderAndFocus', async () 
          { species: 'Fetched Lion', type: 'animal' },
          { name: 'Stored Peaks', type: 'restaurant' },
       ]);
-      assert.deepEqual(focusCalls.at(Position.LAST)[1], { type: 'animal', row: { species: 'Lion' } });
+      assert.deepEqual(focusCalls.at(Position.LAST)[Position.SECOND], focus);
 
       await updater.refetchWithCurrentControls(null);
       assert.equal(deps.rendered.length, 2);
@@ -382,7 +393,7 @@ test('Test_CreateMapUpdater_TestPendingAndFocusHelpers_ExpectDeferredAndDirect',
          },
       });
       assert.equal(direct, null);
-      assert.deepEqual(directFocus.at(Position.LAST)[1], { type: 'animal' });
+      assert.deepEqual(directFocus.at(Position.LAST)[Position.SECOND], { type: 'animal' });
 
       const refetchDeep = updater.focusFromDeepLink({
          resolved: {

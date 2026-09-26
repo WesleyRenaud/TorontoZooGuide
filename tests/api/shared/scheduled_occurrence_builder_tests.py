@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
+from datetime import timedelta
 
 from api_test_support.frozen_datetime import patch_database_today
 import pytest
@@ -52,9 +53,12 @@ def Test_Build_TestMondaySchedule_ExpectOccurrencesForMatchingWeekdays(
       freeze_database_today: Callable[ [ date ], None ],
 ) -> None:
    freeze_database_today( FROZEN_TODAY )
+   occurrence_time = '10:00 AM'
+   days_ahead = 7
+   next_monday = FROZEN_TODAY + timedelta( days=days_ahead )
    schedule_record = SampleScheduleRecord(
       schedule_start_date='2026-06-01',
-      schedule_end_date='2026-06-22',
+      schedule_end_date=next_monday.isoformat(),
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -62,18 +66,18 @@ def Test_Build_TestMondaySchedule_ExpectOccurrencesForMatchingWeekdays(
       friday=False,
       saturday=False,
       sunday=False,
-      occurrence_time='10:00 AM' )
+      occurrence_time=occurrence_time )
 
    occurrences = ScheduledOccurrenceBuilder.build(
       [ schedule_record ],
-      days_ahead=7,
+      days_ahead=days_ahead,
       get_time=lambda record: record.occurrence_time,
       get_weekday_flags=_weekday_flags,
       is_cancelled=lambda _date_key, _time: False )
 
    assert [ ( occurrence.date, occurrence.time ) for occurrence in occurrences ] == [
-      ( '2026-06-15', '10:00 AM' ),
-      ( '2026-06-22', '10:00 AM' ),
+      ( FROZEN_TODAY.isoformat(), schedule_record.occurrence_time ),
+      ( next_monday.isoformat(), schedule_record.occurrence_time ),
    ]
 
 
@@ -81,9 +85,10 @@ def Test_Build_TestCancelledOccurrence_ExpectExcluded(
       freeze_database_today: Callable[ [ date ], None ],
 ) -> None:
    freeze_database_today( FROZEN_TODAY )
+   occurrence_time = '10:00 AM'
    schedule_record = SampleScheduleRecord(
-      schedule_start_date='2026-06-15',
-      schedule_end_date='2026-06-15',
+      schedule_start_date=FROZEN_TODAY.isoformat(),
+      schedule_end_date=FROZEN_TODAY.isoformat(),
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -91,14 +96,16 @@ def Test_Build_TestCancelledOccurrence_ExpectExcluded(
       friday=False,
       saturday=False,
       sunday=False,
-      occurrence_time='10:00 AM' )
+      occurrence_time=occurrence_time )
 
    occurrences = ScheduledOccurrenceBuilder.build(
       [ schedule_record ],
       days_ahead=0,
       get_time=lambda record: record.occurrence_time,
       get_weekday_flags=_weekday_flags,
-      is_cancelled=lambda date_key, time: date_key == '2026-06-15' and time == '10:00 AM' )
+      is_cancelled=lambda date_key, time: (
+         date_key == FROZEN_TODAY.isoformat()
+         and time == schedule_record.occurrence_time ) )
 
    assert occurrences == []
 
@@ -109,7 +116,7 @@ def Test_Build_TestExtraOccurrences_ExpectMergedSortedUnique(
    freeze_database_today( FROZEN_TODAY )
    extra_occurrences = [
       ScheduledOccurrence( date='2026-06-16', time='11:00 AM' ),
-      ScheduledOccurrence( date='2026-06-15', time='10:00 AM' ),
+      ScheduledOccurrence( date=FROZEN_TODAY.isoformat(), time='10:00 AM' ),
    ]
 
    occurrences = ScheduledOccurrenceBuilder.build(
@@ -121,8 +128,10 @@ def Test_Build_TestExtraOccurrences_ExpectMergedSortedUnique(
       extra_occurrences=extra_occurrences )
 
    assert [ ( occurrence.date, occurrence.time ) for occurrence in occurrences ] == [
-      ( '2026-06-15', '10:00 AM' ),
-      ( '2026-06-16', '11:00 AM' ),
+      ( extra.date, extra.time )
+      for extra in sorted(
+         extra_occurrences,
+         key=lambda occurrence: ( occurrence.date, occurrence.time ) )
    ]
 
 

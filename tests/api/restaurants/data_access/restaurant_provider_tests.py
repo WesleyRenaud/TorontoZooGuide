@@ -104,7 +104,9 @@ def _insert_restaurant(
 
 def Test_FetchRestaurantNames_TestEmpty_ExpectEmptyList(
       restaurant_provider_conn: sqlite3.Connection ) -> None:
-   assert RestaurantProvider.fetch_restaurant_names( restaurant_provider_conn ) == []
+   restaurant_names = RestaurantProvider.fetch_restaurant_names( restaurant_provider_conn )
+
+   assert restaurant_names == []
 
 
 def Test_FetchRestaurantNames_TestPopulated_ExpectNames(
@@ -179,8 +181,10 @@ def Test_FetchRestaurantRecords_TestMatchingMultiplier_ExpectJoinedValues(
 
 def Test_FetchRestaurantScheduleRecords_TestEmpty_ExpectEmptyList(
       restaurant_provider_conn: sqlite3.Connection ) -> None:
-   assert RestaurantProvider.fetch_restaurant_schedule_records(
-      restaurant_provider_conn ) == []
+   restaurant_schedule_records = RestaurantProvider.fetch_restaurant_schedule_records(
+      restaurant_provider_conn )
+
+   assert restaurant_schedule_records == []
 
 
 def Test_FetchRestaurantScheduleRecords_TestPopulated_ExpectMappedFields(
@@ -223,8 +227,10 @@ def Test_FetchRestaurantScheduleRecords_TestPopulated_ExpectMappedFields(
 
 def Test_FetchRestaurantScheduleOverrideRecords_TestEmpty_ExpectEmptyList(
       restaurant_provider_conn: sqlite3.Connection ) -> None:
-   assert RestaurantProvider.fetch_restaurant_schedule_override_records(
-      restaurant_provider_conn ) == []
+   restaurant_schedule_override_records = RestaurantProvider.fetch_restaurant_schedule_override_records(
+      restaurant_provider_conn )
+
+   assert restaurant_schedule_override_records == []
 
 
 def Test_FetchRestaurantScheduleOverrideRecords_TestPopulated_ExpectMappedFields(

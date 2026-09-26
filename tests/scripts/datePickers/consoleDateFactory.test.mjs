@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ConsoleDateFactory } from '../../../scripts/datePickers/consoleDateFactory.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
+
 
 function _createMockPickerInstance(inputEl, overrides = {}) {
    return {
@@ -11,7 +13,7 @@ function _createMockPickerInstance(inputEl, overrides = {}) {
       },
       isOpen: true,
       config: {
-         dateFormat: 'h:i K',
+         dateFormat: ConsoleDateFactory.CONSOLE_TIME_PICKER_OPTIONS.dateFormat,
          time_24hr: false,
       },
       selectedDates: [],
@@ -29,7 +31,7 @@ function _createMockPickerInstance(inputEl, overrides = {}) {
       },
       setDate(time) {
          inputEl.value = time;
-         this.selectedDates = [ new Date() ];
+         this.selectedDates = [new Date()];
       },
       set(property, value) {
          this[property] = value;
@@ -38,6 +40,7 @@ function _createMockPickerInstance(inputEl, overrides = {}) {
    };
 }
 
+
 function _createFlatpickrSpy() {
    const calls = [];
 
@@ -45,13 +48,13 @@ function _createFlatpickrSpy() {
       calls,
       initFlatpickrFn: (inputEl, options) => {
          calls.push({ inputEl, options });
-
          const instance = _createMockPickerInstance(inputEl);
          options.onReady?.([], '', instance);
          return instance;
       },
    };
 }
+
 
 function _dispatchKeydown(target, key) {
    target.listeners.keydown?.({
@@ -61,73 +64,82 @@ function _dispatchKeydown(target, key) {
    });
 }
 
+
 test('Test_InitTimePicker_TestDefaults_ExpectConsoleOptions', () => {
    const inputEl = createDomNode('input');
    const { calls, initFlatpickrFn } = _createFlatpickrSpy();
 
    ConsoleDateFactory.initTimePicker(inputEl, {}, initFlatpickrFn);
+   const options = calls.at(Position.FIRST).options;
 
-   assert.equal(calls.length, 1);
-   assert.equal(calls[0].options.enableTime, true);
-   assert.equal(calls[0].options.noCalendar, true);
-   assert.equal(calls[0].options.dateFormat, 'h:i K');
+   assert.equal(calls.length, Position.SECOND);
+   assert.equal(options.enableTime, ConsoleDateFactory.CONSOLE_TIME_PICKER_OPTIONS.enableTime);
+   assert.equal(options.noCalendar, ConsoleDateFactory.CONSOLE_TIME_PICKER_OPTIONS.noCalendar);
+   assert.equal(options.dateFormat, ConsoleDateFactory.CONSOLE_TIME_PICKER_OPTIONS.dateFormat);
 });
+
 
 test('Test_InitTimePicker_TestEnterFromPicker_ExpectPopulated', () => {
    const inputEl = createDomNode('input');
    const { initFlatpickrFn } = _createFlatpickrSpy();
    const picker = ConsoleDateFactory.initTimePicker(inputEl, {}, initFlatpickrFn);
+   const expected = `${picker.hourElement.value}:${picker.minuteElement.value} ${picker.amPM.textContent}`;
 
    _dispatchKeydown(inputEl, 'Enter');
 
-   assert.equal(inputEl.value, '12:00 PM');
+   assert.equal(inputEl.value, expected);
    assert.equal(picker.isOpen, false);
 });
+
 
 test('Test_InitTimePicker_TestCalendarEnterEmpty_ExpectPopulated', () => {
    const inputEl = createDomNode('input');
    const { initFlatpickrFn } = _createFlatpickrSpy();
    const picker = ConsoleDateFactory.initTimePicker(inputEl, {}, initFlatpickrFn);
+   const expected = `${picker.hourElement.value}:${picker.minuteElement.value} ${picker.amPM.textContent}`;
 
    _dispatchKeydown(picker.calendarContainer, 'Enter');
 
-   assert.equal(inputEl.value, '12:00 PM');
+   assert.equal(inputEl.value, expected);
    assert.equal(picker.isOpen, false);
 });
+
 
 test('Test_InitTimePicker_TestEnterTyped_ExpectKept', () => {
    const inputEl = createDomNode('input');
    const { initFlatpickrFn } = _createFlatpickrSpy();
-
+   const time = '2:30 PM';
    ConsoleDateFactory.initTimePicker(inputEl, {}, initFlatpickrFn);
-   inputEl.value = '2:30 PM';
+   inputEl.value = time;
+
    _dispatchKeydown(inputEl, 'Enter');
 
-   assert.equal(inputEl.value, '2:30 PM');
+   assert.equal(inputEl.value, time);
 });
+
 
 test('Test_InitDateRangePickers_TestStartChange_ExpectEndMinDate', () => {
    const startDateEl = createDomNode('input');
    const endDateEl = createDomNode('input');
    const { calls, initFlatpickrFn } = _createFlatpickrSpy();
-
-   startDateEl.value = '2026-06-15';
+   const minDate = '2026-06-01';
+   const startDate = '2026-06-15';
+   const nextStartDate = '2026-06-20';
+   startDateEl.value = startDate;
 
    const { endPicker } = ConsoleDateFactory.initDateRangePickers(startDateEl, endDateEl, {
-      minDate: '2026-06-01',
+      minDate,
       initFlatpickrFn,
    });
-
-   assert.equal(calls.length, 2);
-   assert.equal(calls[0].options.minDate, '2026-06-01');
-   assert.equal(calls[1].options.minDate, '2026-06-01');
-   assert.equal(endPicker.minDate, '2026-06-15');
-
-   startDateEl.value = '2026-06-20';
+   startDateEl.value = nextStartDate;
    startDateEl.listeners.change?.();
 
-   assert.equal(endPicker.minDate, '2026-06-20');
+   assert.equal(calls.length, 2);
+   assert.equal(calls.at(Position.FIRST).options.minDate, minDate);
+   assert.equal(calls.at(Position.SECOND).options.minDate, minDate);
+   assert.equal(endPicker.minDate, nextStartDate);
 });
+
 
 test('Test_InitScheduleDateTimePickers_TestFourInputs_ExpectInitialized', () => {
    const startDateEl = createDomNode('input');
@@ -145,58 +157,76 @@ test('Test_InitScheduleDateTimePickers_TestFourInputs_ExpectInitialized', () => 
    );
 
    assert.equal(calls.length, 4);
-   assert.equal(calls[0].inputEl, startDateEl);
-   assert.equal(calls[1].inputEl, endDateEl);
-   assert.equal(calls[2].inputEl, dailyStartTimeEl);
-   assert.equal(calls[3].inputEl, dailyEndTimeEl);
-   assert.equal(calls[2].options.enableTime, true);
+   assert.equal(calls.at(Position.FIRST).inputEl, startDateEl);
+   assert.equal(calls.at(Position.SECOND).inputEl, endDateEl);
+   assert.equal(calls.at(Position.THIRD).inputEl, dailyStartTimeEl);
+   assert.equal(calls.at(Position.FOURTH).inputEl, dailyEndTimeEl);
+   assert.equal(calls.at(Position.THIRD).options.enableTime, true);
    assert.ok(pickers.startDatePicker);
    assert.ok(pickers.dailyEndTimePicker);
 });
 
+
 test('Test_InitTimePicker_TestMissingInput_ExpectNull', () => {
-   assert.equal(ConsoleDateFactory.initTimePicker(null), null);
+   const inputEl = null;
+
+   const picker = ConsoleDateFactory.initTimePicker(inputEl);
+
+   assert.equal(picker, null);
 });
 
+
 test('Test_ApplyScheduleTimePickerBounds_TestMissingPicker_ExpectNoOp', () => {
-   assert.doesNotThrow(() => {
-      ConsoleDateFactory.applyScheduleTimePickerBounds(null, {
-         openTime: '09:00 AM',
-         closeTime: '05:00 PM',
-      });
+   const apply = () => ConsoleDateFactory.applyScheduleTimePickerBounds(null, {
+      openTime: '09:00 AM',
+      closeTime: '05:00 PM',
    });
+
+   assert.doesNotThrow(apply);
 });
+
 
 test('Test_ApplyScheduleTimePickerBounds_TestMissingBounds_ExpectCleared', () => {
    const picker = { sets: [], set(property, value) { this.sets.push([property, value]); } };
 
    ConsoleDateFactory.applyScheduleTimePickerBounds(picker, null);
-   assert.deepEqual(picker.sets, [
-      ['minTime', null],
-      ['maxTime', null],
-   ]);
 
-   picker.sets.length = 0;
-   ConsoleDateFactory.applyScheduleTimePickerBounds(picker, { openTime: '09:00 AM' });
    assert.deepEqual(picker.sets, [
       ['minTime', null],
       ['maxTime', null],
    ]);
 });
+
+
+test('Test_ApplyScheduleTimePickerBounds_TestPartialBounds_ExpectCleared', () => {
+   const picker = { sets: [], set(property, value) { this.sets.push([property, value]); } };
+   const openTime = '09:00 AM';
+
+   ConsoleDateFactory.applyScheduleTimePickerBounds(picker, { openTime });
+
+   assert.deepEqual(picker.sets, [
+      ['minTime', null],
+      ['maxTime', null],
+   ]);
+});
+
 
 test('Test_ApplyScheduleTimePickerBounds_TestBounds_ExpectSet', () => {
    const picker = { sets: [], set(property, value) { this.sets.push([property, value]); } };
+   const openTime = '09:00 AM';
+   const closeTime = '05:00 PM';
 
    ConsoleDateFactory.applyScheduleTimePickerBounds(picker, {
-      openTime: '09:00 AM',
-      closeTime: '05:00 PM',
+      openTime,
+      closeTime,
    });
 
    assert.deepEqual(picker.sets, [
-      ['minTime', '09:00 AM'],
-      ['maxTime', '05:00 PM'],
+      ['minTime', openTime],
+      ['maxTime', closeTime],
    ]);
 });
+
 
 test('Test_InitAttractionHoursSchedulePickers_TestSixInputs_ExpectInitialized', () => {
    const startDateEl = createDomNode('input');
@@ -217,12 +247,10 @@ test('Test_InitAttractionHoursSchedulePickers_TestSixInputs_ExpectInitialized', 
    }, { initFlatpickrFn });
 
    assert.equal(calls.length, 6);
-   assert.equal(calls[0].inputEl, startDateEl);
-   assert.equal(calls[1].inputEl, endDateEl);
-   assert.equal(calls[2].inputEl, weekdayStartTimeEl);
-   assert.equal(calls[3].inputEl, weekdayEndTimeEl);
-   assert.equal(calls[4].inputEl, weekendHolidayStartTimeEl);
-   assert.equal(calls[5].inputEl, weekendHolidayEndTimeEl);
+   assert.equal(calls.at(Position.FIRST).inputEl, startDateEl);
+   assert.equal(calls.at(Position.SECOND).inputEl, endDateEl);
+   assert.equal(calls.at(Position.THIRD).inputEl, weekdayStartTimeEl);
+   assert.equal(calls.at(Position.FOURTH).inputEl, weekdayEndTimeEl);
    assert.ok(pickers.startPicker);
    assert.ok(pickers.endPicker);
    assert.ok(pickers.weekdayStartTimePicker);

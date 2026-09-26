@@ -99,9 +99,11 @@ def attraction_hours_schedule_conn() -> sqlite3.Connection:
 
 def Test_SaveHoursSchedule_TestNewSchedule_ExpectPersistsRow(
       attraction_hours_schedule_conn: sqlite3.Connection ) -> None:
-   assert AttractionHoursScheduleProvider.save_hours_schedule(
+   result = AttractionHoursScheduleProvider.save_hours_schedule(
       attraction_hours_schedule_conn,
-      _hours_schedule() ) is True
+      _hours_schedule() )
+
+   assert result is True
 
    row = _fetch_hours_row( attraction_hours_schedule_conn, START_DATE )
 
@@ -122,14 +124,16 @@ def Test_SaveHoursSchedule_TestSameStartDate_ExpectUpdatesRow(
       attraction_hours_schedule_conn,
       _hours_schedule() )
 
-   assert AttractionHoursScheduleProvider.save_hours_schedule(
+   result = AttractionHoursScheduleProvider.save_hours_schedule(
       attraction_hours_schedule_conn,
       _hours_schedule(
          end_date='2026-07-15',
          weekday_start_time='11:00',
          weekday_end_time='15:00',
          weekend_holiday_start_time='10:00',
-         weekend_holiday_end_time='16:00' ) ) is True
+         weekend_holiday_end_time='16:00' ) )
+
+   assert result is True
 
    row = _fetch_hours_row( attraction_hours_schedule_conn, START_DATE )
 
@@ -150,11 +154,13 @@ def Test_SaveHoursSchedule_TestOverlappingDates_ExpectReturnsFalse(
       attraction_hours_schedule_conn,
       _hours_schedule() )
 
-   assert AttractionHoursScheduleProvider.save_hours_schedule(
+   result = AttractionHoursScheduleProvider.save_hours_schedule(
       attraction_hours_schedule_conn,
       _hours_schedule(
          start_date='2026-06-15',
-         end_date='2026-07-15' ) ) is False
+         end_date='2026-07-15' ) )
+
+   assert result is False
 
    assert _fetch_hours_row( attraction_hours_schedule_conn, '2026-06-15' ) is None
 

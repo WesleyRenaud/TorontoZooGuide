@@ -6,16 +6,34 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_JoinClassNames_TestValues_ExpectJoined', () => {
-   assert.equal(ItineraryPanelPopupBuilder.joinClassNames('a', '', 'b', null), 'a b');
+   const firstClass = 'tzg-popup';
+   const emptyClass = '';
+   const secondClass = 'tzg-popup-open';
+   const missingClass = null;
+
+   const classNames = ItineraryPanelPopupBuilder.joinClassNames(
+      firstClass,
+      emptyClass,
+      secondClass,
+      missingClass
+   );
+
+   assert.equal(classNames, `${firstClass} ${secondClass}`);
 });
 
+
 test('Test_CreatePopupButton_TestConfig_ExpectButton', () => {
+   const className = 'tzg-popup-confirm';
+   const text = 'OK';
+
    const button = ItineraryPanelPopupBuilder.createPopupButton({
-      className: 'tzg-popup-confirm',
-      text: 'OK',
+      className,
+      text,
    });
+
    assert.equal(button.type, 'button');
-   assert.equal(button.className, 'tzg-popup-confirm');
-   assert.equal(button.textContent, 'OK');
+   assert.equal(button.className, className);
+   assert.equal(button.textContent, text);
 });

@@ -5,24 +5,24 @@ from api.models.gift_shop import GiftShop
 
 
 def Test_Build_TestMatchingQuery_ExpectMatchingGiftShopOnly() -> None:
-   gift_shops = [
-      GiftShop( name='Zootique', location='Learning & Engagement Centre' ),
-      GiftShop( name='Africa Gift Shop', location='Africa' ),
-   ]
+   zootique = GiftShop( name='Zootique', location='Learning & Engagement Centre' )
+   africa_gift_shop = GiftShop( name='Africa Gift Shop', location='Africa' )
+   gift_shops = [ zootique, africa_gift_shop ]
+   query = 'zootique'
 
-   matches = GiftShopsMatchingQueryBuilder.build( gift_shops, 'zootique' )
+   matches = GiftShopsMatchingQueryBuilder.build( gift_shops, query )
 
-   assert [ shop.name for shop in matches ] == [ 'Zootique' ]
+   assert [ shop.name for shop in matches ] == [ zootique.name ]
 
 
 def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingGiftShopOnly() -> None:
-   gift_shops = [
-      GiftShop( name='Zootique', location='Learning & Engagement Centre' ),
-      GiftShop( name='Africa Gift Shop', location='Africa' ),
-   ]
+   zootique = GiftShop( name='Zootique', location='Learning & Engagement Centre' )
+   africa_gift_shop = GiftShop( name='Africa Gift Shop', location='Africa' )
+   gift_shops = [ zootique, africa_gift_shop ]
+   query = 'zootique'
 
    matches = GiftShopsMatchingQueryBuilder.filter_matching_query(
       gift_shops,
-      'zootique' )
+      query )
 
-   assert [ shop.name for shop in matches ] == [ 'Zootique' ]
+   assert [ shop.name for shop in matches ] == [ zootique.name ]

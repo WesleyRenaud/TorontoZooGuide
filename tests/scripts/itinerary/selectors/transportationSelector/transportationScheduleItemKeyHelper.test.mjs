@@ -3,9 +3,38 @@ import test from 'node:test';
 
 import { TransportationScheduleItemKeyHelper } from '../../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKeyHelper.js';
 
-test('Test_AddedAsAttractionFromWire_TestTokens_ExpectBooleanOrNull', () => {
-   assert.equal(TransportationScheduleItemKeyHelper.addedAsAttractionFromWire('1'), true);
-   assert.equal(TransportationScheduleItemKeyHelper.addedAsAttractionFromWire('0'), false);
-   assert.equal(TransportationScheduleItemKeyHelper.addedAsAttractionFromWire('  '), null);
-   assert.equal(TransportationScheduleItemKeyHelper.addedAsAttractionFromWire('yes'), null);
+
+test('Test_AddedAsAttractionFromWire_TestOne_ExpectTrue', () => {
+   const value = '1';
+
+   const flag = TransportationScheduleItemKeyHelper.addedAsAttractionFromWire(value);
+
+   assert.equal(flag, Boolean(Number(value)));
+});
+
+
+test('Test_AddedAsAttractionFromWire_TestZero_ExpectFalse', () => {
+   const value = '0';
+
+   const flag = TransportationScheduleItemKeyHelper.addedAsAttractionFromWire(value);
+
+   assert.equal(flag, Boolean(Number(value)));
+});
+
+
+test('Test_AddedAsAttractionFromWire_TestBlank_ExpectNull', () => {
+   const value = '  ';
+
+   const flag = TransportationScheduleItemKeyHelper.addedAsAttractionFromWire(value);
+
+   assert.equal(flag, null);
+});
+
+
+test('Test_AddedAsAttractionFromWire_TestYes_ExpectNull', () => {
+   const value = 'yes';
+
+   const flag = TransportationScheduleItemKeyHelper.addedAsAttractionFromWire(value);
+
+   assert.equal(flag, null);
 });

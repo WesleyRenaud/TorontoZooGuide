@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AttractionClosedFragment } from '../../../scripts/banners/attractionClosedFragment.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 
@@ -15,8 +16,12 @@ function _installCreateElementNS() {
 
 installDomTestHooks({ before: _installCreateElementNS });
 
+
 test('Test_CreateAttractionClosedBanner_TestMessage_ExpectShown', () => {
+   const message = 'Carousel closed';
    const banner = AttractionClosedFragment.createAttractionClosedBanner();
-   banner.sync({ closed_message: 'Carousel closed' });
-   assert.match(document.body.children.at(-1).textContent, /Carousel closed/);
+
+   banner.sync({ closed_message: message });
+
+   assert.match(document.body.children.at(Position.LAST).textContent, new RegExp(message));
 });

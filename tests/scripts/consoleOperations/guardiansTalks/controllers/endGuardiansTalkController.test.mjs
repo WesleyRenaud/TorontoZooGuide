@@ -9,8 +9,10 @@ import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperatio
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 installDomTestHooks();
+
 
 test('Test_CreateEndGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks', async () => {
    const originalCreate = EndRecurringScheduleFormController.createEndRecurringScheduleFormController;
@@ -86,7 +88,6 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestWiring_ExpectFormCallbac
       captured.resetSelection();
       assert.ok(filterCalls.includes('clearTalk'));
       assert.ok(filterCalls.includes('clearTimes'));
-
       assert.deepEqual(
          await captured.submitEndSchedule({
             talk: 'Tiger',
@@ -109,7 +110,6 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestWiring_ExpectFormCallbac
       filterCalls.length = 0;
       await talkNameEl.listeners.change();
       assert.deepEqual(filterCalls, ['clearTimes', 'refreshTimes']);
-
       assert.equal(
          captured.successMessage({ talk: 'Tiger', location: 'Eurasia' }),
          Strings.status.guardiansTalkScheduleEnded({ talk: 'Tiger', location: 'Eurasia' })
@@ -123,6 +123,7 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestWiring_ExpectFormCallbac
       ConsoleOperationsClient.endGuardiansTalkSchedule = originalEnd;
    }
 });
+
 
 test('Test_CreateEndGuardiansTalkScheduleController_TestResetWithoutFilter_ExpectPopulate', () => {
    const originalCreate = EndRecurringScheduleFormController.createEndRecurringScheduleFormController;
@@ -155,7 +156,7 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestResetWithoutFilter_Expec
 
       captured.resetSelection();
       assert.equal(populateCalls.length, 1);
-      assert.deepEqual(populateCalls[0][1], []);
+      assert.deepEqual(populateCalls.at(Position.FIRST)[Position.SECOND], []);
 
       const talkInputEl = document.createElement('input');
       talkInputEl.value = 'Old Talk';

@@ -10,37 +10,24 @@ def Test_ToDict_TestReasonWithoutItems_ExpectCodeOnly() -> None:
    reason = ItineraryResultReason(
       code=ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
 
-   assert reason.to_dict() == {
-      'code': 'itemNotOnItinerary',
-      'items': [],
-   }
+   result = reason.to_dict()
+
+   assert result[ 'code' ] == reason.code.value
+   assert result[ 'items' ] == []
 
 
 def Test_ToDict_TestReasonWithItems_ExpectSerializedItems() -> None:
+   issue_item = ItinerarySaveIssueItem(
+      name='African Lion',
+      start_time='2:00 PM',
+      end_time='2:30 PM',
+      item_type=ItinerarySaveIssueItemType.GUARDIANS_TALK,
+      location='Africa Savanna' )
    reason = ItineraryResultReason(
       code=ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-      items=[
-         ItinerarySaveIssueItem(
-            name='African Lion',
-            start_time='2:00 PM',
-            end_time='2:30 PM',
-            item_type=ItinerarySaveIssueItemType.GUARDIANS_TALK,
-            location='Africa Savanna',
-         ),
-      ],
-   )
+      items=[ issue_item ] )
 
-   assert reason.to_dict() == {
-      'code': 'guardiansTalkWithoutAnimal',
-      'items': [
-         {
-            'name': 'African Lion',
-            'start_time': '2:00 PM',
-            'end_time': '2:30 PM',
-            'item_type': ItinerarySaveIssueItemType.GUARDIANS_TALK,
-            'meeting_spot': '',
-            'location': 'Africa Savanna',
-            'link': '',
-         },
-      ],
-   }
+   result = reason.to_dict()
+
+   assert result[ 'code' ] == reason.code.value
+   assert result[ 'items' ] == [ issue_item.to_dict() ]

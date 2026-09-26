@@ -16,6 +16,7 @@ from api.itinerary.scheduling.bulk.bulk_schedule_start_state import BulkSchedule
 from api.itinerary.scheduling.bulk.bulk_schedule_window_prep import BulkScheduleWindowPrep
 from api.itinerary.scheduling.bulk.guardians_talk_animal_coverer import GuardiansTalkAnimalCoverer
 from api.itinerary.scheduling.bulk.loop_schedule_unit import LoopScheduleUnit
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 from api.shared.operating_hours import OperatingHours
 from api.walk_graph.domain.walk_graph import WalkGraph
@@ -86,17 +87,17 @@ WINDOW_PREP = BulkScheduleWindowPrep(
    ),
    previous_itinerary=ItineraryBuilder.empty(),
    itinerary_context={},
-   anchor_seconds=9 * 3600 + 30 * 60,
-   day_end_seconds=17 * 3600,
+   anchor_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
+   day_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
    blockers=[],
    walk_graph=TEST_GRAPH,
    start_state=BulkScheduleStartState(
       start_node_id=ENTRANCE_NODE_ID,
-      schedule_anchor_seconds=9 * 3600 + 30 * 60 ),
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:30 AM' ) ),
    schedule_windows=[
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600 + 30 * 60,
-         end_seconds=17 * 3600 ),
+         start_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
    ],
    loop_pins=[],
    visit_date=None,

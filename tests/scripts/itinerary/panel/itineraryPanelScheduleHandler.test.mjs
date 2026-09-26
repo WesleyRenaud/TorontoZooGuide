@@ -2,73 +2,92 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ItineraryPanelScheduleHandler } from '../../../../scripts/itinerary/panel/itineraryPanelScheduleHandler.js';
+import { ScheduleItemKeySeparator } from '../../../../scripts/itinerary/scheduleItemKeySeparator.js';
+import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { Position } from '../../../../scripts/shared/enums/position.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
-import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 
-const ITINERARY_CONFIG = {
-   eventTypes: ['lunch', 'break'],
+const eventType = 'lunch';
+const itineraryConfig = {
+   eventTypes: [eventType, 'break'],
    visitBoundaryEventTypes: {
       arrival: 'arrival',
       departure: 'departure',
    },
 };
-
-const ANIMAL_ROW = {
-   species: 'Tiger',
-   exhibit: 'Savanna',
-   scheduleItemKind: 'animals',
+const species = 'Amur Tiger';
+const exhibit = 'Eurasia Wilds';
+const animalRow = {
+   species,
+   exhibit,
+   scheduleItemKind: ScheduleItemKind.ANIMAL.kind,
 };
+const animalKey = [species, exhibit].join(ScheduleItemKeySeparator.VALUE);
 
-test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersOpenScheduleItemModuleForwardsOptionsToTheScheduleModule_ExpectOk', () => {
+
+test('Test_OpenScheduleItemModule_TestOptions_ExpectForwarded', () => {
    const calls = [];
+   const visitDate = '2026-06-15';
+   const itinerary = { date: visitDate };
+   const eventTypes = [eventType];
+   const onScheduled = () => {};
 
    ItineraryPanelScheduleHandler.openScheduleItemModule({
-      itinerary: { date: '2026-06-15' },
-      eventTypes: ['lunch'],
-      onScheduled: () => {},
-      preselectedRow: ANIMAL_ROW,
+      itinerary,
+      eventTypes,
+      onScheduled,
+      preselectedRow: animalRow,
    }, {
       showScheduleItemModule: (options) => {
          calls.push(options);
       },
    });
+   const opened = calls.at(Position.FIRST);
 
-   assert.equal(calls.length, 1);
-   assert.deepEqual(calls[Position.FIRST], {
-      itinerary: { date: '2026-06-15' },
-      eventTypes: ['lunch'],
-      preselectedRow: ANIMAL_ROW,
-      onScheduled: calls[Position.FIRST].onScheduled,
+   assert.equal(calls.length, Position.SECOND);
+   assert.deepEqual(opened, {
+      itinerary,
+      eventTypes,
+      preselectedRow: animalRow,
+      onScheduled,
    });
 });
 
-test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersOpensTheModuleForAPicked_ExpectOk', () => {
+
+test('Test_BuildItineraryPanelScheduleHandlers_TestScheduleItem_ExpectModuleOpened', () => {
    const opened = [];
+   const eventTypes = [eventType];
    const handlers = ItineraryPanelScheduleHandler.buildItineraryPanelScheduleHandlers(
-      { itineraryConfig: ITINERARY_CONFIG },
+      { itineraryConfig },
       {
          onPanelRefresh: async () => {},
          deps: {
             openModule: (options) => {
                opened.push(options);
             },
-            buildEventTypes: () => ['lunch'],
+            buildEventTypes: () => eventTypes,
          },
       }
    );
 
-   handlers.onScheduleItineraryItem({ row: ANIMAL_ROW });
+   handlers.onScheduleItineraryItem({ row: animalRow });
+   const openedOptions = opened.at(Position.FIRST);
 
-   assert.equal(opened.length, 1);
-   assert.deepEqual(opened[Position.FIRST].eventTypes, ['lunch']);
-   assert.equal(opened[Position.FIRST].preselectedRow, ANIMAL_ROW);
+   assert.equal(opened.length, Position.SECOND);
+   assert.deepEqual(openedOptions.eventTypes, eventTypes);
+   assert.equal(openedOptions.preselectedRow, animalRow);
 });
 
-test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersUnschedulesItemsAndRefreshesThePanel_ExpectOk', async () => {
+
+test('Test_BuildItineraryPanelScheduleHandlers_TestUnscheduleItem_ExpectRefreshed', async () => {
    const unscheduled = [];
    let refreshed = false;
    let notified = false;
+   const payload = {
+      itemType: ScheduleItemKind.ANIMAL.itemType,
+      key: animalKey,
+   };
    const handlers = ItineraryPanelScheduleHandler.buildItineraryPanelScheduleHandlers(
       {},
       {
@@ -76,9 +95,9 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuil
             refreshed = true;
          },
          deps: {
-            unscheduleItem: async (payload) => {
-               unscheduled.push(payload);
-               return { errorType: 'success' };
+            unscheduleItem: async (request) => {
+               unscheduled.push(request);
+               return { errorType: ItineraryErrorType.SUCCESS };
             },
             notifyUpdated: async () => {
                notified = true;
@@ -88,34 +107,33 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuil
       }
    );
 
-   await handlers.onUnscheduleItineraryItem({
-      itemType: ScheduleItemKind.ANIMAL.itemType,
-      key: 'Tiger||Savanna',
-   });
+   await handlers.onUnscheduleItineraryItem(payload);
 
-   assert.deepEqual(unscheduled, [{
-      itemType: ScheduleItemKind.ANIMAL.itemType,
-      key: 'Tiger||Savanna',
-   }]);
+   assert.deepEqual(unscheduled, [payload]);
    assert.equal(notified, true);
    assert.equal(refreshed, true);
 });
 
-test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersConfirmsBeforeRemovingConfiguredEventTypes_ExpectOk', async () => {
+
+test('Test_BuildItineraryPanelScheduleHandlers_TestRemoveEventType_ExpectConfirmedThenRemoved', async () => {
    const removed = [];
    const confirmations = [];
    let refreshed = false;
    let notified = false;
+   const payload = {
+      itemType: eventType,
+      key: '',
+   };
    const handlers = ItineraryPanelScheduleHandler.buildItineraryPanelScheduleHandlers(
-      { itineraryConfig: ITINERARY_CONFIG },
+      { itineraryConfig },
       {
          onPanelRefresh: async () => {
             refreshed = true;
          },
          deps: {
-            removeItem: async (payload) => {
-               removed.push(payload);
-               return { errorType: 'success' };
+            removeItem: async (request) => {
+               removed.push(request);
+               return { errorType: ItineraryErrorType.SUCCESS };
             },
             removeAnimalDraft: () => {},
             requiresRemoveConfirmation: () => true,
@@ -130,28 +148,29 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuil
       }
    );
 
-   handlers.onRemoveItineraryItem({
-      itemType: 'lunch',
-      key: '',
-   });
+   handlers.onRemoveItineraryItem(payload);
+   const onConfirm = confirmations.at(Position.FIRST);
 
    assert.equal(removed.length, 0);
-   assert.equal(confirmations.length, 1);
+   assert.equal(confirmations.length, Position.SECOND);
 
-   await confirmations[Position.FIRST]();
+   await onConfirm();
 
-   assert.deepEqual(removed, [{ itemType: 'lunch', key: '' }]);
+   assert.deepEqual(removed, [payload]);
    assert.equal(notified, true);
    assert.equal(refreshed, true);
 });
 
-test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersPassesItemIdentityIntoRemoveConfirmation_ExpectOk', async () => {
+
+test('Test_BuildItineraryPanelScheduleHandlers_TestRemoveTransportation_ExpectIdentityPassedToConfirmation', () => {
    const confirmations = [];
+   const itemType = ScheduleItemKind.TRANSPORTATION.itemType;
+   const key = new TransportationScheduleItemKey('Zoomobile', false).toWire();
    const handlers = ItineraryPanelScheduleHandler.buildItineraryPanelScheduleHandlers(
-      { itineraryConfig: ITINERARY_CONFIG },
+      { itineraryConfig },
       {
          deps: {
-            removeItem: async () => ({ errorType: 'success' }),
+            removeItem: async () => ({ errorType: ItineraryErrorType.SUCCESS }),
             removeAnimalDraft: () => {},
             requiresRemoveConfirmation: () => true,
             showRemoveConfirmation: (options) => {
@@ -162,29 +181,29 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuil
       }
    );
 
-   handlers.onRemoveItineraryItem({
-      itemType: ScheduleItemKind.TRANSPORTATION.itemType,
-      key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
-   });
+   handlers.onRemoveItineraryItem({ itemType, key });
+   const confirmation = confirmations.at(Position.FIRST);
 
-   assert.equal(confirmations.length, 1);
-   assert.equal(
-      confirmations[Position.FIRST].itemType,
-      ScheduleItemKind.TRANSPORTATION.itemType
-   );
-   assert.equal(confirmations[Position.FIRST].key, new TransportationScheduleItemKey('Zoomobile', false).toWire());
+   assert.equal(confirmations.length, Position.SECOND);
+   assert.equal(confirmation.itemType, itemType);
+   assert.equal(confirmation.key, key);
 });
 
-test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuildItineraryPanelScheduleHandlersRemovesAnimalsWithoutConfirmation_ExpectOk', async () => {
+
+test('Test_BuildItineraryPanelScheduleHandlers_TestRemoveAnimalWithoutConfirmation_ExpectRemoved', async () => {
    const removed = [];
    let notified = false;
+   const payload = {
+      itemType: ScheduleItemKind.ANIMAL.itemType,
+      key: animalKey,
+   };
    const handlers = ItineraryPanelScheduleHandler.buildItineraryPanelScheduleHandlers(
-      { itineraryConfig: ITINERARY_CONFIG },
+      { itineraryConfig },
       {
          deps: {
-            removeItem: async (payload) => {
-               removed.push(payload);
-               return { errorType: 'success' };
+            removeItem: async (request) => {
+               removed.push(request);
+               return { errorType: ItineraryErrorType.SUCCESS };
             },
             removeAnimalDraft: () => {},
             requiresRemoveConfirmation: () => false,
@@ -196,18 +215,11 @@ test('Test_ItineraryPanelScheduleHandlers_TestItineraryPanelScheduleHandlersBuil
       }
    );
 
-   handlers.onRemoveItineraryItem({
-      itemType: ScheduleItemKind.ANIMAL.itemType,
-      key: 'Tiger||Savanna',
-   });
-
+   handlers.onRemoveItineraryItem(payload);
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
 
-   assert.deepEqual(removed, [{
-      itemType: ScheduleItemKind.ANIMAL.itemType,
-      key: 'Tiger||Savanna',
-   }]);
+   assert.deepEqual(removed, [payload]);
    assert.equal(notified, true);
 });

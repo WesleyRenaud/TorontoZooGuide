@@ -1,19 +1,21 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { RenderView } from '../../../../scripts/itinerary/panel/renderView.js';
+import { ItineraryPanelView } from '../../../../scripts/itinerary/panel/components/itineraryPanelView.js';
 import { ItineraryPanelViewStore } from '../../../../scripts/itinerary/panel/itineraryPanelViewStore.js';
+import { RenderView } from '../../../../scripts/itinerary/panel/renderView.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
-const ZOO_HOURS = {
+const visitDate = '2026-06-15';
+const zooHours = {
    open: '09:00',
    close: '19:00',
 };
-
-const POPULATED_ITINERARY = {
-   date: '2026-06-15',
-   animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+const populatedItinerary = {
+   date: visitDate,
+   animals: [{ species: 'Amur Tiger', exhibit: 'Eurasia Wilds' }],
    attractions: [],
    guardiansTalks: [],
    wildEncounters: [],
@@ -28,39 +30,42 @@ const POPULATED_ITINERARY = {
 
 installDomTestHooks({
    before: () => {
-      ItineraryPanelViewStore.resetActiveItineraryPanelView('list');
+      ItineraryPanelViewStore.resetActiveItineraryPanelView(ItineraryPanelView.ITINERARY_PANEL_VIEWS.list);
    },
 });
 
-test('Test_Renders_TestRendersBuildOnlyContentWhenNoItineraryIs_ExpectOk', async () => {
+
+test('Test_RenderItineraryPanelInto_TestNoItinerary_ExpectBuildOnlyContent', async () => {
    const bodyEl = createDomNode('div', 'side-panel-body');
 
    await RenderView.renderItineraryPanelInto(bodyEl, {
       loadItinerary: async () => null,
-      resolveHoursDate: async () => '2026-06-15',
-      loadZooHours: async () => ZOO_HOURS,
+      resolveHoursDate: async () => visitDate,
+      loadZooHours: async () => zooHours,
    });
 
-   assert.equal(bodyEl.children.length, 1);
+   assert.equal(bodyEl.children.length, Position.SECOND);
    assert.ok(bodyEl.querySelector('.itin-panel-view-toggle'));
    assert.ok(bodyEl.querySelector('.itin-panel-build-btn'));
    assert.equal(bodyEl.querySelector('.itin-panel-date'), null);
 });
 
-test('Test_Renders_TestRendersDateOnlyItinerariesTheSameAsOther_ExpectOk', async () => {
+
+test('Test_RenderItineraryPanelInto_TestDateOnlyItinerary_ExpectDayPlanner', async () => {
    const bodyEl = createDomNode('div', 'side-panel-body');
+   const dateOnlyItinerary = {
+      date: visitDate,
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+      itineraryConfig: populatedItinerary.itineraryConfig,
+   };
 
    await RenderView.renderItineraryPanelInto(bodyEl, {
-      loadItinerary: async () => ({
-         date: '2026-06-15',
-         animals: [],
-         attractions: [],
-         guardiansTalks: [],
-         wildEncounters: [],
-         itineraryConfig: POPULATED_ITINERARY.itineraryConfig,
-      }),
-      resolveHoursDate: async () => '2026-06-15',
-      loadZooHours: async () => ZOO_HOURS,
+      loadItinerary: async () => dateOnlyItinerary,
+      resolveHoursDate: async () => visitDate,
+      loadZooHours: async () => zooHours,
    });
 
    assert.ok(bodyEl.querySelector('.itin-panel-actions-wrap'));
@@ -71,13 +76,14 @@ test('Test_Renders_TestRendersDateOnlyItinerariesTheSameAsOther_ExpectOk', async
    assert.equal(bodyEl.querySelectorAll('.itin-panel-build-btn').length, 0);
 });
 
-test('Test_Renders_TestRendersItinerarySectionsAndTheDayPlannerFor_ExpectOk', async () => {
+
+test('Test_RenderItineraryPanelInto_TestPopulatedItinerary_ExpectSectionsAndDayPlanner', async () => {
    const bodyEl = createDomNode('div', 'side-panel-body');
 
    await RenderView.renderItineraryPanelInto(bodyEl, {
-      loadItinerary: async () => POPULATED_ITINERARY,
-      resolveHoursDate: async () => '2026-06-15',
-      loadZooHours: async () => ZOO_HOURS,
+      loadItinerary: async () => populatedItinerary,
+      resolveHoursDate: async () => visitDate,
+      loadZooHours: async () => zooHours,
    });
 
    assert.ok(bodyEl.querySelector('.itin-panel-actions-wrap'));
@@ -87,15 +93,16 @@ test('Test_Renders_TestRendersItinerarySectionsAndTheDayPlannerFor_ExpectOk', as
    assert.equal(bodyEl.querySelectorAll('.itin-panel-build-btn').length, 0);
 });
 
-test('Test_Ignores_TestIgnoresStaleRendersWhenANewerRenderStarts_ExpectOk', async () => {
+
+test('Test_RenderItineraryPanelInto_TestStaleRender_ExpectNewerRenderKept', async () => {
    const bodyEl = createDomNode('div', 'side-panel-body');
+   const markerClass = 'render-marker';
    let resolveFirst = null;
    let buildCount = 0;
-
    const buildMarkerContent = () => {
       buildCount += 1;
       const fragment = document.createDocumentFragment();
-      fragment.appendChild(createDomNode('div', 'render-marker'));
+      fragment.appendChild(createDomNode('div', markerClass));
       return fragment;
    };
 
@@ -103,40 +110,46 @@ test('Test_Ignores_TestIgnoresStaleRendersWhenANewerRenderStarts_ExpectOk', asyn
       loadItinerary: () => new Promise((resolve) => {
          resolveFirst = resolve;
       }),
-      resolveHoursDate: async () => '2026-06-15',
-      loadZooHours: async () => ZOO_HOURS,
+      resolveHoursDate: async () => visitDate,
+      loadZooHours: async () => zooHours,
       buildContent: buildMarkerContent,
       buildEmptyContent: () => {
          buildCount += 1;
       },
    });
-
    await RenderView.renderItineraryPanelInto(bodyEl, {
-      loadItinerary: async () => POPULATED_ITINERARY,
-      resolveHoursDate: async () => '2026-06-15',
-      loadZooHours: async () => ZOO_HOURS,
+      loadItinerary: async () => populatedItinerary,
+      resolveHoursDate: async () => visitDate,
+      loadZooHours: async () => zooHours,
       buildContent: buildMarkerContent,
       buildEmptyContent: () => {
          buildCount += 1;
       },
    });
-
-   resolveFirst?.(POPULATED_ITINERARY);
+   resolveFirst?.(populatedItinerary);
    await firstRender;
+   const markers = bodyEl.querySelectorAll(`.${markerClass}`);
 
-   assert.equal(buildCount, 1);
-   assert.equal(bodyEl.querySelectorAll('.render-marker').length, 1);
+   assert.equal(buildCount, Position.SECOND);
+   assert.equal(markers.length, Position.SECOND);
 });
 
-test('Test_RenderPanel_TestRenderPanelRenderItineraryPanelIntoReturnsEarlyWithoutABodyElement_ExpectOk', async () => {
+
+test('Test_RenderItineraryPanelInto_TestMissingBody_ExpectNoLoad', async () => {
+   let loaded = false;
+
    await RenderView.renderItineraryPanelInto(null, {
       loadItinerary: async () => {
+         loaded = true;
          throw new Error('should not load');
       },
    });
+
+   assert.equal(loaded, false);
 });
 
-test('Test_Clears_TestClearsTheSavedItineraryAndDraftStorage_ExpectOk', async () => {
+
+test('Test_ClearStoredItinerary_TestSavedAndDraft_ExpectCleared', async () => {
    let cleared = false;
    let draftCleared = false;
 
@@ -153,10 +166,11 @@ test('Test_Clears_TestClearsTheSavedItineraryAndDraftStorage_ExpectOk', async ()
    assert.equal(draftCleared, true);
 });
 
-test('Test_Logs_TestLogsAndSwallowsErrorsWhenClearingTheItinerary_ExpectOk', async () => {
+
+test('Test_ClearStoredItinerary_TestClearFails_ExpectErrorSwallowed', async () => {
    const errors = [];
    const originalConsoleError = console.error;
-
+   const failure = new Error('clear failed');
    console.error = (...args) => {
       errors.push(args);
    };
@@ -164,17 +178,18 @@ test('Test_Logs_TestLogsAndSwallowsErrorsWhenClearingTheItinerary_ExpectOk', asy
    try {
       await RenderView.clearStoredItinerary({
          clearSavedItinerary: async () => {
-            throw new Error('clear failed');
+            throw failure;
          },
          clearDraftStorage: () => {
             throw new Error('should not run');
          },
       });
-   }
-   finally {
+
+      const loggedError = errors.at(Position.FIRST);
+
+      assert.equal(errors.length, Position.SECOND);
+      assert.match(String(loggedError.at(Position.FIRST)), /Failed to clear itinerary/);
+   } finally {
       console.error = originalConsoleError;
    }
-
-   assert.equal(errors.length, 1);
-   assert.match(String(errors[0][0]), /Failed to clear itinerary/);
 });

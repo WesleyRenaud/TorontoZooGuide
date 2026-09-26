@@ -5,6 +5,7 @@ import { WizardFinalizer } from '../../../../scripts/itinerary/wizard/wizardFina
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 
 installDomTestHooks({
    before: () => {
@@ -16,6 +17,7 @@ installDomTestHooks({
       delete globalThis.localStorage;
    },
 });
+
 
 test('Test_Saves_TestSavesSyncsDraftStateClearsTheMountAnd_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
@@ -51,18 +53,21 @@ test('Test_Saves_TestSavesSyncsDraftStateClearsTheMountAnd_ExpectOk', async () =
    assert.equal(mountEl.children.length, 0);
 });
 
+
 test('Test_Shows_TestShowsAWizardErrorPopupWhenSaveFails_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const popupCalls = [];
+   const saveError = 'Save failed';
+   const draft = { date: '2026-06-15', animals: ['Lion'] };
 
    const result = await WizardFinalizer.finalizeItineraryWizard(
-      { date: '2026-06-15', animals: ['Lion'] },
+      draft,
       mountEl,
       {
          deps: {
-            normalizeDraft: (draft) => draft,
+            normalizeDraft: (value) => value,
             saveItineraryFn: async () => {
-               throw new Error('Save failed');
+               throw new Error(saveError);
             },
             showWizardPopup: (config) => {
                popupCalls.push(config);
@@ -72,22 +77,25 @@ test('Test_Shows_TestShowsAWizardErrorPopupWhenSaveFails_ExpectOk', async () => 
    );
 
    assert.equal(result, null);
-   assert.equal(popupCalls[0].message, 'Save failed');
+   assert.equal(popupCalls[Position.FIRST].message, saveError);
 });
+
 
 test('Test_Returns_TestReturnsCancelledWhenSaveIsCancelledFromA_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const popupCalls = [];
+   const draft = {
+      date: '2026-06-15',
+      guardiansTalks: [{ name: 'Arctic Wolf' }],
+   };
+   const cancelled = { cancelled: true };
 
    const result = await WizardFinalizer.finalizeItineraryWizard(
-      {
-         date: '2026-06-15',
-         guardiansTalks: [{ name: 'Arctic Wolf' }],
-      },
+      draft,
       mountEl,
       {
          deps: {
-            normalizeDraft: (draft) => draft,
+            normalizeDraft: (value) => value,
             saveItineraryFn: async () => null,
             showWizardPopup: (config) => {
                popupCalls.push(config);
@@ -96,9 +104,10 @@ test('Test_Returns_TestReturnsCancelledWhenSaveIsCancelledFromA_ExpectOk', async
       }
    );
 
-   assert.deepEqual(result, { cancelled: true });
+   assert.deepEqual(result, cancelled);
    assert.equal(popupCalls.length, 0);
 });
+
 
 test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
@@ -109,6 +118,8 @@ test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () 
       saveIssues: [{ type: 'conflict', message: 'Conflict' }],
    };
    const saveCalls = [];
+   const overrideDate = '2026-06-16';
+   const overrideOptions = { overridingConflictingGuardiansTalks: true };
 
    await WizardFinalizer.finalizeItineraryWizard(
       savedItinerary,
@@ -130,29 +141,33 @@ test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () 
    );
 
    assert.equal(saveIssuesCalls.length, 1);
-   assert.deepEqual(saveIssuesCalls[0].itinerary, savedItinerary);
-   assert.equal(typeof saveIssuesCalls[0].options.saveFinalItinerary, 'function');
-   await saveIssuesCalls[0].options.saveFinalItinerary(
-      { date: '2026-06-16' },
-      { overridingConflictingGuardiansTalks: true }
+   assert.deepEqual(saveIssuesCalls[Position.FIRST].itinerary, savedItinerary);
+   assert.equal(typeof saveIssuesCalls[Position.FIRST].options.saveFinalItinerary, 'function');
+
+   await saveIssuesCalls[Position.FIRST].options.saveFinalItinerary(
+      { date: overrideDate },
+      overrideOptions
    );
+
    assert.equal(saveCalls.length, 2);
-   assert.deepEqual(saveCalls[1].options, {
-      overridingConflictingGuardiansTalks: true,
+   assert.deepEqual(saveCalls[Position.SECOND].options, {
+      ...overrideOptions,
       selectedExhibits: [],
    });
 });
 
+
 test('Test_Returns_TestReturnsCancelledConfirmationResult_ExpectPassthrough', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const cancelled = { cancelled: true, reason: 'user' };
+   const draft = { date: '2026-06-15', animals: ['Lion'] };
 
    const result = await WizardFinalizer.finalizeItineraryWizard(
-      { date: '2026-06-15', animals: ['Lion'] },
+      draft,
       mountEl,
       {
          deps: {
-            normalizeDraft: (draft) => draft,
+            normalizeDraft: (value) => value,
             saveItineraryFn: async () => cancelled,
          },
       }
@@ -160,6 +175,7 @@ test('Test_Returns_TestReturnsCancelledConfirmationResult_ExpectPassthrough', as
 
    assert.equal(result, cancelled);
 });
+
 
 test('Test_Saves_TestSavesDateOnlyItineraryWithoutBlocking_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');

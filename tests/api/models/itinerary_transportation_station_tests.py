@@ -4,6 +4,7 @@ from api.models.itinerary_transportation_station import ItineraryTransportationS
 from api.shared.enums.item_type import ItemType
 from api.shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
 
+
 def Test_ToDict_TestMainStation_ExpectSerializedFields() -> None:
    station = ItineraryTransportationStation(
       name='Main Zoomobile Station',
@@ -15,7 +16,10 @@ def Test_ToDict_TestMainStation_ExpectSerializedFields() -> None:
 
    result = station.to_dict()
 
-   assert result[ 'name' ] == 'Main Zoomobile Station'
-   assert result[ 'transportation' ] == 'Zoomobile'
-   assert result[ 'role' ] == ItineraryTransportationStationRole.ONBOARDING.value
+   assert result[ 'name' ] == station.name
+   assert result[ 'transportation' ] == station.transportation
+   assert result[ 'role' ] == station.role.value
    assert result[ 'type' ] == ItemType.TRANSPORTATION_STATION.value
+   assert result[ 'description' ] == station.description
+   assert result[ 'x_coord' ] == station.x_coord
+   assert result[ 'y_coord' ] == station.y_coord

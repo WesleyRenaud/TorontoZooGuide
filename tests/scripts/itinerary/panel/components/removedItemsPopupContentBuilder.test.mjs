@@ -3,40 +3,81 @@ import test from 'node:test';
 
 import { RemovedItemsPopupContentBuilder } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupContentBuilder.js';
 import { RemovedItemsPopupKeepButtonStore } from '../../../../../scripts/itinerary/panel/components/removedItemsPopupKeepButtonStore.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_AddAlternativesButton_TestClick_ExpectCallback', () => {
+   const stepKey = 'animals';
+   const removedLabel = 'removed';
    const calls = [];
+
    const button = RemovedItemsPopupContentBuilder.addAlternativesButton(
       document.createElement('div'),
-      'animals',
-      (stepKey) => calls.push(stepKey),
-      () => calls.push('removed')
+      stepKey,
+      (clickedStep) => calls.push(clickedStep),
+      () => calls.push(removedLabel)
    );
+   button.click();
 
    assert.equal(button.type, 'button');
    assert.equal(button.textContent, Strings.itinerary.removedItems.viewAlternatives);
-   button.click();
-   assert.deepEqual(calls, ['removed', 'animals']);
-   assert.equal(
-      RemovedItemsPopupContentBuilder.addAlternativesButton(null, 'animals', () => {}, () => {}),
-      null
-   );
+   assert.deepEqual(calls, [removedLabel, stepKey]);
 });
 
+
+test('Test_AddAlternativesButton_TestNullRow_ExpectNull', () => {
+   const button = RemovedItemsPopupContentBuilder.addAlternativesButton(
+      null,
+      'animals',
+      () => {},
+      () => {}
+   );
+
+   assert.equal(button, null);
+});
+
+
+test('Test_AddKeepOverrideButton_TestNullItem_ExpectNull', () => {
+   const button = RemovedItemsPopupContentBuilder.addKeepOverrideButton(
+      null,
+      () => 'k',
+      () => {},
+      () => false
+   );
+
+   assert.equal(button, null);
+});
+
+
+test('Test_AddKeepOverrideButton_TestEmptyKey_ExpectNull', () => {
+   const button = RemovedItemsPopupContentBuilder.addKeepOverrideButton(
+      {},
+      () => '',
+      () => {},
+      () => false
+   );
+
+   assert.equal(button, null);
+});
+
+
 test('Test_AddKeepOverrideButton_TestToggle_ExpectSynced', () => {
-   const toggles = [];
-   let selected = false;
    const originalApply = RemovedItemsPopupKeepButtonStore.applyKeepOverrideButtonState;
    const originalGet = RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState;
+   const species = 'African Lion';
+   const keepLabel = 'keep';
+   const removeLabel = 'remove';
+   const toggles = [];
    const applies = [];
+   let selected = false;
 
    RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState = (isSelected) => ({
       selected: isSelected,
-      textContent: isSelected ? 'remove' : 'keep',
+      textContent: isSelected ? removeLabel : keepLabel,
    });
    RemovedItemsPopupKeepButtonStore.applyKeepOverrideButtonState = (btn, state) => {
       applies.push(state);
@@ -44,17 +85,8 @@ test('Test_AddKeepOverrideButton_TestToggle_ExpectSynced', () => {
    };
 
    try {
-      assert.equal(
-         RemovedItemsPopupContentBuilder.addKeepOverrideButton(null, () => 'k', () => {}, () => false),
-         null
-      );
-      assert.equal(
-         RemovedItemsPopupContentBuilder.addKeepOverrideButton({}, () => '', () => {}, () => false),
-         null
-      );
-
       const button = RemovedItemsPopupContentBuilder.addKeepOverrideButton(
-         { species: 'Lion' },
+         { species },
          (item) => item.species,
          (item) => {
             toggles.push(item.species);
@@ -62,33 +94,48 @@ test('Test_AddKeepOverrideButton_TestToggle_ExpectSynced', () => {
          },
          () => selected
       );
-
-      assert.equal(applies[0].textContent, 'keep');
       button.click();
-      assert.deepEqual(toggles, ['Lion']);
-      assert.equal(applies.at(-1).textContent, 'remove');
+
+      assert.equal(applies.at(Position.FIRST).textContent, keepLabel);
+      assert.deepEqual(toggles, [species]);
+      assert.equal(applies.at(Position.LAST).textContent, removeLabel);
    } finally {
       RemovedItemsPopupKeepButtonStore.applyKeepOverrideButtonState = originalApply;
       RemovedItemsPopupKeepButtonStore.getKeepOverrideButtonState = originalGet;
    }
 });
 
-test('Test_MakeSection_TestRows_ExpectSectionOrNull', () => {
-   assert.equal(RemovedItemsPopupContentBuilder.makeSection('Title', 'Sub', []), null);
 
-   const row = document.createElement('div');
-   row.textContent = 'row';
-   const section = RemovedItemsPopupContentBuilder.makeSection('Title', 'Sub', [row, null]);
+test('Test_MakeSection_TestEmptyRows_ExpectNull', () => {
+   const title = 'Removed animals';
+   const subtitle = 'These animals left the itinerary';
 
-   assert.ok(section.classList.contains('itin-removed-section'));
-   assert.match(section.textContent, /Title/);
-   assert.match(section.textContent, /Sub/);
-   assert.match(section.textContent, /row/);
+   const section = RemovedItemsPopupContentBuilder.makeSection(title, subtitle, []);
+
+   assert.equal(section, null);
 });
 
-test('Test_BuildSectionRows_TestActions_ExpectButtons', () => {
+
+test('Test_MakeSection_TestRows_ExpectSection', () => {
+   const title = 'Removed animals';
+   const subtitle = 'These animals left the itinerary';
+   const rowText = 'African Lion';
    const row = document.createElement('div');
-   const items = [{ species: 'Lion' }];
+   row.textContent = rowText;
+
+   const section = RemovedItemsPopupContentBuilder.makeSection(title, subtitle, [row, null]);
+
+   assert.ok(section.classList.contains('itin-removed-section'));
+   assert.match(section.textContent, new RegExp(title));
+   assert.match(section.textContent, new RegExp(subtitle));
+   assert.match(section.textContent, new RegExp(rowText));
+});
+
+
+test('Test_BuildSectionRows_TestActions_ExpectButtons', () => {
+   const species = 'African Lion';
+   const items = [{ species }];
+   const row = document.createElement('div');
 
    const rows = RemovedItemsPopupContentBuilder.buildSectionRows(
       items,
@@ -103,16 +150,21 @@ test('Test_BuildSectionRows_TestActions_ExpectButtons', () => {
          isSelected: () => false,
       }
    );
-
-   assert.equal(rows.length, 1);
-   assert.ok(rows[0].classList.contains('itin-removed-row'));
-   const actions = rows[0].children.find((child) => (
+   const actions = rows.at(Position.FIRST).children.find((child) => (
       child.classList?.contains('itin-removed-row-actions')
    ));
+
+   assert.equal(rows.length, items.length);
+   assert.ok(rows.at(Position.FIRST).classList.contains('itin-removed-row'));
    assert.ok(actions);
    assert.equal(actions.children.length, 2);
+});
 
-   const plain = RemovedItemsPopupContentBuilder.buildSectionRows(
+
+test('Test_BuildSectionRows_TestWithoutActions_ExpectPlainRow', () => {
+   const items = [{ species: 'African Lion' }];
+
+   const rows = RemovedItemsPopupContentBuilder.buildSectionRows(
       items,
       () => [document.createElement('div')],
       'animals',
@@ -121,5 +173,6 @@ test('Test_BuildSectionRows_TestActions_ExpectButtons', () => {
       false,
       null
    );
-   assert.equal(plain[0].classList.contains('itin-removed-row'), false);
+
+   assert.equal(rows.at(Position.FIRST).classList.contains('itin-removed-row'), false);
 });

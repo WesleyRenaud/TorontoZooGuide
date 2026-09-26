@@ -7,20 +7,20 @@ from api.shared.enums.api_error_type import ApiErrorType
 
 def Test_ApplyError_TestParams_ExpectApiErrorTypeAndParams() -> None:
    response: dict[ str, object ] = { 'success': False }
+   error_type = ApiErrorType.COULD_NOT_SET_GUARDIANS_TALK_SCHEDULE
+   talk = 'African Lion'
+   location = 'Africa Savanna'
 
    ApiErrorResponseApplier.apply_error(
       response,
-      ApiErrorType.COULD_NOT_SET_GUARDIANS_TALK_SCHEDULE,
-      talk='African Lion',
-      location='Africa Savanna' )
+      error_type,
+      talk=talk,
+      location=location )
 
-   assert response == {
-      'success': False,
-      'apiErrorType': ApiErrorType.COULD_NOT_SET_GUARDIANS_TALK_SCHEDULE.value,
-      'apiErrorParams': {
-         'talk': 'African Lion',
-         'location': 'Africa Savanna',
-      },
+   assert response[ 'apiErrorType' ] == error_type.value
+   assert response[ 'apiErrorParams' ] == {
+      'talk': talk,
+      'location': location,
    }
 
 
@@ -37,6 +37,5 @@ def Test_ApplyFailure_TestOperationFailure_ExpectAppliesFailureFields() -> None:
 
    ApiErrorResponseApplier.apply_failure( response, failure )
 
-   assert response[ 'apiErrorType' ] == (
-      ApiErrorType.GUARDIANS_TALK_OCCURRENCE_ALREADY_EXISTS.value )
+   assert response[ 'apiErrorType' ] == failure.error_type.value
    assert response[ 'apiErrorParams' ] == failure.params

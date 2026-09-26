@@ -6,28 +6,39 @@ import { ItinerarySearchContextHelper } from '../../../scripts/itinerary/itinera
 import { VisitDateResolver } from '../../../scripts/itinerary/visitDateResolver.js';
 import { createLocalStorageMock } from '../helpers/localStorageMock.mjs';
 
-test('Test_ResolveItinerarySearchDate_TestOverrideStoredAndFallback_ExpectDate', async () => {
+
+test('Test_ResolveItinerarySearchDate_TestOverride_ExpectDate', async () => {
    globalThis.localStorage = createLocalStorageMock();
+   const date = '2026-09-08';
 
-   assert.equal(
-      await ItinerarySearchContextHelper.resolveItinerarySearchDate('2026-09-08'),
-      '2026-09-08'
-   );
+   const resolved = await ItinerarySearchContextHelper.resolveItinerarySearchDate(date);
 
-   DraftStore.setStoredItineraryDate('2026-09-09');
-   assert.equal(
-      await ItinerarySearchContextHelper.resolveItinerarySearchDate(''),
-      '2026-09-09'
-   );
+   assert.equal(resolved, date);
+});
 
+
+test('Test_ResolveItinerarySearchDate_TestStored_ExpectStoredDate', async () => {
+   globalThis.localStorage = createLocalStorageMock();
+   const storedDate = '2026-09-09';
+   DraftStore.setStoredItineraryDate(storedDate);
+
+   const resolved = await ItinerarySearchContextHelper.resolveItinerarySearchDate('');
+
+   assert.equal(resolved, storedDate);
+});
+
+
+test('Test_ResolveItinerarySearchDate_TestFallback_ExpectResolvedDate', async () => {
+   globalThis.localStorage = createLocalStorageMock();
    DraftStore.setStoredItineraryDate('');
    const original = VisitDateResolver.resolveEffectiveItineraryHoursDateIso;
-   VisitDateResolver.resolveEffectiveItineraryHoursDateIso = async () => '2026-09-10';
+   const fallbackDate = '2026-09-10';
+   VisitDateResolver.resolveEffectiveItineraryHoursDateIso = async () => fallbackDate;
+
    try {
-      assert.equal(
-         await ItinerarySearchContextHelper.resolveItinerarySearchDate(''),
-         '2026-09-10'
-      );
+      const resolved = await ItinerarySearchContextHelper.resolveItinerarySearchDate('');
+
+      assert.equal(resolved, fallbackDate);
    } finally {
       VisitDateResolver.resolveEffectiveItineraryHoursDateIso = original;
    }

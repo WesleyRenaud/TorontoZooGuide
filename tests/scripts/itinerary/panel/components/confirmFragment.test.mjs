@@ -9,6 +9,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_ShowItineraryConfirmPopup_TestConfirm_ExpectDoNotShowAgain', () => {
    const originalCreate = ItineraryPanelFragment.createItineraryPopupLayout;
    const originalMount = ItineraryPanelFragment.mountDismissablePopup;
@@ -16,10 +17,12 @@ test('Test_ShowItineraryConfirmPopup_TestConfirm_ExpectDoNotShowAgain', () => {
    const confirms = [];
    const closes = [];
    const confirmButton = document.createElement('button');
+   const doNotShowAgain = true;
+   const message = 'Clear this itinerary?';
 
    ConfirmPopupHelper.createConfirmPopupBody = () => ({
       body: document.createElement('div'),
-      checkbox: { checked: true },
+      checkbox: { checked: doNotShowAgain },
    });
    ItineraryPanelFragment.createItineraryPopupLayout = (args) => {
       assert.equal(args.popupClassName, 'tzg-confirm');
@@ -40,12 +43,12 @@ test('Test_ShowItineraryConfirmPopup_TestConfirm_ExpectDoNotShowAgain', () => {
 
    try {
       ConfirmFragment.showItineraryConfirmPopup({
-         message: 'Confirm?',
+         message,
          onConfirm: (args) => { confirms.push(args); },
       });
-
       confirmButton.listeners.click();
-      assert.deepEqual(confirms, [{ doNotShowAgain: true }]);
+
+      assert.deepEqual(confirms, [{ doNotShowAgain }]);
       assert.deepEqual(closes, [true]);
    } finally {
       ItineraryPanelFragment.createItineraryPopupLayout = originalCreate;
@@ -54,12 +57,14 @@ test('Test_ShowItineraryConfirmPopup_TestConfirm_ExpectDoNotShowAgain', () => {
    }
 });
 
+
 test('Test_ShowItineraryConfirmPopup_TestCancel_ExpectOnCancel', () => {
    const originalCreate = ItineraryPanelFragment.createItineraryPopupLayout;
    const originalMount = ItineraryPanelFragment.mountDismissablePopup;
    const originalBody = ConfirmPopupHelper.createConfirmPopupBody;
    const cancels = [];
    const cancelButton = document.createElement('button');
+   const message = 'Cancel this change?';
 
    ConfirmPopupHelper.createConfirmPopupBody = () => document.createElement('div');
    ItineraryPanelFragment.createItineraryPopupLayout = () => ({
@@ -77,10 +82,11 @@ test('Test_ShowItineraryConfirmPopup_TestCancel_ExpectOnCancel', () => {
 
    try {
       ConfirmFragment.showItineraryConfirmPopup({
-         message: 'Cancel?',
+         message,
          onCancel: () => { cancels.push(true); },
       });
       cancelButton.listeners.click();
+
       assert.deepEqual(cancels, [true]);
    } finally {
       ItineraryPanelFragment.createItineraryPopupLayout = originalCreate;

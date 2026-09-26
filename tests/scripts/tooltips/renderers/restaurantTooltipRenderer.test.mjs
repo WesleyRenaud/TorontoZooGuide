@@ -1,19 +1,25 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { RestaurantTooltipRenderer } from '../../../../scripts/tooltips/renderers/restaurantTooltipRenderer.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateCard_TestRestaurant_ExpectNamedCard', () => {
+   const name = 'Simba Safari Cafe';
+   const location = 'Africa';
+
    const card = RestaurantTooltipRenderer.createCard({
-      name: 'Simba Safari Cafe',
-      location: 'Africa',
+      name,
+      location,
       description: 'Meals',
       menu_link: 'https://example.test/menu',
-   }, 0);
+   }, Position.FIRST);
+
    assert.equal(RestaurantTooltipRenderer.key, 'restaurant');
-   assert.match(card.textContent, /Simba Safari Cafe/);
-   assert.match(card.textContent, /Africa/);
+   assert.match(card.textContent, new RegExp(name));
+   assert.match(card.textContent, new RegExp(location));
 });

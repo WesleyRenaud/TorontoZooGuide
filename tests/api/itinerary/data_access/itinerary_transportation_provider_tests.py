@@ -7,6 +7,7 @@ import pytest
 from api.itinerary.data_access.itinerary_transportation_provider import ItineraryTransportationProvider
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.date_values import DateValues
 from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
 
@@ -82,128 +83,149 @@ def transportation_provider_conn() -> sqlite3.Connection:
 
 def Test_InsertItineraryTransportation_TestNewRow_ExpectInserted(
       transportation_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   start_time = '10:00 AM'
+   duration_minutes = 75
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
+   route = 'summer'
+   new_likelihood = 100
    cur = transportation_provider_conn.cursor()
+
    inserted = ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
-      new_likelihood=100,
-      added_as_attraction=True,
-      start_time='10:00 AM',
-      end_time='11:15 AM',
-      route='summer' )
+      new_likelihood=new_likelihood,
+      added_as_attraction=added_as_attraction,
+      start_time=start_time,
+      end_time=end_time,
+      route=route )
    transportation_provider_conn.commit()
    cur.close()
-
    row = transportation_provider_conn.execute(
       """   SELECT START_TIME, END_TIME, ROUTE, BULK_TRANSIT_EVALUATED
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchone()
 
    assert inserted is True
    assert row is not None
-   assert row[ 'START_TIME' ] == '10:00 AM'
-   assert row[ 'END_TIME' ] == '11:15 AM'
-   assert row[ 'ROUTE' ] == 'summer'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time
+   assert row[ 'ROUTE' ] == route
    assert row[ 'BULK_TRANSIT_EVALUATED' ] == 0
 
 
 def Test_InsertItineraryTransportation_TestDuplicateRow_ExpectIgnored(
       transportation_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   first_likelihood = 100
+   duplicate_likelihood = 50
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
-      new_likelihood=100,
-      added_as_attraction=True )
+      new_likelihood=first_likelihood,
+      added_as_attraction=added_as_attraction )
+
    duplicate_inserted = ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
-      new_likelihood=50,
-      added_as_attraction=True )
+      new_likelihood=duplicate_likelihood,
+      added_as_attraction=added_as_attraction )
    transportation_provider_conn.commit()
    cur.close()
-
    row = transportation_provider_conn.execute(
       """   SELECT NEW_LIKELIHOOD
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchone()
 
    assert duplicate_inserted is False
    assert row is not None
-   assert row[ 'NEW_LIKELIHOOD' ] == 100
+   assert row[ 'NEW_LIKELIHOOD' ] == first_likelihood
 
 
 def Test_InsertItineraryTransportationLegs_TestLegs_ExpectPersistedRows(
       transportation_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   start_time = '10:00 AM'
+   duration_minutes = 20
+   end_time = DateValues.add_minutes_to_time( start_time, duration_minutes )
+   legs = [
+      ItineraryTransportationLeg(
+         transportation=transportation,
+         from_station=MAIN,
+         to_station=CANADA,
+         start_time=start_time,
+         end_time=end_time,
+         added_as_attraction=added_as_attraction ),
+   ]
    cur = transportation_provider_conn.cursor()
+
    ItineraryTransportationProvider.insert_itinerary_transportation_legs(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      legs=[
-         ItineraryTransportationLeg(
-            transportation=TransportationName.ZOOMOBILE,
-            from_station=MAIN,
-            to_station=CANADA,
-            start_time='10:00 AM',
-            end_time='10:20 AM',
-            added_as_attraction=True ),
-      ] )
+      transportation=transportation,
+      added_as_attraction=added_as_attraction,
+      legs=legs )
    transportation_provider_conn.commit()
    cur.close()
-
-   legs = transportation_provider_conn.execute(
+   persisted_legs = transportation_provider_conn.execute(
       """   SELECT FROM_STATION, TO_STATION, START_TIME, END_TIME
             FROM ItineraryTransportationLeg
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchall()
 
-   assert len( legs ) == 1
-   assert legs[ Position.FIRST ][ 'FROM_STATION' ] == MAIN
-   assert legs[ Position.FIRST ][ 'TO_STATION' ] == CANADA
+   assert len( persisted_legs ) == len( legs )
+   assert persisted_legs[ Position.FIRST ][ 'FROM_STATION' ] == MAIN
+   assert persisted_legs[ Position.FIRST ][ 'TO_STATION' ] == CANADA
 
 
 def Test_ClearItineraryTransportationScheduleTimes_TestScheduledRow_ExpectClearedFields(
       transportation_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   start_time = '10:00 AM'
+   duration_minutes = 75
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
       new_likelihood=100,
-      added_as_attraction=True,
-      start_time='10:00 AM',
-      end_time='11:15 AM',
+      added_as_attraction=added_as_attraction,
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
       route='summer',
       bulk_transit_evaluated=True )
+
    ItineraryTransportationProvider.clear_itinerary_transportation_schedule_times(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True )
+      transportation=transportation,
+      added_as_attraction=added_as_attraction )
    transportation_provider_conn.commit()
    cur.close()
-
    row = transportation_provider_conn.execute(
       """   SELECT START_TIME, END_TIME, ROUTE, BULK_TRANSIT_EVALUATED
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchone()
 
    assert row is not None
@@ -215,74 +237,84 @@ def Test_ClearItineraryTransportationScheduleTimes_TestScheduledRow_ExpectCleare
 
 def Test_SetItineraryTransportationBulkTransitEvaluated_TestRow_ExpectUpdatedFlag(
       transportation_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   bulk_transit_evaluated = True
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
       new_likelihood=100,
-      added_as_attraction=True )
+      added_as_attraction=added_as_attraction )
+
    ItineraryTransportationProvider.set_itinerary_transportation_bulk_transit_evaluated(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      bulk_transit_evaluated=True )
+      transportation=transportation,
+      added_as_attraction=added_as_attraction,
+      bulk_transit_evaluated=bulk_transit_evaluated )
    transportation_provider_conn.commit()
    cur.close()
-
    row = transportation_provider_conn.execute(
       """   SELECT BULK_TRANSIT_EVALUATED
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchone()
 
    assert row is not None
-   assert row[ 'BULK_TRANSIT_EVALUATED' ] == 1
+   assert row[ 'BULK_TRANSIT_EVALUATED' ] == int( bulk_transit_evaluated )
 
 
 def Test_DeleteItineraryTransportation_TestScheduledRow_ExpectRowLegsAndMarkersRemoved(
       transportation_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   start_time = '10:00 AM'
+   duration_minutes = 20
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
       new_likelihood=100,
-      added_as_attraction=True )
+      added_as_attraction=added_as_attraction )
    ItineraryTransportationProvider.insert_itinerary_transportation_legs(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
+      transportation=transportation,
+      added_as_attraction=added_as_attraction,
       legs=[
          ItineraryTransportationLeg(
-            transportation=TransportationName.ZOOMOBILE,
+            transportation=transportation,
             from_station=MAIN,
             to_station=CANADA,
-            start_time='10:00 AM',
-            end_time='10:20 AM',
-            added_as_attraction=True ),
+            start_time=start_time,
+            end_time=DateValues.add_minutes_to_time(
+               start_time,
+               duration_minutes ),
+            added_as_attraction=added_as_attraction ),
       ] )
    ItineraryTransportationRouteMarkerProvider.insert_itinerary_transportation_route_markers(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
+      transportation=transportation,
+      added_as_attraction=added_as_attraction,
       route_marker_sequences=[ [ 'm-a', 'm-b' ] ] )
+
    ItineraryTransportationProvider.delete_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
-      added_as_attraction=True )
+      transportation=transportation,
+      added_as_attraction=added_as_attraction )
    transportation_provider_conn.commit()
    cur.close()
-
    transportation_count = transportation_provider_conn.execute(
       'SELECT COUNT(*) FROM ItineraryTransportation;' ).fetchone()[ Position.FIRST ]
    leg_count = transportation_provider_conn.execute(
       'SELECT COUNT(*) FROM ItineraryTransportationLeg;' ).fetchone()[ Position.FIRST ]
    marker_count = transportation_provider_conn.execute(
-      'SELECT COUNT(*) FROM ItineraryTransportationRouteMarker;' ).fetchone()[ Position.FIRST ]
+      'SELECT COUNT(*) FROM ItineraryTransportationRouteMarker;' ).fetchone()[
+      Position.FIRST ]
 
    assert transportation_count == 0
    assert leg_count == 0
@@ -291,29 +323,39 @@ def Test_DeleteItineraryTransportation_TestScheduledRow_ExpectRowLegsAndMarkersR
 
 def Test_ClearAllItineraryTransportationScheduleTimes_TestScheduledRows_ExpectAllCleared(
       transportation_provider_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   attraction_start_time = '10:00 AM'
+   attraction_duration_minutes = 75
+   transit_start_time = '11:30 AM'
+   transit_duration_minutes = 30
    cur = transportation_provider_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=True,
-      start_time='10:00 AM',
-      end_time='11:15 AM',
+      start_time=attraction_start_time,
+      end_time=DateValues.add_minutes_to_time(
+         attraction_start_time,
+         attraction_duration_minutes ),
       route='summer' )
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
       new_likelihood=100,
       added_as_attraction=False,
-      start_time='11:30 AM',
-      end_time='12:00 PM',
+      start_time=transit_start_time,
+      end_time=DateValues.add_minutes_to_time(
+         transit_start_time,
+         transit_duration_minutes ),
       route='transit' )
-   ItineraryTransportationProvider.clear_all_itinerary_transportation_schedule_times( cur )
+
+   ItineraryTransportationProvider.clear_all_itinerary_transportation_schedule_times(
+      cur )
    transportation_provider_conn.commit()
    cur.close()
-
    rows = transportation_provider_conn.execute(
       """   SELECT START_TIME, END_TIME, ROUTE, BULK_TRANSIT_EVALUATED
             FROM ItineraryTransportation

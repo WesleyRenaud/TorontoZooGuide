@@ -2,39 +2,38 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
-import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
-import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
+import { Strings } from '../../../../scripts/strings.js';
 import {
    EMPTY_ITINERARY,
-   TEST_ITINERARY_CONFIG,
    allTextFor,
-   boundaryMarkerByLabel,
-   boundaryMarkerStripByLabel,
    createNode,
-   documentListeners,
-   imageSrcFor,
    installPanelRowsTestHooks,
-   textFor,
-   timelinePillTexts,
-   timelineScheduledPillTexts,
 } from '../../helpers/panelRowsTestSetup.mjs';
 
 installPanelRowsTestHooks();
 
-test('Test_Day_TestDayPlannerOmitsGuardiansTalksAndWildEncounters_ExpectOk', () => {
+const transportationName = 'Zoomobile';
+const zooHours = {
+   date: '2026-06-20',
+   openTime: '09:30',
+   lastAdmissionTime: '18:00',
+   closeTime: '19:00',
+};
+
+
+test('Test_MakeDayPlannerPreview_TestGuardiansTalksOmittedFromUnscheduled_ExpectScheduledOnly', () => {
+   const talkName = 'Amur Tiger';
+
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
-      {
-         date: '2026-06-20',
-         openTime: '09:30',
-         lastAdmissionTime: '18:00',
-         closeTime: '19:00',
-      },
+      zooHours,
       {
          ...EMPTY_ITINERARY,
          guardiansTalks: [
             {
-               name: 'Amur Tiger',
+               name: talkName,
                location: 'Eurasia Wilds',
                start_time: '1:30 PM',
                end_time: '2:00 PM',
@@ -45,32 +44,37 @@ test('Test_Day_TestDayPlannerOmitsGuardiansTalksAndWildEncounters_ExpectOk', () 
    );
    const text = allTextFor(planner);
 
-   assert.match(text, /Scheduled Items/);
-   assert.match(text, /Meet The Guardians \(1\)/);
-   assert.match(text, /Unscheduled Items/);
-   assert.match(text, /Animals \(0\)/);
-   assert.match(text, /Attractions \(0\)/);
-   assert.match(text, /Transportation \(0\)/);
-   assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Meet The Guardians/);
-   assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Wild Encounters/);
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.scheduledTitle));
+   assert.match(text, new RegExp(`${Strings.site.nav.meetTheGuardians} \\(1\\)`));
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.unscheduledTitle));
+   assert.match(text, new RegExp(`${Strings.site.nav.animals} \\(0\\)`));
+   assert.match(text, new RegExp(`${Strings.map.filter.attractions} \\(0\\)`));
+   assert.match(text, new RegExp(`${Strings.entityLabels.transportation} \\(0\\)`));
+   assert.doesNotMatch(
+      text,
+      new RegExp(`${Strings.itinerary.dayPlanner.unscheduledTitle}[\\s\\S]*${Strings.site.nav.meetTheGuardians}`)
+   );
+   assert.doesNotMatch(
+      text,
+      new RegExp(`${Strings.itinerary.dayPlanner.unscheduledTitle}[\\s\\S]*${Strings.site.nav.wildEncounters}`)
+   );
 });
 
-test('Test_Day_TestDayPlannerShowsUnscheduledTransportationWithoutASchedule_ExpectOk', () => {
+
+test('Test_MakeDayPlannerPreview_TestUnscheduledTransportation_ExpectRemoveOnly', () => {
    const scheduleCalls = [];
    const removeCalls = [];
+   const addedAsAttraction = false;
+   const transportationKey = new TransportationScheduleItemKey(transportationName, addedAsAttraction).toWire();
+
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
-      {
-         date: '2026-06-20',
-         openTime: '09:30',
-         lastAdmissionTime: '18:00',
-         closeTime: '19:00',
-      },
+      zooHours,
       {
          ...EMPTY_ITINERARY,
          transportations: [
             {
-               name: 'Zoomobile',
-               added_as_attraction: false,
+               name: transportationName,
+               added_as_attraction: addedAsAttraction,
             },
          ],
       },
@@ -89,43 +93,45 @@ test('Test_Day_TestDayPlannerShowsUnscheduledTransportationWithoutASchedule_Expe
    );
    const text = allTextFor(planner);
    const unscheduledList = [...planner.querySelectorAll('.itinerary-day-items-sections')].find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Unscheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(
+         Strings.itinerary.dayPlanner.unscheduledTitle
+      )
    ));
    const zoomobileRow = [...(unscheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
-      allTextFor(row).includes('Zoomobile')
+      allTextFor(row).includes(transportationName)
    ));
    const zoomobileButtons = [...(zoomobileRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [])];
 
-   assert.match(text, /Unscheduled Items/);
-   assert.match(text, /Transportation \(1\)/);
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.unscheduledTitle));
+   assert.match(text, new RegExp(`${Strings.entityLabels.transportation} \\(1\\)`));
    assert.deepEqual(
       zoomobileButtons.map((button) => button.textContent),
-      ['Remove']
+      [Strings.itinerary.dayPlanner.remove]
    );
 
-   zoomobileButtons[0]?.click();
+   zoomobileButtons.at(Position.FIRST)?.click();
+
    assert.equal(scheduleCalls.length, 0);
    assert.deepEqual(removeCalls, [{
-      itemType: 'transportations',
-      key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
+      itemType: ScheduleItemKind.TRANSPORTATION.itemType,
+      key: transportationKey,
    }]);
 });
 
-test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationIn_ExpectOk', () => {
+
+test('Test_MakeDayPlannerPreview_TestBulkEvaluatedTransitWithoutLegs_ExpectScheduledRemove', () => {
    const removeCalls = [];
+   const addedAsAttraction = false;
+   const transportationKey = new TransportationScheduleItemKey(transportationName, addedAsAttraction).toWire();
+
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
-      {
-         date: '2026-06-20',
-         openTime: '09:30',
-         lastAdmissionTime: '18:00',
-         closeTime: '19:00',
-      },
+      zooHours,
       {
          ...EMPTY_ITINERARY,
          transportations: [
             {
-               name: 'Zoomobile',
-               added_as_attraction: false,
+               name: transportationName,
+               added_as_attraction: addedAsAttraction,
                bulk_transit_evaluated: true,
                legs: [],
             },
@@ -143,63 +149,73 @@ test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationIn_ExpectO
    );
    const text = allTextFor(planner);
    const scheduledList = [...planner.querySelectorAll('.itinerary-day-items-sections')].find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(
+         Strings.itinerary.dayPlanner.scheduledTitle
+      )
    ));
    const zoomobileRow = [...(scheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
-      allTextFor(row).includes('Zoomobile')
+      allTextFor(row).includes(transportationName)
    ));
    const zoomobileButtons = [...(zoomobileRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [])];
    const zoomobileMeta = allTextFor(
       zoomobileRow?.querySelector('.itin-panel-meta') ?? createNode('div')
    );
 
-   assert.match(text, /Scheduled Items/);
-   assert.match(text, /Transportation \(1\)/);
-   assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Transportation \(1\)/);
-   assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Zoomobile/);
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.scheduledTitle));
+   assert.match(text, new RegExp(`${Strings.entityLabels.transportation} \\(1\\)`));
+   assert.doesNotMatch(
+      text,
+      new RegExp(`${Strings.itinerary.dayPlanner.unscheduledTitle}[\\s\\S]*${Strings.entityLabels.transportation} \\(1\\)`)
+   );
+   assert.doesNotMatch(
+      text,
+      new RegExp(`${Strings.itinerary.dayPlanner.unscheduledTitle}[\\s\\S]*${transportationName}`)
+   );
    assert.equal(zoomobileMeta, '');
    assert.deepEqual(
       zoomobileButtons.map((button) => button.textContent),
-      ['Remove']
+      [Strings.itinerary.dayPlanner.remove]
    );
 
-   zoomobileButtons[0]?.click();
+   zoomobileButtons.at(Position.FIRST)?.click();
 
    assert.deepEqual(removeCalls, [{
-      itemType: 'transportations',
-      key: new TransportationScheduleItemKey('Zoomobile', false).toWire(),
+      itemType: ScheduleItemKind.TRANSPORTATION.itemType,
+      key: transportationKey,
    }]);
 });
 
-test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationWith_ExpectOk', () => {
+
+test('Test_MakeDayPlannerPreview_TestBulkEvaluatedTransitWithLegs_ExpectStationsAndTime', () => {
+   const addedAsAttraction = false;
+   const firstStation = 'Main Station';
+   const lastStation = 'Wildlife Health';
+   const startTime = '2:30 PM';
+   const endTime = '3:00 PM';
+
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
-      {
-         date: '2026-06-20',
-         openTime: '09:30',
-         lastAdmissionTime: '18:00',
-         closeTime: '19:00',
-      },
+      zooHours,
       {
          ...EMPTY_ITINERARY,
          transportations: [
             {
-               name: 'Zoomobile',
-               added_as_attraction: false,
+               name: transportationName,
+               added_as_attraction: addedAsAttraction,
                bulk_transit_evaluated: true,
-               start_time: '2:30 PM',
-               end_time: '3:00 PM',
+               start_time: startTime,
+               end_time: endTime,
                legs: [
                   {
-                     from_station: 'Main Station',
+                     from_station: firstStation,
                      to_station: 'Canadian Domain',
-                     start_time: '2:30 PM',
+                     start_time: startTime,
                      end_time: '2:40 PM',
                   },
                   {
                      from_station: 'Canadian Domain',
-                     to_station: 'Wildlife Health',
+                     to_station: lastStation,
                      start_time: '2:40 PM',
-                     end_time: '3:00 PM',
+                     end_time: endTime,
                   },
                ],
             },
@@ -217,55 +233,61 @@ test('Test_Day_TestDayPlannerRendersBulkEvaluatedTransitTransportationWith_Expec
    );
    const text = allTextFor(planner);
    const scheduledList = [...planner.querySelectorAll('.itinerary-day-items-sections')].find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(
+         Strings.itinerary.dayPlanner.scheduledTitle
+      )
    ));
    const zoomobileRow = [...(scheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
-      allTextFor(row).includes('Zoomobile')
+      allTextFor(row).includes(transportationName)
    ));
+   const rowText = allTextFor(zoomobileRow);
+   const buttons = [...(zoomobileRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [])]
+      .map((button) => button.textContent);
 
-   assert.match(text, /Scheduled Items[\s\S]*Transportation \(1\)/);
-   assert.match(allTextFor(zoomobileRow), /Main Station → Wildlife Health/);
-   assert.match(allTextFor(zoomobileRow), /Time: ~2:30 PM/);
-   assert.deepEqual(
-      [...(zoomobileRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [])]
-         .map((button) => button.textContent),
-      ['Remove']
+   assert.match(text, new RegExp(`${Strings.itinerary.dayPlanner.scheduledTitle}[\\s\\S]*${Strings.entityLabels.transportation} \\(1\\)`));
+   assert.match(rowText, new RegExp(Strings.labels.transportationStations(firstStation, lastStation)));
+   assert.match(rowText, new RegExp(`Time: ~${startTime}`));
+   assert.deepEqual(buttons, [Strings.itinerary.dayPlanner.remove]);
+   assert.doesNotMatch(
+      text,
+      new RegExp(`${Strings.itinerary.dayPlanner.unscheduledTitle}[\\s\\S]*${transportationName}`)
    );
-   assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Zoomobile/);
 });
 
-test('Test_Day_TestDayPlannerRendersEachScheduledTransportationSequenceIn_ExpectOk', () => {
+
+test('Test_MakeDayPlannerPreview_TestScheduledTransportationSequences_ExpectSplitRows', () => {
+   const firstSequenceStart = '9:00 AM';
+   const firstFrom = 'Main Zoomobile Station';
+   const firstTo = 'Africa Zoomobile Station';
+   const secondFrom = 'Canadian Domain Zoomobile Station';
+   const secondTo = 'Main Zoomobile Station';
+
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
-      {
-         date: '2026-06-20',
-         openTime: '09:30',
-         lastAdmissionTime: '18:00',
-         closeTime: '19:00',
-      },
+      zooHours,
       {
          ...EMPTY_ITINERARY,
          transportations: [
             {
-               name: 'Zoomobile',
+               name: transportationName,
                added_as_attraction: false,
                bulk_transit_evaluated: true,
-               start_time: '9:00 AM',
+               start_time: firstSequenceStart,
                end_time: '11:19 AM',
                legs: [
                   {
-                     from_station: 'Main Zoomobile Station',
+                     from_station: firstFrom,
                      to_station: 'Canadian Domain Zoomobile Station',
-                     start_time: '9:00 AM',
+                     start_time: firstSequenceStart,
                      end_time: '9:20 AM',
                   },
                   {
                      from_station: 'Canadian Domain Zoomobile Station',
-                     to_station: 'Africa Zoomobile Station',
+                     to_station: firstTo,
                      start_time: '9:20 AM',
                      end_time: '9:30 AM',
                   },
                   {
-                     from_station: 'Canadian Domain Zoomobile Station',
+                     from_station: secondFrom,
                      to_station: 'Africa Zoomobile Station',
                      start_time: '10:24 AM',
                      end_time: '10:34 AM',
@@ -284,7 +306,7 @@ test('Test_Day_TestDayPlannerRendersEachScheduledTransportationSequenceIn_Expect
                   },
                   {
                      from_station: 'Eurasia Zoomobile Station',
-                     to_station: 'Main Zoomobile Station',
+                     to_station: secondTo,
                      start_time: '11:04 AM',
                      end_time: '11:19 AM',
                   },
@@ -294,22 +316,20 @@ test('Test_Day_TestDayPlannerRendersEachScheduledTransportationSequenceIn_Expect
       }
    );
    const scheduledList = [...planner.querySelectorAll('.itinerary-day-items-sections')].find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(
+         Strings.itinerary.dayPlanner.scheduledTitle
+      )
    ));
    const zoomobileRows = [...(scheduledList?.querySelectorAll('.itin-panel-item') ?? [])].filter((row) => (
-      allTextFor(row).includes('Zoomobile')
+      allTextFor(row).includes(transportationName)
    ));
+   const firstRowText = allTextFor(zoomobileRows.at(Position.FIRST));
+   const secondRowText = allTextFor(zoomobileRows.at(Position.SECOND));
 
-   assert.match(allTextFor(scheduledList), /Transportation \(2\)/);
-   assert.equal(zoomobileRows.length, 2);
-   assert.match(
-      allTextFor(zoomobileRows[0]),
-      /Main Zoomobile Station → Africa Zoomobile Station/
-   );
-   assert.match(
-      allTextFor(zoomobileRows[1]),
-      /Canadian Domain Zoomobile Station → Main Zoomobile Station/
-   );
-   assert.match(allTextFor(zoomobileRows[0]), /Time: ~9:00 AM/);
-   assert.match(allTextFor(zoomobileRows[1]), /Time: ~10:25 AM/);
+   assert.match(allTextFor(scheduledList), new RegExp(`${Strings.entityLabels.transportation} \\(2\\)`));
+   assert.equal(zoomobileRows.length, Position.THIRD);
+   assert.match(firstRowText, new RegExp(Strings.labels.transportationStations(firstFrom, firstTo)));
+   assert.match(secondRowText, new RegExp(Strings.labels.transportationStations(secondFrom, secondTo)));
+   assert.match(firstRowText, new RegExp(`Time: ~${firstSequenceStart}`));
+   assert.match(secondRowText, /Time: ~10:25 AM/);
 });

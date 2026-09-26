@@ -131,9 +131,11 @@ def gift_shop_schedule_conn() -> sqlite3.Connection:
 
 def Test_SaveOpeningSchedule_TestNewSchedule_ExpectPersistsRow(
       gift_shop_schedule_conn: sqlite3.Connection ) -> None:
-   assert GiftShopScheduleProvider.save_opening_schedule(
+   result = GiftShopScheduleProvider.save_opening_schedule(
       gift_shop_schedule_conn,
-      _opening_schedule() ) is True
+      _opening_schedule() )
+
+   assert result is True
 
    row = _fetch_opening_row( gift_shop_schedule_conn, START_DATE )
 
@@ -159,13 +161,15 @@ def Test_SaveOpeningSchedule_TestSameStartDate_ExpectUpdatesRow(
       gift_shop_schedule_conn,
       _opening_schedule() )
 
-   assert GiftShopScheduleProvider.save_opening_schedule(
+   result = GiftShopScheduleProvider.save_opening_schedule(
       gift_shop_schedule_conn,
       _opening_schedule(
          end_date='2026-07-15',
          saturday=True,
          sunday=True,
-         message='Updated retail hours.' ) ) is True
+         message='Updated retail hours.' ) )
+
+   assert result is True
 
    row = _fetch_opening_row( gift_shop_schedule_conn, START_DATE )
 
@@ -191,12 +195,14 @@ def Test_SaveOpeningSchedule_TestOverlappingDates_ExpectReturnsFalse(
       gift_shop_schedule_conn,
       _opening_schedule() )
 
-   assert GiftShopScheduleProvider.save_opening_schedule(
+   result = GiftShopScheduleProvider.save_opening_schedule(
       gift_shop_schedule_conn,
       _opening_schedule(
          start_date='2026-06-15',
          end_date='2026-07-15',
-         message='Overlapping.' ) ) is False
+         message='Overlapping.' ) )
+
+   assert result is False
 
    assert _fetch_opening_row( gift_shop_schedule_conn, '2026-06-15' ) is None
 
@@ -310,9 +316,11 @@ def Test_SaveScheduleOverride_TestNewOverride_ExpectPersistsRow(
       is_closed=True,
       message=OVERRIDE_MESSAGE )
 
-   assert GiftShopScheduleProvider.save_schedule_override(
+   result = GiftShopScheduleProvider.save_schedule_override(
       gift_shop_schedule_conn,
-      override ) is True
+      override )
+
+   assert result is True
 
    row = gift_shop_schedule_conn.execute(
       """   SELECT
@@ -347,14 +355,16 @@ def Test_SaveScheduleOverride_TestExistingOverride_ExpectUpdatesRow(
          is_closed=True,
          message=OVERRIDE_MESSAGE ) )
 
-   assert GiftShopScheduleProvider.save_schedule_override(
+   result = GiftShopScheduleProvider.save_schedule_override(
       gift_shop_schedule_conn,
       GiftShopScheduleOverride(
          gift_shop=GIFT_SHOP,
          start_date=OVERRIDE_START,
          end_date='2026-06-14',
          is_closed=False,
-         message='Special open day.' ) ) is True
+         message='Special open day.' ) )
+
+   assert result is True
 
    row = gift_shop_schedule_conn.execute(
       """   SELECT OVERRIDE_END_DATE, IS_CLOSED, OVERRIDE_MESSAGE

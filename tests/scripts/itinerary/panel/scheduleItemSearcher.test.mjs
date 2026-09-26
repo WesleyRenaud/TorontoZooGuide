@@ -11,88 +11,127 @@ import { Strings } from '../../../../scripts/strings.js';
 import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 
 test('Test_BuildScheduleItemSearchPayload_TestAnimalModule_ExpectAnimalsOnly', () => {
-   assert.deepEqual(
-      ScheduleItemSearcher.buildScheduleItemSearchPayload(ScheduleItemKind.ANIMAL.itemType, 'panda'),
-      {
-         query: 'panda',
-         includeAnimals: true,
-         includeOffDisplayAnimals: true,
-         forItinerary: true,
-      }
-   );
+   const query = 'panda';
+   const itemType = ScheduleItemKind.ANIMAL.itemType;
+
+   const payload = ScheduleItemSearcher.buildScheduleItemSearchPayload(itemType, query);
+
+   assert.deepEqual(payload, {
+      query,
+      includeAnimals: true,
+      includeOffDisplayAnimals: true,
+      forItinerary: true,
+   });
 });
+
 
 test('Test_BuildScheduleItemSearchPayload_TestAttractionModule_ExpectAttractionsOnly', () => {
-   assert.deepEqual(
-      ScheduleItemSearcher.buildScheduleItemSearchPayload(ScheduleItemKind.ATTRACTION.itemType, 'ride'),
-      {
-         query: 'ride',
-         includeAttractions: true,
-         includeClosedAttractions: true,
-      }
-   );
+   const query = 'ride';
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+
+   const payload = ScheduleItemSearcher.buildScheduleItemSearchPayload(itemType, query);
+
+   assert.deepEqual(payload, {
+      query,
+      includeAttractions: true,
+      includeClosedAttractions: true,
+   });
 });
+
 
 test('Test_BuildScheduleItemSearchPayload_TestTransportationModule_ExpectTransportationsOnly', () => {
-   assert.deepEqual(
-      ScheduleItemSearcher.buildScheduleItemSearchPayload(ScheduleItemKind.TRANSPORTATION.itemType, 'zoomobile'),
-      {
-         query: 'zoomobile',
-         includeTransportations: true,
-      }
-   );
+   const query = 'zoomobile';
+   const itemType = ScheduleItemKind.TRANSPORTATION.itemType;
+
+   const payload = ScheduleItemSearcher.buildScheduleItemSearchPayload(itemType, query);
+
+   assert.deepEqual(payload, {
+      query,
+      includeTransportations: true,
+   });
 });
+
 
 test('Test_BuildScheduleItemSearchPayload_TestWildEncounterModule_ExpectWildEncountersOnly', () => {
-   assert.deepEqual(
-      ScheduleItemSearcher.buildScheduleItemSearchPayload(ScheduleItemKind.WILD_ENCOUNTER.itemType, 'rainforest'),
-      {
-         query: 'rainforest',
-         includeWildEncounters: true,
-      }
-   );
+   const query = 'rainforest';
+   const itemType = ScheduleItemKind.WILD_ENCOUNTER.itemType;
+
+   const payload = ScheduleItemSearcher.buildScheduleItemSearchPayload(itemType, query);
+
+   assert.deepEqual(payload, {
+      query,
+      includeWildEncounters: true,
+   });
 });
+
 
 test('Test_BuildScheduleItemSearchPayload_TestGuardiansTalkModule_ExpectGuardiansTalksOnly', () => {
-   assert.deepEqual(
-      ScheduleItemSearcher.buildScheduleItemSearchPayload(ScheduleItemKind.GUARDIANS_TALK.itemType, 'tiger'),
-      {
-         query: 'tiger',
-         includeGuardiansTalks: true,
-      }
-   );
+   const query = 'tiger';
+   const itemType = ScheduleItemKind.GUARDIANS_TALK.itemType;
+
+   const payload = ScheduleItemSearcher.buildScheduleItemSearchPayload(itemType, query);
+
+   assert.deepEqual(payload, {
+      query,
+      includeGuardiansTalks: true,
+   });
 });
+
 
 test('Test_BuildSchedulableEventTypes_TestArrivalDeparture_ExpectOmitted', () => {
-   assert.deepEqual(
-      ItineraryEventTypes.buildSchedulableEventTypes({
-         eventTypes: ['arrival', 'lunch', 'departure', 'break'],
-         visitBoundaryEventTypes: {
-            arrival: 'arrival',
-            departure: 'departure',
-         },
-      }),
-      ['lunch', 'break']
-   );
-   assert.deepEqual(ItineraryEventTypes.buildSchedulableEventTypes(null), []);
+   const lunch = 'lunch';
+   const breakType = 'break';
+   const itineraryConfig = {
+      eventTypes: ['arrival', lunch, 'departure', breakType],
+      visitBoundaryEventTypes: {
+         arrival: 'arrival',
+         departure: 'departure',
+      },
+   };
+
+   const eventTypes = ItineraryEventTypes.buildSchedulableEventTypes(itineraryConfig);
+
+   assert.deepEqual(eventTypes, [lunch, breakType]);
 });
 
-test('Test_BuildScheduleItemSearchPayload_TestEventTypeSelection_ExpectNoCatalogSearch', () => {
-   assert.deepEqual(ScheduleItemSearcher.buildScheduleItemSearchPayload('lunch', 'snack'), {
-      query: 'snack',
-   });
-   assert.deepEqual(
-      ScheduleItemSearcher.extractScheduleItemSearchRows('lunch', {
-         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
-         attractions: [{ name: 'Carousel' }],
-      }),
-      []
-   );
+
+test('Test_BuildSchedulableEventTypes_TestNullConfig_ExpectEmpty', () => {
+   const eventTypes = ItineraryEventTypes.buildSchedulableEventTypes(null);
+
+   assert.deepEqual(eventTypes, []);
 });
+
+
+test('Test_BuildScheduleItemSearchPayload_TestEventTypeSelection_ExpectQueryOnly', () => {
+   const itemType = 'lunch';
+   const query = 'snack';
+
+   const payload = ScheduleItemSearcher.buildScheduleItemSearchPayload(itemType, query);
+
+   assert.deepEqual(payload, { query });
+});
+
+
+test('Test_ExtractScheduleItemSearchRows_TestEventTypeSelection_ExpectEmptyRows', () => {
+   const itemType = 'lunch';
+   const response = {
+      animals: [{ species: 'Amur Tiger', exhibit: 'Eurasia Wilds' }],
+      attractions: [{ name: 'Conservation Carousel' }],
+   };
+
+   const rows = ScheduleItemSearcher.extractScheduleItemSearchRows(itemType, response);
+
+   assert.deepEqual(rows, []);
+});
+
 
 test('Test_BuildScheduleItemSearchPayload_TestUnsetModule_ExpectCombinedIncludes', () => {
-   assert.deepEqual(ScheduleItemSearcher.buildScheduleItemSearchPayload('', 'tiger'), {
-      query: 'tiger',
+   const query = 'tiger';
+
+   const payload = ScheduleItemSearcher.buildScheduleItemSearchPayload('', query);
+
+   assert.deepEqual(payload, {
+      query,
       includeAnimals: true,
       includeOffDisplayAnimals: true,
       includeAttractions: true,
@@ -103,155 +142,241 @@ test('Test_BuildScheduleItemSearchPayload_TestUnsetModule_ExpectCombinedIncludes
    });
 });
 
+
 test('Test_ScheduleItemTypes_TestTypeDropdownOrder_ExpectPlaceholderFirst', () => {
+   const typePlaceholder = 'Choose what to schedule';
+   const breakfast = 'breakfast';
+   const lunch = 'lunch';
+
    const options = ScheduleItemTypes.buildScheduleItemTypeOptions(
-      ['breakfast', 'lunch'],
-      { typePlaceholder: 'Choose what to schedule' }
+      [breakfast, lunch],
+      { typePlaceholder }
    );
 
    assert.deepEqual(options, [
-      { value: '', label: 'Choose what to schedule', selected: true },
-      { value: 'breakfast', label: 'Breakfast' },
-      { value: 'lunch', label: 'Lunch' },
-      { value: 'animals', label: Strings.entityLabels.animal },
-      { value: 'attractions', label: Strings.entityLabels.attraction },
+      { value: '', label: typePlaceholder, selected: true },
+      { value: breakfast, label: 'Breakfast' },
+      { value: lunch, label: 'Lunch' },
+      { value: ScheduleItemKind.ANIMAL.itemType, label: Strings.entityLabels.animal },
+      { value: ScheduleItemKind.ATTRACTION.itemType, label: Strings.entityLabels.attraction },
       {
-         value: 'guardians_talks',
+         value: ScheduleItemKind.GUARDIANS_TALK.itemType,
          label: Strings.entityLabels.guardiansTalk,
       },
       {
-         value: 'wild_encounters',
+         value: ScheduleItemKind.WILD_ENCOUNTER.itemType,
          label: Strings.entityLabels.wildEncounter,
       },
       {
-         value: 'transportations',
+         value: ScheduleItemKind.TRANSPORTATION.itemType,
          label: Strings.entityLabels.transportation,
       },
    ]);
 });
 
-test('Test_ScheduleItemTypes_TestPlaceholderAndEventTypes_ExpectSearchFlags', () => {
+
+test('Test_IsScheduleItemTypeUnset_TestEmpty_ExpectTrue', () => {
+   const unset = ScheduleItemTypes.isScheduleItemTypeUnset('');
+
+   assert.equal(unset, true);
+});
+
+
+test('Test_IsScheduleItemSearchEnabled_TestUnsetWithEventTypes_ExpectTrue', () => {
    const eventTypes = ['lunch', 'break'];
 
-   assert.equal(ScheduleItemTypes.isScheduleItemTypeUnset(''), true);
-   assert.equal(ScheduleItemTypes.isScheduleItemSearchEnabled('', eventTypes), true);
-   assert.equal(ItineraryEventTypes.isScheduleItemEventType('', eventTypes), false);
-   assert.equal(ScheduleItemTypes.isScheduleItemSearchEnabled('lunch', eventTypes), false);
-   assert.equal(ItineraryEventTypes.isScheduleItemEventType('lunch', eventTypes), true);
-   assert.equal(
-      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.ANIMAL.itemType, eventTypes),
-      true
-   );
-   assert.equal(
-      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.ATTRACTION.itemType, eventTypes),
-      true
-   );
-   assert.equal(
-      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.TRANSPORTATION.itemType, eventTypes),
-      true
-   );
-   assert.equal(
-      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.GUARDIANS_TALK.itemType, eventTypes),
-      true
-   );
-   assert.equal(
-      ScheduleItemTypes.isScheduleItemSearchEnabled(ScheduleItemKind.WILD_ENCOUNTER.itemType, eventTypes),
-      true
-   );
+   const enabled = ScheduleItemTypes.isScheduleItemSearchEnabled('', eventTypes);
+
+   assert.equal(enabled, true);
 });
+
+
+test('Test_IsScheduleItemEventType_TestUnset_ExpectFalse', () => {
+   const eventTypes = ['lunch', 'break'];
+
+   const isEvent = ItineraryEventTypes.isScheduleItemEventType('', eventTypes);
+
+   assert.equal(isEvent, false);
+});
+
+
+test('Test_IsScheduleItemSearchEnabled_TestLunch_ExpectFalse', () => {
+   const eventType = 'lunch';
+   const eventTypes = [eventType, 'break'];
+
+   const enabled = ScheduleItemTypes.isScheduleItemSearchEnabled(eventType, eventTypes);
+
+   assert.equal(enabled, false);
+});
+
+
+test('Test_IsScheduleItemEventType_TestLunch_ExpectTrue', () => {
+   const eventType = 'lunch';
+   const eventTypes = [eventType, 'break'];
+
+   const isEvent = ItineraryEventTypes.isScheduleItemEventType(eventType, eventTypes);
+
+   assert.equal(isEvent, true);
+});
+
+
+test('Test_IsScheduleItemSearchEnabled_TestCatalogTypes_ExpectTrue', () => {
+   const eventTypes = ['lunch', 'break'];
+   const catalogTypes = [
+      ScheduleItemKind.ANIMAL.itemType,
+      ScheduleItemKind.ATTRACTION.itemType,
+      ScheduleItemKind.TRANSPORTATION.itemType,
+      ScheduleItemKind.GUARDIANS_TALK.itemType,
+      ScheduleItemKind.WILD_ENCOUNTER.itemType,
+   ];
+
+   const enabled = catalogTypes.map((itemType) => (
+      ScheduleItemTypes.isScheduleItemSearchEnabled(itemType, eventTypes)
+   ));
+
+   assert.deepEqual(enabled, catalogTypes.map(() => true));
+});
+
 
 test('Test_ExtractScheduleItemSearchRows_TestUnsetModule_ExpectCombinedTaggedRows', () => {
+   const species = 'Giant Panda';
+   const exhibit = 'Bamboo';
+   const attractionName = 'Conservation Carousel';
+   const talkName = 'Amur Tiger';
+   const talkLocation = 'Eurasia Wilds';
+   const encounterName = 'African Rainforest';
+   const meetingSpot = 'Africa';
    const response = {
-      animals: [{ species: 'Giant Panda', exhibit: 'Bamboo' }],
-      attractions: [{ name: 'Carousel' }],
-      guardians_talks: [{ name: 'Amur Tiger', location: 'Eurasia Wilds' }],
-      wild_encounters: [{ name: 'African Rainforest', meeting_spot: 'Africa' }],
+      animals: [{ species, exhibit }],
+      attractions: [{ name: attractionName }],
+      guardians_talks: [{ name: talkName, location: talkLocation }],
+      wild_encounters: [{ name: encounterName, meeting_spot: meetingSpot }],
    };
 
-   assert.deepEqual(
-      ScheduleItemSearcher.extractScheduleItemSearchRows('', response),
-      [
-         {
-            species: 'Giant Panda',
-            exhibit: 'Bamboo',
-            scheduleItemKind: 'animals',
-         },
-         {
-            name: 'Carousel',
-            scheduleItemKind: 'attractions',
-         },
-         {
-            name: 'Amur Tiger',
-            location: 'Eurasia Wilds',
-            scheduleItemKind: 'guardians_talks',
-         },
-         {
-            name: 'African Rainforest',
-            meeting_spot: 'Africa',
-            scheduleItemKind: 'wild_encounters',
-         },
-      ]
-   );
+   const rows = ScheduleItemSearcher.extractScheduleItemSearchRows('', response);
+
+   assert.deepEqual(rows, [
+      {
+         species,
+         exhibit,
+         scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
+      },
+      {
+         name: attractionName,
+         scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
+      },
+      {
+         name: talkName,
+         location: talkLocation,
+         scheduleItemKind: ScheduleItemKind.GUARDIANS_TALK.itemType,
+      },
+      {
+         name: encounterName,
+         meeting_spot: meetingSpot,
+         scheduleItemKind: ScheduleItemKind.WILD_ENCOUNTER.itemType,
+      },
+   ]);
 });
 
-test('Test_ExtractScheduleItemSearchRows_TestSelectedModule_ExpectTaggedCollection', () => {
+
+test('Test_ExtractScheduleItemSearchRows_TestAnimalModule_ExpectTaggedAnimals', () => {
+   const species = 'Giant Panda';
+   const exhibit = 'Bamboo';
    const response = {
-      animals: [{ species: 'Giant Panda', exhibit: 'Bamboo' }],
-      attractions: [{ name: 'Carousel' }],
+      animals: [{ species, exhibit }],
+      attractions: [{ name: 'Conservation Carousel' }],
    };
 
-   assert.deepEqual(
-      ScheduleItemSearcher.extractScheduleItemSearchRows(ScheduleItemKind.ANIMAL.itemType, response),
-      [{
-         species: 'Giant Panda',
-         exhibit: 'Bamboo',
-         scheduleItemKind: 'animals',
-      }]
+   const rows = ScheduleItemSearcher.extractScheduleItemSearchRows(
+      ScheduleItemKind.ANIMAL.itemType,
+      response
    );
-   assert.deepEqual(
-      ScheduleItemSearcher.extractScheduleItemSearchRows(ScheduleItemKind.ATTRACTION.itemType, response),
-      [{
-         name: 'Carousel',
-         scheduleItemKind: 'attractions',
-      }]
-   );
+
+   assert.deepEqual(rows, [{
+      species,
+      exhibit,
+      scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
+   }]);
 });
+
+
+test('Test_ExtractScheduleItemSearchRows_TestAttractionModule_ExpectTaggedAttractions', () => {
+   const attractionName = 'Conservation Carousel';
+   const response = {
+      animals: [{ species: 'Giant Panda', exhibit: 'Bamboo' }],
+      attractions: [{ name: attractionName }],
+   };
+
+   const rows = ScheduleItemSearcher.extractScheduleItemSearchRows(
+      ScheduleItemKind.ATTRACTION.itemType,
+      response
+   );
+
+   assert.deepEqual(rows, [{
+      name: attractionName,
+      scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
+   }]);
+});
+
 
 test('Test_ExtractScheduleItemSearchRows_TestTransportationModule_ExpectTagged', () => {
+   const transportationName = 'Zoomobile';
+   const attractionName = 'Conservation Carousel';
    const response = {
       transportations: [
-         { name: 'Zoomobile', free_with_admission: false },
+         { name: transportationName, free_with_admission: false },
       ],
       attractions: [
-         { name: 'Carousel', is_also_transportation: false },
-         { name: 'Zoomobile', is_also_transportation: true },
+         { name: attractionName, is_also_transportation: false },
+         { name: transportationName, is_also_transportation: true },
       ],
    };
 
-   assert.deepEqual(
-      ScheduleItemSearcher.extractScheduleItemSearchRows(ScheduleItemKind.TRANSPORTATION.itemType, response),
-      [{
-         name: 'Zoomobile',
-         free_with_admission: false,
-         scheduleItemKind: 'transportations',
-      }]
+   const transportationRows = ScheduleItemSearcher.extractScheduleItemSearchRows(
+      ScheduleItemKind.TRANSPORTATION.itemType,
+      response
    );
-   assert.deepEqual(
-      ScheduleItemSearcher.extractScheduleItemSearchRows(ScheduleItemKind.ATTRACTION.itemType, response),
-      [
-         {
-            name: 'Carousel',
-            is_also_transportation: false,
-            scheduleItemKind: 'attractions',
-         },
-         {
-            name: 'Zoomobile',
-            is_also_transportation: true,
-            scheduleItemKind: 'attractions',
-         },
-      ]
-   );
+
+   assert.deepEqual(transportationRows, [{
+      name: transportationName,
+      free_with_admission: false,
+      scheduleItemKind: ScheduleItemKind.TRANSPORTATION.itemType,
+   }]);
 });
+
+
+test('Test_ExtractScheduleItemSearchRows_TestAttractionAlsoTransportation_ExpectTagged', () => {
+   const transportationName = 'Zoomobile';
+   const attractionName = 'Conservation Carousel';
+   const response = {
+      transportations: [
+         { name: transportationName, free_with_admission: false },
+      ],
+      attractions: [
+         { name: attractionName, is_also_transportation: false },
+         { name: transportationName, is_also_transportation: true },
+      ],
+   };
+
+   const attractionRows = ScheduleItemSearcher.extractScheduleItemSearchRows(
+      ScheduleItemKind.ATTRACTION.itemType,
+      response
+   );
+
+   assert.deepEqual(attractionRows, [
+      {
+         name: attractionName,
+         is_also_transportation: false,
+         scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
+      },
+      {
+         name: transportationName,
+         is_also_transportation: true,
+         scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
+      },
+   ]);
+});
+
 
 test('Test_GetScheduleItemRowKindAndId_TestMixedRows_ExpectResolved', () => {
    const animalRow = {
@@ -297,6 +422,7 @@ test('Test_GetScheduleItemRowKindAndId_TestMixedRows_ExpectResolved', () => {
    );
 });
 
+
 test('Test_ResolveEffectiveScheduleItemSelection_TestUnsetWithAnimalRow_ExpectAnimal', () => {
    const animalRow = {
       species: 'Pygmy Hippopotamus',
@@ -317,6 +443,7 @@ test('Test_ResolveEffectiveScheduleItemSelection_TestUnsetWithAnimalRow_ExpectAn
    );
 });
 
+
 test('Test_ResolveEffectiveScheduleItemSelection_TestUnsetWithTransportationRow_ExpectTransportation', () => {
    const transportationRow = {
       name: 'Zoomobile',
@@ -329,6 +456,7 @@ test('Test_ResolveEffectiveScheduleItemSelection_TestUnsetWithTransportationRow_
       ScheduleItemKind.TRANSPORTATION.itemType
    );
 });
+
 
 test('Test_BuildItineraryScheduleItemRowIds_TestMixedItinerary_ExpectIdSets', () => {
    const ids = ScheduleItemSearcher.buildItineraryScheduleItemRowIds({
@@ -367,6 +495,7 @@ test('Test_BuildItineraryScheduleItemRowIds_TestMixedItinerary_ExpectIdSets', ()
    );
 });
 
+
 test('Test_BuildItineraryScheduleItemRowIds_TestUnscheduledOnly_ExpectUnscheduledIds', () => {
    const ids = ScheduleItemSearcher.buildItineraryScheduleItemRowIds({
       animals: [
@@ -389,6 +518,7 @@ test('Test_BuildItineraryScheduleItemRowIds_TestUnscheduledOnly_ExpectUnschedule
    );
    assert.equal(ids.guardiansTalkIds.has(''), true);
 });
+
 
 test('Test_BuildItineraryScheduleItemRowIds_TestScheduledOnly_ExpectScheduledIds', () => {
    const ids = ScheduleItemSearcher.buildItineraryScheduleItemRowIds({
@@ -415,6 +545,7 @@ test('Test_BuildItineraryScheduleItemRowIds_TestScheduledOnly_ExpectScheduledIds
       true
    );
 });
+
 
 test('Test_FilterScheduleItemRowsExcludingScheduledOccurrences_TestScheduledItems_ExpectHidden', () => {
    const rows = [
@@ -479,6 +610,7 @@ test('Test_FilterScheduleItemRowsExcludingScheduledOccurrences_TestScheduledItem
    );
 });
 
+
 test('Test_FilterScheduleItemRowsForScheduleModule_TestOccurrenceRules_ExpectFiltered', () => {
    const rows = [
       {
@@ -534,6 +666,7 @@ test('Test_FilterScheduleItemRowsForScheduleModule_TestOccurrenceRules_ExpectFil
       ]
    );
 });
+
 
 test('Test_FilterScheduleItemRowsToItinerary_TestOwnedRows_ExpectKept', () => {
    const rows = [
@@ -602,6 +735,7 @@ test('Test_FilterScheduleItemRowsToItinerary_TestOwnedRows_ExpectKept', () => {
       ]
    );
 });
+
 
 test('Test_FilterScheduleItemRowsToItinerary_TestAddedAsAttraction_ExpectAttractionId', () => {
    const zoomobileAsAttractionRow = {
@@ -672,6 +806,7 @@ test('Test_FilterScheduleItemRowsToItinerary_TestAddedAsAttraction_ExpectAttract
    );
 });
 
+
 test('Test_TagScheduleItemRow_TestModuleKinds_ExpectTagged', () => {
    const animalRow = ScheduleItemSearcher.tagScheduleItemRow(ScheduleItemKind.ANIMAL.itemType, {
       species: 'Giant Panda',
@@ -724,10 +859,13 @@ test('Test_TagScheduleItemRow_TestModuleKinds_ExpectTagged', () => {
    assert.equal(ScheduleItemSearcher.tagScheduleItemRow(ScheduleItemKind.ANIMAL.itemType, null), null);
 });
 
+
 test('Test_ResolveEffectiveScheduleItemSelection_TestUnsetWithoutRow_ExpectSelection', () => {
+
    assert.equal(ScheduleItemSearcher.resolveEffectiveScheduleItemSelection('', null), '');
    assert.equal(ScheduleItemSearcher.resolveEffectiveScheduleItemSelection('', undefined), '');
 });
+
 
 test('Test_TagScheduleItemRow_TestWildEncounter_ExpectTagged', () => {
    const wildEncounterRow = ScheduleItemSearcher.tagScheduleItemRow(
@@ -738,7 +876,9 @@ test('Test_TagScheduleItemRow_TestWildEncounter_ExpectTagged', () => {
    assert.equal(wildEncounterRow.scheduleItemKind, ScheduleItemKind.WILD_ENCOUNTER.itemType);
 });
 
+
 test('Test_GetItineraryItemKey_TestModuleKinds_ExpectKeys', () => {
+
    assert.equal(
       ScheduleItemSearcher.getItineraryItemKey(
          ScheduleItemKind.ANIMAL.itemType,
@@ -777,7 +917,9 @@ test('Test_GetItineraryItemKey_TestModuleKinds_ExpectKeys', () => {
    assert.equal(ScheduleItemSearcher.getItineraryItemKey('', { name: 'x' }), '');
 });
 
+
 test('Test_ExtractScheduleItemSearchRows_TestGuardiansAndWild_ExpectTagged', () => {
+
    assert.deepEqual(
       ScheduleItemSearcher.extractScheduleItemSearchRows(
          ScheduleItemKind.GUARDIANS_TALK.itemType,
@@ -802,11 +944,13 @@ test('Test_ExtractScheduleItemSearchRows_TestGuardiansAndWild_ExpectTagged', () 
    );
 });
 
+
 test('Test_FilterScheduleItemRowsExcludingScheduledOccurrences_TestUnknownKind_ExpectKept', () => {
    const originalKind = ScheduleItemSearcher.getScheduleItemRowKind;
    ScheduleItemSearcher.getScheduleItemRowKind = () => 'unknown';
 
    try {
+
       assert.deepEqual(
          ScheduleItemSearcher.filterScheduleItemRowsExcludingScheduledOccurrences(
             [{ name: 'Mystery' }],

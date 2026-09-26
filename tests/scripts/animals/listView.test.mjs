@@ -3,10 +3,12 @@ import test from 'node:test';
 
 import { ListView } from '../../../scripts/animals/listView.js';
 import { AssetKeyNormalizer } from '../../../scripts/assets/assetKeyNormalizer.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../scripts/strings.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
 
 function _createListEl() {
    const listEl = document.createElement('div');
@@ -25,65 +27,124 @@ function _createListEl() {
    return listEl;
 }
 
+
 function _imageSrc(buttonEl) {
    const imageEl = [...buttonEl.children].find((child) => String(child.tagName).toLowerCase() === 'img');
    return imageEl?.src ?? null;
 }
 
-test('Test_CreateAnimalsListView_TestRenderRegionsExhibitsAnimals_ExpectButtons', () => {
+
+function _installNormalizeStub() {
    const originalNormalize = AssetKeyNormalizer.normalize;
    AssetKeyNormalizer.normalize = (value) => String(value).toLowerCase().replace(/\s+/g, '-');
+   return originalNormalize;
+}
+
+
+test('Test_CreateAnimalsListView_TestRenderRegions_ExpectButtons', () => {
+   const originalNormalize = _installNormalizeStub();
+   const region = { name: 'Africa' };
+   const regionSelected = [];
 
    try {
       const listEl = _createListEl();
       const view = ListView.createAnimalsListView({ listEl });
-      const regionSelected = [];
-      const exhibitSelected = [];
-      const animalSelected = [];
-      let backCalls = 0;
 
       view.renderRegions(
-         [{ name: 'Africa' }],
-         { onRegionSelected: (region) => { regionSelected.push(region); } }
+         [region],
+         { onRegionSelected: (selected) => { regionSelected.push(selected); } }
       );
-      assert.equal(listEl.children.length, 1);
-      assert.equal(listEl.children[0].textContent, 'Africa');
-      assert.equal(_imageSrc(listEl.children[0]), '../images/details/regions/africa.png');
-      listEl.children[0].listeners.click();
-      assert.deepEqual(regionSelected, [{ name: 'Africa' }]);
+      const button = listEl.children.at(Position.FIRST);
+      button.listeners.click();
+
+      assert.equal(listEl.children.length, Position.SECOND);
+      assert.equal(button.textContent, region.name);
+      assert.equal(_imageSrc(button), `../images/details/regions/${AssetKeyNormalizer.normalize(region.name)}.png`);
+      assert.deepEqual(regionSelected, [region]);
+   } finally {
+      AssetKeyNormalizer.normalize = originalNormalize;
+   }
+});
+
+
+test('Test_CreateAnimalsListView_TestRenderExhibits_ExpectBackAndExhibit', () => {
+   const originalNormalize = _installNormalizeStub();
+   const regionName = 'Africa';
+   const exhibit = 'Savanna';
+   const exhibitSelected = [];
+   let backCalls = Position.FIRST;
+
+   try {
+      const listEl = _createListEl();
+      const view = ListView.createAnimalsListView({ listEl });
 
       view.renderExhibits(
-         'Africa',
-         ['Savanna'],
+         regionName,
+         [exhibit],
          {
             onBack: () => { backCalls += 1; },
-            onExhibitSelected: (exhibit) => { exhibitSelected.push(exhibit); },
+            onExhibitSelected: (selected) => { exhibitSelected.push(selected); },
          }
       );
-      assert.equal(listEl.children[0].textContent, Strings.animalsPage.back);
-      assert.ok(listEl.children[0].classList.contains('back-button'));
-      listEl.children[0].listeners.click();
-      listEl.children[1].listeners.click();
-      assert.equal(backCalls, 1);
-      assert.deepEqual(exhibitSelected, ['Savanna']);
+      const backButton = listEl.children.at(Position.FIRST);
+      const exhibitButton = listEl.children.at(Position.SECOND);
+      backButton.listeners.click();
+      exhibitButton.listeners.click();
+
+      assert.equal(backButton.textContent, Strings.animalsPage.back);
+      assert.ok(backButton.classList.contains('back-button'));
+      assert.equal(backCalls, Position.SECOND);
+      assert.deepEqual(exhibitSelected, [exhibit]);
+   } finally {
+      AssetKeyNormalizer.normalize = originalNormalize;
+   }
+});
+
+
+test('Test_CreateAnimalsListView_TestRenderAnimals_ExpectAnimalButton', () => {
+   const originalNormalize = _installNormalizeStub();
+   const regionName = 'Africa';
+   const exhibit = 'Savanna';
+   const animal = 'Lion';
+   const animalSelected = [];
+
+   try {
+      const listEl = _createListEl();
+      const view = ListView.createAnimalsListView({ listEl });
 
       view.renderAnimals(
-         'Africa',
-         'Savanna',
-         ['Lion'],
+         regionName,
+         exhibit,
+         [animal],
          {
-            onBack: () => { backCalls += 1; },
-            onAnimalSelected: (animal) => { animalSelected.push(animal); },
+            onBack: () => {},
+            onAnimalSelected: (selected) => { animalSelected.push(selected); },
          }
       );
+      const animalButton = listEl.children.at(Position.SECOND);
+      animalButton.listeners.click();
+
       assert.equal(
-         _imageSrc(listEl.children[1]),
-         '../images/icons/animals/savanna/lion/lion.png'
+         _imageSrc(animalButton),
+         `../images/icons/animals/${AssetKeyNormalizer.normalize(exhibit)}/${AssetKeyNormalizer.normalize(animal)}/${AssetKeyNormalizer.normalize(animal)}.png`
       );
-      listEl.children[1].listeners.click();
-      assert.deepEqual(animalSelected, ['Lion']);
+      assert.deepEqual(animalSelected, [animal]);
+   } finally {
+      AssetKeyNormalizer.normalize = originalNormalize;
+   }
+});
+
+
+test('Test_CreateAnimalsListView_TestClear_ExpectEmpty', () => {
+   const originalNormalize = _installNormalizeStub();
+
+   try {
+      const listEl = _createListEl();
+      const view = ListView.createAnimalsListView({ listEl });
+      view.renderRegions([{ name: 'Africa' }], { onRegionSelected: () => {} });
 
       view.clear();
+
       assert.equal(listEl.children.length, 0);
       assert.equal(listEl.scrollTop, 0);
    } finally {

@@ -14,6 +14,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateCancelWildEncounterOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -29,25 +30,19 @@ test('Test_CreateCancelWildEncounterOccurrenceController_TestShowAndSubmitSucces
    ConsoleStatusPresenter.setStatus = (...args) => {
       statuses.push(args);
    };
+   const wildEncounter = 'Giraffe Encounter';
+   const date = '2026-07-01';
+   const times = ['11:00 AM'];
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
-   ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => ['11:00 AM'];
+   ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => times;
    ConsoleOptionsLoader.loadWildEncounters = async () => [{ name: 'Giraffe' }];
    ConsoleDropdownPopulator.populateWildEncounterDropdown = (...args) => {
       filterCalls.push(['populate', args[1]]);
    };
    ConsoleOperationsClient.cancelWildEncounterOccurrence = async (payload) => {
-      assert.deepEqual(payload, {
-         wildEncounter: 'Giraffe Encounter',
-         date: '2026-07-01',
-         times: ['11:00 AM'],
-      });
-      return {
-         success: true,
-         wildEncounter: 'Giraffe Encounter',
-         date: '2026-07-01',
-         times: ['11:00 AM'],
-      };
+      assert.deepEqual(payload, { wildEncounter, date, times });
+      return { success: true, wildEncounter, date, times };
    };
 
    try {
@@ -55,8 +50,8 @@ test('Test_CreateCancelWildEncounterOccurrenceController_TestShowAndSubmitSucces
       const submitButtonEl = document.createElement('button');
       const wildEncounterEl = document.createElement('select');
       const dateEl = document.createElement('input');
-      wildEncounterEl.value = 'Giraffe Encounter';
-      dateEl.value = '2026-07-01';
+      wildEncounterEl.value = wildEncounter;
+      dateEl.value = date;
 
       const occurrenceFilterController = {
          clear: () => {
@@ -93,7 +88,11 @@ test('Test_CreateCancelWildEncounterOccurrenceController_TestShowAndSubmitSucces
       await submitButtonEl.listeners.click();
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === 'Giraffe Encounter on 2026-07-01 at 11:00 AM was cancelled.'
+            entry[1] === Strings.status.wildEncounterOccurrenceCancelled({
+               wildEncounter,
+               date,
+               times,
+            })
             && entry[2] === 'is-success'
          ))
       );
@@ -119,6 +118,7 @@ test('Test_CreateCancelWildEncounterOccurrenceController_TestShowAndSubmitSucces
       ConsoleOperationsClient.cancelWildEncounterOccurrence = originalCancel;
    }
 });
+
 
 test('Test_CreateCancelWildEncounterOccurrenceController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

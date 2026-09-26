@@ -7,40 +7,46 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_HasAttractionWithoutAnimalIssue_TestMatching_ExpectDetected', () => {
-   assert.equal(
-      AttractionWithoutAnimalFragment.hasAttractionWithoutAnimalIssue([
-         { type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL },
-      ]),
-      true
-   );
-   assert.equal(
-      AttractionWithoutAnimalFragment.hasAttractionWithoutAnimalIssue([
-         { type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL },
-      ]),
-      false
-   );
+
+test('Test_HasAttractionWithoutAnimalIssue_TestMatching_ExpectTrue', () => {
+   const issues = [{ type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL }];
+
+   const hasIssue = AttractionWithoutAnimalFragment.hasAttractionWithoutAnimalIssue(issues);
+
+   assert.equal(hasIssue, true);
 });
+
+
+test('Test_HasAttractionWithoutAnimalIssue_TestOtherType_ExpectFalse', () => {
+   const issues = [{ type: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL }];
+
+   const hasIssue = AttractionWithoutAnimalFragment.hasAttractionWithoutAnimalIssue(issues);
+
+   assert.equal(hasIssue, false);
+});
+
 
 test('Test_GetPrimaryAttractionFromWithoutAnimalIssues_TestAttraction_ExpectNoTime', () => {
-   assert.deepEqual(
-      AttractionWithoutAnimalFragment.getPrimaryAttractionFromWithoutAnimalIssues([
-         {
-            type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
-            items: [{ name: 'Kangaroo Walk-Thru' }],
-         },
-      ]),
-      { attractionName: 'Kangaroo Walk-Thru' }
-   );
+   const attractionName = 'Kangaroo Walk-Thru';
+   const issues = [{
+      type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
+      items: [{ name: attractionName }],
+   }];
+
+   const attraction = AttractionWithoutAnimalFragment.getPrimaryAttractionFromWithoutAnimalIssues(issues);
+
+   assert.deepEqual(attraction, { attractionName });
 });
 
+
 test('Test_ShowAttractionWithoutAnimalConfirmation_TestMessage_ExpectNoTime', () => {
+   const attractionName = 'Kangaroo Walk-Thru';
    let confirmed = false;
 
    AttractionWithoutAnimalFragment.showAttractionWithoutAnimalConfirmation({
       issues: [{
          type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
-         items: [{ name: 'Kangaroo Walk-Thru' }],
+         items: [{ name: attractionName }],
       }],
       onConfirm: () => {
          confirmed = true;
@@ -51,13 +57,16 @@ test('Test_ShowAttractionWithoutAnimalConfirmation_TestMessage_ExpectNoTime', ()
 
    assert.equal(
       popupMessage?.textContent,
-      'The Kangaroo Walk-Thru attraction does not match an animal on your itinerary. Do you still want to keep it on your plan?'
+      AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_CONFIG.getMessageWithoutTime(
+         attractionName
+      )
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
 
    assert.equal(confirmed, true);
 });
+
 
 test('Test_ShowAttractionWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', () => {
    AttractionWithoutAnimalFragment.showAttractionWithoutAnimalConfirmation({
@@ -67,56 +76,84 @@ test('Test_ShowAttractionWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', 
       },
    });
 
-   assert.equal(document.querySelector('.tzg-popup'), null);
+   const popup = document.querySelector('.tzg-popup');
+
+   assert.equal(popup, null);
 });
+
 
 test('Test_GetAttractionNamesFromWithoutAnimalIssues_TestNamesTimesAndBlanks_ExpectFiltered', () => {
-   assert.deepEqual(
-      AttractionWithoutAnimalFragment.getAttractionNamesFromWithoutAnimalIssues([{
-         type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
-         items: [
-            { name: '  Kangaroo Walk-Thru  ', start_time: '11:00' },
-            { name: '   ' },
-            { name: 'Splash Island', start_time: '2:00 PM' },
-         ],
-      }]),
-      ['Kangaroo Walk-Thru', 'Splash Island']
-   );
+   const kangaroo = 'Kangaroo Walk-Thru';
+   const splashIsland = 'Splash Island';
+   const issues = [{
+      type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
+      items: [
+         { name: `  ${kangaroo}  `, start_time: '11:00' },
+         { name: '   ' },
+         { name: splashIsland, start_time: '2:00 PM' },
+      ],
+   }];
 
-   assert.deepEqual(
-      AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues([{
-         type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
-         items: [
-            { name: 'Splash Island', start_time: '2:00 PM' },
-            { name: 'Kangaroo Walk-Thru' },
-         ],
-      }]),
-      [
-         { attractionName: 'Splash Island', attractionTime: '2:00 PM' },
-         { attractionName: 'Kangaroo Walk-Thru' },
-      ]
-   );
+   const names = AttractionWithoutAnimalFragment.getAttractionNamesFromWithoutAnimalIssues(issues);
 
-   assert.match(
-      AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage({
-         attractionName: 'Splash Island',
-         attractionTime: '2:00 PM',
-      }),
-      /Splash Island.*2:00 PM/
-   );
+   assert.deepEqual(names, [kangaroo, splashIsland]);
 });
 
+
+test('Test_GetAttractionsFromWithoutAnimalIssues_TestNamedItems_ExpectAttractions', () => {
+   const splashIsland = 'Splash Island';
+   const splashTime = '2:00 PM';
+   const kangaroo = 'Kangaroo Walk-Thru';
+   const issues = [{
+      type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
+      items: [
+         { name: splashIsland, start_time: splashTime },
+         { name: kangaroo },
+      ],
+   }];
+
+   const attractions = AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues(issues);
+
+   assert.deepEqual(attractions, [
+      { attractionName: splashIsland, attractionTime: splashTime },
+      { attractionName: kangaroo },
+   ]);
+});
+
+
+test('Test_AttractionWithoutAnimalMessage_TestWithTime_ExpectMessage', () => {
+   const attractionName = 'Splash Island';
+   const attractionTime = '2:00 PM';
+
+   const message = AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage({
+      attractionName,
+      attractionTime,
+   });
+
+   assert.match(message, new RegExp(attractionName));
+   assert.match(message, new RegExp(attractionTime.replace(':', '\\:')));
+});
+
+
 test('Test_ShowAttractionWithoutAnimalConfirmation_TestMessage_ExpectWithTime', () => {
+   const attractionName = 'Splash Island';
+   const attractionTime = '2:00 PM';
+
    AttractionWithoutAnimalFragment.showAttractionWithoutAnimalConfirmation({
       issues: [{
          type: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
-         items: [{ name: 'Splash Island', start_time: '2:00 PM' }],
+         items: [{ name: attractionName, start_time: attractionTime }],
       }],
       onConfirm: () => {},
    });
 
    const popupMessage = document.querySelector('.tzg-popup-message');
 
-   assert.match(popupMessage?.textContent ?? '', /Splash Island/);
-   assert.match(popupMessage?.textContent ?? '', /2:00 PM/);
+   assert.equal(
+      popupMessage?.textContent,
+      AttractionWithoutAnimalFragment.ATTRACTION_WITHOUT_ANIMAL_CONFIG.getMessage(
+         attractionName,
+         attractionTime
+      )
+   );
 });

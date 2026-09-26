@@ -9,6 +9,7 @@ import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../../../../scripts
 import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateEndWildEncounterSchedulePanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -35,16 +36,15 @@ test('Test_CreateEndWildEncounterSchedulePanel_TestWiring_ExpectShellOptions', (
       const result = EndWildEncounterScheduleView.createEndWildEncounterSchedulePanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'endWildEncounterSchedulePanel');
       assert.equal(captured.title, Strings.panelTitles.endWildEncounterSchedule);
       assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'endWildEncounterScheduleName');
-      assert.equal(captured.bodyChildren[1].inputId, 'endWildEncounterScheduleTimes');
-      assert.equal(captured.bodyChildren[1].helpText, Strings.help.endScheduleTimes);
-      assert.equal(captured.bodyChildren[2].inputId, 'endWildEncounterScheduleDate');
-      assert.equal(captured.bodyChildren[2].helpText, Strings.help.endScheduleToday);
-      assert.equal(captured.bodyChildren[3].submitId, 'submitEndWildEncounterSchedule');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'endWildEncounterScheduleName');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).inputId, 'endWildEncounterScheduleTimes');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).helpText, Strings.help.endScheduleTimes);
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'endWildEncounterScheduleDate');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).helpText, Strings.help.endScheduleToday);
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).submitId, 'submitEndWildEncounterSchedule');
       assert.equal(captured.bodyChildren[4].statusId, 'endWildEncounterScheduleStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;

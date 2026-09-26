@@ -35,6 +35,7 @@ def stub_zoo_hours_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubZooHour
 
 def Test_GetZooHours_TestHttpRequest_ExpectMapsVisitDateAndReturnsHours(
       stub_zoo_hours_coordinator: StubZooHoursCoordinator ) -> None:
+   zoo_hours = _sample_zoo_hours()
    handler = make_handler(
       '/get-zoo-hours',
       {
@@ -45,7 +46,6 @@ def Test_GetZooHours_TestHttpRequest_ExpectMapsVisitDateAndReturnsHours(
    )
 
    server.HttpRequestHandler.do_POST( handler )
-
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
@@ -59,7 +59,7 @@ def Test_GetZooHours_TestHttpRequest_ExpectMapsVisitDateAndReturnsHours(
          }
       )
    ]
-   assert result[ 'hours' ] == _sample_zoo_hours().to_dict()
+   assert result[ 'hours' ] == zoo_hours.to_dict()
 
 
 def Test_GetZooHours_TestHttpRequest_ExpectNullWhenCoordinatorReturnsNone(
@@ -68,7 +68,6 @@ def Test_GetZooHours_TestHttpRequest_ExpectNullWhenCoordinatorReturnsNone(
    handler = make_handler( '/get-zoo-hours', {} )
 
    server.HttpRequestHandler.do_POST( handler )
-
    result = response_json( handler )
 
    assert result[ 'hours' ] is None

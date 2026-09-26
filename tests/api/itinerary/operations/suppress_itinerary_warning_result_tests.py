@@ -5,12 +5,17 @@ from api.shared.enums import ItineraryErrorType
 
 
 def Test_Success_TestSuccessStatus_ExpectTrue() -> None:
-   assert SuppressItineraryWarningResult().success is True
+   result = SuppressItineraryWarningResult()
+
+   success = result.success
+
+   assert success is True
 
 
 def Test_Success_TestFailureStatus_ExpectFalse() -> None:
    result = SuppressItineraryWarningResult(
-      status=ItineraryErrorType.SAVE_FAILED,
-   )
+      status=ItineraryErrorType.SAVE_FAILED )
 
-   assert result.success is False
+   success = result.success
+
+   assert success is False

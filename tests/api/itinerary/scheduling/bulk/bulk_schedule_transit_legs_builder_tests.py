@@ -12,6 +12,7 @@ from api.itinerary.scheduling.bulk.bulk_schedule_start_state import BulkSchedule
 from api.itinerary.scheduling.bulk.bulk_schedule_transit_legs_builder import BulkScheduleTransitLegsBuilder
 from api.itinerary.scheduling.bulk.bulk_schedule_window_prep import BulkScheduleWindowPrep
 from api.itinerary.scheduling.bulk.transportation_transit_ride_applier import TransportationTransitRideApplier
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 from api.walk_graph.domain.walk_graph import WalkGraph
 
@@ -57,17 +58,17 @@ WINDOW_PREP = BulkScheduleWindowPrep(
    ),
    previous_itinerary=None,
    itinerary_context={},
-   anchor_seconds=9 * 3600,
-   day_end_seconds=18 * 3600,
+   anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+   day_end_seconds=DateValues.time_value_in_seconds( '6:00 PM' ),
    blockers=[],
    walk_graph=EMPTY_GRAPH,
    start_state=BulkScheduleStartState(
       start_node_id='n-entrance',
-      schedule_anchor_seconds=9 * 3600 ),
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) ),
    schedule_windows=[
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=18 * 3600 ),
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) ),
    ],
    loop_pins=[],
    visit_date='2026-07-11',
@@ -100,7 +101,7 @@ def Test_Apply_TestTransitZoomobile_ExpectRideApplierCalled(
       prep=WINDOW_PREP )
 
    assert captured[ 'visit_date' ] == '2026-07-11'
-   assert captured[ 'schedule_anchor_seconds' ] == 9 * 3600
+   assert captured[ 'schedule_anchor_seconds' ] == DateValues.time_value_in_seconds( '9:00 AM' )
    assert len( captured[ 'transit_rows' ] ) == 1
    assert captured[ 'transit_rows' ][ Position.FIRST ].added_as_attraction is False
    assert len( captured[ 'scheduled_animals' ] ) == 1

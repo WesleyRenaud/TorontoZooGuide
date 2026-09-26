@@ -11,12 +11,29 @@ from api.models import GuardiansTalk
 from api.models import Itinerary
 from api.models import ItineraryTransportation
 from api.models import WildEncounter
+from api.shared.calendar_dates import DateValues
+from api.shared.duration_values import DurationValues
 from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
 
 
 VISIT_DATE = '2026-06-15'
-ENTRANCE_TRAVEL_SECONDS = 10 * 60
+ENTRANCE_TRAVEL_MINUTES = 10
+ENTRANCE_TRAVEL_SECONDS = DurationValues.minutes_to_seconds( ENTRANCE_TRAVEL_MINUTES )
+LION_START = '10:00 AM'
+LION_DURATION_MINUTES = 8
+LION_END = DateValues.add_minutes_to_time( LION_START, LION_DURATION_MINUTES )
+
+
+def _time_minus_travel( schedule_time: str ) -> str:
+   return DateValues.schedule_time_key_from_seconds(
+      DateValues.time_value_in_seconds( schedule_time ) - ENTRANCE_TRAVEL_SECONDS )
+
+
+def _time_plus_travel( schedule_time: str ) -> str:
+   return DateValues.schedule_time_key_from_seconds(
+      DateValues.time_value_in_seconds( schedule_time ) + ENTRANCE_TRAVEL_SECONDS )
+
 
 def _fully_scheduled_lion_itinerary() -> Itinerary:
    return ItineraryBuilder.build(
@@ -26,8 +43,8 @@ def _fully_scheduled_lion_itinerary() -> Itinerary:
          Animal(
             species='African Lion',
             exhibit='Africa Savanna',
-            start_time='10:00 AM',
-            end_time='10:08 AM' ),
+            start_time=LION_START,
+            end_time=LION_END ),
       ],
       attractions=[],
       transportations=[],
@@ -94,8 +111,8 @@ def _two_animal_itinerary() -> Itinerary:
          Animal(
             species='African Lion',
             exhibit='Africa Savanna',
-            start_time='10:00 AM',
-            end_time='10:08 AM' ),
+            start_time=LION_START,
+            end_time=LION_END ),
          Animal(
             species='Cheetah',
             exhibit='Africa Savanna',
@@ -203,17 +220,23 @@ def Test_IsFullyScheduled_TestUnscheduledAnimal_ExpectFalse() -> None:
       arrival_time=None,
       departure_time=None )
 
-   assert not ScheduledEndpointVisitTimesSyncer.is_fully_scheduled( itinerary )
+   result = ScheduledEndpointVisitTimesSyncer.is_fully_scheduled( itinerary )
+
+   assert not result
 
 
 def Test_IsFullyScheduled_TestFullyScheduledAnimal_ExpectTrue() -> None:
-   assert ScheduledEndpointVisitTimesSyncer.is_fully_scheduled(
+   result = ScheduledEndpointVisitTimesSyncer.is_fully_scheduled(
       _fully_scheduled_lion_itinerary() )
+
+   assert result
 
 
 def Test_IsFullyScheduled_TestPartialSchedule_ExpectFalse() -> None:
-   assert not ScheduledEndpointVisitTimesSyncer.is_fully_scheduled(
+   result = ScheduledEndpointVisitTimesSyncer.is_fully_scheduled(
       _partially_scheduled_itinerary() )
+
+   assert not result
 
 
 def Test_IsFullyScheduled_TestEmptyDay_ExpectFalse() -> None:
@@ -230,7 +253,9 @@ def Test_IsFullyScheduled_TestEmptyDay_ExpectFalse() -> None:
       arrival_time=None,
       departure_time=None )
 
-   assert not ScheduledEndpointVisitTimesSyncer.is_fully_scheduled( itinerary )
+   result = ScheduledEndpointVisitTimesSyncer.is_fully_scheduled( itinerary )
+
+   assert not result
 
 
 def Test_SeedIfComplete_TestUnscheduledAnimal_ExpectNoUpdate(
@@ -301,8 +326,8 @@ def Test_SeedIfComplete_TestFullyScheduledAnimal_ExpectArrivalAndDeparture(
       _fully_scheduled_lion_itinerary() )
 
    assert updated == {
-      'arrival_time': '9:50 AM',
-      'departure_time': '10:18 AM',
+      'arrival_time': _time_minus_travel( LION_START ),
+      'departure_time': _time_plus_travel( LION_END ),
    }
 
 
@@ -324,13 +349,14 @@ def Test_SeedIfComplete_TestTalkOnlyItinerary_ExpectArrivalAndDeparture(
       'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
       lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
 
-   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
-      syncer_conn,
-      _talk_only_itinerary() )
+   itinerary = _talk_only_itinerary()
+   talk = itinerary.guardians_talks[ Position.FIRST ]
+
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete( syncer_conn, itinerary )
 
    assert updated == {
-      'arrival_time': '9:50 AM',
-      'departure_time': '10:25 AM',
+      'arrival_time': _time_minus_travel( talk.start_time ),
+      'departure_time': _time_plus_travel( talk.end_time ),
    }
 
 
@@ -353,8 +379,8 @@ def Test_ClearIfBecameIncomplete_TestLosesSchedule_ExpectTimesCleared(
          Animal(
             species='African Lion',
             exhibit='Africa Savanna',
-            start_time='10:00 AM',
-            end_time='10:08 AM' ),
+            start_time=LION_START,
+            end_time=LION_END ),
       ],
       attractions=[],
       transportations=[],
@@ -362,8 +388,8 @@ def Test_ClearIfBecameIncomplete_TestLosesSchedule_ExpectTimesCleared(
       guardians_talks=[],
       wild_encounters=[],
       events=[],
-      arrival_time='9:50 AM',
-      departure_time='10:18 AM' )
+      arrival_time=_time_minus_travel( LION_START ),
+      departure_time=_time_plus_travel( LION_END ) )
    current_itinerary = ItineraryBuilder.build(
       date=VISIT_DATE,
       selected_exhibits=[],
@@ -378,8 +404,8 @@ def Test_ClearIfBecameIncomplete_TestLosesSchedule_ExpectTimesCleared(
       guardians_talks=[],
       wild_encounters=[],
       events=[],
-      arrival_time='9:50 AM',
-      departure_time='10:18 AM' )
+      arrival_time=_time_minus_travel( LION_START ),
+      departure_time=_time_plus_travel( LION_END ) )
 
    ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
       syncer_conn,
@@ -407,13 +433,14 @@ def Test_SeedIfComplete_TestWildEncounterOnly_ExpectArrivalAndDeparture(
       'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
       lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
 
-   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
-      syncer_conn,
-      _wild_encounter_only_itinerary() )
+   itinerary = _wild_encounter_only_itinerary()
+   encounter = itinerary.wild_encounters[ Position.FIRST ]
+
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete( syncer_conn, itinerary )
 
    assert updated == {
-      'arrival_time': '3:20 PM',
-      'departure_time': '4:25 PM',
+      'arrival_time': _time_minus_travel( encounter.start_time ),
+      'departure_time': _time_plus_travel( encounter.end_time ),
    }
 
 
@@ -435,13 +462,15 @@ def Test_SeedIfComplete_TestTwoAnimals_ExpectDepartureFromLatestEnd(
       'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
       lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
 
-   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
-      syncer_conn,
-      _two_animal_itinerary() )
+   itinerary = _two_animal_itinerary()
+   lion = itinerary.animals[ Position.FIRST ]
+   cheetah = itinerary.animals[ Position.SECOND ]
+
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete( syncer_conn, itinerary )
 
    assert updated == {
-      'arrival_time': '9:50 AM',
-      'departure_time': '11:18 AM',
+      'arrival_time': _time_minus_travel( lion.start_time ),
+      'departure_time': _time_plus_travel( cheetah.end_time ),
    }
 
 
@@ -463,12 +492,13 @@ def Test_SeedIfComplete_TestLionAtEleven_ExpectArrivalFromEarliestStart(
       'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
       lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
 
-   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
-      syncer_conn,
-      _lion_at_eleven_itinerary() )
+   itinerary = _lion_at_eleven_itinerary()
+   lion = itinerary.animals[ Position.FIRST ]
 
-   assert updated[ 'arrival_time' ] == '10:50 AM'
-   assert updated[ 'departure_time' ] == '11:18 AM'
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete( syncer_conn, itinerary )
+
+   assert updated[ 'arrival_time' ] == _time_minus_travel( lion.start_time )
+   assert updated[ 'departure_time' ] == _time_plus_travel( lion.end_time )
 
 
 def Test_SeedIfComplete_TestMorningRescheduledLion_ExpectDepartureFromEndPlusTravel(
@@ -489,13 +519,14 @@ def Test_SeedIfComplete_TestMorningRescheduledLion_ExpectDepartureFromEndPlusTra
       'api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer.ItineraryTimeProvider.set_itinerary_departure_time',
       lambda conn, departure_time: updated.__setitem__( 'departure_time', departure_time ) or True )
 
-   ScheduledEndpointVisitTimesSyncer.seed_if_complete(
-      syncer_conn,
-      _morning_rescheduled_lion_itinerary() )
+   itinerary = _morning_rescheduled_lion_itinerary()
+   lion = itinerary.animals[ Position.FIRST ]
+
+   ScheduledEndpointVisitTimesSyncer.seed_if_complete( syncer_conn, itinerary )
 
    assert updated == {
-      'arrival_time': '9:30 AM',
-      'departure_time': '9:58 AM',
+      'arrival_time': _time_minus_travel( lion.start_time ),
+      'departure_time': _time_plus_travel( lion.end_time ),
    }
 
 
@@ -525,7 +556,7 @@ def Test_SyncIfComplete_TestGuestDepartureSet_ExpectDepartureFromLatestAnimalEnd
             species='African Lion',
             exhibit='Africa Savanna',
             start_time='9:38 AM',
-            end_time='9:46 AM' ),
+            end_time=DateValues.add_minutes_to_time( '9:38 AM', LION_DURATION_MINUTES ) ),
       ],
       attractions=[],
       transportations=[],
@@ -535,12 +566,13 @@ def Test_SyncIfComplete_TestGuestDepartureSet_ExpectDepartureFromLatestAnimalEnd
       events=[],
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
+   lion = itinerary.animals[ Position.FIRST ]
 
    ScheduledEndpointVisitTimesSyncer.sync_if_complete( syncer_conn, itinerary )
 
    assert updated == {
-      'arrival_time': '9:28 AM',
-      'departure_time': '9:56 AM',
+      'arrival_time': _time_minus_travel( lion.start_time ),
+      'departure_time': _time_plus_travel( lion.end_time ),
    }
 
 
@@ -563,8 +595,8 @@ def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVis
          Animal(
             species='African Lion',
             exhibit='Africa Savanna',
-            start_time='10:00 AM',
-            end_time='10:08 AM' ),
+            start_time=LION_START,
+            end_time=LION_END ),
       ],
       attractions=[],
       transportations=[
@@ -578,7 +610,7 @@ def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVis
       guardians_talks=[],
       wild_encounters=[],
       events=[],
-      arrival_time='9:50 AM',
+      arrival_time=_time_minus_travel( LION_START ),
       departure_time='11:40 AM' )
    current_itinerary = ItineraryBuilder.build(
       date=VISIT_DATE,
@@ -587,8 +619,8 @@ def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVis
          Animal(
             species='African Lion',
             exhibit='Africa Savanna',
-            start_time='10:00 AM',
-            end_time='10:08 AM' ),
+            start_time=LION_START,
+            end_time=LION_END ),
       ],
       attractions=[],
       transportations=[
@@ -600,7 +632,7 @@ def Test_ClearIfBecameIncomplete_TestZoomobileUnscheduledAnimalRemains_ExpectVis
       guardians_talks=[],
       wild_encounters=[],
       events=[],
-      arrival_time='9:50 AM',
+      arrival_time=_time_minus_travel( LION_START ),
       departure_time='11:40 AM' )
 
    ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
@@ -658,8 +690,8 @@ def Test_ClearIfBecameIncomplete_TestPreviousIncomplete_ExpectNoClear(
       guardians_talks=[],
       wild_encounters=[],
       events=[],
-      arrival_time='9:50 AM',
-      departure_time='10:18 AM' )
+      arrival_time=_time_minus_travel( LION_START ),
+      departure_time=_time_plus_travel( LION_END ) )
 
    ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete(
       syncer_conn,

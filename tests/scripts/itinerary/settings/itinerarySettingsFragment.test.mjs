@@ -16,20 +16,29 @@ installDomTestHooks({
    },
 });
 
+
 test('Test_ShowItinerarySettingsOverlay_TestMount_ExpectSaveAndCloseCallbacks', () => {
    const closes = [];
    const saves = [];
+   const closed = 'closed';
+   const onCloseEvent = 'onClose';
+   const onSaveEvent = 'onSave';
+   const statuses = [];
    const mountEl = document.getElementById('itineraryFlow');
    const originalBuild = ItinerarySettingsView.buildItinerarySettingsView;
    const originalMount = ItineraryPanelFragment.mountDismissablePopup;
    const closeButtonEl = document.createElement('button');
    const saveButtonEl = document.createElement('button');
    const root = document.createElement('div');
+   const dismissOnOverlayClick = false;
+   const dismissOnEscape = false;
    root.className = 'itin-overlay itin-settings-overlay';
+   let builtArgs;
    let mountedArgs;
-
+   let closedView;
+   let savedView;
    ItinerarySettingsView.buildItinerarySettingsView = (args) => {
-      assert.deepEqual(args.statuses, []);
+      builtArgs = args;
       return {
          root,
          closeButtonEl,
@@ -39,15 +48,9 @@ test('Test_ShowItinerarySettingsOverlay_TestMount_ExpectSaveAndCloseCallbacks', 
    };
    ItineraryPanelFragment.mountDismissablePopup = (args) => {
       mountedArgs = args;
-      assert.equal(args.mountEl, mountEl);
-      assert.equal(args.root, root);
-      assert.equal(args.overlay, root);
-      assert.equal(args.initialFocusEl, saveButtonEl);
-      assert.equal(args.dismissOnOverlayClick, false);
-      assert.equal(args.dismissOnEscape, false);
       return {
          close: () => {
-            closes.push('closed');
+            closes.push(closed);
          },
          dismiss: () => {
             closes.push('dismissed');
@@ -58,32 +61,39 @@ test('Test_ShowItinerarySettingsOverlay_TestMount_ExpectSaveAndCloseCallbacks', 
    try {
       const view = ItinerarySettingsFragment.showItinerarySettingsOverlay({
          mountEl,
-         statuses: [],
+         statuses,
          onClose: ({ close, view: overlayView }) => {
-            closes.push('onClose');
-            assert.equal(overlayView.closeButtonEl, closeButtonEl);
+            closes.push(onCloseEvent);
+            closedView = overlayView;
             close();
          },
          onSave: ({ close, view: overlayView }) => {
-            saves.push('onSave');
-            assert.equal(overlayView.saveButtonEl, saveButtonEl);
+            saves.push(onSaveEvent);
+            savedView = overlayView;
             close();
          },
       });
-
-      assert.equal(view.closeButtonEl, closeButtonEl);
       closeButtonEl.listeners.click();
-      assert.deepEqual(closes, ['onClose', 'closed']);
-
       saveButtonEl.listeners.click();
-      assert.deepEqual(saves, ['onSave']);
-      assert.deepEqual(closes, ['onClose', 'closed', 'closed']);
-      assert.equal(mountedArgs.dismissOnOverlayClick, false);
+
+      assert.equal(builtArgs.statuses, statuses);
+      assert.equal(mountedArgs.mountEl, mountEl);
+      assert.equal(mountedArgs.root, root);
+      assert.equal(mountedArgs.overlay, root);
+      assert.equal(mountedArgs.initialFocusEl, saveButtonEl);
+      assert.equal(mountedArgs.dismissOnOverlayClick, dismissOnOverlayClick);
+      assert.equal(mountedArgs.dismissOnEscape, dismissOnEscape);
+      assert.equal(view.closeButtonEl, closeButtonEl);
+      assert.equal(closedView.closeButtonEl, closeButtonEl);
+      assert.equal(savedView.saveButtonEl, saveButtonEl);
+      assert.deepEqual(saves, [onSaveEvent]);
+      assert.deepEqual(closes, [onCloseEvent, closed, closed]);
    } finally {
       ItinerarySettingsView.buildItinerarySettingsView = originalBuild;
       ItineraryPanelFragment.mountDismissablePopup = originalMount;
    }
 });
+
 
 test('Test_ShowItinerarySettingsOverlay_TestWithoutCallbacks_ExpectCloses', () => {
    const mountEl = document.getElementById('itineraryFlow');
@@ -91,8 +101,8 @@ test('Test_ShowItinerarySettingsOverlay_TestWithoutCallbacks_ExpectCloses', () =
    const originalMount = ItineraryPanelFragment.mountDismissablePopup;
    const closeButtonEl = document.createElement('button');
    const saveButtonEl = document.createElement('button');
+   const closed = 'closed';
    const closes = [];
-
    ItinerarySettingsView.buildItinerarySettingsView = () => ({
       root: document.createElement('div'),
       closeButtonEl,
@@ -101,33 +111,38 @@ test('Test_ShowItinerarySettingsOverlay_TestWithoutCallbacks_ExpectCloses', () =
    });
    ItineraryPanelFragment.mountDismissablePopup = () => ({
       close: () => {
-         closes.push('closed');
+         closes.push(closed);
       },
       dismiss: () => {},
    });
 
    try {
-      ItinerarySettingsFragment.showItinerarySettingsOverlay({
+      const view = ItinerarySettingsFragment.showItinerarySettingsOverlay({
          mountEl,
       });
       closeButtonEl.listeners.click();
       saveButtonEl.listeners.click();
-      assert.deepEqual(closes, ['closed', 'closed']);
+
+      assert.equal(view.closeButtonEl, closeButtonEl);
+      assert.deepEqual(closes, [closed, closed]);
    } finally {
       ItinerarySettingsView.buildItinerarySettingsView = originalBuild;
       ItineraryPanelFragment.mountDismissablePopup = originalMount;
    }
 });
 
+
 test('Test_ShowItinerarySettingsOverlay_TestExistingOverlay_ExpectReplaced', () => {
    const mountEl = document.getElementById('itineraryFlow');
+   const statuses = [];
+
    const first = ItinerarySettingsFragment.showItinerarySettingsOverlay({
       mountEl,
-      statuses: [],
+      statuses,
    });
    const second = ItinerarySettingsFragment.showItinerarySettingsOverlay({
       mountEl,
-      statuses: [],
+      statuses,
    });
 
    assert.equal(

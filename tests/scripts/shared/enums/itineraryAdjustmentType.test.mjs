@@ -9,26 +9,52 @@ import itineraryAdjustmentTypeValues from '../../../../shared/enums/itineraryAdj
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryAdjustmentType_TestNormalize_ExpectMatchedOrPassthrough', () => {
-   assert.equal(
-      ItineraryAdjustmentType.normalize(ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED),
-      ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED
-   );
-   assert.equal(
-      ItineraryAdjustmentType.normalize(`  ${ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED}  `),
-      ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED
-   );
-   assert.equal(ItineraryAdjustmentType.normalize('custom'), 'custom');
-   assert.equal(ItineraryAdjustmentType.normalize(''), '');
+
+test('Test_Normalize_TestArrivalTimeAdjusted_ExpectMatched', () => {
+   const adjustmentType = ItineraryAdjustmentType.ARRIVAL_TIME_ADJUSTED;
+
+   const normalized = ItineraryAdjustmentType.normalize(adjustmentType);
+
+   assert.equal(normalized, adjustmentType);
 });
 
-test('Test_ItineraryAdjustmentType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(itineraryAdjustmentTypeValues)) {
-      assert.equal(ItineraryAdjustmentType[key], value);
-   }
 
+test('Test_Normalize_TestDepartureWhitespace_ExpectTrimmed', () => {
+   const adjustmentType = ItineraryAdjustmentType.DEPARTURE_TIME_ADJUSTED;
+
+   const normalized = ItineraryAdjustmentType.normalize(`  ${adjustmentType}  `);
+
+   assert.equal(normalized, adjustmentType);
+});
+
+
+test('Test_Normalize_TestCustom_ExpectPassthrough', () => {
+   const adjustmentType = 'custom';
+
+   const normalized = ItineraryAdjustmentType.normalize(adjustmentType);
+
+   assert.equal(normalized, adjustmentType);
+});
+
+
+test('Test_Normalize_TestEmpty_ExpectEmpty', () => {
+   const adjustmentType = '';
+
+   const normalized = ItineraryAdjustmentType.normalize(adjustmentType);
+
+   assert.equal(normalized, adjustmentType);
+});
+
+
+test('Test_ItineraryAdjustmentType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/itineraryAdjustmentType.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(itineraryAdjustmentTypeValues).map((key) => [key, ItineraryAdjustmentType[key]])
+   );
+
+   assert.deepEqual(mapped, itineraryAdjustmentTypeValues);
    assert.deepEqual(itineraryAdjustmentTypeValues, diskValues);
 });

@@ -2,11 +2,17 @@ import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
 import { SearchResultsRenderer } from '../../../scripts/search/searchResultsRenderer.js';
+import { SearchResultPresenter } from '../../../scripts/search/searchResultPresenter.js';
+import { AssetKeyNormalizer } from '../../../scripts/assets/assetKeyNormalizer.js';
+import { ItemType } from '../../../scripts/shared/enums/itemType.js';
+import { Strings } from '../../../scripts/strings.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { createDomNode, installDocument, installTestWindow, teardownDocument } from '../helpers/domMock.mjs';
 
 afterEach(() => {
    teardownDocument();
 });
+
 
 function _findDescendant(node, className) {
    const stack = [node];
@@ -24,221 +30,206 @@ function _findDescendant(node, className) {
    return null;
 }
 
+
 test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForAnimalsAndAttractions_ExpectOk', () => {
    installDocument();
-
+   const species = 'African Lion';
+   const exhibit = 'African Savanna';
+   const attraction = 'Conservation Carousel';
    const resultsEl = createDomNode('div', 'animal-search-results');
 
    SearchResultsRenderer.renderSearchResults(resultsEl, [
       {
-         type: 'animal',
-         species: 'African Lion',
-         exhibit: 'African Savanna',
+         type: ItemType.ANIMAL,
+         species,
+         exhibit,
       },
       {
-         type: 'attraction',
-         name: 'Conservation Carousel',
+         type: ItemType.ATTRACTION,
+         name: attraction,
          free_with_admission: true,
       },
    ]);
+   const animalRow = resultsEl.children.at(Position.FIRST);
+   const attractionRow = resultsEl.children.at(Position.SECOND);
 
    assert.equal(resultsEl.children.length, 2);
-
-   const animalRow = resultsEl.children[0];
-   const animalContent = _findDescendant(animalRow, 'itin-animal-content');
-   const animalImg = _findDescendant(animalRow, 'itin-animal-thumb-img');
-
-   assert.ok(animalContent);
+   assert.ok(_findDescendant(animalRow, 'itin-animal-content'));
    assert.equal(
-      animalImg.src,
-      '../images/details/animals/african-savanna/african-lion.png'
+      _findDescendant(animalRow, 'itin-animal-thumb-img').src,
+      `${SearchResultPresenter.SEARCH_DETAIL_IMAGE_BASE_PATH}/animals/${AssetKeyNormalizer.normalize(exhibit)}/${AssetKeyNormalizer.normalize(species)}.png`
    );
-
    assert.ok(_findDescendant(animalRow, 'species-link'));
-
-   const attractionRow = resultsEl.children[1];
-   const attractionContent = _findDescendant(attractionRow, 'itin-animal-content');
-   const attractionImg = _findDescendant(attractionRow, 'itin-animal-thumb-img');
-
-   assert.ok(attractionContent);
+   assert.ok(_findDescendant(attractionRow, 'itin-animal-content'));
    assert.equal(
-      attractionImg.src,
-      '../images/details/attractions/conservation-carousel.png'
+      _findDescendant(attractionRow, 'itin-animal-thumb-img').src,
+      SearchResultPresenter.buildSearchDetailImageSrc('attractions', attraction)
    );
-
-   const attractionTitle = _findDescendant(attractionRow, 'animal-result-species');
-   assert.equal(attractionTitle?.querySelector('.species-link'), null);
+   assert.equal(
+      _findDescendant(attractionRow, 'animal-result-species')?.querySelector('.species-link'),
+      null
+   );
 });
+
 
 test('Test_ResultsView_TestResultsViewRenderSearchResultsLinksAttractionTitlesWhenInfoLink_ExpectOk', () => {
    installDocument();
    installTestWindow();
-
    const opened = [];
+   const name = 'Conservation Carousel';
+   const infoLink = 'https://www.torontozoo.com/tickets/carousel';
    globalThis.window.open = (url) => {
       opened.push(url);
    };
-
    const resultsEl = createDomNode('div', 'animal-search-results');
 
    SearchResultsRenderer.renderSearchResults(resultsEl, [
       {
-         type: 'attraction',
-         name: 'Conservation Carousel',
+         type: ItemType.ATTRACTION,
+         name,
          free_with_admission: true,
-         info_link: 'https://www.torontozoo.com/tickets/carousel',
+         info_link: infoLink,
       },
    ]);
-
-   const row = resultsEl.children[0];
-   const title = _findDescendant(row, 'animal-result-species');
-   const titleLink = title?.querySelector('.species-link');
+   const titleLink = _findDescendant(resultsEl.children.at(Position.FIRST), 'animal-result-species')
+      ?.querySelector('.species-link');
+   titleLink.click();
 
    assert.ok(titleLink);
-   assert.equal(titleLink.textContent, 'Conservation Carousel');
-   assert.equal(_findDescendant(row, 'tooltip-link'), null);
-
-   titleLink.click();
-   assert.deepEqual(opened, ['https://www.torontozoo.com/tickets/carousel']);
+   assert.equal(titleLink.textContent, name);
+   assert.equal(_findDescendant(resultsEl.children.at(Position.FIRST), 'tooltip-link'), null);
+   assert.deepEqual(opened, [infoLink]);
 });
+
 
 test('Test_ResultsView_TestResultsViewRenderSearchResultsLinksWildEncounterTitlesWhenUrl_ExpectOk', () => {
    installDocument();
-
+   const name = 'African Rainforest';
+   const meetingSpot = 'Wild Encounter - Africa Meeting Spot';
    const resultsEl = createDomNode('div', 'animal-search-results');
 
    SearchResultsRenderer.renderSearchResults(resultsEl, [
       {
-         type: 'wildEncounter',
-         name: 'African Rainforest',
-         meeting_spot: 'Wild Encounter - Africa Meeting Spot',
+         type: ItemType.WILD_ENCOUNTER,
+         name,
+         meeting_spot: meetingSpot,
          link: 'https://www.torontozoo.com/wildencounters/african-rainforest',
       },
    ]);
-
-   const row = resultsEl.children[0];
+   const row = resultsEl.children.at(Position.FIRST);
    const title = _findDescendant(row, 'animal-result-species');
-   const img = _findDescendant(row, 'itin-animal-thumb-img');
 
    assert.ok(_findDescendant(row, 'species-link'));
-   assert.equal(title?.textContent, 'African Rainforest Wild Encounter');
+   assert.equal(title?.textContent, `${name} ${Strings.entityLabels.wildEncounter}`);
+   assert.equal(title?.querySelector('.species-link')?.textContent, name);
+   assert.equal(_findDescendant(row, 'animal-result-exhibit')?.textContent, meetingSpot);
    assert.equal(
-      title?.querySelector('.species-link')?.textContent,
-      'African Rainforest'
-   );
-   assert.equal(
-      _findDescendant(row, 'animal-result-exhibit')?.textContent,
-      'Wild Encounter - Africa Meeting Spot'
-   );
-   assert.equal(
-      img?.src,
-      '../images/details/wild-encounters/african-rainforest.png'
+      _findDescendant(row, 'itin-animal-thumb-img')?.src,
+      SearchResultPresenter.buildSearchDetailImageSrc('wild-encounters', name)
    );
    assert.equal(_findDescendant(row, 'tooltip-link'), null);
 });
 
+
 test('Test_ResultsView_TestResultsViewRenderSearchResultsFormatsWildEncounterSubtitlesLikeSchedule_ExpectOk', () => {
    installDocument();
-
+   const meetingSpot = 'Wild Encounter – Mayan Temple Meeting Spot';
    const resultsEl = createDomNode('div', 'animal-search-results');
 
    SearchResultsRenderer.renderSearchResults(resultsEl, [
       {
-         type: 'wildEncounter',
+         type: ItemType.WILD_ENCOUNTER,
          name: 'From Howls to Honks',
-         meeting_spot: 'Wild Encounter – Mayan Temple Meeting Spot',
+         meeting_spot: meetingSpot,
          start_time: '13:00',
          end_time: '13:30',
       },
    ]);
-
    const subtitle = _findDescendant(
-      resultsEl.children[0],
+      resultsEl.children.at(Position.FIRST),
       'animal-result-exhibit'
    );
 
-   assert.equal(
-      subtitle?.textContent,
-      'Wild Encounter – Mayan Temple Meeting Spot  •  1:00 PM - 1:30 PM'
-   );
+   assert.equal(subtitle?.textContent, `${meetingSpot}  •  1:00 PM - 1:30 PM`);
 });
+
 
 test('Test_ResultsView_TestResultsViewRenderSearchResultsKeepsTextOnlyRowsForRestrooms_ExpectOk', () => {
    installDocument();
-
    const resultsEl = createDomNode('div', 'animal-search-results');
 
    SearchResultsRenderer.renderSearchResults(resultsEl, [
-      { type: 'restroom', title: 'Americas Pavilion Restroom' },
+      { type: ItemType.RESTROOM, title: 'Americas Pavilion Restroom' },
    ]);
-
-   const row = resultsEl.children[0];
+   const row = resultsEl.children.at(Position.FIRST);
 
    assert.equal(_findDescendant(row, 'itin-animal-content'), null);
    assert.ok(_findDescendant(row, 'animal-result-left'));
    assert.ok(_findDescendant(row, 'animal-result-map-btn'));
 });
 
+
 test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForNamedMapDetail_ExpectOk', () => {
    installDocument();
-
+   const pastry = 'Beavertails Pastry';
+   const zootique = 'Zootique';
+   const talkName = 'Amur Tiger';
+   const pavilion = 'Americas Pavilion';
+   const station = 'Zoomobile Station 1';
+   const location = 'Eurasia Wilds';
    const resultsEl = createDomNode('div', 'animal-search-results');
-
-   SearchResultsRenderer.renderSearchResults(resultsEl, [
-      { type: 'restaurant', name: 'Beavertails Pastry', location: 'Front Courtyard' },
-      { type: 'giftShop', name: 'Zootique', location: 'Africa' },
-      { type: 'guardiansTalk', name: 'Amur Tiger', location: 'Eurasia Wilds' },
-      { type: 'pavilion', name: 'Americas Pavilion', region: 'Americas' },
-      { type: 'transportationStation', name: 'Zoomobile Station 1' },
-   ]);
-
-   assert.equal(resultsEl.children.length, 5);
-
+   const rows = [
+      { type: ItemType.RESTAURANT, name: pastry, location: 'Front Courtyard' },
+      { type: ItemType.GIFT_SHOP, name: zootique, location: 'Africa' },
+      { type: ItemType.GUARDIANS_TALK, name: talkName, location },
+      { type: ItemType.PAVILION, name: pavilion, region: 'Americas' },
+      { type: ItemType.TRANSPORTATION_STATION, name: station },
+   ];
    const expectedImageSrcs = [
-      '../images/details/restaurants/beavertails-pastry.png',
-      '../images/details/gift-shops/zootique.png',
-      '../images/details/guardians-talks/amur-tiger.png',
-      '../images/details/pavilions/americas-pavilion.png',
-      '../images/details/transportation-stations/zoomobile-station-1.png',
+      SearchResultPresenter.buildSearchDetailImageSrc('restaurants', pastry),
+      SearchResultPresenter.buildSearchDetailImageSrc('gift-shops', zootique),
+      SearchResultPresenter.buildSearchDetailImageSrc('guardians-talks', talkName),
+      SearchResultPresenter.buildSearchDetailImageSrc('pavilions', pavilion),
+      SearchResultPresenter.buildSearchDetailImageSrc('transportation-stations', station),
    ];
 
-   resultsEl.children.forEach((row, index) => {
-      assert.ok(_findDescendant(row, 'itin-animal-content'));
-      assert.equal(
-         _findDescendant(row, 'itin-animal-thumb-img')?.src,
-         expectedImageSrcs[index]
-      );
-   });
-
-   const guardiansTalkTitle = _findDescendant(
-      resultsEl.children[2],
+   SearchResultsRenderer.renderSearchResults(resultsEl, rows);
+   const talkTitle = _findDescendant(
+      resultsEl.children.at(Position.THIRD),
       'animal-result-species'
    );
 
+   assert.equal(resultsEl.children.length, rows.length);
+   resultsEl.children.forEach((row, index) => {
+      assert.ok(_findDescendant(row, 'itin-animal-content'));
+      assert.equal(_findDescendant(row, 'itin-animal-thumb-img')?.src, expectedImageSrcs[index]);
+   });
+   assert.equal(talkTitle?.textContent, Strings.map.hover.guardiansTalkWithName(talkName));
+   assert.equal(talkTitle?.querySelector('.species-link'), null);
    assert.equal(
-      guardiansTalkTitle?.textContent,
-      'Amur Tiger Meet The Guardians Talk'
-   );
-   assert.equal(
-      guardiansTalkTitle?.querySelector('.species-link'),
-      null
-   );
-   assert.equal(
-      _findDescendant(resultsEl.children[2], 'animal-result-exhibit')?.textContent,
-      'Eurasia Wilds'
+      _findDescendant(resultsEl.children.at(Position.THIRD), 'animal-result-exhibit')?.textContent,
+      location
    );
 });
 
-test('Test_RenderSearchResults_TestEmptyOrInvalidRows_ExpectCleared', () => {
-   installDocument();
 
+test('Test_RenderSearchResults_TestEmpty_ExpectCleared', () => {
+   installDocument();
    const resultsEl = createDomNode('div', 'animal-search-results');
    resultsEl.appendChild(createDomNode('div', 'stale'));
 
    SearchResultsRenderer.renderSearchResults(resultsEl, []);
-   assert.equal(resultsEl.children.length, 0);
 
+   assert.equal(resultsEl.children.length, Position.FIRST);
+});
+
+
+test('Test_RenderSearchResults_TestInvalid_ExpectCleared', () => {
+   installDocument();
+   const resultsEl = createDomNode('div', 'animal-search-results');
    resultsEl.appendChild(createDomNode('div', 'stale'));
+
    SearchResultsRenderer.renderSearchResults(resultsEl, null);
-   assert.equal(resultsEl.children.length, 0);
+
+   assert.equal(resultsEl.children.length, Position.FIRST);
 });

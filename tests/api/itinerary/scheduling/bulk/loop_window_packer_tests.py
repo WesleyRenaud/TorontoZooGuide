@@ -37,11 +37,11 @@ SOUTH_CLUSTER_ID = 'south'
 NORTH_CLUSTER_ID = 'north'
 TUNDRA_LOOP_ID = 'tundra_trek'
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
-KANGAROO_OPEN_SECONDS = 11 * 3600
-KANGAROO_CLOSE_GENEROUS_SECONDS = 18 * 3600
-KANGAROO_CLOSE_TIGHT_SECONDS = 12 * 3600 + 30 * 60
-SIDE_CLUSTER_WINDOW_START_SECONDS = 11 * 3600
-SIDE_CLUSTER_WINDOW_END_SECONDS = 18 * 3600
+KANGAROO_OPEN_SECONDS = DateValues.time_value_in_seconds( '11:00 AM' )
+KANGAROO_CLOSE_GENEROUS_SECONDS = DateValues.time_value_in_seconds( '6:00 PM' )
+KANGAROO_CLOSE_TIGHT_SECONDS = DateValues.time_value_in_seconds( '12:30 PM' )
+SIDE_CLUSTER_WINDOW_START_SECONDS = DateValues.time_value_in_seconds( '11:00 AM' )
+SIDE_CLUSTER_WINDOW_END_SECONDS = DateValues.time_value_in_seconds( '6:00 PM' )
 INDO_CLUSTER_DWELL_SECONDS = 20 * 60
 AFRICA_CLUSTER_DWELL_SECONDS = 30 * 60
 TUNDRA_CLUSTER_DWELL_SECONDS = 25 * 60
@@ -50,8 +50,8 @@ GIRAFFE_ENCOUNTER_START = '11:00 AM'
 GIRAFFE_ENCOUNTER_END = '11:45 AM'
 RHINO_ENCOUNTER_START = '9:52 AM'
 RHINO_ENCOUNTER_END = '10:37 AM'
-TINY_TOUR_END_SECONDS = 11 * 3600 + 30 * 60
-HYENA_TALK_START_SECONDS = 14 * 3600
+TINY_TOUR_END_SECONDS = DateValues.time_value_in_seconds( '11:30 AM' )
+HYENA_TALK_START_SECONDS = DateValues.time_value_in_seconds( '2:00 PM' )
 ZOOMOBILE_NODE_ID = 'n-zoomobile'
 ZOOMOBILE_LOOP_ID = 'zoomobile'
 ZOOMOBILE_DWELL_SECONDS = 60 * 60
@@ -65,9 +65,9 @@ CHEETAH_APPROACH_SECONDS = 360
 AUSTRALASIA_DWELL_SECONDS = 120
 INDO_DWELL_SECONDS = 300
 EURASIA_DWELL_SECONDS = 600
-ZEBRA_TALK_START_SECONDS = 11 * 3600
-BACTRIAN_CAMELS_START_SECONDS = 15 * 3600 + 30 * 60
-RHINO_ENCOUNTER_START_SECONDS = 9 * 3600 + 52 * 60
+ZEBRA_TALK_START_SECONDS = DateValues.time_value_in_seconds( '11:00 AM' )
+BACTRIAN_CAMELS_START_SECONDS = DateValues.time_value_in_seconds( '3:30 PM' )
+RHINO_ENCOUNTER_START_SECONDS = DateValues.time_value_in_seconds( '9:52 AM' )
 
 
 def _node( node_id: str, x_px: float, y_px: float ) -> WalkGraphNode:
@@ -922,10 +922,12 @@ def Test_PrepareUnits_TestPrepareStopsFails_ExpectNone(
       'prepare_stops',
       lambda conn, walk_graph, stops, *, adjacency=None: None )
 
-   assert LoopWindowPacker.prepare_units(
+   result = LoopWindowPacker.prepare_units(
       object(),
       [ unit ],
-      walk_graph=TEST_GRAPH ) is None
+      walk_graph=TEST_GRAPH )
+
+   assert result is None
 
 
 def Test_Pack_TestEmptyPreparedUnits_ExpectEmptyList() -> None:
@@ -955,21 +957,25 @@ def Test_Pack_TestCursorPastWindowEnd_ExpectEmptyList() -> None:
 
 
 def Test_PackAllBeforeDeadline_TestEmptyOrClosedWindow_ExpectNone() -> None:
-   assert LoopWindowPacker.pack_all_before_deadline(
+   result = LoopWindowPacker.pack_all_before_deadline(
       TEST_GRAPH,
       prepared_units=[],
       window_start_seconds=_seconds( '9:00 AM' ),
       deadline_seconds=_seconds( '12:00 PM' ),
       current_node_id=ENTRANCE_NODE_ID,
-      until_unit=_deadline_until_unit() ) is None
+      until_unit=_deadline_until_unit() )
 
-   assert LoopWindowPacker.pack_all_before_deadline(
+   assert result is None
+
+   result = LoopWindowPacker.pack_all_before_deadline(
       TEST_GRAPH,
       prepared_units=[ _indo_prepared_unit() ],
       window_start_seconds=_seconds( '12:00 PM' ),
       deadline_seconds=_seconds( '12:00 PM' ),
       current_node_id=ENTRANCE_NODE_ID,
-      until_unit=_deadline_until_unit() ) is None
+      until_unit=_deadline_until_unit() )
+
+   assert result is None
 
 
 def Test_PackAllBeforeDeadline_TestPartialOpenWindowPack_ExpectNone(
@@ -985,13 +991,15 @@ def Test_PackAllBeforeDeadline_TestPartialOpenWindowPack_ExpectNone(
       '_pack_loops_for_open_window',
       lambda *args, **kwargs: [ prepared_units[ Position.FIRST ] ] )
 
-   assert LoopWindowPacker.pack_all_before_deadline(
+   result = LoopWindowPacker.pack_all_before_deadline(
       TEST_GRAPH,
       prepared_units=prepared_units,
       window_start_seconds=_seconds( '9:00 AM' ),
       deadline_seconds=_seconds( '5:00 PM' ),
       current_node_id=ENTRANCE_NODE_ID,
-      until_unit=_deadline_until_unit() ) is None
+      until_unit=_deadline_until_unit() )
+
+   assert result is None
 
 
 def Test_TravelDistanceToUnitEntry_TestMissingEntry_ExpectInfinity() -> None:
@@ -1003,11 +1011,13 @@ def Test_TravelDistanceToUnitEntry_TestMissingEntry_ExpectInfinity() -> None:
       exit_walk_node_id=CHEETAH_NODE_ID,
       duration_seconds=CHEETAH_DWELL_SECONDS )
 
-   assert LoopWindowPacker._travel_distance_to_unit_entry(
+   result = LoopWindowPacker._travel_distance_to_unit_entry(
       TEST_GRAPH,
       from_node_id=ENTRANCE_NODE_ID,
       prepared_unit=prepared_unit,
-      adjacency=adjacency ) == float( 'inf' )
+      adjacency=adjacency )
+
+   assert result == float( 'inf' )
 
 
 def Test_TravelDistanceToUnitEntry_TestTwoWayMissingExit_ExpectForwardDistance() -> None:
@@ -1024,26 +1034,32 @@ def Test_TravelDistanceToUnitEntry_TestTwoWayMissingExit_ExpectForwardDistance()
       TEMPLE_NODE_ID,
       HIGHLAND_NODE_ID )
 
-   assert LoopWindowPacker._travel_distance_to_unit_entry(
+   result = LoopWindowPacker._travel_distance_to_unit_entry(
       ORIENTATION_GRAPH,
       from_node_id=TEMPLE_NODE_ID,
       prepared_unit=prepared_unit,
-      adjacency=adjacency ) == forward_distance
+      adjacency=adjacency )
+
+   assert result == forward_distance
 
 
 def Test_WalkDistancePx_TestEmptyNodeIds_ExpectInfinity() -> None:
    adjacency = WalkGraphAdjacencyBuilder.build( TEST_GRAPH )
 
-   assert LoopWindowPacker._walk_distance_px(
+   result = LoopWindowPacker._walk_distance_px(
       TEST_GRAPH,
       '',
       CHEETAH_NODE_ID,
-      adjacency=adjacency ) == float( 'inf' )
-   assert LoopWindowPacker._walk_distance_px(
+      adjacency=adjacency )
+
+   assert result == float( 'inf' )
+   result = LoopWindowPacker._walk_distance_px(
       TEST_GRAPH,
       ENTRANCE_NODE_ID,
       '',
-      adjacency=adjacency ) == float( 'inf' )
+      adjacency=adjacency )
+
+   assert result == float( 'inf' )
 
 
 def Test_RemoveMatching_TestSharedLoopId_ExpectRemovedByLoop() -> None:
@@ -1078,8 +1094,12 @@ def Test_RemoveMatching_TestNoneLoopIds_ExpectIdentityMatchOnly() -> None:
    LoopWindowPacker.remove_matching( remaining, second )
 
    assert remaining == [ first ]
-   assert LoopWindowPacker._prepared_units_share_loop( first, second ) is False
-   assert LoopWindowPacker._prepared_units_share_loop( first, first ) is True
+   result = LoopWindowPacker._prepared_units_share_loop( first, second )
+
+   assert result is False
+   result = LoopWindowPacker._prepared_units_share_loop( first, first )
+
+   assert result is True
 
 
 def Test_PackLoopsWithTerminalUnit_TestTerminalOccupiesEntireWindow_ExpectEmpty() -> None:
@@ -1240,7 +1260,7 @@ def Test_ChooseSideClusterPackingOrder_TestSoftPinWithoutSideCluster_ExpectNoneN
 def Test_SoftPinsFitBeforeClose_TestClusterMissingFromOrder_ExpectTrue() -> None:
    prepared_units = _side_cluster_prepared_units()
 
-   assert LoopWindowPacker._soft_pins_fit_before_close(
+   result = LoopWindowPacker._soft_pins_fit_before_close(
       _kangaroo_soft_pin_schedule_window(
          close_seconds=KANGAROO_CLOSE_GENEROUS_SECONDS ),
       prepared_units=prepared_units,
@@ -1249,7 +1269,9 @@ def Test_SoftPinsFitBeforeClose_TestClusterMissingFromOrder_ExpectTrue() -> None
       soft_pin_late_in_own_cluster=True,
       walk_graph=TEST_GRAPH,
       current_node_id=ENTRANCE_NODE_ID,
-      cursor_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS ) is True
+      cursor_seconds=SIDE_CLUSTER_WINDOW_START_SECONDS )
+
+   assert result is True
 
 
 def Test_PackLoopsForAnchoredWindow_TestAllTerminalAttemptsFail_ExpectOpenWindowFallback(
@@ -1376,4 +1398,6 @@ def Test_RemoveMatching_TestEqualUnitsWithoutSharedLoop_ExpectFallbackRemove() -
    assert remaining == []
    assert first == equal_other
    assert first is not equal_other
-   assert LoopWindowPacker._prepared_units_share_loop( first, equal_other ) is False
+   result = LoopWindowPacker._prepared_units_share_loop( first, equal_other )
+
+   assert result is False

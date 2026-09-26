@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_walk_route_stop import ItineraryWalkRouteStop
 from api.itinerary.routing.return_to_entrance_walk_route_leg_appender import ReturnToEntranceWalkRouteLegAppender
@@ -23,35 +24,38 @@ def _node( node_id: str, x_px: float, y_px: float ) -> WalkGraphNode:
    }
 
 
+ENTRANCE_NODE_ID = 'n-1'
+DESTINATION_NODE_ID = 'n-2'
+
 TEST_GRAPH: WalkGraph = {
    'map_width_px': 100,
    'map_height_px': 100,
-   'entrance_node_id': 'n-1',
+   'entrance_node_id': ENTRANCE_NODE_ID,
    'nodes': [
-      _node( 'n-1', 0.0, 0.0 ),
-      _node( 'n-2', 10.0, 0.0 ),
+      _node( ENTRANCE_NODE_ID, 0.0, 0.0 ),
+      _node( DESTINATION_NODE_ID, 10.0, 0.0 ),
    ],
    'edges': [
-      { 'from': 'n-1', 'to': 'n-2', 'length_px': 10.0 },
-      { 'from': 'n-2', 'to': 'n-1', 'length_px': 10.0 },
+      { 'from': ENTRANCE_NODE_ID, 'to': DESTINATION_NODE_ID, 'length_px': 10.0 },
+      { 'from': DESTINATION_NODE_ID, 'to': ENTRANCE_NODE_ID, 'length_px': 10.0 },
    ],
 }
-
-ENTRANCE_NODE_ID = 'n-1'
-DESTINATION_NODE_ID = 'n-2'
 
 ENTRANCE_ANCHOR = WalkRouteAnchor(
    schedule_item_kind=ScheduleItemKind.ENTRANCE,
    item_key=ENTRANCE_ITEM_KEY,
    walk_node_ids=[ ENTRANCE_NODE_ID ] )
 
+LION_ITEM_KEY = AnimalScheduleItemKey.wire(
+   species='Lion',
+   exhibit='Africa Savanna' )
+
 
 def Test_Append_TestAlreadyAtEntrance_ExpectNoLegAppended() -> None:
-   route_stops = [
-      ItineraryWalkRouteStop.from_walk_route_anchor(
-         ENTRANCE_ANCHOR,
-         ENTRANCE_NODE_ID ),
-   ]
+   entrance_stop = ItineraryWalkRouteStop.from_walk_route_anchor(
+      ENTRANCE_ANCHOR,
+      ENTRANCE_NODE_ID )
+   route_stops = [ entrance_stop ]
    legs: list[ WalkRouteLeg ] = []
    route_node_ids: list[ str ] = []
 
@@ -65,18 +69,14 @@ def Test_Append_TestAlreadyAtEntrance_ExpectNoLegAppended() -> None:
       route_node_ids=route_node_ids )
 
    assert legs == []
-   assert route_stops == [
-      ItineraryWalkRouteStop.from_walk_route_anchor(
-         ENTRANCE_ANCHOR,
-         ENTRANCE_NODE_ID ),
-   ]
+   assert route_stops == [ entrance_stop ]
    assert route_node_ids == []
 
 
 def Test_Append_TestAwayFromEntrance_ExpectShortestPathLegAppended() -> None:
    from_stop = ItineraryWalkRouteStop(
       schedule_item_kind=ScheduleItemKind.ANIMAL,
-      item_key='Lion||Africa Savanna',
+      item_key=LION_ITEM_KEY,
       walk_node_id=DESTINATION_NODE_ID )
    route_stops = [ from_stop ]
    legs: list[ WalkRouteLeg ] = []
@@ -85,8 +85,6 @@ def Test_Append_TestAwayFromEntrance_ExpectShortestPathLegAppended() -> None:
       TEST_GRAPH,
       DESTINATION_NODE_ID,
       ENTRANCE_NODE_ID )
-
-   assert expected_node_ids is not None
 
    ReturnToEntranceWalkRouteLegAppender.append(
       TEST_GRAPH,
@@ -97,10 +95,11 @@ def Test_Append_TestAwayFromEntrance_ExpectShortestPathLegAppended() -> None:
       legs=legs,
       route_node_ids=route_node_ids )
 
+   assert expected_node_ids is not None
    assert len( legs ) == 1
-   assert legs[ Position.FIRST ].to_item_key == ENTRANCE_ITEM_KEY
+   assert legs[ Position.FIRST ].to_item_key == ENTRANCE_ANCHOR.item_key
    assert legs[ Position.FIRST ].node_ids == expected_node_ids
-   assert route_stops[ Position.LAST ].item_key == ENTRANCE_ITEM_KEY
+   assert route_stops[ Position.LAST ].item_key == ENTRANCE_ANCHOR.item_key
    assert route_stops[ Position.LAST ].walk_node_id == ENTRANCE_NODE_ID
    assert route_node_ids == list( expected_node_ids )
 
@@ -109,7 +108,7 @@ def Test_Append_TestNoReturnPath_ExpectNoLegAppended(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    from_stop = ItineraryWalkRouteStop(
       schedule_item_kind=ScheduleItemKind.ANIMAL,
-      item_key='Lion||Africa Savanna',
+      item_key=LION_ITEM_KEY,
       walk_node_id=DESTINATION_NODE_ID )
    route_stops = [ from_stop ]
    legs: list[ WalkRouteLeg ] = []

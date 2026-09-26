@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import { GuardiansTalkLinkedAnimalOpener } from '../../../../scripts/guardians/guardiansTalkLinkedAnimalOpener.js';
 import { ItineraryItemFormatter } from '../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
+import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import { RowActionPresenter } from '../../../../scripts/itinerary/panel/rowActionPresenter.js';
 import { RowAlertPresenter } from '../../../../scripts/itinerary/panel/rowAlertPresenter.js';
 import { RowBuilder } from '../../../../scripts/itinerary/panel/rowBuilder.js';
@@ -14,10 +14,9 @@ import { GuardiansTalkSelectorModel } from '../../../../scripts/itinerary/select
 import { TransportationSelectorModel } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationSelectorModel.js';
 import { WildEncounterSelectorModel } from '../../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterSelectorModel.js';
 import { SpeciesFragment } from '../../../../scripts/overlays/speciesFragment.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
-
-installDomTestHooks();
 
 function _captureNamedRowConfig(methodName, items, options) {
    const originalBuildRows = RowBuilder.buildRows;
@@ -42,6 +41,9 @@ function _captureNamedRowConfig(methodName, items, options) {
    }
 }
 
+installDomTestHooks();
+
+
 test('Test_BuildAnimalRows_TestConfig_ExpectRowPropsWired', () => {
    const originalNormalize = ItineraryItemFormatter.normalizeAnimal;
    const originalUnique = RowBuilder.buildUniqueAnimals;
@@ -56,40 +58,45 @@ test('Test_BuildAnimalRows_TestConfig_ExpectRowPropsWired', () => {
    const originalActions = RowActionPresenter.buildRowScheduleActionProps;
    const originalOpen = SpeciesFragment.openAnimalSpeciesOverlay;
    const opens = [];
-
+   const species = 'African Lion';
+   const enclosureName = 'Africa Savanna';
+   const imageSrc = 'img.png';
+   const alertLine = 'alert';
+   const linkHref = '/x';
+   const animalRow = 'animal-row';
    ItineraryItemFormatter.normalizeAnimal = (item) => item;
    RowBuilder.buildUniqueAnimals = (items) => items;
    ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = (items) => items;
-   AnimalSelectorModel.getAnimalSpecies = () => 'Lion';
-   AnimalSelectorModel.getAnimalEnclosureName = () => 'Savanna';
+   AnimalSelectorModel.getAnimalSpecies = () => species;
+   AnimalSelectorModel.getAnimalEnclosureName = () => enclosureName;
    AnimalSelectorModel.getAnimalSubtitle = () => 'Subtitle';
-   RowAlertPresenter.buildAnimalAlert = () => ({ line: 'alert', tone: 'warn' });
-   RowPresenter.buildImageSrc = () => 'img.png';
+   RowAlertPresenter.buildAnimalAlert = () => ({ line: alertLine, tone: 'warn' });
+   RowPresenter.buildImageSrc = () => imageSrc;
    RowPresenter.buildMetaLines = (lines) => lines;
-   RowPresenter.buildLinkRowProps = () => ({ linkHref: '/x' });
+   RowPresenter.buildLinkRowProps = () => ({ linkHref });
    RowActionPresenter.buildRowScheduleActionProps = (...args) => ({ actionArgs: args });
    SpeciesFragment.openAnimalSpeciesOverlay = (animal) => {
       opens.push(animal);
    };
 
    try {
-      const { result, captured } = _captureNamedRowConfig('buildAnimalRows', [{ species: 'Lion' }], {
+      const { result, captured } = _captureNamedRowConfig('buildAnimalRows', [{ species }], {
          onUnscheduleItem: () => {},
          onScheduleItem: () => {},
          onRemoveItem: () => {},
       });
+      const props = captured.config.buildRowProps({ species, exhibit: enclosureName, link: '/a' });
 
-      assert.deepEqual(result, ['animal-row']);
+      assert.deepEqual(result, [animalRow]);
       assert.equal(captured.via, 'buildRows');
-      const props = captured.config.buildRowProps({ species: 'Lion', exhibit: 'Savanna', link: '/a' });
-      assert.equal(props.species, 'Lion');
-      assert.equal(props.enclosureName, 'Savanna');
-      assert.equal(props.imageSrc, 'img.png');
-      assert.equal(props.alertLine, 'alert');
-      assert.equal(props.linkHref, '/x');
-      assert.equal(props.actionArgs[0], ScheduleItemKind.ANIMAL.itemType);
+      assert.equal(props.species, species);
+      assert.equal(props.enclosureName, enclosureName);
+      assert.equal(props.imageSrc, imageSrc);
+      assert.equal(props.alertLine, alertLine);
+      assert.equal(props.linkHref, linkHref);
+      assert.equal(props.actionArgs.at(Position.FIRST), ScheduleItemKind.ANIMAL.itemType);
       props.onNameClick();
-      assert.equal(opens.length, 1);
+      assert.equal(opens.length, Position.SECOND);
       assert.equal(captured.config.normalizeItem, ItineraryItemFormatter.normalizeAnimal);
    } finally {
       ItineraryItemFormatter.normalizeAnimal = originalNormalize;
@@ -107,17 +114,16 @@ test('Test_BuildAnimalRows_TestConfig_ExpectRowPropsWired', () => {
    }
 });
 
-test('Test_BuildAnimalRows_TestTransportationOnlyAnimals_ExpectOmitted', () => {
-   const { captured } = _captureNamedRowConfig(
-      'buildAnimalRows',
-      [
-         { species: 'African Lion' },
-         { species: 'Masai Giraffe', added_by_transportation: true },
-      ]
-   );
 
-   assert.deepEqual(captured.sourceItems, [{ species: 'African Lion' }]);
+test('Test_BuildAnimalRows_TestTransportationOnlyAnimals_ExpectOmitted', () => {
+   const lion = { species: 'African Lion' };
+   const giraffe = { species: 'Masai Giraffe', added_by_transportation: true };
+
+   const { captured } = _captureNamedRowConfig('buildAnimalRows', [lion, giraffe]);
+
+   assert.deepEqual(captured.sourceItems, [lion]);
 });
+
 
 test('Test_BuildAttractionRows_TestConfig_ExpectNamedRows', () => {
    const originalNormalize = ItineraryItemFormatter.normalizeAttraction;
@@ -127,11 +133,16 @@ test('Test_BuildAttractionRows_TestConfig_ExpectNamedRows', () => {
    const originalAlert = RowAlertPresenter.buildAttractionRemovalReasonLine;
    const originalTitleLink = RowPresenter.buildTitleLinkRowProps;
    const originalActions = RowActionPresenter.buildRowScheduleActionProps;
-
+   const name = 'Conservation Carousel';
+   const subtitle = 'Fun';
+   const region = 'Americas';
+   const price = '$5';
+   const infoLink = '/i';
+   const approx = 'approx';
    ItineraryItemFormatter.normalizeAttraction = (item) => item;
    ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = (items) => items;
    RowPresenter.buildFieldLine = (label, value) => `${label}:${value}`;
-   RowPresenter.buildApproximateStartTimeFieldLine = () => 'approx';
+   RowPresenter.buildApproximateStartTimeFieldLine = () => approx;
    RowAlertPresenter.buildAttractionRemovalReasonLine = () => 'alert';
    RowPresenter.buildTitleLinkRowProps = () => ({ titleLink: true });
    RowActionPresenter.buildRowScheduleActionProps = () => ({ actions: true });
@@ -139,22 +150,22 @@ test('Test_BuildAttractionRows_TestConfig_ExpectNamedRows', () => {
    try {
       const { result, captured } = _captureNamedRowConfig(
          'buildAttractionRows',
-         [{ name: 'Carousel', subtitle: 'Fun', region: 'Americas', price: '$5', infoLink: '/i' }],
+         [{ name, subtitle, region, price, infoLink }],
          { onRemoveItem: () => {} }
       );
+      const metaLines = captured.config.getMetaLines({ subtitle, region, price });
+      const extended = captured.config.extendRowProps({ infoLink });
 
       assert.deepEqual(result, ['named-row']);
       assert.equal(captured.via, 'buildNamedRows');
-      assert.equal(captured.config.getName({ name: 'Carousel' }), 'Carousel');
-      assert.deepEqual(
-         captured.config.getMetaLines({
-            subtitle: 'Fun',
-            region: 'Americas',
-            price: '$5',
-         }),
-         ['Fun', 'Location:Americas', 'Price:$5', 'approx']
-      );
-      assert.deepEqual(captured.config.extendRowProps({ infoLink: '/i' }), {
+      assert.equal(captured.config.getName({ name }), name);
+      assert.deepEqual(metaLines, [
+         subtitle,
+         RowPresenter.buildFieldLine('Location', region),
+         RowPresenter.buildFieldLine('Price', price),
+         approx,
+      ]);
+      assert.deepEqual(extended, {
          titleLink: true,
          actions: true,
       });
@@ -169,6 +180,7 @@ test('Test_BuildAttractionRows_TestConfig_ExpectNamedRows', () => {
    }
 });
 
+
 test('Test_BuildTransportationRows_TestConfig_ExpectNamedRows', () => {
    const originalNormalize = ItineraryItemFormatter.normalizeTransportation;
    const originalSort = ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime;
@@ -178,20 +190,24 @@ test('Test_BuildTransportationRows_TestConfig_ExpectNamedRows', () => {
    const originalAlert = RowAlertPresenter.buildAttractionRemovalReasonLine;
    const originalTitleLink = RowPresenter.buildTitleLinkRowProps;
    const originalActions = RowActionPresenter.buildRowScheduleActionProps;
-
+   const name = 'Zoomobile';
+   const stationsLine = 'A → B';
+   const approx = 'approx';
    ItineraryItemFormatter.normalizeTransportation = (item) => item;
    ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = (items) => items;
-   TransportationSelectorModel.getTransportationName = () => 'Zoomobile';
-   TransportationSelectorModel.buildTransportationStationsLine = () => 'A → B';
-   RowPresenter.buildApproximateStartTimeFieldLine = () => 'approx';
+   TransportationSelectorModel.getTransportationName = () => name;
+   TransportationSelectorModel.buildTransportationStationsLine = () => stationsLine;
+   RowPresenter.buildApproximateStartTimeFieldLine = () => approx;
    RowAlertPresenter.buildAttractionRemovalReasonLine = () => 'alert';
    RowPresenter.buildTitleLinkRowProps = () => ({ titleLink: true });
    RowActionPresenter.buildRowScheduleActionProps = () => ({ actions: true });
 
    try {
-      const { captured } = _captureNamedRowConfig('buildTransportationRows', [{ name: 'Zoomobile' }]);
-      assert.equal(captured.config.getName({}), 'Zoomobile');
-      assert.deepEqual(captured.config.getMetaLines({}), ['A → B', 'approx']);
+      const { captured } = _captureNamedRowConfig('buildTransportationRows', [{ name }]);
+      const metaLines = captured.config.getMetaLines({});
+
+      assert.equal(captured.config.getName({}), name);
+      assert.deepEqual(metaLines, [stationsLine, approx]);
    } finally {
       ItineraryItemFormatter.normalizeTransportation = originalNormalize;
       ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = originalSort;
@@ -203,6 +219,7 @@ test('Test_BuildTransportationRows_TestConfig_ExpectNamedRows', () => {
       RowActionPresenter.buildRowScheduleActionProps = originalActions;
    }
 });
+
 
 test('Test_BuildGuardiansRows_TestLinkedAnimal_ExpectOnNameClick', () => {
    const originalNormalize = ItineraryItemFormatter.normalizeTalk;
@@ -216,16 +233,16 @@ test('Test_BuildGuardiansRows_TestLinkedAnimal_ExpectOnNameClick', () => {
    const originalLinked = GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal;
    const originalOpen = GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal;
    const opens = [];
-
+   const talkName = 'Amur Tiger';
    ItineraryItemFormatter.normalizeTalk = (item) => item;
    ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = (items) => items;
-   GuardiansTalkSelectorModel.getGuardiansTalkName = () => 'Tiger Talk';
+   GuardiansTalkSelectorModel.getGuardiansTalkName = () => talkName;
    GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix = () => 'Talk';
    RowPresenter.buildFieldLine = (label, value) => `${label}:${value}`;
    RowPresenter.buildScheduledTimeFieldLine = () => 'time';
    RowAlertPresenter.buildGuardiansRemovalReasonLine = () => 'alert';
    RowActionPresenter.buildRemoveRowProps = () => ({ remove: true });
-   GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal = () => ({ species: 'Tiger' });
+   GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal = () => ({ species: talkName });
    GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal = async (talk) => {
       opens.push(talk);
    };
@@ -233,13 +250,14 @@ test('Test_BuildGuardiansRows_TestLinkedAnimal_ExpectOnNameClick', () => {
    try {
       const { captured } = _captureNamedRowConfig(
          'buildGuardiansRows',
-         [{ name: 'Tiger Talk', location: 'Eurasia', link: '/t' }],
+         [{ name: talkName, location: 'Eurasia Wilds', link: '/t' }],
          { onRemoveItem: () => {} }
       );
-      const props = captured.config.extendRowProps({ name: 'Tiger Talk' });
+      const props = captured.config.extendRowProps({ name: talkName });
+
       assert.equal(typeof props.onNameClick, 'function');
       props.onNameClick();
-      assert.equal(opens.length, 1);
+      assert.equal(opens.length, Position.SECOND);
       assert.equal(props.remove, true);
    } finally {
       ItineraryItemFormatter.normalizeTalk = originalNormalize;
@@ -255,6 +273,7 @@ test('Test_BuildGuardiansRows_TestLinkedAnimal_ExpectOnNameClick', () => {
    }
 });
 
+
 test('Test_BuildWildRows_TestConfig_ExpectNamedRows', () => {
    const originalNormalize = ItineraryItemFormatter.normalizeWild;
    const originalSort = ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime;
@@ -265,10 +284,12 @@ test('Test_BuildWildRows_TestConfig_ExpectNamedRows', () => {
    const originalAlert = RowAlertPresenter.buildWildRemovalReasonLine;
    const originalTitleLink = RowPresenter.buildTitleLinkRowProps;
    const originalRemove = RowActionPresenter.buildRemoveRowProps;
-
+   const encounterName = 'Capybara';
+   const meetingSpot = 'Spot';
+   const link = '/w';
    ItineraryItemFormatter.normalizeWild = (item) => item;
    ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = (items) => items;
-   WildEncounterSelectorModel.getWildEncounterName = () => 'Capybara';
+   WildEncounterSelectorModel.getWildEncounterName = () => encounterName;
    WildEncounterSelectorModel.getWildEncounterTitleSuffix = () => 'Encounter';
    RowPresenter.buildFieldLine = (label, value) => `${label}:${value}`;
    RowPresenter.buildScheduledTimeFieldLine = () => 'time';
@@ -279,15 +300,15 @@ test('Test_BuildWildRows_TestConfig_ExpectNamedRows', () => {
    try {
       const { captured } = _captureNamedRowConfig(
          'buildWildRows',
-         [{ name: 'Capybara', meeting_spot: 'Spot', link: '/w' }],
+         [{ name: encounterName, meeting_spot: meetingSpot, link }],
          { onRemoveItem: () => {} }
       );
-      assert.equal(captured.config.getName({}), 'Capybara');
-      assert.deepEqual(
-         captured.config.getMetaLines({ meeting_spot: 'Spot' })[0].includes('Spot'),
-         true
-      );
-      assert.deepEqual(captured.config.extendRowProps({ link: '/w' }), {
+      const metaLines = captured.config.getMetaLines({ meeting_spot: meetingSpot });
+      const extended = captured.config.extendRowProps({ link });
+
+      assert.equal(captured.config.getName({}), encounterName);
+      assert.equal(metaLines.at(Position.FIRST).includes(meetingSpot), true);
+      assert.deepEqual(extended, {
          titleLink: true,
          remove: true,
       });

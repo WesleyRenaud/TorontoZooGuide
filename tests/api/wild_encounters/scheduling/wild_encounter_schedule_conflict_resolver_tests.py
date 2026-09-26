@@ -84,9 +84,11 @@ def Test_SaveReplacingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       'save_replacing_overlaps',
       save_replacing_overlaps )
 
-   assert WildEncounterScheduleConflictResolver.save_replacing_overlaps(
+   result = WildEncounterScheduleConflictResolver.save_replacing_overlaps(
       STUB_CONNECTION,
-      schedule ) is True
+      schedule )
+
+   assert result is True
    assert saver_calls == [
       ( schedule, WildEncounterScheduleProvider.fetch_schedule_conflicts ),
    ]
@@ -114,9 +116,11 @@ def Test_SaveTrimmingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       'save_trimming_overlaps',
       save_trimming_overlaps )
 
-   assert WildEncounterScheduleConflictResolver.save_trimming_overlaps(
+   result = WildEncounterScheduleConflictResolver.save_trimming_overlaps(
       STUB_CONNECTION,
-      schedule ) is True
+      schedule )
+
+   assert result is True
    assert saver_calls == [ schedule ]
 
 

@@ -27,6 +27,10 @@ CREATE TABLE ZooHours (
 );
 """
 
+VISIT_DATE = date( 2026, 6, 22 )
+OPEN_TIME = '09:30'
+LAST_ADMISSION_TIME = '17:00'
+CLOSE_TIME = '18:00'
 ITINERARY_CONTEXT = {
    'animal_coordinator': AnimalCoordinator,
    'attraction_coordinator': AttractionCoordinator,
@@ -34,6 +38,22 @@ ITINERARY_CONTEXT = {
    'wild_encounter_coordinator': WildEncounterCoordinator,
    'visit_date_temp': None,
 }
+
+
+def _stub_saved_itinerary_transportation(
+      monkeypatch: pytest.MonkeyPatch,
+      saved_itinerary: SavedItinerary ) -> None:
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_zoo_hours_validator.ItineraryProvider.fetch_saved_itinerary',
+      lambda conn: saved_itinerary )
+   monkeypatch.setattr(
+      ItineraryTransportationsBuilder,
+      'build',
+      lambda saved_transportations, target_date: [] )
+   monkeypatch.setattr(
+      ItineraryTransportationStationsBuilder,
+      'attach_to_transportations',
+      lambda transportations: [] )
 
 
 @pytest.fixture
@@ -51,7 +71,7 @@ def zoo_hours_validator_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ?, ?, ? );
       """,
-      ( '2026-06-22', None, '09:30', '17:00', '18:00' ) )
+      ( VISIT_DATE.isoformat(), None, OPEN_TIME, LAST_ADMISSION_TIME, CLOSE_TIME ) )
    conn.commit()
 
    yield conn
@@ -62,27 +82,17 @@ def zoo_hours_validator_conn() -> sqlite3.Connection:
 def Test_Validate_TestDepartureAfterClose_ExpectOutOfBounds(
       zoo_hours_validator_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_zoo_hours_validator.ItineraryProvider.fetch_saved_itinerary',
-      lambda conn: SavedItinerary(
-         date_value='2026-06-20',
-         arrival_time='9:30 AM',
-         departure_time='6:30 PM',
-      ) )
-   monkeypatch.setattr(
-      ItineraryTransportationsBuilder,
-      'build',
-      lambda saved_transportations, target_date: [] )
-   monkeypatch.setattr(
-      ItineraryTransportationStationsBuilder,
-      'attach_to_transportations',
-      lambda transportations: [] )
-
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:30 AM',
+      departure_time='6:30 PM',
+   )
    save_input = ItinerarySaveInput(
-      date=date( 2026, 6, 22 ),
-      arrival_time='09:30',
+      date=VISIT_DATE,
+      arrival_time=OPEN_TIME,
       departure_time='19:00',
    )
+   _stub_saved_itinerary_transportation( monkeypatch, saved_itinerary )
 
    result = ItinerarySaveZooHoursValidator.validate(
       zoo_hours_validator_conn,
@@ -91,79 +101,63 @@ def Test_Validate_TestDepartureAfterClose_ExpectOutOfBounds(
 
    assert result is not None
    assert result.status == ItineraryErrorType.TIME_OUT_OF_BOUNDS
-   assert result.itinerary.date == '2026-06-20'
-   assert result.itinerary.departure_time == '6:30 PM'
+   assert result.itinerary.date == saved_itinerary.date_value
+   assert result.itinerary.departure_time == saved_itinerary.departure_time
 
 
 def Test_Validate_TestMissingArrivalOrDeparture_ExpectNone(
       zoo_hours_validator_conn: sqlite3.Connection ) -> None:
    save_input = ItinerarySaveInput(
-      date=date( 2026, 6, 22 ),
+      date=VISIT_DATE,
       arrival_time=None,
-      departure_time='17:00',
+      departure_time=LAST_ADMISSION_TIME,
    )
 
-   assert ItinerarySaveZooHoursValidator.validate(
+   result = ItinerarySaveZooHoursValidator.validate(
       zoo_hours_validator_conn,
       save_input,
-      ITINERARY_CONTEXT ) is None
+      ITINERARY_CONTEXT )
+
+   assert result is None
 
 
 def Test_Validate_TestValidHours_ExpectNone(
       zoo_hours_validator_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_zoo_hours_validator.ItineraryProvider.fetch_saved_itinerary',
-      lambda conn: SavedItinerary(
-         date_value='2026-06-22',
-         arrival_time='9:30 AM',
-         departure_time='5:00 PM',
-      ) )
-   monkeypatch.setattr(
-      ItineraryTransportationsBuilder,
-      'build',
-      lambda saved_transportations, target_date: [] )
-   monkeypatch.setattr(
-      ItineraryTransportationStationsBuilder,
-      'attach_to_transportations',
-      lambda transportations: [] )
-
-   save_input = ItinerarySaveInput(
-      date=date( 2026, 6, 22 ),
-      arrival_time='09:30',
-      departure_time='17:00',
+   saved_itinerary = SavedItinerary(
+      date_value=VISIT_DATE.isoformat(),
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
    )
+   save_input = ItinerarySaveInput(
+      date=VISIT_DATE,
+      arrival_time=OPEN_TIME,
+      departure_time=LAST_ADMISSION_TIME,
+   )
+   _stub_saved_itinerary_transportation( monkeypatch, saved_itinerary )
 
-   assert ItinerarySaveZooHoursValidator.validate(
+   result = ItinerarySaveZooHoursValidator.validate(
       zoo_hours_validator_conn,
       save_input,
-      ITINERARY_CONTEXT ) is None
+      ITINERARY_CONTEXT )
+
+   assert result is None
 
 
 def Test_Validate_TestArrivalBeforeOpen_ExpectOutOfBounds(
       zoo_hours_validator_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr(
-      'api.itinerary.operations.itinerary_save_zoo_hours_validator.ItineraryProvider.fetch_saved_itinerary',
-      lambda conn: SavedItinerary(
-         date_value='2026-06-22',
-         arrival_time='8:00 AM',
-         departure_time='5:00 PM',
-      ) )
-   monkeypatch.setattr(
-      ItineraryTransportationsBuilder,
-      'build',
-      lambda saved_transportations, target_date: [] )
-   monkeypatch.setattr(
-      ItineraryTransportationStationsBuilder,
-      'attach_to_transportations',
-      lambda transportations: [] )
-
-   save_input = ItinerarySaveInput(
-      date=date( 2026, 6, 22 ),
-      arrival_time='08:00',
-      departure_time='17:00',
+   saved_itinerary = SavedItinerary(
+      date_value=VISIT_DATE.isoformat(),
+      arrival_time='8:00 AM',
+      departure_time='5:00 PM',
    )
+   save_input = ItinerarySaveInput(
+      date=VISIT_DATE,
+      arrival_time='08:00',
+      departure_time=LAST_ADMISSION_TIME,
+   )
+   _stub_saved_itinerary_transportation( monkeypatch, saved_itinerary )
 
    result = ItinerarySaveZooHoursValidator.validate(
       zoo_hours_validator_conn,

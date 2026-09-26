@@ -1,17 +1,16 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
-import { ItineraryBuildWarningsContentBuilder } from '../../../../scripts/itinerary/panel/itineraryBuildWarningsContentBuilder.js';
 import { AttractionWithoutAnimalFragment } from '../../../../scripts/itinerary/panel/attractionWithoutAnimalFragment.js';
 import { FixedTimeItemLongWaitFragment } from '../../../../scripts/itinerary/panel/fixedTimeItemLongWaitFragment.js';
 import { GuardiansTalkUnscheduleFragment } from '../../../../scripts/itinerary/panel/guardiansTalkUnscheduleFragment.js';
 import { GuardiansTalkWithoutAnimalFragment } from '../../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalFragment.js';
+import { ItineraryBuildWarningsContentBuilder } from '../../../../scripts/itinerary/panel/itineraryBuildWarningsContentBuilder.js';
 import { WildEncounterUnscheduleFragment } from '../../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
-import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
 import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
-
-installDomTestHooks();
+import { Position } from '../../../../scripts/shared/enums/position.js';
+import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
    suppressedErrorTypes: [],
@@ -31,150 +30,266 @@ const strings = {
    buildWarningLongWaitMessageWithoutTime: (name, phrase) => `${name} ${phrase}`,
 };
 
+installDomTestHooks();
+
+
 test('Test_ItineraryBuildWarningIssueTypes_TestConfigured_ExpectTypes', () => {
-   assert.deepEqual(
-      ItineraryBuildWarningsContentBuilder.itineraryBuildWarningIssueTypes(),
-      [
-         ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-         ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-         ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-         ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
-         ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-      ]
-   );
+   const types = ItineraryBuildWarningsContentBuilder.itineraryBuildWarningIssueTypes();
+
+   assert.deepEqual(types, [
+      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+      ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+      ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+      ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
+      ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+   ]);
 });
 
-test('Test_BuildWarningConfirmFlags_TestTypes_ExpectFlagMap', () => {
+
+test('Test_BuildWarningConfirmFlags_TestGuardiansTalkUnschedule_ExpectFlag', () => {
    const flags = ItineraryBuildWarningsContentBuilder.buildWarningConfirmFlags();
+
    assert.deepEqual(flags[ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS], {
       confirmingGuardiansTalkUnschedule: true,
    });
+});
+
+
+test('Test_BuildWarningConfirmFlags_TestFixedTimeItemLongWait_ExpectFlag', () => {
+   const flags = ItineraryBuildWarningsContentBuilder.buildWarningConfirmFlags();
+
    assert.deepEqual(flags[ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT], {
       confirmingFixedTimeItemLongWait: true,
    });
 });
 
-test('Test_IssueTypeAndAsSections_TestValues_ExpectNormalized', () => {
-   assert.equal(ItineraryBuildWarningsContentBuilder.issueType({ type: 'a' }), 'a');
-   assert.equal(ItineraryBuildWarningsContentBuilder.issueType({ code: 'b' }), 'b');
-   assert.equal(ItineraryBuildWarningsContentBuilder.issueType({}), '');
-   assert.deepEqual(ItineraryBuildWarningsContentBuilder.asSections(null), []);
-   assert.deepEqual(
-      ItineraryBuildWarningsContentBuilder.asSections({ title: 'x' }),
-      [{ title: 'x' }]
-   );
+
+test('Test_IssueType_TestTypeField_ExpectType', () => {
+   const type = 'a';
+
+   const issueType = ItineraryBuildWarningsContentBuilder.issueType({ type });
+
+   assert.equal(issueType, type);
 });
 
-test('Test_BuildGuardiansTalkUnscheduleSection_TestWithAndWithoutTime_ExpectSection', () => {
+
+test('Test_IssueType_TestCodeField_ExpectCode', () => {
+   const code = 'b';
+
+   const issueType = ItineraryBuildWarningsContentBuilder.issueType({ code });
+
+   assert.equal(issueType, code);
+});
+
+
+test('Test_IssueType_TestEmpty_ExpectEmptyString', () => {
+   const issueType = ItineraryBuildWarningsContentBuilder.issueType({});
+
+   assert.equal(issueType, '');
+});
+
+
+test('Test_AsSections_TestNull_ExpectEmptyArray', () => {
+   const sections = ItineraryBuildWarningsContentBuilder.asSections(null);
+
+   assert.deepEqual(sections, []);
+});
+
+
+test('Test_AsSections_TestSingleSection_ExpectWrapped', () => {
+   const title = 'x';
+   const section = { title };
+
+   const sections = ItineraryBuildWarningsContentBuilder.asSections(section);
+
+   assert.deepEqual(sections, [section]);
+});
+
+
+test('Test_BuildGuardiansTalkUnscheduleSection_TestWithTime_ExpectSection', () => {
+   const talkName = 'Amur Tiger';
+   const talkTime = '11:00 AM';
    const original = GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues;
    GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues = () => ({
-      talkName: 'Amur Tiger',
-      talkTime: '11:00 AM',
+      talkName,
+      talkTime,
    });
 
    try {
-      assert.deepEqual(
-         ItineraryBuildWarningsContentBuilder.buildGuardiansTalkUnscheduleSection([], strings),
-         {
-            type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-            title: 'Schedule overlap',
-            message: 'Amur Tiger at 11:00 AM',
-         }
-      );
+      const section = ItineraryBuildWarningsContentBuilder.buildGuardiansTalkUnscheduleSection([], strings);
 
-      GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues = () => ({
-         talkName: 'Amur Tiger',
+      assert.deepEqual(section, {
+         type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         title: strings.buildWarningScheduleOverlapTitle,
+         message: strings.buildWarningScheduleOverlapMessage(talkName, talkTime),
       });
-      assert.equal(
-         ItineraryBuildWarningsContentBuilder.buildGuardiansTalkUnscheduleSection([], strings).message,
-         'Amur Tiger overlaps'
-      );
-
-      GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues = () => null;
-      assert.equal(
-         ItineraryBuildWarningsContentBuilder.buildGuardiansTalkUnscheduleSection([], strings),
-         null
-      );
    } finally {
       GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues = original;
    }
 });
 
-test('Test_BuildWildEncounterUnscheduleSection_TestWithAndWithoutTime_ExpectSection', () => {
-   const original = WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues;
-   WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues = () => ({
-      encounterName: 'Howls',
-      encounterTime: '1:00 PM',
+
+test('Test_BuildGuardiansTalkUnscheduleSection_TestWithoutTime_ExpectOverlapMessage', () => {
+   const talkName = 'Amur Tiger';
+   const original = GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues;
+   GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues = () => ({
+      talkName,
    });
 
    try {
-      assert.match(
-         ItineraryBuildWarningsContentBuilder.buildWildEncounterUnscheduleSection([], strings).message,
-         /wild Howls at 1:00 PM/
-      );
+      const section = ItineraryBuildWarningsContentBuilder.buildGuardiansTalkUnscheduleSection([], strings);
 
-      WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues = () => ({
-         encounterName: 'Howls',
-      });
+      assert.equal(section.message, strings.buildWarningScheduleOverlapMessageWithoutTime(talkName));
+   } finally {
+      GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues = original;
+   }
+});
+
+
+test('Test_BuildGuardiansTalkUnscheduleSection_TestMissingTalk_ExpectNull', () => {
+   const original = GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues;
+   GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues = () => null;
+
+   try {
+      const section = ItineraryBuildWarningsContentBuilder.buildGuardiansTalkUnscheduleSection([], strings);
+
+      assert.equal(section, null);
+   } finally {
+      GuardiansTalkUnscheduleFragment.getPrimaryGuardiansTalkFromUnscheduleIssues = original;
+   }
+});
+
+
+test('Test_BuildWildEncounterUnscheduleSection_TestWithTime_ExpectMessage', () => {
+   const encounterName = 'From Howls to Honks';
+   const encounterTime = '1:00 PM';
+   const original = WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues;
+   WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues = () => ({
+      encounterName,
+      encounterTime,
+   });
+
+   try {
+      const section = ItineraryBuildWarningsContentBuilder.buildWildEncounterUnscheduleSection([], strings);
+
       assert.equal(
-         ItineraryBuildWarningsContentBuilder.buildWildEncounterUnscheduleSection([], strings).message,
-         'wild Howls'
+         section.message,
+         strings.buildWarningWildEncounterOverlapMessage(encounterName, encounterTime)
       );
    } finally {
       WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues = original;
    }
 });
 
-test('Test_BuildWithoutAnimalAndLongWaitSections_TestIssues_ExpectMapped', () => {
-   const originalTalks = GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues;
-   const originalAttractions = AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues;
-   const originalMessage = AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage;
-   const originalLongWait = FixedTimeItemLongWaitFragment.getFixedTimeItemsFromLongWaitIssues;
 
+test('Test_BuildWildEncounterUnscheduleSection_TestWithoutTime_ExpectMessage', () => {
+   const encounterName = 'From Howls to Honks';
+   const original = WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues;
+   WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues = () => ({
+      encounterName,
+   });
+
+   try {
+      const section = ItineraryBuildWarningsContentBuilder.buildWildEncounterUnscheduleSection([], strings);
+
+      assert.equal(
+         section.message,
+         strings.buildWarningWildEncounterOverlapMessageWithoutTime(encounterName)
+      );
+   } finally {
+      WildEncounterUnscheduleFragment.getPrimaryWildEncounterFromUnscheduleIssues = original;
+   }
+});
+
+
+test('Test_BuildGuardiansTalkWithoutAnimalSections_TestTalks_ExpectMessages', () => {
+   const talkName = 'Amur Tiger';
+   const talkTime = '11:00 AM';
+   const secondTalkName = 'African Lion';
+   const originalTalks = GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues;
    GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues = () => [
-      { talkName: 'Tiger', talkTime: '11:00 AM' },
-      { talkName: 'Lion' },
-   ];
-   AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues = () => [
-      { attractionName: 'Carousel' },
-   ];
-   AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage = () => 'carousel warning';
-   FixedTimeItemLongWaitFragment.getFixedTimeItemsFromLongWaitIssues = () => [
-      { itemName: 'Talk', itemTime: '2:00 PM', typePhrase: 'talk' },
-      { itemName: 'Encounter', typePhrase: 'encounter' },
+      { talkName, talkTime },
+      { talkName: secondTalkName },
    ];
 
    try {
       const talkSections = ItineraryBuildWarningsContentBuilder.buildGuardiansTalkWithoutAnimalSections([], strings);
-      assert.equal(talkSections.length, 2);
-      assert.match(talkSections[0].message, /Tiger missing animal 11:00 AM/);
 
-      const attractionSections = ItineraryBuildWarningsContentBuilder.buildAttractionWithoutAnimalSections([], strings);
-      assert.equal(attractionSections[0].message, 'carousel warning');
-
-      const waitSections = ItineraryBuildWarningsContentBuilder.buildFixedTimeItemLongWaitSections([], strings);
-      assert.equal(waitSections.length, 2);
-      assert.match(waitSections[0].message, /Talk 2:00 PM talk/);
-      assert.match(waitSections[1].message, /Encounter encounter/);
+      assert.equal(talkSections.length, Position.THIRD);
+      assert.equal(
+         talkSections.at(Position.FIRST).message,
+         strings.buildWarningWithoutAnimalMessage(talkName, talkTime)
+      );
    } finally {
       GuardiansTalkWithoutAnimalFragment.getGuardiansTalksFromWithoutAnimalIssues = originalTalks;
+   }
+});
+
+
+test('Test_BuildAttractionWithoutAnimalSections_TestAttraction_ExpectMessage', () => {
+   const attractionMessage = 'carousel warning';
+   const originalAttractions = AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues;
+   const originalMessage = AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage;
+   AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues = () => [
+      { attractionName: 'Conservation Carousel' },
+   ];
+   AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage = () => attractionMessage;
+
+   try {
+      const attractionSections = ItineraryBuildWarningsContentBuilder.buildAttractionWithoutAnimalSections([], strings);
+
+      assert.equal(attractionSections.at(Position.FIRST).message, attractionMessage);
+   } finally {
       AttractionWithoutAnimalFragment.getAttractionsFromWithoutAnimalIssues = originalAttractions;
       AttractionWithoutAnimalFragment.attractionWithoutAnimalMessage = originalMessage;
+   }
+});
+
+
+test('Test_BuildFixedTimeItemLongWaitSections_TestItems_ExpectMessages', () => {
+   const talkName = 'Mornings in Malaysia';
+   const talkTime = '2:00 PM';
+   const talkPhrase = 'talk';
+   const encounterName = 'From Howls to Honks';
+   const encounterPhrase = 'encounter';
+   const originalLongWait = FixedTimeItemLongWaitFragment.getFixedTimeItemsFromLongWaitIssues;
+   FixedTimeItemLongWaitFragment.getFixedTimeItemsFromLongWaitIssues = () => [
+      { itemName: talkName, itemTime: talkTime, typePhrase: talkPhrase },
+      { itemName: encounterName, typePhrase: encounterPhrase },
+   ];
+
+   try {
+      const waitSections = ItineraryBuildWarningsContentBuilder.buildFixedTimeItemLongWaitSections([], strings);
+
+      assert.equal(waitSections.length, Position.THIRD);
+      assert.equal(
+         waitSections.at(Position.FIRST).message,
+         strings.buildWarningLongWaitMessage(talkName, talkTime, talkPhrase)
+      );
+      assert.equal(
+         waitSections.at(Position.SECOND).message,
+         strings.buildWarningLongWaitMessageWithoutTime(encounterName, encounterPhrase)
+      );
+   } finally {
       FixedTimeItemLongWaitFragment.getFixedTimeItemsFromLongWaitIssues = originalLongWait;
    }
 });
 
+
 test('Test_CreateBuildWarningsContent_TestSections_ExpectModules', () => {
+   const firstTitle = 'One';
+   const firstMessage = 'First';
+   const secondTitle = 'Two';
+   const secondMessage = 'Second';
+
    const content = ItineraryBuildWarningsContentBuilder.createBuildWarningsContent([
-      { title: 'One', message: 'First' },
-      { title: 'Two', message: 'Second' },
+      { title: firstTitle, message: firstMessage },
+      { title: secondTitle, message: secondMessage },
    ]);
+   const modules = content.querySelectorAll('.itin-build-warning-module');
+   const title = content.querySelector('.itin-build-warning-module-title')?.textContent;
 
    assert.ok(content.classList.contains('itin-build-warnings'));
-   const modules = content.querySelectorAll('.itin-build-warning-module');
-   assert.equal(modules.length, 2);
-   assert.equal(
-      content.querySelector('.itin-build-warning-module-title')?.textContent,
-      'One'
-   );
+   assert.equal(modules.length, Position.THIRD);
+   assert.equal(title, firstTitle);
 });

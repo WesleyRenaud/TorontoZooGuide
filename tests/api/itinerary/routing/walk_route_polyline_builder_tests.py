@@ -61,12 +61,14 @@ DISCONNECTED_POINTS = [
 
 def Test_AppendNodeId_TestDuplicateConsecutive_ExpectStoredOnce() -> None:
    route_node_ids: list[ str ] = []
+   first_node_id = CONTINUOUS_POINTS[ Position.FIRST ].node_id
+   second_node_id = CONTINUOUS_POINTS[ Position.SECOND ].node_id
 
-   WalkRoutePolylineBuilder.append_node_id( route_node_ids, 'n-1' )
-   WalkRoutePolylineBuilder.append_node_id( route_node_ids, 'n-1' )
-   WalkRoutePolylineBuilder.append_node_id( route_node_ids, 'n-2' )
+   WalkRoutePolylineBuilder.append_node_id( route_node_ids, first_node_id )
+   WalkRoutePolylineBuilder.append_node_id( route_node_ids, first_node_id )
+   WalkRoutePolylineBuilder.append_node_id( route_node_ids, second_node_id )
 
-   assert route_node_ids == [ 'n-1', 'n-2' ]
+   assert route_node_ids == [ first_node_id, second_node_id ]
 
 
 def Test_AppendLegNodeIds_TestSharedJoinNode_ExpectStoredOnce() -> None:
@@ -79,38 +81,78 @@ def Test_AppendLegNodeIds_TestSharedJoinNode_ExpectStoredOnce() -> None:
       route_node_ids,
       CONTINUOUS_LEG_B.node_ids )
 
-   assert route_node_ids == [ 'n-1', 'n-2', 'n-3', 'n-4' ]
+   assert route_node_ids == [ point.node_id for point in CONTINUOUS_POINTS ]
 
 
 def Test_InclusivePointSlicesForLegs_TestContinuousLegs_ExpectSharedJoinIndex() -> None:
-   slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs(
-      [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B ] )
+   legs = [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B ]
+   first_from_sequence = Position.FIRST
+   first_to_sequence = (
+      first_from_sequence
+      + len( CONTINUOUS_LEG_A.node_ids )
+      + Position.LAST )
+   second_from_sequence = first_to_sequence
+   second_to_sequence = (
+      second_from_sequence
+      + len( CONTINUOUS_LEG_B.node_ids )
+      + Position.LAST )
 
-   assert slices == [ ( 0, 2 ), ( 2, 3 ) ]
+   slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs( legs )
+
+   assert slices == [
+      ( first_from_sequence, first_to_sequence ),
+      ( second_from_sequence, second_to_sequence ),
+   ]
 
 
 def Test_InclusivePointSlicesForLegs_TestDisconnectedLeg_ExpectGapBetweenSlices() -> None:
-   slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs(
-      [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B, DISCONNECTED_LEG ] )
+   legs = [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B, DISCONNECTED_LEG ]
+   first_to_sequence = (
+      Position.FIRST
+      + len( CONTINUOUS_LEG_A.node_ids )
+      + Position.LAST )
+   second_to_sequence = (
+      first_to_sequence
+      + len( CONTINUOUS_LEG_B.node_ids )
+      + Position.LAST )
+   disconnected_from_sequence = second_to_sequence + Position.SECOND
+   disconnected_to_sequence = (
+      disconnected_from_sequence
+      + len( DISCONNECTED_LEG.node_ids )
+      + Position.LAST )
 
-   assert slices[ Position.LAST ] == ( 4, 5 )
+   slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs( legs )
+
+   assert slices[ Position.LAST ] == (
+      disconnected_from_sequence,
+      disconnected_to_sequence )
 
 
-def Test_NodeIdsForPointSlice_TestSliceRange_ExpectMatchingNodeIds() -> None:
-   for leg, ( from_point_sequence, to_point_sequence ) in zip(
-         [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B ],
-         WalkRoutePolylineBuilder.inclusive_point_slices_for_legs(
-            [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B ] ) ):
-      assert WalkRoutePolylineBuilder.node_ids_for_point_slice(
+def Test_NodeIdsForPointSlice_TestContinuousLegs_ExpectMatchingNodeIds() -> None:
+   legs = [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B ]
+   slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs( legs )
+
+   sliced_node_ids = [
+      WalkRoutePolylineBuilder.node_ids_for_point_slice(
          CONTINUOUS_POINTS,
          from_point_sequence=from_point_sequence,
-         to_point_sequence=to_point_sequence ) == leg.node_ids
+         to_point_sequence=to_point_sequence )
+      for from_point_sequence, to_point_sequence in slices
+   ]
 
-   for leg, ( from_point_sequence, to_point_sequence ) in zip(
-         [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B, DISCONNECTED_LEG ],
-         WalkRoutePolylineBuilder.inclusive_point_slices_for_legs(
-            [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B, DISCONNECTED_LEG ] ) ):
-      assert WalkRoutePolylineBuilder.node_ids_for_point_slice(
+   assert sliced_node_ids == [ leg.node_ids for leg in legs ]
+
+
+def Test_NodeIdsForPointSlice_TestDisconnectedLegs_ExpectMatchingNodeIds() -> None:
+   legs = [ CONTINUOUS_LEG_A, CONTINUOUS_LEG_B, DISCONNECTED_LEG ]
+   slices = WalkRoutePolylineBuilder.inclusive_point_slices_for_legs( legs )
+
+   sliced_node_ids = [
+      WalkRoutePolylineBuilder.node_ids_for_point_slice(
          DISCONNECTED_POINTS,
          from_point_sequence=from_point_sequence,
-         to_point_sequence=to_point_sequence ) == leg.node_ids
+         to_point_sequence=to_point_sequence )
+      for from_point_sequence, to_point_sequence in slices
+   ]
+
+   assert sliced_node_ids == [ leg.node_ids for leg in legs ]

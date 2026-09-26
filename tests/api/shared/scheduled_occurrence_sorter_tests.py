@@ -12,11 +12,10 @@ class SampleOccurrence():
 
 
 def Test_UniqueSortedByKey_TestDuplicateKeys_ExpectKeepsLastItemPerKey() -> None:
-   occurrences = [
-      SampleOccurrence( date='2026-06-15', time='10:00 AM' ),
-      SampleOccurrence( date='2026-06-15', time='10:00 AM' ),
-      SampleOccurrence( date='2026-06-16', time='11:00 AM' ),
-   ]
+   first = SampleOccurrence( date='2026-06-15', time='10:00 AM' )
+   duplicate = SampleOccurrence( date=first.date, time=first.time )
+   later = SampleOccurrence( date='2026-06-16', time='11:00 AM' )
+   occurrences = [ first, duplicate, later ]
 
    sorted_occurrences = ScheduledOccurrenceSorter.unique_sorted_by_key(
       occurrences,
@@ -24,6 +23,6 @@ def Test_UniqueSortedByKey_TestDuplicateKeys_ExpectKeepsLastItemPerKey() -> None
       sort_key=lambda occurrence: ( occurrence.date, occurrence.time ) )
 
    assert [ ( item.date, item.time ) for item in sorted_occurrences ] == [
-      ( '2026-06-15', '10:00 AM' ),
-      ( '2026-06-16', '11:00 AM' ),
+      ( duplicate.date, duplicate.time ),
+      ( later.date, later.time ),
    ]

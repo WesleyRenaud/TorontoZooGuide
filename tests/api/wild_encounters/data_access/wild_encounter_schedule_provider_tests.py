@@ -339,11 +339,13 @@ def Test_ScheduleOverlapsExistingSchedule_TestOverlappingDates_ExpectTrue(
       end_date=END_DATE )
    schedule_provider_conn.commit()
 
-   assert WildEncounterScheduleProvider.schedule_overlaps_existing_schedule(
+   result = WildEncounterScheduleProvider.schedule_overlaps_existing_schedule(
       schedule_provider_conn,
       _schedule_input(
          start_date='2026-06-15',
-         end_date='2026-07-15' ) ) is True
+         end_date='2026-07-15' ) )
+
+   assert result is True
 
 
 def Test_ScheduleOverlapsExistingSchedule_TestNonOverlappingDates_ExpectFalse(
@@ -354,11 +356,13 @@ def Test_ScheduleOverlapsExistingSchedule_TestNonOverlappingDates_ExpectFalse(
       end_date=END_DATE )
    schedule_provider_conn.commit()
 
-   assert WildEncounterScheduleProvider.schedule_overlaps_existing_schedule(
+   result = WildEncounterScheduleProvider.schedule_overlaps_existing_schedule(
       schedule_provider_conn,
       _schedule_input(
          start_date='2026-07-01',
-         end_date='2026-07-31' ) ) is False
+         end_date='2026-07-31' ) )
+
+   assert result is False
 
 
 def Test_FetchScheduleConflicts_TestOverlappingSchedule_ExpectConflictRecord(
@@ -520,9 +524,11 @@ def Test_InsertOrUpdateSchedule_TestSameStartDate_ExpectUpdatesRow(
 
 def Test_SaveSchedule_TestNewSchedule_ExpectPersistsAndReturnsTrue(
       schedule_provider_conn: sqlite3.Connection ) -> None:
-   assert WildEncounterScheduleProvider.save_schedule(
+   result = WildEncounterScheduleProvider.save_schedule(
       schedule_provider_conn,
-      _schedule_input() ) is True
+      _schedule_input() )
+
+   assert result is True
 
    row = _fetch_schedule_row( schedule_provider_conn, start_date=START_DATE )
 
@@ -548,12 +554,14 @@ def Test_SaveSchedule_TestOverlappingSchedule_ExpectReturnsFalse(
       schedule_provider_conn,
       _schedule_input() )
 
-   assert WildEncounterScheduleProvider.save_schedule(
+   result = WildEncounterScheduleProvider.save_schedule(
       schedule_provider_conn,
       _schedule_input(
          start_date='2026-06-15',
          end_date='2026-07-15',
-         message='Overlap.' ) ) is False
+         message='Overlap.' ) )
+
+   assert result is False
 
    assert _fetch_schedule_row(
       schedule_provider_conn,
@@ -568,12 +576,14 @@ def Test_SaveScheduleEnd_TestCoveringSchedule_ExpectUpdatesEndDate(
       end_date=None )
    schedule_provider_conn.commit()
 
-   assert WildEncounterScheduleProvider.save_schedule_end(
+   result = WildEncounterScheduleProvider.save_schedule_end(
       schedule_provider_conn,
       WildEncounterScheduleEndInput(
          wild_encounter=KANGAROO,
          schedule_end_date='2026-06-20',
-         encounter_time=KANGAROO_ENCOUNTER_TIME ) ) is True
+         encounter_time=KANGAROO_ENCOUNTER_TIME ) )
+
+   assert result is True
 
    row = _fetch_schedule_row( schedule_provider_conn, start_date=START_DATE )
 
@@ -583,9 +593,11 @@ def Test_SaveScheduleEnd_TestCoveringSchedule_ExpectUpdatesEndDate(
 
 def Test_SaveScheduleEnd_TestNoMatchingSchedule_ExpectReturnsFalse(
       schedule_provider_conn: sqlite3.Connection ) -> None:
-   assert WildEncounterScheduleProvider.save_schedule_end(
+   result = WildEncounterScheduleProvider.save_schedule_end(
       schedule_provider_conn,
       WildEncounterScheduleEndInput(
          wild_encounter=KANGAROO,
          schedule_end_date='2026-06-20',
-         encounter_time=KANGAROO_ENCOUNTER_TIME ) ) is False
+         encounter_time=KANGAROO_ENCOUNTER_TIME ) )
+
+   assert result is False

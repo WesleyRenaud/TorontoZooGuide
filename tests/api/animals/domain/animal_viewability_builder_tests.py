@@ -9,7 +9,9 @@ from api.animals.domain.animal_viewability_builder import AnimalViewabilityBuild
 from api.animals.domain.indoor_outdoor_viewing_visibility_builder import IndoorOutdoorViewingVisibilityBuilder
 from api.app_string_provider import AppStringProvider
 from api.models import Animal
+from api.shared.enums import EnclosureType
 from api.shared.enums import ScheduleStatus
+from api.shared.weather import Weather
 from api.walk_graph.viewing_walk_node_id_applier import ViewingWalkNodeIdApplier
 
 
@@ -82,47 +84,97 @@ def _make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityR
 
 
 def Test_CalculateAnimalLikelihood_TestIndoorTemperature_ExpectFullLikelihoodWhenExhibitOpen() -> None:
-   assert AnimalViewabilityBuilder.calculate_animal_likelihood(
-      temp=-20,
-      sigma=2,
-      enclosure_type='indoor',
-      min_temperature=30,
-      day_seasonal_multiplier=0,
-      exhibit_day_seasonal_availability_multiplier=1
-   ) == 100
+   temp = -20
+   sigma = 2
+   enclosure_type = EnclosureType.INDOOR.value
+   min_temperature = 30
+   day_seasonal_multiplier = 0
+   exhibit_day_seasonal_availability_multiplier = 1
+
+   likelihood = AnimalViewabilityBuilder.calculate_animal_likelihood(
+      temp=temp,
+      sigma=sigma,
+      enclosure_type=enclosure_type,
+      min_temperature=min_temperature,
+      day_seasonal_multiplier=day_seasonal_multiplier,
+      exhibit_day_seasonal_availability_multiplier=exhibit_day_seasonal_availability_multiplier )
+
+   assert likelihood == max(
+      round( 1.0 * 1.0 * exhibit_day_seasonal_availability_multiplier * 100 ),
+      0 )
 
 
 def Test_CalculateAnimalLikelihood_TestIndoorTemperature_ExpectZeroWhenExhibitClosed() -> None:
-   assert AnimalViewabilityBuilder.calculate_animal_likelihood(
-      temp=-20,
-      sigma=2,
-      enclosure_type='indoor',
-      min_temperature=30,
-      day_seasonal_multiplier=0,
-      exhibit_day_seasonal_availability_multiplier=0
-   ) == 0
+   temp = -20
+   sigma = 2
+   enclosure_type = EnclosureType.INDOOR.value
+   min_temperature = 30
+   day_seasonal_multiplier = 0
+   exhibit_day_seasonal_availability_multiplier = 0
+
+   likelihood = AnimalViewabilityBuilder.calculate_animal_likelihood(
+      temp=temp,
+      sigma=sigma,
+      enclosure_type=enclosure_type,
+      min_temperature=min_temperature,
+      day_seasonal_multiplier=day_seasonal_multiplier,
+      exhibit_day_seasonal_availability_multiplier=exhibit_day_seasonal_availability_multiplier )
+
+   assert likelihood == max(
+      round( 1.0 * 1.0 * exhibit_day_seasonal_availability_multiplier * 100 ),
+      0 )
 
 
 def Test_CalculateAnimalLikelihood_TestOutdoorSeasonalMultipliers_ExpectScaledLikelihood() -> None:
-   assert AnimalViewabilityBuilder.calculate_animal_likelihood(
-      temp=20,
-      sigma=2,
-      enclosure_type='Outdoor',
-      min_temperature=20,
-      day_seasonal_multiplier=0.5,
-      exhibit_day_seasonal_availability_multiplier=0.5
-   ) == 12
+   temp = 20
+   sigma = 2
+   enclosure_type = EnclosureType.OUTDOOR.value
+   min_temperature = 20
+   day_seasonal_multiplier = 0.5
+   exhibit_day_seasonal_availability_multiplier = 0.5
+
+   likelihood = AnimalViewabilityBuilder.calculate_animal_likelihood(
+      temp=temp,
+      sigma=sigma,
+      enclosure_type=enclosure_type,
+      min_temperature=min_temperature,
+      day_seasonal_multiplier=day_seasonal_multiplier,
+      exhibit_day_seasonal_availability_multiplier=exhibit_day_seasonal_availability_multiplier )
+
+   temperature_likelihood = Weather.get_temperature_probability(
+      mu=temp,
+      sigma=sigma,
+      min_temperature=min_temperature )
+   assert likelihood == max(
+      round(
+         temperature_likelihood
+         * day_seasonal_multiplier
+         * exhibit_day_seasonal_availability_multiplier
+         * 100 ),
+      0 )
 
 
 def Test_CalculateAnimalLikelihood_TestMissingInputs_ExpectDefaultLikelihood() -> None:
-   assert AnimalViewabilityBuilder.calculate_animal_likelihood(
-      temp=None,
-      sigma=2,
-      enclosure_type='Outdoor',
-      min_temperature=None,
-      day_seasonal_multiplier=None,
-      exhibit_day_seasonal_availability_multiplier=None
-   ) == 100
+   temp = None
+   sigma = 2
+   enclosure_type = EnclosureType.OUTDOOR.value
+   min_temperature = None
+   day_seasonal_multiplier = None
+   exhibit_day_seasonal_availability_multiplier = None
+
+   likelihood = AnimalViewabilityBuilder.calculate_animal_likelihood(
+      temp=temp,
+      sigma=sigma,
+      enclosure_type=enclosure_type,
+      min_temperature=min_temperature,
+      day_seasonal_multiplier=day_seasonal_multiplier,
+      exhibit_day_seasonal_availability_multiplier=exhibit_day_seasonal_availability_multiplier )
+
+   animal_seasonal_multiplier = 1.0
+   exhibit_seasonal_multiplier = 1.0
+   assert likelihood == max(
+      round( 1.0 * animal_seasonal_multiplier * exhibit_seasonal_multiplier * 100 ),
+      0 )
 
 
 def Test_GetActiveOffDisplayStatus_TestActiveRecord_ExpectMessage() -> None:
@@ -132,9 +184,11 @@ def Test_GetActiveOffDisplayStatus_TestActiveRecord_ExpectMessage() -> None:
       off_display_start=SCHEDULE_START_DATE,
       off_display_end=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_off_display_status(
+   status = AnimalViewabilityBuilder.get_active_off_display_status(
       active_record,
-      TARGET_DATE ) == ( True, OFF_DISPLAY_MESSAGE )
+      TARGET_DATE )
+
+   assert status == ( True, active_record.off_display_message )
 
 
 def Test_GetActiveLimitedViewingStatus_TestActiveRecord_ExpectMessage() -> None:
@@ -145,9 +199,11 @@ def Test_GetActiveLimitedViewingStatus_TestActiveRecord_ExpectMessage() -> None:
       daily_end_time=DAILY_END_TIME,
       viewing_message=LIMITED_VIEWING_MESSAGE )
 
-   assert AnimalViewabilityBuilder.get_active_limited_viewing_status(
+   status = AnimalViewabilityBuilder.get_active_limited_viewing_status(
       active_record,
-      TARGET_DATE ) == ( True, LIMITED_VIEWING_MESSAGE )
+      TARGET_DATE )
+
+   assert status == ( True, active_record.viewing_message )
 
 
 def Test_GetActiveViewingAlertStatus_TestActiveRecord_ExpectMessage() -> None:
@@ -156,9 +212,11 @@ def Test_GetActiveViewingAlertStatus_TestActiveRecord_ExpectMessage() -> None:
       alert_start_date=SCHEDULE_START_DATE,
       alert_end_date=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_viewing_alert_status(
+   status = AnimalViewabilityBuilder.get_active_viewing_alert_status(
       active_record,
-      TARGET_DATE ) == ( True, VIEWING_ALERT_MESSAGE )
+      TARGET_DATE )
+
+   assert status == ( True, active_record.alert_message )
 
 
 def Test_GetActiveExhibitStatus_TestActiveRecord_ExpectClosedStatus() -> None:
@@ -168,9 +226,11 @@ def Test_GetActiveExhibitStatus_TestActiveRecord_ExpectClosedStatus() -> None:
       closed_start=SCHEDULE_START_DATE,
       closed_end=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_exhibit_status(
+   status = AnimalViewabilityBuilder.get_active_exhibit_status(
       active_record,
-      TARGET_DATE ) == ( ScheduleStatus.CLOSED, CLOSED_MESSAGE )
+      TARGET_DATE )
+
+   assert status == ( ScheduleStatus.CLOSED, active_record.closed_message )
 
 
 def Test_GetActiveOffDisplayStatus_TestInactiveRecord_ExpectInactiveDefault() -> None:
@@ -180,9 +240,11 @@ def Test_GetActiveOffDisplayStatus_TestInactiveRecord_ExpectInactiveDefault() ->
       off_display_start=SCHEDULE_START_DATE,
       off_display_end=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_off_display_status(
+   status = AnimalViewabilityBuilder.get_active_off_display_status(
       inactive_record,
-      TARGET_DATE ) == ( False, None )
+      TARGET_DATE )
+
+   assert status == ( False, None )
 
 
 def Test_GetActiveLimitedViewingStatus_TestInactiveRecord_ExpectInactiveDefault() -> None:
@@ -193,9 +255,11 @@ def Test_GetActiveLimitedViewingStatus_TestInactiveRecord_ExpectInactiveDefault(
       daily_end_time=DAILY_END_TIME,
       viewing_message=LIMITED_VIEWING_MESSAGE )
 
-   assert AnimalViewabilityBuilder.get_active_limited_viewing_status(
+   status = AnimalViewabilityBuilder.get_active_limited_viewing_status(
       inactive_record,
-      TARGET_DATE ) == ( False, None )
+      TARGET_DATE )
+
+   assert status == ( False, None )
 
 
 def Test_GetActiveViewingAlertStatus_TestInactiveRecord_ExpectInactiveDefault() -> None:
@@ -204,9 +268,11 @@ def Test_GetActiveViewingAlertStatus_TestInactiveRecord_ExpectInactiveDefault() 
       alert_start_date=SCHEDULE_START_DATE,
       alert_end_date=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_viewing_alert_status(
+   status = AnimalViewabilityBuilder.get_active_viewing_alert_status(
       inactive_record,
-      TARGET_DATE ) == ( False, None )
+      TARGET_DATE )
+
+   assert status == ( False, None )
 
 
 def Test_GetActiveExhibitStatus_TestInactiveRecord_ExpectUnknownStatus() -> None:
@@ -216,9 +282,11 @@ def Test_GetActiveExhibitStatus_TestInactiveRecord_ExpectUnknownStatus() -> None
       closed_start=SCHEDULE_START_DATE,
       closed_end=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_exhibit_status(
+   status = AnimalViewabilityBuilder.get_active_exhibit_status(
       inactive_record,
-      TARGET_DATE ) == ( ScheduleStatus.UNKNOWN, None )
+      TARGET_DATE )
+
+   assert status == ( ScheduleStatus.UNKNOWN, None )
 
 
 def Test_GetActiveOffDisplayStatus_TestExpiredRecord_ExpectInactiveDefault() -> None:
@@ -228,9 +296,11 @@ def Test_GetActiveOffDisplayStatus_TestExpiredRecord_ExpectInactiveDefault() -> 
       off_display_start=SCHEDULE_START_DATE,
       off_display_end=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_off_display_status(
+   status = AnimalViewabilityBuilder.get_active_off_display_status(
       expired_record,
-      EXPIRED_TARGET_DATE ) == ( False, None )
+      EXPIRED_TARGET_DATE )
+
+   assert status == ( False, None )
 
 
 def Test_GetActiveExhibitStatus_TestExpiredRecordOnTargetDate_ExpectOpenStatus() -> None:
@@ -240,9 +310,11 @@ def Test_GetActiveExhibitStatus_TestExpiredRecordOnTargetDate_ExpectOpenStatus()
       closed_start=SCHEDULE_START_DATE,
       closed_end=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_exhibit_status(
+   status = AnimalViewabilityBuilder.get_active_exhibit_status(
       expired_record,
-      TARGET_DATE ) == ( ScheduleStatus.OPEN, None )
+      TARGET_DATE )
+
+   assert status == ( ScheduleStatus.OPEN, None )
 
 
 def Test_GetActiveLimitedViewingStatus_TestExpiredRecord_ExpectInactiveDefault() -> None:
@@ -253,9 +325,11 @@ def Test_GetActiveLimitedViewingStatus_TestExpiredRecord_ExpectInactiveDefault()
       daily_end_time=DAILY_END_TIME,
       viewing_message=LIMITED_VIEWING_MESSAGE )
 
-   assert AnimalViewabilityBuilder.get_active_limited_viewing_status(
+   status = AnimalViewabilityBuilder.get_active_limited_viewing_status(
       expired_record,
-      EXPIRED_TARGET_DATE ) == ( False, None )
+      EXPIRED_TARGET_DATE )
+
+   assert status == ( False, None )
 
 
 def Test_GetActiveViewingAlertStatus_TestExpiredRecord_ExpectInactiveDefault() -> None:
@@ -264,9 +338,11 @@ def Test_GetActiveViewingAlertStatus_TestExpiredRecord_ExpectInactiveDefault() -
       alert_start_date=SCHEDULE_START_DATE,
       alert_end_date=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_viewing_alert_status(
+   status = AnimalViewabilityBuilder.get_active_viewing_alert_status(
       expired_record,
-      EXPIRED_TARGET_DATE ) == ( False, None )
+      EXPIRED_TARGET_DATE )
+
+   assert status == ( False, None )
 
 
 def Test_GetActiveExhibitStatus_TestDateOutsideRange_ExpectUnknownStatus() -> None:
@@ -276,9 +352,11 @@ def Test_GetActiveExhibitStatus_TestDateOutsideRange_ExpectUnknownStatus() -> No
       closed_start=SCHEDULE_START_DATE,
       closed_end=SCHEDULE_END_DATE )
 
-   assert AnimalViewabilityBuilder.get_active_exhibit_status(
+   status = AnimalViewabilityBuilder.get_active_exhibit_status(
       record,
-      EXPIRED_TARGET_DATE ) == ( ScheduleStatus.UNKNOWN, None )
+      EXPIRED_TARGET_DATE )
+
+   assert status == ( ScheduleStatus.UNKNOWN, None )
 
 
 def Test_BuildViewableAnimalFromRecord_TestOffDisplay_ExpectZeroLikelihoodAndMessage(
@@ -466,20 +544,56 @@ def Test_BuildViewableAnimalFromRecord_TestZeroLikelihoodWithoutSeasonalMessage_
    assert animal.off_display_message == SPECIES_LIKELY_OFF_DISPLAY_MESSAGE
 
 
-def Test_BuildViewableAnimalsOnDay_TestThresholdAndIncludeOffDisplay_ExpectFiltered(
+def Test_BuildViewableAnimalsOnDay_TestThreshold_ExpectAboveThresholdOnly(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    high = Animal( species='High', exhibit=EXHIBIT, likelihood=80 )
    low = Animal( species='Low', exhibit=EXHIBIT, likelihood=10 )
    off_display = Animal( species='Off', exhibit=EXHIBIT, likelihood=0 )
    records = [
-      _make_animal_viewability_record( species='High', exhibit=EXHIBIT ),
-      _make_animal_viewability_record( species='Low', exhibit=EXHIBIT ),
-      _make_animal_viewability_record( species='Off', exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species=high.species, exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species=low.species, exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species=off_display.species, exhibit=EXHIBIT ),
    ]
    built = {
-      'High': high,
-      'Low': low,
-      'Off': off_display,
+      high.species: high,
+      low.species: low,
+      off_display.species: off_display,
+   }
+   threshold = 50
+
+   monkeypatch.setattr(
+      AnimalViewabilityBuilder,
+      'build_viewable_animal_from_record',
+      lambda record, **_kwargs: built[ record.species ] )
+   monkeypatch.setattr(
+      IndoorOutdoorViewingVisibilityBuilder,
+      'apply',
+      lambda animals: animals )
+
+   animals = AnimalViewabilityBuilder.build_viewable_animals_on_day(
+      records,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA,
+      threshold=threshold )
+
+   assert [ animal.species for animal in animals ] == [ high.species ]
+
+
+def Test_BuildViewableAnimalsOnDay_TestIncludeOffDisplay_ExpectAllAnimals(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   high = Animal( species='High', exhibit=EXHIBIT, likelihood=80 )
+   low = Animal( species='Low', exhibit=EXHIBIT, likelihood=10 )
+   off_display = Animal( species='Off', exhibit=EXHIBIT, likelihood=0 )
+   records = [
+      _make_animal_viewability_record( species=high.species, exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species=low.species, exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species=off_display.species, exhibit=EXHIBIT ),
+   ]
+   built = {
+      high.species: high,
+      low.species: low,
+      off_display.species: off_display,
    }
 
    monkeypatch.setattr(
@@ -491,31 +605,49 @@ def Test_BuildViewableAnimalsOnDay_TestThresholdAndIncludeOffDisplay_ExpectFilte
       'apply',
       lambda animals: animals )
 
-   assert [
-      animal.species
-      for animal in AnimalViewabilityBuilder.build_viewable_animals_on_day(
-         records,
-         target_date=TARGET_DATE,
-         temp=TEMP,
-         sigma=SIGMA,
-         threshold=50 )
-   ] == [ 'High' ]
+   animals = AnimalViewabilityBuilder.build_viewable_animals_on_day(
+      records,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA,
+      include_off_display_animals=True )
 
-   assert [
-      animal.species
-      for animal in AnimalViewabilityBuilder.build_viewable_animals_on_day(
-         records,
-         target_date=TARGET_DATE,
-         temp=TEMP,
-         sigma=SIGMA,
-         include_off_display_animals=True )
-   ] == [ 'High', 'Low', 'Off' ]
+   assert [ animal.species for animal in animals ] == [
+      high.species,
+      low.species,
+      off_display.species,
+   ]
 
-   assert [
-      animal.species
-      for animal in AnimalViewabilityBuilder.build_viewable_animals_on_day(
-         records,
-         target_date=TARGET_DATE,
-         temp=TEMP,
-         sigma=SIGMA )
-   ] == [ 'High', 'Low' ]
+
+def Test_BuildViewableAnimalsOnDay_TestDefault_ExpectNonZeroLikelihood(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   high = Animal( species='High', exhibit=EXHIBIT, likelihood=80 )
+   low = Animal( species='Low', exhibit=EXHIBIT, likelihood=10 )
+   off_display = Animal( species='Off', exhibit=EXHIBIT, likelihood=0 )
+   records = [
+      _make_animal_viewability_record( species=high.species, exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species=low.species, exhibit=EXHIBIT ),
+      _make_animal_viewability_record( species=off_display.species, exhibit=EXHIBIT ),
+   ]
+   built = {
+      high.species: high,
+      low.species: low,
+      off_display.species: off_display,
+   }
+
+   monkeypatch.setattr(
+      AnimalViewabilityBuilder,
+      'build_viewable_animal_from_record',
+      lambda record, **_kwargs: built[ record.species ] )
+   monkeypatch.setattr(
+      IndoorOutdoorViewingVisibilityBuilder,
+      'apply',
+      lambda animals: animals )
+
+   animals = AnimalViewabilityBuilder.build_viewable_animals_on_day(
+      records,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert [ animal.species for animal in animals ] == [ high.species, low.species ]

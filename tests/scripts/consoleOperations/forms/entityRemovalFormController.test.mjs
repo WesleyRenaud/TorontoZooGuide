@@ -12,6 +12,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -29,6 +30,10 @@ test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStat
    ControllerHelper.hideConsolePanel = () => {};
 
    try {
+      const species = 'Lion';
+      const exhibit = 'Savanna';
+      const formValues = { species, exhibit };
+      const panelEl = { id: 'remove-panel' };
       const showButtonEl = document.createElement('button');
       const submitButtonEl = document.createElement('button');
       const cancelButtonEl = document.createElement('button');
@@ -39,7 +44,7 @@ test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStat
          showButtonEl,
          submitButtonEl,
          cancelButtonEl,
-         panelEl: { id: 'remove-panel' },
+         panelEl,
          statusEl: {},
          formFieldEls: [speciesEl, exhibitEl],
          activatePanel: () => {},
@@ -47,20 +52,20 @@ test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStat
          populateOptions: () => {},
          targetEl: exhibitEl,
          loadErrorMessage: 'load failed',
-         getFormValues: () => ({ species: 'Lion', exhibit: 'Savanna' }),
+         getFormValues: () => formValues,
          validateForm: () => null,
          submitRemoval: async (payload) => {
-            assert.deepEqual(payload, { species: 'Lion', exhibit: 'Savanna' });
-            return { success: true, species: 'Lion', exhibit: 'Savanna' };
+            assert.deepEqual(payload, formValues);
+            return { success: true, species, exhibit };
          },
          successMessage: result => `Removed ${result.species}`,
       });
 
       await controller.show();
-      assert.deepEqual(activations, [{ id: 'remove-panel' }]);
-
       await submitButtonEl.listeners.click();
-      assert.ok(statuses.some((entry) => entry[1] === 'Removed Lion' && entry[2] === 'is-success'));
+
+      assert.deepEqual(activations, [panelEl]);
+      assert.ok(statuses.some((entry) => entry[1] === `Removed ${species}` && entry[2] === 'is-success'));
    } finally {
       ControllerHelper.loadOptionsAndShowPanel = originalLoad;
       ConsoleStatusPresenter.setStatus = originalStatus;
@@ -68,6 +73,7 @@ test('Test_CreateEntityRemovalFormController_TestShowAndSubmitSuccess_ExpectStat
       ControllerHelper.hideConsolePanel = originalHide;
    }
 });
+
 
 test('Test_CreateEntityRemovalFormController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];
@@ -140,6 +146,7 @@ test('Test_CreateEntityRemovalFormController_TestValidationAndFailures_ExpectErr
    }
 });
 
+
 test('Test_CreateEntityRemovalFormController_TestReloadOptionsThrows_ExpectClearsFields', async () => {
    const resets = [];
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -183,6 +190,7 @@ test('Test_CreateEntityRemovalFormController_TestReloadOptionsThrows_ExpectClear
       ControllerHelper.resetFormFields = originalReset;
    }
 });
+
 
 test('Test_CreateEntityRemovalFormController_TestSpeciesLoaders_ExpectAutofillWired', () => {
    const originalAutofill = AnimalExhibitAutofillController.createAnimalExhibitAutofillController;

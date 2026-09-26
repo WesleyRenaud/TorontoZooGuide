@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
+import { SearchApiNormalizer } from '../../../scripts/api/searchApiNormalizer.js';
 import { SearchClient } from '../../../scripts/api/searchClient.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 
 function _mockResponse(text = '{}') {
    return {
@@ -16,52 +18,51 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
+
 test('Test_SearchZoo_TestAttractionPayload_ExpectNormalizedResponse', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/search');
-      assert.deepEqual(JSON.parse(options.body), {
-         query: 'lion',
-         includeAnimals: true,
-      });
+   const query = 'lion';
+   const includeAnimals = true;
+   const species = 'African Lion';
+   const attractionName = 'Conservation Carousel';
+   const freeWithAdmission = true;
+   const partOfSeasonalAttraction = false;
+   const isClosed = false;
+   const infoLink = null;
+   const openTime = '10:00 AM';
+   const closeTime = '4:00 PM';
+   const url = '/search';
+   const payload = {
+      query,
+      includeAnimals,
+   };
+   const attractionRow = {
+      name: `  ${attractionName}  `,
+      free_with_admission: freeWithAdmission,
+      part_of_seasonal_attraction: partOfSeasonalAttraction,
+      is_closed: isClosed,
+      info_link: infoLink,
+      open_time: ` ${openTime} `,
+      close_time: ` ${closeTime} `,
+   };
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
+      assert.deepEqual(JSON.parse(options.body), payload);
 
       return _mockResponse(JSON.stringify({
-         animals: [{ species: 'African Lion' }],
-         attractions: [
-            {
-               name: '  Conservation Carousel  ',
-               free_with_admission: true,
-               part_of_seasonal_attraction: false,
-               is_closed: false,
-               info_link: null,
-               open_time: ' 10:00 AM ',
-               close_time: ' 4:00 PM ',
-            },
-         ],
+         animals: [{ species }],
+         attractions: [attractionRow],
       }));
    };
 
-   assert.deepEqual(await SearchClient.searchZoo({
-      query: 'lion',
-      includeAnimals: true,
-   }), {
-      animals: [{ species: 'African Lion' }],
+   const response = await SearchClient.searchZoo(payload);
+
+   assert.deepEqual(response, {
+      animals: [{ species }],
       pavilions: [],
       restaurants: [],
       restrooms: [],
       gift_shops: [],
-      attractions: [
-         {
-            name: 'Conservation Carousel',
-            free_with_admission: true,
-            part_of_seasonal_attraction: false,
-            is_closed: false,
-            is_also_transportation: false,
-            route_duration_minutes: null,
-            info_link: null,
-            open_time: '10:00 AM',
-            close_time: '4:00 PM',
-         },
-      ],
+      attractions: [SearchApiNormalizer.normalizeAttractionRow(attractionRow)],
       transportations: [],
       transportation_stations: [],
       guardians_talks: [],
@@ -69,93 +70,104 @@ test('Test_SearchZoo_TestAttractionPayload_ExpectNormalizedResponse', async () =
    });
 });
 
+
 test('Test_SearchItineraryItems_TestUnknownEndpoint_ExpectUnnormalized', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/search-animals');
-      assert.deepEqual(JSON.parse(options.body), { query: 'lion' });
+   const endpoint = '/search-animals';
+   const query = 'lion';
+   const species = 'African Lion';
+   const payload = { query };
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, endpoint);
+      assert.deepEqual(JSON.parse(options.body), payload);
 
       return _mockResponse(JSON.stringify({
-         animals: [{ species: 'African Lion' }],
+         animals: [{ species }],
       }));
    };
 
-   assert.deepEqual(await SearchClient.searchItineraryItems('/search-animals', {
-      query: 'lion',
-   }), {
-      animals: [{ species: 'African Lion' }],
+   const response = await SearchClient.searchItineraryItems(endpoint, payload);
+
+   assert.deepEqual(response, {
+      animals: [{ species }],
    });
 });
+
 
 test('Test_NormalizeSearchResponse_TestCollections_ExpectNormalizedRows', () => {
-   const response = SearchClient.normalizeSearchResponse({
-      animals: [{ species: 'African Lion' }],
-      gift_shops: [{ name: 'Zootique' }],
-      attractions: [
-         {
-            name: '  Conservation Carousel  ',
-            free_with_admission: true,
-            part_of_seasonal_attraction: 1,
-            is_closed: false,
-            is_also_transportation: true,
-            info_link: '  https://www.torontozoo.com/tickets/carousel  ',
-         },
-      ],
-      guardians_talks: [
-         {
-            name: '  Amur Tiger  ',
-            location: '  Eurasia Wilds  ',
-            start_time: '  13:30  ',
-            maximum_duration: 30,
-            linked_animals: [
-               {
-                  species: '  Amur Tiger  ',
-                  exhibit: '  Eurasia Wilds  ',
-               },
-            ],
-         },
-      ],
-      wild_encounters: [
-         {
-            name: '  African Rainforest  ',
-            meeting_spot: '  Wild Encounter - Africa Meeting Spot  ',
-            start_time: '  14:00  ',
-            maximum_duration: 45,
-            link: '',
-         },
-      ],
-   });
-
-   assert.deepEqual(response.animals, [{ species: 'African Lion' }]);
-   assert.deepEqual(response.gift_shops, [{ name: 'Zootique' }]);
-   assert.equal(response.attractions[0].name, 'Conservation Carousel');
-   assert.equal(response.attractions[0].free_with_admission, true);
-   assert.equal(response.attractions[0].part_of_seasonal_attraction, false);
-   assert.equal(response.attractions[0].is_closed, false);
-   assert.equal(response.attractions[0].is_also_transportation, true);
-   assert.equal(response.attractions[0].info_link, 'https://www.torontozoo.com/tickets/carousel');
-   assert.deepEqual(response.guardians_talks[0], {
-      name: 'Amur Tiger',
-      location: 'Eurasia Wilds',
-      start_time: '13:30',
-      maximum_duration: 30,
+   const species = 'African Lion';
+   const giftShopName = 'Zootique';
+   const attractionName = 'Conservation Carousel';
+   const freeWithAdmission = true;
+   const isClosed = false;
+   const isAlsoTransportation = true;
+   const infoLink = 'https://www.torontozoo.com/tickets/carousel';
+   const talkName = 'Amur Tiger';
+   const talkLocation = 'Eurasia Wilds';
+   const talkStartTime = '13:30';
+   const talkDuration = 30;
+   const encounterName = 'African Rainforest';
+   const meetingSpot = 'Wild Encounter - Africa Meeting Spot';
+   const encounterStartTime = '14:00';
+   const encounterDuration = 45;
+   const animal = { species };
+   const giftShop = { name: giftShopName };
+   const attractionRow = {
+      name: `  ${attractionName}  `,
+      free_with_admission: freeWithAdmission,
+      part_of_seasonal_attraction: 1,
+      is_closed: isClosed,
+      is_also_transportation: isAlsoTransportation,
+      info_link: `  ${infoLink}  `,
+   };
+   const talkRow = {
+      name: `  ${talkName}  `,
+      location: `  ${talkLocation}  `,
+      start_time: `  ${talkStartTime}  `,
+      maximum_duration: talkDuration,
       linked_animals: [
          {
-            species: 'Amur Tiger',
-            exhibit: 'Eurasia Wilds',
+            species: `  ${talkName}  `,
+            exhibit: `  ${talkLocation}  `,
          },
       ],
+   };
+   const encounterRow = {
+      name: `  ${encounterName}  `,
+      meeting_spot: `  ${meetingSpot}  `,
+      start_time: `  ${encounterStartTime}  `,
+      maximum_duration: encounterDuration,
+      link: '',
+   };
+
+   const response = SearchClient.normalizeSearchResponse({
+      animals: [animal],
+      gift_shops: [giftShop],
+      attractions: [attractionRow],
+      guardians_talks: [talkRow],
+      wild_encounters: [encounterRow],
    });
-   assert.deepEqual(response.wild_encounters[0], {
-      name: 'African Rainforest',
-      meeting_spot: 'Wild Encounter - Africa Meeting Spot',
-      start_time: '14:00',
-      maximum_duration: 45,
-      link: null,
-   });
+
+   assert.deepEqual(response.animals, [animal]);
+   assert.deepEqual(response.gift_shops, [giftShop]);
+   assert.deepEqual(
+      response.attractions[Position.FIRST],
+      SearchApiNormalizer.normalizeAttractionRow(attractionRow)
+   );
+   assert.deepEqual(
+      response.guardians_talks[Position.FIRST],
+      SearchApiNormalizer.normalizeGuardiansTalkRow(talkRow)
+   );
+   assert.deepEqual(
+      response.wild_encounters[Position.FIRST],
+      SearchApiNormalizer.normalizeWildEncounterRow(encounterRow)
+   );
 });
 
+
 test('Test_NormalizeSearchResponse_TestMissingGroups_ExpectEmptyArrays', () => {
-   assert.deepEqual(SearchClient.normalizeSearchResponse(null), {
+   const response = SearchClient.normalizeSearchResponse(null);
+
+   assert.deepEqual(response, {
       animals: [],
       pavilions: [],
       restaurants: [],

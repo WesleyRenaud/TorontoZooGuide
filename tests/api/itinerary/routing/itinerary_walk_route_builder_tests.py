@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_walk_route_builder import ItineraryWalkRouteBuilder
@@ -28,6 +29,14 @@ DEPARTURE_TIME = '5:00 PM'
 
 ENTRANCE_NODE_ID = 'n-1'
 LION_WALK_NODE_ID = 'n-2'
+MULTI_NODE_FIRST_ID = 'n-a'
+MULTI_NODE_SECOND_ID = 'n-b'
+MISSING_NODE_ID = 'missing'
+ONBOARD_TIME = '10:00 AM'
+OFFBOARD_TIME = '10:20 AM'
+ANIMAL_START_TIME = '10:30 AM'
+ANIMAL_END_TIME = '11:00 AM'
+UNRESOLVED_ANIMAL_END_TIME = '11:30 AM'
 ZOOMOBILE_TRANSIT_RIDE_KEY = TransportationScheduleItemKey(
    name=TransportationName.ZOOMOBILE,
    added_as_attraction=False ).to_wire()
@@ -92,17 +101,6 @@ def _clear_walk_graph_provider_cache() -> None:
    WalkGraphProvider.fetch.cache_clear()
 
 
-@pytest.fixture
-def stub_walk_graph( monkeypatch: pytest.MonkeyPatch ) -> None:
-   _clear_walk_graph_provider_cache()
-   monkeypatch.setattr( WalkGraphProvider, 'fetch', lambda: TEST_GRAPH )
-   monkeypatch.setattr(
-      ViewingWalkNodeIdResolver,
-      'resolve',
-      lambda *args, **kwargs: LION_WALK_NODE_ID )
-   yield
-
-
 def _itinerary( *animals: Animal ) -> Itinerary:
    return ItineraryBuilder.build(
       date=VISIT_DATE,
@@ -118,36 +116,58 @@ def _itinerary( *animals: Animal ) -> Itinerary:
       departure_time=DEPARTURE_TIME )
 
 
+def _lion_item_key( animal: Animal ) -> str:
+   return AnimalScheduleItemKey.wire(
+      species=animal.species,
+      exhibit=animal.exhibit,
+      enclosure_name=animal.enclosure_name )
+
+
+@pytest.fixture
+def stub_walk_graph( monkeypatch: pytest.MonkeyPatch ) -> None:
+   _clear_walk_graph_provider_cache()
+   monkeypatch.setattr( WalkGraphProvider, 'fetch', lambda: TEST_GRAPH )
+   monkeypatch.setattr(
+      ViewingWalkNodeIdResolver,
+      'resolve',
+      lambda *args, **kwargs: LION_WALK_NODE_ID )
+   yield
+
+
 def Test_Build_TestUnscheduledStopsOnly_ExpectEmptyRoute(
       stub_walk_graph: None ) -> None:
-   walk_route = ItineraryWalkRouteBuilder.build(
-      _itinerary( UNSCHEDULED_LION ) )
+   itinerary = _itinerary( UNSCHEDULED_LION )
+
+   walk_route = ItineraryWalkRouteBuilder.build( itinerary )
 
    assert walk_route == ItineraryWalkRouteBuilder.empty()
 
 
 def Test_Build_TestScheduledAnimal_ExpectRoundTripRoute(
       stub_walk_graph: None ) -> None:
-   walk_route = ItineraryWalkRouteBuilder.build(
-      _itinerary( SCHEDULED_LION ) )
+   itinerary = _itinerary( SCHEDULED_LION )
+   animal_item_key = _lion_item_key( SCHEDULED_LION )
 
+   walk_route = ItineraryWalkRouteBuilder.build( itinerary )
+
+   first_leg = walk_route.legs[ Position.FIRST ]
+   second_leg = walk_route.legs[ Position.SECOND ]
    assert [ stop.item_key for stop in walk_route.stops ] == [
       ENTRANCE_ITEM_KEY,
-      'African Lion||Africa Savanna||Outdoor',
+      animal_item_key,
       ENTRANCE_ITEM_KEY,
    ]
-   assert len( walk_route.legs ) == 2
-   assert walk_route.legs[ Position.FIRST ].from_item_key == ENTRANCE_ITEM_KEY
-   assert walk_route.legs[ Position.FIRST ].to_item_key == 'African Lion||Africa Savanna||Outdoor'
-   assert walk_route.legs[ Position.SECOND ].from_item_key == 'African Lion||Africa Savanna||Outdoor'
-   assert walk_route.legs[ Position.SECOND ].to_item_key == ENTRANCE_ITEM_KEY
+   assert first_leg.from_item_key == ENTRANCE_ITEM_KEY
+   assert first_leg.to_item_key == animal_item_key
+   assert second_leg.from_item_key == animal_item_key
+   assert second_leg.to_item_key == ENTRANCE_ITEM_KEY
    assert len( walk_route.points ) == (
-      len( walk_route.legs[ Position.FIRST ].node_ids )
-      + len( walk_route.legs[ Position.SECOND ].node_ids )
-      - 1
+      len( first_leg.node_ids )
+      + len( second_leg.node_ids )
+      + Position.LAST
    )
-   assert walk_route.points[ Position.FIRST ].node_id == walk_route.legs[ Position.FIRST ].node_ids[ Position.FIRST ]
-   assert walk_route.points[ Position.LAST ].node_id == walk_route.legs[ Position.SECOND ].node_ids[ Position.LAST ]
+   assert walk_route.points[ Position.FIRST ].node_id == first_leg.node_ids[ Position.FIRST ]
+   assert walk_route.points[ Position.LAST ].node_id == second_leg.node_ids[ Position.LAST ]
    assert all(
       point.x_px >= 0 and point.y_px >= 0
       for point in walk_route.points )
@@ -166,25 +186,24 @@ def Test_Build_TestTransitRideGap_ExpectStopsWithoutLeg(
       schedule_item_kind=ScheduleItemKind.TRANSPORTATION,
       item_key=ZOOMOBILE_MAIN_STOP_KEY,
       walk_node_ids=[ LION_WALK_NODE_ID ],
-      start_time='10:00 AM',
-      end_time='10:00 AM',
+      start_time=ONBOARD_TIME,
+      end_time=ONBOARD_TIME,
       transit_ride_key=ZOOMOBILE_TRANSIT_RIDE_KEY,
       transit_endpoint=TransitRideEndpoint.ONBOARDING )
    offboard = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.TRANSPORTATION,
       item_key=ZOOMOBILE_CANADA_STOP_KEY,
       walk_node_ids=[ LION_WALK_NODE_ID ],
-      start_time='10:20 AM',
-      end_time='10:20 AM',
+      start_time=OFFBOARD_TIME,
+      end_time=OFFBOARD_TIME,
       transit_ride_key=ZOOMOBILE_TRANSIT_RIDE_KEY,
       transit_endpoint=TransitRideEndpoint.OFFBOARDING )
    animal = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ANIMAL,
-      item_key='African Lion||Africa Savanna||Outdoor',
+      item_key=_lion_item_key( SCHEDULED_LION ),
       walk_node_ids=[ LION_WALK_NODE_ID ],
-      start_time='10:30 AM',
-      end_time='11:00 AM' )
-
+      start_time=ANIMAL_START_TIME,
+      end_time=ANIMAL_END_TIME )
    monkeypatch.setattr(
       WalkRouteAnchorBuilder,
       'build',
@@ -194,21 +213,23 @@ def Test_Build_TestTransitRideGap_ExpectStopsWithoutLeg(
       lambda previous, nxt: (
          previous.transit_endpoint == TransitRideEndpoint.ONBOARDING
          and nxt.transit_endpoint == TransitRideEndpoint.OFFBOARDING ) )
+   itinerary = _itinerary( SCHEDULED_LION )
 
-   walk_route = ItineraryWalkRouteBuilder.build( _itinerary( SCHEDULED_LION ) )
+   walk_route = ItineraryWalkRouteBuilder.build( itinerary )
 
    assert any(
-      stop.item_key == ZOOMOBILE_CANADA_STOP_KEY
+      stop.item_key == offboard.item_key
       for stop in walk_route.stops )
    assert all(
-      leg.from_item_key != ZOOMOBILE_MAIN_STOP_KEY
-      or leg.to_item_key != ZOOMOBILE_CANADA_STOP_KEY
+      leg.from_item_key != onboard.item_key
+      or leg.to_item_key != offboard.item_key
       for leg in walk_route.legs )
 
 
 def Test_Build_TestUnresolvedAnchorNode_ExpectSkipped(
       stub_walk_graph: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   animal_item_key = _lion_item_key( SCHEDULED_LION )
    entrance = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ENTRANCE,
       item_key=ENTRANCE_ITEM_KEY,
@@ -217,27 +238,30 @@ def Test_Build_TestUnresolvedAnchorNode_ExpectSkipped(
       end_time=ARRIVAL_TIME )
    empty_anchor = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ANIMAL,
-      item_key='Missing||Exhibit||Outdoor',
+      item_key=AnimalScheduleItemKey.wire(
+         species='Missing',
+         exhibit='Exhibit',
+         enclosure_name='Outdoor' ),
       walk_node_ids=[],
-      start_time='10:00 AM',
-      end_time='10:30 AM' )
+      start_time=ONBOARD_TIME,
+      end_time=ANIMAL_START_TIME )
    animal = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ANIMAL,
-      item_key='African Lion||Africa Savanna||Outdoor',
+      item_key=animal_item_key,
       walk_node_ids=[ LION_WALK_NODE_ID ],
-      start_time='11:00 AM',
-      end_time='11:30 AM' )
-
+      start_time=ANIMAL_END_TIME,
+      end_time=UNRESOLVED_ANIMAL_END_TIME )
    monkeypatch.setattr(
       WalkRouteAnchorBuilder,
       'build',
       lambda itinerary: [ entrance, empty_anchor, animal ] )
+   itinerary = _itinerary( SCHEDULED_LION )
 
-   walk_route = ItineraryWalkRouteBuilder.build( _itinerary( SCHEDULED_LION ) )
+   walk_route = ItineraryWalkRouteBuilder.build( itinerary )
 
-   assert [ stop.item_key for stop in walk_route.stops ][ :2 ] == [
-      ENTRANCE_ITEM_KEY,
-      'African Lion||Africa Savanna||Outdoor',
+   assert [ stop.item_key for stop in walk_route.stops ][ :Position.THIRD ] == [
+      entrance.item_key,
+      animal.item_key,
    ]
 
 
@@ -248,8 +272,9 @@ def Test_Build_TestMissingShortestPath_ExpectEmptyWhenNoLegs(
       ShortestPathCalculator,
       'find',
       lambda *args, **kwargs: None )
+   itinerary = _itinerary( SCHEDULED_LION )
 
-   walk_route = ItineraryWalkRouteBuilder.build( _itinerary( SCHEDULED_LION ) )
+   walk_route = ItineraryWalkRouteBuilder.build( itinerary )
 
    assert walk_route == ItineraryWalkRouteBuilder.empty()
 
@@ -257,41 +282,45 @@ def Test_Build_TestMissingShortestPath_ExpectEmptyWhenNoLegs(
 def Test_ResolveWalkRouteAnchorNodeId_TestMultiNodeAnimal_ExpectRepresentative(
       stub_walk_graph: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   walk_node_ids = [ MULTI_NODE_FIRST_ID, MULTI_NODE_SECOND_ID ]
    captured: dict[ str, object ] = {}
 
    def resolve(
          walk_graph: WalkGraph,
          from_node_id: str,
-         walk_node_ids: list[ str ] ) -> str:
+         resolved_walk_node_ids: list[ str ] ) -> str:
       captured[ 'from_node_id' ] = from_node_id
-      captured[ 'walk_node_ids' ] = list( walk_node_ids )
-      return walk_node_ids[ Position.SECOND ]
+      captured[ 'walk_node_ids' ] = list( resolved_walk_node_ids )
+      return resolved_walk_node_ids[ Position.SECOND ]
 
    monkeypatch.setattr( RepresentativeWalkNodeResolver, 'resolve', resolve )
-
    anchor = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ANIMAL,
-      item_key='African Lion||Africa Savanna||Outdoor',
-      walk_node_ids=[ 'n-a', 'n-b' ],
-      start_time='10:00 AM',
-      end_time='10:30 AM' )
+      item_key=_lion_item_key( SCHEDULED_LION ),
+      walk_node_ids=walk_node_ids,
+      start_time=SCHEDULED_LION.start_time,
+      end_time=SCHEDULED_LION.end_time )
 
    node_id = ItineraryWalkRouteBuilder._resolve_walk_route_anchor_node_id(
       TEST_GRAPH,
       from_node_id=ENTRANCE_NODE_ID,
       anchor=anchor )
 
-   assert node_id == 'n-b'
-   assert captured[ 'walk_node_ids' ] == [ 'n-a', 'n-b' ]
+   assert node_id == walk_node_ids[ Position.SECOND ]
+   assert captured[ 'from_node_id' ] == ENTRANCE_NODE_ID
+   assert captured[ 'walk_node_ids' ] == walk_node_ids
 
 
 def Test_WalkRoutePointsFromNodeIds_TestMissingNode_ExpectSkipped() -> None:
+   nodes_by_id = {
+      ENTRANCE_NODE_ID: TEST_GRAPH[ 'nodes' ][ Position.FIRST ],
+      LION_WALK_NODE_ID: TEST_GRAPH[ 'nodes' ][ Position.SECOND ],
+   }
+   node_ids = [ ENTRANCE_NODE_ID, MISSING_NODE_ID, LION_WALK_NODE_ID ]
+
    points = ItineraryWalkRouteBuilder._walk_route_points_from_node_ids(
-      [ ENTRANCE_NODE_ID, 'missing', LION_WALK_NODE_ID ],
-      {
-         ENTRANCE_NODE_ID: TEST_GRAPH[ 'nodes' ][ Position.FIRST ],
-         LION_WALK_NODE_ID: TEST_GRAPH[ 'nodes' ][ Position.SECOND ],
-      } )
+      node_ids,
+      nodes_by_id )
 
    assert [ point.node_id for point in points ] == [
       ENTRANCE_NODE_ID,
@@ -302,19 +331,22 @@ def Test_WalkRoutePointsFromNodeIds_TestMissingNode_ExpectSkipped() -> None:
 def Test_ResolveWalkRouteAnchorNodeId_TestMultiNodeNonAnimal_ExpectRepresentative(
       stub_walk_graph: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   walk_node_ids = [ MULTI_NODE_FIRST_ID, MULTI_NODE_SECOND_ID ]
    monkeypatch.setattr(
       RepresentativeWalkNodeResolver,
       'resolve',
-      lambda walk_graph, from_node_id, walk_node_ids: walk_node_ids[ Position.FIRST ] )
-
+      lambda walk_graph, from_node_id, resolved_walk_node_ids: (
+         resolved_walk_node_ids[ Position.FIRST ] ) )
    anchor = WalkRouteAnchor(
       schedule_item_kind=ScheduleItemKind.ATTRACTION,
       item_key='Splash Island',
-      walk_node_ids=[ 'n-a', 'n-b' ],
-      start_time='10:00 AM',
-      end_time='10:30 AM' )
+      walk_node_ids=walk_node_ids,
+      start_time=SCHEDULED_LION.start_time,
+      end_time=SCHEDULED_LION.end_time )
 
-   assert ItineraryWalkRouteBuilder._resolve_walk_route_anchor_node_id(
+   node_id = ItineraryWalkRouteBuilder._resolve_walk_route_anchor_node_id(
       TEST_GRAPH,
       from_node_id=ENTRANCE_NODE_ID,
-      anchor=anchor ) == 'n-a'
+      anchor=anchor )
+
+   assert node_id == walk_node_ids[ Position.FIRST ]

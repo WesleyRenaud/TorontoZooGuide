@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.itinerary.scheduling.items.attraction_or_transportation_duration_resolver import AttractionOrTransportationDurationResolver
+from api.shared.duration_values import DurationValues
 from api.shared.enums.transportation_name import TransportationName
 
 
@@ -17,6 +18,8 @@ CREATE TABLE Attraction (
 """
 
 CAROUSEL = 'Conservation Carousel'
+CAROUSEL_DURATION_MINUTES = 12
+
 
 @pytest.fixture
 def duration_conn() -> sqlite3.Connection:
@@ -31,7 +34,7 @@ def duration_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, 0 );
       """,
-      ( CAROUSEL, 12 ) )
+      ( CAROUSEL, CAROUSEL_DURATION_MINUTES ) )
    conn.execute(
       """   INSERT INTO Attraction (
                NAME,
@@ -50,18 +53,25 @@ def duration_conn() -> sqlite3.Connection:
 
 def Test_DefaultSeconds_TestAttraction_ExpectAttractionDuration(
       duration_conn: sqlite3.Connection ) -> None:
-   assert AttractionOrTransportationDurationResolver.default_seconds(
+   seconds = AttractionOrTransportationDurationResolver.default_seconds(
       duration_conn,
-      CAROUSEL ) == 12 * 60
+      CAROUSEL )
+
+   assert seconds == DurationValues.minutes_to_seconds( CAROUSEL_DURATION_MINUTES )
 
 
 def Test_DefaultSeconds_TestTransportationAttraction_ExpectTransportationDuration(
       duration_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   transportation_minutes = 25
+   transportation_seconds = DurationValues.minutes_to_seconds(
+      transportation_minutes )
    monkeypatch.setattr(
       'api.itinerary.scheduling.items.attraction_or_transportation_duration_resolver.TransportationDefaultDurationResolver.resolve',
-      lambda conn, attraction_name: 25 * 60 )
+      lambda conn, attraction_name: transportation_seconds )
 
-   assert AttractionOrTransportationDurationResolver.default_seconds(
+   seconds = AttractionOrTransportationDurationResolver.default_seconds(
       duration_conn,
-      TransportationName.ZOOMOBILE ) == 25 * 60
+      TransportationName.ZOOMOBILE )
+
+   assert seconds == transportation_seconds

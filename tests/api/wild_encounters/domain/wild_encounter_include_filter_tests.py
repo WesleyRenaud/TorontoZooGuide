@@ -4,25 +4,37 @@ from api.wild_encounters.domain.wild_encounter_include_filter import WildEncount
 
 
 def Test_FromOptionalList_TestNone_ExpectAllEncountersAllowed() -> None:
+   encounter_name = 'Giraffe Feeding'
+
    include_filter = WildEncounterIncludeFilter.from_optional_list( None )
 
    assert include_filter.provisioned_explicitly is False
-   assert include_filter.allows_wild_encounter_name( 'Giraffe Feeding' )
+   assert include_filter.allows_wild_encounter_name( encounter_name ) is True
 
 
 def Test_ShouldReturnEmpty_TestExplicitEmptyList_ExpectTrue() -> None:
    include_filter = WildEncounterIncludeFilter.from_optional_list( [] )
 
-   assert include_filter.should_return_empty()
+   should_return_empty = include_filter.should_return_empty()
+
+   assert should_return_empty is True
 
 
 def Test_AllowsWildEncounterName_TestIncludedName_ExpectTrue() -> None:
-   include_filter = WildEncounterIncludeFilter.from_optional_list( [ ' Giraffe Feeding ' ] )
+   encounter_name = 'Giraffe Feeding'
+   include_filter = WildEncounterIncludeFilter.from_optional_list(
+      [ f' { encounter_name } ' ] )
 
-   assert include_filter.allows_wild_encounter_name( 'giraffe feeding' )
+   allowed = include_filter.allows_wild_encounter_name( encounter_name.lower() )
+
+   assert allowed is True
 
 
 def Test_AllowsWildEncounterName_TestExcludedName_ExpectFalse() -> None:
-   include_filter = WildEncounterIncludeFilter.from_optional_list( [ 'Giraffe Feeding' ] )
+   encounter_name = 'Giraffe Feeding'
+   other_name = 'Rhino Encounter'
+   include_filter = WildEncounterIncludeFilter.from_optional_list( [ encounter_name ] )
 
-   assert not include_filter.allows_wild_encounter_name( 'Rhino Encounter' )
+   allowed = include_filter.allows_wild_encounter_name( other_name )
+
+   assert allowed is False

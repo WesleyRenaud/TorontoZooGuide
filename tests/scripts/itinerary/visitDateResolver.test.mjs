@@ -8,27 +8,34 @@ import { makeNoonDate } from '../helpers/visitDateMock.mjs';
 const today = makeNoonDate(2026, 5, 15);
 const tomorrow = makeNoonDate(2026, 5, 16);
 
+
 test('Test_ResolveEarliestSelectableVisitDateNoon_TestBeforeClose_ExpectToday', async () => {
+   const closeTime = '19:00';
+
    const result = await VisitDateResolver.resolveEarliestSelectableVisitDateNoon({
       getTodayFn: () => today,
-      getZooHoursFn: async () => ({ closeTime: '19:00' }),
+      getZooHoursFn: async () => ({ closeTime }),
       isPastClose: () => false,
    });
 
    assert.equal(result, today);
 });
 
+
 test('Test_ResolveEarliestSelectableVisitDateNoon_TestAfterClose_ExpectTomorrow', async () => {
+   const closeTime = '19:00';
    const addDays = (_date, days) => makeNoonDate(2026, 5, 15 + days);
+
    const result = await VisitDateResolver.resolveEarliestSelectableVisitDateNoon({
       getTodayFn: () => today,
-      getZooHoursFn: async () => ({ closeTime: '19:00' }),
+      getZooHoursFn: async () => ({ closeTime }),
       isPastClose: () => true,
       addDays,
    });
 
    assert.equal(result.getTime(), addDays(today, 1).getTime());
 });
+
 
 test('Test_ResolveEarliestSelectableVisitDateNoon_TestHoursFail_ExpectToday', async () => {
    const result = await VisitDateResolver.resolveEarliestSelectableVisitDateNoon({
@@ -41,34 +48,43 @@ test('Test_ResolveEarliestSelectableVisitDateNoon_TestHoursFail_ExpectToday', as
    assert.equal(result, today);
 });
 
+
 test('Test_ResolveEffectiveItineraryHoursDateIso_TestItineraryDate_ExpectPreferred', async () => {
+   const date = '2026-06-20';
+
    const result = await VisitDateResolver.resolveEffectiveItineraryHoursDateIso({
-      date: ' 2026-06-20 ',
+      date: ` ${date} `,
    });
 
-   assert.equal(result, '2026-06-20');
+   assert.equal(result, date);
 });
 
+
 test('Test_ResolveEffectiveItineraryHoursDateIso_TestStoredDraft_ExpectUsed', async () => {
+   const date = '2026-06-18';
+
    const result = await VisitDateResolver.resolveEffectiveItineraryHoursDateIso(
       {},
       {
-         getStoredDate: () => ' 2026-06-18 ',
+         getStoredDate: () => ` ${date} `,
       }
    );
 
-   assert.equal(result, '2026-06-18');
+   assert.equal(result, date);
 });
 
+
 test('Test_ResolveEffectiveItineraryHoursDateIso_TestNoDates_ExpectEarliest', async () => {
+   const date = '2026-06-16';
+
    const result = await VisitDateResolver.resolveEffectiveItineraryHoursDateIso(
       {},
       {
          getStoredDate: () => '',
          resolveEarliest: async () => tomorrow,
-         toIso: () => '2026-06-16',
+         toIso: () => date,
       }
    );
 
-   assert.equal(result, '2026-06-16');
+   assert.equal(result, date);
 });

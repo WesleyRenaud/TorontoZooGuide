@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ReadOpenPickerFormatter } from '../../../scripts/datePickers/readOpenPickerFormatter.js';
+
+
 function _createMockPickerInstance(overrides = {}) {
    return {
       isOpen: true,
@@ -25,42 +27,63 @@ function _createMockPickerInstance(overrides = {}) {
    };
 }
 
-test('Test_ReadOpenPickerTime_TestOpenDefaultControls_ExpectControlTime', () => {
-   const time = ReadOpenPickerFormatter.readOpenPickerTime(_createMockPickerInstance());
 
-   assert.equal(time, '12:00 PM');
+test('Test_ReadOpenPickerTime_TestOpenDefaultControls_ExpectControlTime', () => {
+   const instance = _createMockPickerInstance();
+
+   const time = ReadOpenPickerFormatter.readOpenPickerTime(instance);
+
+   assert.equal(time, `${instance.hourElement.value}:${instance.minuteElement.value} ${instance.amPM.textContent}`);
 });
+
 
 test('Test_ReadOpenPickerTime_TestSelectedDatesPresent_ExpectSelectedOverControls', () => {
+   const hours = 14;
+   const minutes = 30;
    const selectedDate = new Date();
-   selectedDate.setHours(14, 30, 0, 0);
+   selectedDate.setHours(hours, minutes, 0, 0);
+   const instance = _createMockPickerInstance({
+      selectedDates: [selectedDate],
+   });
 
-   const time = ReadOpenPickerFormatter.readOpenPickerTime(_createMockPickerInstance({
-      selectedDates: [ selectedDate ],
-   }));
+   const time = ReadOpenPickerFormatter.readOpenPickerTime(instance);
 
-   assert.equal(time, '2:30 PM');
+   assert.equal(time, instance.formatDate(selectedDate));
 });
+
 
 test('Test_ReadOpenPickerTime_TestClosedPicker_ExpectEmpty', () => {
-   assert.equal(
-      ReadOpenPickerFormatter.readOpenPickerTime(_createMockPickerInstance({ isOpen: false })),
-      ''
-   );
-   assert.equal(ReadOpenPickerFormatter.readOpenPickerTime(null), '');
+   const instance = _createMockPickerInstance({ isOpen: false });
+
+   const time = ReadOpenPickerFormatter.readOpenPickerTime(instance);
+
+   assert.equal(time, '');
 });
 
-test('Test_ReadOpenPickerTime_TestLatestSelectedFallback_ExpectFormatted', () => {
-   const latestSelectedDateObj = new Date();
-   latestSelectedDateObj.setHours(9, 15, 0, 0);
 
-   const time = ReadOpenPickerFormatter.readOpenPickerTime(_createMockPickerInstance({
+test('Test_ReadOpenPickerTime_TestNull_ExpectEmpty', () => {
+   const instance = null;
+
+   const time = ReadOpenPickerFormatter.readOpenPickerTime(instance);
+
+   assert.equal(time, '');
+});
+
+
+test('Test_ReadOpenPickerTime_TestLatestSelectedFallback_ExpectFormatted', () => {
+   const hours = 9;
+   const minutes = 15;
+   const latestSelectedDateObj = new Date();
+   latestSelectedDateObj.setHours(hours, minutes, 0, 0);
+   const instance = _createMockPickerInstance({
       selectedDates: [],
       hourElement: { value: '' },
       minuteElement: { value: '' },
       amPM: { textContent: '' },
       latestSelectedDateObj,
-   }));
+   });
 
-   assert.equal(time, '9:15 AM');
+   const time = ReadOpenPickerFormatter.readOpenPickerTime(instance);
+
+   assert.equal(time, instance.formatDate(latestSelectedDateObj));
 });

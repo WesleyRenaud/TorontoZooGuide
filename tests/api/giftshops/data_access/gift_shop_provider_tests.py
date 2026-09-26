@@ -90,7 +90,9 @@ def _insert_gift_shop(
 
 def Test_FetchGiftShopNames_TestEmpty_ExpectEmptyList(
       gift_shop_provider_conn: sqlite3.Connection ) -> None:
-   assert GiftShopProvider.fetch_gift_shop_names( gift_shop_provider_conn ) == []
+   gift_shop_names = GiftShopProvider.fetch_gift_shop_names( gift_shop_provider_conn )
+
+   assert gift_shop_names == []
 
 
 def Test_FetchGiftShopNames_TestPopulated_ExpectNames(
@@ -157,8 +159,10 @@ def Test_FetchGiftShopRecords_TestMatchingMultiplier_ExpectJoinedValues(
 
 def Test_FetchGiftShopScheduleRecords_TestEmpty_ExpectEmptyList(
       gift_shop_provider_conn: sqlite3.Connection ) -> None:
-   assert GiftShopProvider.fetch_gift_shop_schedule_records(
-      gift_shop_provider_conn ) == []
+   gift_shop_schedule_records = GiftShopProvider.fetch_gift_shop_schedule_records(
+      gift_shop_provider_conn )
+
+   assert gift_shop_schedule_records == []
 
 
 def Test_FetchGiftShopScheduleRecords_TestPopulated_ExpectMappedFields(
@@ -200,8 +204,10 @@ def Test_FetchGiftShopScheduleRecords_TestPopulated_ExpectMappedFields(
 
 def Test_FetchGiftShopScheduleOverrideRecords_TestEmpty_ExpectEmptyList(
       gift_shop_provider_conn: sqlite3.Connection ) -> None:
-   assert GiftShopProvider.fetch_gift_shop_schedule_override_records(
-      gift_shop_provider_conn ) == []
+   gift_shop_schedule_override_records = GiftShopProvider.fetch_gift_shop_schedule_override_records(
+      gift_shop_provider_conn )
+
+   assert gift_shop_schedule_override_records == []
 
 
 def Test_FetchGiftShopScheduleOverrideRecords_TestPopulated_ExpectMappedFields(

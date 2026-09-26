@@ -7,22 +7,28 @@ import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_InitSearch_TestMissingElements_ExpectNoop', () => {
    const original = SearchQueryRunner.createNoopSearch;
-   SearchQueryRunner.createNoopSearch = () => ({ noop: true });
+   const noop = { noop: true };
+   SearchQueryRunner.createNoopSearch = () => noop;
 
    try {
-      assert.deepEqual(SearchController.initSearch({}), { noop: true });
+      const controller = SearchController.initSearch({});
+
+      assert.deepEqual(controller, noop);
    } finally {
       SearchQueryRunner.createNoopSearch = original;
    }
 });
 
+
 test('Test_InitSearch_TestWiredInput_ExpectRefresh', () => {
    const originalCreate = SearchQueryRunner.createSearchRunner;
    const originalDebounce = SearchQueryRunner.debounce;
    const runs = [];
-   SearchQueryRunner.createSearchRunner = () => () => { runs.push('run'); };
+   const runLabel = 'run';
+   SearchQueryRunner.createSearchRunner = () => () => { runs.push(runLabel); };
    SearchQueryRunner.debounce = (fn) => fn;
 
    try {
@@ -36,9 +42,10 @@ test('Test_InitSearch_TestWiredInput_ExpectRefresh', () => {
          onFocusRow: () => {},
       });
 
-      assert.equal(typeof inputEl.listeners.input, 'function');
       controller.refresh();
-      assert.deepEqual(runs, ['run']);
+
+      assert.equal(typeof inputEl.listeners.input, 'function');
+      assert.deepEqual(runs, [runLabel]);
    } finally {
       SearchQueryRunner.createSearchRunner = originalCreate;
       SearchQueryRunner.debounce = originalDebounce;

@@ -9,36 +9,81 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_ResetAndGetFieldValue_TestInputTypes_ExpectCleared', () => {
+
+test('Test_ResetFieldValue_TestTextInput_ExpectCleared', () => {
+   const text = document.createElement('input');
+   text.value = 'hello';
+
+   ControllerHelper.resetFieldValue(text);
+
+   assert.equal(text.value, '');
+});
+
+
+test('Test_GetFieldValue_TestClearedInput_ExpectEmpty', () => {
    const text = document.createElement('input');
    text.value = 'hello';
    ControllerHelper.resetFieldValue(text);
-   assert.equal(text.value, '');
-   assert.equal(ControllerHelper.getFieldValue(text), '');
 
+   const value = ControllerHelper.getFieldValue(text);
+
+   assert.equal(value, '');
+});
+
+
+test('Test_ResetFieldValue_TestCheckbox_ExpectUnchecked', () => {
    const checkbox = document.createElement('input');
    checkbox.type = 'checkbox';
    checkbox.checked = true;
+
    ControllerHelper.resetFieldValue(checkbox);
+
    assert.equal(checkbox.checked, false);
-
-   ControllerHelper.resetFieldValue(null);
 });
 
-test('Test_ResetFormFieldsAndHasCheckedField_TestFields_ExpectState', () => {
-   const a = document.createElement('input');
-   a.value = 'x';
-   const b = document.createElement('input');
-   b.type = 'checkbox';
-   b.checked = true;
 
-   ControllerHelper.resetFormFields([a, b]);
-   assert.equal(a.value, '');
-   assert.equal(b.checked, false);
-   assert.equal(ControllerHelper.hasCheckedField([b]), false);
-   b.checked = true;
-   assert.equal(ControllerHelper.hasCheckedField([b]), true);
+test('Test_ResetFieldValue_TestNull_ExpectNoThrow', () => {
+   const fieldEl = null;
+
+   assert.doesNotThrow(() => ControllerHelper.resetFieldValue(fieldEl));
 });
+
+
+test('Test_ResetFormFields_TestFields_ExpectCleared', () => {
+   const text = document.createElement('input');
+   text.value = 'x';
+   const checkbox = document.createElement('input');
+   checkbox.type = 'checkbox';
+   checkbox.checked = true;
+
+   ControllerHelper.resetFormFields([text, checkbox]);
+
+   assert.equal(text.value, '');
+   assert.equal(checkbox.checked, false);
+});
+
+
+test('Test_HasCheckedField_TestUnchecked_ExpectFalse', () => {
+   const checkbox = document.createElement('input');
+   checkbox.type = 'checkbox';
+   checkbox.checked = false;
+
+   const hasChecked = ControllerHelper.hasCheckedField([checkbox]);
+
+   assert.equal(hasChecked, false);
+});
+
+
+test('Test_HasCheckedField_TestChecked_ExpectTrue', () => {
+   const checkbox = document.createElement('input');
+   checkbox.type = 'checkbox';
+   checkbox.checked = true;
+
+   const hasChecked = ControllerHelper.hasCheckedField([checkbox]);
+
+   assert.equal(hasChecked, checkbox.checked);
+});
+
 
 test('Test_HideConsolePanel_TestActivePanel_ExpectCleared', () => {
    const statuses = [];
@@ -47,15 +92,22 @@ test('Test_HideConsolePanel_TestActivePanel_ExpectCleared', () => {
    const originalClearUrl = PanelNavigator.clearConsolePanelUrlParam;
    const originalClearMenu = PanelNavigator.clearConsoleMenuButtonSelection;
    const clears = [];
-   PanelNavigator.clearConsolePanelUrlParam = () => { clears.push('url'); };
-   PanelNavigator.clearConsoleMenuButtonSelection = () => { clears.push('menu'); };
+   PanelNavigator.clearConsolePanelUrlParam = () => {
+      clears.push('url');
+   };
+   PanelNavigator.clearConsoleMenuButtonSelection = () => {
+      clears.push('menu');
+   };
 
    try {
       ControllerHelper.hideConsolePanel({
          panelEl,
          statusEl: {},
-         setStatus: (_el, value) => { statuses.push(value); },
+         setStatus: (_el, value) => {
+            statuses.push(value);
+         },
       });
+
       assert.equal(panelEl.classList.contains('active'), false);
       assert.deepEqual(clears, ['url', 'menu']);
       assert.deepEqual(statuses, ['']);
@@ -65,76 +117,144 @@ test('Test_HideConsolePanel_TestActivePanel_ExpectCleared', () => {
    }
 });
 
-test('Test_LoadOptionsAndShowPanel_TestSuccessAndError_ExpectStatus', async () => {
-   const statuses = [];
+
+test('Test_LoadOptionsAndShowPanel_TestSuccess_ExpectActivated', async () => {
+   const options = ['a'];
+   const panelEl = { id: 'panel' };
+   const targetEl = {};
    const activations = [];
 
    await ControllerHelper.loadOptionsAndShowPanel({
       statusEl: {},
-      setStatus: (_el, value, tone) => { statuses.push({ value, tone }); },
-      loadOptions: async () => ['a'],
-      populateOptions: (target, options) => { target.options = options; },
-      targetEl: {},
+      setStatus: () => {},
+      loadOptions: async () => options,
+      populateOptions: (target, loaded) => {
+         target.options = loaded;
+      },
+      targetEl,
       resetForm: () => {},
-      activatePanel: (panel) => { activations.push(panel); },
-      panelEl: { id: 'panel' },
+      activatePanel: (panel) => {
+         activations.push(panel);
+      },
+      panelEl,
    });
 
-   assert.deepEqual(activations, [{ id: 'panel' }]);
+   assert.deepEqual(activations, [panelEl]);
+   assert.deepEqual(targetEl.options, options);
+});
+
+
+test('Test_LoadOptionsAndShowPanel_TestError_ExpectErrorStatus', async () => {
+   const errorMessage = 'boom';
+   const statuses = [];
+   const activations = [];
+   const panelEl = { id: 'err' };
 
    await ControllerHelper.loadOptionsAndShowPanel({
       statusEl: {},
-      setStatus: (_el, value, tone) => { statuses.push({ value, tone }); },
-      loadOptions: async () => { throw new Error('fail'); },
-      activatePanel: (panel) => { activations.push(panel); },
-      panelEl: { id: 'err' },
-      errorMessage: 'boom',
+      setStatus: (_el, value, tone) => {
+         statuses.push({ value, tone });
+      },
+      loadOptions: async () => {
+         throw new Error('fail');
+      },
+      activatePanel: (panel) => {
+         activations.push(panel);
+      },
+      panelEl,
+      errorMessage,
    });
 
-   assert.ok(statuses.some((entry) => entry.value === 'boom' && entry.tone === 'is-error'));
+   assert.deepEqual(activations, [panelEl]);
+   assert.ok(statuses.some((entry) => entry.value === errorMessage && entry.tone === 'is-error'));
 });
 
+
 test('Test_ReloadOptions_TestLoadSucceeds_ExpectPopulatedAndReset', async () => {
+   const exhibit = 'Africa Savanna';
+   const loaded = [exhibit];
+   const targetEl = { id: 'exhibit' };
    const populated = [];
    const resets = [];
 
    await ControllerHelper.reloadOptions({
-      loadOptions: async () => ['Africa Savanna'],
+      loadOptions: async () => loaded,
       populateOptions: (target, options) => {
          populated.push({ target, options });
       },
-      targetEl: { id: 'exhibit' },
+      targetEl,
       resetForm: () => {
          resets.push(true);
       },
    });
 
-   assert.deepEqual(populated, [{
-      target: { id: 'exhibit' },
-      options: ['Africa Savanna'],
-   }]);
+   assert.deepEqual(populated, [{ target: targetEl, options: loaded }]);
    assert.deepEqual(resets, [true]);
 });
 
-test('Test_ValidateOptionalDateRange_TestBounds_ExpectMessageOrNull', () => {
+
+test('Test_ValidateOptionalDateRange_TestEmptyEnd_ExpectNull', () => {
    const original = VisitDateValidator.resolveOptionalStartDate;
-   VisitDateValidator.resolveOptionalStartDate = (value) => value || '2026-06-15';
+   const startDate = '2026-06-15';
+   VisitDateValidator.resolveOptionalStartDate = (value) => value || startDate;
 
    try {
-      assert.equal(ControllerHelper.validateOptionalDateRange('2026-06-15', ''), null);
-      assert.equal(
-         ControllerHelper.validateOptionalDateRange('2026-06-20', '2026-06-10'),
-         Strings.validation.endDateBeforeStartDate
-      );
-      assert.equal(ControllerHelper.validateOptionalDateRange('2026-06-10', '2026-06-20'), null);
-      assert.equal(
-         ControllerHelper.validateOptionalDateRange('not-a-date', 'also-bad'),
-         Strings.validation.dateRangeInvalid
-      );
+      const message = ControllerHelper.validateOptionalDateRange(startDate, '');
+
+      assert.equal(message, null);
    } finally {
       VisitDateValidator.resolveOptionalStartDate = original;
    }
 });
+
+
+test('Test_ValidateOptionalDateRange_TestEndBeforeStart_ExpectMessage', () => {
+   const original = VisitDateValidator.resolveOptionalStartDate;
+   const startDate = '2026-06-20';
+   const endDate = '2026-06-10';
+   VisitDateValidator.resolveOptionalStartDate = (value) => value || startDate;
+
+   try {
+      const message = ControllerHelper.validateOptionalDateRange(startDate, endDate);
+
+      assert.equal(message, Strings.validation.endDateBeforeStartDate);
+   } finally {
+      VisitDateValidator.resolveOptionalStartDate = original;
+   }
+});
+
+
+test('Test_ValidateOptionalDateRange_TestOrderedDates_ExpectNull', () => {
+   const original = VisitDateValidator.resolveOptionalStartDate;
+   const startDate = '2026-06-10';
+   const endDate = '2026-06-20';
+   VisitDateValidator.resolveOptionalStartDate = (value) => value || startDate;
+
+   try {
+      const message = ControllerHelper.validateOptionalDateRange(startDate, endDate);
+
+      assert.equal(message, null);
+   } finally {
+      VisitDateValidator.resolveOptionalStartDate = original;
+   }
+});
+
+
+test('Test_ValidateOptionalDateRange_TestInvalidDates_ExpectMessage', () => {
+   const original = VisitDateValidator.resolveOptionalStartDate;
+   const startDate = 'not-a-date';
+   const endDate = 'also-bad';
+   VisitDateValidator.resolveOptionalStartDate = (value) => value || startDate;
+
+   try {
+      const message = ControllerHelper.validateOptionalDateRange(startDate, endDate);
+
+      assert.equal(message, Strings.validation.dateRangeInvalid);
+   } finally {
+      VisitDateValidator.resolveOptionalStartDate = original;
+   }
+});
+
 
 test('Test_BindResetValueOnChange_TestChange_ExpectTargetReset', () => {
    const sourceEl = document.createElement('select');
@@ -143,5 +263,6 @@ test('Test_BindResetValueOnChange_TestChange_ExpectTargetReset', () => {
 
    ControllerHelper.bindResetValueOnChange(sourceEl, targetEl);
    sourceEl.listeners.change();
+
    assert.equal(targetEl.value, '');
 });

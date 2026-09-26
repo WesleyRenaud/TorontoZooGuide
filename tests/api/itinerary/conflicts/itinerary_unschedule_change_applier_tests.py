@@ -45,15 +45,18 @@ def _validated_with_scheduled_guest_items() -> ValidatedItinerary:
 
 def Test_Apply_TestNoRequirements_ExpectUnchangedValidated() -> None:
    validated = _validated_with_scheduled_guest_items()
+   lion = validated.animals[ Position.FIRST ]
+   carousel = validated.attractions[ Position.FIRST ]
+   events = list( validated.events )
 
    result = ItineraryUnscheduleChangeApplier.apply(
       validated,
       ItineraryUnscheduleRequirements( talks=[], encounters=[] ) )
 
    assert result is validated
-   assert result.animals[ Position.FIRST ].start_time == '2:30 PM'
-   assert result.attractions[ Position.FIRST ].start_time == '11:00 AM'
-   assert len( result.events ) == 1
+   assert result.animals[ Position.FIRST ].start_time == lion.start_time
+   assert result.attractions[ Position.FIRST ].start_time == carousel.start_time
+   assert result.events == events
 
 
 def Test_Apply_TestEncounterOverlap_ExpectGuestSchedulesCleared() -> None:
@@ -77,7 +80,7 @@ def Test_Apply_TestEncounterOverlap_ExpectGuestSchedulesCleared() -> None:
    assert result.animals[ Position.FIRST ].end_time is None
    assert result.attractions[ Position.FIRST ].start_time is None
    assert result.attractions[ Position.FIRST ].end_time is None
-   assert len( result.events ) == 1
+   assert result.events == validated.events
 
 
 def Test_Apply_TestTalkOverlap_ExpectGuestSchedulesCleared() -> None:

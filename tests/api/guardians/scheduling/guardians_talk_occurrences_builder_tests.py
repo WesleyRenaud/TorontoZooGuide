@@ -99,10 +99,12 @@ def Test_IsCancelled_TestMatchingCancellation_ExpectTrue() -> None:
          talk_time=TALK_TIME ),
    ]
 
-   assert GuardiansTalkOccurrencesBuilder.is_cancelled(
+   flag = GuardiansTalkOccurrencesBuilder.is_cancelled(
       cancellations,
       '2026-06-15',
       TALK_TIME )
+
+   assert flag
 
 
 def Test_Build_TestAllWeekdaysWithCancellation_ExpectCancelledDateExcluded(

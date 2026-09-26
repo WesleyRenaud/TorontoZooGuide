@@ -6,6 +6,7 @@ import pytest
 
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.shared.enums import ItineraryErrorType
+from api.shared.value_conversion import ValueConversion
 
 
 STATUS_SCHEMA = """
@@ -48,83 +49,102 @@ def Test_FetchItineraryStatuses_TestSeededRows_ExpectMappedRecords(
       status_db: sqlite3.Connection ) -> None:
    statuses = ItineraryStatusProvider.fetch_itinerary_statuses( status_db )
 
+   suppressable_status = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   matching = next(
+      record
+      for record in statuses
+      if record.status == suppressable_status.value )
+
    assert len( statuses ) == len( STATUS_ROWS )
    assert all( record.status for record in statuses )
-   assert any(
-      record.status == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value
-      and record.is_suppressable
-      and not record.is_suppressed
-      for record in statuses )
+   assert matching.is_suppressable is True
+   assert matching.is_suppressed is False
 
 
-def Test_IsItineraryStatusSuppressable_TestKnownStatuses_ExpectExpectedFlags(
+@pytest.mark.parametrize(
+   'status, expected',
+   [
+      (
+         ItineraryErrorType( status_value ),
+         ValueConversion.as_boolean( is_suppressable ),
+      )
+      for status_value, is_suppressable in STATUS_ROWS
+   ] )
+def Test_IsItineraryStatusSuppressable(
+      status_db: sqlite3.Connection,
+      status: ItineraryErrorType,
+      expected: bool ) -> None:
+   is_suppressable = ItineraryStatusProvider.is_itinerary_status_suppressable(
+      status_db,
+      status )
+
+   assert is_suppressable is expected
+
+
+def Test_IsItineraryStatusSuppressable_TestUnknownStatus_ExpectFalse(
       status_db: sqlite3.Connection ) -> None:
-   assert ItineraryStatusProvider.is_itinerary_status_suppressable(
-      status_db,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-   assert ItineraryStatusProvider.is_itinerary_status_suppressable(
-      status_db,
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
-   assert not ItineraryStatusProvider.is_itinerary_status_suppressable(
-      status_db,
-      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
-   assert not ItineraryStatusProvider.is_itinerary_status_suppressable(
-      status_db,
-      ItineraryErrorType.BULK_SCHEDULE_ITINERARY_ALREADY_SCHEDULED )
+   status = ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
 
-   assert not ItineraryStatusProvider.is_itinerary_status_suppressable(
+   is_suppressable = ItineraryStatusProvider.is_itinerary_status_suppressable(
       status_db,
-      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP )
+      status )
+
+   assert is_suppressable is False
 
 
 def Test_SuppressItineraryStatus_TestSuppressableType_ExpectPersisted(
       status_db: sqlite3.Connection ) -> None:
-   ItineraryStatusProvider.suppress_itinerary_status(
-      status_db,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+   status = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
 
-   assert ItineraryStatusProvider.is_itinerary_error_suppressed(
+   ItineraryStatusProvider.suppress_itinerary_status( status_db, status )
+   is_suppressed = ItineraryStatusProvider.is_itinerary_error_suppressed(
       status_db,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-   assert ItineraryStatusProvider.fetch_suppressed_status_values( status_db ) == [
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value,
-   ]
+      status )
+   suppressed_values = ItineraryStatusProvider.fetch_suppressed_status_values(
+      status_db )
+
+   assert is_suppressed
+   assert suppressed_values == [ status.value ]
 
 
 def Test_UnsuppressItineraryStatus_TestAfterSuppress_ExpectCleared(
       status_db: sqlite3.Connection ) -> None:
-   ItineraryStatusProvider.suppress_itinerary_status(
-      status_db,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+   status = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   ItineraryStatusProvider.suppress_itinerary_status( status_db, status )
 
-   ItineraryStatusProvider.unsuppress_itinerary_status(
+   ItineraryStatusProvider.unsuppress_itinerary_status( status_db, status )
+   is_suppressed = ItineraryStatusProvider.is_itinerary_error_suppressed(
       status_db,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+      status )
+   suppressed_values = ItineraryStatusProvider.fetch_suppressed_status_values(
+      status_db )
 
-   assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
-      status_db,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-   assert ItineraryStatusProvider.fetch_suppressed_status_values( status_db ) == []
+   assert not is_suppressed
+   assert suppressed_values == []
 
 
 def Test_IsItineraryErrorSuppressed_TestNonSuppressableType_ExpectFalse(
       status_db: sqlite3.Connection ) -> None:
-   assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
+   status = ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
+
+   is_suppressed = ItineraryStatusProvider.is_itinerary_error_suppressed(
       status_db,
-      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
+      status )
+
+   assert not is_suppressed
 
 
 def Test_ClearItineraryStatusSuppressions_TestAfterSuppress_ExpectCleared(
       status_db: sqlite3.Connection ) -> None:
-   ItineraryStatusProvider.suppress_itinerary_status(
-      status_db,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-
+   status = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   ItineraryStatusProvider.suppress_itinerary_status( status_db, status )
    cur = status_db.cursor()
+
    ItineraryStatusProvider.clear_itinerary_status_suppressions( cur )
    status_db.commit()
    cur.close()
-
-   assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
+   is_suppressed = ItineraryStatusProvider.is_itinerary_error_suppressed(
       status_db,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+      status )
+
+   assert not is_suppressed

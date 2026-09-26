@@ -70,9 +70,11 @@ def Test_SaveReplacingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       'save_replacing_overlaps',
       save_replacing_overlaps )
 
-   assert RestaurantScheduleConflictResolver.save_replacing_overlaps(
+   result = RestaurantScheduleConflictResolver.save_replacing_overlaps(
       STUB_REQUEST_CONNECTION,
-      schedule ) is True
+      schedule )
+
+   assert result is True
    assert saver_calls == [
       ( schedule, RestaurantScheduleProvider.fetch_opening_schedule_conflicts ),
    ]
@@ -99,9 +101,11 @@ def Test_SaveTrimmingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       'save_trimming_overlaps',
       save_trimming_overlaps )
 
-   assert RestaurantScheduleConflictResolver.save_trimming_overlaps(
+   result = RestaurantScheduleConflictResolver.save_trimming_overlaps(
       STUB_REQUEST_CONNECTION,
-      schedule ) is True
+      schedule )
+
+   assert result is True
    assert saver_calls == [ schedule ]
 
 def Test_TrimConflict_TestConflictAndSchedule_ExpectTrimmerDelegation(

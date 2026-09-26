@@ -6,81 +6,113 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_MakeOpenPill_TestEmptyLabel_ExpectNull', () => {
-   assert.equal(OpenTimelineView.makeOpenPill(''), null);
-   assert.equal(OpenTimelineView.makeOpenPill(null), null);
+   const label = '';
+
+   const pill = OpenTimelineView.makeOpenPill(label);
+
+   assert.equal(pill, null);
 });
 
+
+test('Test_MakeOpenPill_TestNullLabel_ExpectNull', () => {
+   const label = null;
+
+   const pill = OpenTimelineView.makeOpenPill(label);
+
+   assert.equal(pill, null);
+});
+
+
 test('Test_MakeOpenPill_TestNoRemove_ExpectCompact', () => {
-   const pill = OpenTimelineView.makeOpenPill('Lunch');
+   const label = 'Tundra Grill';
+
+   const pill = OpenTimelineView.makeOpenPill(label);
 
    assert.ok(pill.classList.contains('itinerary-day-open-pill'));
    assert.equal(pill.classList.contains('itinerary-day-open-pill--with-menu'), false);
-   assert.equal(
-      pill.querySelector('.itinerary-day-open-pill-label')?.textContent,
-      'Lunch'
-   );
+   assert.equal(pill.querySelector('.itinerary-day-open-pill-label')?.textContent, label);
    assert.equal(pill.querySelector('.itinerary-day-open-pill-menu'), null);
 });
 
+
 test('Test_MakeOpenPill_TestOnRemove_ExpectMenu', () => {
-   const pill = OpenTimelineView.makeOpenPill('Breakfast', {
+   const label = 'Breakfast';
+   const menuAriaLabel = 'Breakfast options';
+   const removeLabel = 'Remove';
+
+   const pill = OpenTimelineView.makeOpenPill(label, {
       onRemove: () => {},
-      menuAriaLabel: 'Breakfast options',
-      removeLabel: 'Remove',
+      menuAriaLabel,
+      removeLabel,
    });
 
    assert.ok(pill.classList.contains('itinerary-day-open-pill--with-menu'));
    assert.equal(
       pill.querySelector('.itinerary-day-open-pill-menu-btn')?.getAttribute('aria-label'),
-      'Breakfast options'
+      menuAriaLabel
    );
    assert.equal(
       pill.querySelector('.itinerary-day-open-pill-menu-item')?.textContent,
-      'Remove'
+      removeLabel
    );
-   assert.equal(
-      pill.querySelector('.itinerary-day-open-pill-menu-panel')?.hidden,
-      true
-   );
+   assert.equal(pill.querySelector('.itinerary-day-open-pill-menu-panel')?.hidden, true);
 });
+
 
 test('Test_MakeBoundaryMarker_TestEmptyLabel_ExpectNull', () => {
-   assert.equal(OpenTimelineView.makeBoundaryMarker(''), null);
+   const label = '';
+
+   const marker = OpenTimelineView.makeBoundaryMarker(label);
+
+   assert.equal(marker, null);
 });
 
+
 test('Test_MakeBoundaryMarker_TestDefault_ExpectArrival', () => {
-   const marker = OpenTimelineView.makeBoundaryMarker('Arrival');
+   const label = 'Arrival';
+
+   const marker = OpenTimelineView.makeBoundaryMarker(label);
 
    assert.ok(marker.classList.contains('itinerary-day-boundary-marker'));
-   assert.equal(marker.getAttribute('aria-label'), 'Arrival');
+   assert.equal(marker.getAttribute('aria-label'), label);
    assert.equal(marker.getAttribute('data-boundary-marker-kind'), 'arrival');
    assert.ok(marker.querySelector('.itinerary-day-boundary-marker-icon'));
    assert.equal(marker.querySelector('.itinerary-day-boundary-marker-btn'), null);
 });
 
+
 test('Test_MakeBoundaryMarker_TestStartsAtAnchor_ExpectDeparture', () => {
-   const marker = OpenTimelineView.makeBoundaryMarker('Departure', {
-      visitBoundaryPlacement: 'starts-at-anchor',
+   const label = 'Departure';
+   const visitBoundaryPlacement = 'starts-at-anchor';
+
+   const marker = OpenTimelineView.makeBoundaryMarker(label, {
+      visitBoundaryPlacement,
    });
 
    assert.equal(marker.getAttribute('data-boundary-marker-kind'), 'departure');
 });
 
+
 test('Test_MakeBoundaryMarker_TestOnRemove_ExpectMenu', () => {
-   const marker = OpenTimelineView.makeBoundaryMarker('Arrival', {
+   const label = 'Arrival';
+   const menuAriaLabel = 'Arrival options';
+   const removeLabel = 'Clear arrival';
+
+   const marker = OpenTimelineView.makeBoundaryMarker(label, {
       onRemove: () => {},
-      menuAriaLabel: 'Arrival options',
-      removeLabel: 'Clear arrival',
+      menuAriaLabel,
+      removeLabel,
    });
 
    assert.ok(marker.classList.contains('itinerary-day-boundary-marker--with-menu'));
    assert.equal(
       marker.querySelector('.itinerary-day-boundary-marker-btn')?.getAttribute('aria-label'),
-      'Arrival options'
+      menuAriaLabel
    );
    assert.equal(
       marker.querySelector('.itinerary-day-open-pill-menu-item')?.textContent,
-      'Clear arrival'
+      removeLabel
    );
 });

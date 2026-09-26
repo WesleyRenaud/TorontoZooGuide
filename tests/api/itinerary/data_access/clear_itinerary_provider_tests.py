@@ -132,6 +132,13 @@ CREATE TABLE TransportationAnimal (
 );
 """
 
+ITINERARY_DATE = '2026-06-15'
+ARRIVAL_TIME = '9:30 AM'
+DEPARTURE_TIME = '5:00 PM'
+LION_SPECIES = 'African Lion'
+LION_EXHIBIT = 'Africa Savanna'
+SUPPRESSABLE_STATUS = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+
 
 @pytest.fixture
 def clear_itinerary_conn() -> sqlite3.Connection:
@@ -146,10 +153,10 @@ def clear_itinerary_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, ? );
       """,
-      ( '2026-06-15', '9:30 AM', '5:00 PM' ) )
+      ( ITINERARY_DATE, ARRIVAL_TIME, DEPARTURE_TIME ) )
    conn.execute(
       'INSERT INTO ItineraryAnimal ( SPECIES, EXHIBIT ) VALUES ( ?, ? );',
-      ( 'African Lion', 'Africa Savanna' ) )
+      ( LION_SPECIES, LION_EXHIBIT ) )
    conn.execute(
       """   INSERT INTO ItineraryStatus (
                STATUS,
@@ -157,7 +164,7 @@ def clear_itinerary_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 1 );
       """,
-      ( ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value, ) )
+      ( SUPPRESSABLE_STATUS.value, ) )
    conn.commit()
 
    yield conn
@@ -167,43 +174,48 @@ def clear_itinerary_conn() -> sqlite3.Connection:
 
 def Test_ClearItinerary_TestSavedRows_ExpectTablesCleared(
       clear_itinerary_conn: sqlite3.Connection ) -> None:
+   status = SUPPRESSABLE_STATUS
    ItineraryStatusProvider.suppress_itinerary_status(
       clear_itinerary_conn,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+      status )
 
-   assert ClearItineraryProvider.clear_itinerary( clear_itinerary_conn )
-
+   cleared = ClearItineraryProvider.clear_itinerary( clear_itinerary_conn )
    date_count = clear_itinerary_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryDate;' ).fetchone()
    animal_count = clear_itinerary_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryAnimal;' ).fetchone()
+   is_suppressed = ItineraryStatusProvider.is_itinerary_error_suppressed(
+      clear_itinerary_conn,
+      status )
 
+   assert cleared
    assert date_count is not None
    assert date_count[ 'COUNT' ] == 0
    assert animal_count is not None
    assert animal_count[ 'COUNT' ] == 0
-   assert ItineraryStatusProvider.is_itinerary_error_suppressed(
-      clear_itinerary_conn,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+   assert is_suppressed
 
 
 def Test_ClearItinerary_TestSavedRows_ExpectProviderReadsEmpty(
       clear_itinerary_conn: sqlite3.Connection ) -> None:
-   assert ClearItineraryProvider.clear_itinerary( clear_itinerary_conn )
+   cleared = ClearItineraryProvider.clear_itinerary( clear_itinerary_conn )
+   itinerary_date = ItineraryProvider.fetch_itinerary_date( clear_itinerary_conn )
+   saved = ItineraryProvider.fetch_saved_itinerary( clear_itinerary_conn )
 
-   assert ItineraryProvider.fetch_itinerary_date( clear_itinerary_conn ) is None
-
-   cleared = ItineraryProvider.fetch_saved_itinerary( clear_itinerary_conn )
-
-   assert cleared.is_empty()
-   assert cleared.animal_rows == []
-   assert cleared.attraction_rows == []
-   assert cleared.guardians_talk_rows == []
-   assert cleared.wild_encounter_rows == []
+   assert cleared
+   assert itinerary_date is None
+   assert saved.is_empty()
+   assert saved.animal_rows == []
+   assert saved.attraction_rows == []
+   assert saved.guardians_talk_rows == []
+   assert saved.wild_encounter_rows == []
 
 
 def Test_ClearItinerary_TestTransportationAnimal_ExpectRemovedWhenTransportationCleared(
       clear_itinerary_conn: sqlite3.Connection ) -> None:
+   species = 'Masai Giraffe'
+   exhibit = 'Africa Savanna'
+   added_by_transportation = 1
    clear_itinerary_conn.execute(
       """   INSERT INTO ItineraryAnimal (
                SPECIES,
@@ -212,16 +224,17 @@ def Test_ClearItinerary_TestTransportationAnimal_ExpectRemovedWhenTransportation
             )
             VALUES ( ?, ?, ? );
       """,
-      ( 'Masai Giraffe', 'Africa Savanna', 1 ) )
+      ( species, exhibit, added_by_transportation ) )
    clear_itinerary_conn.commit()
 
-   assert ClearItineraryProvider.clear_itinerary( clear_itinerary_conn )
-
+   cleared = ClearItineraryProvider.clear_itinerary( clear_itinerary_conn )
+   itinerary_date = ItineraryProvider.fetch_itinerary_date( clear_itinerary_conn )
    rows = clear_itinerary_conn.execute(
       """   SELECT SPECIES, ADDED_BY_TRANSPORTATION
             FROM ItineraryAnimal
             ORDER BY SPECIES;
       """ ).fetchall()
 
-   assert ItineraryProvider.fetch_itinerary_date( clear_itinerary_conn ) is None
+   assert cleared
+   assert itinerary_date is None
    assert rows == []

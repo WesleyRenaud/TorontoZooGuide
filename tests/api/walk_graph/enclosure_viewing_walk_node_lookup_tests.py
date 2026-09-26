@@ -216,9 +216,11 @@ def Test_ForViewingSpot_TestCoordinates_ExpectMatchingRow(
 
 def Test_ForSpeciesExhibit_TestUnknownSpecies_ExpectEmptyList(
       stub_enclosure_viewing_walk_nodes: None ) -> None:
-   assert EnclosureViewingWalkNodeLookup.for_species_exhibit(
+   result = EnclosureViewingWalkNodeLookup.for_species_exhibit(
       'Unknown Species',
-      AFRICA_SAVANNA ) == []
+      AFRICA_SAVANNA )
+
+   assert result == []
 
 
 def Test_WalkNodeIdByEnclosureName_TestOstrichSpots_ExpectResolvedWalkNodes(

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from datetime import date
 
+from api.app_string_provider import AppStringProvider
 from api.exhibits.data_access.exhibit_closure_record import ExhibitClosureRecord
 from api.exhibits.status.exhibit_status_builder import ExhibitStatusBuilder
 
 
 EXHIBIT_NAME = 'Africa Savanna'
 CUSTOM_CLOSED_MESSAGE = 'Closed for maintenance.'
-DEFAULT_CLOSED_MESSAGE = 'The Africa Savanna is temporarily closed.'
 CLOSURE_START_DATE = '2026-06-01'
 CLOSURE_END_DATE = '2026-06-30'
 VISIT_DATE = date( 2026, 6, 15 )
@@ -36,58 +36,78 @@ def Test_BuildClosedStatus_TestEmptyMessage_ExpectDefaultGuestStatusMessage() ->
       end_date=CLOSURE_END_DATE,
       message='' )
 
-   assert status.message == DEFAULT_CLOSED_MESSAGE
+   assert status.message == AppStringProvider.format(
+      'guestStatus.locations.temporarilyClosed',
+      name=EXHIBIT_NAME )
 
 
 def Test_IsClosureActiveOnVisitDate_TestInactiveClosure_ExpectFalse() -> None:
-   assert ExhibitStatusBuilder.is_closure_active_on_visit_date(
-      is_closed=False,
+   is_closed = False
+
+   active = ExhibitStatusBuilder.is_closure_active_on_visit_date(
+      is_closed=is_closed,
       closed_start=CLOSURE_START_DATE,
       closed_end=CLOSURE_END_DATE,
-      target_date=VISIT_DATE ) is False
+      target_date=VISIT_DATE )
+
+   assert active is False
 
 
 def Test_IsClosureActiveOnVisitDate_TestMissingVisitDate_ExpectFalse() -> None:
-   assert ExhibitStatusBuilder.is_closure_active_on_visit_date(
+   target_date = None
+
+   active = ExhibitStatusBuilder.is_closure_active_on_visit_date(
       is_closed=True,
       closed_start=CLOSURE_START_DATE,
       closed_end=CLOSURE_END_DATE,
-      target_date=None ) is False
+      target_date=target_date )
+
+   assert active is False
 
 
 def Test_IsClosureActiveOnVisitDate_TestVisitDateInRange_ExpectTrue() -> None:
-   assert ExhibitStatusBuilder.is_closure_active_on_visit_date(
+   active = ExhibitStatusBuilder.is_closure_active_on_visit_date(
       is_closed=True,
       closed_start=CLOSURE_START_DATE,
       closed_end=CLOSURE_END_DATE,
-      target_date=VISIT_DATE ) is True
+      target_date=VISIT_DATE )
+
+   assert active is True
 
 
-def Test_IsClosureActiveOnVisitDate_TestVisitDateOutsideRange_ExpectFalse() -> None:
-   assert ExhibitStatusBuilder.is_closure_active_on_visit_date(
+def Test_IsClosureActiveOnVisitDate_TestVisitDateBeforeRange_ExpectFalse() -> None:
+   active = ExhibitStatusBuilder.is_closure_active_on_visit_date(
       is_closed=True,
       closed_start=CLOSURE_START_DATE,
       closed_end=CLOSURE_END_DATE,
-      target_date=BEFORE_VISIT_DATE ) is False
-   assert ExhibitStatusBuilder.is_closure_active_on_visit_date(
+      target_date=BEFORE_VISIT_DATE )
+
+   assert active is False
+
+
+def Test_IsClosureActiveOnVisitDate_TestVisitDateAfterRange_ExpectFalse() -> None:
+   active = ExhibitStatusBuilder.is_closure_active_on_visit_date(
       is_closed=True,
       closed_start=CLOSURE_START_DATE,
       closed_end=CLOSURE_END_DATE,
-      target_date=AFTER_VISIT_DATE ) is False
+      target_date=AFTER_VISIT_DATE )
+
+   assert active is False
 
 
 def Test_ExhibitNamesClosedOnVisitDate_TestMixedRecords_ExpectActiveExhibitsOnly() -> None:
-   closure_records = [
-      ExhibitClosureRecord(
-         exhibit=EXHIBIT_NAME,
-         closed_start=CLOSURE_START_DATE,
-         closed_end=CLOSURE_END_DATE ),
-      ExhibitClosureRecord(
-         exhibit='Eurasia Wilds',
-         closed_start='2026-07-01',
-         closed_end='2026-07-31' ),
-   ]
+   savanna_closure = ExhibitClosureRecord(
+      exhibit=EXHIBIT_NAME,
+      closed_start=CLOSURE_START_DATE,
+      closed_end=CLOSURE_END_DATE )
+   eurasia_closure = ExhibitClosureRecord(
+      exhibit='Eurasia Wilds',
+      closed_start='2026-07-01',
+      closed_end='2026-07-31' )
+   closure_records = [ savanna_closure, eurasia_closure ]
 
-   assert ExhibitStatusBuilder.exhibit_names_closed_on_visit_date(
+   closed_exhibits = ExhibitStatusBuilder.exhibit_names_closed_on_visit_date(
       closure_records,
-      VISIT_DATE ) == [ EXHIBIT_NAME ]
+      VISIT_DATE )
+
+   assert closed_exhibits == [ savanna_closure.exhibit ]

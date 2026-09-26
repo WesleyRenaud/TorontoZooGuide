@@ -3,33 +3,46 @@ import { test } from 'node:test';
 
 import { ItineraryServiceSaver } from '../../../scripts/itinerary/itineraryServiceSaver.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryItemFormatter } from '../../../scripts/itinerary/panel/itineraryItemFormatter.js';
 import { WildEncounterScheduleItemKey } from '../../../scripts/itinerary/selectors/wildEncounterSelector/wildEncounterScheduleItemKey.js';
 import { StorageKeys } from '../../../scripts/itinerary/storageKeys.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { ItinerarySaveIssueItemType } from '../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { Strings } from '../../../scripts/strings.js';
 
 installItineraryServiceTestHooks();
 
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryIncludesSelectedExhibitsInTheBackend_ExpectOk', async () => {
+   const date = '2026-06-15';
+   const africaSavanna = 'Africa Savanna';
+   const eurasia = 'Eurasia';
+   const selectedExhibits = [africaSavanna, eurasia];
+   const draft = {
+      date,
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   };
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna', '  ', 'Eurasia'])
+      JSON.stringify([africaSavanna, '  ', eurasia])
    );
-
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(JSON.parse(options.body), {
-         date: '2026-06-15',
+         date,
          arrivalTime: '',
          departureTime: '',
-         animals: [],
-         attractions: [],
+         animals: draft.animals,
+         attractions: draft.attractions,
          transportations: [],
-         guardiansTalks: [],
-         wildEncounters: [],
-         selectedExhibits: ['Africa Savanna', 'Eurasia'],
+         guardiansTalks: draft.guardiansTalks,
+         wildEncounters: draft.wildEncounters,
+         selectedExhibits,
          temp: null,
          overridingConflictingGuardiansTalks: false,
       });
@@ -40,34 +53,35 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryIncludesSel
          statusText: 'OK',
          text: async () => JSON.stringify({
             itinerary: {
-               date: '2026-06-15',
-               animals: [],
-               attractions: [],
-               guardians_talks: [],
-               wild_encounters: [],
+               date,
+               animals: draft.animals,
+               attractions: draft.attractions,
+               guardians_talks: draft.guardiansTalks,
+               wild_encounters: draft.wildEncounters,
             },
             reasons: [],
          }),
       };
    };
 
-   await ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
+   await ItineraryServiceSaver.saveItinerary(draft, { selectedExhibits });
+});
+
+
+test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryOmitsSelectedExhibitsByDefault_ExpectOk', async () => {
+   const date = '2026-06-15';
+   const africaSavanna = 'Africa Savanna';
+   const draft = {
+      date,
       animals: [],
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
-   }, {
-      selectedExhibits: ['Africa Savanna', 'Eurasia'],
-   });
-});
-
-test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryOmitsSelectedExhibitsByDefault_ExpectOk', async () => {
+   };
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
+      JSON.stringify([africaSavanna])
    );
-
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(JSON.parse(options.body).selectedExhibits, []);
@@ -78,28 +92,27 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryOmitsSelect
          statusText: 'OK',
          text: async () => JSON.stringify({
             itinerary: {
-               date: '2026-06-15',
-               animals: [],
-               attractions: [],
-               guardians_talks: [],
-               wild_encounters: [],
+               date,
+               animals: draft.animals,
+               attractions: draft.attractions,
+               guardians_talks: draft.guardiansTalks,
+               wild_encounters: draft.wildEncounters,
             },
             reasons: [],
          }),
       };
    };
 
-   await ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   });
+   await ItineraryServiceSaver.saveItinerary(draft);
 });
+
 
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAGuardiansTalk_ExpectOk', async () => {
    const requests = [];
+   const date = '2026-06-15';
+   const talkName = 'Komodo Dragon';
+   const startTime = '2:00 PM';
+   const location = 'Australasia Pavilion';
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -107,11 +120,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       },
       suppressed_error_types: [],
    };
-
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
@@ -119,7 +130,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       });
 
       const isConfirmed = Boolean(
-         requests.at(-1)?.body?.confirmingGuardiansTalkWithoutAnimal
+         requests.at(Position.LAST)?.body?.confirmingGuardiansTalkWithoutAnimal
       );
 
       return {
@@ -131,15 +142,15 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
             reasons: isConfirmed ? [] : [{
                code: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
                items: [{
-                  name: 'Komodo Dragon',
+                  name: talkName,
                   item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-                  start_time: '2:00 PM',
-                  location: 'Australasia Pavilion',
+                  start_time: startTime,
+                  location,
                }],
             }],
             itinerary_config: itineraryConfig,
             itinerary: {
-               date: '2026-06-15',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -150,30 +161,29 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    };
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
+      date,
       animals: [],
       attractions: [],
-      guardiansTalks: [{ name: 'Komodo Dragon' }],
+      guardiansTalks: [{ name: talkName }],
       wildEncounters: [],
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    const popupMessage = document.querySelector('.tzg-popup-message');
 
-   assert.match(
-      popupMessage?.textContent ?? '',
-      /The Komodo Dragon guardians talk at .* does not match an animal on your itinerary\. Do you still want to keep it on your plan\?/
+   assert.equal(
+      popupMessage.textContent,
+      Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessage(
+         talkName,
+         ItineraryItemFormatter.formatClockTime(startTime)
+      )
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await savePromise;
 
    assert.equal(requests.length, 2);
@@ -181,8 +191,11 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAnAttractionWithout_ExpectOk', async () => {
    const requests = [];
+   const date = '2026-06-20';
+   const attractionName = 'Kangaroo Walk-Thru';
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -190,11 +203,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       },
       suppressed_error_types: [],
    };
-
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
@@ -202,7 +213,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       });
 
       const isConfirmed = Boolean(
-         requests.at(-1)?.body?.confirmingAttractionWithoutAnimal
+         requests.at(Position.LAST)?.body?.confirmingAttractionWithoutAnimal
       );
 
       return {
@@ -214,13 +225,13 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
             reasons: isConfirmed ? [] : [{
                code: ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL,
                items: [{
-                  name: 'Kangaroo Walk-Thru',
+                  name: attractionName,
                   item_type: ItinerarySaveIssueItemType.ATTRACTION,
                }],
             }],
             itinerary_config: itineraryConfig,
             itinerary: {
-               date: '2026-06-20',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -231,30 +242,26 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    };
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-20',
+      date,
       animals: [],
-      attractions: ['Kangaroo Walk-Thru'],
+      attractions: [attractionName],
       guardiansTalks: [],
       wildEncounters: [],
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    const popupMessage = document.querySelector('.tzg-popup-message');
 
    assert.equal(
       popupMessage?.textContent,
-      'The Kangaroo Walk-Thru attraction does not match an animal on your itinerary. Do you still want to keep it on your plan?'
+      `The ${attractionName} attraction does not match an animal on your itinerary. Do you still want to keep it on your plan?`
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await savePromise;
 
    assert.equal(requests.length, 2);
@@ -262,8 +269,12 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    assert.equal(requests[Position.SECOND].body.confirmingAttractionWithoutAnimal, true);
 });
 
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAGuardiansTalk_ExpectOk', async () => {
    const requests = [];
+   const date = '2026-06-15';
+   const talkName = 'African Lion';
+   const startTime = '10:00';
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -271,7 +282,6 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       },
       suppressed_error_types: [],
    };
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
@@ -279,7 +289,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       });
 
       const isConfirmed = Boolean(
-         requests.at(-1)?.body?.confirmingGuardiansTalkUnschedule
+         requests.at(Position.LAST)?.body?.confirmingGuardiansTalkUnschedule
       );
 
       return {
@@ -291,14 +301,14 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
             reasons: isConfirmed ? [] : [{
                code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
                items: [{
-                  name: 'African Lion',
+                  name: talkName,
                   item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-                  start_time: '10:00',
+                  start_time: startTime,
                }],
             }],
             itinerary_config: itineraryConfig,
             itinerary: {
-               date: '2026-06-15',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -309,30 +319,29 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    };
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
+      date,
       animals: [],
       attractions: [],
-      guardiansTalks: [{ name: 'African Lion' }],
+      guardiansTalks: [{ name: talkName }],
       wildEncounters: [],
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    const popupMessage = document.querySelector('.tzg-popup-message');
 
-   assert.match(
-      popupMessage?.textContent ?? '',
-      /Adding the African Lion guardians talk will put it at .* on your day and update your walking route\. Your items will be rescheduled around it\./
+   assert.equal(
+      popupMessage.textContent,
+      Strings.itinerary.confirmation.guardiansTalkRescheduleMessage(
+         talkName,
+         ItineraryItemFormatter.formatClockTime(startTime)
+      )
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await savePromise;
 
    assert.equal(requests.length, 2);
@@ -340,32 +349,37 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkUnschedule, true);
 });
 
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCancelledWhenGuardiansTalkReschedule_ExpectOk', async () => {
+   const date = '2026-06-15';
+   const talkName = 'Arctic Wolf';
+   const startTime = '11:00';
+   const errorType = ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
+   const issueItem = {
+      name: talkName,
+      item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
+      start_time: startTime,
+   };
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
-         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: errorType,
       },
       suppressed_error_types: [],
    };
-
    globalThis.fetch = async () => ({
       ok: true,
       status: 200,
       statusText: 'OK',
       text: async () => JSON.stringify({
-         status: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         status: errorType,
          reasons: [{
-            code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-            items: [{
-               name: 'Arctic Wolf',
-               item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-               start_time: '11:00',
-            }],
+            code: errorType,
+            items: [issueItem],
          }],
          itinerary_config: itineraryConfig,
          itinerary: {
-            date: '2026-06-15',
+            date,
             animals: [],
             attractions: [],
             guardians_talks: [],
@@ -375,37 +389,30 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryReturnsCanc
    });
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
+      date,
       animals: [],
       attractions: [],
-      guardiansTalks: [{ name: 'Arctic Wolf' }],
+      guardiansTalks: [{ name: talkName }],
       wildEncounters: [],
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    document.querySelector('.tzg-popup-cancel')?.click();
-
    const result = await savePromise;
 
-   assert.deepEqual(result, {
-      cancelled: true,
-      issues: [{
-         code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-         type: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-         items: [{
-            name: 'Arctic Wolf',
-            item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-            start_time: '11:00',
-         }],
-      }],
-   });
+   assert.equal(result.cancelled, true);
+   assert.equal(result.issues[Position.FIRST].code, errorType);
+   assert.equal(result.issues[Position.FIRST].type, errorType);
+   assert.deepEqual(result.issues[Position.FIRST].items, [issueItem]);
 });
+
 
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBeforeSavingAWildEncounter_ExpectOk', async () => {
    const requests = [];
+   const date = '2026-06-15';
+   const encounterName = 'African Rainforest';
+   const startTime = '14:00';
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -413,7 +420,6 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       },
       suppressed_error_types: [],
    };
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
@@ -421,7 +427,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       });
 
       const isConfirmed = Boolean(
-         requests.at(-1)?.body?.confirmingWildEncounterUnschedule
+         requests.at(Position.LAST)?.body?.confirmingWildEncounterUnschedule
       );
 
       return {
@@ -433,14 +439,14 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
             reasons: isConfirmed ? [] : [{
                code: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
                items: [{
-                  name: 'African Rainforest',
+                  name: encounterName,
                   item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
-                  start_time: '14:00',
+                  start_time: startTime,
                }],
             }],
             itinerary_config: itineraryConfig,
             itinerary: {
-               date: '2026-06-15',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -451,30 +457,29 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    };
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
+      date,
       animals: [],
       attractions: [],
       guardiansTalks: [],
-      wildEncounters: [{ name: 'African Rainforest' }],
+      wildEncounters: [{ name: encounterName }],
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    const popupMessage = document.querySelector('.tzg-popup-message');
 
-   assert.match(
-      popupMessage?.textContent ?? '',
-      /Adding the African Rainforest wild encounter will put it at .* on your day and update your walking route\. Your items will be rescheduled around it\./
+   assert.equal(
+      popupMessage.textContent,
+      Strings.itinerary.confirmation.wildEncounterRescheduleMessage(
+         encounterName,
+         ItineraryItemFormatter.formatClockTime(startTime)
+      )
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await savePromise;
 
    assert.equal(requests.length, 2);
@@ -482,8 +487,12 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    assert.equal(requests[Position.SECOND].body.confirmingWildEncounterUnschedule, true);
 });
 
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesScheduleTimeConflictsBeforeUnschedule_ExpectOk', async () => {
    const requests = [];
+   const date = '2026-06-15';
+   const talkName = 'African Lion';
+   const encounterName = 'African Rainforest';
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -492,18 +501,16 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
       },
       suppressed_error_types: [],
    };
-
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
       });
 
-      const body = requests.at(-1)?.body ?? {};
+      const body = requests.at(Position.LAST)?.body ?? {};
 
       if (body.overridingConflictingGuardiansTalks) {
          return {
@@ -515,10 +522,10 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
                reasons: [],
                itinerary_config: itineraryConfig,
                itinerary: {
-                  date: '2026-06-15',
+                  date,
                   animals: [],
                   attractions: [],
-                  guardians_talks: [{ name: 'African Lion' }],
+                  guardians_talks: [{ name: talkName }],
                   wild_encounters: [],
                },
             }),
@@ -535,14 +542,14 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
                code: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
                items: [
                   {
-                     name: 'African Lion',
+                     name: talkName,
                      item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                      start_time: '14:00',
                      end_time: '14:30',
                      location: 'Africa Savanna',
                   },
                   {
-                     name: 'African Rainforest',
+                     name: encounterName,
                      item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
                      start_time: '14:00',
                      end_time: '14:45',
@@ -552,7 +559,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
             }],
             itinerary_config: itineraryConfig,
             itinerary: {
-               date: '2026-06-15',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -563,48 +570,47 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
    };
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
+      date,
       animals: [],
       attractions: [],
-      guardiansTalks: [{ name: 'African Lion' }],
-      wildEncounters: [{ name: 'African Rainforest' }],
+      guardiansTalks: [{ name: talkName }],
+      wildEncounters: [{ name: encounterName }],
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    const conflictTitle = document.querySelector('.itin-top-title');
 
-   assert.match(
-      conflictTitle?.textContent ?? '',
-      /Your Itinerary Has the Following Issues:/
+   assert.equal(
+      conflictTitle.textContent,
+      Strings.itinerary.confirmation.saveIssuesTitle
    );
 
    document.querySelector('.itin-save-issue-select-btn')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await savePromise;
 
    assert.equal(requests.length, 2);
    assert.equal(requests[Position.FIRST].body.overridingConflictingGuardiansTalks, false);
    assert.equal(requests[Position.SECOND].body.overridingConflictingGuardiansTalks, true);
    assert.equal(requests[Position.SECOND].body.guardiansTalks.length, 1);
-   assert.equal(requests[Position.SECOND].body.guardiansTalks[Position.FIRST].name, 'African Lion');
+   assert.equal(requests[Position.SECOND].body.guardiansTalks[Position.FIRST].name, talkName);
    assert.deepEqual(requests[Position.SECOND].body.wildEncounters, []);
 });
 
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiffUnselectedScheduleConflicts_ExpectOk', async () => {
    const requests = [];
+   const date = '2026-06-15';
+   const talkName = 'Highland Cattle';
+   const encounterName = 'Grizzly Bear';
+   const encounterStart = '13:00';
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -612,18 +618,16 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
       },
       suppressed_error_types: [],
    };
-
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
       });
 
-      const body = requests.at(-1)?.body ?? {};
+      const body = requests.at(Position.LAST)?.body ?? {};
 
       if (body.overridingConflictingGuardiansTalks) {
          return {
@@ -635,11 +639,11 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
                reasons: [],
                itinerary_config: itineraryConfig,
                itinerary: {
-                  date: '2026-06-15',
+                  date,
                   animals: [],
                   attractions: [],
                   guardians_talks: [],
-                  wild_encounters: [{ name: 'Grizzly Bear' }],
+                  wild_encounters: [{ name: encounterName }],
                },
             }),
          };
@@ -655,16 +659,16 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
                code: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
                items: [
                   {
-                     name: 'Highland Cattle',
+                     name: talkName,
                      item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-                     start_time: '13:00',
+                     start_time: encounterStart,
                      end_time: '13:30',
                      location: 'Eurasia Wilds',
                   },
                   {
-                     name: 'Grizzly Bear',
+                     name: encounterName,
                      item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
-                     start_time: '13:00',
+                     start_time: encounterStart,
                      end_time: '13:45',
                      meeting_spot: 'Wild Encounter - Americas Meeting Spot',
                   },
@@ -672,7 +676,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
             }],
             itinerary_config: itineraryConfig,
             itinerary: {
-               date: '2026-06-15',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -683,29 +687,23 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
    };
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
+      date,
       animals: [],
       attractions: [],
-      guardiansTalks: [{ name: 'Highland Cattle' }],
-      wildEncounters: [{ name: 'Grizzly Bear', start_time: '13:00' }],
+      guardiansTalks: [{ name: talkName }],
+      wildEncounters: [{ name: encounterName, start_time: encounterStart }],
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    document.body.querySelectorAll('.itin-save-issue-select-btn')[Position.SECOND]?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    const result = await savePromise;
 
    assert.equal(requests.length, 2);
@@ -713,14 +711,26 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
    assert.deepEqual(requests[Position.SECOND].body.guardiansTalks, []);
    assert.equal(
       requests[Position.SECOND].body.wildEncounters[Position.FIRST],
-      new WildEncounterScheduleItemKey('Grizzly Bear', '13:00').toWire()
+      new WildEncounterScheduleItemKey(encounterName, encounterStart).toWire()
    );
    assert.deepEqual(result.validation.removed.guardiansTalks, []);
    assert.equal(result.validation.hasChanges, false);
 });
 
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSavedAnimalsOnConflictRetry_ExpectOk', async () => {
    const requests = [];
+   const date = '2026-06-15';
+   const species = 'African Lion';
+   const exhibit = 'Africa Savanna';
+   const talkName = 'Nile Soft-Shelled Turtle';
+   const encounterName = 'Guardians of White Rhinos';
+   const scheduledAnimal = {
+      species,
+      exhibit,
+      start_time: '14:30',
+      end_time: '14:45',
+   };
    const itineraryConfig = {
       itinerary_error_types: {
          SUCCESS: 'success',
@@ -728,18 +738,16 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
       },
       suppressed_error_types: [],
    };
-
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-
    globalThis.fetch = async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
       });
 
-      const body = requests.at(-1)?.body ?? {};
+      const body = requests.at(Position.LAST)?.body ?? {};
 
       if (body.overridingConflictingGuardiansTalks) {
          return {
@@ -751,15 +759,10 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
                reasons: [],
                itinerary_config: itineraryConfig,
                itinerary: {
-                  date: '2026-06-15',
-                  animals: [{
-                     species: 'African Lion',
-                     exhibit: 'Africa Savanna',
-                     start_time: '14:30',
-                     end_time: '14:45',
-                  }],
+                  date,
+                  animals: [scheduledAnimal],
                   attractions: [],
-                  guardians_talks: [{ name: 'Nile Soft-Shelled Turtle' }],
+                  guardians_talks: [{ name: talkName }],
                   wild_encounters: [],
                },
             }),
@@ -776,14 +779,14 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
                code: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
                items: [
                   {
-                     name: 'Nile Soft-Shelled Turtle',
+                     name: talkName,
                      item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
                      start_time: '14:00',
                      end_time: '14:30',
                      location: 'African Rainforest Pavilion',
                   },
                   {
-                     name: 'Guardians of White Rhinos',
+                     name: encounterName,
                      item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
                      start_time: '14:00',
                      end_time: '14:45',
@@ -793,15 +796,10 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
             }],
             itinerary_config: itineraryConfig,
             itinerary: {
-               date: '2026-06-15',
-               animals: [{
-                  species: 'African Lion',
-                  exhibit: 'Africa Savanna',
-                  start_time: '14:30',
-                  end_time: '14:45',
-               }],
+               date,
+               animals: [scheduledAnimal],
                attractions: [],
-               guardians_talks: [{ name: 'Nile Soft-Shelled Turtle' }],
+               guardians_talks: [{ name: talkName }],
                wild_encounters: [],
             },
          }),
@@ -809,44 +807,39 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
    };
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
-      date: '2026-06-15',
+      date,
       animals: [],
       attractions: [],
-      guardiansTalks: [{ name: 'Nile Soft-Shelled Turtle' }],
-      wildEncounters: [{ name: 'Guardians of White Rhinos' }],
+      guardiansTalks: [{ name: talkName }],
+      wildEncounters: [{ name: encounterName }],
    });
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    document.querySelector('.itin-save-issue-select-btn')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    document.querySelector('.tzg-popup-confirm')?.click();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
    await savePromise;
 
    assert.equal(requests.length, 2);
-   assert.deepEqual(requests[Position.SECOND].body.animals, [{
-      species: 'African Lion',
-      exhibit: 'Africa Savanna',
-   }]);
+   assert.deepEqual(requests[Position.SECOND].body.animals, [{ species, exhibit }]);
 });
 
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiffAlsoTransportationAttractions_ExpectOk', async () => {
+   const date = '2026-08-17';
+   const name = 'Zoomobile';
+   const addedAsAttraction = true;
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(JSON.parse(options.body).transportations, [{
-         name: 'Zoomobile',
-         added_as_attraction: true,
+         name,
+         added_as_attraction: addedAsAttraction,
       }]);
 
       return {
@@ -857,12 +850,12 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
             status: 'success',
             reasons: [],
             itinerary: {
-               date: '2026-08-17',
+               date,
                animals: [],
                attractions: [],
                transportations: [{
-                  name: 'Zoomobile',
-                  added_as_attraction: true,
+                  name,
+                  added_as_attraction: addedAsAttraction,
                   likelihood: 100,
                }],
                guardians_talks: [],
@@ -873,9 +866,9 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
    };
 
    const result = await ItineraryServiceSaver.saveItinerary({
-      date: '2026-08-17',
+      date,
       animals: [],
-      attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
+      attractions: [{ name, addedAsAttraction }],
       guardiansTalks: [],
       wildEncounters: [],
    });

@@ -15,37 +15,56 @@ installDomTestHooks({
    },
 });
 
-test('Test_GetItineraryOverlayMountEl_TestFlowThenMap_ExpectFallback', () => {
-   const flow = document.getElementById('itineraryFlow');
-   assert.equal(ItineraryPanelFragment.getItineraryOverlayMountEl(), flow);
 
+test('Test_GetItineraryOverlayMountEl_TestFlow_ExpectFlow', () => {
+   const flow = document.getElementById('itineraryFlow');
+
+   const mount = ItineraryPanelFragment.getItineraryOverlayMountEl();
+
+   assert.equal(mount, flow);
+});
+
+
+test('Test_GetItineraryOverlayMountEl_TestMissingFlow_ExpectMap', () => {
    const originalGet = document.getElementById;
-   document.getElementById = () => null;
+   const originalQuery = document.querySelector;
    const map = document.createElement('div');
    map.className = 'map-container';
-   const originalQuery = document.querySelector;
+
+   document.getElementById = () => null;
    document.querySelector = (selector) => (
-      selector === '.map-container' ? map : originalQuery(selector)
+      selector === `.${map.className}` ? map : originalQuery(selector)
    );
 
    try {
-      assert.equal(ItineraryPanelFragment.getItineraryOverlayMountEl(), map);
+      const mount = ItineraryPanelFragment.getItineraryOverlayMountEl();
+
+      assert.equal(mount, map);
    } finally {
       document.getElementById = originalGet;
       document.querySelector = originalQuery;
    }
 });
 
+
 test('Test_GetItineraryPanelMountEl_TestPanel_ExpectElement', () => {
    const panel = document.querySelector('.itinerary-panel');
-   assert.equal(ItineraryPanelFragment.getItineraryPanelMountEl(), panel);
+
+   const mount = ItineraryPanelFragment.getItineraryPanelMountEl();
+
+   assert.equal(mount, panel);
 });
 
+
 test('Test_CreateItineraryPopupLayout_TestMessageAndActions_ExpectStructure', () => {
+   const popupClassName = 'tzg-confirm';
+   const title = 'Heads up';
+   const message = 'Save changes?';
+
    const layout = ItineraryPanelFragment.createItineraryPopupLayout({
-      popupClassName: 'tzg-confirm',
-      title: 'Heads up',
-      message: 'Save changes?',
+      popupClassName,
+      title,
+      message,
       actionButtons: [
          { key: 'cancel', label: 'Cancel' },
          { key: 'confirm', label: 'Save', className: 'tzg-popup-confirm' },
@@ -53,17 +72,19 @@ test('Test_CreateItineraryPopupLayout_TestMessageAndActions_ExpectStructure', ()
    });
 
    assert.ok(layout.root.classList.contains('tzg-popup'));
-   assert.ok(layout.root.classList.contains('tzg-confirm'));
-   assert.equal(layout.root.querySelector('.itin-top-title')?.textContent, 'Heads up');
-   assert.equal(layout.root.querySelector('.tzg-popup-message')?.textContent, 'Save changes?');
+   assert.ok(layout.root.classList.contains(popupClassName));
+   assert.equal(layout.root.querySelector('.itin-top-title')?.textContent, title);
+   assert.equal(layout.root.querySelector('.tzg-popup-message')?.textContent, message);
    assert.equal(layout.closeButton, null);
    assert.ok(layout.buttonEls.cancel);
    assert.ok(layout.buttonEls.confirm);
 });
 
+
 test('Test_CreateItineraryPopupLayout_TestBodyContentAndClose_ExpectCloseButton', () => {
+   const bodyClassName = 'custom-body';
    const bodyContent = document.createElement('div');
-   bodyContent.className = 'custom-body';
+   bodyContent.className = bodyClassName;
    bodyContent.textContent = 'Custom';
 
    const layout = ItineraryPanelFragment.createItineraryPopupLayout({
@@ -76,30 +97,32 @@ test('Test_CreateItineraryPopupLayout_TestBodyContentAndClose_ExpectCloseButton'
 
    assert.ok(layout.closeButton);
    assert.equal(layout.closeButton.getAttribute('aria-label'), Strings.itinerary.aria.closeBuilder);
-   assert.ok(layout.root.querySelector('.custom-body'));
+   assert.ok(layout.root.querySelector(`.${bodyClassName}`));
    assert.equal(layout.root.querySelector('.tzg-popup-message'), null);
 });
 
+
 test('Test_MountDismissablePopup_TestMissingArgs_ExpectNoOpClosers', () => {
    const result = ItineraryPanelFragment.mountDismissablePopup({});
+
    result.close();
    result.dismiss();
 });
 
-test('Test_MountDismissablePopup_TestOverlayEscapeAndClose_ExpectDismiss', () => {
+
+test('Test_MountDismissablePopup_TestOverlayClick_ExpectDismiss', () => {
    const dismissals = [];
    const focusEl = document.createElement('button');
    const focusCalls = [];
    focusEl.focus = () => {
       focusCalls.push(true);
    };
-
    const root = document.createElement('div');
    const overlay = document.createElement('div');
    overlay.className = 'itin-overlay';
    root.appendChild(overlay);
 
-   const { close, dismiss } = ItineraryPanelFragment.mountDismissablePopup({
+   const mounted = ItineraryPanelFragment.mountDismissablePopup({
       mountEl: document.body,
       root,
       overlay,
@@ -108,17 +131,22 @@ test('Test_MountDismissablePopup_TestOverlayEscapeAndClose_ExpectDismiss', () =>
          dismissals.push(true);
       },
    });
+   overlay.listeners.click({ target: root });
+   overlay.listeners.click({ target: overlay });
+   mounted.close();
+   mounted.dismiss();
 
    assert.equal(document.body.children.includes?.(root) || document.body.contains?.(root), true);
    assert.deepEqual(focusCalls, [true]);
-
-   overlay.listeners.click({ target: overlay });
    assert.deepEqual(dismissals, [true]);
    assert.equal(Boolean(root.parentElement), false);
+});
 
-   const root2 = document.createElement('div');
-   const overlay2 = document.createElement('div');
-   const keydowns = [];
+
+test('Test_MountDismissablePopup_TestEscape_ExpectDismiss', () => {
+   const dismissals = [];
+   const root = document.createElement('div');
+   const overlay = document.createElement('div');
    const originalAdd = document.addEventListener;
    const originalRemove = document.removeEventListener;
    let keyHandler = null;
@@ -127,38 +155,35 @@ test('Test_MountDismissablePopup_TestOverlayEscapeAndClose_ExpectDismiss', () =>
       if (type === 'keydown') {
          keyHandler = handler;
       }
-      keydowns.push(type);
    };
    document.removeEventListener = () => {};
 
    try {
       const mounted = ItineraryPanelFragment.mountDismissablePopup({
          mountEl: document.body,
-         root: root2,
-         overlay: overlay2,
+         root,
+         overlay,
          onDismiss: () => {
             dismissals.push('escape');
          },
       });
-
       keyHandler?.({ key: 'Escape', preventDefault() {} });
-      assert.ok(dismissals.includes('escape'));
-
       mounted.close();
-      close();
-      dismiss();
+
+      assert.ok(dismissals.includes('escape'));
    } finally {
       document.addEventListener = originalAdd;
       document.removeEventListener = originalRemove;
    }
 });
 
+
 test('Test_MountDismissablePopup_TestDismissFlagsOff_ExpectNoOverlayOrEscape', () => {
    const dismissals = [];
    const root = document.createElement('div');
    const overlay = document.createElement('div');
-   let keyHandler = null;
    const originalAdd = document.addEventListener;
+   let keyHandler = null;
 
    document.addEventListener = (type, handler) => {
       if (type === 'keydown') {
@@ -177,19 +202,21 @@ test('Test_MountDismissablePopup_TestDismissFlagsOff_ExpectNoOverlayOrEscape', (
             dismissals.push(true);
          },
       });
+      keyHandler?.({ key: 'Escape', preventDefault() {} });
 
       assert.equal(overlay.listeners.click, undefined);
-      keyHandler?.({ key: 'Escape', preventDefault() {} });
       assert.deepEqual(dismissals, []);
    } finally {
       document.addEventListener = originalAdd;
    }
 });
 
+
 test('Test_CreateItineraryPopupLayout_TestJoinClassNames_ExpectPopupBuilder', () => {
    const originalJoin = ItineraryPanelPopupBuilder.joinClassNames;
    const originalButton = ItineraryPanelPopupBuilder.createPopupButton;
    const joins = [];
+   const popupClassName = 'extra';
 
    ItineraryPanelPopupBuilder.joinClassNames = (...args) => {
       joins.push(args);
@@ -203,10 +230,11 @@ test('Test_CreateItineraryPopupLayout_TestJoinClassNames_ExpectPopupBuilder', ()
 
    try {
       ItineraryPanelFragment.createItineraryPopupLayout({
-         popupClassName: 'extra',
+         popupClassName,
          actionsClassName: 'actions-extra',
          actionButtons: [{ key: 'ok', label: 'OK' }],
       });
+
       assert.ok(joins.some((args) => args.includes('tzg-popup')));
    } finally {
       ItineraryPanelPopupBuilder.joinClassNames = originalJoin;

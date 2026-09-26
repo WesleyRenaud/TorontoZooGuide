@@ -45,14 +45,25 @@ const guardiansTalk = {
    location: 'Africa Savanna',
 };
 
+const _emptyItinerary = {
+   date: '2026-06-15',
+   animals: [],
+   attractions: [],
+   guardiansTalks: [],
+   wildEncounters: [],
+};
+
+
 test('Test_GetWildEncounterConflictIssueStartTime_TestUsesTheEarliestEncounterTime_ExpectOk', () => {
-   assert.equal(
-      WildEncounterConflictResolver.getWildEncounterConflictIssueStartTime({
-         items: [thirdEncounter, fourthEncounter],
-      }),
-      '14:00'
-   );
+   const issue = {
+      items: [thirdEncounter, fourthEncounter],
+   };
+
+   const startTime = WildEncounterConflictResolver.getWildEncounterConflictIssueStartTime(issue);
+
+   assert.equal(startTime, thirdEncounter.start_time);
 });
+
 
 test('Test_SortWildEncounterConflictIssuesByStartTime_TestOrdersGroupsByEarliestTime_ExpectOk', () => {
    const afternoonIssue = {
@@ -62,14 +73,14 @@ test('Test_SortWildEncounterConflictIssuesByStartTime_TestOrdersGroupsByEarliest
       items: [firstEncounter, secondEncounter],
    };
 
-   assert.deepEqual(
-      WildEncounterConflictResolver.sortWildEncounterConflictIssuesByStartTime([
-         afternoonIssue,
-         middayIssue,
-      ]),
-      [middayIssue, afternoonIssue]
-   );
+   const sorted = WildEncounterConflictResolver.sortWildEncounterConflictIssuesByStartTime([
+      afternoonIssue,
+      middayIssue,
+   ]);
+
+   assert.deepEqual(sorted, [middayIssue, afternoonIssue]);
 });
+
 
 test('Test_GetSelectedWildEncounters_TestReturnsSelectionsFromEachConflictGroup_ExpectOk', () => {
    const conflictGroups = [
@@ -77,11 +88,11 @@ test('Test_GetSelectedWildEncounters_TestReturnsSelectionsFromEachConflictGroup_
       { selection: { items: [thirdEncounter] } },
    ];
 
-   assert.deepEqual(
-      WildEncounterConflictResolver.getSelectedWildEncounters(conflictGroups),
-      [firstEncounter, thirdEncounter]
-   );
+   const selected = WildEncounterConflictResolver.getSelectedWildEncounters(conflictGroups);
+
+   assert.deepEqual(selected, [firstEncounter, thirdEncounter]);
 });
+
 
 test('Test_GetSelectedWildEncounters_TestReturnsMultipleNonOverlappingPicksInOneGroup_ExpectOk', () => {
    const conflictGroups = [
@@ -92,11 +103,11 @@ test('Test_GetSelectedWildEncounters_TestReturnsMultipleNonOverlappingPicksInOne
       },
    ];
 
-   assert.deepEqual(
-      WildEncounterConflictResolver.getSelectedWildEncounters(conflictGroups),
-      [firstEncounter, thirdEncounter]
-   );
+   const selected = WildEncounterConflictResolver.getSelectedWildEncounters(conflictGroups);
+
+   assert.deepEqual(selected, [firstEncounter, thirdEncounter]);
 });
+
 
 test('Test_GetSelectedWildEncounters_TestDeduplicatesTheSameEncounterSelectedTwice_ExpectOk', () => {
    const conflictGroups = [
@@ -104,11 +115,20 @@ test('Test_GetSelectedWildEncounters_TestDeduplicatesTheSameEncounterSelectedTwi
       { selection: { items: [firstEncounter] } },
    ];
 
-   assert.deepEqual(
-      WildEncounterConflictResolver.getSelectedWildEncounters(conflictGroups),
-      [firstEncounter]
-   );
+   const selected = WildEncounterConflictResolver.getSelectedWildEncounters(conflictGroups);
+
+   assert.deepEqual(selected, [firstEncounter]);
 });
+
+
+test('Test_HasWildEncounterConflictSelection_TestEmpty_ExpectFalse', () => {
+   const conflictGroups = [];
+
+   const hasSelection = WildEncounterConflictResolver.hasWildEncounterConflictSelection(conflictGroups);
+
+   assert.equal(hasSelection, false);
+});
+
 
 test('Test_HasWildEncounterConflictSelection_TestIsFalseUntilAGroupHasASelection_ExpectOk', () => {
    const conflictGroups = [
@@ -116,9 +136,22 @@ test('Test_HasWildEncounterConflictSelection_TestIsFalseUntilAGroupHasASelection
       { selection: { items: [thirdEncounter] } },
    ];
 
-   assert.equal(WildEncounterConflictResolver.hasWildEncounterConflictSelection([]), false);
-   assert.equal(WildEncounterConflictResolver.hasWildEncounterConflictSelection(conflictGroups), true);
+   const hasSelection = WildEncounterConflictResolver.hasWildEncounterConflictSelection(conflictGroups);
+
+   assert.equal(hasSelection, true);
 });
+
+
+test('Test_HasUnresolvedWildEncounterConflictGroups_TestEmpty_ExpectFalse', () => {
+   const conflictGroups = [];
+
+   const unresolved = WildEncounterConflictResolver.hasUnresolvedWildEncounterConflictGroups(
+      conflictGroups
+   );
+
+   assert.equal(unresolved, false);
+});
+
 
 test('Test_HasUnresolvedWildEncounterConflictGroups_TestDetectsPartialResolution_ExpectOk', () => {
    const conflictGroups = [
@@ -126,37 +159,55 @@ test('Test_HasUnresolvedWildEncounterConflictGroups_TestDetectsPartialResolution
       { selection: { items: [] } },
    ];
 
-   assert.equal(WildEncounterConflictResolver.hasUnresolvedWildEncounterConflictGroups([]), false);
-   assert.equal(
-      WildEncounterConflictResolver.hasUnresolvedWildEncounterConflictGroups(conflictGroups),
-      true
+   const unresolved = WildEncounterConflictResolver.hasUnresolvedWildEncounterConflictGroups(
+      conflictGroups
    );
-   assert.equal(
-      WildEncounterConflictResolver.hasUnresolvedWildEncounterConflictGroups([
-         { selection: { items: [firstEncounter] } },
-         { selection: { items: [thirdEncounter] } },
-      ]),
-      false
-   );
-   assert.equal(
-      WildEncounterConflictResolver.hasUnresolvedWildEncounterConflictGroups([
-         { selection: { items: [] } },
-         { selection: { items: [] } },
-      ]),
-      false
-   );
+
+   assert.equal(unresolved, true);
 });
 
-test('Test_IsGuardiansTalkConflictItem_TestIdentifiesGuardiansTalkIssueItems_ExpectOk', () => {
-   assert.equal(
-      ScheduleConflictChecker.isGuardiansTalkConflictItem(guardiansTalk),
-      true
+
+test('Test_HasUnresolvedWildEncounterConflictGroups_TestAllSelected_ExpectFalse', () => {
+   const conflictGroups = [
+      { selection: { items: [firstEncounter] } },
+      { selection: { items: [thirdEncounter] } },
+   ];
+
+   const unresolved = WildEncounterConflictResolver.hasUnresolvedWildEncounterConflictGroups(
+      conflictGroups
    );
-   assert.equal(
-      ScheduleConflictChecker.isGuardiansTalkConflictItem(firstEncounter),
-      false
-   );
+
+   assert.equal(unresolved, false);
 });
+
+
+test('Test_HasUnresolvedWildEncounterConflictGroups_TestAllEmpty_ExpectFalse', () => {
+   const conflictGroups = [
+      { selection: { items: [] } },
+      { selection: { items: [] } },
+   ];
+
+   const unresolved = WildEncounterConflictResolver.hasUnresolvedWildEncounterConflictGroups(
+      conflictGroups
+   );
+
+   assert.equal(unresolved, false);
+});
+
+
+test('Test_IsGuardiansTalkConflictItem_TestTalk_ExpectTrue', () => {
+   const isTalk = ScheduleConflictChecker.isGuardiansTalkConflictItem(guardiansTalk);
+
+   assert.equal(isTalk, true);
+});
+
+
+test('Test_IsGuardiansTalkConflictItem_TestEncounter_ExpectFalse', () => {
+   const isTalk = ScheduleConflictChecker.isGuardiansTalkConflictItem(firstEncounter);
+
+   assert.equal(isTalk, false);
+});
+
 
 test('Test_GetSelectedGuardiansTalks_TestReturnsOnlyGuardiansTalkSelections_ExpectOk', () => {
    const conflictGroups = [
@@ -164,104 +215,85 @@ test('Test_GetSelectedGuardiansTalks_TestReturnsOnlyGuardiansTalkSelections_Expe
       { selection: { items: [firstEncounter] } },
    ];
 
-   assert.deepEqual(
-      WildEncounterConflictResolver.getSelectedGuardiansTalks(conflictGroups),
-      [guardiansTalk]
-   );
+   const talks = WildEncounterConflictResolver.getSelectedGuardiansTalks(conflictGroups);
+
+   assert.deepEqual(talks, [guardiansTalk]);
 });
 
+
 test('Test_BuildItineraryWithSelectedConflictResolutions_TestOmitsScheduleTimesForBackendTrimming_ExpectOk', () => {
-   const itinerary = {
-      date: '2026-06-15',
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   };
+   const itinerary = { ..._emptyItinerary };
+   const encounterName = 'Grizzly Bear';
+   const meetingSpot = 'Spot';
+   const talkName = 'African Lion';
+   const location = 'Africa Savanna';
    const encounter = {
-      name: 'Grizzly Bear',
+      name: encounterName,
       start_time: '13:00',
       end_time: '13:45',
       item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
-      meeting_spot: 'Spot',
+      meeting_spot: meetingSpot,
    };
    const talk = {
-      name: 'African Lion',
+      name: talkName,
       start_time: '13:30',
       end_time: '14:00',
       item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-      location: 'Africa Savanna',
+      location,
    };
 
-   assert.deepEqual(
-      WildEncounterConflictResolver.buildItineraryWithSelectedConflictResolutions(
-         itinerary,
-         [encounter, talk]
-      ),
-      {
-         ...itinerary,
-         guardiansTalks: [{
-            name: 'African Lion',
-            location: 'Africa Savanna',
-         }],
-         wildEncounters: [{
-            name: 'Grizzly Bear',
-            meeting_spot: 'Spot',
-         }],
-      }
+   const resolved = WildEncounterConflictResolver.buildItineraryWithSelectedConflictResolutions(
+      itinerary,
+      [encounter, talk]
    );
+
+   assert.deepEqual(resolved, {
+      ...itinerary,
+      guardiansTalks: [{
+         name: talk.name,
+         location: talk.location,
+      }],
+      wildEncounters: [{
+         name: encounter.name,
+         meeting_spot: encounter.meeting_spot,
+      }],
+   });
 });
+
 
 test('Test_BuildItineraryWithSelectedConflictResolutions_TestAppendsTalksAndEncounters_ExpectOk', () => {
-   const itinerary = {
-      date: '2026-06-15',
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   };
+   const itinerary = { ..._emptyItinerary };
 
-   assert.deepEqual(
-      WildEncounterConflictResolver.buildItineraryWithSelectedConflictResolutions(
-         itinerary,
-         [guardiansTalk, firstEncounter]
-      ),
-      {
-         ...itinerary,
-         guardiansTalks: [{
-            name: guardiansTalk.name,
-            location: guardiansTalk.location,
-         }],
-         wildEncounters: [{
-            name: firstEncounter.name,
-            meeting_spot: firstEncounter.meeting_spot,
-         }],
-      }
+   const resolved = WildEncounterConflictResolver.buildItineraryWithSelectedConflictResolutions(
+      itinerary,
+      [guardiansTalk, firstEncounter]
    );
+
+   assert.deepEqual(resolved, {
+      ...itinerary,
+      guardiansTalks: [{
+         name: guardiansTalk.name,
+         location: guardiansTalk.location,
+      }],
+      wildEncounters: [{
+         name: firstEncounter.name,
+         meeting_spot: firstEncounter.meeting_spot,
+      }],
+   });
 });
 
-test('Test_BuildItineraryWithSelectedWildEncounters_TestAppendsAllSelectedEncounters_ExpectOk', () => {
-   const itinerary = {
-      date: '2026-06-15',
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
-   };
 
-   assert.deepEqual(
-      WildEncounterConflictResolver.buildItineraryWithSelectedWildEncounters(
-         itinerary,
-         [firstEncounter, secondEncounter, thirdEncounter, fourthEncounter]
-      ),
-      {
-         ...itinerary,
-         wildEncounters: [
-            firstEncounter,
-            secondEncounter,
-            thirdEncounter,
-            fourthEncounter,
-         ],
-      }
+test('Test_BuildItineraryWithSelectedWildEncounters_TestAppendsAllSelectedEncounters_ExpectOk', () => {
+   const itinerary = { ..._emptyItinerary };
+   const encounters = [firstEncounter, secondEncounter, thirdEncounter, fourthEncounter];
+
+   const resolved = WildEncounterConflictResolver.buildItineraryWithSelectedWildEncounters(
+      itinerary,
+      encounters
    );
+
+   assert.deepEqual(resolved, {
+      ...itinerary,
+      wildEncounters: encounters,
+   });
 });

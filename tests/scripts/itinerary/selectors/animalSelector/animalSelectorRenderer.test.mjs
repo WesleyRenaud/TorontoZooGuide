@@ -6,10 +6,12 @@ import { AnimalSelectorModel } from '../../../../../scripts/itinerary/selectors/
 import { AnimalSelectorRendererHelper } from '../../../../../scripts/itinerary/selectors/animalSelector/animalSelectorRendererHelper.js';
 import { SpeciesLinkTitleBuilder } from '../../../../../scripts/animals/speciesLinkTitleBuilder.js';
 import { ResultRenderer } from '../../../../../scripts/itinerary/selectors/base/resultRenderer.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
 
 test('Test_RenderAnimalSelectorRowLeft_TestRow_ExpectSelectorContent', () => {
    const originalSpecies = AnimalSelectorModel.getAnimalSpecies;
@@ -21,20 +23,22 @@ test('Test_RenderAnimalSelectorRowLeft_TestRow_ExpectSelectorContent', () => {
    const originalWarning = AnimalSelectorRendererHelper.createLikelihoodWarning;
    const originalTextColumn = ResultRenderer.createSelectorTextColumn;
    const originalRowContent = ResultRenderer.createSelectorRowContent;
-
-   AnimalSelectorModel.getAnimalSpecies = () => 'Lion';
+   const species = 'Lion';
+   const imageSrc = '/lion.png';
+   const warningClass = 'warn';
+   AnimalSelectorModel.getAnimalSpecies = () => species;
    AnimalSelectorModel.getAnimalSubtitle = () => 'Savanna';
-   AnimalSelectorModel.buildAnimalImageSrc = () => '/lion.png';
+   AnimalSelectorModel.buildAnimalImageSrc = () => imageSrc;
    AnimalSelectorModel.getAnimalEnclosureName = () => 'Yard';
    AnimalSelectorModel.getAnimalLikelihoodLevel = () => 'low';
    SpeciesLinkTitleBuilder.createAnimalTitleLinkElement = () => {
       const el = document.createElement('a');
-      el.textContent = 'Lion';
+      el.textContent = species;
       return el;
    };
    AnimalSelectorRendererHelper.createLikelihoodWarning = () => {
       const el = document.createElement('span');
-      el.className = 'warn';
+      el.className = warningClass;
       return el;
    };
    ResultRenderer.createSelectorTextColumn = ({ subtitle, titleNode }) => {
@@ -43,9 +47,9 @@ test('Test_RenderAnimalSelectorRowLeft_TestRow_ExpectSelectorContent', () => {
       el.appendChild(titleNode);
       return el;
    };
-   ResultRenderer.createSelectorRowContent = ({ imageSrc, imageAlt, textColumnEl }) => {
+   ResultRenderer.createSelectorRowContent = ({ imageSrc: src, imageAlt, textColumnEl }) => {
       const el = document.createElement('div');
-      el.dataset.imageSrc = imageSrc;
+      el.dataset.imageSrc = src;
       el.dataset.imageAlt = imageAlt;
       el.appendChild(textColumnEl);
       return el;
@@ -53,9 +57,10 @@ test('Test_RenderAnimalSelectorRowLeft_TestRow_ExpectSelectorContent', () => {
 
    try {
       const content = AnimalSelectorRenderer.renderAnimalSelectorRowLeft({});
-      assert.equal(content.dataset.imageSrc, '/lion.png');
-      assert.equal(content.dataset.imageAlt, Strings.itinerary.itemPhoto('Lion'));
-      assert.equal(content.querySelector('.warn').className, 'warn');
+
+      assert.equal(content.dataset.imageSrc, imageSrc);
+      assert.equal(content.dataset.imageAlt, Strings.itinerary.itemPhoto(species));
+      assert.equal(content.querySelector(`.${warningClass}`).className, warningClass);
    } finally {
       AnimalSelectorModel.getAnimalSpecies = originalSpecies;
       AnimalSelectorModel.getAnimalSubtitle = originalSubtitle;
@@ -68,6 +73,7 @@ test('Test_RenderAnimalSelectorRowLeft_TestRow_ExpectSelectorContent', () => {
       ResultRenderer.createSelectorRowContent = originalRowContent;
    }
 });
+
 
 test('Test_RenderIncludeOffDisplayToggle_TestChange_ExpectCallbacks', () => {
    const search = document.createElement('input');
@@ -95,19 +101,18 @@ test('Test_RenderIncludeOffDisplayToggle_TestChange_ExpectCallbacks', () => {
       },
    });
 
+   const wrap = inserted.at(Position.FIRST);
    assert.equal(inserted.length, 1);
-   assert.equal(inserted[0].reference, search);
-   assert.equal(inserted[0].node.className, 'itin-selector-toggle-wrap');
-
-   const label = inserted[0].node.children[0];
-   const checkbox = label.children[0];
+   assert.equal(wrap.reference, search);
+   assert.equal(wrap.node.className, 'itin-selector-toggle-wrap');
+   const label = wrap.node.children.at(Position.FIRST);
+   const checkbox = label.children.at(Position.FIRST);
    assert.equal(checkbox.type, 'checkbox');
    assert.equal(checkbox.checked, false);
    assert.equal(
-      label.children[1].textContent,
+      label.children.at(Position.SECOND).textContent,
       Strings.itinerary.selectors.includeOffDisplayAnimals
    );
-
    checkbox.checked = true;
    checkbox.listeners.change();
    assert.deepEqual(changes, [true]);

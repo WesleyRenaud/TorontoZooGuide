@@ -418,11 +418,13 @@ def Test_ScheduleOverlapsExistingSchedule_TestOverlappingDates_ExpectTrue(
    _insert_schedule_row( schedule_provider_conn )
    schedule_provider_conn.commit()
 
-   assert GuardiansTalkScheduleProvider.schedule_overlaps_existing_schedule(
+   result = GuardiansTalkScheduleProvider.schedule_overlaps_existing_schedule(
       schedule_provider_conn,
       _schedule_input(
          start_date='2026-06-15',
-         end_date='2026-07-15' ) ) is True
+         end_date='2026-07-15' ) )
+
+   assert result is True
 
 
 def Test_ScheduleOverlapsExistingSchedule_TestNonOverlappingDates_ExpectFalse(
@@ -430,18 +432,22 @@ def Test_ScheduleOverlapsExistingSchedule_TestNonOverlappingDates_ExpectFalse(
    _insert_schedule_row( schedule_provider_conn )
    schedule_provider_conn.commit()
 
-   assert GuardiansTalkScheduleProvider.schedule_overlaps_existing_schedule(
+   result = GuardiansTalkScheduleProvider.schedule_overlaps_existing_schedule(
       schedule_provider_conn,
       _schedule_input(
          start_date='2026-07-01',
-         end_date='2026-07-31' ) ) is False
+         end_date='2026-07-31' ) )
+
+   assert result is False
 
 
 def Test_SaveSchedule_TestNewSchedule_ExpectPersistsAndReturnsTrue(
       schedule_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkScheduleProvider.save_schedule(
+   result = GuardiansTalkScheduleProvider.save_schedule(
       schedule_provider_conn,
-      _schedule_input() ) is True
+      _schedule_input() )
+
+   assert result is True
 
    row = _fetch_schedule_row( schedule_provider_conn, start_date=START_DATE )
 
@@ -468,12 +474,14 @@ def Test_SaveSchedule_TestOverlappingSchedule_ExpectReturnsFalse(
       schedule_provider_conn,
       _schedule_input() )
 
-   assert GuardiansTalkScheduleProvider.save_schedule(
+   result = GuardiansTalkScheduleProvider.save_schedule(
       schedule_provider_conn,
       _schedule_input(
          start_date='2026-06-15',
          end_date='2026-07-15',
-         message='Overlap.' ) ) is False
+         message='Overlap.' ) )
+
+   assert result is False
 
    assert _fetch_schedule_row(
       schedule_provider_conn,
@@ -630,13 +638,15 @@ def Test_SaveScheduleEnd_TestCoveringSchedule_ExpectUpdatesEndDate(
       end_date=None )
    schedule_provider_conn.commit()
 
-   assert GuardiansTalkScheduleProvider.save_schedule_end(
+   result = GuardiansTalkScheduleProvider.save_schedule_end(
       schedule_provider_conn,
       GuardiansTalkScheduleEndInput(
          talk_name=TALK_NAME,
          location=LOCATION,
          schedule_end_date='2026-06-20',
-         talk_time=TALK_TIME ) ) is True
+         talk_time=TALK_TIME ) )
+
+   assert result is True
 
    row = _fetch_schedule_row( schedule_provider_conn, start_date=START_DATE )
 
@@ -646,10 +656,12 @@ def Test_SaveScheduleEnd_TestCoveringSchedule_ExpectUpdatesEndDate(
 
 def Test_SaveScheduleEnd_TestNoMatchingSchedule_ExpectReturnsFalse(
       schedule_provider_conn: sqlite3.Connection ) -> None:
-   assert GuardiansTalkScheduleProvider.save_schedule_end(
+   result = GuardiansTalkScheduleProvider.save_schedule_end(
       schedule_provider_conn,
       GuardiansTalkScheduleEndInput(
          talk_name=TALK_NAME,
          location=LOCATION,
          schedule_end_date='2026-06-20',
-         talk_time=TALK_TIME ) ) is False
+         talk_time=TALK_TIME ) )
+
+   assert result is False

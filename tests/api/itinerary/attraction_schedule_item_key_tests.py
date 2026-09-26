@@ -7,17 +7,33 @@ CAROUSEL = 'Conservation Carousel'
 
 
 def Test_FromWire_TestName_ExpectAttractionKey() -> None:
-   key = AttractionScheduleItemKey.from_wire( CAROUSEL )
+   wire = CAROUSEL
 
-   assert key == AttractionScheduleItemKey( name=CAROUSEL )
+   key = AttractionScheduleItemKey.from_wire( wire )
+
+   assert key == AttractionScheduleItemKey( name=wire )
+
+
+def Test_FromWire_TestEmptyName_ExpectNone() -> None:
+   wire = ''
+
+   key = AttractionScheduleItemKey.from_wire( wire )
+
+   assert key is None
 
 
 def Test_FromWire_TestBlankName_ExpectNone() -> None:
-   assert AttractionScheduleItemKey.from_wire( '' ) is None
-   assert AttractionScheduleItemKey.from_wire( '   ' ) is None
+   wire = '   '
+
+   key = AttractionScheduleItemKey.from_wire( wire )
+
+   assert key is None
 
 
 def Test_ToWire_TestName_ExpectTrimmedWire() -> None:
-   key = AttractionScheduleItemKey( name=f'  { CAROUSEL }  ' )
+   name = CAROUSEL
+   key = AttractionScheduleItemKey( name=f'  { name }  ' )
 
-   assert key.to_wire() == CAROUSEL
+   wire = key.to_wire()
+
+   assert wire == name

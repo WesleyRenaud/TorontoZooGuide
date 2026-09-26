@@ -21,19 +21,20 @@ installDomTestHooks({
    },
 });
 
+
 test('Test_EnsureItineraryVisitDate_TestServerDate_ExpectSameItinerary', async () => {
+   const date = '2026-06-15';
+   const itinerary = {
+      date,
+      animals: [],
+      attractions: [],
+   };
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
-         return mockJsonResponse({ date: '2026-06-15' });
+         return mockJsonResponse({ date });
       }
 
       throw new Error(`Unexpected fetch: ${url}`);
-   };
-
-   const itinerary = {
-      date: '2026-06-15',
-      animals: [],
-      attractions: [],
    };
 
    const result = await ItineraryVisitDateResolver.ensureItineraryVisitDate(itinerary);
@@ -41,9 +42,10 @@ test('Test_EnsureItineraryVisitDate_TestServerDate_ExpectSameItinerary', async (
    assert.equal(result, itinerary);
 });
 
+
 test('Test_EnsureItineraryVisitDate_TestNoSavedDate_ExpectPersisted', async () => {
    const requests = [];
-
+   const itinerary = { animals: [], attractions: [] };
    globalThis.fetch = async (url, options = {}) => {
       requests.push({
          url,
@@ -69,8 +71,8 @@ test('Test_EnsureItineraryVisitDate_TestNoSavedDate_ExpectPersisted', async () =
             reasons: [],
             itinerary: {
                date: JSON.parse(options.body).date,
-               animals: [],
-               attractions: [],
+               animals: itinerary.animals,
+               attractions: itinerary.attractions,
                guardians_talks: [],
                wild_encounters: [],
             },
@@ -83,21 +85,20 @@ test('Test_EnsureItineraryVisitDate_TestNoSavedDate_ExpectPersisted', async () =
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const result = await ItineraryVisitDateResolver.ensureItineraryVisitDate({ animals: [], attractions: [] });
+   const result = await ItineraryVisitDateResolver.ensureItineraryVisitDate(itinerary);
 
+   const setItineraryRequest = requests.find((request) => request.url === '/set-itinerary');
    assert.ok(result.date);
-   assert.equal(requests.some((request) => request.url === '/set-itinerary'), true);
-   assert.equal(
-      requests.find((request) => request.url === '/set-itinerary')?.body?.date,
-      result.date
-   );
+   assert.equal(Boolean(setItineraryRequest), true);
+   assert.equal(setItineraryRequest?.body?.date, result.date);
 });
 
+
 test('Test_EnsureItineraryVisitDate_TestLocalDraftOnly_ExpectPersisted', async () => {
-   DraftStore.setStoredItineraryDate('2026-06-18');
-
+   const date = '2026-06-18';
    const requests = [];
-
+   const itinerary = { animals: [], attractions: [] };
+   DraftStore.setStoredItineraryDate(date);
    globalThis.fetch = async (url, options = {}) => {
       requests.push({ url });
 
@@ -120,8 +121,8 @@ test('Test_EnsureItineraryVisitDate_TestLocalDraftOnly_ExpectPersisted', async (
             reasons: [],
             itinerary: {
                date: JSON.parse(options.body).date,
-               animals: [],
-               attractions: [],
+               animals: itinerary.animals,
+               attractions: itinerary.attractions,
                guardians_talks: [],
                wild_encounters: [],
             },
@@ -134,33 +135,37 @@ test('Test_EnsureItineraryVisitDate_TestLocalDraftOnly_ExpectPersisted', async (
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   const result = await ItineraryVisitDateResolver.ensureItineraryVisitDate({ animals: [], attractions: [] });
+   const result = await ItineraryVisitDateResolver.ensureItineraryVisitDate(itinerary);
 
    assert.ok(result.date);
    assert.equal(requests.some((request) => request.url === '/set-itinerary'), true);
 });
 
+
 test('Test_EnsureItineraryVisitDate_TestServerDateMismatch_ExpectUpdatedDate', async () => {
+   const itineraryDate = '2026-06-15';
+   const serverDate = '2026-07-01';
+   const animals = [];
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
-         return mockJsonResponse({ date: '2026-07-01' });
+         return mockJsonResponse({ date: serverDate });
       }
 
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
    const result = await ItineraryVisitDateResolver.ensureItineraryVisitDate({
-      date: '2026-06-15',
-      animals: [],
+      date: itineraryDate,
+      animals,
    });
 
-   assert.deepEqual(result, {
-      date: '2026-07-01',
-      animals: [],
-   });
+   assert.equal(result.date, serverDate);
+   assert.equal(result.animals, animals);
 });
 
+
 test('Test_EnsureItineraryVisitDate_TestSetItineraryFails_ExpectThrows', async () => {
+   const itinerary = { animals: [] };
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: null });
@@ -187,7 +192,7 @@ test('Test_EnsureItineraryVisitDate_TestSetItineraryFails_ExpectThrows', async (
    };
 
    await assert.rejects(
-      () => ItineraryVisitDateResolver.ensureItineraryVisitDate({ animals: [] }),
+      () => ItineraryVisitDateResolver.ensureItineraryVisitDate(itinerary),
       (error) => {
          assert.equal(error instanceof Error, true);
          assert.match(error.message, /itinerary/i);

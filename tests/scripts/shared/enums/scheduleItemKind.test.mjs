@@ -9,117 +9,331 @@ import scheduleItemKindValues from '../../../../shared/enums/scheduleItemKind.js
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ScheduleItemKind_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(scheduleItemKindValues)) {
-      assert.deepEqual(ScheduleItemKind[key], value);
-   }
 
+test('Test_ScheduleItemKind_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/scheduleItemKind.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(scheduleItemKindValues).map((key) => [key, ScheduleItemKind[key]])
+   );
+
+   assert.deepEqual(mapped, scheduleItemKindValues);
    assert.deepEqual(scheduleItemKindValues, diskValues);
 });
 
-test('Test_ScheduleItemKindFromItemType_TestModuleAndKindStrings_ExpectMatchingKind', () => {
-   assert.equal(
-      ScheduleItemKind.scheduleItemKindFromItemType(ScheduleItemKind.ANIMAL.itemType),
-      ScheduleItemKind.ANIMAL
-   );
-   assert.equal(
-      ScheduleItemKind.scheduleItemKindFromItemType(ScheduleItemKind.ATTRACTION.itemType),
-      ScheduleItemKind.ATTRACTION
-   );
-   assert.equal(
-      ScheduleItemKind.scheduleItemKindFromItemType(ScheduleItemKind.ANIMAL.kind),
-      ScheduleItemKind.ANIMAL
-   );
+
+test('Test_ScheduleItemKindFromItemType_TestAnimalItemType_ExpectAnimal', () => {
+   const itemType = ScheduleItemKind.ANIMAL.itemType;
+
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
+
+   assert.equal(kind, ScheduleItemKind.ANIMAL);
 });
 
-test('Test_IsScheduleItemModuleItemType_TestModuleTypes_ExpectRecognizedOnly', () => {
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.ANIMAL.itemType), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.ATTRACTION.itemType), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.TRANSPORTATION.itemType), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.GUARDIANS_TALK.itemType), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.WILD_ENCOUNTER.itemType), true);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType('lunch'), false);
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(ScheduleItemKind.ANIMAL.kind), false);
-   assert.equal(
-      ScheduleItemKind.isScheduleItemModuleItemType(`  ${ScheduleItemKind.ANIMAL.itemType.toUpperCase()}  `),
-      true
-   );
-   assert.equal(ScheduleItemKind.isScheduleItemModuleItemType(null), false);
+
+test('Test_ScheduleItemKindFromItemType_TestAttractionItemType_ExpectAttraction', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
+
+   assert.equal(kind, ScheduleItemKind.ATTRACTION);
 });
 
-test('Test_IsFixedTimeScheduleItemKind_TestTalksAndEncounters_ExpectTrueOnly', () => {
-   assert.equal(
-      ScheduleItemKind.isFixedTimeScheduleItemKind(ScheduleItemKind.GUARDIANS_TALK.itemType),
-      true
-   );
-   assert.equal(
-      ScheduleItemKind.isFixedTimeScheduleItemKind(ScheduleItemKind.GUARDIANS_TALK.kind),
-      true
-   );
-   assert.equal(
-      ScheduleItemKind.isFixedTimeScheduleItemKind(ScheduleItemKind.WILD_ENCOUNTER.itemType),
-      true
-   );
-   assert.equal(
-      ScheduleItemKind.isFixedTimeScheduleItemKind(ScheduleItemKind.WILD_ENCOUNTER.kind),
-      true
-   );
-   assert.equal(ScheduleItemKind.isFixedTimeScheduleItemKind(ScheduleItemKind.ANIMAL.itemType), false);
-   assert.equal(ScheduleItemKind.isFixedTimeScheduleItemKind(ScheduleItemKind.ATTRACTION.itemType), false);
-   assert.equal(ScheduleItemKind.isFixedTimeScheduleItemKind('lunch'), false);
+
+test('Test_ScheduleItemKindFromItemType_TestAnimalKind_ExpectAnimal', () => {
+   const itemType = ScheduleItemKind.ANIMAL.kind;
+
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
+
+   assert.equal(kind, ScheduleItemKind.ANIMAL);
 });
 
-test('Test_UsesScheduledTimelineEventCard_TestFixedTimeAndAttractions_ExpectTrue', () => {
-   assert.equal(
-      ScheduleItemKind.usesScheduledTimelineEventCard(ScheduleItemKind.GUARDIANS_TALK.itemType),
-      true
-   );
-   assert.equal(
-      ScheduleItemKind.usesScheduledTimelineEventCard(ScheduleItemKind.WILD_ENCOUNTER.kind),
-      true
-   );
-   assert.equal(
-      ScheduleItemKind.usesScheduledTimelineEventCard(ScheduleItemKind.ATTRACTION.itemType),
-      true
-   );
-   assert.equal(
-      ScheduleItemKind.usesScheduledTimelineEventCard(ScheduleItemKind.ATTRACTION.kind),
-      true
-   );
-   assert.equal(
-      ScheduleItemKind.usesScheduledTimelineEventCard(ScheduleItemKind.ANIMAL.itemType),
-      false
-   );
-   assert.equal(
-      ScheduleItemKind.isFixedTimeScheduleItemKind(ScheduleItemKind.ATTRACTION.itemType),
-      false
-   );
+
+test('Test_IsScheduleItemModuleItemType_TestAnimal_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.ANIMAL.itemType;
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(itemType);
+
+   assert.equal(isModuleType, true);
 });
 
-test('Test_ScheduleItemKindFromItemType_TestUnknownAndBlank_ExpectNullOrEvent', () => {
-   assert.equal(ScheduleItemKind.scheduleItemKindFromItemType(ScheduleItemKind.EVENT.kind), ScheduleItemKind.EVENT);
-   assert.equal(ScheduleItemKind.scheduleItemKindFromItemType('lunch'), null);
-   assert.equal(ScheduleItemKind.scheduleItemKindFromItemType(''), null);
-   assert.equal(ScheduleItemKind.scheduleItemKindFromItemType(null), null);
-   assert.equal(
-      ScheduleItemKind.scheduleItemKindFromItemType(`  ${ScheduleItemKind.ATTRACTION.kind.toUpperCase()}  `),
-      ScheduleItemKind.ATTRACTION
-   );
+
+test('Test_IsScheduleItemModuleItemType_TestAttraction_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(itemType);
+
+   assert.equal(isModuleType, true);
 });
 
-test('Test_ScheduleItemModuleItemTypeForKind_TestSchedulableKinds_ExpectItemTypes', () => {
-   assert.equal(
-      ScheduleItemKind.scheduleItemModuleItemTypeForKind(ScheduleItemKind.ANIMAL.kind),
-      ScheduleItemKind.ANIMAL.itemType
-   );
-   assert.equal(
-      ScheduleItemKind.scheduleItemModuleItemTypeForKind(ScheduleItemKind.ATTRACTION.kind),
-      ScheduleItemKind.ATTRACTION.itemType
-   );
-   assert.equal(ScheduleItemKind.scheduleItemModuleItemTypeForKind(ScheduleItemKind.EVENT.kind), null);
-   assert.equal(ScheduleItemKind.scheduleItemModuleItemTypeForKind(''), null);
-   assert.equal(ScheduleItemKind.scheduleItemModuleItemTypeForKind(null), null);
+
+test('Test_IsScheduleItemModuleItemType_TestTransportation_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.TRANSPORTATION.itemType;
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(itemType);
+
+   assert.equal(isModuleType, true);
+});
+
+
+test('Test_IsScheduleItemModuleItemType_TestGuardiansTalk_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.GUARDIANS_TALK.itemType;
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(itemType);
+
+   assert.equal(isModuleType, true);
+});
+
+
+test('Test_IsScheduleItemModuleItemType_TestWildEncounter_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.WILD_ENCOUNTER.itemType;
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(itemType);
+
+   assert.equal(isModuleType, true);
+});
+
+
+test('Test_IsScheduleItemModuleItemType_TestLunch_ExpectFalse', () => {
+   const itemType = 'lunch';
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(itemType);
+
+   assert.equal(isModuleType, false);
+});
+
+
+test('Test_IsScheduleItemModuleItemType_TestAnimalKind_ExpectFalse', () => {
+   const itemType = ScheduleItemKind.ANIMAL.kind;
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(itemType);
+
+   assert.equal(isModuleType, false);
+});
+
+
+test('Test_IsScheduleItemModuleItemType_TestAnimalItemTypeUppercase_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.ANIMAL.itemType;
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(`  ${itemType.toUpperCase()}  `);
+
+   assert.equal(isModuleType, true);
+});
+
+
+test('Test_IsScheduleItemModuleItemType_TestNull_ExpectFalse', () => {
+   const itemType = null;
+
+   const isModuleType = ScheduleItemKind.isScheduleItemModuleItemType(itemType);
+
+   assert.equal(isModuleType, false);
+});
+
+
+test('Test_IsFixedTimeScheduleItemKind_TestGuardiansTalkItemType_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.GUARDIANS_TALK.itemType;
+
+   const isFixedTime = ScheduleItemKind.isFixedTimeScheduleItemKind(itemType);
+
+   assert.equal(isFixedTime, true);
+});
+
+
+test('Test_IsFixedTimeScheduleItemKind_TestGuardiansTalkKind_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.GUARDIANS_TALK.kind;
+
+   const isFixedTime = ScheduleItemKind.isFixedTimeScheduleItemKind(itemType);
+
+   assert.equal(isFixedTime, true);
+});
+
+
+test('Test_IsFixedTimeScheduleItemKind_TestWildEncounterItemType_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.WILD_ENCOUNTER.itemType;
+
+   const isFixedTime = ScheduleItemKind.isFixedTimeScheduleItemKind(itemType);
+
+   assert.equal(isFixedTime, true);
+});
+
+
+test('Test_IsFixedTimeScheduleItemKind_TestWildEncounterKind_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.WILD_ENCOUNTER.kind;
+
+   const isFixedTime = ScheduleItemKind.isFixedTimeScheduleItemKind(itemType);
+
+   assert.equal(isFixedTime, true);
+});
+
+
+test('Test_IsFixedTimeScheduleItemKind_TestAnimal_ExpectFalse', () => {
+   const itemType = ScheduleItemKind.ANIMAL.itemType;
+
+   const isFixedTime = ScheduleItemKind.isFixedTimeScheduleItemKind(itemType);
+
+   assert.equal(isFixedTime, false);
+});
+
+
+test('Test_IsFixedTimeScheduleItemKind_TestAttraction_ExpectFalse', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+
+   const isFixedTime = ScheduleItemKind.isFixedTimeScheduleItemKind(itemType);
+
+   assert.equal(isFixedTime, false);
+});
+
+
+test('Test_IsFixedTimeScheduleItemKind_TestLunch_ExpectFalse', () => {
+   const itemType = 'lunch';
+
+   const isFixedTime = ScheduleItemKind.isFixedTimeScheduleItemKind(itemType);
+
+   assert.equal(isFixedTime, false);
+});
+
+
+test('Test_UsesScheduledTimelineEventCard_TestGuardiansTalk_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.GUARDIANS_TALK.itemType;
+
+   const usesCard = ScheduleItemKind.usesScheduledTimelineEventCard(itemType);
+
+   assert.equal(usesCard, true);
+});
+
+
+test('Test_UsesScheduledTimelineEventCard_TestWildEncounterKind_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.WILD_ENCOUNTER.kind;
+
+   const usesCard = ScheduleItemKind.usesScheduledTimelineEventCard(itemType);
+
+   assert.equal(usesCard, true);
+});
+
+
+test('Test_UsesScheduledTimelineEventCard_TestAttractionItemType_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+
+   const usesCard = ScheduleItemKind.usesScheduledTimelineEventCard(itemType);
+
+   assert.equal(usesCard, true);
+});
+
+
+test('Test_UsesScheduledTimelineEventCard_TestAttractionKind_ExpectTrue', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.kind;
+
+   const usesCard = ScheduleItemKind.usesScheduledTimelineEventCard(itemType);
+
+   assert.equal(usesCard, true);
+});
+
+
+test('Test_UsesScheduledTimelineEventCard_TestAnimal_ExpectFalse', () => {
+   const itemType = ScheduleItemKind.ANIMAL.itemType;
+
+   const usesCard = ScheduleItemKind.usesScheduledTimelineEventCard(itemType);
+
+   assert.equal(usesCard, false);
+});
+
+
+test('Test_IsFixedTimeScheduleItemKind_TestAttractionNotFixed_ExpectFalse', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.itemType;
+
+   const isFixedTime = ScheduleItemKind.isFixedTimeScheduleItemKind(itemType);
+
+   assert.equal(isFixedTime, false);
+});
+
+
+test('Test_ScheduleItemKindFromItemType_TestEventKind_ExpectEvent', () => {
+   const itemType = ScheduleItemKind.EVENT.kind;
+
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
+
+   assert.equal(kind, ScheduleItemKind.EVENT);
+});
+
+
+test('Test_ScheduleItemKindFromItemType_TestLunch_ExpectNull', () => {
+   const itemType = 'lunch';
+
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
+
+   assert.equal(kind, null);
+});
+
+
+test('Test_ScheduleItemKindFromItemType_TestEmpty_ExpectNull', () => {
+   const itemType = '';
+
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
+
+   assert.equal(kind, null);
+});
+
+
+test('Test_ScheduleItemKindFromItemType_TestNull_ExpectNull', () => {
+   const itemType = null;
+
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(itemType);
+
+   assert.equal(kind, null);
+});
+
+
+test('Test_ScheduleItemKindFromItemType_TestAttractionKindUppercase_ExpectAttraction', () => {
+   const itemType = ScheduleItemKind.ATTRACTION.kind;
+
+   const kind = ScheduleItemKind.scheduleItemKindFromItemType(`  ${itemType.toUpperCase()}  `);
+
+   assert.equal(kind, ScheduleItemKind.ATTRACTION);
+});
+
+
+test('Test_ScheduleItemModuleItemTypeForKind_TestAnimal_ExpectItemType', () => {
+   const kind = ScheduleItemKind.ANIMAL.kind;
+
+   const itemType = ScheduleItemKind.scheduleItemModuleItemTypeForKind(kind);
+
+   assert.equal(itemType, ScheduleItemKind.ANIMAL.itemType);
+});
+
+
+test('Test_ScheduleItemModuleItemTypeForKind_TestAttraction_ExpectItemType', () => {
+   const kind = ScheduleItemKind.ATTRACTION.kind;
+
+   const itemType = ScheduleItemKind.scheduleItemModuleItemTypeForKind(kind);
+
+   assert.equal(itemType, ScheduleItemKind.ATTRACTION.itemType);
+});
+
+
+test('Test_ScheduleItemModuleItemTypeForKind_TestEvent_ExpectNull', () => {
+   const kind = ScheduleItemKind.EVENT.kind;
+
+   const itemType = ScheduleItemKind.scheduleItemModuleItemTypeForKind(kind);
+
+   assert.equal(itemType, null);
+});
+
+
+test('Test_ScheduleItemModuleItemTypeForKind_TestEmpty_ExpectNull', () => {
+   const kind = '';
+
+   const itemType = ScheduleItemKind.scheduleItemModuleItemTypeForKind(kind);
+
+   assert.equal(itemType, null);
+});
+
+
+test('Test_ScheduleItemModuleItemTypeForKind_TestNull_ExpectNull', () => {
+   const kind = null;
+
+   const itemType = ScheduleItemKind.scheduleItemModuleItemTypeForKind(kind);
+
+   assert.equal(itemType, null);
 });

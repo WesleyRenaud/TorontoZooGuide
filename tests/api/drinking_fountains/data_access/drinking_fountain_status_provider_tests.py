@@ -53,18 +53,22 @@ def drinking_fountain_status_conn() -> sqlite3.Connection:
 
 def Test_FetchDrinkingFountainStatusRecord_TestEmptyTable_ExpectNone(
       drinking_fountain_status_conn: sqlite3.Connection ) -> None:
-   assert DrinkingFountainStatusProvider.fetch_drinking_fountain_status_record(
-      drinking_fountain_status_conn ) is None
+   drinking_fountain_status_record = DrinkingFountainStatusProvider.fetch_drinking_fountain_status_record(
+      drinking_fountain_status_conn )
+
+   assert drinking_fountain_status_record is None
 
 
 def Test_SaveClosedStatus_TestClosedStatus_ExpectPersistsAndFetches(
       drinking_fountain_status_conn: sqlite3.Connection ) -> None:
-   assert DrinkingFountainStatusProvider.save_drinking_fountain_closed_status(
+   result = DrinkingFountainStatusProvider.save_drinking_fountain_closed_status(
       drinking_fountain_status_conn,
       DrinkingFountainClosedStatus(
          start_date=START_DATE,
          end_date=END_DATE,
-         message=CLOSED_MESSAGE ) ) is True
+         message=CLOSED_MESSAGE ) )
+
+   assert result is True
 
    record = DrinkingFountainStatusProvider.fetch_drinking_fountain_status_record(
       drinking_fountain_status_conn )
@@ -85,11 +89,13 @@ def Test_SaveOpenStatus_TestReplacesClosedStatus_ExpectOpenRow(
          end_date=END_DATE,
          message=CLOSED_MESSAGE ) )
 
-   assert DrinkingFountainStatusProvider.save_drinking_fountain_open_status(
+   result = DrinkingFountainStatusProvider.save_drinking_fountain_open_status(
       drinking_fountain_status_conn,
       DrinkingFountainOpenStatus(
          start_date=START_DATE,
-         end_date=END_DATE ) ) is True
+         end_date=END_DATE ) )
+
+   assert result is True
 
    record = DrinkingFountainStatusProvider.fetch_drinking_fountain_status_record(
       drinking_fountain_status_conn )
@@ -101,13 +107,17 @@ def Test_SaveOpenStatus_TestReplacesClosedStatus_ExpectOpenRow(
 
 def Test_FetchSeasonalLikelihood_TestKnownDate_ExpectStoredLikelihood(
       drinking_fountain_status_conn: sqlite3.Connection ) -> None:
-   assert DrinkingFountainStatusProvider.fetch_drinking_fountain_seasonal_likelihood(
+   drinking_fountain_seasonal_likelihood = DrinkingFountainStatusProvider.fetch_drinking_fountain_seasonal_likelihood(
       drinking_fountain_status_conn,
-      date( 2026, 6, 15 ) ) == 0.5
+      date( 2026, 6, 15 ) )
+
+   assert drinking_fountain_seasonal_likelihood == 0.5
 
 
 def Test_FetchSeasonalLikelihood_TestUnknownDate_ExpectDefaultOne(
       drinking_fountain_status_conn: sqlite3.Connection ) -> None:
-   assert DrinkingFountainStatusProvider.fetch_drinking_fountain_seasonal_likelihood(
+   drinking_fountain_seasonal_likelihood = DrinkingFountainStatusProvider.fetch_drinking_fountain_seasonal_likelihood(
       drinking_fountain_status_conn,
-      date( 2026, 1, 1 ) ) == 1.0
+      date( 2026, 1, 1 ) )
+
+   assert drinking_fountain_seasonal_likelihood == 1.0

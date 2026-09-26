@@ -6,18 +6,30 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_CreateItemNameElement_TestSpeciesAndPlain_ExpectPanelName', () => {
+
+test('Test_CreateItemNameElement_TestSpecies_ExpectPanelName', () => {
+   const species = 'African Lion';
+   const enclosureName = 'African Savanna';
+
    const animalTitle = ItemRowHelper.createItemNameElement({
-      species: 'African Lion',
-      enclosureName: 'African Savanna',
+      species,
+      enclosureName,
    });
+
    assert.equal(animalTitle.className, 'itin-panel-name');
-   assert.match(animalTitle.textContent, /African Lion/);
+   assert.match(animalTitle.textContent, new RegExp(species));
+});
+
+
+test('Test_CreateItemNameElement_TestPlainName_ExpectPanelName', () => {
+   const name = 'Conservation Carousel';
+   const nameSuffix = ' • Open';
 
    const plainTitle = ItemRowHelper.createItemNameElement({
-      name: 'Carousel',
-      nameSuffix: ' • Open',
+      name,
+      nameSuffix,
    });
+
    assert.equal(plainTitle.className, 'itin-panel-name');
-   assert.match(plainTitle.textContent, /Carousel/);
+   assert.match(plainTitle.textContent, new RegExp(name));
 });

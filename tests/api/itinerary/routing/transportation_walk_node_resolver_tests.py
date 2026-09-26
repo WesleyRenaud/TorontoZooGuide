@@ -10,6 +10,7 @@ from api.itinerary.routing.transportation_walk_node_resolver import Transportati
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
 
 
@@ -19,6 +20,7 @@ EURASIA_STATION = 'Eurasia Zoomobile Station'
 ONBOARD_NODE_ID = 'n-onboard'
 OFFBOARD_NODE_ID = 'n-offboard'
 DEFAULT_BOARDING_NODE_ID = 'n-default'
+VISIT_DATE = '2026-06-20'
 
 TRANSPORTATION_LEGS = [
    ItineraryTransportationLeg(
@@ -43,6 +45,14 @@ STATION_NODE_IDS = {
 }
 
 
+class _ItineraryDateRecord:
+   itinerary_date = VISIT_DATE
+
+
+class _DayLoop:
+   legs = TRANSPORTATION_LEGS
+
+
 def _resolve_station_node( transportation_name: str, station_name: str ) -> str | None:
    return STATION_NODE_IDS.get( station_name )
 
@@ -57,24 +67,34 @@ def stub_transportation_walk_node_dependencies( monkeypatch: pytest.MonkeyPatch 
 
 def Test_Resolve_TestOnboardingLegs_ExpectFirstStationWalkNode(
       stub_transportation_walk_node_dependencies: None ) -> None:
-   assert TransportationWalkNodeResolver.resolve(
+   onboarding_station = TRANSPORTATION_LEGS[ Position.FIRST ].from_station
+
+   walk_node_id = TransportationWalkNodeResolver.resolve(
       TransportationName.ZOOMOBILE,
       legs=TRANSPORTATION_LEGS,
-      endpoint=TransitRideEndpoint.ONBOARDING ) == ONBOARD_NODE_ID
+      endpoint=TransitRideEndpoint.ONBOARDING )
+
+   assert walk_node_id == STATION_NODE_IDS[ onboarding_station ]
 
 
 def Test_Resolve_TestOffboardingLegs_ExpectLastStationWalkNode(
       stub_transportation_walk_node_dependencies: None ) -> None:
-   assert TransportationWalkNodeResolver.resolve(
+   offboarding_station = TRANSPORTATION_LEGS[ Position.LAST ].to_station
+
+   walk_node_id = TransportationWalkNodeResolver.resolve(
       TransportationName.ZOOMOBILE,
       legs=TRANSPORTATION_LEGS,
-      endpoint=TransitRideEndpoint.OFFBOARDING ) == OFFBOARD_NODE_ID
+      endpoint=TransitRideEndpoint.OFFBOARDING )
+
+   assert walk_node_id == STATION_NODE_IDS[ offboarding_station ]
 
 
 def Test_Resolve_TestNoConnection_ExpectNone( monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: None )
 
-   assert TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE ) is None
+   walk_node_id = TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE )
+
+   assert walk_node_id is None
 
 
 def Test_Resolve_TestDefaultBoardingStation_ExpectMainStationWalkNode(
@@ -93,19 +113,18 @@ def Test_Resolve_TestDefaultBoardingStation_ExpectMainStationWalkNode(
       'resolve',
       lambda transportation_name, station_name: DEFAULT_BOARDING_NODE_ID )
 
-   assert TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE ) == DEFAULT_BOARDING_NODE_ID
+   walk_node_id = TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE )
+
+   assert walk_node_id == DEFAULT_BOARDING_NODE_ID
 
 
 def Test_Resolve_TestDayLoopLegs_ExpectFirstFromStation(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   class _DayLoop:
-      legs = TRANSPORTATION_LEGS
-
    monkeypatch.setattr( RequestConnectionProvider, 'get', lambda: object() )
    monkeypatch.setattr(
       ItineraryProvider,
       'fetch_itinerary_date_record',
-      lambda conn: type( 'DateRecord', (), { 'itinerary_date': '2026-06-20' } )() )
+      lambda conn: _ItineraryDateRecord() )
    monkeypatch.setattr(
       TransportationDayLoopFetcher,
       'fetch',
@@ -114,5 +133,8 @@ def Test_Resolve_TestDayLoopLegs_ExpectFirstFromStation(
       TransportationStationWalkNodeResolver,
       'resolve',
       _resolve_station_node )
+   onboarding_station = TRANSPORTATION_LEGS[ Position.FIRST ].from_station
 
-   assert TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE ) == ONBOARD_NODE_ID
+   walk_node_id = TransportationWalkNodeResolver.resolve( TransportationName.ZOOMOBILE )
+
+   assert walk_node_id == STATION_NODE_IDS[ onboarding_station ]

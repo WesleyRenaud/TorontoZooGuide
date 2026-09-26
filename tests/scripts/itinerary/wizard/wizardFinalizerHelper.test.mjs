@@ -4,61 +4,89 @@ import test from 'node:test';
 import { ItineraryShape } from '../../../../scripts/itinerary/itineraryShape.js';
 import { RegionStorageStore } from '../../../../scripts/itinerary/selectors/regionSelector/regionStorageStore.js';
 import { WizardFinalizerHelper } from '../../../../scripts/itinerary/wizard/wizardFinalizerHelper.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_ClearWizardMount_TestChildren_ExpectCleared', () => {
    const mountEl = document.createElement('div');
    mountEl.appendChild(document.createElement('span'));
+
    WizardFinalizerHelper.clearWizardMount(mountEl);
+
    assert.equal(mountEl.children.length, 0);
-   WizardFinalizerHelper.clearWizardMount(null);
 });
 
+
+test('Test_ClearWizardMount_TestNull_ExpectNoOp', () => {
+   const mountEl = null;
+
+   assert.doesNotThrow(() => {
+      WizardFinalizerHelper.clearWizardMount(mountEl);
+   });
+});
+
+
 test('Test_CreateFinalItineraryDraft_TestNormalize_ExpectNormalized', () => {
-   const draft = WizardFinalizerHelper.createFinalItineraryDraft(
-      { animals: [{ species: 'African Lion' }] },
-      (value) => ({ ...value, normalized: true })
-   );
+   const animal = { species: 'African Lion' };
+   const source = { animals: [animal] };
+   const normalize = (value) => ({ ...value, normalized: true });
+
+   const draft = WizardFinalizerHelper.createFinalItineraryDraft(source, normalize);
+
    assert.deepEqual(draft, {
-      animals: [{ species: 'African Lion' }],
+      animals: [animal],
       normalized: true,
    });
+});
 
+
+test('Test_CreateFinalItineraryDraft_TestDefaultNormalizer_ExpectNormalized', () => {
    const original = ItineraryShape.normalizeItineraryDraft;
    ItineraryShape.normalizeItineraryDraft = (value) => ({ ...value, viaDefault: true });
+   const date = '2026-06-15';
+   const source = { date };
+
    try {
-      assert.deepEqual(
-         WizardFinalizerHelper.createFinalItineraryDraft({ date: '2026-06-15' }),
-         { date: '2026-06-15', viaDefault: true }
-      );
+      const draft = WizardFinalizerHelper.createFinalItineraryDraft(source);
+
+      assert.deepEqual(draft, { date, viaDefault: true });
    } finally {
       ItineraryShape.normalizeItineraryDraft = original;
    }
 });
 
+
 test('Test_SaveFinalItinerary_TestOptions_ExpectSaverCalled', () => {
    const calls = [];
    const finalItinerary = { date: '2026-06-15' };
+   const selectedExhibits = ['African Rainforest'];
    const originalLoad = RegionStorageStore.loadSelectedNames;
-   RegionStorageStore.loadSelectedNames = () => ['African Rainforest'];
+   RegionStorageStore.loadSelectedNames = () => selectedExhibits;
+   const saved = 'saved';
+   const options = { overridingConflictingGuardiansTalks: true };
+   const saveItinerary = (itinerary, nextOptions) => {
+      calls.push({ itinerary, options: nextOptions });
+      return saved;
+   };
 
    try {
       const result = WizardFinalizerHelper.saveFinalItinerary(
          finalItinerary,
-         { overridingConflictingGuardiansTalks: true },
-         (itinerary, options) => {
-            calls.push({ itinerary, options });
-            return 'saved';
-         }
+         options,
+         saveItinerary
       );
 
-      assert.equal(result, 'saved');
+      assert.equal(result, saved);
       assert.equal(calls.length, 1);
-      assert.equal(calls[0].itinerary, finalItinerary);
-      assert.equal(calls[0].options.overridingConflictingGuardiansTalks, true);
-      assert.deepEqual(calls[0].options.selectedExhibits, ['African Rainforest']);
+      assert.equal(calls[Position.FIRST].itinerary, finalItinerary);
+      assert.equal(
+         calls[Position.FIRST].options.overridingConflictingGuardiansTalks,
+         options.overridingConflictingGuardiansTalks
+      );
+      assert.deepEqual(calls[Position.FIRST].options.selectedExhibits, selectedExhibits);
    } finally {
       RegionStorageStore.loadSelectedNames = originalLoad;
    }

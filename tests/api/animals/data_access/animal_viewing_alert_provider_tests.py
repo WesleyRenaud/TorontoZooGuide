@@ -39,13 +39,15 @@ def animal_viewing_alert_conn() -> sqlite3.Connection:
 
 def Test_SaveAnimalViewingAlert_TestNewAlert_ExpectPersistsRow(
       animal_viewing_alert_conn: sqlite3.Connection ) -> None:
-   assert AnimalViewingAlertProvider.save_animal_viewing_alert(
+   result = AnimalViewingAlertProvider.save_animal_viewing_alert(
       animal_viewing_alert_conn,
       species=SPECIES,
       exhibit=EXHIBIT,
       alert_start_date=ALERT_START_DATE,
       alert_end_date=ALERT_END_DATE,
-      message=MESSAGE ) is True
+      message=MESSAGE )
+
+   assert result is True
 
    row = animal_viewing_alert_conn.execute(
       """   SELECT SPECIES, EXHIBIT, ALERT_MESSAGE, ALERT_START_DATE, ALERT_END_DATE
@@ -74,13 +76,15 @@ def Test_SaveAnimalViewingAlert_TestExistingAlert_ExpectReplacesRow(
       alert_end_date=ALERT_END_DATE,
       message=MESSAGE )
 
-   assert AnimalViewingAlertProvider.save_animal_viewing_alert(
+   result = AnimalViewingAlertProvider.save_animal_viewing_alert(
       animal_viewing_alert_conn,
       species=SPECIES,
       exhibit=EXHIBIT,
       alert_start_date='2026-07-01',
       alert_end_date='2026-07-15',
-      message='Updated alert.' ) is True
+      message='Updated alert.' )
+
+   assert result is True
 
    rows = animal_viewing_alert_conn.execute(
       """   SELECT ALERT_MESSAGE, ALERT_START_DATE, ALERT_END_DATE
@@ -104,10 +108,12 @@ def Test_DeleteAnimalViewingAlert_TestExistingAlert_ExpectRemovesRow(
       alert_end_date=ALERT_END_DATE,
       message=MESSAGE )
 
-   assert AnimalViewingAlertProvider.delete_animal_viewing_alert(
+   result = AnimalViewingAlertProvider.delete_animal_viewing_alert(
       animal_viewing_alert_conn,
       species=SPECIES,
-      exhibit=EXHIBIT ) is True
+      exhibit=EXHIBIT )
+
+   assert result is True
 
    row = animal_viewing_alert_conn.execute(
       """   SELECT 1
@@ -122,7 +128,9 @@ def Test_DeleteAnimalViewingAlert_TestExistingAlert_ExpectRemovesRow(
 
 def Test_DeleteAnimalViewingAlert_TestMissingAlert_ExpectFalse(
       animal_viewing_alert_conn: sqlite3.Connection ) -> None:
-   assert AnimalViewingAlertProvider.delete_animal_viewing_alert(
+   result = AnimalViewingAlertProvider.delete_animal_viewing_alert(
       animal_viewing_alert_conn,
       species=SPECIES,
-      exhibit=EXHIBIT ) is False
+      exhibit=EXHIBIT )
+
+   assert result is False

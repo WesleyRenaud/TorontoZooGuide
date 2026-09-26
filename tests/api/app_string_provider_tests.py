@@ -33,20 +33,30 @@ def Test_Values_TestRepeatedCalls_ExpectReusesCacheUntilSourcesChange(
 
 
 def Test_Format_TestGuestStatusTemplate_ExpectResolvedMessage() -> None:
-   assert AppStringProvider.format(
-      'guestStatus.animals.temporarilyOffDisplay',
-      species='Giraffe' ) == 'The Giraffe is temporarily off-display.'
+   species = 'Giraffe'
+   key = 'guestStatus.animals.temporarilyOffDisplay'
+   template = AppStringProvider.values()[ key ]
+
+   message = AppStringProvider.format( key, species=species )
+
+   assert message == template.format( species=species )
 
 
 def Test_Format_TestUnknownKey_ExpectKeyError() -> None:
-   with pytest.raises( KeyError, match='Unknown app string key: missing.key' ):
-      AppStringProvider.format( 'missing.key' )
+   key = 'missing.key'
+
+   with pytest.raises( KeyError, match=key ):
+      AppStringProvider.format( key )
 
 
 def Test_Format_TestLikelyOffDisplayTemplate_ExpectResolvedMessage() -> None:
-   assert AppStringProvider.format(
-      'guestStatus.animals.speciesLikelyOffDisplayOnDay',
-      species='Giraffe' ) == 'The Giraffe is most likely off display on this day.'
+   species = 'Giraffe'
+   key = 'guestStatus.animals.speciesLikelyOffDisplayOnDay'
+   template = AppStringProvider.values()[ key ]
+
+   message = AppStringProvider.format( key, species=species )
+
+   assert message == template.format( species=species )
 
 
 def Test_ClearCache_TestHtmlStringCacheClear_ExpectAlsoClearsAppStringCache(

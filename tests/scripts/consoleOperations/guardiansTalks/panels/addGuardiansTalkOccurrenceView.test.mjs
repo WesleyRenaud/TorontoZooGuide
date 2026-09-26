@@ -8,6 +8,7 @@ import { ConsolePanelShellBuilder } from '../../../../../scripts/consoleOperatio
 import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { Strings } from '../../../../../scripts/strings.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 test('Test_CreateAddGuardiansTalkOccurrencePanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -32,14 +33,13 @@ test('Test_CreateAddGuardiansTalkOccurrencePanel_TestWiring_ExpectShellOptions',
       const result = AddGuardiansTalkOccurrenceView.createAddGuardiansTalkOccurrencePanel();
 
       assert.deepEqual(result, { panel: true });
-
       assert.equal(captured.panelId, 'addGuardiansTalkOccurrencePanel');
       assert.equal(captured.title, Strings.panelTitles.addGuardiansTalkOccurrence);
       assert.equal(captured.bodyChildren.length, 6);
-      assert.equal(captured.bodyChildren[0].inputId, 'addGuardiansTalkOccurrenceLocation');
-      assert.equal(captured.bodyChildren[1].inputId, 'addGuardiansTalkOccurrenceTalkName');
-      assert.equal(captured.bodyChildren[2].inputId, 'addGuardiansTalkOccurrenceDate');
-      assert.equal(captured.bodyChildren[3].inputId, 'addGuardiansTalkOccurrenceTime');
+      assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'addGuardiansTalkOccurrenceLocation');
+      assert.equal(captured.bodyChildren.at(Position.SECOND).inputId, 'addGuardiansTalkOccurrenceTalkName');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'addGuardiansTalkOccurrenceDate');
+      assert.equal(captured.bodyChildren.at(Position.FOURTH).inputId, 'addGuardiansTalkOccurrenceTime');
       assert.equal(captured.bodyChildren[4].submitId, 'submitAddGuardiansTalkOccurrence');
       assert.equal(captured.bodyChildren[5].statusId, 'addGuardiansTalkOccurrenceStatus');
    } finally {

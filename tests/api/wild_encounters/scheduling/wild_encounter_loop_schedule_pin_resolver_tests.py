@@ -126,14 +126,16 @@ def Test_Resolve_TestUnpinnedMeetingSpot_ExpectNone(
       start_time='10:00 AM',
       end_time='10:45 AM' )
 
-   assert WildEncounterLoopSchedulePinResolver.resolve(
+   result = WildEncounterLoopSchedulePinResolver.resolve(
       wild_encounter,
       _wild_encounter_stop(
          item_key='Guardians of White Rhinos',
          meeting_spot=PENGUIN_MEETING_SPOT,
          start_time='10:00 AM',
          end_time='10:45 AM' ),
-      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS ) is None
+      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS )
+
+   assert result is None
 
 
 def Test_Resolve_TestBactrianCamelsEurasiaMeetingSpot_ExpectNone(
@@ -147,14 +149,16 @@ def Test_Resolve_TestBactrianCamelsEurasiaMeetingSpot_ExpectNone(
       start_time='3:30 PM',
       end_time='4:00 PM' )
 
-   assert WildEncounterLoopSchedulePinResolver.resolve(
+   result = WildEncounterLoopSchedulePinResolver.resolve(
       wild_encounter,
       _wild_encounter_stop(
          item_key=BACTRIAN_CAMELS_ENCOUNTER,
          meeting_spot=EURASIA_MEETING_SPOT,
          start_time='3:30 PM',
          end_time='4:00 PM' ),
-      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS ) is None
+      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS )
+
+   assert result is None
 
 
 def Test_Resolve_TestCanadianDomainMeetingSpot_ExpectSavannaLoopPin(
@@ -230,14 +234,16 @@ def Test_Resolve_TestMissingMasterRouteLoop_ExpectNone(
       start_time='1:00 PM',
       end_time='1:45 PM' )
 
-   assert WildEncounterLoopSchedulePinResolver.resolve(
+   result = WildEncounterLoopSchedulePinResolver.resolve(
       wild_encounter,
       _wild_encounter_stop(
          item_key=GRIZZLY_BEAR_ENCOUNTER,
          meeting_spot=CANADIAN_DOMAIN_MEETING_SPOT,
          start_time='1:00 PM',
          end_time='1:45 PM' ),
-      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS ) is None
+      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS )
+
+   assert result is None
 
 
 def Test_Resolve_TestInvalidStopTimes_ExpectNone() -> None:
@@ -250,11 +256,13 @@ def Test_Resolve_TestInvalidStopTimes_ExpectNone() -> None:
       start_time='1:00 PM',
       end_time='1:45 PM' )
 
-   assert WildEncounterLoopSchedulePinResolver.resolve(
+   result = WildEncounterLoopSchedulePinResolver.resolve(
       wild_encounter,
       _wild_encounter_stop(
          item_key=GRIZZLY_BEAR_ENCOUNTER,
          meeting_spot=CANADIAN_DOMAIN_MEETING_SPOT,
          start_time=None,
          end_time='1:45 PM' ),
-      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS ) is None
+      meeting_spot_loop_pins_by_name=MEETING_SPOT_LOOP_PINS )
+
+   assert result is None

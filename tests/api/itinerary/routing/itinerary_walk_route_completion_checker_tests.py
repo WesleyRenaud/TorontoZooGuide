@@ -36,8 +36,10 @@ def Test_ShouldAppendReturnToEntranceLeg_TestPartialSchedule_ExpectFalse() -> No
       arrival_time=ARRIVAL_TIME,
       departure_time=DEPARTURE_TIME )
 
-   assert not ItineraryWalkRouteCompletionChecker.should_append_return_to_entrance_leg(
+   should_append = ItineraryWalkRouteCompletionChecker.should_append_return_to_entrance_leg(
       partial_itinerary )
+
+   assert should_append is False
 
 
 def Test_ShouldAppendReturnToEntranceLeg_TestCompleteSchedule_ExpectTrue() -> None:
@@ -54,5 +56,7 @@ def Test_ShouldAppendReturnToEntranceLeg_TestCompleteSchedule_ExpectTrue() -> No
       arrival_time=ARRIVAL_TIME,
       departure_time=DEPARTURE_TIME )
 
-   assert ItineraryWalkRouteCompletionChecker.should_append_return_to_entrance_leg(
+   should_append = ItineraryWalkRouteCompletionChecker.should_append_return_to_entrance_leg(
       complete_itinerary )
+
+   assert should_append is True

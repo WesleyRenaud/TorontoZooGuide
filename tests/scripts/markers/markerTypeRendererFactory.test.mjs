@@ -14,63 +14,132 @@ function _markerEl() {
    return document.createElement('div');
 }
 
-test('Test_ShouldShowLimitedViewingIndicator_TestCases_ExpectBoolean', () => {
-   assert.equal(MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator(null), false);
-   assert.equal(MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator({
+
+test('Test_ShouldShowLimitedViewingIndicator_TestNull_ExpectFalse', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator(null);
+
+   assert.equal(shouldShow, false);
+});
+
+
+test('Test_ShouldShowLimitedViewingIndicator_TestOffDisplay_ExpectFalse', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator({
       off_display_message: 'Off',
       has_limited_viewing_schedule: true,
       limited_viewing_message: 'Limited',
-   }), false);
-   assert.equal(MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator({
+   });
+
+   assert.equal(shouldShow, false);
+});
+
+
+test('Test_ShouldShowLimitedViewingIndicator_TestLimited_ExpectTrue', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator({
       has_limited_viewing_schedule: true,
       limited_viewing_message: 'Limited',
-   }), true);
-   assert.equal(MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator({
-      viewing_alert_messages: ['Alert'],
-   }), true);
+   });
+
+   assert.equal(shouldShow, true);
 });
 
-test('Test_ShouldShowViewableFromZoomobileIndicator_TestFlag_ExpectBoolean', () => {
-   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator(null), false);
-   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
+
+test('Test_ShouldShowLimitedViewingIndicator_TestAlert_ExpectTrue', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowLimitedViewingIndicator({
+      viewing_alert_messages: ['Alert'],
+   });
+
+   assert.equal(shouldShow, true);
+});
+
+test('Test_ShouldShowViewableFromZoomobileIndicator_TestNull_ExpectFalse', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator(null);
+
+   assert.equal(shouldShow, false);
+});
+
+
+test('Test_ShouldShowViewableFromZoomobileIndicator_TestNotAdded_ExpectFalse', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
       added_by_transportation: false,
-   }), false);
-   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
+   });
+
+   assert.equal(shouldShow, false);
+});
+
+
+test('Test_ShouldShowViewableFromZoomobileIndicator_TestAdded_ExpectTrue', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
       added_by_transportation: true,
-   }), true);
-   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
+   });
+
+   assert.equal(shouldShow, true);
+});
+
+
+test('Test_ShouldShowViewableFromZoomobileIndicator_TestZoomobileOnly_ExpectTrue', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
       is_zoomobile_only: true,
-   }), true);
-   assert.equal(MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
+   });
+
+   assert.equal(shouldShow, true);
+});
+
+
+test('Test_ShouldShowViewableFromZoomobileIndicator_TestNeither_ExpectFalse', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowViewableFromZoomobileIndicator({
       added_by_transportation: false,
       is_zoomobile_only: false,
-   }), false);
+   });
+
+   assert.equal(shouldShow, false);
 });
 
-test('Test_ShouldShowRestroomAlertIndicator_TestCases_ExpectBoolean', () => {
-   assert.equal(MarkerTypeRendererFactory.shouldShowRestroomAlertIndicator({
+test('Test_ShouldShowRestroomAlertIndicator_TestClosed_ExpectFalse', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowRestroomAlertIndicator({
       is_closed: true,
       has_alert: true,
       alert_message: 'Alert',
-   }), false);
-   assert.equal(MarkerTypeRendererFactory.shouldShowRestroomAlertIndicator({
+   });
+
+   assert.equal(shouldShow, false);
+});
+
+
+test('Test_ShouldShowRestroomAlertIndicator_TestOpenAlert_ExpectTrue', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowRestroomAlertIndicator({
       is_closed: false,
       has_alert: true,
       alert_message: 'Alert',
-   }), true);
-   assert.equal(MarkerTypeRendererFactory.shouldShowRestroomAlertIndicator({
-      is_closed: false,
-      has_alert: true,
-   }), false);
+   });
+
+   assert.equal(shouldShow, true);
 });
 
-test('Test_ApplyAttractionMarkerSize_TestOverrides_ExpectSized', () => {
+
+test('Test_ShouldShowRestroomAlertIndicator_TestMissingMessage_ExpectFalse', () => {
+   const shouldShow = MarkerTypeRendererFactory.shouldShowRestroomAlertIndicator({
+      is_closed: false,
+      has_alert: true,
+   });
+
+   assert.equal(shouldShow, false);
+});
+
+test('Test_ApplyAttractionMarkerSize_TestUnknown_ExpectUnsized', () => {
    const markerEl = _markerEl();
 
    MarkerTypeRendererFactory.applyAttractionMarkerSize(markerEl, 'Unknown');
-   assert.equal(markerEl.style.width, undefined);
 
-   MarkerTypeRendererFactory.applyAttractionMarkerSize(markerEl, 'Splash Island');
+   assert.equal(markerEl.style.width, undefined);
+});
+
+
+test('Test_ApplyAttractionMarkerSize_TestSplashIsland_ExpectSized', () => {
+   const markerEl = _markerEl();
+   const name = 'Splash Island';
+
+   MarkerTypeRendererFactory.applyAttractionMarkerSize(markerEl, name);
+
    assert.equal(markerEl.style.width, '80px');
    assert.equal(markerEl.style.height, '80px');
 });

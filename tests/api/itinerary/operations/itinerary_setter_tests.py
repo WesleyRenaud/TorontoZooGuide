@@ -35,6 +35,27 @@ ZOO_HOURS_ERROR = ItinerarySaveResult(
    reasons=[],
    itinerary=ItineraryBuilder.empty() )
 
+VISIT_DATE = date( 2026, 6, 22 )
+OLD_VISIT_DATE = '2026-06-20'
+ARRIVAL_TIME = '09:30'
+DEPARTURE_TIME = '17:00'
+
+
+def _save_context( conn: sqlite3.Connection ) -> ItinerarySaveContext:
+   return ItinerarySaveContext(
+      conn=conn,
+      save_input=ItinerarySaveInput(
+         date=VISIT_DATE,
+         arrival_time=ARRIVAL_TIME,
+         departure_time=DEPARTURE_TIME,
+      ),
+      validated_itinerary=object(),
+      current_itinerary=ItineraryBuilder.empty(),
+      old_visit_date=OLD_VISIT_DATE,
+      saved_itinerary=None,
+      unschedule_requirements=object(),
+      itinerary_controller_kwargs={} )
+
 
 @pytest.fixture
 def setter_conn() -> sqlite3.Connection:
@@ -48,7 +69,7 @@ def Test_Set_TestZooHoursError_ExpectEarlyReturnWithoutCommit(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_setter.ItineraryProvider.fetch_itinerary_date',
-      lambda conn: '2026-06-20' )
+      lambda conn: OLD_VISIT_DATE )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_setter.ItinerarySaveRestrictiveHoursAdjuster.adjust',
       lambda conn, save_input, **kwargs: ( save_input, [] ) )
@@ -63,9 +84,9 @@ def Test_Set_TestZooHoursError_ExpectEarlyReturnWithoutCommit(
 
    result = ItinerarySetter.set(
       setter_conn,
-      '2026-06-22',
-      '09:30',
-      '17:00',
+      VISIT_DATE.isoformat(),
+      ARRIVAL_TIME,
+      DEPARTURE_TIME,
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
@@ -79,23 +100,10 @@ def Test_Set_TestZooHoursError_ExpectEarlyReturnWithoutCommit(
 def Test_Set_TestSaveWarning_ExpectEarlyReturnWithoutCommit(
       setter_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   save_context = ItinerarySaveContext(
-      conn=setter_conn,
-      save_input=ItinerarySaveInput(
-         date=date( 2026, 6, 22 ),
-         arrival_time='09:30',
-         departure_time='17:00',
-      ),
-      validated_itinerary=object(),
-      current_itinerary=ItineraryBuilder.empty(),
-      old_visit_date='2026-06-20',
-      saved_itinerary=None,
-      unschedule_requirements=object(),
-      itinerary_controller_kwargs={} )
-
+   save_context = _save_context( setter_conn )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_setter.ItineraryProvider.fetch_itinerary_date',
-      lambda conn: '2026-06-20' )
+      lambda conn: OLD_VISIT_DATE )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_setter.ItinerarySaveRestrictiveHoursAdjuster.adjust',
       lambda conn, save_input, **kwargs: ( save_input, [] ) )
@@ -117,9 +125,9 @@ def Test_Set_TestSaveWarning_ExpectEarlyReturnWithoutCommit(
 
    result = ItinerarySetter.set(
       setter_conn,
-      '2026-06-22',
-      '09:30',
-      '17:00',
+      VISIT_DATE.isoformat(),
+      ARRIVAL_TIME,
+      DEPARTURE_TIME,
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
@@ -133,24 +141,11 @@ def Test_Set_TestSaveWarning_ExpectEarlyReturnWithoutCommit(
 def Test_Set_TestValidSave_ExpectCommitCalled(
       setter_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   save_context = ItinerarySaveContext(
-      conn=setter_conn,
-      save_input=ItinerarySaveInput(
-         date=date( 2026, 6, 22 ),
-         arrival_time='09:30',
-         departure_time='17:00',
-      ),
-      validated_itinerary=object(),
-      current_itinerary=ItineraryBuilder.empty(),
-      old_visit_date='2026-06-20',
-      saved_itinerary=None,
-      unschedule_requirements=object(),
-      itinerary_controller_kwargs={} )
+   save_context = _save_context( setter_conn )
    commit_calls: list[ object ] = []
-
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_setter.ItineraryProvider.fetch_itinerary_date',
-      lambda conn: '2026-06-20' )
+      lambda conn: OLD_VISIT_DATE )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_setter.ItinerarySaveRestrictiveHoursAdjuster.adjust',
       lambda conn, save_input, **kwargs: ( save_input, [] ) )
@@ -172,9 +167,9 @@ def Test_Set_TestValidSave_ExpectCommitCalled(
 
    result = ItinerarySetter.set(
       setter_conn,
-      '2026-06-22',
-      '09:30',
-      '17:00',
+      VISIT_DATE.isoformat(),
+      ARRIVAL_TIME,
+      DEPARTURE_TIME,
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,

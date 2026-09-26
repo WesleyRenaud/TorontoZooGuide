@@ -6,105 +6,125 @@ import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryEr
 import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
 
-test('Test_CopyForStatus_TestKnownWarnings_ExpectConfirmationCopy', () => {
-   assert.deepEqual(
-      ItinerarySettingsWarningCopy.copyForStatus(
-         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
-      ),
-      {
-         title: Strings.itinerary.confirmation.shortVisitTitle,
-         description: Strings.itinerary.confirmation.shortVisitMessage,
-      }
-   );
-   assert.deepEqual(
-      ItinerarySettingsWarningCopy.copyForStatus(
-         ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
-      ),
-      {
-         title: Strings.itinerary.confirmation.earlyAdmissionTitle,
-         description: Strings.itinerary.confirmation.earlyAdmissionMessage,
-      }
-   );
-   assert.deepEqual(
-      ItinerarySettingsWarningCopy.copyForStatus(ItineraryErrorType.ITEM_NOT_ON_ITINERARY),
-      {
-         title: Strings.itinerary.confirmation.scheduleItemNotOnItineraryTitle,
-         description: Strings.itinerary.confirmation.scheduleItemNotOnItineraryMessage,
-      }
-   );
+
+test('Test_CopyForStatus_TestShortVisit_ExpectConfirmationCopy', () => {
+   const status = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+
+   const copy = ItinerarySettingsWarningCopy.copyForStatus(status);
+
+   assert.deepEqual(copy, {
+      title: Strings.itinerary.confirmation.shortVisitTitle,
+      description: Strings.itinerary.confirmation.shortVisitMessage,
+   });
 });
+
+
+test('Test_CopyForStatus_TestEarlyAdmission_ExpectConfirmationCopy', () => {
+   const status = ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP;
+
+   const copy = ItinerarySettingsWarningCopy.copyForStatus(status);
+
+   assert.deepEqual(copy, {
+      title: Strings.itinerary.confirmation.earlyAdmissionTitle,
+      description: Strings.itinerary.confirmation.earlyAdmissionMessage,
+   });
+});
+
+
+test('Test_CopyForStatus_TestItemNotOnItinerary_ExpectConfirmationCopy', () => {
+   const status = ItineraryErrorType.ITEM_NOT_ON_ITINERARY;
+
+   const copy = ItinerarySettingsWarningCopy.copyForStatus(status);
+
+   assert.deepEqual(copy, {
+      title: Strings.itinerary.confirmation.scheduleItemNotOnItineraryTitle,
+      description: Strings.itinerary.confirmation.scheduleItemNotOnItineraryMessage,
+   });
+});
+
 
 test('Test_CopyForStatus_TestUnknownStatus_ExpectStatusTitle', () => {
-   assert.deepEqual(
-      ItinerarySettingsWarningCopy.copyForStatus('notARealWarning'),
-      {
-         title: 'notARealWarning',
-         description: '',
-      }
-   );
+   const status = 'notARealWarning';
+
+   const copy = ItinerarySettingsWarningCopy.copyForStatus(status);
+
+   assert.deepEqual(copy, {
+      title: status,
+      description: '',
+   });
 });
+
 
 test('Test_SuppressableStatuses_TestMixed_ExpectFilteredAndOrdered', () => {
-   const statuses = ItinerarySettingsWarningCopy.suppressableStatuses({
-      statuses: [
-         {
-            status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-            isSuppressable: true,
-            isSuppressed: true,
-         },
-         {
-            status: ItineraryErrorType.SAVE_FAILED,
-            isSuppressable: false,
-            isSuppressed: false,
-         },
-         {
-            status: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-            isSuppressable: true,
-            isSuppressed: false,
-         },
-         {
-            status: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
-            isSuppressable: false,
-            isSuppressed: false,
-         },
-         {
-            status: '',
-            isSuppressable: true,
-            isSuppressed: false,
-         },
-      ],
-   });
+   const itemStatus = {
+      status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+      isSuppressable: true,
+      isSuppressed: true,
+   };
+   const arrivalStatus = {
+      status: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+      isSuppressable: true,
+      isSuppressed: false,
+   };
+   const statuses = [
+      itemStatus,
+      {
+         status: ItineraryErrorType.SAVE_FAILED,
+         isSuppressable: false,
+         isSuppressed: false,
+      },
+      arrivalStatus,
+      {
+         status: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
+         isSuppressable: false,
+         isSuppressed: false,
+      },
+      {
+         status: '',
+         isSuppressable: true,
+         isSuppressed: false,
+      },
+   ];
 
-   assert.equal(statuses.length, 2);
-   assert.equal(
-      statuses[Position.FIRST].status,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
-   );
-   assert.equal(
-      statuses[Position.SECOND].status,
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY
-   );
+   const suppressable = ItinerarySettingsWarningCopy.suppressableStatuses({ statuses });
+
+   assert.equal(suppressable.length, 2);
+   assert.equal(suppressable[Position.FIRST].status, arrivalStatus.status);
+   assert.equal(suppressable[Position.SECOND].status, itemStatus.status);
 });
 
+
 test('Test_SortSuppressableStatuses_TestUnknownStatuses_ExpectOmitted', () => {
-   const statuses = ItinerarySettingsWarningCopy.sortSuppressableStatuses([
+   const knownStatus = {
+      status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+      isSuppressable: true,
+      isSuppressed: false,
+   };
+   const statuses = [
       {
          status: 'zebraWarning',
          isSuppressable: true,
          isSuppressed: false,
       },
-      {
-         status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-         isSuppressable: true,
-         isSuppressed: false,
-      },
-   ]);
+      knownStatus,
+   ];
 
-   assert.equal(statuses.length, 1);
-   assert.equal(statuses[Position.FIRST].status, ItineraryErrorType.ITEM_NOT_ON_ITINERARY);
+   const sorted = ItinerarySettingsWarningCopy.sortSuppressableStatuses(statuses);
+
+   assert.equal(sorted.length, 1);
+   assert.equal(sorted[Position.FIRST].status, knownStatus.status);
 });
 
+
 test('Test_SuppressableStatuses_TestMissingStatuses_ExpectEmpty', () => {
-   assert.deepEqual(ItinerarySettingsWarningCopy.suppressableStatuses(), []);
-   assert.deepEqual(ItinerarySettingsWarningCopy.suppressableStatuses({}), []);
+   const statuses = ItinerarySettingsWarningCopy.suppressableStatuses();
+
+   assert.deepEqual(statuses, []);
+});
+
+
+test('Test_SuppressableStatuses_TestEmptyObject_ExpectEmpty', () => {
+   const statuses = ItinerarySettingsWarningCopy.suppressableStatuses({});
+
+   assert.deepEqual(statuses, []);
 });

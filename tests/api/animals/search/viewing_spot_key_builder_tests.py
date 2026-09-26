@@ -1,18 +1,22 @@
 from __future__ import annotations
 
+from api.animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from api.animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from api.models.animal import Animal
 
 
 def Test_FromValues_TestEnclosureName_ExpectNormalizedTuple() -> None:
-   species, exhibit, enclosure_name = ViewingSpotKeyBuilder.from_values(
-      'Masai Giraffe',
-      'Africa Savanna',
-      '  Outdoor Habitat  ' )
+   species = 'Masai Giraffe'
+   exhibit = 'Africa Savanna'
+   enclosure_name = '  Outdoor Habitat  '
+   key = SpeciesExhibitKeyBuilder.from_values( species, exhibit )
 
-   assert species == 'masai giraffe'
-   assert exhibit == 'africa savanna'
-   assert enclosure_name == 'Outdoor Habitat'
+   result = ViewingSpotKeyBuilder.from_values( species, exhibit, enclosure_name )
+
+   assert result == (
+      key.species,
+      key.exhibit,
+      ViewingSpotKeyBuilder.name_from_value( enclosure_name ) )
 
 
 def Test_FromAnimal_TestAnimal_ExpectViewingSpotKey() -> None:
@@ -21,8 +25,9 @@ def Test_FromAnimal_TestAnimal_ExpectViewingSpotKey() -> None:
       exhibit='Africa Savanna',
       enclosure_name='Indoor' )
 
-   assert ViewingSpotKeyBuilder.from_animal( animal ) == (
-      'african lion',
-      'africa savanna',
-      'Indoor',
-   )
+   result = ViewingSpotKeyBuilder.from_animal( animal )
+
+   assert result == ViewingSpotKeyBuilder.from_values(
+      animal.species,
+      animal.exhibit,
+      animal.enclosure_name )

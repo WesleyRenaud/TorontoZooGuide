@@ -41,5 +41,7 @@ def Test_FetchRecords_TestJsonFiles_ExpectParsedAndSortedRecords( tmp_path: Path
       json.dumps( [ GUARDIANS_TALK_RECORD.to_json() ] ),
       encoding='utf-8' )
 
-   assert MapLocationWalkNodeProvider.fetch_records(
-      paths=[ guardians_talk_path, attraction_path ] ) == PROVIDER_RECORDS
+   records = MapLocationWalkNodeProvider.fetch_records(
+      paths=[ guardians_talk_path, attraction_path ] )
+
+   assert records == PROVIDER_RECORDS

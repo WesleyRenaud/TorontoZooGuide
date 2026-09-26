@@ -1,72 +1,85 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { DayPlannerActionPresenter } from '../../../../scripts/itinerary/panel/dayPlannerActionPresenter.js';
 import { DayPlannerActionFeedbackFragment } from '../../../../scripts/itinerary/panel/components/dayPlannerActionFeedbackFragment.js';
 import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
+import { DayPlannerActionPresenter } from '../../../../scripts/itinerary/panel/dayPlannerActionPresenter.js';
+import { TimelineLayoutConstants } from '../../../../scripts/shared/timelineLayoutConstants.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
+
+installDomTestHooks();
 
 afterEach(() => {
    DayPlannerActionPresenter.resetPendingDayPlannerActionFeedback();
 });
 
-installDomTestHooks();
 
 test('Test_SetPendingDayPlannerActionFeedback_TestConsume_ExpectOnce', () => {
-   DayPlannerActionPresenter.setPendingDayPlannerActionFeedback({
+   const feedback = {
       variant: 'success',
       message: 'All items unscheduled',
-   });
+   };
 
-   assert.deepEqual(DayPlannerActionPresenter.consumePendingDayPlannerActionFeedback(), {
-      variant: 'success',
-      message: 'All items unscheduled',
-   });
-   assert.equal(DayPlannerActionPresenter.consumePendingDayPlannerActionFeedback(), null);
+   DayPlannerActionPresenter.setPendingDayPlannerActionFeedback(feedback);
+
+   const first = DayPlannerActionPresenter.consumePendingDayPlannerActionFeedback();
+   const second = DayPlannerActionPresenter.consumePendingDayPlannerActionFeedback();
+
+   assert.deepEqual(first, feedback);
+   assert.equal(second, null);
 });
+
 
 test('Test_AppendDayPlannerActionFeedbackBanner_TestSuccess_ExpectStatusBanner', () => {
    const slot = document.createElement('div');
    slot.className = 'itinerary-day-action-feedback-slot';
+   const message = 'All items unscheduled';
+   const variant = 'success';
 
    DayPlannerActionFeedbackFragment.appendDayPlannerActionFeedbackBanner(slot, {
-      variant: 'success',
-      message: 'All items unscheduled',
+      variant,
+      message,
    }, {
       dismissMs: 10_000,
-      fadeMs: 300,
+      fadeMs: TimelineLayoutConstants.DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
    });
 
-   const banner = slot.querySelector('.itinerary-day-action-feedback--success');
+   const banner = slot.querySelector(`.itinerary-day-action-feedback--${variant}`);
 
    assert.ok(banner);
-   assert.equal(banner.textContent, 'All items unscheduled');
+   assert.equal(banner.textContent, message);
    assert.equal(banner.getAttribute('role'), 'status');
 });
+
 
 test('Test_AppendDayPlannerActionFeedbackBanner_TestError_ExpectStatusBanner', () => {
    const slot = document.createElement('div');
    slot.className = 'itinerary-day-action-feedback-slot';
+   const message = 'There were no items to unschedule.';
+   const variant = 'error';
 
    DayPlannerActionFeedbackFragment.appendDayPlannerActionFeedbackBanner(slot, {
-      variant: 'error',
-      message: 'There were no items to unschedule.',
+      variant,
+      message,
    }, {
       dismissMs: 10_000,
-      fadeMs: 300,
+      fadeMs: TimelineLayoutConstants.DAY_PLANNER_ACTION_FEEDBACK_FADE_MS,
    });
 
-   const banner = slot.querySelector('.itinerary-day-action-feedback--error');
+   const banner = slot.querySelector(`.itinerary-day-action-feedback--${variant}`);
 
    assert.ok(banner);
-   assert.equal(banner.textContent, 'There were no items to unschedule.');
+   assert.equal(banner.textContent, message);
    assert.equal(banner.getAttribute('role'), 'status');
 });
 
+
 test('Test_MakeDayPlannerPreview_TestPendingFeedback_ExpectBelowButtons', () => {
+   const message = 'All items unscheduled';
+   const variant = 'success';
    DayPlannerActionPresenter.setPendingDayPlannerActionFeedback({
-      variant: 'success',
-      message: 'All items unscheduled',
+      variant,
+      message,
    });
 
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -77,8 +90,8 @@ test('Test_MakeDayPlannerPreview_TestPendingFeedback_ExpectBelowButtons', () => 
       },
       {
          animals: [{
-            species: 'Tiger',
-            exhibit: 'Savanna',
+            species: 'Amur Tiger',
+            exhibit: 'Eurasia Wilds',
             start_time: '10:00',
             end_time: '10:30',
          }],
@@ -94,19 +107,20 @@ test('Test_MakeDayPlannerPreview_TestPendingFeedback_ExpectBelowButtons', () => 
       }
    );
 
-   const banner = planner.querySelector('.itinerary-day-action-feedback--success');
+   const banner = planner.querySelector(`.itinerary-day-action-feedback--${variant}`);
    const buttonBar = planner.querySelector('.itinerary-day-schedule-actions');
    const feedbackSlot = planner.querySelector('.itinerary-day-action-feedback-slot');
    const scheduleActions = planner.querySelector('.itinerary-day-module-schedule-actions');
 
    assert.ok(banner);
-   assert.equal(banner.textContent, 'All items unscheduled');
+   assert.equal(banner.textContent, message);
    assert.ok(feedbackSlot);
    assert.ok(feedbackSlot.contains(banner));
    assert.equal(scheduleActions?.querySelector('.itinerary-day-schedule-actions'), buttonBar);
    assert.equal(scheduleActions?.querySelector('.itinerary-day-action-feedback-slot'), feedbackSlot);
    assert.equal(DayPlannerActionPresenter.consumePendingDayPlannerActionFeedback(), null);
 });
+
 
 test('Test_MakeDayPlannerPreview_TestNoFeedback_ExpectReservedSlot', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(

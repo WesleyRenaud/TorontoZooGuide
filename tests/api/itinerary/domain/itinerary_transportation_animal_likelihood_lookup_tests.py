@@ -16,19 +16,22 @@ GIRAFFE_LINK = TransportationAnimalRecord(
 
 
 def Test_ForLink_TestMatchingAnimal_ExpectLikelihood() -> None:
-   lookup = ItineraryTransportationAnimalLikelihoodLookup(
-      [
-         Animal(
-            species='Masai Giraffe',
-            exhibit='Africa Savanna',
-            enclosure_name='Outdoor',
-            likelihood=80 ),
-      ] )
+   likelihood = 80
+   animal = Animal(
+      species=GIRAFFE_LINK.species,
+      exhibit=GIRAFFE_LINK.exhibit,
+      enclosure_name=GIRAFFE_LINK.enclosure_name,
+      likelihood=likelihood )
+   lookup = ItineraryTransportationAnimalLikelihoodLookup( [ animal ] )
 
-   assert lookup.for_link( GIRAFFE_LINK ) == 80
+   resolved = lookup.for_link( GIRAFFE_LINK )
+
+   assert resolved == animal.likelihood
 
 
 def Test_ForLink_TestMissingSpot_ExpectZero() -> None:
    lookup = ItineraryTransportationAnimalLikelihoodLookup( [] )
 
-   assert lookup.for_link( GIRAFFE_LINK ) == 0
+   resolved = lookup.for_link( GIRAFFE_LINK )
+
+   assert resolved == 0

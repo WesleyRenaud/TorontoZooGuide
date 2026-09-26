@@ -4,9 +4,11 @@ import { test } from 'node:test';
 import { ItineraryPathCalculator } from '../../../scripts/map/itineraryPathCalculator.js';
 import { ItineraryPathFragment } from '../../../scripts/map/itineraryPathFragment.js';
 import { ZooMapConstants } from '../../../scripts/shared/zooMapConstants.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { querySelectorInNode } from '../helpers/domSelectorMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+
 
 function _installItineraryMapDom() {
    const svgRoot = createDomNode('svg');
@@ -49,16 +51,22 @@ installDomTestHooks({
    },
 });
 
+
 test('Test_RenderItineraryPathOverlay_TestExactPath_ExpectLayerInSvg', () => {
+   const startX = 2515.5;
+   const startY = 2434.9;
+   const endX = 2600;
+   const endY = 2500;
+   const points = [
+      { nodeId: ZooMapConstants.ENTRANCE_WALK_NODE_ID, xPx: startX, yPx: startY },
+      { nodeId: 'v-0012', xPx: startX, yPx: startY },
+      { nodeId: 'v-0011', xPx: endX, yPx: endY },
+   ];
+
    ItineraryPathFragment.renderItineraryPathOverlay({
       legs: [],
-      points: [
-         { nodeId: ZooMapConstants.ENTRANCE_WALK_NODE_ID, xPx: 2515.5, yPx: 2434.9 },
-         { nodeId: 'v-0012', xPx: 2515.5, yPx: 2434.9 },
-         { nodeId: 'v-0011', xPx: 2600, yPx: 2500 },
-      ],
+      points,
    });
-
    const svgRoot = document.querySelector('#zooMapMount svg');
    const path = svgRoot?.querySelector('.itinerary-path-line');
    const layer = path?.parentElement ?? path?.parent;
@@ -67,15 +75,17 @@ test('Test_RenderItineraryPathOverlay_TestExactPath_ExpectLayerInSvg', () => {
    assert.equal(path?.getAttribute('fill'), 'none');
    assert.equal(
       path?.getAttribute('d'),
-      ItineraryPathCalculator.buildItineraryPathD([
-         { x: 2515.5, y: 2434.9 },
-         { x: 2515.5, y: 2434.9 },
-         { x: 2600, y: 2500 },
-      ])
+      ItineraryPathCalculator.buildItineraryPathD(points.map((point) => ({
+         x: point.xPx,
+         y: point.yPx,
+      })))
    );
 });
 
+
 test('Test_RenderItineraryPathOverlay_TestRoute_ExpectArrows', () => {
+   const expectedArrows = 6;
+
    ItineraryPathFragment.renderItineraryPathOverlay({
       legs: [],
       points: [
@@ -83,24 +93,25 @@ test('Test_RenderItineraryPathOverlay_TestRoute_ExpectArrows', () => {
          { nodeId: 'v-0002', xPx: 500, yPx: 200 },
       ],
    });
-
    const svgRoot = document.querySelector('#zooMapMount svg');
    const arrows = svgRoot?.querySelectorAll('.itinerary-path-arrow') ?? [];
 
-   assert.equal(arrows.length, 6);
+   assert.equal(arrows.length, expectedArrows);
 });
+
 
 test('Test_RenderItineraryPathOverlay_TestFewerThanTwoPoints_ExpectCleared', () => {
    ItineraryPathFragment.renderItineraryPathOverlay({
       legs: [],
       points: [{ xPx: 100, yPx: 200 }],
    });
+   const path = document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line');
 
-   assert.equal(
-      document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line'),
-      null
-   );
+   assert.equal(path, null);
+});
 
+
+test('Test_ClearItineraryPathOverlay_TestExistingPath_ExpectCleared', () => {
    ItineraryPathFragment.renderItineraryPathOverlay({
       legs: [],
       points: [
@@ -110,12 +121,11 @@ test('Test_RenderItineraryPathOverlay_TestFewerThanTwoPoints_ExpectCleared', () 
    });
 
    ItineraryPathFragment.clearItineraryPathOverlay();
+   const path = document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line');
 
-   assert.equal(
-      document.querySelector('#zooMapMount svg')?.querySelector('.itinerary-path-line'),
-      null
-   );
+   assert.equal(path, null);
 });
+
 
 test('Test_RenderItineraryPathOverlay_TestMissingSvgRoot_ExpectNoOp', async () => {
    const { ItineraryPathOverlayRenderer } = await import(
@@ -125,7 +135,7 @@ test('Test_RenderItineraryPathOverlay_TestMissingSvgRoot_ExpectNoOp', async () =
    ItineraryPathOverlayRenderer.getSvgRoot = () => null;
 
    try {
-      assert.doesNotThrow(() => {
+      const render = () => {
          ItineraryPathFragment.renderItineraryPathOverlay({
             legs: [],
             points: [
@@ -133,7 +143,9 @@ test('Test_RenderItineraryPathOverlay_TestMissingSvgRoot_ExpectNoOp', async () =
                { xPx: 300, yPx: 400 },
             ],
          });
-      });
+      };
+
+      assert.doesNotThrow(render);
    } finally {
       ItineraryPathOverlayRenderer.getSvgRoot = originalGet;
    }

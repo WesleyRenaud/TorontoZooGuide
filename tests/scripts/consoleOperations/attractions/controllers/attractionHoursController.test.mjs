@@ -80,6 +80,7 @@ function _createController(overrides = {}) {
    });
 }
 
+
 test('Test_CreateAttractionHoursScheduleController_TestMissingTimes_ExpectValidationError', () => {
    const controller = _createController({
       weekdayStartTimeEl: { value: '' },
@@ -90,6 +91,7 @@ test('Test_CreateAttractionHoursScheduleController_TestMissingTimes_ExpectValida
       Strings.validation.attractionHoursTimesRequired
    );
 });
+
 
 test('Test_CreateAttractionHoursScheduleController_TestMissingAttraction_ExpectValidationError', () => {
    const controller = _createController({
@@ -104,6 +106,7 @@ test('Test_CreateAttractionHoursScheduleController_TestMissingAttraction_ExpectV
    );
 });
 
+
 test('Test_CreateAttractionHoursScheduleController_TestWeekdayOrder_ExpectValidationError', () => {
    const controller = _createController({
       weekdayStartTimeEl: { value: '4:00 PM' },
@@ -115,6 +118,7 @@ test('Test_CreateAttractionHoursScheduleController_TestWeekdayOrder_ExpectValida
       Strings.validation.attractionHoursWeekdayOrder
    );
 });
+
 
 test('Test_CreateAttractionHoursScheduleController_TestWeekendOrder_ExpectValidationError', () => {
    const controller = _createController({
@@ -128,11 +132,13 @@ test('Test_CreateAttractionHoursScheduleController_TestWeekendOrder_ExpectValida
    );
 });
 
+
 test('Test_CreateAttractionHoursScheduleController_TestValidPayload_ExpectAccepted', () => {
    const controller = _createController();
 
    assert.equal(controller.validateForm(controller.getFormValues()), null);
 });
+
 
 test('Test_CreateAttractionHoursScheduleController_TestOutOfBoundsTimes_ExpectNoClientValidation', () => {
    const controller = _createController({
@@ -145,6 +151,7 @@ test('Test_CreateAttractionHoursScheduleController_TestOutOfBoundsTimes_ExpectNo
    assert.equal(controller.validateForm(controller.getFormValues()), null);
 });
 
+
 test('Test_CreateAttractionHoursScheduleController_TestEndBeforeStart_ExpectValidationError', () => {
    const controller = _createController({
       startDateEl: _createField('2026-06-20'),
@@ -156,6 +163,7 @@ test('Test_CreateAttractionHoursScheduleController_TestEndBeforeStart_ExpectVali
       Strings.validation.endDateBeforeStartDate
    );
 });
+
 
 test('Test_CreateAttractionHoursScheduleController_TestShow_ExpectPickerBounds', async () => {
    const applied = [];
@@ -188,6 +196,7 @@ test('Test_CreateAttractionHoursScheduleController_TestShow_ExpectPickerBounds',
       ]
    );
 });
+
 
 test('Test_CreateAttractionHoursScheduleController_TestEndDateChange_ExpectBoundsRefresh', async () => {
    const endDateEl = { value: '', listeners: {} };
@@ -223,6 +232,7 @@ test('Test_CreateAttractionHoursScheduleController_TestEndDateChange_ExpectBound
 
    assert.deepEqual(boundCloses, [ '6:00 PM', '4:30 PM' ]);
 });
+
 
 test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendPayload', async () => {
    const savedPayloads = [];
@@ -260,6 +270,7 @@ test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendPaylo
    ]);
 });
 
+
 test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendError', async () => {
    const statusEl = _createStatusEl();
    const controller = _createController({
@@ -278,6 +289,7 @@ test('Test_CreateAttractionHoursScheduleController_TestSubmit_ExpectBackendError
    );
 });
 
+
 test('Test_CreateAttractionHoursScheduleController_TestBoundsFailureHideOverlapAndValidation_ExpectBranches', async () => {
    const statusEl = _createStatusEl();
 
@@ -288,6 +300,7 @@ test('Test_CreateAttractionHoursScheduleController_TestBoundsFailureHideOverlapA
          apiErrorType: ApiErrorType.COULD_NOT_RESOLVE_ATTRACTION_HOURS_TIME_BOUNDS,
       }),
    });
+
    assert.equal(await boundsFail.refreshTimeBounds(), false);
    assert.ok(statusEl.textContent);
 
@@ -299,6 +312,7 @@ test('Test_CreateAttractionHoursScheduleController_TestBoundsFailureHideOverlapA
       activatePanel: () => {},
    });
    await showFail.show();
+
    assert.ok(statusEl.textContent);
 
    const hideController = _createController({
@@ -312,6 +326,7 @@ test('Test_CreateAttractionHoursScheduleController_TestBoundsFailureHideOverlapA
       attractionEl: _createField(''),
    });
    await validationSubmit.submit();
+
    assert.ok(statusEl.textContent);
 
    const originalShow = OpeningScheduleOverlapFragment.showOpeningScheduleOverlapDialog;
@@ -386,6 +401,7 @@ test('Test_CreateAttractionHoursScheduleController_TestBoundsFailureHideOverlapA
    await startDateEl.listeners.change?.();
 });
 
+
 test('Test_ApplyScheduleTimePickerBounds_TestSetAndClear_ExpectLimits', () => {
    const values = {};
    const picker = {
@@ -407,6 +423,7 @@ test('Test_ApplyScheduleTimePickerBounds_TestSetAndClear_ExpectLimits', () => {
    assert.equal(values.minTime, null);
    assert.equal(values.maxTime, null);
 });
+
 
 test('Test_InitAttractionHoursSchedulePickers_TestInit_ExpectPickers', () => {
    const startDateEl = createDomNode('input');

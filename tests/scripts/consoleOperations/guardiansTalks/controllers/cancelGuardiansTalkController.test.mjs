@@ -10,8 +10,10 @@ import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperatio
 import { ConsoleStatusPresenter } from '../../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 installDomTestHooks();
+
 
 test('Test_CreateCancelGuardiansTalkOccurrenceController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
@@ -26,23 +28,16 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestShowAndSubmitSucces
    ConsoleStatusPresenter.setStatus = (...args) => {
       statuses.push(args);
    };
+   const talk = 'Tiger Talk';
+   const location = 'Eurasia';
+   const date = '2026-07-01';
+   const times = ['11:00 AM'];
    ControllerHelper.getFieldValue = (el) => el?.value ?? '';
    ControllerHelper.resetFormFields = () => {};
-   ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => ['11:00 AM'];
+   ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => times;
    ConsoleOperationsClient.cancelGuardiansTalkOccurrence = async (payload) => {
-      assert.deepEqual(payload, {
-         talk: 'Tiger Talk',
-         location: 'Eurasia',
-         date: '2026-07-01',
-         times: ['11:00 AM'],
-      });
-      return {
-         success: true,
-         talk: 'Tiger Talk',
-         location: 'Eurasia',
-         date: '2026-07-01',
-         times: ['11:00 AM'],
-      };
+      assert.deepEqual(payload, { talk, location, date, times });
+      return { success: true, talk, location, date, times };
    };
 
    try {
@@ -51,9 +46,9 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestShowAndSubmitSucces
       const talkNameEl = document.createElement('select');
       const locationEl = document.createElement('select');
       const dateEl = document.createElement('input');
-      talkNameEl.value = 'Tiger Talk';
-      locationEl.value = 'Eurasia';
-      dateEl.value = '2026-07-01';
+      talkNameEl.value = talk;
+      locationEl.value = location;
+      dateEl.value = date;
 
       const talkLocationFilterController = {
          clear: () => {
@@ -101,7 +96,12 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestShowAndSubmitSucces
       await submitButtonEl.listeners.click();
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === 'Tiger Talk in Eurasia on 2026-07-01 at 11:00 AM was cancelled.'
+            entry[1] === Strings.status.guardiansTalkOccurrenceCancelled({
+               talk,
+               location,
+               date,
+               times,
+            })
             && entry[2] === 'is-success'
          ))
       );
@@ -128,6 +128,7 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestShowAndSubmitSucces
       ConsoleOperationsClient.cancelGuardiansTalkOccurrence = originalCancel;
    }
 });
+
 
 test('Test_CreateCancelGuardiansTalkOccurrenceController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];
@@ -262,7 +263,7 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestValidationAndFailur
       });
       await resetShowButtonEl.listeners.click();
       assert.equal(populateCalls.length, 1);
-      assert.deepEqual(populateCalls[0][1], []);
+      assert.deepEqual(populateCalls.at(Position.FIRST)[Position.SECOND], []);
 
       const talkInputEl = document.createElement('input');
       talkInputEl.value = 'Old Talk';

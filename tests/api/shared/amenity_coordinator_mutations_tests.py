@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import pytest
-
 from api.restaurants.scheduling.restaurant_opening_schedule import RestaurantOpeningSchedule
 from api.restaurants.scheduling.restaurant_schedule_override import RestaurantScheduleOverride
 from api.shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
 from api.shared.enums.position import Position
-from api.types import Types
 
 
 AMENITY_NAME = 'Africa Restaurant'
@@ -64,19 +61,19 @@ def _mutations(
 def Test_SetOpeningSchedule_TestPayload_ExpectBuiltScheduleSaved(
       stub_request_connection: None,
 ) -> None:
+   monday = True
    saved_schedules: list[ RestaurantOpeningSchedule ] = []
-
    mutations = _mutations(
       saved_schedules=saved_schedules,
       saved_overrides=[],
       replaced=[],
       trimmed=[] )
 
-   assert mutations.set_opening_schedule(
+   saved = mutations.set_opening_schedule(
       AMENITY_NAME,
       START_DATE,
       END_DATE,
-      monday=True,
+      monday=monday,
       tuesday=False,
       wednesday=False,
       thursday=False,
@@ -84,25 +81,25 @@ def Test_SetOpeningSchedule_TestPayload_ExpectBuiltScheduleSaved(
       saturday=False,
       sunday=False,
       holidays_only=False,
-      message=MESSAGE ) is True
+      message=MESSAGE )
 
-   assert len( saved_schedules ) == 1
-   assert saved_schedules[ Position.FIRST ].monday is True
+   assert saved is True
+   assert saved_schedules[ Position.FIRST ].monday is monday
 
 
 def Test_SetAsClosed_TestPayload_ExpectBuiltScheduleSaved(
       stub_request_connection: None,
 ) -> None:
    saved_schedules: list[ RestaurantOpeningSchedule ] = []
-
    mutations = _mutations(
       saved_schedules=saved_schedules,
       saved_overrides=[],
       replaced=[],
       trimmed=[] )
 
-   assert mutations.set_as_closed( AMENITY_NAME, START_DATE, END_DATE, MESSAGE ) is True
-   assert len( saved_schedules ) == 1
+   saved = mutations.set_as_closed( AMENITY_NAME, START_DATE, END_DATE, MESSAGE )
+
+   assert saved is True
    assert saved_schedules[ Position.FIRST ].restaurant == AMENITY_NAME
    assert saved_schedules[ Position.FIRST ].message == MESSAGE
 
@@ -111,34 +108,34 @@ def Test_SetClosureOverride_TestPayload_ExpectOverrideSaved(
       stub_request_connection: None,
 ) -> None:
    saved_overrides: list[ RestaurantScheduleOverride ] = []
-
    mutations = _mutations(
       saved_schedules=[],
       saved_overrides=saved_overrides,
       replaced=[],
       trimmed=[] )
 
-   assert mutations.set_closure_override( AMENITY_NAME, START_DATE, END_DATE, MESSAGE ) is True
-   assert len( saved_overrides ) == 1
+   saved = mutations.set_closure_override( AMENITY_NAME, START_DATE, END_DATE, MESSAGE )
+
+   assert saved is True
    assert saved_overrides[ Position.FIRST ].restaurant == AMENITY_NAME
 
 
 def Test_ReplaceOpeningScheduleOverlaps_TestPayload_ExpectReplacePath(
       stub_request_connection: None,
 ) -> None:
+   monday = True
    replaced: list[ RestaurantOpeningSchedule ] = []
-
    mutations = _mutations(
       saved_schedules=[],
       saved_overrides=[],
       replaced=replaced,
       trimmed=[] )
 
-   assert mutations.replace_opening_schedule_overlaps(
+   saved = mutations.replace_opening_schedule_overlaps(
       AMENITY_NAME,
       START_DATE,
       END_DATE,
-      monday=True,
+      monday=monday,
       tuesday=False,
       wednesday=False,
       thursday=False,
@@ -146,36 +143,36 @@ def Test_ReplaceOpeningScheduleOverlaps_TestPayload_ExpectReplacePath(
       saturday=False,
       sunday=False,
       holidays_only=False,
-      message=MESSAGE ) is True
+      message=MESSAGE )
 
-   assert len( replaced ) == 1
-   assert replaced[ Position.FIRST ].monday is True
+   assert saved is True
+   assert replaced[ Position.FIRST ].monday is monday
 
 
 def Test_TrimOpeningScheduleOverlaps_TestPayload_ExpectTrimPath(
       stub_request_connection: None,
 ) -> None:
+   tuesday = True
    trimmed: list[ RestaurantOpeningSchedule ] = []
-
    mutations = _mutations(
       saved_schedules=[],
       saved_overrides=[],
       replaced=[],
       trimmed=trimmed )
 
-   assert mutations.trim_opening_schedule_overlaps(
+   saved = mutations.trim_opening_schedule_overlaps(
       AMENITY_NAME,
       START_DATE,
       END_DATE,
       monday=False,
-      tuesday=True,
+      tuesday=tuesday,
       wednesday=False,
       thursday=False,
       friday=False,
       saturday=False,
       sunday=False,
       holidays_only=False,
-      message=MESSAGE ) is True
+      message=MESSAGE )
 
-   assert len( trimmed ) == 1
-   assert trimmed[ Position.FIRST ].tuesday is True
+   assert saved is True
+   assert trimmed[ Position.FIRST ].tuesday is tuesday

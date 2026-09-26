@@ -17,6 +17,9 @@ from api.itinerary.scheduling.items.listed_schedule_target_resolver import Liste
 from api.itinerary.transportation.transportation_day_loop import TransportationDayLoop
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from api.shared.calendar_dates import DateValues
+from api.shared.duration_values import DurationValues
+from api.shared.enums.position import Position
 
 TARGET_SCHEMA = """
 CREATE TABLE EnclosureViewing (
@@ -57,13 +60,16 @@ LION_KEY = AnimalScheduleItemKey(
    species='African Lion',
    exhibit='Africa Savanna',
 )
+LION_DURATION_MINUTES = 8
 
 PENGUIN_KEY = AnimalScheduleItemKey(
    species='African Penguin',
    exhibit='Africa Savanna',
 )
+PENGUIN_DURATION_MINUTES = 8
 
 CAROUSEL_KEY = AttractionScheduleItemKey( name='Conservation Carousel' )
+CAROUSEL_DURATION_MINUTES = 12
 
 ZOOMOBILE_KEY = AttractionScheduleItemKey( name='Zoomobile' )
 
@@ -101,7 +107,7 @@ def target_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, NULL, ? );
       """,
-      ( 'African Lion', 'Africa Savanna', 8 ) )
+      ( LION_KEY.species, LION_KEY.exhibit, LION_DURATION_MINUTES ) )
    conn.execute(
       """   INSERT INTO Attraction (
                NAME,
@@ -110,7 +116,7 @@ def target_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, 0 );
       """,
-      ( 'Conservation Carousel', 12 ) )
+      ( CAROUSEL_KEY.name, CAROUSEL_DURATION_MINUTES ) )
    conn.execute(
       """   INSERT INTO ItineraryAnimal (
                SPECIES,
@@ -121,7 +127,7 @@ def target_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, ?, NULL, NULL, NULL );
       """,
-      ( 'African Lion', 'Africa Savanna' ) )
+      ( LION_KEY.species, LION_KEY.exhibit ) )
    conn.commit()
 
    yield conn
@@ -133,23 +139,28 @@ def Test_Resolve_TestAnimalDefault_ExpectEnclosureDuration(
       target_conn: sqlite3.Connection ) -> None:
    target = ListedScheduleTargetResolver.resolve( target_conn, LION_KEY )
 
-   assert target.default_duration_seconds == 8 * 60
+   assert target.default_duration_seconds == DurationValues.minutes_to_seconds(
+      LION_DURATION_MINUTES )
 
 
 def Test_Resolve_TestAttractionDefault_ExpectAttractionDuration(
       target_conn: sqlite3.Connection ) -> None:
    target = ListedScheduleTargetResolver.resolve( target_conn, CAROUSEL_KEY )
 
-   assert target.default_duration_seconds == 12 * 60
+   assert target.default_duration_seconds == DurationValues.minutes_to_seconds(
+      CAROUSEL_DURATION_MINUTES )
 
 
 def Test_Apply_TestExistingAnimal_ExpectScheduleUpdated(
       target_conn: sqlite3.Connection ) -> None:
+   start_time = '10:00 AM'
+   end_time = DateValues.add_minutes_to_time( start_time, LION_DURATION_MINUTES )
+
    updated = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       LION_KEY,
-      '10:00 AM',
-      '10:08 AM',
+      start_time,
+      end_time,
       insert_if_missing=False )
 
    assert updated
@@ -160,21 +171,24 @@ def Test_Apply_TestExistingAnimal_ExpectScheduleUpdated(
             WHERE SPECIES = ?
               AND EXHIBIT = ?;
       """,
-      ( 'African Lion', 'Africa Savanna' ),
+      ( LION_KEY.species, LION_KEY.exhibit ),
    ).fetchone()
 
    assert row is not None
-   assert row[ 'START_TIME' ] == '10:00 AM'
-   assert row[ 'END_TIME' ] == '10:08 AM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time
 
 
 def Test_Apply_TestMissingAnimalInsertIfMissing_ExpectInserted(
       target_conn: sqlite3.Connection ) -> None:
+   start_time = '11:00 AM'
+   end_time = DateValues.add_minutes_to_time( start_time, PENGUIN_DURATION_MINUTES )
+
    inserted = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       PENGUIN_KEY,
-      '11:00 AM',
-      '11:08 AM',
+      start_time,
+      end_time,
       insert_if_missing=True )
 
    assert inserted
@@ -185,12 +199,12 @@ def Test_Apply_TestMissingAnimalInsertIfMissing_ExpectInserted(
             WHERE SPECIES = ?
               AND EXHIBIT = ?;
       """,
-      ( 'African Penguin', 'Africa Savanna' ),
+      ( PENGUIN_KEY.species, PENGUIN_KEY.exhibit ),
    ).fetchone()
 
    assert row is not None
-   assert row[ 'START_TIME' ] == '11:00 AM'
-   assert row[ 'END_TIME' ] == '11:08 AM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time
 
 
 def Test_Apply_TestExistingAnimalInsertIfMissing_ExpectUpdated(
@@ -201,11 +215,14 @@ def Test_Apply_TestExistingAnimalInsertIfMissing_ExpectUpdated(
       'insert_itinerary_animal_schedule',
       lambda *_args, **_kwargs: False )
 
+   start_time = '11:30 AM'
+   end_time = DateValues.add_minutes_to_time( start_time, LION_DURATION_MINUTES )
+
    updated = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       LION_KEY,
-      '11:30 AM',
-      '11:38 AM',
+      start_time,
+      end_time,
       insert_if_missing=True )
 
    assert updated
@@ -216,12 +233,12 @@ def Test_Apply_TestExistingAnimalInsertIfMissing_ExpectUpdated(
             WHERE SPECIES = ?
               AND EXHIBIT = ?;
       """,
-      ( 'African Lion', 'Africa Savanna' ),
+      ( LION_KEY.species, LION_KEY.exhibit ),
    ).fetchone()
 
    assert row is not None
-   assert row[ 'START_TIME' ] == '11:30 AM'
-   assert row[ 'END_TIME' ] == '11:38 AM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time
 
 
 def Test_Apply_TestAttractionInsertIfMissing_ExpectInserted(
@@ -236,11 +253,14 @@ def Test_Apply_TestAttractionInsertIfMissing_ExpectInserted(
       'find_saved_itinerary_schedule_item_row',
       lambda _saved, _key: None )
 
+   start_time = '12:00 PM'
+   end_time = DateValues.add_minutes_to_time( start_time, CAROUSEL_DURATION_MINUTES )
+
    inserted = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       CAROUSEL_KEY,
-      '12:00 PM',
-      '12:12 PM',
+      start_time,
+      end_time,
       insert_if_missing=True )
 
    assert inserted
@@ -250,12 +270,12 @@ def Test_Apply_TestAttractionInsertIfMissing_ExpectInserted(
             FROM ItineraryAttraction
             WHERE ATTRACTION = ?;
       """,
-      ( 'Conservation Carousel', ),
+      ( CAROUSEL_KEY.name, ),
    ).fetchone()
 
    assert row is not None
-   assert row[ 'START_TIME' ] == '12:00 PM'
-   assert row[ 'END_TIME' ] == '12:12 PM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time
 
 
 def Test_Apply_TestExistingAttraction_ExpectUpdated(
@@ -265,7 +285,10 @@ def Test_Apply_TestExistingAttraction_ExpectUpdated(
       """   INSERT INTO ItineraryAttraction ( ATTRACTION, START_TIME, END_TIME )
             VALUES ( ?, ?, ? );
       """,
-      ( 'Conservation Carousel', '9:00 AM', '9:12 AM' ) )
+      (
+         CAROUSEL_KEY.name,
+         '9:00 AM',
+         DateValues.add_minutes_to_time( '9:00 AM', CAROUSEL_DURATION_MINUTES ) ) )
    target_conn.commit()
 
    monkeypatch.setattr(
@@ -277,11 +300,14 @@ def Test_Apply_TestExistingAttraction_ExpectUpdated(
       'find_saved_itinerary_schedule_item_row',
       lambda _saved, _key: None )
 
+   start_time = '1:00 PM'
+   end_time = DateValues.add_minutes_to_time( start_time, CAROUSEL_DURATION_MINUTES )
+
    updated = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       CAROUSEL_KEY,
-      '1:00 PM',
-      '1:12 PM',
+      start_time,
+      end_time,
       insert_if_missing=False )
 
    assert updated
@@ -291,12 +317,12 @@ def Test_Apply_TestExistingAttraction_ExpectUpdated(
             FROM ItineraryAttraction
             WHERE ATTRACTION = ?;
       """,
-      ( 'Conservation Carousel', ),
+      ( CAROUSEL_KEY.name, ),
    ).fetchone()
 
    assert row is not None
-   assert row[ 'START_TIME' ] == '1:00 PM'
-   assert row[ 'END_TIME' ] == '1:12 PM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time
 
 
 def Test_Apply_TestTransportationDayLoop_ExpectProviderApplied(
@@ -340,17 +366,24 @@ def Test_Apply_TestTransportationDayLoop_ExpectProviderApplied(
       'apply_itinerary_transportation_schedule',
       apply_itinerary_transportation_schedule )
 
-   assert ListedScheduleTargetResolver.apply(
+   start_time = '10:00 AM'
+   end_time = DateValues.add_minutes_to_time(
+      start_time,
+      DAY_LOOP.legs[ Position.FIRST ].duration_minutes )
+
+   result = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       ZOOMOBILE_KEY,
-      '10:00 AM',
-      '10:20 AM',
-      insert_if_missing=False ) is True
+      start_time,
+      end_time,
+      insert_if_missing=False )
+
+   assert result is True
    assert captured[ 'args' ] == (
-      'Zoomobile',
-      True,
-      '10:00 AM',
-      'summer',
+      DAY_LOOP.transportation,
+      TRANSPORTATION_ROW.added_as_attraction,
+      start_time,
+      DAY_LOOP.route,
       DAY_LOOP.legs )
 
 
@@ -370,12 +403,14 @@ def Test_Apply_TestTransportationMissingVisitDate_ExpectFalse(
       'fetch_itinerary_date',
       lambda _conn: None )
 
-   assert ListedScheduleTargetResolver.apply(
+   result = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       ZOOMOBILE_KEY,
       '10:00 AM',
       '10:20 AM',
-      insert_if_missing=False ) is False
+      insert_if_missing=False )
+
+   assert result is False
 
 
 def Test_Apply_TestTransportationMissingDayLoop_ExpectFalse(
@@ -398,12 +433,14 @@ def Test_Apply_TestTransportationMissingDayLoop_ExpectFalse(
       'fetch',
       lambda *_args, **_kwargs: None )
 
-   assert ListedScheduleTargetResolver.apply(
+   result = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       ZOOMOBILE_KEY,
       '10:00 AM',
       '10:20 AM',
-      insert_if_missing=False ) is False
+      insert_if_missing=False )
+
+   assert result is False
 
 
 def Test_Apply_TestAttractionInsertIfMissingAlreadyPresent_ExpectUpdated(
@@ -413,7 +450,10 @@ def Test_Apply_TestAttractionInsertIfMissingAlreadyPresent_ExpectUpdated(
       """   INSERT INTO ItineraryAttraction ( ATTRACTION, START_TIME, END_TIME )
             VALUES ( ?, ?, ? );
       """,
-      ( 'Conservation Carousel', '9:00 AM', '9:12 AM' ) )
+      (
+         CAROUSEL_KEY.name,
+         '9:00 AM',
+         DateValues.add_minutes_to_time( '9:00 AM', CAROUSEL_DURATION_MINUTES ) ) )
    target_conn.commit()
 
    monkeypatch.setattr(
@@ -429,11 +469,14 @@ def Test_Apply_TestAttractionInsertIfMissingAlreadyPresent_ExpectUpdated(
       'insert_itinerary_attraction_schedule',
       lambda *_args, **_kwargs: False )
 
+   start_time = '2:00 PM'
+   end_time = DateValues.add_minutes_to_time( start_time, CAROUSEL_DURATION_MINUTES )
+
    updated = ListedScheduleTargetResolver.apply(
       target_conn.cursor(),
       CAROUSEL_KEY,
-      '2:00 PM',
-      '2:12 PM',
+      start_time,
+      end_time,
       insert_if_missing=True )
 
    assert updated
@@ -443,9 +486,9 @@ def Test_Apply_TestAttractionInsertIfMissingAlreadyPresent_ExpectUpdated(
             FROM ItineraryAttraction
             WHERE ATTRACTION = ?;
       """,
-      ( 'Conservation Carousel', ),
+      ( CAROUSEL_KEY.name, ),
    ).fetchone()
 
    assert row is not None
-   assert row[ 'START_TIME' ] == '2:00 PM'
-   assert row[ 'END_TIME' ] == '2:12 PM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time

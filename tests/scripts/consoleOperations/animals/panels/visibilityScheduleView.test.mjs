@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateVisibilitySchedulePanel_TestDefault_ExpectPanel', () => {
    const panelEl = VisibilityScheduleView.createVisibilitySchedulePanel();
 

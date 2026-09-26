@@ -15,6 +15,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateWildEncounterScheduleController_TestWiring_ExpectFormCallbacks', async () => {
    const originalCreate = RecurringScheduleFormController.createRecurringScheduleFormController;
    const originalRows = RecurringScheduleRowsController.createRecurringScheduleRowsController;
@@ -93,7 +94,6 @@ test('Test_CreateWildEncounterScheduleController_TestWiring_ExpectFormCallbacks'
 
       captured.resetSelection();
       assert.ok(rowCalls.some((call) => Array.isArray(call) && call[0] === 'resetFields'));
-
       assert.deepEqual(
          await captured.submitSchedule({
             wildEncounter: 'Giraffe',

@@ -113,9 +113,11 @@ def _insert_zoomobile( conn: sqlite3.Connection ) -> None:
 
 def Test_FetchTransportationRecords_TestEmpty_ExpectEmptyList(
       transportation_provider_conn: sqlite3.Connection ) -> None:
-   assert TransportationProvider.fetch_transportation_records(
+   transportation_records = TransportationProvider.fetch_transportation_records(
       transportation_provider_conn,
-      VISIT_DATE ) == []
+      VISIT_DATE )
+
+   assert transportation_records == []
 
 def Test_FetchTransportationRecords_TestPopulated_ExpectMappedFields(
       transportation_provider_conn: sqlite3.Connection ) -> None:

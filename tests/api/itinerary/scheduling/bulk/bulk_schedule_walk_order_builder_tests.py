@@ -125,11 +125,13 @@ def stub_bulk_schedule_walk_order_dependencies(
 
 def Test_RepresentativeWalkNodeId_TestClosestViewingSpot_ExpectNearestNode(
       stub_bulk_schedule_walk_order_dependencies: None ) -> None:
-   assert BulkScheduleWalkOrderBuilder.representative_walk_node_id(
+   result = BulkScheduleWalkOrderBuilder.representative_walk_node_id(
       TEST_GRAPH,
       ENTRANCE_NODE_ID,
       'Cheetah',
-      'Indo-Malaya Outdoor' ) == CHEETAH_NODE_ID
+      'Indo-Malaya Outdoor' )
+
+   assert result == CHEETAH_NODE_ID
 
 
 def Test_SortAnimals_TestMixedEnclosures_ExpectMasterRouteOrder(
@@ -180,10 +182,12 @@ def Test_WalkTravelDistancePx_TestResolvedViewingSpot_ExpectShortestDistance(
 
 
 def Test_SortByNearestNeighbor_TestEmptyList_ExpectEmpty() -> None:
-   assert BulkScheduleWalkOrderBuilder.sort_by_nearest_neighbor(
+   result = BulkScheduleWalkOrderBuilder.sort_by_nearest_neighbor(
       TEST_GRAPH,
       [],
-      start_node_id=ENTRANCE_NODE_ID ) == []
+      start_node_id=ENTRANCE_NODE_ID )
+
+   assert result == []
 
 
 def Test_RepresentativeWalkNodeId_TestUnknownViewingSpot_ExpectNone(
@@ -193,11 +197,13 @@ def Test_RepresentativeWalkNodeId_TestUnknownViewingSpot_ExpectNone(
       'resolve',
       lambda species, exhibit, enclosure_name=None: None )
 
-   assert BulkScheduleWalkOrderBuilder.representative_walk_node_id(
+   result = BulkScheduleWalkOrderBuilder.representative_walk_node_id(
       TEST_GRAPH,
       ENTRANCE_NODE_ID,
       'Unknown Animal',
-      'Nowhere' ) is None
+      'Nowhere' )
+
+   assert result is None
 
 
 def Test_SortByNearestNeighbor_TestCheetahAndLion_ExpectCheetahFirst(

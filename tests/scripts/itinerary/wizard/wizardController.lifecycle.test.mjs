@@ -10,6 +10,15 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 import { createStubStepController, syncedSelection } from '../../helpers/wizardTestFixtures.mjs';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+
+const _year = 2026;
+const _juneIndex = 5;
+const _day = 15;
+const _animalsStep = 'animals';
+const _animalsKey = 'animals';
+const _regionsStep = 'regions';
+const _dateStep = 'date';
 
 installDomTestHooks({
    before: () => {
@@ -19,30 +28,37 @@ installDomTestHooks({
       delete globalThis.localStorage;
    },
 });
+
+
 test('Test_No_TestNoOpsWhenMountElIsMissing_ExpectOk', async () => {
-   await WizardController.openItineraryWizard({ mountEl: null });
+   const mountEl = null;
+
+   await assert.doesNotReject(async () => {
+      await WizardController.openItineraryWizard({ mountEl });
+   });
 });
+
 
 test('Test_Shows_TestShowsTheResolvedStartStepWithInjectedControllers_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const shownSteps = [];
-   const dateController = createStubStepController('date', shownSteps);
+   const dateController = createStubStepController(_dateStep, shownSteps);
 
    await WizardController.openItineraryWizard({
       mountEl,
-      startAt: 'animals',
+      startAt: _animalsStep,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
          createDateStepController: () => dateController,
          selectionStepConfigs: [
             {
-               stepKey: 'animals',
-               selectionKey: 'animals',
-               prevStepKey: 'regions',
+               stepKey: _animalsStep,
+               selectionKey: _animalsKey,
+               prevStepKey: _regionsStep,
                nextStepKey: 'attractions',
-               factory: () => createStubStepController('animals', shownSteps),
+               factory: () => createStubStepController(_animalsStep, shownSteps),
             },
          ],
          finalizeWizard: async () => {},
@@ -51,8 +67,9 @@ test('Test_Shows_TestShowsTheResolvedStartStepWithInjectedControllers_ExpectOk',
       },
    });
 
-   assert.deepEqual(shownSteps, ['animals']);
+   assert.deepEqual(shownSteps, [_animalsStep]);
 });
+
 
 test('Test_Closes_TestClosesImmediatelyWhenThereAreNoUnsavedChanges_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
@@ -61,14 +78,13 @@ test('Test_Closes_TestClosesImmediatelyWhenThereAreNoUnsavedChanges_ExpectOk', a
       show() {},
       getDate: () => null,
    };
-
    mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
    await WizardController.openItineraryWizard({
       mountEl,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
          createDateStepController: ({ onClose }) => {
             closeHandler = onClose;
@@ -80,25 +96,27 @@ test('Test_Closes_TestClosesImmediatelyWhenThereAreNoUnsavedChanges_ExpectOk', a
          syncAnimalDraft: () => {},
       },
    });
-
    await closeHandler?.();
 
    assert.equal(mountEl.children.length, 0);
 });
 
+
 test('Test_Syncs_TestSyncsAnimalDraftStateForAnActiveItinerary_ExpectOk', async () => {
    const syncedItineraries = [];
    const mountEl = createDomNode('div', 'wizard-mount');
+   const animal = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   const visitDate = '2026-06-15';
 
    await WizardController.openItineraryWizard({
       mountEl,
       deps: {
          loadItinerary: async () => ({
             isActive: true,
-            date: '2026-06-15',
-            animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+            date: visitDate,
+            animals: [animal],
          }),
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
          createDateStepController: () => ({ show() {} }),
          selectionStepConfigs: [],
@@ -113,12 +131,13 @@ test('Test_Syncs_TestSyncsAnimalDraftStateForAnActiveItinerary_ExpectOk', async 
    assert.equal(syncedItineraries.length, 1);
 });
 
+
 test('Test_Clears_TestClearsStaleRegionSelectionStorageWhenOpeningWithout_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
-
+   const exhibit = 'Africa Savanna';
    localStorage.setItem(
       StorageKeys.SELECTED_EXHIBITS_KEY,
-      JSON.stringify(['Africa Savanna'])
+      JSON.stringify([exhibit])
    );
 
    await WizardController.openItineraryWizard({
@@ -132,7 +151,7 @@ test('Test_Clears_TestClearsStaleRegionSelectionStorageWhenOpeningWithout_Expect
             wildEncounters: [],
             isActive: false,
          }),
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
          createDateStepController: () => ({ show() {} }),
          selectionStepConfigs: [],
@@ -144,16 +163,19 @@ test('Test_Clears_TestClearsStaleRegionSelectionStorageWhenOpeningWithout_Expect
    assert.equal(localStorage.getItem(StorageKeys.SELECTED_EXHIBITS_KEY), null);
 });
 
+
 test('Test_Prompts_TestPromptsToSaveWhenClosingWithUnsavedChanges_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const popupConfigs = [];
    let closeHandler = null;
+   const animal = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   const selectedDate = makeNoonDate(_year, _juneIndex, _day);
 
    await WizardController.openItineraryWizard({
       mountEl,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => selectedDate,
          createWizardState: () => {
             const wizard = ItineraryWizardStore.createItineraryWizardState({
                date: '',
@@ -163,9 +185,7 @@ test('Test_Prompts_TestPromptsToSaveWhenClosingWithUnsavedChanges_ExpectOk', asy
                wildEncounters: [],
             });
 
-            wizard.updateSelection('animals', [
-               { species: 'African Lion', exhibit: 'Africa Savanna' },
-            ]);
+            wizard.updateSelection(_animalsKey, [animal]);
 
             return wizard;
          },
@@ -173,7 +193,7 @@ test('Test_Prompts_TestPromptsToSaveWhenClosingWithUnsavedChanges_ExpectOk', asy
             closeHandler = onClose;
             return {
                show() {},
-               getDate: () => makeNoonDate(2026, 5, 15),
+               getDate: () => selectedDate,
             };
          },
          selectionStepConfigs: [],
@@ -184,15 +204,15 @@ test('Test_Prompts_TestPromptsToSaveWhenClosingWithUnsavedChanges_ExpectOk', asy
          syncAnimalDraft: () => {},
       },
    });
-
    await closeHandler?.();
 
    assert.equal(popupConfigs.length, 1);
    assert.equal(
-      popupConfigs[0].title,
+      popupConfigs[Position.FIRST].title,
       Strings.itinerary.confirmation.saveChangesTitle
    );
 });
+
 
 test('Test_Closes_TestClosesWithoutPromptingAfterRevisitingRegionsOnAn_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
@@ -203,7 +223,6 @@ test('Test_Closes_TestClosesWithoutPromptingAfterRevisitingRegionsOnAn_ExpectOk'
    const existingAnimals = [
       { species: 'Red Panda', exhibit: 'Eurasia Wilds' },
    ];
-
    mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
    await WizardController.openItineraryWizard({
@@ -217,7 +236,7 @@ test('Test_Closes_TestClosesWithoutPromptingAfterRevisitingRegionsOnAn_ExpectOk'
             guardiansTalks: [],
             wildEncounters: [],
          }),
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 6, 4),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, 6, 4),
          createWizardState: (existing = {}) => ItineraryWizardStore.createItineraryWizardState(existing),
          createDateStepController: ({ onSave, onClose }) => {
             saveHandler = onSave;
@@ -226,8 +245,8 @@ test('Test_Closes_TestClosesWithoutPromptingAfterRevisitingRegionsOnAn_ExpectOk'
          },
          selectionStepConfigs: [
             {
-               stepKey: 'regions',
-               selectionKey: 'animals',
+               stepKey: _regionsStep,
+               selectionKey: _animalsKey,
                preserveOnInvalid: true,
                factory: ({ onClose }) => {
                   closeHandler = onClose;
@@ -246,7 +265,6 @@ test('Test_Closes_TestClosesWithoutPromptingAfterRevisitingRegionsOnAn_ExpectOk'
          syncAnimalDraft: () => {},
       },
    });
-
    saveHandler?.(visitDate);
    await closeHandler?.();
 
@@ -254,32 +272,34 @@ test('Test_Closes_TestClosesWithoutPromptingAfterRevisitingRegionsOnAn_ExpectOk'
    assert.equal(mountEl.children.length, 0);
 });
 
+
 test('Test_Date_TestDateSaveAdvancesToTheRegionsStep_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const shownSteps = [];
    let saveHandler = null;
+   const visitDate = '2026-06-15';
 
    await WizardController.openItineraryWizard({
       mountEl,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
          createDateStepController: ({ onSave }) => {
             saveHandler = onSave;
             return {
                show() {
-                  shownSteps.push('date');
+                  shownSteps.push(_dateStep);
                },
             };
          },
          selectionStepConfigs: [
             {
-               stepKey: 'regions',
-               selectionKey: 'animals',
+               stepKey: _regionsStep,
+               selectionKey: _animalsKey,
                factory: () => ({
                   show() {
-                     shownSteps.push('regions');
+                     shownSteps.push(_regionsStep);
                   },
                }),
             },
@@ -289,11 +309,11 @@ test('Test_Date_TestDateSaveAdvancesToTheRegionsStep_ExpectOk', async () => {
          syncAnimalDraft: () => {},
       },
    });
+   saveHandler?.(visitDate);
 
-   saveHandler?.('2026-06-15');
-
-   assert.deepEqual(shownSteps, ['date', 'regions']);
+   assert.deepEqual(shownSteps, [_dateStep, _regionsStep]);
 });
+
 
 test('Test_Regions_TestRegionsFinishSavesWhenOnlyTheVisitDate_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
@@ -303,7 +323,8 @@ test('Test_Regions_TestRegionsFinishSavesWhenOnlyTheVisitDate_ExpectOk', async (
    const existingAnimals = [
       { species: 'African Lion', exhibit: 'Africa Savanna' },
    ];
-
+   const nextDate = '2026-06-15';
+   const existingDate = '2026-06-01';
    mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
    await WizardController.openItineraryWizard({
@@ -311,13 +332,13 @@ test('Test_Regions_TestRegionsFinishSavesWhenOnlyTheVisitDate_ExpectOk', async (
       deps: {
          loadItinerary: async () => ({
             isActive: true,
-            date: '2026-06-01',
+            date: existingDate,
             animals: existingAnimals,
             attractions: [],
             guardiansTalks: [],
             wildEncounters: [],
          }),
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: (existing = {}) => ItineraryWizardStore.createItineraryWizardState(existing),
          createDateStepController: ({ onSave }) => {
             saveHandler = onSave;
@@ -325,8 +346,8 @@ test('Test_Regions_TestRegionsFinishSavesWhenOnlyTheVisitDate_ExpectOk', async (
          },
          selectionStepConfigs: [
             {
-               stepKey: 'regions',
-               selectionKey: 'animals',
+               stepKey: _regionsStep,
+               selectionKey: _animalsKey,
                preserveOnInvalid: true,
                factory: ({ onFinish }) => {
                   regionsFinishHandler = onFinish;
@@ -337,31 +358,30 @@ test('Test_Regions_TestRegionsFinishSavesWhenOnlyTheVisitDate_ExpectOk', async (
                },
             },
          ],
-         finalizeWizard: async (draft, mountEl, options) => {
+         finalizeWizard: async (draft, mount, options) => {
             finishCalls.push({ draft, options });
-            mountEl.replaceChildren();
+            mount.replaceChildren();
             return draft;
          },
          showConfirmPopup: () => {},
          syncAnimalDraft: () => {},
       },
    });
-
-   saveHandler?.('2026-06-15');
+   saveHandler?.(nextDate);
    regionsFinishHandler?.(null);
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
 
    assert.equal(finishCalls.length, 1);
-   assert.equal(finishCalls[0].draft.date, '2026-06-15');
+   assert.equal(finishCalls[Position.FIRST].draft.date, nextDate);
    assert.deepEqual(
-      finishCalls[0].draft.animals.map((animal) => animal.species),
-      ['African Lion']
+      finishCalls[Position.FIRST].draft.animals.map((animal) => animal.species),
+      existingAnimals.map((animal) => animal.species)
    );
    assert.equal(mountEl.children.length, 0);
 });
+
 
 test('Test_Selection_TestSelectionPrevHandlersReturnToThePreviousStep_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
@@ -370,37 +390,37 @@ test('Test_Selection_TestSelectionPrevHandlersReturnToThePreviousStep_ExpectOk',
 
    await WizardController.openItineraryWizard({
       mountEl,
-      startAt: 'animals',
+      startAt: _animalsStep,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
          createDateStepController: () => ({
             show() {
-               shownSteps.push('date');
+               shownSteps.push(_dateStep);
             },
          }),
          selectionStepConfigs: [
             {
-               stepKey: 'regions',
-               selectionKey: 'animals',
-               prevStepKey: 'date',
-               nextStepKey: 'animals',
+               stepKey: _regionsStep,
+               selectionKey: _animalsKey,
+               prevStepKey: _dateStep,
+               nextStepKey: _animalsStep,
                factory: () => ({
                   show() {
-                     shownSteps.push('regions');
+                     shownSteps.push(_regionsStep);
                   },
                }),
             },
             {
-               stepKey: 'animals',
-               selectionKey: 'animals',
-               prevStepKey: 'regions',
+               stepKey: _animalsStep,
+               selectionKey: _animalsKey,
+               prevStepKey: _regionsStep,
                factory: ({ onPrev }) => {
                   animalsPrevHandler = onPrev;
                   return {
                      show() {
-                        shownSteps.push('animals');
+                        shownSteps.push(_animalsStep);
                      },
                   };
                },
@@ -411,11 +431,11 @@ test('Test_Selection_TestSelectionPrevHandlersReturnToThePreviousStep_ExpectOk',
          syncAnimalDraft: () => {},
       },
    });
-
    animalsPrevHandler?.([]);
 
-   assert.deepEqual(shownSteps, ['animals', 'regions']);
+   assert.deepEqual(shownSteps, [_animalsStep, _regionsStep]);
 });
+
 
 test('Test_Loads_TestLoadsDefaultSelectionStepConfigsWhenNoneAre_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
@@ -425,20 +445,20 @@ test('Test_Loads_TestLoadsDefaultSelectionStepConfigsWhenNoneAre_ExpectOk', asyn
       mountEl,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
          createDateStepController: () => ({
             show() {
-               shownSteps.push('date');
+               shownSteps.push(_dateStep);
             },
          }),
          loadSelectionStepConfigs: async () => ([
             {
-               stepKey: 'regions',
-               selectionKey: 'animals',
+               stepKey: _regionsStep,
+               selectionKey: _animalsKey,
                factory: () => ({
                   show() {
-                     shownSteps.push('regions');
+                     shownSteps.push(_regionsStep);
                   },
                }),
             },
@@ -449,25 +469,26 @@ test('Test_Loads_TestLoadsDefaultSelectionStepConfigsWhenNoneAre_ExpectOk', asyn
       },
    });
 
-   assert.deepEqual(shownSteps, ['date']);
+   assert.deepEqual(shownSteps, [_dateStep]);
 });
+
 
 test('Test_Finish_TestFinishAfterSelectionChangesClearsTheWizardOverlay_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    let finishHandler = null;
    const selectedAnimals = syncedSelection();
    const finalizeCalls = [];
-
+   const visitDate = '2026-06-15';
    mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
    await WizardController.openItineraryWizard({
       mountEl,
-      startAt: 'animals',
+      startAt: _animalsStep,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({
-            date: '2026-06-15',
+            date: visitDate,
             animals: [],
             attractions: [],
             guardiansTalks: [],
@@ -476,8 +497,8 @@ test('Test_Finish_TestFinishAfterSelectionChangesClearsTheWizardOverlay_ExpectOk
          createDateStepController: () => ({ show() {} }),
          selectionStepConfigs: [
             {
-               stepKey: 'animals',
-               selectionKey: 'animals',
+               stepKey: _animalsStep,
+               selectionKey: _animalsKey,
                factory: ({ onFinish }) => {
                   finishHandler = onFinish;
                   return { show() {} };
@@ -493,48 +514,47 @@ test('Test_Finish_TestFinishAfterSelectionChangesClearsTheWizardOverlay_ExpectOk
          syncAnimalDraft: () => {},
       },
    });
-
    finishHandler?.(selectedAnimals);
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
 
    assert.equal(finalizeCalls.length, 1);
+   assert.deepEqual(finalizeCalls[Position.FIRST].animals, selectedAnimals);
    assert.equal(mountEl.children.length, 0);
 });
+
 
 test('Test_Date_TestDateFinishSavesWhenOnlyTheVisitDate_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    let finishHandler = null;
    const finishCalls = [];
-
+   const visitDate = '2026-06-15';
    mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
    await WizardController.openItineraryWizard({
       mountEl,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
          createDateStepController: ({ onFinish }) => {
             finishHandler = onFinish;
             return { show() {} };
          },
          selectionStepConfigs: [],
-         finalizeWizard: async (draft, mountEl, options) => {
+         finalizeWizard: async (draft, mount, options) => {
             finishCalls.push({ draft, options });
-            mountEl.replaceChildren();
+            mount.replaceChildren();
             return draft;
          },
          showConfirmPopup: () => {},
          syncAnimalDraft: () => {},
       },
    });
-
-   await finishHandler?.('2026-06-15');
+   await finishHandler?.(visitDate);
 
    assert.equal(finishCalls.length, 1);
-   assert.equal(finishCalls[0].draft.date, '2026-06-15');
+   assert.equal(finishCalls[Position.FIRST].draft.date, visitDate);
    assert.equal(mountEl.children.length, 0);
 });

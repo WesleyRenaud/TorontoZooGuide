@@ -15,12 +15,14 @@ test('Test_AnimalSpeciesAutocompleteKeys_TestRegistry_ExpectKnownKeys', () => {
       'viewingAlert',
       'removeViewingAlert',
    ]);
+
    assert.deepEqual(ConsoleControllersBootstrapHelper.ANIMAL_SPECIES_SOURCE_METHOD_BY_KEY, {
       onDisplay: 'createOffDisplayAnimalSpeciesSource',
       removeVisibilitySchedule: 'createVisibilityScheduleAnimalSpeciesSource',
       removeViewingAlert: 'createViewingAlertAnimalSpeciesSource',
    });
 });
+
 
 test('Test_ControllerBindings_TestRegistry_ExpectCreateFunctions', () => {
    const bindings = ConsoleControllersBootstrapHelper.CONTROLLER_BINDINGS;
@@ -30,6 +32,7 @@ test('Test_ControllerBindings_TestRegistry_ExpectCreateFunctions', () => {
    assert.ok(bindings.every((binding) => typeof binding.createController === 'function'));
    assert.ok(bindings.every((binding) => typeof binding.getRefs === 'function'));
 });
+
 
 test('Test_ControllerBindings_TestGetExtraOptions_ExpectSpecialControllersMapped', () => {
    const specialControllers = {
@@ -70,6 +73,7 @@ test('Test_ControllerBindings_TestGetExtraOptions_ExpectSpecialControllersMapped
       },
    ]);
 });
+
 
 test('Test_CreateAnimalSpeciesSourceForKey_TestOnDisplayAndDefault_ExpectMatchingSources', () => {
    const originalDefault = SpeciesProvider.createAnimalSpeciesSource;
@@ -118,6 +122,7 @@ test('Test_CreateAnimalSpeciesSourceForKey_TestOnDisplayAndDefault_ExpectMatchin
       SpeciesProvider.createViewingAlertAnimalSpeciesSource = originalViewingAlert;
    }
 });
+
 
 test('Test_InitAnimalSpeciesAutocompletes_TestAnimalsRefs_ExpectControllersCreated', () => {
    const originalCreate = AnimalSpeciesController.createAnimalSpeciesAutocompleteController;
@@ -174,6 +179,7 @@ test('Test_InitAnimalSpeciesAutocompletes_TestAnimalsRefs_ExpectControllersCreat
    }
 });
 
+
 test('Test_CreateControllerOptions_TestExtraOptions_ExpectMerged', () => {
    const activatePanel = () => {};
    const options = ConsoleControllersBootstrapHelper.createControllerOptions({
@@ -190,6 +196,7 @@ test('Test_CreateControllerOptions_TestExtraOptions_ExpectMerged', () => {
    assert.deepEqual(options.occurrenceFilterController, { id: 'filter' });
 });
 
+
 test('Test_CreateControllerOptions_TestWithoutExtra_ExpectRefsOnly', () => {
    const options = ConsoleControllersBootstrapHelper.createControllerOptions({
       refs: { panelEl: { id: 'panel' } },
@@ -201,6 +208,7 @@ test('Test_CreateControllerOptions_TestWithoutExtra_ExpectRefsOnly', () => {
       activatePanel: null,
    });
 });
+
 
 test('Test_WireControllerBindings_TestStubbedBinding_ExpectCreateCalled', () => {
    const originalBindings = ConsoleControllersBootstrapHelper.CONTROLLER_BINDINGS;
@@ -237,9 +245,9 @@ test('Test_WireControllerBindings_TestStubbedBinding_ExpectCreateCalled', () => 
       });
 
       assert.equal(calls.length, 2);
-      assert.equal(calls[0].panelEl.id, 'off');
-      assert.equal(calls[0].activatePanel, activatePanel);
-      assert.deepEqual(calls[0].occurrenceFilterController, { id: 'filter' });
+      assert.equal(calls.at(Position.FIRST).panelEl.id, 'off');
+      assert.equal(calls.at(Position.FIRST).activatePanel, activatePanel);
+      assert.deepEqual(calls.at(Position.FIRST).occurrenceFilterController, { id: 'filter' });
       assert.deepEqual(calls[1], ['second', { id: 'on' }]);
    } finally {
       ConsoleControllersBootstrapHelper.CONTROLLER_BINDINGS = originalBindings;

@@ -3,12 +3,32 @@ from __future__ import annotations
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.routing.itinerary_schedule_window_partitioner import ItineraryScheduleWindowPartitioner
 from api.itinerary.routing.itinerary_stop import ItineraryStop
+from api.itinerary.scheduling.core.time_block import TimeBlock
+from api.itinerary.scheduling.core.time_block_builder import TimeBlockBuilder
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 
 
-ANCHOR_SECONDS = 9 * 60 * 60
-DAY_END_SECONDS = 17 * 60 * 60
-ARRIVAL_SECONDS = 11 * 60 * 60
+ANCHOR_TIME = '9:00 AM'
+DAY_END_TIME = '5:00 PM'
+ARRIVAL_TIME = '11:00 AM'
+
+
+def _seconds( schedule_time: str ) -> int:
+   seconds = DateValues.time_value_in_seconds( schedule_time )
+   assert seconds is not None
+   return seconds
+
+
+def _time_block( stop: ItineraryStop ) -> TimeBlock:
+   time_block = TimeBlockBuilder.from_schedule_times( stop.start_time, stop.end_time )
+   assert time_block is not None
+   return time_block
+
+
+ANCHOR_SECONDS = _seconds( ANCHOR_TIME )
+DAY_END_SECONDS = _seconds( DAY_END_TIME )
+ARRIVAL_SECONDS = _seconds( ARRIVAL_TIME )
 
 FIXED_ENCOUNTER_STOP = ItineraryStop(
    schedule_item_kind=ScheduleItemKind.WILD_ENCOUNTER,
@@ -97,6 +117,8 @@ HYENA_TALK_STOP = ItineraryStop(
 
 
 def Test_Partition_TestFixedEncounter_ExpectWindowsBeforeAndAfter() -> None:
+   encounter_block = _time_block( FIXED_ENCOUNTER_STOP )
+
    windows = ItineraryScheduleWindowPartitioner.partition(
       ANCHOR_SECONDS,
       DAY_END_SECONDS,
@@ -105,20 +127,22 @@ def Test_Partition_TestFixedEncounter_ExpectWindowsBeforeAndAfter() -> None:
    assert windows == [
       ItineraryScheduleWindow(
          start_seconds=ANCHOR_SECONDS,
-         end_seconds=11 * 60 * 60,
+         end_seconds=encounter_block.start_seconds,
          anchor_stop=FIXED_ENCOUNTER_STOP,
          opens_after_fixed_time_stop=False,
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
-         start_seconds=( 11 * 60 + 45 ) * 60,
+         start_seconds=encounter_block.end_seconds,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='n-3001' ),
+         start_walk_node_id=FIXED_ENCOUNTER_STOP.primary_walk_node_id() ),
    ]
 
 
 def Test_Partition_TestMidMorningRhinoEncounter_ExpectWindowsBeforeAndAfter() -> None:
+   encounter_block = _time_block( MIDMORNING_RHINO_ENCOUNTER_STOP )
+
    windows = ItineraryScheduleWindowPartitioner.partition(
       ANCHOR_SECONDS,
       DAY_END_SECONDS,
@@ -127,20 +151,22 @@ def Test_Partition_TestMidMorningRhinoEncounter_ExpectWindowsBeforeAndAfter() ->
    assert windows == [
       ItineraryScheduleWindow(
          start_seconds=ANCHOR_SECONDS,
-         end_seconds=9 * 60 * 60 + 52 * 60,
+         end_seconds=encounter_block.start_seconds,
          anchor_stop=MIDMORNING_RHINO_ENCOUNTER_STOP,
          opens_after_fixed_time_stop=False,
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
-         start_seconds=( 10 * 60 + 37 ) * 60,
+         start_seconds=encounter_block.end_seconds,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='n-3001' ),
+         start_walk_node_id=MIDMORNING_RHINO_ENCOUNTER_STOP.primary_walk_node_id() ),
    ]
 
 
 def Test_Partition_TestGuardiansTalk_ExpectWindowsBeforeAndAfter() -> None:
+   talk_block = _time_block( AFRICAN_LION_TALK_STOP )
+
    windows = ItineraryScheduleWindowPartitioner.partition(
       ANCHOR_SECONDS,
       DAY_END_SECONDS,
@@ -149,20 +175,23 @@ def Test_Partition_TestGuardiansTalk_ExpectWindowsBeforeAndAfter() -> None:
    assert windows == [
       ItineraryScheduleWindow(
          start_seconds=ANCHOR_SECONDS,
-         end_seconds=11 * 60 * 60,
+         end_seconds=talk_block.start_seconds,
          anchor_stop=AFRICAN_LION_TALK_STOP,
          opens_after_fixed_time_stop=False,
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
-         start_seconds=( 11 * 60 + 30 ) * 60,
+         start_seconds=talk_block.end_seconds,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='v-0436' ),
+         start_walk_node_id=AFRICAN_LION_TALK_STOP.primary_walk_node_id() ),
    ]
 
 
 def Test_Partition_TestAdjacentGuardiansTalks_ExpectWindowsBeforeZebraAndAfterCamel() -> None:
+   zebra_block = _time_block( ZEBRA_TALK_STOP )
+   camel_block = _time_block( CAMEL_TALK_STOP )
+
    windows = ItineraryScheduleWindowPartitioner.partition(
       ANCHOR_SECONDS,
       DAY_END_SECONDS,
@@ -171,20 +200,22 @@ def Test_Partition_TestAdjacentGuardiansTalks_ExpectWindowsBeforeZebraAndAfterCa
    assert windows == [
       ItineraryScheduleWindow(
          start_seconds=ANCHOR_SECONDS,
-         end_seconds=12 * 60 * 60,
+         end_seconds=zebra_block.start_seconds,
          anchor_stop=ZEBRA_TALK_STOP,
          opens_after_fixed_time_stop=False,
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
-         start_seconds=13 * 60 * 60,
+         start_seconds=camel_block.end_seconds,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='v-0044' ),
+         start_walk_node_id=CAMEL_TALK_STOP.primary_walk_node_id() ),
    ]
 
 
 def Test_Partition_TestUnpinnedAfternoonEncounter_ExpectWindowBeforeEncounter() -> None:
+   encounter_block = _time_block( BACTRIAN_CAMELS_ENCOUNTER_STOP )
+
    windows = ItineraryScheduleWindowPartitioner.partition(
       ANCHOR_SECONDS,
       DAY_END_SECONDS,
@@ -193,20 +224,22 @@ def Test_Partition_TestUnpinnedAfternoonEncounter_ExpectWindowBeforeEncounter() 
    assert windows == [
       ItineraryScheduleWindow(
          start_seconds=ANCHOR_SECONDS,
-         end_seconds=15 * 60 * 60 + 30 * 60,
+         end_seconds=encounter_block.start_seconds,
          anchor_stop=BACTRIAN_CAMELS_ENCOUNTER_STOP,
          opens_after_fixed_time_stop=False,
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
-         start_seconds=16 * 60 * 60,
+         start_seconds=encounter_block.end_seconds,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='v-0100' ),
+         start_walk_node_id=BACTRIAN_CAMELS_ENCOUNTER_STOP.primary_walk_node_id() ),
    ]
 
 
 def Test_Partition_TestOtterTalk_ExpectWindowsBeforeAndAfter() -> None:
+   talk_block = _time_block( OTTER_TALK_STOP )
+
    windows = ItineraryScheduleWindowPartitioner.partition(
       ANCHOR_SECONDS,
       DAY_END_SECONDS,
@@ -215,20 +248,23 @@ def Test_Partition_TestOtterTalk_ExpectWindowsBeforeAndAfter() -> None:
    assert windows == [
       ItineraryScheduleWindow(
          start_seconds=ANCHOR_SECONDS,
-         end_seconds=14 * 60 * 60,
+         end_seconds=talk_block.start_seconds,
          anchor_stop=OTTER_TALK_STOP,
          opens_after_fixed_time_stop=False,
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
-         start_seconds=14 * 60 * 60 + 30 * 60,
+         start_seconds=talk_block.end_seconds,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='v-0100' ),
+         start_walk_node_id=OTTER_TALK_STOP.primary_walk_node_id() ),
    ]
 
 
 def Test_Partition_TestTinyTourAndHyenaTalk_ExpectMiddleWindowForZoomobile() -> None:
+   tiny_tour_block = _time_block( TINY_TOUR_ENCOUNTER_STOP )
+   hyena_block = _time_block( HYENA_TALK_STOP )
+
    windows = ItineraryScheduleWindowPartitioner.partition(
       ANCHOR_SECONDS,
       DAY_END_SECONDS,
@@ -237,26 +273,29 @@ def Test_Partition_TestTinyTourAndHyenaTalk_ExpectMiddleWindowForZoomobile() -> 
    assert windows == [
       ItineraryScheduleWindow(
          start_seconds=ANCHOR_SECONDS,
-         end_seconds=11 * 60 * 60,
+         end_seconds=tiny_tour_block.start_seconds,
          anchor_stop=TINY_TOUR_ENCOUNTER_STOP,
          opens_after_fixed_time_stop=False,
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
-         start_seconds=11 * 60 * 60 + 30 * 60,
-         end_seconds=14 * 60 * 60,
+         start_seconds=tiny_tour_block.end_seconds,
+         end_seconds=hyena_block.start_seconds,
          anchor_stop=HYENA_TALK_STOP,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='n-discovery' ),
+         start_walk_node_id=TINY_TOUR_ENCOUNTER_STOP.primary_walk_node_id() ),
       ItineraryScheduleWindow(
-         start_seconds=14 * 60 * 60 + 30 * 60,
+         start_seconds=hyena_block.end_seconds,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='v-hyena' ),
+         start_walk_node_id=HYENA_TALK_STOP.primary_walk_node_id() ),
    ]
 
 
 def Test_Partition_TestCamelTalkAndEncounter_ExpectAfternoonWindowBetweenTalkAndEncounter() -> None:
+   camel_block = _time_block( CAMEL_TALK_STOP )
+   encounter_block = _time_block( BACTRIAN_CAMELS_ENCOUNTER_STOP )
+
    windows = ItineraryScheduleWindowPartitioner.partition(
       ARRIVAL_SECONDS,
       DAY_END_SECONDS,
@@ -265,20 +304,20 @@ def Test_Partition_TestCamelTalkAndEncounter_ExpectAfternoonWindowBetweenTalkAnd
    assert windows == [
       ItineraryScheduleWindow(
          start_seconds=ARRIVAL_SECONDS,
-         end_seconds=12 * 60 * 60 + 30 * 60,
+         end_seconds=camel_block.start_seconds,
          anchor_stop=CAMEL_TALK_STOP,
          opens_after_fixed_time_stop=False,
          start_walk_node_id=None ),
       ItineraryScheduleWindow(
-         start_seconds=13 * 60 * 60,
-         end_seconds=15 * 60 * 60 + 30 * 60,
+         start_seconds=camel_block.end_seconds,
+         end_seconds=encounter_block.start_seconds,
          anchor_stop=BACTRIAN_CAMELS_ENCOUNTER_STOP,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='v-0044' ),
+         start_walk_node_id=CAMEL_TALK_STOP.primary_walk_node_id() ),
       ItineraryScheduleWindow(
-         start_seconds=16 * 60 * 60,
+         start_seconds=encounter_block.end_seconds,
          end_seconds=DAY_END_SECONDS,
          anchor_stop=None,
          opens_after_fixed_time_stop=True,
-         start_walk_node_id='v-0100' ),
+         start_walk_node_id=BACTRIAN_CAMELS_ENCOUNTER_STOP.primary_walk_node_id() ),
    ]

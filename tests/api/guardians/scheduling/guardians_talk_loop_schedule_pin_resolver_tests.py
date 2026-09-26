@@ -158,10 +158,12 @@ def Test_Resolve_TestUnmappedTalk_ExpectNone(
       start_time='10:00 AM',
       end_time='10:30 AM' )
 
-   assert GuardiansTalkLoopSchedulePinResolver.resolve(
+   result = GuardiansTalkLoopSchedulePinResolver.resolve(
       None,
       guardians_talk,
-      _itinerary_stop( item_key='Not On Master Route' ) ) is None
+      _itinerary_stop( item_key='Not On Master Route' ) )
+
+   assert result is None
 
 
 def Test_Resolve_TestAfricanLionTalk_ExpectSavannaLoopPin(
@@ -274,7 +276,7 @@ def Test_Resolve_TestInvalidStopTimes_ExpectNone() -> None:
       start_time='10:00 AM',
       end_time='10:30 AM' )
 
-   assert GuardiansTalkLoopSchedulePinResolver.resolve(
+   result = GuardiansTalkLoopSchedulePinResolver.resolve(
       None,
       guardians_talk,
       ItineraryStop(
@@ -283,4 +285,6 @@ def Test_Resolve_TestInvalidStopTimes_ExpectNone() -> None:
          walk_node_ids=( 'v-0000', ),
          is_fixed_time=True,
          start_time=None,
-         end_time='10:30 AM' ) ) is None
+         end_time='10:30 AM' ) )
+
+   assert result is None

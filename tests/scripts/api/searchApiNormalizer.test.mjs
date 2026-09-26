@@ -2,96 +2,128 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { SearchApiNormalizer } from '../../../scripts/api/searchApiNormalizer.js';
+import { ValueNormalizer } from '../../../scripts/api/valueNormalizer.js';
+
 
 test('Test_NormalizeAttractionRow_TestFlagsAndTimes_ExpectNormalized', () => {
-   assert.deepEqual(
-      SearchApiNormalizer.normalizeAttractionRow({
-         name: '  Conservation Carousel  ',
-         free_with_admission: true,
-         part_of_seasonal_attraction: 1,
-         is_closed: false,
-         is_also_transportation: true,
-         route_duration_minutes: '12',
-         info_link: '  https://example.com  ',
-         open_time: '  10:00  ',
-         close_time: '  ',
-         region: 'Canada',
-      }),
-      {
-         name: 'Conservation Carousel',
-         free_with_admission: true,
-         part_of_seasonal_attraction: false,
-         is_closed: false,
-         is_also_transportation: true,
-         route_duration_minutes: 12,
-         info_link: 'https://example.com',
-         open_time: '10:00',
-         close_time: null,
-         region: 'Canada',
-      }
-   );
+   const name = 'Conservation Carousel';
+   const freeWithAdmission = true;
+   const isClosed = false;
+   const isAlsoTransportation = true;
+   const routeDurationMinutes = '12';
+   const infoLink = 'https://example.com';
+   const openTime = '10:00';
+   const region = 'Canada';
+   const row = {
+      name: `  ${name}  `,
+      free_with_admission: freeWithAdmission,
+      part_of_seasonal_attraction: 1,
+      is_closed: isClosed,
+      is_also_transportation: isAlsoTransportation,
+      route_duration_minutes: routeDurationMinutes,
+      info_link: `  ${infoLink}  `,
+      open_time: `  ${openTime}  `,
+      close_time: '  ',
+      region,
+   };
+
+   const attraction = SearchApiNormalizer.normalizeAttractionRow(row);
+
+   assert.deepEqual(attraction, {
+      name,
+      free_with_admission: freeWithAdmission,
+      part_of_seasonal_attraction: ValueNormalizer.asBoolean(row.part_of_seasonal_attraction),
+      is_closed: isClosed,
+      is_also_transportation: isAlsoTransportation,
+      route_duration_minutes: Number(routeDurationMinutes),
+      info_link: infoLink,
+      open_time: openTime,
+      close_time: null,
+      region,
+   });
 });
+
 
 test('Test_NormalizeGuardiansTalkRow_TestLinkedAnimals_ExpectNormalized', () => {
-   assert.deepEqual(
-      SearchApiNormalizer.normalizeGuardiansTalkRow({
-         name: '  Lion Talk  ',
-         location: '  Theatre  ',
-         start_time: '  11:00  ',
-         linked_animals: [{ species: '  African Lion  ', exhibit: '  African Savanna  ' }],
-      }),
-      {
-         name: 'Lion Talk',
-         location: 'Theatre',
-         start_time: '11:00',
-         linked_animals: [{ species: 'African Lion', exhibit: 'African Savanna' }],
-      }
-   );
+   const name = 'Lion Talk';
+   const location = 'Theatre';
+   const startTime = '11:00';
+   const species = 'African Lion';
+   const exhibit = 'African Savanna';
+   const row = {
+      name: `  ${name}  `,
+      location: `  ${location}  `,
+      start_time: `  ${startTime}  `,
+      linked_animals: [{ species: `  ${species}  `, exhibit: `  ${exhibit}  ` }],
+   };
+
+   const talk = SearchApiNormalizer.normalizeGuardiansTalkRow(row);
+
+   assert.deepEqual(talk, {
+      name,
+      location,
+      start_time: startTime,
+      linked_animals: [{ species, exhibit }],
+   });
 });
+
 
 test('Test_NormalizeWildEncounterRow_TestFields_ExpectNormalized', () => {
-   assert.deepEqual(
-      SearchApiNormalizer.normalizeWildEncounterRow({
-         name: '  Red Panda  ',
-         meeting_spot: '  Pavilion  ',
-         start_time: '  13:00  ',
-         link: '  ',
-      }),
-      {
-         name: 'Red Panda',
-         meeting_spot: 'Pavilion',
-         start_time: '13:00',
-         link: null,
-      }
-   );
+   const name = 'Red Panda';
+   const meetingSpot = 'Pavilion';
+   const startTime = '13:00';
+   const row = {
+      name: `  ${name}  `,
+      meeting_spot: `  ${meetingSpot}  `,
+      start_time: `  ${startTime}  `,
+      link: '  ',
+   };
+
+   const encounter = SearchApiNormalizer.normalizeWildEncounterRow(row);
+
+   assert.deepEqual(encounter, {
+      name,
+      meeting_spot: meetingSpot,
+      start_time: startTime,
+      link: null,
+   });
 });
+
 
 test('Test_NormalizeTransportationRow_TestFlags_ExpectNormalized', () => {
-   assert.deepEqual(
-      SearchApiNormalizer.normalizeTransportationRow({
-         name: '  Zoomobile  ',
-         free_with_admission: true,
-         is_also_attraction: false,
-         info_link: null,
-         open_time: '09:00',
-         close_time: '17:00',
-      }),
-      {
-         name: 'Zoomobile',
-         free_with_admission: true,
-         is_also_attraction: false,
-         info_link: null,
-         open_time: '09:00',
-         close_time: '17:00',
-      }
-   );
+   const name = 'Zoomobile';
+   const freeWithAdmission = true;
+   const isAlsoAttraction = false;
+   const infoLink = null;
+   const openTime = '09:00';
+   const closeTime = '17:00';
+   const row = {
+      name: `  ${name}  `,
+      free_with_admission: freeWithAdmission,
+      is_also_attraction: isAlsoAttraction,
+      info_link: infoLink,
+      open_time: openTime,
+      close_time: closeTime,
+   };
+
+   const transportation = SearchApiNormalizer.normalizeTransportationRow(row);
+
+   assert.deepEqual(transportation, {
+      name,
+      free_with_admission: freeWithAdmission,
+      is_also_attraction: isAlsoAttraction,
+      info_link: infoLink,
+      open_time: openTime,
+      close_time: closeTime,
+   });
 });
 
+
 test('Test_NormalizeSearchEndpointResponse_TestOtherEndpoint_ExpectPassthrough', () => {
+   const endpoint = '/other';
    const response = { ok: true };
 
-   assert.equal(
-      SearchApiNormalizer.normalizeSearchEndpointResponse('/other', response),
-      response
-   );
+   const normalized = SearchApiNormalizer.normalizeSearchEndpointResponse(endpoint, response);
+
+   assert.equal(normalized, response);
 });

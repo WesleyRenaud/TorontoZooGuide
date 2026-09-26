@@ -21,8 +21,8 @@ KANGAROO_LINK = {
 }
 
 KANGAROO_SPECIES_EXHIBIT = SpeciesExhibitKey.from_values(
-   'Western Grey Kangaroo',
-   'Australasia Outdoor' )
+   KANGAROO_LINK[ 'species' ],
+   KANGAROO_LINK[ 'exhibit' ] )
 
 
 def _validated_itinerary(
@@ -51,95 +51,100 @@ def stub_attraction_animal_links( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 def Test_AttractionsWithoutMatchingAnimal_TestLinkedAndUnlinked_ExpectOnlyLinkedMissing(
       stub_attraction_animal_links: None ) -> None:
+   carousel = AttractionDiff(
+      name=CAROUSEL,
+      old_likelihood=None,
+      new_likelihood=100 )
+   kangaroo_walk = AttractionDiff(
+      name=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   validated = _validated_itinerary( attractions=[ carousel, kangaroo_walk ] )
+
    missing = AttractionWithoutAnimalWarningBuilder.attractions_without_matching_animal(
-      _validated_itinerary(
-         attractions=[
-            AttractionDiff(
-               name=CAROUSEL,
-               old_likelihood=None,
-               new_likelihood=100 ),
-            AttractionDiff(
-               name=KANGAROO_WALK_THRU,
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ] ),
+      validated,
       None )
 
-   assert [ attraction.name for attraction in missing ] == [ KANGAROO_WALK_THRU ]
+   assert [ attraction.name for attraction in missing ] == [ kangaroo_walk.name ]
 
 
 def Test_AttractionsWithoutMatchingAnimal_TestWrongAnimal_ExpectLinkedAttractionMissing(
       stub_attraction_animal_links: None ) -> None:
+   animal = AnimalDiff(
+      species='Amur Tiger',
+      exhibit='Eurasia Wilds',
+      old_likelihood=None,
+      new_likelihood=100 )
+   kangaroo_walk = AttractionDiff(
+      name=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   validated = _validated_itinerary(
+      animals=[ animal ],
+      attractions=[ kangaroo_walk ] )
+
    missing = AttractionWithoutAnimalWarningBuilder.attractions_without_matching_animal(
-      _validated_itinerary(
-         animals=[
-            AnimalDiff(
-               species='Amur Tiger',
-               exhibit='Eurasia Wilds',
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ],
-         attractions=[
-            AttractionDiff(
-               name=KANGAROO_WALK_THRU,
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ] ),
+      validated,
       None )
 
-   assert [ attraction.name for attraction in missing ] == [ KANGAROO_WALK_THRU ]
+   assert [ attraction.name for attraction in missing ] == [ kangaroo_walk.name ]
 
 
 def Test_NewlyAddedWithoutMatchingAnimal_TestSavedAttraction_ExpectEmpty(
       stub_attraction_animal_links: None ) -> None:
+   kangaroo_walk = AttractionDiff(
+      name=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   validated = _validated_itinerary( attractions=[ kangaroo_walk ] )
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-20',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      attraction_rows=[
+         ItineraryAttractionRecord(
+            attraction=kangaroo_walk.name,
+            old_likelihood=None,
+            new_likelihood=100 ),
+      ] )
+
    missing = AttractionWithoutAnimalWarningBuilder.newly_added_without_matching_animal(
-      _validated_itinerary(
-         attractions=[
-            AttractionDiff(
-               name=KANGAROO_WALK_THRU,
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ] ),
+      validated,
       None,
-      saved_itinerary=SavedItinerary(
-         date_value='2026-06-20',
-         arrival_time='9:30 AM',
-         departure_time='5:00 PM',
-         attraction_rows=[
-            ItineraryAttractionRecord(
-               attraction=KANGAROO_WALK_THRU,
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ] ) )
+      saved_itinerary=saved_itinerary )
 
    assert missing == []
 
 
 def Test_IsRequired_TestConfirmingFlag_ExpectFalse(
       stub_attraction_animal_links: None ) -> None:
-   assert AttractionWithoutAnimalWarningBuilder.is_required(
-      _validated_itinerary(
-         attractions=[
-            AttractionDiff(
-               name=KANGAROO_WALK_THRU,
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ] ),
+   kangaroo_walk = AttractionDiff(
+      name=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   validated = _validated_itinerary( attractions=[ kangaroo_walk ] )
+   confirming_attraction_without_animal = True
+
+   required = AttractionWithoutAnimalWarningBuilder.is_required(
+      validated,
       None,
-      confirming_attraction_without_animal=True ) is False
+      confirming_attraction_without_animal=confirming_attraction_without_animal )
+
+   assert required is False
 
 
 def Test_BuildIssueFromAttractions_TestLinkedAttraction_ExpectWithoutAnimalIssue() -> None:
+   kangaroo_walk = AttractionDiff(
+      name=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   attractions = [ kangaroo_walk ]
+
    issue = AttractionWithoutAnimalWarningBuilder.build_issue_from_attractions(
-      [
-         AttractionDiff(
-            name=KANGAROO_WALK_THRU,
-            old_likelihood=None,
-            new_likelihood=100 ),
-      ] )
+      attractions )
 
    assert issue.code == ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL
-   assert [ item.name for item in issue.items ] == [ KANGAROO_WALK_THRU ]
+   assert [ item.name for item in issue.items ] == [ kangaroo_walk.name ]
 
 
 def Test_AttractionsWithoutMatchingAnimal_TestMatchingAnimal_ExpectEmpty(
@@ -148,22 +153,21 @@ def Test_AttractionsWithoutMatchingAnimal_TestMatchingAnimal_ExpectEmpty(
       AttractionAnimalProvider,
       'fetch_attraction_linked_animals',
       lambda conn, name: [ KANGAROO_SPECIES_EXHIBIT ] )
+   animal = AnimalDiff(
+      species=KANGAROO_SPECIES_EXHIBIT.species,
+      exhibit=KANGAROO_SPECIES_EXHIBIT.exhibit,
+      old_likelihood=None,
+      new_likelihood=100 )
+   kangaroo_walk = AttractionDiff(
+      name=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   validated = _validated_itinerary(
+      animals=[ animal ],
+      attractions=[ kangaroo_walk ] )
 
    missing = AttractionWithoutAnimalWarningBuilder.attractions_without_matching_animal(
-      _validated_itinerary(
-         animals=[
-            AnimalDiff(
-               species='Western Grey Kangaroo',
-               exhibit='Australasia Outdoor',
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ],
-         attractions=[
-            AttractionDiff(
-               name=KANGAROO_WALK_THRU,
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ] ),
+      validated,
       None )
 
    assert missing == []
@@ -171,30 +175,33 @@ def Test_AttractionsWithoutMatchingAnimal_TestMatchingAnimal_ExpectEmpty(
 
 def Test_NewlyAddedWithoutMatchingAnimal_TestNoSavedItinerary_ExpectMissing(
       stub_attraction_animal_links: None ) -> None:
+   kangaroo_walk = AttractionDiff(
+      name=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   validated = _validated_itinerary( attractions=[ kangaroo_walk ] )
+
    missing = AttractionWithoutAnimalWarningBuilder.newly_added_without_matching_animal(
-      _validated_itinerary(
-         attractions=[
-            AttractionDiff(
-               name=KANGAROO_WALK_THRU,
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ] ),
+      validated,
       None,
       saved_itinerary=None )
 
-   assert [ item.name for item in missing ] == [ KANGAROO_WALK_THRU ]
+   assert [ item.name for item in missing ] == [ kangaroo_walk.name ]
 
 
 def Test_IsRequired_TestMissingAnimalWithoutConfirmation_ExpectTrue(
       stub_attraction_animal_links: None ) -> None:
-   assert AttractionWithoutAnimalWarningBuilder.is_required(
-      _validated_itinerary(
-         attractions=[
-            AttractionDiff(
-               name=KANGAROO_WALK_THRU,
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ] ),
+   kangaroo_walk = AttractionDiff(
+      name=KANGAROO_WALK_THRU,
+      old_likelihood=None,
+      new_likelihood=100 )
+   validated = _validated_itinerary( attractions=[ kangaroo_walk ] )
+   confirming_attraction_without_animal = False
+
+   required = AttractionWithoutAnimalWarningBuilder.is_required(
+      validated,
       None,
-      confirming_attraction_without_animal=False,
-      saved_itinerary=None ) is True
+      confirming_attraction_without_animal=confirming_attraction_without_animal,
+      saved_itinerary=None )
+
+   assert required is True

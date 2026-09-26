@@ -23,6 +23,7 @@ from api.itinerary.scheduling.bulk.loop_window_packer import LoopWindowPacker
 from api.itinerary.scheduling.bulk.master_route_loop_scheduler import MasterRouteLoopScheduler
 from api.itinerary.scheduling.bulk.prepared_loop_schedule_unit import PreparedLoopScheduleUnit
 from api.itinerary.scheduling.bulk.timed_loop_schedule_stop import TimedLoopScheduleStop
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.data_access.walk_graph_provider import WalkGraphProvider
 from api.walk_graph.domain.walk_graph import WalkGraph
@@ -36,21 +37,21 @@ AFRICA_SAVANNA_LOOP_ID = 'africa_savanna'
 ZEBRA_TALK_LOOP_ID = 'africa_savanna_zebra_talk'
 AMERICAS_TALK_LOOP_ID = 'americas_otter_talk'
 SPLASH_ISLAND = 'Splash Island'
-TALK_START_SECONDS = 11 * 3600
+TALK_START_SECONDS = DateValues.time_value_in_seconds( '11:00 AM' )
 GIRAFFE_DWELL_SECONDS = 8 * 60
 GIRAFFE_APPROACH_SECONDS = 6 * 60
 AMERICAS_APPROACH_SECONDS = 10 * 60
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
 AUSTRALASIA_LOOP_ID = 'australasia'
 ZOOMOBILE_LOOP_ID = 'zoomobile'
-KANGAROO_OPEN_SECONDS = 11 * 3600
-KANGAROO_CLOSE_SECONDS = 15 * 3600
-ZOOMOBILE_OPEN_SECONDS = 10 * 3600
-ZOOMOBILE_CLOSE_SECONDS = 18 * 3600
-CAMEL_TALK_START_SECONDS = 12 * 3600 + 30 * 60
+KANGAROO_OPEN_SECONDS = DateValues.time_value_in_seconds( '11:00 AM' )
+KANGAROO_CLOSE_SECONDS = DateValues.time_value_in_seconds( '3:00 PM' )
+ZOOMOBILE_OPEN_SECONDS = DateValues.time_value_in_seconds( '10:00 AM' )
+ZOOMOBILE_CLOSE_SECONDS = DateValues.time_value_in_seconds( '6:00 PM' )
+CAMEL_TALK_START_SECONDS = DateValues.time_value_in_seconds( '12:30 PM' )
 KANGAROO_DWELL_SECONDS = 60 * 60
 ZOOMOBILE_DWELL_SECONDS = 75 * 60
-ARRIVAL_SECONDS = 11 * 3600
+ARRIVAL_SECONDS = DateValues.time_value_in_seconds( '11:00 AM' )
 
 
 def _node( node_id: str, x_px: float, y_px: float ) -> WalkGraphNode:
@@ -185,17 +186,17 @@ def Test_WaitFillerPackEndSeconds_TestInactiveSoftPins_ExpectReservedPackEnd() -
       loop_id='face-painting',
       viewing_spot_index=0,
       attraction_name='Face Painting',
-      open_seconds=11 * 3600,
-      close_seconds=16 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    zoomobile = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name='Zoomobile',
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ active, zoomobile ] )
    remaining_units = [
       PreparedLoopScheduleUnit(
@@ -211,12 +212,12 @@ def Test_WaitFillerPackEndSeconds_TestInactiveSoftPins_ExpectReservedPackEnd() -
       remaining_units=remaining_units,
       active_soft_pin_loop_ids={ 'face-painting' },
       hard_pinned_loop_ids=set(),
-      active_open_seconds=11 * 3600,
+      active_open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       hard_pin_deadline_seconds=None,
-      cursor_seconds=9 * 3600 + 15 * 60 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:15 AM' ) )
 
-   assert planned_active_start == 11 * 3600
-   assert wait_pack_end == 11 * 3600 - 30 * 60
+   assert planned_active_start == DateValues.time_value_in_seconds( '11:00 AM' )
+   assert wait_pack_end == DateValues.time_value_in_seconds( '11:00 AM' ) - 30 * 60
 
 
 def Test_WaitFillerPackEndSeconds_TestHardPinDeadline_ExpectCascadedPackEnd() -> None:
@@ -224,17 +225,17 @@ def Test_WaitFillerPackEndSeconds_TestHardPinDeadline_ExpectCascadedPackEnd() ->
       loop_id='face-painting',
       viewing_spot_index=0,
       attraction_name='Face Painting',
-      open_seconds=11 * 3600,
-      close_seconds=16 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    carousel = AttractionHoursSoftPin(
       loop_id='carousel',
       viewing_spot_index=0,
       attraction_name='Conservation Carousel',
-      open_seconds=9 * 3600 + 30 * 60,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ active, carousel ] )
    remaining_units = [
       PreparedLoopScheduleUnit(
@@ -250,11 +251,11 @@ def Test_WaitFillerPackEndSeconds_TestHardPinDeadline_ExpectCascadedPackEnd() ->
       remaining_units=remaining_units,
       active_soft_pin_loop_ids={ 'face-painting' },
       hard_pinned_loop_ids=set(),
-      active_open_seconds=11 * 3600,
-      hard_pin_deadline_seconds=12 * 3600,
-      cursor_seconds=9 * 3600 + 15 * 60 )
+      active_open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      hard_pin_deadline_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:15 AM' ) )
 
-   assert planned_active_start == 12 * 3600 - 20 * 60
+   assert planned_active_start == DateValues.time_value_in_seconds( '12:00 PM' ) - 20 * 60
    assert wait_pack_end == planned_active_start - 15 * 60
 
 
@@ -263,17 +264,17 @@ def Test_WaitFillerPackEndSeconds_TestSplashOpenDeadline_ExpectZoomobilePackedBe
       loop_id='splash',
       viewing_spot_index=0,
       attraction_name=SPLASH_ISLAND,
-      open_seconds=12 * 3600,
-      close_seconds=16 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    zoomobile = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name='Zoomobile',
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=10 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ splash, zoomobile ] )
    remaining_units = [
       PreparedLoopScheduleUnit(
@@ -289,21 +290,21 @@ def Test_WaitFillerPackEndSeconds_TestSplashOpenDeadline_ExpectZoomobilePackedBe
       remaining_units=remaining_units,
       active_soft_pin_loop_ids={ 'splash' },
       hard_pinned_loop_ids=set(),
-      active_open_seconds=12 * 3600,
+      active_open_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
       hard_pin_deadline_seconds=None,
-      cursor_seconds=10 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '10:00 AM' ) )
 
-   assert planned_active_start == 12 * 3600
-   assert wait_pack_end == 12 * 3600 - 75 * 60
+   assert planned_active_start == DateValues.time_value_in_seconds( '12:00 PM' )
+   assert wait_pack_end == DateValues.time_value_in_seconds( '12:00 PM' ) - 75 * 60
 
 
 def Test_DrainCascadedInactiveSoftPinLoopUnits_TestNoActiveOpen_ExpectNoop() -> None:
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[] )
 
-   assert MasterRouteLoopScheduler._drain_cascaded_inactive_soft_pin_loop_units(
+   result = MasterRouteLoopScheduler._drain_cascaded_inactive_soft_pin_loop_units(
       object(),
       [],
       schedule_window,
@@ -311,10 +312,12 @@ def Test_DrainCascadedInactiveSoftPinLoopUnits_TestNoActiveOpen_ExpectNoop() -> 
       hard_pinned_loop_ids=set(),
       pinned_earliest_start_cache={},
       blockers=[],
-      cursor_seconds=9 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       current_node_id='entrance',
       walk_graph=object(),
-      cascade_end_seconds=11 * 3600 ) == ( 9 * 3600, 'entrance' )
+      cascade_end_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) )
+
+   assert result == ( DateValues.time_value_in_seconds( '9:00 AM' ), 'entrance' )
 
 
 def Test_DrainCascadedInactiveSoftPinLoopUnits_TestUnreadyUnit_ExpectNoop() -> None:
@@ -322,40 +325,42 @@ def Test_DrainCascadedInactiveSoftPinLoopUnits_TestUnreadyUnit_ExpectNoop() -> N
       loop_id='face-painting',
       viewing_spot_index=0,
       attraction_name='Face Painting',
-      open_seconds=11 * 3600,
-      close_seconds=16 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    carousel = AttractionHoursSoftPin(
       loop_id='carousel',
       viewing_spot_index=0,
       attraction_name='Conservation Carousel',
-      open_seconds=9 * 3600 + 30 * 60,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    zoomobile = AttractionHoursSoftPin(
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name='Zoomobile',
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ active, carousel, zoomobile ] )
    unready = PreparedLoopScheduleUnit(
       unit=_loop_unit( 'carousel' ),
       occupied_seconds=15 * 60 )
 
-   assert MasterRouteLoopScheduler._drain_cascaded_inactive_soft_pin_loop_units(
+   result = MasterRouteLoopScheduler._drain_cascaded_inactive_soft_pin_loop_units(
       object(),
       [ unready ],
       schedule_window,
       active_soft_pin_loop_ids={ 'face-painting' },
       hard_pinned_loop_ids=set(),
-      pinned_earliest_start_cache={ id( unready ): 10 * 3600 },
+      pinned_earliest_start_cache={ id( unready ): DateValues.time_value_in_seconds( '10:00 AM' ) },
       blockers=[],
-      cursor_seconds=9 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       current_node_id='entrance',
       walk_graph=object(),
-      cascade_end_seconds=11 * 3600 ) == ( 9 * 3600, 'entrance' )
+      cascade_end_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) )
+
+   assert result == ( DateValues.time_value_in_seconds( '9:00 AM' ), 'entrance' )
 
 
 def Test_EarliestPinnedLoopWaitSeconds_TestMixedPinnedUnits_ExpectEarliestAfterCursor() -> None:
@@ -370,7 +375,7 @@ def Test_EarliestPinnedLoopWaitSeconds_TestMixedPinnedUnits_ExpectEarliestAfterC
       remaining_units,
       { ZEBRA_TALK_LOOP_ID },
       pinned_earliest_start_cache=pinned_cache,
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    assert wait_seconds == TALK_START_SECONDS
 
@@ -395,8 +400,8 @@ def Test_NonPinnedPackingWindow_TestPinnedTalkBeforeWindowEnd_ExpectCappedEnd() 
    giraffe = _giraffe_prepared_unit()
    zebra_talk = _zebra_talk_prepared_unit()
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
    pinned_cache = {
       id( zebra_talk ): TALK_START_SECONDS,
    }
@@ -406,7 +411,7 @@ def Test_NonPinnedPackingWindow_TestPinnedTalkBeforeWindowEnd_ExpectCappedEnd() 
       remaining_units=[ giraffe, zebra_talk ],
       pinned_loop_ids={ ZEBRA_TALK_LOOP_ID },
       pinned_earliest_start_cache=pinned_cache,
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    assert capped_window.end_seconds == TALK_START_SECONDS
    assert capped_window.start_seconds == schedule_window.start_seconds
@@ -433,15 +438,15 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestFreeLoopBeforeTalk_ExpectRig
          sqlite3.connect( ':memory:' ),
          remaining_units=remaining_units,
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
          pinned_loop_ids={ ZEBRA_TALK_LOOP_ID },
          pinned_earliest_start_cache=pinned_cache,
          hours_by_attraction_name={},
          blockers=[],
          walk_graph=TEST_GRAPH,
          window_state=LoopScheduleWindowState(
-            cursor_seconds=9 * 3600,
+            cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
             current_node_id=ENTRANCE_NODE_ID,
             departure_side_cluster_id=None ),
          remaining_animals=[] ) )
@@ -484,15 +489,15 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestApproachToPinnedLoop_ExpectT
          sqlite3.connect( ':memory:' ),
          remaining_units=remaining_units,
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
          pinned_loop_ids={ AMERICAS_TALK_LOOP_ID },
          pinned_earliest_start_cache=pinned_cache,
          hours_by_attraction_name={},
          blockers=[],
          walk_graph=TEST_GRAPH,
          window_state=LoopScheduleWindowState(
-            cursor_seconds=9 * 3600,
+            cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
             current_node_id=ENTRANCE_NODE_ID,
             departure_side_cluster_id=None ),
          remaining_animals=[] ) )
@@ -511,7 +516,7 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestMissingUntilUnit_ExpectUncha
    americas_talk = _americas_talk_prepared_unit()
    remaining_units = [ giraffe, americas_talk ]
    window_state = LoopScheduleWindowState(
-      cursor_seconds=9 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       current_node_id=ENTRANCE_NODE_ID,
       departure_side_cluster_id=None )
 
@@ -525,8 +530,8 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestMissingUntilUnit_ExpectUncha
          sqlite3.connect( ':memory:' ),
          remaining_units=remaining_units,
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
          pinned_loop_ids={ AMERICAS_TALK_LOOP_ID },
          pinned_earliest_start_cache={
             id( americas_talk ): TALK_START_SECONDS + 3600,
@@ -538,7 +543,7 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestMissingUntilUnit_ExpectUncha
          remaining_animals=[] ) )
 
    assert not should_abort
-   assert next_cursor_seconds == 9 * 3600
+   assert next_cursor_seconds == DateValues.time_value_in_seconds( '9:00 AM' )
    assert remaining_units == [ giraffe, americas_talk ]
 
 
@@ -546,7 +551,7 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestNoPinnedDeadline_ExpectUncha
    giraffe = _giraffe_prepared_unit()
    remaining_units = [ giraffe ]
    window_state = LoopScheduleWindowState(
-      cursor_seconds=9 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       current_node_id=ENTRANCE_NODE_ID,
       departure_side_cluster_id=None )
 
@@ -555,8 +560,8 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestNoPinnedDeadline_ExpectUncha
          sqlite3.connect( ':memory:' ),
          remaining_units=remaining_units,
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
          pinned_loop_ids=set(),
          pinned_earliest_start_cache={},
          hours_by_attraction_name={},
@@ -566,7 +571,7 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestNoPinnedDeadline_ExpectUncha
          remaining_animals=[] ) )
 
    assert not should_abort
-   assert next_cursor_seconds == 9 * 3600
+   assert next_cursor_seconds == DateValues.time_value_in_seconds( '9:00 AM' )
    assert remaining_units == [ giraffe ]
 
 
@@ -583,7 +588,7 @@ def Test_ActiveSoftPinLoopIds_TestKangarooAndZoomobile_ExpectKangarooActivated()
 def Test_InactiveSoftPinLoopIdsBeforeActive_TestZoomobileBeforeKangarooOpen_ExpectZoomobileInactive() -> None:
    schedule_window = ItineraryScheduleWindow(
       start_seconds=ARRIVAL_SECONDS,
-      end_seconds=17 * 3600,
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[
          _kangaroo_soft_pin(),
          _zoomobile_soft_pin(),
@@ -609,7 +614,7 @@ def Test_InactiveSoftPinLoopIdsBeforeActive_TestZoomobileBeforeKangarooOpen_Expe
 def Test_WaitFillerPackEndSeconds_TestKangarooWalkThruAndCamelTalk_ExpectZoomobileReservedBeforeKangarooPlaces() -> None:
    schedule_window = ItineraryScheduleWindow(
       start_seconds=ARRIVAL_SECONDS,
-      end_seconds=17 * 3600,
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[
          _kangaroo_soft_pin(),
          _zoomobile_soft_pin(),
@@ -643,11 +648,11 @@ LION_ANIMAL = ItineraryAnimalRecord(
    old_likelihood=None,
    new_likelihood=100,
 )
-SCHEDULE_START_SECONDS = 9 * 3600
-SCHEDULE_END_SECONDS = 17 * 3600
+SCHEDULE_START_SECONDS = DateValues.time_value_in_seconds( '9:00 AM' )
+SCHEDULE_END_SECONDS = DateValues.time_value_in_seconds( '5:00 PM' )
 HARD_PIN_LOOP_ID = 'africa_savanna_talk'
-HARD_PIN_READY_SECONDS = 11 * 3600
-HARD_PIN_DRAIN_CURSOR_SECONDS = 11 * 3600 + 30 * 60
+HARD_PIN_READY_SECONDS = DateValues.time_value_in_seconds( '11:00 AM' )
+HARD_PIN_DRAIN_CURSOR_SECONDS = DateValues.time_value_in_seconds( '11:30 AM' )
 
 def Test_Schedule_TestPrepareUnitsReturnsNone_ExpectAnimalsReturned(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -893,11 +898,11 @@ def Test_Schedule_TestDeferFreePackingAfterAnchor_ExpectEarlyTrueSkipsAbort(
 
 def Test_PackingWindowWithActiveSoftPinTailReserve_TestSoftOnlyUnit_ExpectReservedEnd() -> None:
    packing_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] )
    kangaroo_unit = PreparedLoopScheduleUnit(
       unit=_loop_unit( AUSTRALASIA_LOOP_ID ),
@@ -910,18 +915,18 @@ def Test_PackingWindowWithActiveSoftPinTailReserve_TestSoftOnlyUnit_ExpectReserv
       active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
       hard_pinned_loop_ids=set(),
       pinned_earliest_start_cache={},
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    assert reserved.end_seconds == KANGAROO_CLOSE_SECONDS - KANGAROO_DWELL_SECONDS
 
 
 def Test_PackingWindowWithActiveSoftPinTailReserve_TestNoSoftUnits_ExpectUnchanged() -> None:
    packing_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] )
 
    reserved = MasterRouteLoopScheduler._packing_window_with_active_soft_pin_tail_reserve(
@@ -931,18 +936,18 @@ def Test_PackingWindowWithActiveSoftPinTailReserve_TestNoSoftUnits_ExpectUnchang
       active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
       hard_pinned_loop_ids=set(),
       pinned_earliest_start_cache={},
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    assert reserved is packing_window
 
 
 def Test_PackingWindowWithActiveSoftPinTailReserve_TestHardPinOnly_ExpectUnchanged() -> None:
    packing_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] )
 
    reserved = MasterRouteLoopScheduler._packing_window_with_active_soft_pin_tail_reserve(
@@ -956,15 +961,15 @@ def Test_PackingWindowWithActiveSoftPinTailReserve_TestHardPinOnly_ExpectUnchang
       active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
       hard_pinned_loop_ids={ AUSTRALASIA_LOOP_ID },
       pinned_earliest_start_cache={},
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    assert reserved is packing_window
 
 
 def Test_InactiveSoftPinLoopIdsOpeningBeforeActive_TestZoomobileBeforeKangaroo_ExpectZoomobile() -> None:
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin(), _zoomobile_soft_pin() ] )
    remaining_units = [
       PreparedLoopScheduleUnit(
@@ -979,7 +984,7 @@ def Test_InactiveSoftPinLoopIdsOpeningBeforeActive_TestZoomobileBeforeKangaroo_E
       schedule_window,
       remaining_units,
       active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    assert inactive == { ZOOMOBILE_LOOP_ID }
 
@@ -1000,19 +1005,19 @@ def Test_BuildConstrainedEarliestStartCache_TestHardAndSoft_ExpectMaxStarts(
    monkeypatch.setattr(
       LoopUnitPinScheduler,
       'earliest_start_seconds',
-      lambda *_args, **_kwargs: 11 * 3600 )
+      lambda *_args, **_kwargs: DateValues.time_value_in_seconds( '11:00 AM' ) )
    monkeypatch.setattr(
       LoopUnitAttractionHoursScheduler,
       'earliest_start_seconds',
-      lambda *_args, **_kwargs: 10 * 3600 )
+      lambda *_args, **_kwargs: DateValues.time_value_in_seconds( '10:00 AM' ) )
 
    cache = MasterRouteLoopScheduler._build_constrained_earliest_start_cache(
       sqlite3.connect( ':memory:' ),
       [ hard_unit, soft_unit, none_unit ],
       [
          ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600,
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
             loop_pins=[
                LoopSchedulePin(
                   loop_id=HARD_PIN_LOOP_ID,
@@ -1021,14 +1026,14 @@ def Test_BuildConstrainedEarliestStartCache_TestHardAndSoft_ExpectMaxStarts(
                      walk_node_ids=[ GIRAFFE_NODE_ID ],
                      schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
                      item_key='Talk' ),
-                  start_seconds=11 * 3600,
-                  end_seconds=11 * 3600 + 30 * 60 ),
+                  start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+                  end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ) ),
             ],
             attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] ),
       ] )
 
-   assert cache[ id( hard_unit ) ] == 11 * 3600
-   assert cache[ id( soft_unit ) ] == 10 * 3600
+   assert cache[ id( hard_unit ) ] == DateValues.time_value_in_seconds( '11:00 AM' )
+   assert cache[ id( soft_unit ) ] == DateValues.time_value_in_seconds( '10:00 AM' )
    assert id( none_unit ) not in cache
 
 
@@ -1095,25 +1100,29 @@ def Test_ShouldPackOpenSoftPinsWithFreeLoops_TestOpenSoftPin_ExpectTrue() -> Non
       unit=_loop_unit( AFRICA_SAVANNA_LOOP_ID ),
       occupied_seconds=20 * 60 )
 
-   assert MasterRouteLoopScheduler._should_pack_open_soft_pins_with_free_loops(
+   result = MasterRouteLoopScheduler._should_pack_open_soft_pins_with_free_loops(
       remaining_units=[ free_unit ],
       active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
       held_constrained_loop_ids={ AUSTRALASIA_LOOP_ID },
       wait_filler_pending=False,
       hard_pin_deadline_seconds=None,
-      active_open_seconds=10 * 3600,
-      cursor_seconds=11 * 3600 )
+      active_open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) )
+
+   assert result
 
 
 def Test_ShouldPackOpenSoftPinsWithFreeLoops_TestWaitFillerPending_ExpectFalse() -> None:
-   assert not MasterRouteLoopScheduler._should_pack_open_soft_pins_with_free_loops(
+   result = MasterRouteLoopScheduler._should_pack_open_soft_pins_with_free_loops(
       remaining_units=[],
       active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
       held_constrained_loop_ids=set(),
       wait_filler_pending=True,
       hard_pin_deadline_seconds=None,
-      active_open_seconds=10 * 3600,
-      cursor_seconds=11 * 3600 )
+      active_open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '11:00 AM' ) )
+
+   assert not result
 
 
 def Test_DrainReadySoftPinLoopUnits_TestReadySoftPin_ExpectRemovedAndCursorAdvanced(
@@ -1124,14 +1133,14 @@ def Test_DrainReadySoftPinLoopUnits_TestReadySoftPin_ExpectRemovedAndCursorAdvan
       occupied_seconds=KANGAROO_DWELL_SECONDS )
    remaining = [ soft_unit ]
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] )
 
    monkeypatch.setattr(
       LoopUnitAttractionHoursScheduler,
       'schedule',
-      lambda *_args, **_kwargs: ( [], 12 * 3600 ) )
+      lambda *_args, **_kwargs: ( [], DateValues.time_value_in_seconds( '12:00 PM' ) ) )
    monkeypatch.setattr(
       LoopWindowPacker,
       'remove_matching',
@@ -1143,15 +1152,15 @@ def Test_DrainReadySoftPinLoopUnits_TestReadySoftPin_ExpectRemovedAndCursorAdvan
       schedule_window,
       soft_only_loop_ids={ AUSTRALASIA_LOOP_ID },
       hard_pinned_loop_ids=set(),
-      pinned_earliest_start_cache={ id( soft_unit ): 11 * 3600 },
+      pinned_earliest_start_cache={ id( soft_unit ): DateValues.time_value_in_seconds( '11:00 AM' ) },
       blockers=[],
-      cursor_seconds=11 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       current_node_id=ENTRANCE_NODE_ID,
       walk_graph=TEST_GRAPH,
       late_place=False )
 
    assert remaining == []
-   assert cursor == 12 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '12:00 PM' )
    assert node_id == ENTRANCE_NODE_ID
 
 
@@ -1173,8 +1182,8 @@ def Test_DrainReadySoftPinLoopUnits_TestPartialProgress_ExpectReplacementKept(
       occupied_seconds=40 * 60 )
    remaining = [ soft_unit ]
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] )
    replacement = PreparedLoopScheduleUnit(
       unit=_unit_with_stops( AUSTRALASIA_LOOP_ID, [ cheetah ] ),
@@ -1183,7 +1192,7 @@ def Test_DrainReadySoftPinLoopUnits_TestPartialProgress_ExpectReplacementKept(
    monkeypatch.setattr(
       LoopUnitAttractionHoursScheduler,
       'schedule',
-      lambda *_args, **_kwargs: ( [ cheetah ], 11 * 3600 + 20 * 60 ) )
+      lambda *_args, **_kwargs: ( [ cheetah ], DateValues.time_value_in_seconds( '11:20 AM' ) ) )
    monkeypatch.setattr(
       MasterRouteLoopScheduler,
       '_keep_partial_soft_pin_loop_progress',
@@ -1196,14 +1205,14 @@ def Test_DrainReadySoftPinLoopUnits_TestPartialProgress_ExpectReplacementKept(
       schedule_window,
       soft_only_loop_ids={ AUSTRALASIA_LOOP_ID },
       hard_pinned_loop_ids=set(),
-      pinned_earliest_start_cache={ id( soft_unit ): 11 * 3600 },
+      pinned_earliest_start_cache={ id( soft_unit ): DateValues.time_value_in_seconds( '11:00 AM' ) },
       blockers=[],
-      cursor_seconds=11 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       current_node_id=ENTRANCE_NODE_ID,
       walk_graph=TEST_GRAPH )
 
    assert remaining == [ replacement ]
-   assert cursor == 11 * 3600 + 20 * 60
+   assert cursor == DateValues.time_value_in_seconds( '11:20 AM' )
 
 
 def Test_KeepPartialPinnedLoopProgress_TestPartialAnimals_ExpectReplacement(
@@ -1223,7 +1232,7 @@ def Test_KeepPartialPinnedLoopProgress_TestPartialAnimals_ExpectReplacement(
       unit=_unit_with_stops( HARD_PIN_LOOP_ID, [ lion, cheetah ] ),
       occupied_seconds=40 * 60 )
    remaining = [ prepared ]
-   cache: dict[ int, int | None ] = { id( prepared ): 11 * 3600 }
+   cache: dict[ int, int | None ] = { id( prepared ): DateValues.time_value_in_seconds( '11:00 AM' ) }
    replacement = PreparedLoopScheduleUnit(
       unit=_unit_with_stops( HARD_PIN_LOOP_ID, [ cheetah ] ),
       occupied_seconds=20 * 60 )
@@ -1235,7 +1244,7 @@ def Test_KeepPartialPinnedLoopProgress_TestPartialAnimals_ExpectReplacement(
    monkeypatch.setattr(
       LoopUnitPinScheduler,
       'earliest_start_seconds',
-      lambda *_args, **_kwargs: 12 * 3600 )
+      lambda *_args, **_kwargs: DateValues.time_value_in_seconds( '12:00 PM' ) )
 
    kept = MasterRouteLoopScheduler._keep_partial_pinned_loop_progress(
       sqlite3.connect( ':memory:' ),
@@ -1247,7 +1256,7 @@ def Test_KeepPartialPinnedLoopProgress_TestPartialAnimals_ExpectReplacement(
 
    assert kept is True
    assert remaining == [ replacement ]
-   assert cache[ id( replacement ) ] == 12 * 3600
+   assert cache[ id( replacement ) ] == DateValues.time_value_in_seconds( '12:00 PM' )
 
 
 def Test_KeepPartialPinnedLoopProgress_TestNoProgress_ExpectFalse() -> None:
@@ -1255,13 +1264,15 @@ def Test_KeepPartialPinnedLoopProgress_TestNoProgress_ExpectFalse() -> None:
       unit=_unit_with_stops( HARD_PIN_LOOP_ID, [ LION_ANIMAL ] ),
       occupied_seconds=20 * 60 )
 
-   assert not MasterRouteLoopScheduler._keep_partial_pinned_loop_progress(
+   result = MasterRouteLoopScheduler._keep_partial_pinned_loop_progress(
       sqlite3.connect( ':memory:' ),
       [ prepared ],
       prepared,
       unscheduled_animals=[ LION_ANIMAL ],
       pinned_earliest_start_cache={},
       loop_pins=[] )
+
+   assert not result
 
 
 def Test_SchedulePreparedLoopUnit_TestPrepareFails_ExpectAnimalsReturned(
@@ -1276,12 +1287,14 @@ def Test_SchedulePreparedLoopUnit_TestPrepareFails_ExpectAnimalsReturned(
       'prepare_stops',
       lambda *_args, **_kwargs: None )
 
-   assert MasterRouteLoopScheduler._schedule_prepared_loop_unit(
+   result = MasterRouteLoopScheduler._schedule_prepared_loop_unit(
       sqlite3.connect( ':memory:' ),
       prepared,
       blockers=[],
-      start_seconds=10 * 3600,
-      walk_graph=TEST_GRAPH ) == [ LION_ANIMAL ]
+      start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      walk_graph=TEST_GRAPH )
+
+   assert result == [ LION_ANIMAL ]
 
 
 def Test_SchedulePreparedLoopUnit_TestSaveFails_ExpectPersistError(
@@ -1309,7 +1322,7 @@ def Test_SchedulePreparedLoopUnit_TestSaveFails_ExpectPersistError(
       'assign_contiguous_respecting_attraction_hours',
       lambda *_args, **_kwargs: (
          [ LoopScheduleSlot( LION_ANIMAL, '10:00 AM', '10:20 AM' ) ],
-         10 * 3600 + 20 * 60,
+         DateValues.time_value_in_seconds( '10:20 AM' ),
       ) )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
@@ -1321,8 +1334,8 @@ def Test_SchedulePreparedLoopUnit_TestSaveFails_ExpectPersistError(
          sqlite3.connect( ':memory:' ),
          prepared,
          blockers=[],
-         start_seconds=10 * 3600,
-         end_seconds=17 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
          walk_graph=TEST_GRAPH )
 
 
@@ -1379,8 +1392,8 @@ def Test_Schedule_TestSoftPinWaitFillerDrain_ExpectSoftPinScheduled(
 def Test_DrainCascadedInactiveSoftPinLoopUnits_TestReadyInactive_ExpectPlaced(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin(), _zoomobile_soft_pin() ] )
    zoomobile = PreparedLoopScheduleUnit(
       unit=_loop_unit( ZOOMOBILE_LOOP_ID ),
@@ -1402,7 +1415,7 @@ def Test_DrainCascadedInactiveSoftPinLoopUnits_TestReadyInactive_ExpectPlaced(
    monkeypatch.setattr(
       MasterRouteLoopScheduler,
       '_drain_ready_soft_pin_loop_units',
-      lambda *_args, **_kwargs: ( 11 * 3600, 'n-exit' ) )
+      lambda *_args, **_kwargs: ( DateValues.time_value_in_seconds( '11:00 AM' ), 'n-exit' ) )
    monkeypatch.setattr(
       MasterRouteLoopScheduler,
       '_units_matching_loop_ids',
@@ -1416,12 +1429,12 @@ def Test_DrainCascadedInactiveSoftPinLoopUnits_TestReadyInactive_ExpectPlaced(
       hard_pinned_loop_ids=set(),
       pinned_earliest_start_cache={ id( zoomobile ): ZOOMOBILE_OPEN_SECONDS },
       blockers=[],
-      cursor_seconds=9 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       current_node_id=ENTRANCE_NODE_ID,
       walk_graph=TEST_GRAPH,
       cascade_end_seconds=KANGAROO_OPEN_SECONDS )
 
-   assert cursor == 11 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '11:00 AM' )
    assert node_id == 'n-exit'
 
 
@@ -1438,12 +1451,12 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestFitsInLaterGap_ExpectTrue(
       start_time='10:00 AM',
       end_time='10:30 AM' )
    morning = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=10 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       anchor_stop=anchor_stop )
    later = ItineraryScheduleWindow(
-      start_seconds=10 * 3600 + 30 * 60,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '10:30 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       opens_after_fixed_time_stop=True,
       loop_pins=[
          LoopSchedulePin(
@@ -1453,8 +1466,8 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestFitsInLaterGap_ExpectTrue(
                walk_node_ids=[ GIRAFFE_NODE_ID ],
                schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
                item_key='Later Talk' ),
-            start_seconds=12 * 3600,
-            end_seconds=12 * 3600 + 30 * 60 ),
+            start_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+            end_seconds=DateValues.time_value_in_seconds( '12:30 PM' ) ),
       ] )
    pinned = PreparedLoopScheduleUnit(
       unit=_loop_unit( HARD_PIN_LOOP_ID ),
@@ -1463,15 +1476,17 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestFitsInLaterGap_ExpectTrue(
    monkeypatch.setattr(
       MasterRouteLoopScheduler,
       '_earliest_pinned_loop_wait_seconds',
-      lambda *_args, **_kwargs: 12 * 3600 )
+      lambda *_args, **_kwargs: DateValues.time_value_in_seconds( '12:00 PM' ) )
 
-   assert MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
+   result = MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
       morning,
       later_schedule_windows=[ later ],
       remaining_units=[ free_unit, pinned ],
       held_pinned_loop_ids={ HARD_PIN_LOOP_ID },
-      pinned_earliest_start_cache={ id( pinned ): 12 * 3600 },
-      cursor_seconds=9 * 3600 )
+      pinned_earliest_start_cache={ id( pinned ): DateValues.time_value_in_seconds( '12:00 PM' ) },
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
+
+   assert result
 
 
 def Test_EarliestHardPinDeadlineSeconds_TestCachedDeadline_ExpectMin() -> None:
@@ -1479,20 +1494,24 @@ def Test_EarliestHardPinDeadlineSeconds_TestCachedDeadline_ExpectMin() -> None:
       unit=_loop_unit( HARD_PIN_LOOP_ID ),
       occupied_seconds=20 * 60 )
 
-   assert MasterRouteLoopScheduler._earliest_hard_pin_deadline_seconds(
+   result = MasterRouteLoopScheduler._earliest_hard_pin_deadline_seconds(
       [ prepared ],
       { HARD_PIN_LOOP_ID },
-      pinned_earliest_start_cache={ id( prepared ): 11 * 3600 } ) == 11 * 3600
+      pinned_earliest_start_cache={ id( prepared ): DateValues.time_value_in_seconds( '11:00 AM' ) } )
+
+   assert result == DateValues.time_value_in_seconds( '11:00 AM' )
 
 
 def Test_UnitsMatchingLoopIds_TestEmptyIds_ExpectEmpty() -> None:
-   assert MasterRouteLoopScheduler._units_matching_loop_ids(
+   result = MasterRouteLoopScheduler._units_matching_loop_ids(
       [
          PreparedLoopScheduleUnit(
             unit=_loop_unit( AFRICA_SAVANNA_LOOP_ID ),
             occupied_seconds=10 * 60 ),
       ],
-      set() ) == []
+      set() )
+
+   assert result == []
 
 
 def Test_KeepPartialSoftPinLoopProgress_TestPartialStops_ExpectReplacement(
@@ -1512,7 +1531,7 @@ def Test_KeepPartialSoftPinLoopProgress_TestPartialStops_ExpectReplacement(
       unit=_unit_with_stops( AUSTRALASIA_LOOP_ID, [ lion, cheetah ] ),
       occupied_seconds=40 * 60 )
    remaining = [ prepared ]
-   cache: dict[ int, int | None ] = { id( prepared ): 11 * 3600 }
+   cache: dict[ int, int | None ] = { id( prepared ): DateValues.time_value_in_seconds( '11:00 AM' ) }
    replacement = PreparedLoopScheduleUnit(
       unit=_unit_with_stops( AUSTRALASIA_LOOP_ID, [ cheetah ] ),
       occupied_seconds=20 * 60 )
@@ -1524,7 +1543,7 @@ def Test_KeepPartialSoftPinLoopProgress_TestPartialStops_ExpectReplacement(
    monkeypatch.setattr(
       LoopUnitAttractionHoursScheduler,
       'earliest_start_seconds',
-      lambda *_args, **_kwargs: 12 * 3600 )
+      lambda *_args, **_kwargs: DateValues.time_value_in_seconds( '12:00 PM' ) )
 
    kept = MasterRouteLoopScheduler._keep_partial_soft_pin_loop_progress(
       sqlite3.connect( ':memory:' ),
@@ -1536,7 +1555,7 @@ def Test_KeepPartialSoftPinLoopProgress_TestPartialStops_ExpectReplacement(
 
    assert kept is True
    assert remaining == [ replacement ]
-   assert cache[ id( replacement ) ] == 12 * 3600
+   assert cache[ id( replacement ) ] == DateValues.time_value_in_seconds( '12:00 PM' )
 
 
 def Test_PreparedLoopUnitFromStops_TestPrepareFails_ExpectNone(
@@ -1548,10 +1567,12 @@ def Test_PreparedLoopUnitFromStops_TestPrepareFails_ExpectNone(
       'prepare_stops',
       lambda *_args, **_kwargs: None )
 
-   assert MasterRouteLoopScheduler._prepared_loop_unit_from_stops(
+   result = MasterRouteLoopScheduler._prepared_loop_unit_from_stops(
       sqlite3.connect( ':memory:' ),
       _unit_with_stops( AFRICA_SAVANNA_LOOP_ID, [ LION_ANIMAL ] ),
-      [ LION_ANIMAL ] ) is None
+      [ LION_ANIMAL ] )
+
+   assert result is None
 
 
 def Test_PreparedLoopUnitFromStops_TestPrepared_ExpectOccupiedSeconds(
@@ -1586,8 +1607,8 @@ def Test_ScheduleStartSecondsForPackedUnits_TestRightAlign_ExpectWindowEndMinusO
       monkeypatch: pytest.MonkeyPatch ) -> None:
 
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=12 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '12:00 PM' ) )
    packed = [
       PreparedLoopScheduleUnit(
          unit=_loop_unit( AFRICA_SAVANNA_LOOP_ID ),
@@ -1602,18 +1623,18 @@ def Test_ScheduleStartSecondsForPackedUnits_TestRightAlign_ExpectWindowEndMinusO
    start = MasterRouteLoopScheduler._schedule_start_seconds_for_packed_units(
       schedule_window,
       packed_units=packed,
-      cursor_seconds=9 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       walk_graph=TEST_GRAPH,
       current_node_id=ENTRANCE_NODE_ID,
       right_align_to_window_end=True )
 
-   assert start == 12 * 3600 - 30 * 60
+   assert start == DateValues.time_value_in_seconds( '12:00 PM' ) - 30 * 60
 
 
 def Test_ScheduleStartSecondsForPackedUnits_TestLeftAlign_ExpectWindowStart() -> None:
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=12 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '12:00 PM' ) )
    packed = [
       PreparedLoopScheduleUnit(
          unit=_loop_unit( AFRICA_SAVANNA_LOOP_ID ),
@@ -1623,12 +1644,12 @@ def Test_ScheduleStartSecondsForPackedUnits_TestLeftAlign_ExpectWindowStart() ->
    start = MasterRouteLoopScheduler._schedule_start_seconds_for_packed_units(
       schedule_window,
       packed_units=packed,
-      cursor_seconds=9 * 3600 + 15 * 60,
+      cursor_seconds=DateValues.time_value_in_seconds( '9:15 AM' ),
       walk_graph=TEST_GRAPH,
       current_node_id=ENTRANCE_NODE_ID,
       right_align_to_window_end=False )
 
-   assert start == 9 * 3600 + 15 * 60
+   assert start == DateValues.time_value_in_seconds( '9:15 AM' )
 
 
 def Test_Schedule_TestWaitFillerFreePackThenCascadeSoftPins_ExpectFreeScheduledAndCascaded(
@@ -1659,7 +1680,7 @@ def Test_Schedule_TestWaitFillerFreePackThenCascadeSoftPins_ExpectFreeScheduledA
    zoomobile = PreparedLoopScheduleUnit(
       unit=_unit_with_stops( ZOOMOBILE_LOOP_ID, [ zoomobile_animal ] ),
       occupied_seconds=ZOOMOBILE_DWELL_SECONDS )
-   cursor_seconds = 9 * 3600 + 15 * 60
+   cursor_seconds = DateValues.time_value_in_seconds( '9:15 AM' )
    cascade_calls: list[ int ] = []
    soft_drain_calls: list[ dict[ str, object ] ] = []
    pack_calls = { 'n': 0 }
@@ -1862,7 +1883,7 @@ def Test_Schedule_TestWaitFillerFreePackWithHardPin_ExpectLatePlaceSoftPin(
             loop_pins=[ hard_pin ],
             attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] ),
       ],
-      schedule_cursor_seconds=9 * 3600 + 15 * 60,
+      schedule_cursor_seconds=DateValues.time_value_in_seconds( '9:15 AM' ),
       walk_graph=TEST_GRAPH,
       start_node_id=ENTRANCE_NODE_ID )
 
@@ -1909,11 +1930,11 @@ def Test_Schedule_TestSnapsStartWalkNodeAndSkipsEmptyWindow_ExpectPackSeesSnappe
       blockers=[],
       schedule_windows=[
          ItineraryScheduleWindow(
-            start_seconds=10 * 3600,
-            end_seconds=10 * 3600,
+            start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
             start_walk_node_id=GIRAFFE_NODE_ID ),
          ItineraryScheduleWindow(
-            start_seconds=10 * 3600,
+            start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
             end_seconds=SCHEDULE_END_SECONDS ),
       ],
       schedule_cursor_seconds=SCHEDULE_START_SECONDS,
@@ -1967,7 +1988,7 @@ def Test_Schedule_TestPinnedWaitAdvancesCursor_ExpectSoftOpenWait(
             end_seconds=SCHEDULE_END_SECONDS,
             attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] ),
       ],
-      schedule_cursor_seconds=9 * 3600 + 15 * 60,
+      schedule_cursor_seconds=DateValues.time_value_in_seconds( '9:15 AM' ),
       walk_graph=TEST_GRAPH,
       start_node_id=ENTRANCE_NODE_ID )
 
@@ -2209,28 +2230,32 @@ def Test_ProcessScheduleWindow_TestOpensAfterFixed_ExpectSuccessorHolds(
 
 
 def Test_ShouldDeferFreePackingUntilAfterAnchor_TestOpensAfterFixed_ExpectFalse() -> None:
-   assert not MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
+   result = MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=10 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
          opens_after_fixed_time_stop=True ),
       later_schedule_windows=[],
       remaining_units=[],
       held_pinned_loop_ids=set(),
       pinned_earliest_start_cache={},
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
+
+   assert not result
 
 
 def Test_ShouldDeferFreePackingUntilAfterAnchor_TestNoAnchor_ExpectFalse() -> None:
-   assert not MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
+   result = MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=10 * 3600 ),
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '10:00 AM' ) ),
       later_schedule_windows=[],
       remaining_units=[],
       held_pinned_loop_ids=set(),
       pinned_earliest_start_cache={},
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
+
+   assert not result
 
 
 def Test_ShouldDeferFreePackingUntilAfterAnchor_TestBadEndTime_ExpectFalse() -> None:
@@ -2242,10 +2267,10 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestBadEndTime_ExpectFalse() -> 
       start_time='10:00 AM',
       end_time=None )
 
-   assert not MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
+   result = MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=10 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
          anchor_stop=anchor_stop ),
       later_schedule_windows=[],
       remaining_units=[
@@ -2255,7 +2280,9 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestBadEndTime_ExpectFalse() -> 
       ],
       held_pinned_loop_ids=set(),
       pinned_earliest_start_cache={},
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
+
+   assert not result
 
 
 def Test_ShouldDeferFreePackingUntilAfterAnchor_TestNoFreeUnits_ExpectFalse() -> None:
@@ -2267,10 +2294,10 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestNoFreeUnits_ExpectFalse() ->
       start_time='10:00 AM',
       end_time='10:30 AM' )
 
-   assert not MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
+   result = MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=10 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
          anchor_stop=anchor_stop ),
       later_schedule_windows=[],
       remaining_units=[
@@ -2280,7 +2307,9 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestNoFreeUnits_ExpectFalse() ->
       ],
       held_pinned_loop_ids={ HARD_PIN_LOOP_ID },
       pinned_earliest_start_cache={},
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
+
+   assert not result
 
 
 def Test_ShouldDeferFreePackingUntilAfterAnchor_TestGapMismatch_ExpectFalse(
@@ -2296,13 +2325,13 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestGapMismatch_ExpectFalse(
       start_time='10:00 AM',
       end_time='10:30 AM' )
    morning = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=10 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       anchor_stop=anchor_stop )
    # start does not match anchor end -> continue / eventually False
    later_wrong_start = ItineraryScheduleWindow(
-      start_seconds=11 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       opens_after_fixed_time_stop=True,
       loop_pins=[
          LoopSchedulePin(
@@ -2312,12 +2341,12 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestGapMismatch_ExpectFalse(
                walk_node_ids=[ GIRAFFE_NODE_ID ],
                schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
                item_key='Later Talk' ),
-            start_seconds=12 * 3600,
-            end_seconds=12 * 3600 + 30 * 60 ),
+            start_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+            end_seconds=DateValues.time_value_in_seconds( '12:30 PM' ) ),
       ] )
    later_not_after_fixed = ItineraryScheduleWindow(
-      start_seconds=10 * 3600 + 30 * 60,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '10:30 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       opens_after_fixed_time_stop=False,
       loop_pins=[
          LoopSchedulePin(
@@ -2327,17 +2356,17 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestGapMismatch_ExpectFalse(
                walk_node_ids=[ GIRAFFE_NODE_ID ],
                schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
                item_key='Later Talk' ),
-            start_seconds=12 * 3600,
-            end_seconds=12 * 3600 + 30 * 60 ),
+            start_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+            end_seconds=DateValues.time_value_in_seconds( '12:30 PM' ) ),
       ] )
    later_no_pins = ItineraryScheduleWindow(
-      start_seconds=10 * 3600 + 30 * 60,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '10:30 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       opens_after_fixed_time_stop=True,
       loop_pins=[] )
    later_no_reserve = ItineraryScheduleWindow(
-      start_seconds=10 * 3600 + 30 * 60,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '10:30 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       opens_after_fixed_time_stop=True,
       loop_pins=[
          LoopSchedulePin(
@@ -2347,8 +2376,8 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestGapMismatch_ExpectFalse(
                walk_node_ids=[ GIRAFFE_NODE_ID ],
                schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
                item_key='Later Talk' ),
-            start_seconds=12 * 3600,
-            end_seconds=12 * 3600 + 30 * 60 ),
+            start_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+            end_seconds=DateValues.time_value_in_seconds( '12:30 PM' ) ),
       ] )
 
    monkeypatch.setattr(
@@ -2356,7 +2385,7 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestGapMismatch_ExpectFalse(
       '_earliest_pinned_loop_wait_seconds',
       lambda *_args, **_kwargs: None )
 
-   assert not MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
+   result = MasterRouteLoopScheduler._should_defer_free_packing_until_after_anchor(
       morning,
       later_schedule_windows=[
          later_wrong_start,
@@ -2367,16 +2396,18 @@ def Test_ShouldDeferFreePackingUntilAfterAnchor_TestGapMismatch_ExpectFalse(
       remaining_units=[ free_unit ],
       held_pinned_loop_ids=set(),
       pinned_earliest_start_cache={},
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
+
+   assert not result
 
 
 def Test_PackingWindowWithActiveSoftPinTailReserve_TestHardPinClamp_ExpectMinDeadline() -> None:
    packing_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] )
    kangaroo_unit = PreparedLoopScheduleUnit(
       unit=_loop_unit( AUSTRALASIA_LOOP_ID ),
@@ -2384,7 +2415,7 @@ def Test_PackingWindowWithActiveSoftPinTailReserve_TestHardPinClamp_ExpectMinDea
    hard_unit = PreparedLoopScheduleUnit(
       unit=_loop_unit( HARD_PIN_LOOP_ID ),
       occupied_seconds=30 * 60 )
-   hard_start = 12 * 3600
+   hard_start = DateValues.time_value_in_seconds( '12:00 PM' )
 
    reserved = MasterRouteLoopScheduler._packing_window_with_active_soft_pin_tail_reserve(
       packing_window,
@@ -2393,18 +2424,18 @@ def Test_PackingWindowWithActiveSoftPinTailReserve_TestHardPinClamp_ExpectMinDea
       active_soft_pin_loop_ids={ AUSTRALASIA_LOOP_ID },
       hard_pinned_loop_ids={ HARD_PIN_LOOP_ID },
       pinned_earliest_start_cache={ id( hard_unit ): hard_start },
-      cursor_seconds=9 * 3600 )
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    assert reserved.end_seconds == hard_start - KANGAROO_DWELL_SECONDS
 
 
 def Test_PackingWindowWithActiveSoftPinTailReserve_TestTooTight_ExpectUnchanged() -> None:
    packing_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600 )
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
    schedule_window = ItineraryScheduleWindow(
-      start_seconds=9 * 3600,
-      end_seconds=17 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] )
    kangaroo_unit = PreparedLoopScheduleUnit(
       unit=_loop_unit( AUSTRALASIA_LOOP_ID ),
@@ -2446,8 +2477,8 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestOpensAfterFixed_ExpectSucces
          sqlite3.connect( ':memory:' ),
          remaining_units=[ giraffe, zebra_talk ],
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600,
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
             opens_after_fixed_time_stop=True ),
          pinned_loop_ids={ ZEBRA_TALK_LOOP_ID },
          pinned_earliest_start_cache={ id( zebra_talk ): TALK_START_SECONDS },
@@ -2455,7 +2486,7 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestOpensAfterFixed_ExpectSucces
          blockers=[],
          walk_graph=TEST_GRAPH,
          window_state=LoopScheduleWindowState(
-            cursor_seconds=9 * 3600,
+            cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
             current_node_id=ENTRANCE_NODE_ID,
             departure_side_cluster_id=None ),
          remaining_animals=[] ) )
@@ -2471,7 +2502,7 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestEmptyNonPinned_ExpectUnchang
       unit=_unit_with_stops( HARD_PIN_LOOP_ID, [ LION_ANIMAL ] ),
       occupied_seconds=20 * 60 )
    window_state = LoopScheduleWindowState(
-      cursor_seconds=9 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       current_node_id=ENTRANCE_NODE_ID,
       departure_side_cluster_id=None )
 
@@ -2480,10 +2511,10 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestEmptyNonPinned_ExpectUnchang
          sqlite3.connect( ':memory:' ),
          remaining_units=[ pinned ],
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
          pinned_loop_ids={ HARD_PIN_LOOP_ID },
-         pinned_earliest_start_cache={ id( pinned ): 11 * 3600 },
+         pinned_earliest_start_cache={ id( pinned ): DateValues.time_value_in_seconds( '11:00 AM' ) },
          hours_by_attraction_name={},
          blockers=[],
          walk_graph=TEST_GRAPH,
@@ -2491,7 +2522,7 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestEmptyNonPinned_ExpectUnchang
          remaining_animals=[] ) )
 
    assert not should_abort
-   assert next_cursor == 9 * 3600
+   assert next_cursor == DateValues.time_value_in_seconds( '9:00 AM' )
 
 
 def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestPackFail_ExpectUnchangedCursor(
@@ -2510,21 +2541,21 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestPackFail_ExpectUnchangedCurs
          sqlite3.connect( ':memory:' ),
          remaining_units=[ giraffe, zebra_talk ],
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
          pinned_loop_ids={ ZEBRA_TALK_LOOP_ID },
          pinned_earliest_start_cache={ id( zebra_talk ): TALK_START_SECONDS },
          hours_by_attraction_name={},
          blockers=[],
          walk_graph=TEST_GRAPH,
          window_state=LoopScheduleWindowState(
-            cursor_seconds=9 * 3600,
+            cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
             current_node_id=ENTRANCE_NODE_ID,
             departure_side_cluster_id=None ),
          remaining_animals=[] ) )
 
    assert not should_abort
-   assert next_cursor == 9 * 3600
+   assert next_cursor == DateValues.time_value_in_seconds( '9:00 AM' )
 
 
 def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestPersistError_ExpectAbort(
@@ -2545,21 +2576,21 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestPersistError_ExpectAbort(
          sqlite3.connect( ':memory:' ),
          remaining_units=[ giraffe, zebra_talk ],
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
          pinned_loop_ids={ ZEBRA_TALK_LOOP_ID },
          pinned_earliest_start_cache={ id( zebra_talk ): TALK_START_SECONDS },
          hours_by_attraction_name={},
          blockers=[],
          walk_graph=TEST_GRAPH,
          window_state=LoopScheduleWindowState(
-            cursor_seconds=9 * 3600,
+            cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
             current_node_id=ENTRANCE_NODE_ID,
             departure_side_cluster_id=None ),
          remaining_animals=remaining_animals ) )
 
    assert should_abort is True
-   assert next_cursor == 9 * 3600
+   assert next_cursor == DateValues.time_value_in_seconds( '9:00 AM' )
    assert giraffe.unit.stops[ Position.FIRST ] in remaining_animals
 
 
@@ -2580,27 +2611,27 @@ def Test_PackNonPinnedLoopsBeforePinnedDeadline_TestUnscheduledAnimals_ExpectSto
          sqlite3.connect( ':memory:' ),
          remaining_units=remaining_units,
          schedule_window=ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
          pinned_loop_ids={ ZEBRA_TALK_LOOP_ID },
          pinned_earliest_start_cache={ id( zebra_talk ): TALK_START_SECONDS },
          hours_by_attraction_name={},
          blockers=[],
          walk_graph=TEST_GRAPH,
          window_state=LoopScheduleWindowState(
-            cursor_seconds=9 * 3600,
+            cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
             current_node_id=ENTRANCE_NODE_ID,
             departure_side_cluster_id=None ),
          remaining_animals=remaining_animals ) )
 
    assert not should_abort
-   assert next_cursor == 9 * 3600
+   assert next_cursor == DateValues.time_value_in_seconds( '9:00 AM' )
    assert remaining_animals == list( giraffe.unit.stops )
    assert giraffe in remaining_units
 
 
 def Test_BuildConstrainedEarliestStartCache_TestNoPins_ExpectEmpty() -> None:
-   assert MasterRouteLoopScheduler._build_constrained_earliest_start_cache(
+   result = MasterRouteLoopScheduler._build_constrained_earliest_start_cache(
       sqlite3.connect( ':memory:' ),
       [
          PreparedLoopScheduleUnit(
@@ -2609,9 +2640,11 @@ def Test_BuildConstrainedEarliestStartCache_TestNoPins_ExpectEmpty() -> None:
       ],
       [
          ItineraryScheduleWindow(
-            start_seconds=9 * 3600,
-            end_seconds=17 * 3600 ),
-      ] ) == {}
+            start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+            end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) ),
+      ] )
+
+   assert result == {}
 
 
 def Test_DrainReadyPinnedLoopUnits_TestPartialProgress_ExpectCursorAdvanced(
@@ -2681,7 +2714,7 @@ def Test_DrainReadySoftPinLoopUnits_TestSoftOnlyNone_ExpectUsesWindowSoftPins(
    monkeypatch.setattr(
       LoopUnitAttractionHoursScheduler,
       'schedule',
-      lambda *_args, **_kwargs: ( [], 12 * 3600 ) )
+      lambda *_args, **_kwargs: ( [], DateValues.time_value_in_seconds( '12:00 PM' ) ) )
    monkeypatch.setattr(
       LoopWindowPacker,
       'remove_matching',
@@ -2691,19 +2724,19 @@ def Test_DrainReadySoftPinLoopUnits_TestSoftOnlyNone_ExpectUsesWindowSoftPins(
       sqlite3.connect( ':memory:' ),
       remaining,
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=17 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
          attraction_hours_soft_pins=[ _kangaroo_soft_pin() ] ),
       soft_only_loop_ids=None,
       hard_pinned_loop_ids=set(),
-      pinned_earliest_start_cache={ id( soft_unit ): 11 * 3600 },
+      pinned_earliest_start_cache={ id( soft_unit ): DateValues.time_value_in_seconds( '11:00 AM' ) },
       blockers=[],
-      cursor_seconds=11 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       current_node_id=ENTRANCE_NODE_ID,
       walk_graph=TEST_GRAPH )
 
    assert remaining == []
-   assert cursor == 12 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '12:00 PM' )
    assert node_id == ENTRANCE_NODE_ID
 
 
@@ -2734,7 +2767,7 @@ def Test_DrainReadySoftPinLoopUnits_TestTransportationApproach_ExpectExitNodeUpd
    monkeypatch.setattr(
       LoopUnitAttractionHoursScheduler,
       'schedule',
-      lambda *_args, **_kwargs: ( [], 12 * 3600 ) )
+      lambda *_args, **_kwargs: ( [], DateValues.time_value_in_seconds( '12:00 PM' ) ) )
    monkeypatch.setattr(
       LoopWindowPacker,
       'remove_matching',
@@ -2744,8 +2777,8 @@ def Test_DrainReadySoftPinLoopUnits_TestTransportationApproach_ExpectExitNodeUpd
       sqlite3.connect( ':memory:' ),
       remaining,
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=17 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
          attraction_hours_soft_pins=[ _zoomobile_soft_pin() ] ),
       soft_only_loop_ids={ ZOOMOBILE_LOOP_ID },
       hard_pinned_loop_ids=set(),
@@ -2756,7 +2789,7 @@ def Test_DrainReadySoftPinLoopUnits_TestTransportationApproach_ExpectExitNodeUpd
       walk_graph=TEST_GRAPH )
 
    assert remaining == []
-   assert cursor == 12 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '12:00 PM' )
    assert node_id == GIRAFFE_NODE_ID
 
 
@@ -2802,7 +2835,7 @@ def Test_DrainReadySoftPinLoopUnits_TestPartialWithApproach_ExpectExitNodeUpdate
    monkeypatch.setattr(
       LoopUnitAttractionHoursScheduler,
       'schedule',
-      lambda *_args, **_kwargs: ( [ leftover ], 11 * 3600 ) )
+      lambda *_args, **_kwargs: ( [ leftover ], DateValues.time_value_in_seconds( '11:00 AM' ) ) )
    monkeypatch.setattr(
       MasterRouteLoopScheduler,
       '_keep_partial_soft_pin_loop_progress',
@@ -2813,8 +2846,8 @@ def Test_DrainReadySoftPinLoopUnits_TestPartialWithApproach_ExpectExitNodeUpdate
       sqlite3.connect( ':memory:' ),
       remaining,
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=17 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
          attraction_hours_soft_pins=[ _zoomobile_soft_pin() ] ),
       soft_only_loop_ids={ ZOOMOBILE_LOOP_ID },
       hard_pinned_loop_ids=set(),
@@ -2824,7 +2857,7 @@ def Test_DrainReadySoftPinLoopUnits_TestPartialWithApproach_ExpectExitNodeUpdate
       current_node_id=ENTRANCE_NODE_ID,
       walk_graph=TEST_GRAPH )
 
-   assert cursor == 11 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '11:00 AM' )
    assert node_id == GIRAFFE_NODE_ID
    assert remaining == [ replacement ]
 
@@ -2850,13 +2883,15 @@ def Test_KeepPartialPinnedLoopProgress_TestReplacementNone_ExpectFalse(
       '_prepared_loop_unit_from_stops',
       lambda *_args, **_kwargs: None )
 
-   assert not MasterRouteLoopScheduler._keep_partial_pinned_loop_progress(
+   result = MasterRouteLoopScheduler._keep_partial_pinned_loop_progress(
       sqlite3.connect( ':memory:' ),
       [ prepared ],
       prepared,
       unscheduled_animals=[ cheetah ],
       pinned_earliest_start_cache={},
       loop_pins=[] )
+
+   assert not result
 
 
 def Test_KeepPartialPinnedLoopProgress_TestUnitMissing_ExpectFalse(
@@ -2886,7 +2921,7 @@ def Test_KeepPartialPinnedLoopProgress_TestUnitMissing_ExpectFalse(
       '_prepared_loop_unit_from_stops',
       lambda *_args, **_kwargs: replacement )
 
-   assert not MasterRouteLoopScheduler._keep_partial_pinned_loop_progress(
+   result = MasterRouteLoopScheduler._keep_partial_pinned_loop_progress(
       sqlite3.connect( ':memory:' ),
       [ other ],
       prepared,
@@ -2894,19 +2929,23 @@ def Test_KeepPartialPinnedLoopProgress_TestUnitMissing_ExpectFalse(
       pinned_earliest_start_cache={},
       loop_pins=[] )
 
+   assert not result
+
 
 def Test_KeepPartialSoftPinLoopProgress_TestNoProgress_ExpectFalse() -> None:
    prepared = PreparedLoopScheduleUnit(
       unit=_unit_with_stops( AUSTRALASIA_LOOP_ID, [ LION_ANIMAL ] ),
       occupied_seconds=20 * 60 )
 
-   assert not MasterRouteLoopScheduler._keep_partial_soft_pin_loop_progress(
+   result = MasterRouteLoopScheduler._keep_partial_soft_pin_loop_progress(
       sqlite3.connect( ':memory:' ),
       [ prepared ],
       prepared,
       unscheduled_stops=[ LION_ANIMAL ],
       pinned_earliest_start_cache={},
       soft_pins=[] )
+
+   assert not result
 
 
 def Test_KeepPartialSoftPinLoopProgress_TestReplacementNone_ExpectFalse(
@@ -2930,13 +2969,15 @@ def Test_KeepPartialSoftPinLoopProgress_TestReplacementNone_ExpectFalse(
       '_prepared_loop_unit_from_stops',
       lambda *_args, **_kwargs: None )
 
-   assert not MasterRouteLoopScheduler._keep_partial_soft_pin_loop_progress(
+   result = MasterRouteLoopScheduler._keep_partial_soft_pin_loop_progress(
       sqlite3.connect( ':memory:' ),
       [ prepared ],
       prepared,
       unscheduled_stops=[ cheetah ],
       pinned_earliest_start_cache={},
       soft_pins=[] )
+
+   assert not result
 
 
 def Test_KeepPartialSoftPinLoopProgress_TestUnitMissing_ExpectFalse(
@@ -2966,7 +3007,7 @@ def Test_KeepPartialSoftPinLoopProgress_TestUnitMissing_ExpectFalse(
       '_prepared_loop_unit_from_stops',
       lambda *_args, **_kwargs: replacement )
 
-   assert not MasterRouteLoopScheduler._keep_partial_soft_pin_loop_progress(
+   result = MasterRouteLoopScheduler._keep_partial_soft_pin_loop_progress(
       sqlite3.connect( ':memory:' ),
       [ other ],
       prepared,
@@ -2974,16 +3015,20 @@ def Test_KeepPartialSoftPinLoopProgress_TestUnitMissing_ExpectFalse(
       pinned_earliest_start_cache={},
       soft_pins=[] )
 
+   assert not result
+
 
 def Test_SoftPinLoopIdsInWindow_TestSoftPins_ExpectLoopIds() -> None:
-   assert MasterRouteLoopScheduler._soft_pin_loop_ids_in_window(
+   result = MasterRouteLoopScheduler._soft_pin_loop_ids_in_window(
       ItineraryScheduleWindow(
-         start_seconds=9 * 3600,
-         end_seconds=17 * 3600,
+         start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
          attraction_hours_soft_pins=[
             _kangaroo_soft_pin(),
             _zoomobile_soft_pin(),
-         ] ) ) == { AUSTRALASIA_LOOP_ID, ZOOMOBILE_LOOP_ID }
+         ] ) )
+
+   assert result == { AUSTRALASIA_LOOP_ID, ZOOMOBILE_LOOP_ID }
 
 
 def Test_EarliestPinnedLoopWaitSeconds_TestNoneCacheEntry_ExpectSkipped() -> None:
@@ -2991,21 +3036,25 @@ def Test_EarliestPinnedLoopWaitSeconds_TestNoneCacheEntry_ExpectSkipped() -> Non
       unit=_loop_unit( HARD_PIN_LOOP_ID ),
       occupied_seconds=20 * 60 )
 
-   assert MasterRouteLoopScheduler._earliest_pinned_loop_wait_seconds(
+   result = MasterRouteLoopScheduler._earliest_pinned_loop_wait_seconds(
       [ prepared ],
       { HARD_PIN_LOOP_ID },
       pinned_earliest_start_cache={ id( prepared ): None },
-      cursor_seconds=9 * 3600 ) is None
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
+
+   assert result is None
 
 
 def Test_LaterSameClusterLoopIds_TestEmptySoftPins_ExpectEmpty() -> None:
-   assert MasterRouteLoopScheduler._later_same_cluster_loop_ids(
+   result = MasterRouteLoopScheduler._later_same_cluster_loop_ids(
       [
          PreparedLoopScheduleUnit(
             unit=_loop_unit( AFRICA_SAVANNA_LOOP_ID ),
             occupied_seconds=10 * 60 ),
       ],
-      set() ) == set()
+      set() )
+
+   assert result == set()
 
 
 def Test_SchedulePreparedLoopUnit_TestExceedsEndByDuration_ExpectAnimalsReturned(
@@ -3029,13 +3078,15 @@ def Test_SchedulePreparedLoopUnit_TestExceedsEndByDuration_ExpectAnimalsReturned
       'total_occupied_seconds',
       lambda prepared_stops: 20 * 60 )
 
-   assert MasterRouteLoopScheduler._schedule_prepared_loop_unit(
+   result = MasterRouteLoopScheduler._schedule_prepared_loop_unit(
       sqlite3.connect( ':memory:' ),
       prepared,
       blockers=[],
-      start_seconds=10 * 3600,
-      end_seconds=10 * 3600 + 10 * 60,
-      walk_graph=TEST_GRAPH ) == [ LION_ANIMAL ]
+      start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '10:10 AM' ),
+      walk_graph=TEST_GRAPH )
+
+   assert result == [ LION_ANIMAL ]
 
 
 def Test_SchedulePreparedLoopUnit_TestEmptySlots_ExpectAnimalsReturned(
@@ -3061,15 +3112,17 @@ def Test_SchedulePreparedLoopUnit_TestEmptySlots_ExpectAnimalsReturned(
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'assign_contiguous_respecting_attraction_hours',
-      lambda *_args, **_kwargs: ( [], 10 * 3600 ) )
+      lambda *_args, **_kwargs: ( [], DateValues.time_value_in_seconds( '10:00 AM' ) ) )
 
-   assert MasterRouteLoopScheduler._schedule_prepared_loop_unit(
+   result = MasterRouteLoopScheduler._schedule_prepared_loop_unit(
       sqlite3.connect( ':memory:' ),
       prepared,
       blockers=[],
-      start_seconds=10 * 3600,
-      end_seconds=17 * 3600,
-      walk_graph=TEST_GRAPH ) == [ LION_ANIMAL ]
+      start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      walk_graph=TEST_GRAPH )
+
+   assert result == [ LION_ANIMAL ]
 
 
 def Test_SchedulePreparedLoopUnit_TestSlotEndPastWindow_ExpectAnimalsReturned(
@@ -3097,16 +3150,18 @@ def Test_SchedulePreparedLoopUnit_TestSlotEndPastWindow_ExpectAnimalsReturned(
       'assign_contiguous_respecting_attraction_hours',
       lambda *_args, **_kwargs: (
          [ LoopScheduleSlot( LION_ANIMAL, '10:00 AM', '10:40 AM' ) ],
-         10 * 3600 + 40 * 60,
+         DateValues.time_value_in_seconds( '10:40 AM' ),
       ) )
 
-   assert MasterRouteLoopScheduler._schedule_prepared_loop_unit(
+   result = MasterRouteLoopScheduler._schedule_prepared_loop_unit(
       sqlite3.connect( ':memory:' ),
       prepared,
       blockers=[],
-      start_seconds=10 * 3600,
-      end_seconds=10 * 3600 + 30 * 60,
-      walk_graph=TEST_GRAPH ) == [ LION_ANIMAL ]
+      start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '10:30 AM' ),
+      walk_graph=TEST_GRAPH )
+
+   assert result == [ LION_ANIMAL ]
 
 
 def Test_SchedulePreparedLoopUnit_TestSaveSucceeds_ExpectEmpty(
@@ -3134,20 +3189,22 @@ def Test_SchedulePreparedLoopUnit_TestSaveSucceeds_ExpectEmpty(
       'assign_contiguous_respecting_attraction_hours',
       lambda *_args, **_kwargs: (
          [ LoopScheduleSlot( LION_ANIMAL, '10:00 AM', '10:20 AM' ) ],
-         10 * 3600 + 20 * 60,
+         DateValues.time_value_in_seconds( '10:20 AM' ),
       ) )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'save',
       lambda *_args, **_kwargs: True )
 
-   assert MasterRouteLoopScheduler._schedule_prepared_loop_unit(
+   result = MasterRouteLoopScheduler._schedule_prepared_loop_unit(
       sqlite3.connect( ':memory:' ),
       prepared,
       blockers=[],
-      start_seconds=10 * 3600,
-      end_seconds=17 * 3600,
-      walk_graph=TEST_GRAPH ) == []
+      start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      walk_graph=TEST_GRAPH )
+
+   assert result == []
 
 
 def Test_Schedule_TestFreePackPersistError_ExpectAbort(
@@ -3201,7 +3258,7 @@ def Test_Schedule_TestFreePackOverflow_ExpectBreakWithoutScheduling(
 
    oversized = PreparedLoopScheduleUnit(
       unit=_unit_with_stops( AFRICA_SAVANNA_LOOP_ID, [ LION_ANIMAL ] ),
-      occupied_seconds=8 * 3600 )
+      occupied_seconds=DateValues.time_value_in_seconds( '8:00 AM' ) )
    schedule_calls = { 'n': 0 }
 
    def _schedule( *_args: object, **_kwargs: object ) -> list:

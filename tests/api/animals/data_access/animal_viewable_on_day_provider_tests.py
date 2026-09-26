@@ -197,10 +197,12 @@ def _seed_base_animal(
 
 def Test_FetchAnimalsViewableOnDayRecords_TestEmpty_ExpectEmptyList(
       animal_viewable_on_day_conn: sqlite3.Connection ) -> None:
-   assert AnimalViewableOnDayProvider.fetch_animals_viewable_on_day_records(
+   animals_viewable_on_day_records = AnimalViewableOnDayProvider.fetch_animals_viewable_on_day_records(
       animal_viewable_on_day_conn,
       VISIT_MONTH,
-      VISIT_DAY ) == []
+      VISIT_DAY )
+
+   assert animals_viewable_on_day_records == []
 
 
 def Test_FetchAnimalsViewableOnDayRecords_TestDefaults_ExpectDefaultMultipliers(

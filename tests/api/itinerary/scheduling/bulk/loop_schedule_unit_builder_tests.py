@@ -427,17 +427,22 @@ def Test_Build_TestGroupedAnimals_ExpectLoopMetadataAndWalkEndpoints(
    australasia_unit = loop_units[ Position.FIRST ]
    indo_unit = loop_units[ Position.SECOND ]
 
-   assert australasia_unit.loop_id == 'australasia'
-   assert australasia_unit.side_cluster_id == 'north'
-   assert australasia_unit.entry_walk_node_id == 'n-kookaburra'
-   assert australasia_unit.exit_walk_node_id == 'n-kookaburra'
-   assert [ animal.species for animal in australasia_unit.stops ] == [ 'Kookaburra' ]
+   assert australasia_unit.loop_id == LOOP_ID_BY_STOP_KEY[ _stop_key( KOOKABURRA ) ]
+   assert australasia_unit.side_cluster_id == LOOP_SIDE_CLUSTER_ID_BY_LOOP_ID[
+      australasia_unit.loop_id ]
+   assert australasia_unit.entry_walk_node_id == WALK_NODE_IDS[
+      ( KOOKABURRA.species, KOOKABURRA.exhibit, KOOKABURRA.enclosure_name ) ]
+   assert australasia_unit.exit_walk_node_id == WALK_NODE_IDS[
+      ( KOOKABURRA.species, KOOKABURRA.exhibit, KOOKABURRA.enclosure_name ) ]
+   assert [ animal.species for animal in australasia_unit.stops ] == [ KOOKABURRA.species ]
 
    assert indo_unit.loop_id == 'indo_malaya'
    assert indo_unit.side_cluster_id == 'south'
-   assert indo_unit.entry_walk_node_id == 'n-indo-cheetah'
-   assert indo_unit.exit_walk_node_id == 'n-indo-cheetah'
-   assert [ animal.species for animal in indo_unit.stops ] == [ 'Cheetah' ]
+   assert indo_unit.entry_walk_node_id == WALK_NODE_IDS[
+      ( INDO_CHEETAH.species, INDO_CHEETAH.exhibit, INDO_CHEETAH.enclosure_name ) ]
+   assert indo_unit.exit_walk_node_id == WALK_NODE_IDS[
+      ( INDO_CHEETAH.species, INDO_CHEETAH.exhibit, INDO_CHEETAH.enclosure_name ) ]
+   assert [ animal.species for animal in indo_unit.stops ] == [ INDO_CHEETAH.species ]
 
 
 def Test_Build_TestPartialLoopAnimal_ExpectItineraryAnimalEndpoints(
@@ -642,8 +647,10 @@ def Test_WalkNodeIdForStop_TestUnknownAttraction_ExpectNone(
       'for_map_location',
       lambda kind, name: None )
 
-   assert LoopScheduleUnitBuilder.walk_node_id_for_stop(
+   result = LoopScheduleUnitBuilder.walk_node_id_for_stop(
       ItineraryAttractionRecord(
          attraction='Not A Real Attraction',
          old_likelihood=None,
-         new_likelihood=100 ) ) is None
+         new_likelihood=100 ) )
+
+   assert result is None

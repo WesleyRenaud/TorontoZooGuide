@@ -6,11 +6,14 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateStatus_TestId_ExpectStatusElement', () => {
-   const statusEl = ConsoleStatusBuilder.createStatus({ statusId: 'animals-status' });
+   const statusId = 'animals-status';
+
+   const statusEl = ConsoleStatusBuilder.createStatus({ statusId });
 
    assert.equal(statusEl.tagName.toUpperCase(), 'DIV');
-   assert.equal(statusEl.id, 'animals-status');
+   assert.equal(statusEl.id, statusId);
    assert.equal(statusEl.className, 'console-operations-status');
    assert.equal(statusEl.getAttribute('aria-live'), 'polite');
 });

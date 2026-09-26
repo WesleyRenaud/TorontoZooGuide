@@ -3,101 +3,142 @@ import test from 'node:test';
 
 import { ScheduledOccurrenceSelectorFactory } from '../../../../scripts/itinerary/selectors/scheduledOccurrenceSelectorFactory.js';
 
-test('Test_GetOccurrenceName_TestRow_ExpectNameOrEmpty', () => {
-   assert.equal(ScheduledOccurrenceSelectorFactory.getOccurrenceName({ name: 'Talk' }), 'Talk');
-   assert.equal(ScheduledOccurrenceSelectorFactory.getOccurrenceName(null), '');
+
+test('Test_GetOccurrenceName_TestRow_ExpectName', () => {
+   const name = 'Talk';
+   const row = { name };
+
+   const occurrenceName = ScheduledOccurrenceSelectorFactory.getOccurrenceName(row);
+
+   assert.equal(occurrenceName, name);
 });
 
-test('Test_CreateStoredOccurrenceFromString_TestBlankAndValue_ExpectNullOrStored', () => {
-   assert.equal(
-      ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromString('  ', {
-         emptyStoredFields: { location: '' },
-         buildImageSrc: () => 'img',
-      }),
-      null
-   );
-   assert.deepEqual(
-      ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromString('Tiger Talk', {
-         emptyStoredFields: { location: '' },
-         buildImageSrc: (name) => `img/${name}`,
-      }),
+
+test('Test_GetOccurrenceName_TestNull_ExpectEmpty', () => {
+   const row = null;
+
+   const occurrenceName = ScheduledOccurrenceSelectorFactory.getOccurrenceName(row);
+
+   assert.equal(occurrenceName, '');
+});
+
+
+test('Test_CreateStoredOccurrenceFromString_TestBlank_ExpectNull', () => {
+   const value = '  ';
+
+   const stored = ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromString(value, {
+      emptyStoredFields: { location: '' },
+      buildImageSrc: () => 'img',
+   });
+
+   assert.equal(stored, null);
+});
+
+
+test('Test_CreateStoredOccurrenceFromString_TestName_ExpectStored', () => {
+   const name = 'Tiger Talk';
+   const emptyStoredFields = { location: '' };
+   const buildImageSrc = (value) => `img/${value}`;
+
+   const stored = ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromString(name, {
+      emptyStoredFields,
+      buildImageSrc,
+   });
+
+   assert.equal(stored.id, name);
+   assert.equal(stored.name, name);
+   assert.equal(stored.location, emptyStoredFields.location);
+   assert.equal(stored.imageSrc, buildImageSrc(name));
+});
+
+
+test('Test_CreateStoredOccurrenceFromObject_TestMissingId_ExpectNull', () => {
+   const item = { name: 'Talk' };
+
+   const stored = ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromObject(
+      item,
       {
-         id: 'Tiger Talk',
-         name: 'Tiger Talk',
-         location: '',
-         imageSrc: 'img/Tiger Talk',
+         buildImageSrc: () => 'img',
+         readStoredFields: () => ({}),
+         getId: () => '',
       }
    );
+
+   assert.equal(stored, null);
 });
+
 
 test('Test_CreateStoredOccurrenceFromObject_TestFields_ExpectStored', () => {
-   assert.equal(
-      ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromObject(
-         { name: 'Talk' },
-         {
-            buildImageSrc: () => 'img',
-            readStoredFields: () => ({}),
-            getId: () => '',
-         }
-      ),
-      null
-   );
+   const name = 'Talk';
+   const startTime = '11:00 AM';
+   const endTime = '11:30 AM';
+   const maximumDuration = 30;
+   const link = 'https://example.test';
+   const location = 'Eurasia';
+   const id = 'talk-1';
+   const item = {
+      name,
+      start_time: startTime,
+      end_time: endTime,
+      maximum_duration: maximumDuration,
+      link,
+      imageSrc: '',
+   };
+   const buildImageSrc = (value) => `img/${value}`;
 
-   assert.deepEqual(
-      ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromObject(
-         {
-            name: 'Talk',
-            start_time: '11:00 AM',
-            end_time: '11:30 AM',
-            maximum_duration: 30,
-            link: 'https://example.test',
-            imageSrc: '',
-         },
-         {
-            buildImageSrc: (name) => `img/${name}`,
-            includeLink: true,
-            readStoredFields: () => ({ location: 'Eurasia' }),
-            getId: () => 'talk-1',
-         }
-      ),
+   const stored = ScheduledOccurrenceSelectorFactory.createStoredOccurrenceFromObject(
+      item,
       {
-         id: 'talk-1',
-         name: 'Talk',
-         location: 'Eurasia',
-         imageSrc: 'img/Talk',
-         link: 'https://example.test',
-         start_time: '11:00 AM',
-         end_time: '11:30 AM',
-         maximum_duration: 30,
+         buildImageSrc,
+         includeLink: true,
+         readStoredFields: () => ({ location }),
+         getId: () => id,
       }
    );
+
+   assert.equal(stored.id, id);
+   assert.equal(stored.name, name);
+   assert.equal(stored.location, location);
+   assert.equal(stored.imageSrc, buildImageSrc(name));
+   assert.equal(stored.link, link);
+   assert.equal(stored.start_time, startTime);
+   assert.equal(stored.end_time, endTime);
+   assert.equal(stored.maximum_duration, maximumDuration);
 });
 
+
 test('Test_CreateOccurrenceSelection_TestRow_ExpectSelection', () => {
-   assert.deepEqual(
-      ScheduledOccurrenceSelectorFactory.createOccurrenceSelection(
-         {
-            end_time: '12:00 PM',
-            maximum_duration: 45,
-         },
-         {
-            getId: () => 'id-1',
-            getLink: () => 'https://example.test',
-            getName: () => 'Encounter',
-            buildImageSrc: (name) => `img/${name}`,
-            buildSelectionFields: () => ({ meeting_spot: 'Savanna' }),
-            getTimeOfDay: () => '11:00 AM',
-         }
-      ),
+   const id = 'id-1';
+   const name = 'Encounter';
+   const meetingSpot = 'Savanna';
+   const link = 'https://example.test';
+   const startTime = '11:00 AM';
+   const endTime = '12:00 PM';
+   const maximumDuration = 45;
+   const row = {
+      end_time: endTime,
+      maximum_duration: maximumDuration,
+   };
+   const buildImageSrc = (value) => `img/${value}`;
+
+   const selection = ScheduledOccurrenceSelectorFactory.createOccurrenceSelection(
+      row,
       {
-         id: 'id-1',
-         name: 'Encounter',
-         meeting_spot: 'Savanna',
-         imageSrc: 'img/Encounter',
-         link: 'https://example.test',
-         maximum_duration: 45,
-         start_time: '11:00 AM',
-         end_time: '12:00 PM',
+         getId: () => id,
+         getLink: () => link,
+         getName: () => name,
+         buildImageSrc,
+         buildSelectionFields: () => ({ meeting_spot: meetingSpot }),
+         getTimeOfDay: () => startTime,
       }
    );
+
+   assert.equal(selection.id, id);
+   assert.equal(selection.name, name);
+   assert.equal(selection.meeting_spot, meetingSpot);
+   assert.equal(selection.imageSrc, buildImageSrc(name));
+   assert.equal(selection.link, link);
+   assert.equal(selection.maximum_duration, maximumDuration);
+   assert.equal(selection.start_time, startTime);
+   assert.equal(selection.end_time, endTime);
 });

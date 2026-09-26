@@ -61,34 +61,42 @@ def stub_enclosure_viewing_walk_nodes( monkeypatch: pytest.MonkeyPatch ) -> None
 
 def Test_Resolve_TestOutdoorEnclosureName_ExpectWalkNodeId(
       stub_enclosure_viewing_walk_nodes: None ) -> None:
-   assert ViewingSpotWalkNodeIdResolver.resolve(
+   result = ViewingSpotWalkNodeIdResolver.resolve(
       'Aldabra Tortoise',
       AFRICAN_RAINFOREST_PAVILION,
-      'Outdoor' ) == 'v-9001'
+      'Outdoor' )
+
+   assert result == 'v-9001'
 
 
 def Test_Resolve_TestCoordinates_ExpectWalkNodeId(
       stub_enclosure_viewing_walk_nodes: None ) -> None:
-   assert ViewingSpotWalkNodeIdResolver.resolve(
+   result = ViewingSpotWalkNodeIdResolver.resolve(
       'Aldabra Tortoise',
       AFRICAN_RAINFOREST_PAVILION,
       None,
       47.091,
-      66.261 ) == 'v-9001'
+      66.261 )
+
+   assert result == 'v-9001'
 
 
 def Test_ResolveForCoordinates_TestMissingCoordinate_ExpectNone() -> None:
-   assert ViewingSpotWalkNodeIdResolver.resolve_for_coordinates(
+   result = ViewingSpotWalkNodeIdResolver.resolve_for_coordinates(
       'Aldabra Tortoise',
       'African Rainforest Pavilion',
       47.091,
-      None ) is None
+      None )
+
+   assert result is None
 
 
 def Test_ResolveForCoordinates_TestUnknownSpot_ExpectNone(
       stub_enclosure_viewing_walk_nodes: None ) -> None:
-   assert ViewingSpotWalkNodeIdResolver.resolve_for_coordinates(
+   result = ViewingSpotWalkNodeIdResolver.resolve_for_coordinates(
       'Unknown Species',
       'Nowhere',
       0.0,
-      0.0 ) is None
+      0.0 )
+
+   assert result is None

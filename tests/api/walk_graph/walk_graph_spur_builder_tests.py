@@ -107,36 +107,46 @@ def Test_IndexForViewingNodeIds_TestOverlappingSpur_ExpectBestMatch() -> None:
    spurs = [ OTHER_SPUR, PENINSULA_SPUR ]
    viewing_node_ids = [ 's-0', 's-5', 'x-1' ]
 
-   assert WalkGraphSpurBuilder.index_for_viewing_node_ids(
+   result = WalkGraphSpurBuilder.index_for_viewing_node_ids(
       spurs,
-      viewing_node_ids ) == 1
+      viewing_node_ids )
+
+   assert result == 1
 
 
 def Test_IndexForViewingNodeIds_TestNoOverlap_ExpectNone() -> None:
-   assert WalkGraphSpurBuilder.index_for_viewing_node_ids(
+   result = WalkGraphSpurBuilder.index_for_viewing_node_ids(
       [ OTHER_SPUR ],
-      [ 's-0' ] ) is None
+      [ 's-0' ] )
+
+   assert result is None
 
 
 def Test_IsActive_TestCurrentNodeInsideSpur_ExpectTrue() -> None:
-   assert WalkGraphSpurBuilder.is_active(
+   flag = WalkGraphSpurBuilder.is_active(
       PENINSULA_SPUR,
       's-3',
       {} )
 
+   assert flag
+
 
 def Test_IsActive_TestNearAttachment_ExpectTrue() -> None:
-   assert WalkGraphSpurBuilder.is_active(
+   flag = WalkGraphSpurBuilder.is_active(
       PENINSULA_SPUR,
       'outside-node',
       { 'm-60': 50.0 } )
 
+   assert flag
+
 
 def Test_IsActive_TestFarFromAttachment_ExpectFalse() -> None:
-   assert not WalkGraphSpurBuilder.is_active(
+   flag = WalkGraphSpurBuilder.is_active(
       PENINSULA_SPUR,
       'outside-node',
       { 'm-60': 150.0 } )
+
+   assert not flag
 
 
 def Test_BuildForGraph_TestBridgedPeninsula_ExpectSpurWithAttachmentNode() -> None:
@@ -164,13 +174,17 @@ def Test_Build_TestCachedProviderGraph_ExpectSameAsBuildForGraph(
       'fetch',
       lambda: graph )
 
-   assert WalkGraphSpurBuilder.build() == WalkGraphSpurBuilder.build_for_graph( graph )
+   result = WalkGraphSpurBuilder.build()
+
+   assert result == WalkGraphSpurBuilder.build_for_graph( graph )
    WalkGraphSpurBuilder.build.cache_clear()
 
 
 def Test_BuildForGraph_TestShortSpur_ExpectSkipped() -> None:
-   assert WalkGraphSpurBuilder.build_for_graph(
-      _bridged_spur_graph( spur_node_count=5 ) ) == []
+   for_graph = WalkGraphSpurBuilder.build_for_graph(
+      _bridged_spur_graph( spur_node_count=5 ) )
+
+   assert for_graph == []
 
 
 def Test_AppendRegion_TestSameNodeIds_ExpectMergedAttachments() -> None:
@@ -203,8 +217,12 @@ def Test_MergeSubsetSpurs_TestNestedSpurs_ExpectLargestOnly() -> None:
       node_ids=frozenset( { 'a', 'b' } ),
       attachment_node_ids=frozenset( { 'm-2' } ) )
 
-   assert WalkGraphSpurBuilder._merge_subset_spurs( [ small, large ] ) == [ large ]
+   result = WalkGraphSpurBuilder._merge_subset_spurs( [ small, large ] )
+
+   assert result == [ large ]
 
 
 def Test_BuildForGraph_TestCycleGraph_ExpectNoSpurs() -> None:
-   assert WalkGraphSpurBuilder.build_for_graph( _cycle_graph() ) == []
+   for_graph = WalkGraphSpurBuilder.build_for_graph( _cycle_graph() )
+
+   assert for_graph == []

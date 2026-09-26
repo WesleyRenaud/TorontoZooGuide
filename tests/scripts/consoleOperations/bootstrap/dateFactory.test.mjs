@@ -5,32 +5,32 @@ import { DateFactory } from '../../../../scripts/consoleOperations/bootstrap/dat
 import { DatePickersBindingHelper } from '../../../../scripts/consoleOperations/bootstrap/datePickersBindingHelper.js';
 import { ConsoleDateFactory } from '../../../../scripts/datePickers/consoleDateFactory.js';
 
+
 test('Test_WireConsoleOperationDatePickers_TestBindings_ExpectHelpersCalled', () => {
-   const rangeCalls = [];
-   const singleCalls = [];
-   const dateTimeCalls = [];
+   const refs = {
+      attractions: {
+         hoursSchedule: { start: 's' },
+      },
+   };
    const originalRange = DatePickersBindingHelper.initDateRangePickerBinding;
    const originalSingle = DatePickersBindingHelper.initSingleDatePickerBinding;
    const originalDateTime = DatePickersBindingHelper.initDateTimePickerBinding;
    const originalHours = ConsoleDateFactory.initAttractionHoursSchedulePickers;
-
-   DatePickersBindingHelper.initDateRangePickerBinding = (refs, path) => {
+   const rangeCalls = [];
+   const singleCalls = [];
+   const dateTimeCalls = [];
+   DatePickersBindingHelper.initDateRangePickerBinding = (_wiredRefs, path) => {
       rangeCalls.push(path);
    };
-   DatePickersBindingHelper.initSingleDatePickerBinding = (refs, path) => {
+   DatePickersBindingHelper.initSingleDatePickerBinding = (_wiredRefs, path) => {
       singleCalls.push(path);
    };
-   DatePickersBindingHelper.initDateTimePickerBinding = (refs, binding) => {
+   DatePickersBindingHelper.initDateTimePickerBinding = (_wiredRefs, binding) => {
       dateTimeCalls.push(binding);
    };
    ConsoleDateFactory.initAttractionHoursSchedulePickers = () => ({ wired: true });
 
    try {
-      const refs = {
-         attractions: {
-            hoursSchedule: { start: 's' },
-         },
-      };
       DateFactory.wireConsoleOperationDatePickers(refs);
 
       assert.equal(rangeCalls.length, DateFactory.DATE_PICKER_BINDINGS.dateRanges.length);

@@ -3,6 +3,7 @@ from __future__ import annotations
 from api.itinerary.routing.transit_ride_endpoint import TransitRideEndpoint
 from api.itinerary.routing.transportation_boarding_station_resolver import TransportationBoardingStationResolver
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
 
 
@@ -36,17 +37,23 @@ TRANSPORTATION_LEGS = [
 
 
 def Test_BoardingStationForLegs_TestMultiLegRide_ExpectFirstFromStation() -> None:
-   assert TransportationBoardingStationResolver.boarding_station_for_legs(
-      TRANSPORTATION_LEGS ) == MAIN_STATION
+   station = TransportationBoardingStationResolver.boarding_station_for_legs(
+      TRANSPORTATION_LEGS )
+
+   assert station == TRANSPORTATION_LEGS[ Position.FIRST ].from_station
 
 
 def Test_StationForLegs_TestOnboardingEndpoint_ExpectFirstFromStation() -> None:
-   assert TransportationBoardingStationResolver.station_for_legs(
+   station = TransportationBoardingStationResolver.station_for_legs(
       TRANSPORTATION_LEGS,
-      TransitRideEndpoint.ONBOARDING ) == MAIN_STATION
+      TransitRideEndpoint.ONBOARDING )
+
+   assert station == TRANSPORTATION_LEGS[ Position.FIRST ].from_station
 
 
 def Test_StationForLegs_TestOffboardingEndpoint_ExpectLastToStation() -> None:
-   assert TransportationBoardingStationResolver.station_for_legs(
+   station = TransportationBoardingStationResolver.station_for_legs(
       TRANSPORTATION_LEGS,
-      TransitRideEndpoint.OFFBOARDING ) == EURASIA_STATION
+      TransitRideEndpoint.OFFBOARDING )
+
+   assert station == TRANSPORTATION_LEGS[ Position.LAST ].to_station

@@ -5,9 +5,18 @@ import { DayPlannerController } from '../../../../../scripts/itinerary/panel/com
 import { DayPlannerScheduleController } from '../../../../../scripts/itinerary/panel/dayPlannerScheduleController.js';
 import { ItineraryPanelHelper } from '../../../../../scripts/itinerary/panel/itineraryPanelHelper.js';
 import { ItineraryTimeView } from '../../../../../scripts/itinerary/panel/components/itineraryTimeView.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
+function _createElement(tag, className, text) {
+   const el = document.createElement(tag);
+   if (className) el.className = className;
+   if (text != null) el.textContent = text;
+   return el;
+}
+
 installDomTestHooks();
+
 
 test('Test_MakeDayPlannerControls_TestArrivalAndDeparture_ExpectWiredInputs', () => {
    const originalEl = ItineraryPanelHelper.el;
@@ -16,36 +25,35 @@ test('Test_MakeDayPlannerControls_TestArrivalAndDeparture_ExpectWiredInputs', ()
    const originalArrivalError = DayPlannerScheduleController.resolveArrivalTimeValidationError;
    const originalDepartureError = DayPlannerScheduleController.resolveDepartureTimeValidationError;
    const originalTimeInput = ItineraryTimeView.makeItineraryTimeInput;
+   const visitDate = '2026-06-01';
+   const arrivalTime = '10:00';
+   const departureTime = '16:00';
+   const arrivalLabel = 'Arrival';
+   const departureLabel = 'Departure';
+   const arrivalError = 'arrival bad';
    const timeConfigs = [];
 
-   ItineraryPanelHelper.el = (tag, className, text) => {
-      const el = document.createElement(tag);
-      if (className) el.className = className;
-      if (text != null) el.textContent = text;
-      return el;
-   };
+   ItineraryPanelHelper.el = _createElement;
    DayPlannerScheduleController.buildArrivalTimeBounds = () => ({ min: '09:00' });
    DayPlannerScheduleController.buildDepartureTimeBounds = () => ({ max: '18:00' });
-   DayPlannerScheduleController.resolveArrivalTimeValidationError = () => 'arrival bad';
+   DayPlannerScheduleController.resolveArrivalTimeValidationError = () => arrivalError;
    DayPlannerScheduleController.resolveDepartureTimeValidationError = () => null;
    ItineraryTimeView.makeItineraryTimeInput = (config) => {
       timeConfigs.push(config);
-      const el = document.createElement('div');
-      el.className = 'time-input';
-      return el;
+      return _createElement('div', 'time-input');
    };
 
    try {
       const controls = DayPlannerController.makeDayPlannerControls(
-         '2026-06-01',
-         { arrivalTime: '10:00', departureTime: '16:00' },
+         visitDate,
+         { arrivalTime, departureTime },
          {
             onArrivalTimeChange: () => {},
             onDepartureTimeChange: () => {},
          },
          {
-            arrivalInputLabel: 'Arrival',
-            departureInputLabel: 'Departure',
+            arrivalInputLabel: arrivalLabel,
+            departureInputLabel: departureLabel,
             clearArrivalTimeAria: 'Clear arrival',
             clearDepartureTimeAria: 'Clear departure',
             arrivalTimeInvalid: 'Arrival invalid',
@@ -53,16 +61,18 @@ test('Test_MakeDayPlannerControls_TestArrivalAndDeparture_ExpectWiredInputs', ()
          },
          { open: '09:00', close: '18:00' }
       );
+      const arrivalConfig = timeConfigs.at(Position.FIRST);
+      const departureConfig = timeConfigs.at(Position.SECOND);
 
       assert.equal(controls.className, 'itinerary-day-module-controls');
-      assert.equal(controls.children[0].textContent, '2026-06-01');
+      assert.equal(controls.children.at(Position.FIRST).textContent, visitDate);
       assert.equal(timeConfigs.length, 2);
-      assert.equal(timeConfigs[0].label, 'Arrival');
-      assert.equal(timeConfigs[0].value, '10:00');
-      assert.equal(timeConfigs[0].validateTime('10:00'), false);
-      assert.equal(timeConfigs[0].resolveInvalidMessage('10:00'), 'arrival bad');
-      assert.equal(timeConfigs[1].label, 'Departure');
-      assert.equal(timeConfigs[1].validateTime('16:00'), true);
+      assert.equal(arrivalConfig.label, arrivalLabel);
+      assert.equal(arrivalConfig.value, arrivalTime);
+      assert.equal(arrivalConfig.validateTime(arrivalTime), false);
+      assert.equal(arrivalConfig.resolveInvalidMessage(arrivalTime), arrivalError);
+      assert.equal(departureConfig.label, departureLabel);
+      assert.equal(departureConfig.validateTime(departureTime), true);
    } finally {
       ItineraryPanelHelper.el = originalEl;
       DayPlannerScheduleController.buildArrivalTimeBounds = originalArrivalBounds;
@@ -73,25 +83,17 @@ test('Test_MakeDayPlannerControls_TestArrivalAndDeparture_ExpectWiredInputs', ()
    }
 });
 
+
 test('Test_MakeDayPlannerControls_TestEmptyDate_ExpectOmitsDateLabel', () => {
    const originalEl = ItineraryPanelHelper.el;
    const originalArrivalBounds = DayPlannerScheduleController.buildArrivalTimeBounds;
    const originalDepartureBounds = DayPlannerScheduleController.buildDepartureTimeBounds;
    const originalTimeInput = ItineraryTimeView.makeItineraryTimeInput;
 
-   ItineraryPanelHelper.el = (tag, className, text) => {
-      const el = document.createElement(tag);
-      if (className) el.className = className;
-      if (text != null) el.textContent = text;
-      return el;
-   };
+   ItineraryPanelHelper.el = _createElement;
    DayPlannerScheduleController.buildArrivalTimeBounds = () => null;
    DayPlannerScheduleController.buildDepartureTimeBounds = () => null;
-   ItineraryTimeView.makeItineraryTimeInput = () => {
-      const el = document.createElement('div');
-      el.className = 'time-input';
-      return el;
-   };
+   ItineraryTimeView.makeItineraryTimeInput = () => _createElement('div', 'time-input');
 
    try {
       const controls = DayPlannerController.makeDayPlannerControls(

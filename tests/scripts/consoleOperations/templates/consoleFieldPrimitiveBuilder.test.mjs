@@ -6,17 +6,32 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_CreateFieldWrapperAndLabel_TestBasics_ExpectElements', () => {
+
+test('Test_CreateFieldWrapper_TestBasics_ExpectFieldClass', () => {
    const fieldEl = ConsoleFieldPrimitiveBuilder.createFieldWrapper();
-   const labelEl = ConsoleFieldPrimitiveBuilder.createLabel({ text: 'Name', htmlFor: 'name' });
+
    assert.equal(fieldEl.className, 'console-operations-field');
-   assert.equal(labelEl.textContent, 'Name');
-   assert.equal(labelEl.htmlFor, 'name');
 });
+
+
+test('Test_CreateLabel_TestTextAndFor_ExpectLabel', () => {
+   const text = 'Name';
+   const htmlFor = 'name';
+
+   const labelEl = ConsoleFieldPrimitiveBuilder.createLabel({ text, htmlFor });
+
+   assert.equal(labelEl.textContent, text);
+   assert.equal(labelEl.htmlFor, htmlFor);
+});
+
 
 test('Test_AppendChildren_TestNested_ExpectAppended', () => {
    const parent = document.createElement('div');
    const child = document.createElement('span');
-   ConsoleFieldPrimitiveBuilder.appendChildren(parent, [child, null, [document.createElement('em')]]);
-   assert.equal(parent.children.length, 2);
+   const nested = document.createElement('em');
+   const children = [child, null, [nested]];
+
+   const parentEl = ConsoleFieldPrimitiveBuilder.appendChildren(parent, children);
+
+   assert.equal(parentEl.children.length, [child, nested].length);
 });

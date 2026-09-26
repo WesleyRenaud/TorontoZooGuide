@@ -16,6 +16,7 @@ AFRICA = 'Africa'
 AMERICAS = 'Americas'
 EURASIA = 'Eurasia'
 INDO_MALAYA = 'Indo-Malaya'
+CANADIAN_DOMAIN = 'Canadian Domain'
 AFRICA_RECORD = TransportationStationRecord(
    name=AFRICA,
    description='Africa station',
@@ -34,6 +35,7 @@ EURASIA_RECORD = TransportationStationRecord(
    x_coord=5.0,
    y_coord=6.0,
 )
+
 
 def _leg(
       *,
@@ -73,159 +75,178 @@ def stub_station_records(
 
 
 def Test_GroupConsecutiveLegSequences_TestContinuousLegs_ExpectOneSequence() -> None:
-   legs = [
-      _leg(
-         from_station=AFRICA,
-         to_station=AMERICAS,
-         start_time='10:00 AM',
-         end_time='10:10 AM' ),
-      _leg(
-         from_station=AMERICAS,
-         to_station=EURASIA,
-         start_time='10:10 AM',
-         end_time='10:20 AM' ),
-   ]
+   first_leg = _leg(
+      from_station=AFRICA,
+      to_station=AMERICAS,
+      start_time='10:00 AM',
+      end_time='10:10 AM' )
+   second_leg = _leg(
+      from_station=AMERICAS,
+      to_station=EURASIA,
+      start_time=first_leg.end_time,
+      end_time='10:20 AM' )
+   legs = [ first_leg, second_leg ]
 
    sequences = ItineraryTransportationStationsBuilder.group_consecutive_leg_sequences( legs )
 
-   assert len( sequences ) == 1
-   assert [ ( leg.from_station, leg.to_station ) for leg in sequences[ Position.FIRST ] ] == [
-      ( AFRICA, AMERICAS ),
-      ( AMERICAS, EURASIA ),
-   ]
+   assert sequences == [ legs ]
 
 
-def Test_GroupConsecutiveLegSequences_TestStationOrTimeGap_ExpectSplitSequences() -> None:
-   legs = [
-      _leg(
-         from_station=AFRICA,
-         to_station=AMERICAS,
-         start_time='10:00 AM',
-         end_time='10:10 AM' ),
-      _leg(
-         from_station=EURASIA,
-         to_station=INDO_MALAYA,
-         start_time='10:10 AM',
-         end_time='10:20 AM' ),
-      _leg(
-         from_station=INDO_MALAYA,
-         to_station='Canadian Domain',
-         start_time='11:00 AM',
-         end_time='11:10 AM' ),
-   ]
+def Test_GroupConsecutiveLegSequences_TestStationGap_ExpectSplitSequences() -> None:
+   first_leg = _leg(
+      from_station=AFRICA,
+      to_station=AMERICAS,
+      start_time='10:00 AM',
+      end_time='10:10 AM' )
+   second_leg = _leg(
+      from_station=EURASIA,
+      to_station=INDO_MALAYA,
+      start_time=first_leg.end_time,
+      end_time='10:20 AM' )
+   legs = [ first_leg, second_leg ]
 
    sequences = ItineraryTransportationStationsBuilder.group_consecutive_leg_sequences( legs )
 
-   assert [
-      [ ( leg.from_station, leg.to_station ) for leg in sequence ]
-      for sequence in sequences
-   ] == [
-      [ ( AFRICA, AMERICAS ) ],
-      [ ( EURASIA, INDO_MALAYA ) ],
-      [ ( INDO_MALAYA, 'Canadian Domain' ) ],
+   assert sequences == [
+      [ legs[ Position.FIRST ] ],
+      [ legs[ Position.SECOND ] ],
+   ]
+
+
+def Test_GroupConsecutiveLegSequences_TestTimeGap_ExpectSplitSequences() -> None:
+   first_leg = _leg(
+      from_station=EURASIA,
+      to_station=INDO_MALAYA,
+      start_time='10:10 AM',
+      end_time='10:20 AM' )
+   second_leg = _leg(
+      from_station=INDO_MALAYA,
+      to_station=CANADIAN_DOMAIN,
+      start_time='11:00 AM',
+      end_time='11:10 AM' )
+   legs = [ first_leg, second_leg ]
+
+   sequences = ItineraryTransportationStationsBuilder.group_consecutive_leg_sequences( legs )
+
+   assert sequences == [
+      [ legs[ Position.FIRST ] ],
+      [ legs[ Position.SECOND ] ],
    ]
 
 
 def Test_UniqueStationNames_TestDuplicatesAndEmpty_ExpectOrderPreservedUniques() -> None:
-   assert ItineraryTransportationStationsBuilder._unique_station_names(
-      [ AFRICA, '', AMERICAS, AFRICA, EURASIA, AMERICAS ]
-   ) == [ AFRICA, AMERICAS, EURASIA ]
+   names = [ AFRICA, '', AMERICAS, AFRICA, EURASIA, AMERICAS ]
+
+   unique_names = ItineraryTransportationStationsBuilder._unique_station_names( names )
+
+   assert unique_names == [ AFRICA, AMERICAS, EURASIA ]
 
 
 def Test_StationRolesForTransportation_TestSingleRide_ExpectOnboardAndOffboard() -> None:
-   transportation = _transportation(
-      [
-         _leg(
-            from_station=AFRICA,
-            to_station=AMERICAS,
-            start_time='10:00 AM',
-            end_time='10:10 AM' ),
-         _leg(
-            from_station=AMERICAS,
-            to_station=EURASIA,
-            start_time='10:10 AM',
-            end_time='10:20 AM' ),
-      ] )
+   first_leg = _leg(
+      from_station=AFRICA,
+      to_station=AMERICAS,
+      start_time='10:00 AM',
+      end_time='10:10 AM' )
+   second_leg = _leg(
+      from_station=AMERICAS,
+      to_station=EURASIA,
+      start_time=first_leg.end_time,
+      end_time='10:20 AM' )
+   transportation = _transportation( [ first_leg, second_leg ] )
 
    roles = ItineraryTransportationStationsBuilder._station_roles_for_transportation(
       transportation )
 
    assert roles == {
-      AFRICA: ItineraryTransportationStationRole.ONBOARDING,
-      EURASIA: ItineraryTransportationStationRole.OFFBOARDING,
+      first_leg.from_station: ItineraryTransportationStationRole.ONBOARDING,
+      second_leg.to_station: ItineraryTransportationStationRole.OFFBOARDING,
    }
 
 
 def Test_StationRolesForTransportation_TestReturnRide_ExpectRoundTripStations() -> None:
-   transportation = _transportation(
-      [
-         _leg(
-            from_station=AFRICA,
-            to_station=AMERICAS,
-            start_time='10:00 AM',
-            end_time='10:10 AM' ),
-         _leg(
-            from_station=AMERICAS,
-            to_station=AFRICA,
-            start_time='11:00 AM',
-            end_time='11:10 AM' ),
-      ] )
+   outbound = _leg(
+      from_station=AFRICA,
+      to_station=AMERICAS,
+      start_time='10:00 AM',
+      end_time='10:10 AM' )
+   return_ride = _leg(
+      from_station=AMERICAS,
+      to_station=AFRICA,
+      start_time='11:00 AM',
+      end_time='11:10 AM' )
+   transportation = _transportation( [ outbound, return_ride ] )
 
    roles = ItineraryTransportationStationsBuilder._station_roles_for_transportation(
       transportation )
 
    assert roles == {
-      AFRICA: ItineraryTransportationStationRole.ROUND_TRIP,
-      AMERICAS: ItineraryTransportationStationRole.ROUND_TRIP,
+      outbound.from_station: ItineraryTransportationStationRole.ROUND_TRIP,
+      outbound.to_station: ItineraryTransportationStationRole.ROUND_TRIP,
    }
 
 
 def Test_StationRolesForTransportation_TestEmptyLegs_ExpectEmptyRoles() -> None:
-   assert ItineraryTransportationStationsBuilder._station_roles_for_transportation(
-      _transportation( [] ) ) == {}
+   transportation = _transportation( [] )
+
+   roles = ItineraryTransportationStationsBuilder._station_roles_for_transportation(
+      transportation )
+
+   assert roles == {}
 
 
 def Test_StationRecordByName_TestRecords_ExpectNameKeyedMap() -> None:
    records = [ AFRICA_RECORD, AMERICAS_RECORD ]
 
-   assert ItineraryTransportationStationsBuilder._station_record_by_name( records ) == {
-      AFRICA: AFRICA_RECORD,
-      AMERICAS: AMERICAS_RECORD,
+   records_by_name = ItineraryTransportationStationsBuilder._station_record_by_name(
+      records )
+
+   assert records_by_name == {
+      record.name: record
+      for record in records
    }
 
 
 def Test_BuildStationsForTransportation_TestOnboardOffboard_ExpectStationsFromRecords(
       stub_station_records: None ) -> None:
-   transportation = _transportation(
-      [
-         _leg(
-            from_station=AFRICA,
-            to_station=AMERICAS,
-            start_time='10:00 AM',
-            end_time='10:10 AM' ),
-         _leg(
-            from_station=AMERICAS,
-            to_station=EURASIA,
-            start_time='10:10 AM',
-            end_time='10:20 AM' ),
-      ] )
+   first_leg = _leg(
+      from_station=AFRICA,
+      to_station=AMERICAS,
+      start_time='10:00 AM',
+      end_time='10:10 AM' )
+   second_leg = _leg(
+      from_station=AMERICAS,
+      to_station=EURASIA,
+      start_time=first_leg.end_time,
+      end_time='10:20 AM' )
+   transportation = _transportation( [ first_leg, second_leg ] )
 
    stations = ItineraryTransportationStationsBuilder.build_stations_for_transportation(
       transportation )
 
-   assert [
-      ( station.name, station.role, station.description, station.x_coord, station.y_coord )
-      for station in stations
-   ] == [
-      ( AFRICA, ItineraryTransportationStationRole.ONBOARDING, 'Africa station', 1.0, 2.0 ),
-      ( EURASIA, ItineraryTransportationStationRole.OFFBOARDING, 'Eurasia station', 5.0, 6.0 ),
-   ]
+   onboard = stations[ Position.FIRST ]
+   offboard = stations[ Position.SECOND ]
+
+   assert onboard.name == AFRICA_RECORD.name
+   assert onboard.role == ItineraryTransportationStationRole.ONBOARDING
+   assert onboard.description == AFRICA_RECORD.description
+   assert onboard.x_coord == AFRICA_RECORD.x_coord
+   assert onboard.y_coord == AFRICA_RECORD.y_coord
+   assert offboard.name == EURASIA_RECORD.name
+   assert offboard.role == ItineraryTransportationStationRole.OFFBOARDING
+   assert offboard.description == EURASIA_RECORD.description
+   assert offboard.x_coord == EURASIA_RECORD.x_coord
+   assert offboard.y_coord == EURASIA_RECORD.y_coord
 
 
 def Test_BuildStationsForTransportation_TestNoRoles_ExpectEmptyList(
       stub_station_records: None ) -> None:
-   assert ItineraryTransportationStationsBuilder.build_stations_for_transportation(
-      _transportation( [] ) ) == []
+   transportation = _transportation( [] )
+
+   stations = ItineraryTransportationStationsBuilder.build_stations_for_transportation(
+      transportation )
+
+   assert stations == []
 
 
 def Test_AttachToTransportations_TestMultipleRides_ExpectStationsAttachedAndFlattened(
@@ -255,23 +276,17 @@ def Test_AttachToTransportations_TestMultipleRides_ExpectStationsAttachedAndFlat
    flattened = ItineraryTransportationStationsBuilder.attach_to_transportations(
       [ first, second ] )
 
-   assert [
-      ( station.name, station.role )
-      for station in first.stations
-   ] == [
-      ( AFRICA, ItineraryTransportationStationRole.ONBOARDING ),
-      ( AMERICAS, ItineraryTransportationStationRole.OFFBOARDING ),
-   ]
-   assert [
-      ( station.name, station.role )
-      for station in second.stations
-   ] == [
-      ( AMERICAS, ItineraryTransportationStationRole.ROUND_TRIP ),
-      ( EURASIA, ItineraryTransportationStationRole.ROUND_TRIP ),
-   ]
-   assert [ station.name for station in flattened ] == [
-      AFRICA,
-      AMERICAS,
-      AMERICAS,
-      EURASIA,
-   ]
+   first_onboard = first.stations[ Position.FIRST ]
+   first_offboard = first.stations[ Position.SECOND ]
+   second_americas = second.stations[ Position.FIRST ]
+   second_eurasia = second.stations[ Position.SECOND ]
+
+   assert first_onboard.name == AFRICA
+   assert first_onboard.role == ItineraryTransportationStationRole.ONBOARDING
+   assert first_offboard.name == AMERICAS
+   assert first_offboard.role == ItineraryTransportationStationRole.OFFBOARDING
+   assert second_americas.name == AMERICAS
+   assert second_americas.role == ItineraryTransportationStationRole.ROUND_TRIP
+   assert second_eurasia.name == EURASIA
+   assert second_eurasia.role == ItineraryTransportationStationRole.ROUND_TRIP
+   assert flattened == first.stations + second.stations

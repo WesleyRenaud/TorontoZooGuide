@@ -7,9 +7,10 @@ import { ConsoleDateRangeFieldsBuilder } from '../../../../scripts/consoleOperat
 import { ConsolePanelShellBuilder } from '../../../../scripts/consoleOperations/templates/consolePanelShellBuilder.js';
 import { ConsoleStatusBuilder } from '../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { ConsoleTextareaFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleTextareaFieldBuilder.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
 
-test('Test_CreatePanel_TestOpenConfig_ExpectDateRangeOnly', () => {
+function _installBuilderMocks() {
    const originals = {
       createPanelShell: ConsolePanelShellBuilder.createPanelShell,
       createDateRangeFields: ConsoleDateRangeFieldsBuilder.createDateRangeFields,
@@ -17,12 +18,13 @@ test('Test_CreatePanel_TestOpenConfig_ExpectDateRangeOnly', () => {
       createActions: ConsoleActionsBuilder.createActions,
       createStatus: ConsoleStatusBuilder.createStatus,
    };
-
+   const panel = { panel: true };
    let captured;
    let textareaCalls = 0;
+
    ConsolePanelShellBuilder.createPanelShell = (options) => {
       captured = options;
-      return { panel: true };
+      return panel;
    };
    ConsoleDateRangeFieldsBuilder.createDateRangeFields = (options) => ({ kind: 'createDateRangeFields', ...options });
    ConsoleTextareaFieldBuilder.createTextareaField = (options) => {
@@ -32,87 +34,95 @@ test('Test_CreatePanel_TestOpenConfig_ExpectDateRangeOnly', () => {
    ConsoleActionsBuilder.createActions = (options) => ({ kind: 'createActions', ...options });
    ConsoleStatusBuilder.createStatus = (options) => ({ kind: 'createStatus', ...options });
 
+   return {
+      panel,
+      getCaptured: () => captured,
+      getTextareaCalls: () => textareaCalls,
+      restore() {
+         ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
+         ConsoleDateRangeFieldsBuilder.createDateRangeFields = originals.createDateRangeFields;
+         ConsoleTextareaFieldBuilder.createTextareaField = originals.createTextareaField;
+         ConsoleActionsBuilder.createActions = originals.createActions;
+         ConsoleStatusBuilder.createStatus = originals.createStatus;
+      },
+   };
+}
+
+
+test('Test_CreatePanel_TestOpenConfig_ExpectDateRangeOnly', () => {
+   const mocks = _installBuilderMocks();
+   const panelId = 'drinkingFountainsOpenPanel';
+   const title = Strings.panelTitles.drinkingFountainsOpen;
+   const idPrefix = 'drinkingFountainsOpen';
+   const endHelpText = Strings.help.keepExplicitlyOpenUntilChanged('drinking fountains', 'they are');
+   const submitId = 'submitDrinkingFountainsOpen';
+   const statusId = 'drinkingFountainsOpenStatus';
+
    try {
       const result = GlobalAmenityStatusPanelBuilder.createPanel({
-         panelId: 'drinkingFountainsOpenPanel',
-         title: Strings.panelTitles.drinkingFountainsOpen,
-         idPrefix: 'drinkingFountainsOpen',
-         endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('drinking fountains', 'they are'),
-         submitId: 'submitDrinkingFountainsOpen',
-         statusId: 'drinkingFountainsOpenStatus',
+         panelId,
+         title,
+         idPrefix,
+         endHelpText,
+         submitId,
+         statusId,
       });
 
-      assert.deepEqual(result, { panel: true });
-      assert.equal(captured.panelId, 'drinkingFountainsOpenPanel');
-      assert.equal(captured.title, Strings.panelTitles.drinkingFountainsOpen);
-      assert.equal(captured.bodyChildren.length, 3);
-      assert.equal(captured.bodyChildren[0].startDateId, 'drinkingFountainsOpenStartDate');
-      assert.equal(captured.bodyChildren[0].startHelpText, Strings.help.startImmediately);
-      assert.equal(captured.bodyChildren[0].endDateId, 'drinkingFountainsOpenEndDate');
-      assert.equal(
-         captured.bodyChildren[0].endHelpText,
-         Strings.help.keepExplicitlyOpenUntilChanged('drinking fountains', 'they are')
-      );
-      assert.equal(captured.bodyChildren[1].submitId, 'submitDrinkingFountainsOpen');
-      assert.equal(captured.bodyChildren[2].statusId, 'drinkingFountainsOpenStatus');
-      assert.equal(textareaCalls, 0);
+      const captured = mocks.getCaptured();
+      const dateRange = captured.bodyChildren[Position.FIRST];
+      const actions = captured.bodyChildren[Position.SECOND];
+      const status = captured.bodyChildren[Position.THIRD];
+      assert.equal(result, mocks.panel);
+      assert.equal(captured.panelId, panelId);
+      assert.equal(captured.title, title);
+      assert.equal(dateRange.startDateId, `${idPrefix}StartDate`);
+      assert.equal(dateRange.startHelpText, Strings.help.startImmediately);
+      assert.equal(dateRange.endDateId, `${idPrefix}EndDate`);
+      assert.equal(dateRange.endHelpText, endHelpText);
+      assert.equal(actions.submitId, submitId);
+      assert.equal(status.statusId, statusId);
+      assert.equal(mocks.getTextareaCalls(), 0);
    } finally {
-      ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
-      ConsoleDateRangeFieldsBuilder.createDateRangeFields = originals.createDateRangeFields;
-      ConsoleTextareaFieldBuilder.createTextareaField = originals.createTextareaField;
-      ConsoleActionsBuilder.createActions = originals.createActions;
-      ConsoleStatusBuilder.createStatus = originals.createStatus;
+      mocks.restore();
    }
 });
 
-test('Test_CreatePanel_TestClosedConfig_ExpectDateRangeAndMessage', () => {
-   const originals = {
-      createPanelShell: ConsolePanelShellBuilder.createPanelShell,
-      createDateRangeFields: ConsoleDateRangeFieldsBuilder.createDateRangeFields,
-      createTextareaField: ConsoleTextareaFieldBuilder.createTextareaField,
-      createActions: ConsoleActionsBuilder.createActions,
-      createStatus: ConsoleStatusBuilder.createStatus,
-   };
 
-   let captured;
-   ConsolePanelShellBuilder.createPanelShell = (options) => {
-      captured = options;
-      return { panel: true };
-   };
-   ConsoleDateRangeFieldsBuilder.createDateRangeFields = (options) => ({ kind: 'createDateRangeFields', ...options });
-   ConsoleTextareaFieldBuilder.createTextareaField = (options) => ({ kind: 'createTextareaField', ...options });
-   ConsoleActionsBuilder.createActions = (options) => ({ kind: 'createActions', ...options });
-   ConsoleStatusBuilder.createStatus = (options) => ({ kind: 'createStatus', ...options });
+test('Test_CreatePanel_TestClosedConfig_ExpectDateRangeAndMessage', () => {
+   const mocks = _installBuilderMocks();
+   const idPrefix = 'drinkingFountainsClosed';
+   const endHelpText = Strings.help.continueUntilReopened('drinking fountains');
+   const messageLabel = Strings.labels.closedMessage;
+   const messagePlaceholder = Strings.textareas.drinkingFountainsClosedMessage;
+   const submitId = 'submitDrinkingFountainsClosed';
+   const statusId = 'drinkingFountainsClosedStatus';
 
    try {
       GlobalAmenityStatusPanelBuilder.createPanel({
          panelId: 'drinkingFountainsClosedPanel',
          title: Strings.panelTitles.drinkingFountainsClosed,
-         idPrefix: 'drinkingFountainsClosed',
-         endHelpText: Strings.help.continueUntilReopened('drinking fountains'),
+         idPrefix,
+         endHelpText,
          includeMessage: true,
-         messageLabel: Strings.labels.closedMessage,
-         messagePlaceholder: Strings.textareas.drinkingFountainsClosedMessage,
-         submitId: 'submitDrinkingFountainsClosed',
-         statusId: 'drinkingFountainsClosedStatus',
+         messageLabel,
+         messagePlaceholder,
+         submitId,
+         statusId,
       });
 
-      assert.equal(captured.bodyChildren.length, 4);
-      assert.equal(captured.bodyChildren[0].startDateId, 'drinkingFountainsClosedStartDate');
-      assert.equal(captured.bodyChildren[0].endHelpText, Strings.help.continueUntilReopened('drinking fountains'));
-      assert.equal(captured.bodyChildren[1].label, Strings.labels.closedMessage);
-      assert.equal(captured.bodyChildren[1].inputId, 'drinkingFountainsClosedMessage');
-      assert.equal(
-         captured.bodyChildren[1].placeholder,
-         Strings.textareas.drinkingFountainsClosedMessage
-      );
-      assert.equal(captured.bodyChildren[2].submitId, 'submitDrinkingFountainsClosed');
-      assert.equal(captured.bodyChildren[3].statusId, 'drinkingFountainsClosedStatus');
+      const captured = mocks.getCaptured();
+      const dateRange = captured.bodyChildren[Position.FIRST];
+      const messageField = captured.bodyChildren[Position.SECOND];
+      const actions = captured.bodyChildren[Position.THIRD];
+      const status = captured.bodyChildren[Position.FOURTH];
+      assert.equal(dateRange.startDateId, `${idPrefix}StartDate`);
+      assert.equal(dateRange.endHelpText, endHelpText);
+      assert.equal(messageField.label, messageLabel);
+      assert.equal(messageField.inputId, `${idPrefix}Message`);
+      assert.equal(messageField.placeholder, messagePlaceholder);
+      assert.equal(actions.submitId, submitId);
+      assert.equal(status.statusId, statusId);
    } finally {
-      ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
-      ConsoleDateRangeFieldsBuilder.createDateRangeFields = originals.createDateRangeFields;
-      ConsoleTextareaFieldBuilder.createTextareaField = originals.createTextareaField;
-      ConsoleActionsBuilder.createActions = originals.createActions;
-      ConsoleStatusBuilder.createStatus = originals.createStatus;
+      mocks.restore();
    }
 });

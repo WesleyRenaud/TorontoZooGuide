@@ -121,7 +121,9 @@ def _insert_attraction(
 
 def Test_FetchAttractionNames_TestEmpty_ExpectEmptyList(
       attraction_provider_conn: sqlite3.Connection ) -> None:
-   assert AttractionProvider.fetch_attraction_names( attraction_provider_conn ) == []
+   attraction_names = AttractionProvider.fetch_attraction_names( attraction_provider_conn )
+
+   assert attraction_names == []
 
 
 def Test_FetchAttractionNames_TestPopulated_ExpectNames(
@@ -261,10 +263,12 @@ def Test_FetchAttractionRecords_TestHoursOutsideVisitDate_ExpectNullHours(
 
 def Test_FetchAttractionRecordForCalendarDay_TestMissingAttraction_ExpectNone(
       attraction_provider_conn: sqlite3.Connection ) -> None:
-   assert AttractionProvider.fetch_attraction_record_for_calendar_day(
+   attraction_record_for_calendar_day = AttractionProvider.fetch_attraction_record_for_calendar_day(
       attraction_provider_conn,
       CAROUSEL,
-      VISIT_DATE ) is None
+      VISIT_DATE )
+
+   assert attraction_record_for_calendar_day is None
 
 
 def Test_FetchAttractionRecordForCalendarDay_TestOpenEndedHours_ExpectJoinedHours(
@@ -314,8 +318,10 @@ def Test_FetchAttractionRecordForCalendarDay_TestOpenEndedHours_ExpectJoinedHour
 
 def Test_FetchAttractionScheduleRecords_TestEmpty_ExpectEmptyList(
       attraction_provider_conn: sqlite3.Connection ) -> None:
-   assert AttractionProvider.fetch_attraction_schedule_records(
-      attraction_provider_conn ) == []
+   attraction_schedule_records = AttractionProvider.fetch_attraction_schedule_records(
+      attraction_provider_conn )
+
+   assert attraction_schedule_records == []
 
 
 def Test_FetchAttractionScheduleRecords_TestPopulated_ExpectMappedFields(
@@ -357,8 +363,10 @@ def Test_FetchAttractionScheduleRecords_TestPopulated_ExpectMappedFields(
 
 def Test_FetchAttractionScheduleOverrideRecords_TestEmpty_ExpectEmptyList(
       attraction_provider_conn: sqlite3.Connection ) -> None:
-   assert AttractionProvider.fetch_attraction_schedule_override_records(
-      attraction_provider_conn ) == []
+   attraction_schedule_override_records = AttractionProvider.fetch_attraction_schedule_override_records(
+      attraction_provider_conn )
+
+   assert attraction_schedule_override_records == []
 
 
 def Test_FetchAttractionScheduleOverrideRecords_TestPopulated_ExpectMappedFields(

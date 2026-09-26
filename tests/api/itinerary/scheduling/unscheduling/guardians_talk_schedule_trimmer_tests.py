@@ -5,6 +5,7 @@ import pytest
 from api.itinerary.scheduling.unscheduling.guardians_talk_schedule_trimmer import GuardiansTalkScheduleTrimmer
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 
 
@@ -25,8 +26,8 @@ def Test_Apply_TestWildEncounterBlocker_ExpectTalkShiftedAfterEncounter() -> Non
 
    trimmed_talks = GuardiansTalkScheduleTrimmer.apply( [ talk ], [ encounter ] )
 
-   assert trimmed_talks[ Position.FIRST ].start_time == '1:45 PM'
-   assert trimmed_talks[ Position.FIRST ].end_time == '2:00 PM'
+   assert trimmed_talks[ Position.FIRST ].start_time == encounter.end_time
+   assert trimmed_talks[ Position.FIRST ].end_time == talk.end_time
 
 
 def Test_Apply_TestEarlierTalkPrecedence_ExpectLaterTalkShifted() -> None:
@@ -48,59 +49,84 @@ def Test_Apply_TestEarlierTalkPrecedence_ExpectLaterTalkShifted() -> None:
       [],
    )
 
-   assert trimmed_talks[ Position.FIRST ].start_time == '1:30 PM'
-   assert trimmed_talks[ Position.FIRST ].end_time == '2:00 PM'
-   assert trimmed_talks[ Position.SECOND ].start_time == '2:00 PM'
-   assert trimmed_talks[ Position.SECOND ].end_time == '2:15 PM'
+   assert trimmed_talks[ Position.FIRST ].start_time == first_talk.start_time
+   assert trimmed_talks[ Position.FIRST ].end_time == first_talk.end_time
+   assert trimmed_talks[ Position.SECOND ].start_time == first_talk.end_time
+   assert trimmed_talks[ Position.SECOND ].end_time == second_talk.end_time
 
 
 def Test_TrimRangeAgainstBlocker_TestBlockerCoversStart_ExpectShiftedStart() -> None:
-   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
-      start=810,
-      end=900,
-      blocker_start=780,
-      blocker_end=855 )
+   talk_start = DateValues.time_value_in_minutes( '1:30 PM' )
+   talk_end = DateValues.time_value_in_minutes( '3:00 PM' )
+   blocker_start = DateValues.time_value_in_minutes( '1:00 PM' )
+   blocker_end = DateValues.time_value_in_minutes( '2:15 PM' )
 
-   assert ( start, end ) == ( 855, 900 )
+   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
+      start=talk_start,
+      end=talk_end,
+      blocker_start=blocker_start,
+      blocker_end=blocker_end )
+
+   assert ( start, end ) == ( blocker_end, talk_end )
 
 
 def Test_TrimRangeAgainstBlocker_TestBlockerCoversEnd_ExpectShiftedEnd() -> None:
-   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
-      start=810,
-      end=900,
-      blocker_start=855,
-      blocker_end=930 )
+   talk_start = DateValues.time_value_in_minutes( '1:30 PM' )
+   talk_end = DateValues.time_value_in_minutes( '3:00 PM' )
+   blocker_start = DateValues.time_value_in_minutes( '2:15 PM' )
+   blocker_end = DateValues.time_value_in_minutes( '3:30 PM' )
 
-   assert ( start, end ) == ( 810, 855 )
+   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
+      start=talk_start,
+      end=talk_end,
+      blocker_start=blocker_start,
+      blocker_end=blocker_end )
+
+   assert ( start, end ) == ( talk_start, blocker_start )
 
 
 def Test_TrimRangeAgainstBlocker_TestNoOverlap_ExpectUnchanged() -> None:
-   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
-      start=810,
-      end=900,
-      blocker_start=700,
-      blocker_end=780 )
+   talk_start = DateValues.time_value_in_minutes( '1:30 PM' )
+   talk_end = DateValues.time_value_in_minutes( '3:00 PM' )
+   blocker_start = DateValues.time_value_in_minutes( '11:40 AM' )
+   blocker_end = DateValues.time_value_in_minutes( '1:00 PM' )
 
-   assert ( start, end ) == ( 810, 900 )
+   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
+      start=talk_start,
+      end=talk_end,
+      blocker_start=blocker_start,
+      blocker_end=blocker_end )
+
+   assert ( start, end ) == ( talk_start, talk_end )
 
 
 def Test_TrimRangeAgainstBlocker_TestFullyCovered_ExpectValueError() -> None:
+   talk_start = DateValues.time_value_in_minutes( '1:30 PM' )
+   talk_end = DateValues.time_value_in_minutes( '3:00 PM' )
+   blocker_start = DateValues.time_value_in_minutes( '1:00 PM' )
+   blocker_end = DateValues.time_value_in_minutes( '3:30 PM' )
+
    with pytest.raises( ValueError ):
       GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
-         start=810,
-         end=900,
-         blocker_start=780,
-         blocker_end=930 )
+         start=talk_start,
+         end=talk_end,
+         blocker_start=blocker_start,
+         blocker_end=blocker_end )
 
 
 def Test_TrimRangeAgainstBlocker_TestInternalBlocker_ExpectShiftedToAfterBlocker() -> None:
-   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
-      start=810,
-      end=900,
-      blocker_start=840,
-      blocker_end=870 )
+   talk_start = DateValues.time_value_in_minutes( '1:30 PM' )
+   talk_end = DateValues.time_value_in_minutes( '3:00 PM' )
+   blocker_start = DateValues.time_value_in_minutes( '2:00 PM' )
+   blocker_end = DateValues.time_value_in_minutes( '2:30 PM' )
 
-   assert ( start, end ) == ( 870, 900 )
+   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
+      start=talk_start,
+      end=talk_end,
+      blocker_start=blocker_start,
+      blocker_end=blocker_end )
+
+   assert ( start, end ) == ( blocker_end, talk_end )
 
 
 def Test_TrimTimes_TestFullyConsumed_ExpectNoRemainingTimeError() -> None:
@@ -133,13 +159,18 @@ def Test_Apply_TestDeletedTalk_ExpectPassthrough() -> None:
 
 
 def Test_TrimRangeAgainstBlocker_TestMiddleOverlap_ExpectLaterSegment() -> None:
-   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
-      780,
-      900,
-      blocker_start=810,
-      blocker_end=840 )
+   talk_start = DateValues.time_value_in_minutes( '1:00 PM' )
+   talk_end = DateValues.time_value_in_minutes( '3:00 PM' )
+   blocker_start = DateValues.time_value_in_minutes( '1:30 PM' )
+   blocker_end = DateValues.time_value_in_minutes( '2:00 PM' )
 
-   assert ( start, end ) == ( 840, 900 )
+   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
+      talk_start,
+      talk_end,
+      blocker_start=blocker_start,
+      blocker_end=blocker_end )
+
+   assert ( start, end ) == ( blocker_end, talk_end )
 
 
 def Test_TrimTimes_TestEmptyRangeAfterTrim_ExpectNoRemainingTimeError(
@@ -165,10 +196,14 @@ def Test_TrimTimes_TestEmptyRangeAfterTrim_ExpectNoRemainingTimeError(
 
 
 def Test_TrimRangeAgainstBlocker_TestBlockerEndsAtTalkEnd_ExpectEarlierSegment() -> None:
-   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
-      start=810,
-      end=900,
-      blocker_start=850,
-      blocker_end=900 )
+   talk_start = DateValues.time_value_in_minutes( '1:30 PM' )
+   talk_end = DateValues.time_value_in_minutes( '3:00 PM' )
+   blocker_start = DateValues.time_value_in_minutes( '2:10 PM' )
 
-   assert ( start, end ) == ( 810, 850 )
+   start, end = GuardiansTalkScheduleTrimmer.trim_range_against_blocker(
+      start=talk_start,
+      end=talk_end,
+      blocker_start=blocker_start,
+      blocker_end=talk_end )
+
+   assert ( start, end ) == ( talk_start, blocker_start )

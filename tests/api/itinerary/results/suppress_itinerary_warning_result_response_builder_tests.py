@@ -8,9 +8,9 @@ from api.shared.itinerary_config_builder import ItineraryConfigBuilder
 def Test_ToDict_TestSuccess_ExpectPayload() -> None:
    result = SuppressItineraryWarningResult()
 
-   assert SuppressItineraryWarningResultResponseBuilder.to_dict( result ) == {
-      'status': 'success',
-      'reasons': [],
-      'suppressed_warnings': [],
-      'itinerary_config': ItineraryConfigBuilder.to_dict(),
-   }
+   payload = SuppressItineraryWarningResultResponseBuilder.to_dict( result )
+
+   assert payload[ 'status' ] == result.status.value
+   assert payload[ 'reasons' ] == []
+   assert payload[ 'suppressed_warnings' ] == []
+   assert payload[ 'itinerary_config' ] == ItineraryConfigBuilder.to_dict()

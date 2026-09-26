@@ -43,57 +43,58 @@ afterEach(() => {
    delete globalThis.localStorage;
 });
 
-test('Test_API_TestAPITalkWithoutIdMatchesCatalogWireId_ExpectOk', () => {
-   localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify([
-         {
-            name: 'New World Primates',
-            location: 'Americas Pavilion',
-            start_time: '11:30 AM',
-            end_time: '12:00 PM',
-         },
-      ])
-   );
 
-   const state = _createGuardiansTalkSelectionState();
-   const catalogRow = {
-      name: 'New World Primates',
-      location: 'Americas Pavilion',
-      start_time: '11:30 AM',
-      end_time: '12:00 PM',
+test('Test_IsSelected_TestTalkWithoutId_ExpectCatalogWireId', () => {
+   const name = 'New World Primates';
+   const location = 'Americas Pavilion';
+   const startTime = '11:30 AM';
+   const endTime = '12:00 PM';
+   const storedTalk = {
+      name,
+      location,
+      start_time: startTime,
+      end_time: endTime,
    };
+   localStorage.setItem(STORAGE_KEY, JSON.stringify([storedTalk]));
+   const catalogRow = {
+      name,
+      location,
+      start_time: startTime,
+      end_time: endTime,
+   };
+   const state = _createGuardiansTalkSelectionState();
    const catalogId = GuardiansTalkSelectorModel.getGuardiansTalkId(catalogRow);
 
+   const isSelected = state.isSelected(catalogId);
+
    assert.equal(catalogId, GuardiansTalkScheduleItemKey.fromRow(catalogRow).toWire());
-   assert.equal(state.isSelected(catalogId), true);
-   assert.equal(state.getSelectedSnapshot()[Position.FIRST].id, catalogId);
+   assert.equal(isSelected, true);
+   assert.equal(state.getSelectedSnapshot().at(Position.FIRST).id, catalogId);
 });
 
-test('Test_Name_TestNameOnlyStoredIdIsUpgradedWhenStart_ExpectOk', () => {
+
+test('Test_IsSelected_TestNameOnlyStoredId_ExpectUpgradedWire', () => {
+   const name = 'New World Primates';
+   const location = 'Americas Pavilion';
+   const startTime = '11:30 AM';
+   const endTime = '12:00 PM';
    localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify([
          {
-            id: 'New World Primates',
-            name: 'New World Primates',
-            location: 'Americas Pavilion',
-            start_time: '11:30 AM',
-            end_time: '12:00 PM',
+            id: name,
+            name,
+            location,
+            start_time: startTime,
+            end_time: endTime,
          },
       ])
    );
-
    const state = _createGuardiansTalkSelectionState();
-   const upgradedWire = new GuardiansTalkScheduleItemKey(
-      'New World Primates',
-      '11:30 AM',
-      '12:00 PM'
-   ).toWire();
+   const upgradedWire = new GuardiansTalkScheduleItemKey(name, startTime, endTime).toWire();
 
-   assert.equal(
-      state.isSelected(upgradedWire),
-      true
-   );
-   assert.equal(state.isSelected('New World Primates'), false);
+   const isSelected = state.isSelected(upgradedWire);
+
+   assert.equal(isSelected, true);
+   assert.equal(state.isSelected(name), false);
 });

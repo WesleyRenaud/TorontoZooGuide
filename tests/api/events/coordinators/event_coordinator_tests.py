@@ -19,13 +19,15 @@ EVENT_END_DATE = '2026-06-30'
 
 def Test_CreateEvent_TestValidEvent_ExpectPersistsEventFields(
       db: SeededDatabase ) -> None:
-   assert EventCoordinator.create_event(
+   result = EventCoordinator.create_event(
       name=EVENT_NAME,
       location=EVENT_LOCATION,
       description=EVENT_DESCRIPTION,
       link=EVENT_LINK,
       start_date=EVENT_START_DATE,
-      end_date=EVENT_END_DATE ) is True
+      end_date=EVENT_END_DATE )
+
+   assert result is True
 
    assert db.conn is not None
    row = db.conn.execute(
@@ -48,13 +50,15 @@ def Test_CreateEvent_TestValidEvent_ExpectPersistsEventFields(
 
 def Test_CreateEvent_TestOpenEndedEvent_ExpectPersistsNullEndDate(
       db: SeededDatabase ) -> None:
-   assert EventCoordinator.create_event(
+   result = EventCoordinator.create_event(
       name=EVENT_NAME,
       location=EVENT_LOCATION,
       description=EVENT_DESCRIPTION,
       link=EVENT_LINK,
       start_date=EVENT_START_DATE,
-      end_date=None ) is True
+      end_date=None )
+
+   assert result is True
 
    assert db.conn is not None
    row = db.conn.execute(
@@ -70,29 +74,35 @@ def Test_CreateEvent_TestOpenEndedEvent_ExpectPersistsNullEndDate(
 
 def Test_CreateEvent_TestDuplicateNameAndStartDate_ExpectRejectsSecondInsert(
       db: SeededDatabase ) -> None:
-   assert EventCoordinator.create_event(
+   result = EventCoordinator.create_event(
       name=EVENT_NAME,
       location=EVENT_LOCATION,
       description='First description.',
       link='https://www.torontozoo.com/events/one',
       start_date=EVENT_START_DATE,
-      end_date=None ) is True
+      end_date=None )
 
-   assert EventCoordinator.create_event(
+   assert result is True
+
+   result = EventCoordinator.create_event(
       name=EVENT_NAME,
       location='Africa Savanna',
       description='Second description.',
       link='https://www.torontozoo.com/events/two',
       start_date=EVENT_START_DATE,
-      end_date=None ) is False
+      end_date=None )
 
-   assert EventCoordinator.create_event(
+   assert result is False
+
+   result = EventCoordinator.create_event(
       name=EVENT_NAME,
       location='Africa Savanna',
       description='Second description.',
       link='https://www.torontozoo.com/events/two',
       start_date='2026-07-01',
-      end_date=None ) is True
+      end_date=None )
+
+   assert result is True
 
 
 def Test_GetEventsForVisitDate_TestMixedEventDates_ExpectUpcomingAndExcludesExpired(
@@ -100,37 +110,45 @@ def Test_GetEventsForVisitDate_TestMixedEventDates_ExpectUpcomingAndExcludesExpi
       monkeypatch: pytest.MonkeyPatch ) -> None:
    patch_database_today( monkeypatch, date( 2026, 6, 15 ) )
 
-   assert EventCoordinator.create_event(
+   result = EventCoordinator.create_event(
       name='Active open-ended event',
       location='Front Courtyard',
       description='Still happening.',
       link='https://www.torontozoo.com/events/active',
       start_date='2026-06-01',
-      end_date=None ) is True
+      end_date=None )
 
-   assert EventCoordinator.create_event(
+   assert result is True
+
+   result = EventCoordinator.create_event(
       name='Active ranged event',
       location='Africa Savanna',
       description='Ends later.',
       link='https://www.torontozoo.com/events/ranged',
       start_date='2026-06-10',
-      end_date='2026-06-30' ) is True
+      end_date='2026-06-30' )
 
-   assert EventCoordinator.create_event(
+   assert result is True
+
+   result = EventCoordinator.create_event(
       name='Future event',
       location='Indo-Malaya',
       description='Starts later.',
       link='https://www.torontozoo.com/events/future',
       start_date='2026-07-01',
-      end_date='2026-07-15' ) is True
+      end_date='2026-07-15' )
 
-   assert EventCoordinator.create_event(
+   assert result is True
+
+   result = EventCoordinator.create_event(
       name='Expired event',
       location='Canadian Domain',
       description='Already ended.',
       link='https://www.torontozoo.com/events/expired',
       start_date='2026-05-01',
-      end_date='2026-05-31' ) is True
+      end_date='2026-05-31' )
+
+   assert result is True
 
    events = EventCoordinator.get_events_for_visit_date(
       month='June',

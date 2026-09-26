@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.app_string_provider import AppStringProvider
 from api.restaurants.status.restaurant_status_builder import RestaurantStatusBuilder
 
 
@@ -7,7 +8,6 @@ RESTAURANT_NAME = 'Africa Restaurant'
 CLOSURE_START_DATE = '2026-06-01'
 CLOSURE_END_DATE = '2026-06-30'
 CUSTOM_CLOSED_MESSAGE = 'Closed for maintenance.'
-DEFAULT_CLOSED_MESSAGE = 'The Africa Restaurant is temporarily closed.'
 
 
 def Test_BuildClosedSchedule_TestEmptyMessage_ExpectDefaultGuestStatusMessage() -> None:
@@ -18,7 +18,9 @@ def Test_BuildClosedSchedule_TestEmptyMessage_ExpectDefaultGuestStatusMessage() 
       message='' )
 
    assert schedule.restaurant == RESTAURANT_NAME
-   assert schedule.message == DEFAULT_CLOSED_MESSAGE
+   assert schedule.message == AppStringProvider.format(
+      'guestStatus.locations.temporarilyClosed',
+      name=RESTAURANT_NAME )
 
 
 def Test_BuildClosedSchedule_TestCustomMessage_ExpectMessageRetained() -> None:
@@ -32,13 +34,16 @@ def Test_BuildClosedSchedule_TestCustomMessage_ExpectMessageRetained() -> None:
 
 
 def Test_BuildOpeningSchedule_TestWeekdayFlags_ExpectMappedSchedule() -> None:
+   monday = True
+   wednesday = True
+
    schedule = RestaurantStatusBuilder.build_opening_schedule(
       restaurant=RESTAURANT_NAME,
       start_date=CLOSURE_START_DATE,
       end_date=CLOSURE_END_DATE,
-      monday=True,
+      monday=monday,
       tuesday=False,
-      wednesday=True,
+      wednesday=wednesday,
       thursday=False,
       friday=False,
       saturday=False,
@@ -47,8 +52,8 @@ def Test_BuildOpeningSchedule_TestWeekdayFlags_ExpectMappedSchedule() -> None:
       message=CUSTOM_CLOSED_MESSAGE )
 
    assert schedule.restaurant == RESTAURANT_NAME
-   assert schedule.monday is True
-   assert schedule.wednesday is True
+   assert schedule.monday is monday
+   assert schedule.wednesday is wednesday
 
 
 def Test_BuildClosureOverride_TestCustomMessage_ExpectMappedOverride() -> None:

@@ -66,13 +66,19 @@ def stub_transportation_station_walk_node_dependencies(
 
 def Test_Resolve_TestKnownStation_ExpectSnappedWalkNode(
       stub_transportation_station_walk_node_dependencies: None ) -> None:
-   assert TransportationStationWalkNodeResolver.resolve(
+   walk_node_id = TransportationStationWalkNodeResolver.resolve(
       TransportationName.ZOOMOBILE,
-      MAIN_STATION ) == FAR_NODE_ID
+      MAIN_STATION )
+
+   assert walk_node_id == FAR_NODE_ID
 
 
 def Test_Resolve_TestMissingStationRecord_ExpectNone(
       stub_transportation_station_walk_node_dependencies: None ) -> None:
-   assert TransportationStationWalkNodeResolver.resolve(
+   station_name = 'Unknown Station'
+
+   walk_node_id = TransportationStationWalkNodeResolver.resolve(
       TransportationName.ZOOMOBILE,
-      'Unknown Station' ) is None
+      station_name )
+
+   assert walk_node_id is None

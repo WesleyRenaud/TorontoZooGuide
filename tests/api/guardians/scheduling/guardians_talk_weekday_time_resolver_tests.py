@@ -33,30 +33,38 @@ def _schedule_record(
 def Test_IncludesWeekday_TestScheduledMonday_ExpectTrue() -> None:
    schedule_record = _schedule_record( monday=True )
 
-   assert GuardiansTalkWeekdayTimeResolver.includes_weekday(
+   result = GuardiansTalkWeekdayTimeResolver.includes_weekday(
       schedule_record,
       weekday=0 )
+
+   assert result
 
 
 def Test_IncludesWeekday_TestUnscheduledTuesday_ExpectFalse() -> None:
    schedule_record = _schedule_record( monday=True, tuesday=False )
 
-   assert not GuardiansTalkWeekdayTimeResolver.includes_weekday(
+   result = GuardiansTalkWeekdayTimeResolver.includes_weekday(
       schedule_record,
       weekday=1 )
+
+   assert not result
 
 
 def Test_TimeForWeekday_TestScheduledDay_ExpectTalkTime() -> None:
    schedule_record = _schedule_record( monday=True )
 
-   assert GuardiansTalkWeekdayTimeResolver.time_for_weekday(
+   result = GuardiansTalkWeekdayTimeResolver.time_for_weekday(
       schedule_record,
-      weekday=0 ) == TALK_TIME
+      weekday=0 )
+
+   assert result == TALK_TIME
 
 
 def Test_TimeForWeekday_TestUnscheduledDay_ExpectNone() -> None:
    schedule_record = _schedule_record( monday=True, tuesday=False )
 
-   assert GuardiansTalkWeekdayTimeResolver.time_for_weekday(
+   result = GuardiansTalkWeekdayTimeResolver.time_for_weekday(
       schedule_record,
-      weekday=1 ) is None
+      weekday=1 )
+
+   assert result is None

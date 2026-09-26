@@ -2,8 +2,11 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { ItineraryWizardStore } from '../../../../scripts/itinerary/wizard/itineraryWizardStore.js';
+import { ScheduleItemKeySeparator } from '../../../../scripts/itinerary/scheduleItemKeySeparator.js';
 import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
+
+const _animalsKey = 'animals';
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();
@@ -13,7 +16,8 @@ afterEach(() => {
    delete globalThis.localStorage;
 });
 
-test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueAfterSelectingOnlyAVisit_ExpectOk', () => {
+
+test('Test_HasUnsavedChanges_TestFreshState_ExpectFalse', () => {
    const wizard = ItineraryWizardStore.createItineraryWizardState({
       date: '',
       animals: [],
@@ -22,12 +26,28 @@ test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueAfterSelectingOnlyAVisit
       wildEncounters: [],
    });
 
-   assert.equal(wizard.hasUnsavedChanges(), false);
+   const hasChanges = wizard.hasUnsavedChanges();
 
-   wizard.applyValidationResult('2026-06-15', null);
-
-   assert.equal(wizard.hasUnsavedChanges(), true);
+   assert.equal(hasChanges, false);
 });
+
+
+test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueAfterSelectingOnlyAVisit_ExpectOk', () => {
+   const wizard = ItineraryWizardStore.createItineraryWizardState({
+      date: '',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+   const visitDate = '2026-06-15';
+   wizard.applyValidationResult(visitDate, null);
+
+   const hasChanges = wizard.hasUnsavedChanges();
+
+   assert.equal(hasChanges, true);
+});
+
 
 test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenSelectionsDifferFromInitial_ExpectOk', () => {
    const wizard = ItineraryWizardStore.createItineraryWizardState({
@@ -37,49 +57,57 @@ test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenSelectionsDifferFrom
       guardiansTalks: [],
       wildEncounters: [],
    });
+   const animal = { species: 'African Lion', exhibit: 'Africa Savanna' };
+   wizard.updateSelection(_animalsKey, [animal]);
 
-   wizard.updateSelection('animals', [
-      { species: 'African Lion', exhibit: 'Africa Savanna' },
-   ]);
+   const hasChanges = wizard.hasUnsavedChanges();
 
-   assert.equal(wizard.hasUnsavedChanges(), true);
+   assert.equal(hasChanges, true);
 });
 
+
 test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsFalseWhenAnimalsMatchSemanticallyAfter_ExpectOk', () => {
+   const species = 'African Lion';
+   const exhibit = 'Africa Savanna';
    const wizard = ItineraryWizardStore.createItineraryWizardState({
       date: '2026-06-15',
-      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      animals: [{ species, exhibit }],
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
    });
-
-   wizard.updateSelection('animals', [
+   wizard.updateSelection(_animalsKey, [
       {
-         species: 'African Lion',
-         exhibit: 'Africa Savanna',
+         species,
+         exhibit,
          likelihood: 88,
          imageSrc: 'https://example.test/lion.png',
-         id: 'African Lion||Africa Savanna',
+         id: [species, exhibit].join(ScheduleItemKeySeparator.VALUE),
       },
    ]);
 
-   assert.equal(wizard.hasUnsavedChanges(), false);
+   const hasChanges = wizard.hasUnsavedChanges();
+
+   assert.equal(hasChanges, false);
 });
 
+
 test('Test_HasUnsavedChanges_TestHasUnsavedChangesIgnoresRevisitingTheSameVisitDateOn_ExpectOk', () => {
+   const visitDate = '2026-06-15';
    const wizard = ItineraryWizardStore.createItineraryWizardState({
-      date: '2026-06-15',
+      date: visitDate,
       animals: [{ species: 'Red Panda', exhibit: 'Eurasia Wilds' }],
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
    });
+   wizard.applyValidationResult(visitDate, null);
 
-   wizard.applyValidationResult('2026-06-15', null);
+   const hasChanges = wizard.hasUnsavedChanges();
 
-   assert.equal(wizard.hasUnsavedChanges(), false);
+   assert.equal(hasChanges, false);
 });
+
 
 test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenOnlyTheVisitDate_ExpectOk', () => {
    const wizard = ItineraryWizardStore.createItineraryWizardState({
@@ -89,33 +117,41 @@ test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenOnlyTheVisitDate_Exp
       guardiansTalks: [],
       wildEncounters: [],
    });
+   const nextDate = '2026-06-20';
+   wizard.applyValidationResult(nextDate, null);
 
-   wizard.applyValidationResult('2026-06-20', null);
+   const hasChanges = wizard.hasUnsavedChanges();
 
-   assert.equal(wizard.hasUnsavedChanges(), true);
+   assert.equal(hasChanges, true);
 });
 
+
 test('Test_HasUnsavedChanges_TestHasUnsavedChangesStaysFalseAfterRevisitingDateAndAnimals_ExpectOk', () => {
+   const visitDate = '2026-06-15';
+   const species = 'African Lion';
+   const exhibit = 'Africa Savanna';
    const wizard = ItineraryWizardStore.createItineraryWizardState({
-      date: '2026-06-15',
-      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      date: visitDate,
+      animals: [{ species, exhibit }],
       attractions: [{ name: 'Carousel' }],
       guardiansTalks: [],
       wildEncounters: [],
    });
-
-   wizard.applyValidationResult('2026-06-15', null);
-   wizard.updateSelection('animals', [
+   wizard.applyValidationResult(visitDate, null);
+   wizard.updateSelection(_animalsKey, [
       {
-         species: 'African Lion',
-         exhibit: 'Africa Savanna',
+         species,
+         exhibit,
          likelihood: 91,
-         id: 'African Lion||Africa Savanna',
+         id: [species, exhibit].join(ScheduleItemKeySeparator.VALUE),
       },
    ]);
 
-   assert.equal(wizard.hasUnsavedChanges(), false);
+   const hasChanges = wizard.hasUnsavedChanges();
+
+   assert.equal(hasChanges, false);
 });
+
 
 test('Test_ApplyValidationResult_TestApplyValidationResultWithNullValidatedDoesNotMarkItinerary_ExpectOk', () => {
    const wizard = ItineraryWizardStore.createItineraryWizardState({
@@ -125,11 +161,13 @@ test('Test_ApplyValidationResult_TestApplyValidationResultWithNullValidatedDoesN
       guardiansTalks: [],
       wildEncounters: [],
    });
-
    wizard.applyValidationResult('2026-06-20', null);
 
-   assert.equal(wizard.consumePendingValidation().isEmptyItinerary, false);
+   const pending = wizard.consumePendingValidation();
+
+   assert.equal(pending.isEmptyItinerary, false);
 });
+
 
 test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenClearingANonEmpty_ExpectOk', () => {
    const wizard = ItineraryWizardStore.createItineraryWizardState({
@@ -139,59 +177,65 @@ test('Test_HasUnsavedChanges_TestHasUnsavedChangesIsTrueWhenClearingANonEmpty_Ex
       guardiansTalks: [],
       wildEncounters: [],
    });
+   wizard.updateSelection(_animalsKey, []);
 
-   wizard.updateSelection('animals', []);
+   const hasChanges = wizard.hasUnsavedChanges();
 
-   assert.equal(wizard.hasUnsavedChanges(), true);
+   assert.equal(hasChanges, true);
 });
 
+
 test('Test_Hydrates_TestHydratesAlsoTransportationAttractionsWhenOpeningWizardState_ExpectOk', () => {
+   const transportationName = 'Zoomobile';
+   const transportation = { name: transportationName, added_as_attraction: true };
+   const attraction = {
+      name: transportationName,
+      addedAsAttraction: true,
+   };
    const wizard = ItineraryWizardStore.createItineraryWizardState({
       date: '2026-08-17',
       animals: [],
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
-      transportations: [{ name: 'Zoomobile', added_as_attraction: true }],
+      transportations: [transportation],
    });
 
-   assert.deepEqual(wizard.state.attractions, [{
-      name: 'Zoomobile',
-      addedAsAttraction: true,
-   }]);
+   assert.deepEqual(wizard.state.attractions, [attraction]);
    assert.deepEqual(wizard.state.transportations, []);
-   assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.ATTRACTIONS_KEY)), [{
-      name: 'Zoomobile',
-      addedAsAttraction: true,
-   }]);
+   assert.deepEqual(JSON.parse(localStorage.getItem(StorageKeys.ATTRACTIONS_KEY)), [attraction]);
 });
+
 
 test('Test_UpdateSelection_TestPreserveOnInvalidRejected_ExpectNoPersist', () => {
+   const animal = { species: 'African Lion', exhibit: 'Africa Savanna' };
    const wizard = ItineraryWizardStore.createItineraryWizardState({
       date: '2026-06-15',
-      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      animals: [animal],
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
    });
 
-   wizard.updateSelection('animals', null, { preserveOnInvalid: true });
-   assert.equal(wizard.state.animals.length, 1);
+   wizard.updateSelection(_animalsKey, null, { preserveOnInvalid: true });
+
+   assert.deepEqual(wizard.state.animals, [animal]);
 });
 
+
 test('Test_DiscardChanges_TestRestoresInitialDraft_ExpectOk', () => {
+   const animal = { species: 'African Lion', exhibit: 'Africa Savanna' };
    const wizard = ItineraryWizardStore.createItineraryWizardState({
       date: '2026-06-15',
-      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      animals: [animal],
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
    });
-
-   wizard.updateSelection('animals', []);
-   assert.equal(wizard.hasUnsavedChanges(), true);
+   wizard.updateSelection(_animalsKey, []);
 
    wizard.discardChanges();
+
    assert.equal(wizard.hasUnsavedChanges(), false);
-   assert.equal(wizard.state.animals.length, 1);
+   assert.deepEqual(wizard.state.animals, [animal]);
 });

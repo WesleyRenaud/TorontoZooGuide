@@ -18,36 +18,53 @@ def _items() -> list[ SampleItem ]:
 
 
 def Test_FilterMatching_TestCaseInsensitiveSubstring_ExpectMatchingItemsOnly() -> None:
+   items = _items()
+   query = 'africa'
+
    matches = NameMatchingQueryBuilder.filter_matching(
-      _items(),
-      'africa',
+      items,
+      query,
       lambda item: item.name.lower() )
 
-   assert [ item.name for item in matches ] == [ 'Africa Restaurant' ]
+   assert [ item.name for item in matches ] == [
+      item.name for item in items if query in item.name.lower()
+   ]
 
 
 def Test_FilterMatching_TestEmptyQuery_ExpectAllItems() -> None:
+   items = _items()
+   query = ''
+
    matches = NameMatchingQueryBuilder.filter_matching(
-      _items(),
-      '',
+      items,
+      query,
       lambda item: item.name.lower() )
 
-   assert [ item.name for item in matches ] == [ 'Africa Restaurant', 'Zootique' ]
+   assert [ item.name for item in matches ] == [ item.name for item in items ]
 
 
 def Test_SortByKey_TestUnsortedItems_ExpectSortedByKey() -> None:
+   items = _items()
+
    sorted_items = NameMatchingQueryBuilder.sort_by_key(
-      _items(),
+      items,
       lambda item: item.name.lower() )
 
-   assert [ item.name for item in sorted_items ] == [ 'Africa Restaurant', 'Zootique' ]
+   assert [ item.name for item in sorted_items ] == [
+      item.name for item in sorted( items, key=lambda item: item.name.lower() )
+   ]
 
 
 def Test_Build_TestMatchingQueryWithSort_ExpectFilteredAndSortedItems() -> None:
+   items = _items()
+   query = 'zoo'
+
    matches = NameMatchingQueryBuilder.build(
-      _items(),
-      'zoo',
+      items,
+      query,
       lambda item: item.name.lower(),
       sort=True )
 
-   assert [ item.name for item in matches ] == [ 'Zootique' ]
+   assert [ item.name for item in matches ] == [
+      item.name for item in items if query in item.name.lower()
+   ]

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -10,18 +11,21 @@ from api.shared.enums.shared_enum_values import SharedEnumValues
 def Test_Load_TestValidMembers_ExpectSortedDict(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   members = {
+      'BETA': 'beta',
+      'ALPHA': 'alpha',
+   }
    ( tmp_path / 'sample.json' ).write_text(
-      '{\n   "BETA": "beta",\n   "ALPHA": "alpha"\n}\n',
+      json.dumps( members, indent=3 ) + '\n',
       encoding='utf-8' )
    monkeypatch.setattr(
       SharedEnumValues,
       'shared_enums_directory',
       staticmethod( lambda: tmp_path ) )
 
-   assert SharedEnumValues.load( 'sample.json' ) == {
-      'ALPHA': 'alpha',
-      'BETA': 'beta',
-   }
+   loaded = SharedEnumValues.load( 'sample.json' )
+
+   assert loaded == dict( sorted( members.items() ) )
 
 
 def Test_Load_TestEmptyObject_ExpectValueError(
@@ -70,21 +74,21 @@ def Test_Load_TestInvalidWireValue_ExpectValueError(
 def Test_LoadObjectMembers_TestValidMembers_ExpectSortedDict(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   members = {
+      'BETA': { 'kind': 'beta', 'itemType': 'betas', 'onboarding': True },
+      'ALPHA': { 'kind': 'alpha', 'label': 'Alpha' },
+   }
    ( tmp_path / 'sample.json' ).write_text(
-      '{\n'
-      '   "BETA": { "kind": "beta", "itemType": "betas", "onboarding": true },\n'
-      '   "ALPHA": { "kind": "alpha", "label": "Alpha" }\n'
-      '}\n',
+      json.dumps( members, indent=3 ) + '\n',
       encoding='utf-8' )
    monkeypatch.setattr(
       SharedEnumValues,
       'shared_enums_directory',
       staticmethod( lambda: tmp_path ) )
 
-   assert SharedEnumValues.load_object_members( 'sample.json' ) == {
-      'ALPHA': { 'kind': 'alpha', 'label': 'Alpha' },
-      'BETA': { 'kind': 'beta', 'itemType': 'betas', 'onboarding': True },
-   }
+   loaded = SharedEnumValues.load_object_members( 'sample.json' )
+
+   assert loaded == dict( sorted( members.items() ) )
 
 
 def Test_LoadObjectMembers_TestEmptyObject_ExpectValueError(
@@ -148,19 +152,22 @@ def Test_LoadObjectMembers_TestMissingKind_ExpectValueError(
 def Test_LoadIntegers_TestValidMembers_ExpectSortedDict(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   members = {
+      'SECOND': 1,
+      'FIRST': 0,
+      'LAST': -1,
+   }
    ( tmp_path / 'sample.json' ).write_text(
-      '{\n   "SECOND": 1,\n   "FIRST": 0,\n   "LAST": -1\n}\n',
+      json.dumps( members, indent=3 ) + '\n',
       encoding='utf-8' )
    monkeypatch.setattr(
       SharedEnumValues,
       'shared_enums_directory',
       staticmethod( lambda: tmp_path ) )
 
-   assert SharedEnumValues.load_integers( 'sample.json' ) == {
-      'FIRST': 0,
-      'LAST': -1,
-      'SECOND': 1,
-   }
+   loaded = SharedEnumValues.load_integers( 'sample.json' )
+
+   assert loaded == dict( sorted( members.items() ) )
 
 
 def Test_LoadIntegers_TestInvalidValue_ExpectValueError(

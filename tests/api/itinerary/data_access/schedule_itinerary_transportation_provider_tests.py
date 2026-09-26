@@ -8,6 +8,7 @@ from api.itinerary.data_access.itinerary_transportation_provider import Itinerar
 from api.itinerary.data_access.itinerary_transportation_route_marker_provider import ItineraryTransportationRouteMarkerProvider
 from api.itinerary.data_access.schedule_itinerary_transportation_provider import ScheduleItineraryTransportationProvider
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from api.shared.date_values import DateValues
 from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
 
@@ -17,6 +18,7 @@ CANADA = 'Canadian Domain Zoomobile Station'
 AFRICA = 'Africa Zoomobile Station'
 TUNDRA = 'Tundra Zoomobile Station'
 EURASIA = 'Eurasia Zoomobile Station'
+SUMMER_ROUTE = 'summer'
 SUMMER_ROUTE_LEG_SEGMENTS = [
    TransportationRouteLegSegment( MAIN, CANADA, 20 ),
    TransportationRouteLegSegment( CANADA, AFRICA, 10 ),
@@ -24,6 +26,7 @@ SUMMER_ROUTE_LEG_SEGMENTS = [
    TransportationRouteLegSegment( TUNDRA, EURASIA, 15 ),
    TransportationRouteLegSegment( EURASIA, MAIN, 15 ),
 ]
+
 
 SCHEDULE_TRANSPORTATION_SCHEMA = """
 CREATE TABLE ItineraryTransportation (
@@ -94,43 +97,46 @@ def schedule_transportation_conn() -> sqlite3.Connection:
 def Test_ApplyItineraryTransportationSchedule_TestSummerLoop_ExpectTimedLegsAndRoute(
       schedule_transportation_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   start_time = '10:00 AM'
+   route = SUMMER_ROUTE
+   first_sequence_markers = [ 'm-a', 'm-b' ]
+   second_sequence_markers = [ 'm-c' ]
+   route_marker_sequences = [ first_sequence_markers, second_sequence_markers ]
+   total_duration_minutes = sum(
+      segment.duration_minutes for segment in SUMMER_ROUTE_LEG_SEGMENTS )
+   end_time = DateValues.add_minutes_to_time( start_time, total_duration_minutes )
    cur = schedule_transportation_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
       new_likelihood=3,
-      added_as_attraction=True )
+      added_as_attraction=added_as_attraction )
    schedule_transportation_conn.commit()
    cur.close()
-
    monkeypatch.setattr(
       'api.itinerary.data_access.schedule_itinerary_transportation_provider.TransportationRouteMarkerSequencesBuilder.build',
-      lambda conn, *, transportation, route, legs: [
-         [ 'm-a', 'm-b' ],
-         [ 'm-c' ],
-      ] )
+      lambda conn, *, transportation, route, legs: route_marker_sequences )
 
    cur = schedule_transportation_conn.cursor()
    applied = ScheduleItineraryTransportationProvider.apply_itinerary_transportation_schedule(
       cur,
-      name=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      start_time='10:00 AM',
-      route='summer',
+      name=transportation,
+      added_as_attraction=added_as_attraction,
+      start_time=start_time,
+      route=route,
       legs=SUMMER_ROUTE_LEG_SEGMENTS )
    schedule_transportation_conn.commit()
    cur.close()
-
-   assert applied is True
-
-   transportation = schedule_transportation_conn.execute(
+   persisted = schedule_transportation_conn.execute(
       """   SELECT START_TIME, END_TIME, ROUTE
             FROM ItineraryTransportation
             WHERE TRANSPORTATION = ?
               AND ADDED_AS_ATTRACTION = 1;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchone()
    legs = schedule_transportation_conn.execute(
       """   SELECT FROM_STATION, TO_STATION, START_TIME, END_TIME
@@ -139,85 +145,115 @@ def Test_ApplyItineraryTransportationSchedule_TestSummerLoop_ExpectTimedLegsAndR
               AND ADDED_AS_ATTRACTION = 1
             ORDER BY START_TIME;
       """,
-      ( TransportationName.ZOOMOBILE, ),
+      ( transportation, ),
    ).fetchall()
    markers = ItineraryTransportationRouteMarkerProvider.fetch_itinerary_transportation_route_markers(
       schedule_transportation_conn )
 
-   assert transportation is not None
-   assert transportation[ 'START_TIME' ] == '10:00 AM'
-   assert transportation[ 'END_TIME' ] == '11:15 AM'
-   assert transportation[ 'ROUTE' ] == 'summer'
-   assert len( legs ) == 5
+   assert applied is True
+   assert persisted is not None
+   assert persisted[ 'START_TIME' ] == start_time
+   assert persisted[ 'END_TIME' ] == end_time
+   assert persisted[ 'ROUTE' ] == route
+   assert len( legs ) == len( SUMMER_ROUTE_LEG_SEGMENTS )
    assert legs[ Position.FIRST ][ 'FROM_STATION' ] == MAIN
    assert legs[ Position.LAST ][ 'TO_STATION' ] == MAIN
-   assert { marker.sequence for marker in markers } == { 0, 1 }
-   assert len( markers ) == 3
+   assert { marker.sequence for marker in markers } == {
+      Position.FIRST,
+      Position.SECOND,
+   }
+   assert len( markers ) == sum(
+      len( sequence ) for sequence in route_marker_sequences )
 
 
 def Test_ApplyItineraryTransportationSchedule_TestDiscontinuousLegs_ExpectSplitMarkerSequences(
       schedule_transportation_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   start_time = '10:00 AM'
+   first_sequence_markers = [ 'm-a', 'm-b' ]
+   second_sequence_markers = [ 'm-d', 'm-e' ]
+   route_marker_sequences = [ first_sequence_markers, second_sequence_markers ]
+   legs = [
+      TransportationRouteLegSegment( MAIN, CANADA, 20 ),
+      TransportationRouteLegSegment( TUNDRA, EURASIA, 15 ),
+   ]
    cur = schedule_transportation_conn.cursor()
    ItineraryTransportationProvider.insert_itinerary_transportation(
       cur,
-      transportation=TransportationName.ZOOMOBILE,
+      transportation=transportation,
       old_likelihood=None,
       new_likelihood=3,
-      added_as_attraction=True )
+      added_as_attraction=added_as_attraction )
    schedule_transportation_conn.commit()
    cur.close()
-
    monkeypatch.setattr(
       'api.itinerary.data_access.schedule_itinerary_transportation_provider.TransportationRouteMarkerSequencesBuilder.build',
-      lambda conn, *, transportation, route, legs: [
-         [ 'm-a', 'm-b' ],
-         [ 'm-d', 'm-e' ],
-      ] )
+      lambda conn, *, transportation, route, legs: route_marker_sequences )
 
    cur = schedule_transportation_conn.cursor()
    applied = ScheduleItineraryTransportationProvider.apply_itinerary_transportation_schedule(
       cur,
-      name=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      start_time='10:00 AM',
-      route='summer',
-      legs=[
-         TransportationRouteLegSegment( MAIN, CANADA, 20 ),
-         TransportationRouteLegSegment( TUNDRA, EURASIA, 15 ),
-      ] )
+      name=transportation,
+      added_as_attraction=added_as_attraction,
+      start_time=start_time,
+      route=SUMMER_ROUTE,
+      legs=legs )
    schedule_transportation_conn.commit()
    cur.close()
-
-   assert applied is True
-
    markers = ItineraryTransportationRouteMarkerProvider.fetch_itinerary_transportation_route_markers(
       schedule_transportation_conn )
 
-   assert { marker.sequence for marker in markers } == { 0, 1 }
-   assert [ marker.marker_id for marker in markers if marker.sequence == 0 ] == [ 'm-a', 'm-b' ]
-   assert [ marker.marker_id for marker in markers if marker.sequence == 1 ] == [ 'm-d', 'm-e' ]
+   assert applied is True
+   assert { marker.sequence for marker in markers } == {
+      Position.FIRST,
+      Position.SECOND,
+   }
+   assert [
+      marker.marker_id
+      for marker in markers
+      if marker.sequence == Position.FIRST
+   ] == first_sequence_markers
+   assert [
+      marker.marker_id
+      for marker in markers
+      if marker.sequence == Position.SECOND
+   ] == second_sequence_markers
 
 
 def Test_ApplyItineraryTransportationRideSegments_TestEmptySegments_ExpectFalse(
       schedule_transportation_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   segments = []
    cur = schedule_transportation_conn.cursor()
-   assert not ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
+
+   applied = ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
       cur,
-      name=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      route='summer',
-      segments=[] )
+      name=transportation,
+      added_as_attraction=added_as_attraction,
+      route=SUMMER_ROUTE,
+      segments=segments )
    cur.close()
+
+   assert not applied
 
 
 def Test_ApplyItineraryTransportationRideSegments_TestEmptyLegs_ExpectFalse(
       schedule_transportation_conn: sqlite3.Connection ) -> None:
+   transportation = TransportationName.ZOOMOBILE
+   added_as_attraction = True
+   start_time = '10:00 AM'
+   segments = [ ( start_time, [] ) ]
    cur = schedule_transportation_conn.cursor()
-   assert not ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
+
+   applied = ScheduleItineraryTransportationProvider.apply_itinerary_transportation_ride_segments(
       cur,
-      name=TransportationName.ZOOMOBILE,
-      added_as_attraction=True,
-      route='summer',
-      segments=[ ( '10:00 AM', [] ) ] )
+      name=transportation,
+      added_as_attraction=added_as_attraction,
+      route=SUMMER_ROUTE,
+      segments=segments )
    cur.close()
+
+   assert not applied

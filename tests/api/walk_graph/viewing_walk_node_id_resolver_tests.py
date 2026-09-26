@@ -61,9 +61,11 @@ def stub_enclosure_viewing_walk_nodes( monkeypatch: pytest.MonkeyPatch ) -> None
 
 def Test_Resolve_TestOutdoorAldabraTortoise_ExpectViewingWalkNode(
       stub_enclosure_viewing_walk_nodes: None ) -> None:
-   assert ViewingWalkNodeIdResolver.resolve(
+   result = ViewingWalkNodeIdResolver.resolve(
       'Aldabra Tortoise',
       AFRICAN_RAINFOREST_PAVILION,
       47.091,
       66.261,
-      'Outdoor' ) == 'v-9001'
+      'Outdoor' )
+
+   assert result == 'v-9001'

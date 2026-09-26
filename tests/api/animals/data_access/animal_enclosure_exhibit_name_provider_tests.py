@@ -51,9 +51,11 @@ def _insert_enclosure(
 
 def Test_FetchExhibitNamesForSpecies_TestEmpty_ExpectEmptyList(
       enclosure_exhibit_conn: sqlite3.Connection ) -> None:
-   assert AnimalEnclosureExhibitNameProvider.fetch_exhibit_names_for_species(
+   exhibit_names_for_species = AnimalEnclosureExhibitNameProvider.fetch_exhibit_names_for_species(
       enclosure_exhibit_conn,
-      LION ) == []
+      LION )
+
+   assert exhibit_names_for_species == []
 
 
 def Test_FetchExhibitNamesForSpecies_TestMultipleExhibits_ExpectSortedExhibits(
@@ -71,9 +73,11 @@ def Test_FetchExhibitNamesForSpecies_TestMultipleExhibits_ExpectSortedExhibits(
       species=LION,
       exhibit=SAVANNA )
 
-   assert AnimalEnclosureExhibitNameProvider.fetch_exhibit_names_for_species(
+   exhibit_names_for_species = AnimalEnclosureExhibitNameProvider.fetch_exhibit_names_for_species(
       enclosure_exhibit_conn,
-      CAMEL ) == [ CANADIAN_DOMAIN, EURASIA ]
+      CAMEL )
+
+   assert exhibit_names_for_species == [ CANADIAN_DOMAIN, EURASIA ]
 
 
 def Test_FetchExhibitNamesForSpecies_TestUniqueSpecies_ExpectSingleExhibit(
@@ -83,6 +87,8 @@ def Test_FetchExhibitNamesForSpecies_TestUniqueSpecies_ExpectSingleExhibit(
       species=LION,
       exhibit=SAVANNA )
 
-   assert AnimalEnclosureExhibitNameProvider.fetch_exhibit_names_for_species(
+   exhibit_names_for_species = AnimalEnclosureExhibitNameProvider.fetch_exhibit_names_for_species(
       enclosure_exhibit_conn,
-      LION ) == [ SAVANNA ]
+      LION )
+
+   assert exhibit_names_for_species == [ SAVANNA ]

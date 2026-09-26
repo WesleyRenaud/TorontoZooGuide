@@ -6,40 +6,44 @@ import { ItineraryMapControllerBootstrap } from '../../../scripts/itinerary/itin
 import { ItineraryPathFragment } from '../../../scripts/map/itineraryPathFragment.js';
 import { TransportationRouteFragment } from '../../../scripts/map/transportationRouteFragment.js';
 
+
 test('Test_ClearItineraryMapDisplay_TestRuntime_ExpectCleared', () => {
    const renders = [];
    const originalPath = ItineraryPathFragment.clearItineraryPathOverlay;
    const originalRoutes = TransportationRouteFragment.hideTransportationRouteLayers;
-   ItineraryPathFragment.clearItineraryPathOverlay = () => { renders.push('path'); };
-   TransportationRouteFragment.hideTransportationRouteLayers = () => { renders.push('routes'); };
+   const pathCleared = 'path';
+   const routesCleared = 'routes';
+   ItineraryPathFragment.clearItineraryPathOverlay = () => { renders.push(pathCleared); };
+   TransportationRouteFragment.hideTransportationRouteLayers = () => { renders.push(routesCleared); };
+   const runtime = {
+      markers: { render: (items) => { renders.push(items); } },
+   };
 
    try {
-      ItineraryMapController.clearItineraryMapDisplay({
-         markers: { render: (items) => { renders.push(items); } },
-      });
-      assert.deepEqual(renders, [[], 'path', 'routes']);
+      ItineraryMapController.clearItineraryMapDisplay(runtime);
+
+      assert.deepEqual(renders, [[], pathCleared, routesCleared]);
    } finally {
       ItineraryPathFragment.clearItineraryPathOverlay = originalPath;
       TransportationRouteFragment.hideTransportationRouteLayers = originalRoutes;
    }
 });
 
+
 test('Test_InitItineraryMap_TestRuntime_ExpectCached', () => {
    const originalRuntime = ItineraryMapController.itineraryMapRuntime;
    const originalCreate = ItineraryMapControllerBootstrap.createItineraryMapRuntime;
    const originalBind = ItineraryMapControllerBootstrap.bindItineraryMapEvents;
-   const refreshes = [];
-
+   const runtimeId = 'runtime';
    ItineraryMapController.itineraryMapRuntime = null;
-   ItineraryMapControllerBootstrap.createItineraryMapRuntime = () => ({ id: 'runtime' });
-   ItineraryMapControllerBootstrap.bindItineraryMapEvents = () => async () => {
-      refreshes.push(true);
-   };
+   ItineraryMapControllerBootstrap.createItineraryMapRuntime = () => ({ id: runtimeId });
+   ItineraryMapControllerBootstrap.bindItineraryMapEvents = () => async () => {};
 
    try {
       const first = ItineraryMapController.initItineraryMap();
       const second = ItineraryMapController.initItineraryMap();
-      assert.equal(first.id, 'runtime');
+
+      assert.equal(first.id, runtimeId);
       assert.equal(second, first);
    } finally {
       ItineraryMapController.itineraryMapRuntime = originalRuntime;

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from api.animals.domain.animal_viewing_scope import AnimalViewingScope
 from api.animals.status.animal_off_display_status_builder import AnimalOffDisplayStatusBuilder
+from api.app_string_provider import AppStringProvider
 
 
 SPECIES = 'Masai Giraffe'
@@ -30,13 +31,17 @@ def Test_Build_TestCustomMessage_ExpectMappedStatus() -> None:
 
 
 def Test_Build_TestMissingMessage_ExpectDefaultGuestMessage() -> None:
+   unnamed_scope = AnimalViewingScope.from_enclosure_name( None )
+
    status = AnimalOffDisplayStatusBuilder.build(
       species=SPECIES,
       exhibit=EXHIBIT,
-      viewing_scopes=[ AnimalViewingScope.from_enclosure_name( None ) ],
+      viewing_scopes=[ unnamed_scope ],
       start_date=START_DATE,
       end_date=None,
       message='' )
 
    assert status.end_date is None
-   assert SPECIES in status.message
+   assert status.message == AppStringProvider.format(
+      'guestStatus.animals.temporarilyOffDisplay',
+      species=SPECIES )

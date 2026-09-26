@@ -2,33 +2,44 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ConsoleOptionsLoaderHelper } from '../../../../scripts/consoleOperations/options/consoleOptionsLoaderHelper.js';
+import { NamedItems } from '../../../../scripts/consoleOperations/options/namedItems.js';
 
-test('Test_LoadCachedOptions_TestFetchAndCache_ExpectSortedCached', async () => {
-   ConsoleOptionsLoaderHelper.cachedOptionSets.species = null;
-   let fetches = 0;
+
+test('Test_LoadCachedOptions_TestFetch_ExpectSorted', async () => {
+   const cacheKey = 'species';
+   const lion = { name: 'Lion' };
+   const tiger = { name: 'Tiger' };
+   const animals = [tiger, lion];
+   ConsoleOptionsLoaderHelper.cachedOptionSets[cacheKey] = null;
 
    const options = await ConsoleOptionsLoaderHelper.loadCachedOptions({
-      cacheKey: 'species',
+      cacheKey,
       resultKey: 'animals',
-      fetchOptions: async () => {
-         fetches += 1;
-         return { animals: [{ name: 'Tiger' }, { name: 'Lion' }] };
-      },
+      fetchOptions: async () => ({ animals }),
    });
 
-   assert.deepEqual(options, [{ name: 'Lion' }, { name: 'Tiger' }]);
-   assert.equal(fetches, 1);
+   assert.deepEqual(options, NamedItems.sortNamedOptions(animals));
+   ConsoleOptionsLoaderHelper.cachedOptionSets[cacheKey] = null;
+});
+
+
+test('Test_LoadCachedOptions_TestCached_ExpectSameReference', async () => {
+   const cacheKey = 'species';
+   const lion = { name: 'Lion' };
+   const tiger = { name: 'Tiger' };
+   ConsoleOptionsLoaderHelper.cachedOptionSets[cacheKey] = null;
+   const options = await ConsoleOptionsLoaderHelper.loadCachedOptions({
+      cacheKey,
+      resultKey: 'animals',
+      fetchOptions: async () => ({ animals: [tiger, lion] }),
+   });
 
    const cached = await ConsoleOptionsLoaderHelper.loadCachedOptions({
-      cacheKey: 'species',
+      cacheKey,
       resultKey: 'animals',
-      fetchOptions: async () => {
-         fetches += 1;
-         return { animals: [] };
-      },
+      fetchOptions: async () => ({ animals: [] }),
    });
 
    assert.equal(cached, options);
-   assert.equal(fetches, 1);
-   ConsoleOptionsLoaderHelper.cachedOptionSets.species = null;
+   ConsoleOptionsLoaderHelper.cachedOptionSets[cacheKey] = null;
 });

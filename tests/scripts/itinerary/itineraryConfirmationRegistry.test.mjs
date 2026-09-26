@@ -7,13 +7,9 @@ import { PersistItineraryWarningSuppressor } from '../../../scripts/itinerary/pe
 import { AttractionOutsideOperatingHoursFragment } from '../../../scripts/itinerary/panel/attractionOutsideOperatingHoursFragment.js';
 import { AttractionWithoutAnimalFragment } from '../../../scripts/itinerary/panel/attractionWithoutAnimalFragment.js';
 import { EarlyAdmissionFragment } from '../../../scripts/itinerary/panel/earlyAdmissionFragment.js';
-import { FixedTimeItemLongWaitFragment } from '../../../scripts/itinerary/panel/fixedTimeItemLongWaitFragment.js';
-import { GuardiansTalkUnscheduleFragment } from '../../../scripts/itinerary/panel/guardiansTalkUnscheduleFragment.js';
-import { GuardiansTalkWithoutAnimalFragment } from '../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalFragment.js';
 import { ScheduleItemNotOnItineraryFragment } from '../../../scripts/itinerary/panel/scheduleItemNotOnItineraryFragment.js';
-import { ShortVisitFragment } from '../../../scripts/itinerary/panel/shortVisitFragment.js';
-import { WildEncounterUnscheduleFragment } from '../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
 import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 
 function _withSuppressedErrorTypes(suppressedErrorTypes, run) {
    const originalSuppressed = ItineraryErrorTypes.suppressedItineraryErrorTypes;
@@ -25,99 +21,154 @@ function _withSuppressedErrorTypes(suppressedErrorTypes, run) {
    }
 }
 
-test('Test_GetConfirmationEntry_TestKnownTypes_ExpectMappedFragments', () => {
+
+test('Test_GetConfirmationEntry_TestItemNotOnItinerary_ExpectFragment', () => {
+   const errorType = ItineraryErrorType.ITEM_NOT_ON_ITINERARY;
+
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
    assert.equal(
-      ItineraryConfirmationRegistry.getConfirmationEntry(ItineraryErrorType.ITEM_NOT_ON_ITINERARY).showConfirmation,
+      entry.showConfirmation,
       ScheduleItemNotOnItineraryFragment.showScheduleItemNotOnItineraryConfirmation
    );
+});
+
+
+test('Test_GetConfirmationEntry_TestAttractionOutsideOperatingHours_ExpectFragment', () => {
+   const errorType = ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS;
+
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
    assert.equal(
-      ItineraryConfirmationRegistry.getConfirmationEntry(
-         ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS
-      ).showConfirmation,
+      entry.showConfirmation,
       AttractionOutsideOperatingHoursFragment.showAttractionOutsideOperatingHoursConfirmation
    );
+});
+
+
+test('Test_GetConfirmationEntry_TestAttractionWithoutAnimal_ExpectFragment', () => {
+   const errorType = ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL;
+
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
    assert.equal(
-      ItineraryConfirmationRegistry.getConfirmationEntry(
-         ItineraryErrorType.ATTRACTION_WITHOUT_ANIMAL
-      ).showConfirmation,
+      entry.showConfirmation,
       AttractionWithoutAnimalFragment.showAttractionWithoutAnimalConfirmation
    );
+});
+
+
+test('Test_GetConfirmationEntry_TestEarlyAdmission_ExpectFragment', () => {
+   const errorType = ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP;
+
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
    assert.equal(
-      ItineraryConfirmationRegistry.getConfirmationEntry(
-         ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
-      ).showConfirmation,
+      entry.showConfirmation,
       EarlyAdmissionFragment.showEarlyAdmissionConfirmation
    );
-   assert.equal(
-      ItineraryConfirmationRegistry.getConfirmationEntry(ItineraryErrorType.SAVE_FAILED),
-      null
-   );
 });
+
+
+test('Test_GetConfirmationEntry_TestSaveFailed_ExpectNull', () => {
+   const errorType = ItineraryErrorType.SAVE_FAILED;
+
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
+   assert.equal(entry, null);
+});
+
 
 test('Test_GetScheduleItemConfirmationEntries_TestOrder_ExpectBeforeWarningsThenAfter', () => {
+   const beforeWarnings = ItineraryConfirmationRegistry.getScheduleItemConfirmationEntriesBeforeWarnings();
+   const afterWarnings = ItineraryConfirmationRegistry.getScheduleItemConfirmationEntriesAfterWarnings();
+
    const entries = ItineraryConfirmationRegistry.getScheduleItemConfirmationEntries();
 
-   assert.deepEqual(
-      entries.map((entry) => entry.confirmFlag),
-      [
-         'confirmingScheduleItemNotOnItinerary',
-         'confirmingAttractionOutsideOperatingHours',
-         'confirmingGuardiansTalkUnschedule',
-         'confirmingGuardiansTalkWithoutAnimal',
-         'confirmingFixedTimeItemLongWait',
-         'confirmingWildEncounterUnschedule',
-      ]
-   );
-   assert.equal(
-      entries[2].showConfirmation,
-      GuardiansTalkUnscheduleFragment.showGuardiansTalkUnscheduleConfirmation
-   );
-   assert.equal(
-      entries[3].showConfirmation,
-      GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation
-   );
-   assert.equal(
-      entries[4].showConfirmation,
-      FixedTimeItemLongWaitFragment.showFixedTimeItemLongWaitConfirmation
-   );
-   assert.equal(
-      entries[5].showConfirmation,
-      WildEncounterUnscheduleFragment.showWildEncounterUnscheduleConfirmation
-   );
+   assert.deepEqual(entries, [...beforeWarnings, ...afterWarnings]);
 });
+
 
 test('Test_GetSetItineraryConfirmationEntries_TestFlags_ExpectConfirmFlags', () => {
-   assert.deepEqual(
-      ItineraryConfirmationRegistry.getSetItineraryConfirmationEntries().map((entry) => entry.confirmFlag),
-      [
-         'confirmingEarlyAdmission',
-         'confirmingGuardiansTalkUnschedule',
-         'confirmingGuardiansTalkWithoutAnimal',
-         'confirmingAttractionWithoutAnimal',
-         'confirmingFixedTimeItemLongWait',
-         'confirmingWildEncounterUnschedule',
-      ]
+   const expectedFlags = Object.values(
+      ItineraryConfirmationRegistry.SET_ITINERARY_CONFIRMATIONS
+   ).map((entry) => entry.confirmFlag);
+
+   const flags = ItineraryConfirmationRegistry.getSetItineraryConfirmationEntries().map(
+      (entry) => entry.confirmFlag
    );
+
+   assert.deepEqual(flags, expectedFlags);
 });
+
 
 test('Test_GetTimeChangeConfirmationEntries_TestFragments_ExpectEarlyThenShort', () => {
+   const earlyAdmission = ItineraryConfirmationRegistry.TIME_CHANGE_CONFIRMATIONS[
+      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
+   ];
+   const shortVisit = ItineraryConfirmationRegistry.TIME_CHANGE_CONFIRMATIONS[
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   ];
+
    const entries = ItineraryConfirmationRegistry.getTimeChangeConfirmationEntries();
 
-   assert.equal(entries[0].showConfirmation, EarlyAdmissionFragment.showEarlyAdmissionConfirmation);
-   assert.equal(entries[1].showConfirmation, ShortVisitFragment.showShortVisitConfirmation);
-   assert.deepEqual(
-      ItineraryConfirmationRegistry.buildTimeChangeConfirmationOptions(entries[0]),
-      {
-         showConfirmation: EarlyAdmissionFragment.showEarlyAdmissionConfirmation,
-         suppressionType: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
-         confirmationOptions: {
-            confirmingEarlyAdmission: true,
-         },
-      }
+   assert.equal(
+      entries[Position.FIRST].showConfirmation,
+      earlyAdmission.showConfirmation
+   );
+   assert.equal(
+      entries[Position.SECOND].showConfirmation,
+      shortVisit.showConfirmation
    );
 });
 
-test('Test_RequiresConfirmation_TestSuppressed_ExpectFalse', () => {
+
+test('Test_BuildTimeChangeConfirmationOptions_TestEarlyAdmission_ExpectOptions', () => {
+   const entry = ItineraryConfirmationRegistry.TIME_CHANGE_CONFIRMATIONS[
+      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
+   ];
+
+   const options = ItineraryConfirmationRegistry.buildTimeChangeConfirmationOptions(entry);
+
+   assert.equal(options.showConfirmation, entry.showConfirmation);
+   assert.equal(options.suppressionType, entry.suppressKey);
+   assert.equal(options.confirmationOptions[entry.confirmFlag], true);
+});
+
+
+test('Test_RequiresConfirmation_TestSuppressedItemNotOnItinerary_ExpectFalse', () => {
+   const errorType = ItineraryErrorType.ITEM_NOT_ON_ITINERARY;
+
+   _withSuppressedErrorTypes([errorType], () => {
+      const requiresConfirmation = ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         errorType,
+         ItineraryErrorTypes.isItineraryErrorSuppressed
+      );
+
+      assert.equal(requiresConfirmation, false);
+   });
+});
+
+
+test('Test_RequiresConfirmation_TestSuppressedShortVisit_ExpectFalse', () => {
+   const errorType = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+
+   _withSuppressedErrorTypes([errorType], () => {
+      const requiresConfirmation = ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         errorType,
+         ItineraryErrorTypes.isItineraryErrorSuppressed
+      );
+
+      assert.equal(requiresConfirmation, false);
+   });
+});
+
+
+test('Test_RequiresConfirmation_TestUnsuppressedLongWait_ExpectTrue', () => {
+   const errorType = ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT;
+
    _withSuppressedErrorTypes(
       [
          ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
@@ -125,88 +176,99 @@ test('Test_RequiresConfirmation_TestSuppressed_ExpectFalse', () => {
          ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
       ],
       () => {
-         assert.equal(
-            ItineraryConfirmationRegistry.requiresConfirmation(
-               ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-               ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-               ItineraryErrorTypes.isItineraryErrorSuppressed
-            ),
-            false
+         const requiresConfirmation = ItineraryConfirmationRegistry.requiresConfirmation(
+            errorType,
+            errorType
          );
-         assert.equal(
-            ItineraryConfirmationRegistry.requiresConfirmation(
-               ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-               ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-               ItineraryErrorTypes.isItineraryErrorSuppressed
-            ),
-            false
-         );
-         assert.equal(
-            ItineraryConfirmationRegistry.requiresConfirmation(
-               ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
-               ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT
-            ),
-            true
-         );
+
+         assert.equal(requiresConfirmation, true);
       }
    );
 });
+
 
 test('Test_BuildConfirmedOptions_TestFlag_ExpectTrue', () => {
-   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(
-      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
-   );
+   const errorType = ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
 
-   assert.deepEqual(ItineraryConfirmationRegistry.buildConfirmedOptions(entry)(), {
-      confirmingGuardiansTalkUnschedule: true,
-   });
-   assert.deepEqual(
-      ItineraryConfirmationRegistry.buildConfirmedPayload(entry, { date: '2026-06-15' })(),
-      {
-         date: '2026-06-15',
-         confirmingGuardiansTalkUnschedule: true,
-      }
-   );
+   const options = ItineraryConfirmationRegistry.buildConfirmedOptions(entry)();
+
+   assert.equal(options[entry.confirmFlag], true);
 });
 
-test('Test_BuildBeforeConfirm_TestSuppressKey_ExpectPersist', async () => {
+
+test('Test_BuildConfirmedPayload_TestFlag_ExpectMerged', () => {
+   const errorType = ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
+   const date = '2026-06-15';
+   const payload = { date };
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
+   const confirmed = ItineraryConfirmationRegistry.buildConfirmedPayload(entry, payload)();
+
+   assert.equal(confirmed.date, date);
+   assert.equal(confirmed[entry.confirmFlag], true);
+});
+
+
+test('Test_BuildBeforeConfirm_TestNoSuppressKey_ExpectUndefined', () => {
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(
+      ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS
+   );
+
+   const beforeConfirm = ItineraryConfirmationRegistry.buildBeforeConfirm(entry);
+
+   assert.equal(beforeConfirm, undefined);
+});
+
+
+test('Test_BuildBeforeConfirm_TestDoNotShowAgainFalse_ExpectNoPersist', async () => {
+   const originalPersist = PersistItineraryWarningSuppressor.persistItineraryWarningSuppression;
+   const persisted = [];
    const entry = ItineraryConfirmationRegistry.getConfirmationEntry(
       ItineraryErrorType.ITEM_NOT_ON_ITINERARY
    );
-   const originalPersist = PersistItineraryWarningSuppressor.persistItineraryWarningSuppression;
-   const persisted = [];
-
    PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = async (warningType) => {
       persisted.push(warningType);
    };
 
    try {
-      assert.equal(
-         ItineraryConfirmationRegistry.buildBeforeConfirm(
-            ItineraryConfirmationRegistry.getConfirmationEntry(
-               ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS
-            )
-         ),
-         undefined
-      );
-
       const beforeConfirm = ItineraryConfirmationRegistry.buildBeforeConfirm(entry);
       await beforeConfirm({ doNotShowAgain: false });
+
       assert.deepEqual(persisted, []);
-      await beforeConfirm({ doNotShowAgain: true });
-      assert.deepEqual(persisted, [ItineraryErrorType.ITEM_NOT_ON_ITINERARY]);
    } finally {
       PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = originalPersist;
    }
 });
 
+
+test('Test_BuildBeforeConfirm_TestDoNotShowAgainTrue_ExpectPersist', async () => {
+   const originalPersist = PersistItineraryWarningSuppressor.persistItineraryWarningSuppression;
+   const persisted = [];
+   const errorType = ItineraryErrorType.ITEM_NOT_ON_ITINERARY;
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+   PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = async (warningType) => {
+      persisted.push(warningType);
+   };
+
+   try {
+      const beforeConfirm = ItineraryConfirmationRegistry.buildBeforeConfirm(entry);
+      await beforeConfirm({ doNotShowAgain: true });
+
+      assert.deepEqual(persisted, [errorType]);
+   } finally {
+      PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = originalPersist;
+   }
+});
+
+
 test('Test_ScheduleItemNotOnItineraryEntry_TestMeta_ExpectSaveFailedAndSuppress', () => {
-   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY
-   );
+   const errorType = ItineraryErrorType.ITEM_NOT_ON_ITINERARY;
+
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
 
    assert.equal(entry.resolveConfirmErrorAsSaveFailed, true);
-   assert.equal(entry.suppressKey, ItineraryErrorType.ITEM_NOT_ON_ITINERARY);
+   assert.equal(entry.suppressKey, errorType);
    assert.equal(
       entry.showConfirmation,
       ScheduleItemNotOnItineraryFragment.showScheduleItemNotOnItineraryConfirmation

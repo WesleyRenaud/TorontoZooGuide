@@ -4,25 +4,36 @@ from api.guardians.domain.guardians_talk_include_filter import GuardiansTalkIncl
 
 
 def Test_FromOptionalList_TestNone_ExpectAllTalksAllowed() -> None:
+   talk_name = 'African Lion'
+
    include_filter = GuardiansTalkIncludeFilter.from_optional_list( None )
 
    assert include_filter.provisioned_explicitly is False
-   assert include_filter.allows_talk_name( 'African Lion' )
+   assert include_filter.allows_talk_name( talk_name ) is True
 
 
 def Test_ShouldReturnEmpty_TestExplicitEmptyList_ExpectTrue() -> None:
    include_filter = GuardiansTalkIncludeFilter.from_optional_list( [] )
 
-   assert include_filter.should_return_empty()
+   should_return_empty = include_filter.should_return_empty()
+
+   assert should_return_empty is True
 
 
 def Test_AllowsTalkName_TestIncludedName_ExpectTrue() -> None:
-   include_filter = GuardiansTalkIncludeFilter.from_optional_list( [ ' African Lion ' ] )
+   talk_name = 'African Lion'
+   include_filter = GuardiansTalkIncludeFilter.from_optional_list( [ f' { talk_name } ' ] )
 
-   assert include_filter.allows_talk_name( 'african lion' )
+   allowed = include_filter.allows_talk_name( talk_name.lower() )
+
+   assert allowed is True
 
 
 def Test_AllowsTalkName_TestExcludedName_ExpectFalse() -> None:
-   include_filter = GuardiansTalkIncludeFilter.from_optional_list( [ 'African Lion' ] )
+   talk_name = 'African Lion'
+   other_name = 'Masai Giraffe'
+   include_filter = GuardiansTalkIncludeFilter.from_optional_list( [ talk_name ] )
 
-   assert not include_filter.allows_talk_name( 'Masai Giraffe' )
+   allowed = include_filter.allows_talk_name( other_name )
+
+   assert allowed is False

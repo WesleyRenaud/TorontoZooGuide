@@ -6,15 +6,18 @@ import { DraftStore } from '../../../scripts/itinerary/draftStore.js';
 import { ItineraryServiceHelper } from '../../../scripts/itinerary/itineraryServiceHelper.js';
 import { createLocalStorageMock } from '../helpers/localStorageMock.mjs';
 
+
 test('Test_FetchSavedItineraryVisitDate_TestResponse_ExpectStored', async () => {
    globalThis.localStorage = createLocalStorageMock();
    const original = ItineraryClient.getItineraryDateRequest;
-   ItineraryClient.getItineraryDateRequest = async () => ({ date: '2026-09-08' });
+   const date = '2026-09-08';
+   ItineraryClient.getItineraryDateRequest = async () => ({ date });
 
    try {
-      const date = await ItineraryServiceHelper.fetchSavedItineraryVisitDate();
-      assert.equal(date, '2026-09-08');
-      assert.equal(DraftStore.getStoredItineraryDate(), '2026-09-08');
+      const fetched = await ItineraryServiceHelper.fetchSavedItineraryVisitDate();
+
+      assert.equal(fetched, date);
+      assert.equal(DraftStore.getStoredItineraryDate(), date);
    } finally {
       ItineraryClient.getItineraryDateRequest = original;
    }

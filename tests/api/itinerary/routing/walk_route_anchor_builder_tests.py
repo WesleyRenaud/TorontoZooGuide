@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from api.itinerary.animal_schedule_item_key import AnimalScheduleItemKey
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.itinerary_stop import ItineraryStop
@@ -26,13 +27,14 @@ VISIT_DATE = '2026-06-20'
 ARRIVAL_TIME = '9:30 AM'
 DEPARTURE_TIME = '5:00 PM'
 
-
 MAIN_STATION = 'Main Zoomobile Station'
 CANADA_STATION = 'Canadian Domain Zoomobile Station'
 ENTRANCE_NODE_ID = 'n-1'
 LION_WALK_NODE_ID = 'n-2001'
 ONBOARD_NODE_ID = 'n-onboard'
 OFFBOARD_NODE_ID = 'n-offboard'
+ATTRACTION_MODE_START_TIME = '11:00 AM'
+ATTRACTION_MODE_END_TIME = '11:30 AM'
 
 UNSCHEDULED_LION = Animal(
    species='African Lion',
@@ -118,6 +120,13 @@ def _resolve_station_node( transportation_name: str, station_name: str ) -> str 
    return STATION_NODE_IDS.get( station_name )
 
 
+def _lion_item_key( animal: Animal ) -> str:
+   return AnimalScheduleItemKey.wire(
+      species=animal.species,
+      exhibit=animal.exhibit,
+      enclosure_name=animal.enclosure_name )
+
+
 @pytest.fixture
 def stub_walk_route_anchor_dependencies( monkeypatch: pytest.MonkeyPatch ) -> None:
    _clear_walk_graph_provider_cache()
@@ -135,127 +144,152 @@ def stub_walk_route_anchor_dependencies( monkeypatch: pytest.MonkeyPatch ) -> No
 
 def Test_Build_TestUnscheduledAnimal_ExpectEmpty(
       stub_walk_route_anchor_dependencies: None ) -> None:
-   assert WalkRouteAnchorBuilder.build(
-      _itinerary( animals=[ UNSCHEDULED_LION ] ) ) == []
+   itinerary = _itinerary( animals=[ UNSCHEDULED_LION ] )
+
+   anchors = WalkRouteAnchorBuilder.build( itinerary )
+
+   assert anchors == []
 
 
 def Test_Build_TestScheduledAnimal_ExpectEntranceAndAnimalAnchors(
       stub_walk_route_anchor_dependencies: None ) -> None:
-   anchors = WalkRouteAnchorBuilder.build(
-      _itinerary( animals=[ SCHEDULED_LION ] ) )
+   itinerary = _itinerary( animals=[ SCHEDULED_LION ] )
+   animal_item_key = _lion_item_key( SCHEDULED_LION )
 
-   assert len( anchors ) == 2
-   assert anchors[ Position.FIRST ].schedule_item_kind == ScheduleItemKind.ENTRANCE
+   anchors = WalkRouteAnchorBuilder.build( itinerary )
+
+   assert [ anchor.schedule_item_kind for anchor in anchors ] == [
+      ScheduleItemKind.ENTRANCE,
+      ScheduleItemKind.ANIMAL,
+   ]
    assert anchors[ Position.FIRST ].item_key == ENTRANCE_ITEM_KEY
    assert anchors[ Position.FIRST ].walk_node_ids == [ ENTRANCE_NODE_ID ]
-   assert anchors[ Position.SECOND ].schedule_item_kind == ScheduleItemKind.ANIMAL
-   assert anchors[ Position.SECOND ].item_key == 'African Lion||Africa Savanna||Outdoor'
+   assert anchors[ Position.SECOND ].item_key == animal_item_key
    assert anchors[ Position.SECOND ].walk_node_ids == [ LION_WALK_NODE_ID ]
-   assert anchors[ Position.SECOND ].start_time == '10:00 AM'
+   assert anchors[ Position.SECOND ].start_time == SCHEDULED_LION.start_time
 
 
 def Test_Build_TestTransitRide_ExpectOnboardAndOffboardAnchors(
       stub_walk_route_anchor_dependencies: None ) -> None:
-   anchors = WalkRouteAnchorBuilder.build(
-      _itinerary(
-         transportations=[
-            ItineraryTransportation(
-               name=TransportationName.ZOOMOBILE,
-               added_as_attraction=False,
-               legs=ZOOMOBILE_LEGS ),
-         ] ) )
+   first_leg = ZOOMOBILE_LEGS[ Position.FIRST ]
+   itinerary = _itinerary(
+      transportations=[
+         ItineraryTransportation(
+            name=TransportationName.ZOOMOBILE,
+            added_as_attraction=False,
+            legs=ZOOMOBILE_LEGS ),
+      ] )
 
-   assert len( anchors ) == 3
-   assert anchors[ Position.FIRST ].schedule_item_kind == ScheduleItemKind.ENTRANCE
+   anchors = WalkRouteAnchorBuilder.build( itinerary )
 
    onboarding_anchor = anchors[ Position.SECOND ]
    offboarding_anchor = anchors[ Position.THIRD ]
-
+   assert [ anchor.schedule_item_kind for anchor in anchors ] == [
+      ScheduleItemKind.ENTRANCE,
+      ScheduleItemKind.TRANSPORTATION,
+      ScheduleItemKind.TRANSPORTATION,
+   ]
    assert onboarding_anchor.transit_endpoint == TransitRideEndpoint.ONBOARDING
-   assert onboarding_anchor.walk_node_ids == [ ONBOARD_NODE_ID ]
-   assert onboarding_anchor.start_time == '10:00 AM'
+   assert onboarding_anchor.walk_node_ids == [ STATION_NODE_IDS[ first_leg.from_station ] ]
+   assert onboarding_anchor.start_time == first_leg.start_time
    assert offboarding_anchor.transit_endpoint == TransitRideEndpoint.OFFBOARDING
-   assert offboarding_anchor.walk_node_ids == [ OFFBOARD_NODE_ID ]
-   assert offboarding_anchor.start_time == '10:20 AM'
+   assert offboarding_anchor.walk_node_ids == [ STATION_NODE_IDS[ first_leg.to_station ] ]
+   assert offboarding_anchor.start_time == first_leg.end_time
 
 
 def Test_Build_TestAttractionModeTransportation_ExpectBoardingPin(
       stub_walk_route_anchor_dependencies: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   transportation = ItineraryTransportation(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=True,
+      start_time=ATTRACTION_MODE_START_TIME,
+      end_time=ATTRACTION_MODE_END_TIME,
+      legs=ZOOMOBILE_LEGS )
    monkeypatch.setattr(
       TransportationWalkNodeResolver,
       'resolve',
       lambda name, legs=None, endpoint=None: ONBOARD_NODE_ID )
+   itinerary = _itinerary( transportations=[ transportation ] )
 
-   anchors = WalkRouteAnchorBuilder.build(
-      _itinerary(
-         transportations=[
-            ItineraryTransportation(
-               name=TransportationName.ZOOMOBILE,
-               added_as_attraction=True,
-               start_time='11:00 AM',
-               end_time='11:30 AM',
-               legs=ZOOMOBILE_LEGS ),
-         ] ) )
+   anchors = WalkRouteAnchorBuilder.build( itinerary )
 
-   assert len( anchors ) == 2
-   assert anchors[ Position.SECOND ].schedule_item_kind == ScheduleItemKind.TRANSPORTATION
-   assert anchors[ Position.SECOND ].item_key == TransportationName.ZOOMOBILE
-   assert anchors[ Position.SECOND ].walk_node_ids == [ ONBOARD_NODE_ID ]
-   assert anchors[ Position.SECOND ].start_time == '11:00 AM'
+   boarding_anchor = anchors[ Position.SECOND ]
+   assert [ anchor.schedule_item_kind for anchor in anchors ] == [
+      ScheduleItemKind.ENTRANCE,
+      ScheduleItemKind.TRANSPORTATION,
+   ]
+   assert boarding_anchor.schedule_item_kind == ScheduleItemKind.TRANSPORTATION
+   assert boarding_anchor.item_key == transportation.name
+   assert boarding_anchor.walk_node_ids == [ ONBOARD_NODE_ID ]
+   assert boarding_anchor.start_time == transportation.start_time
 
 
-def Test_AttractionModeTransportationAnchor_TestMissingTimes_ExpectNone() -> None:
-   assert WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
-      ItineraryTransportation(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=True,
-         start_time=None,
-         end_time='11:30 AM',
-         legs=ZOOMOBILE_LEGS ) ) is None
-   assert WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
-      ItineraryTransportation(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=True,
-         start_time='11:00 AM',
-         end_time=None,
-         legs=ZOOMOBILE_LEGS ) ) is None
+def Test_AttractionModeTransportationAnchor_TestMissingStartTime_ExpectNone() -> None:
+   transportation = ItineraryTransportation(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=True,
+      start_time=None,
+      end_time=ATTRACTION_MODE_END_TIME,
+      legs=ZOOMOBILE_LEGS )
+
+   anchor = WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
+      transportation )
+
+   assert anchor is None
+
+
+def Test_AttractionModeTransportationAnchor_TestMissingEndTime_ExpectNone() -> None:
+   transportation = ItineraryTransportation(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=True,
+      start_time=ATTRACTION_MODE_START_TIME,
+      end_time=None,
+      legs=ZOOMOBILE_LEGS )
+
+   anchor = WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
+      transportation )
+
+   assert anchor is None
 
 
 def Test_AttractionModeTransportationAnchor_TestMissingWalkNode_ExpectNone(
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   transportation = ItineraryTransportation(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=True,
+      start_time=ATTRACTION_MODE_START_TIME,
+      end_time=ATTRACTION_MODE_END_TIME,
+      legs=ZOOMOBILE_LEGS )
    monkeypatch.setattr(
       TransportationWalkNodeResolver,
       'resolve',
       lambda name, legs=None, endpoint=None: None )
 
-   assert WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
-      ItineraryTransportation(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=True,
-         start_time='11:00 AM',
-         end_time='11:30 AM',
-         legs=ZOOMOBILE_LEGS ) ) is None
+   anchor = WalkRouteAnchorBuilder._attraction_mode_transportation_anchor(
+      transportation )
+
+   assert anchor is None
 
 
 def Test_Build_TestAttractionModeWithoutResolvedNode_ExpectEmpty(
       stub_walk_route_anchor_dependencies: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   transportation = ItineraryTransportation(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=True,
+      start_time=ATTRACTION_MODE_START_TIME,
+      end_time=ATTRACTION_MODE_END_TIME,
+      legs=ZOOMOBILE_LEGS )
    monkeypatch.setattr(
       TransportationWalkNodeResolver,
       'resolve',
       lambda name, legs=None, endpoint=None: None )
+   itinerary = _itinerary( transportations=[ transportation ] )
 
-   assert WalkRouteAnchorBuilder.build(
-      _itinerary(
-         transportations=[
-            ItineraryTransportation(
-               name=TransportationName.ZOOMOBILE,
-               added_as_attraction=True,
-               start_time='11:00 AM',
-               end_time='11:30 AM',
-               legs=ZOOMOBILE_LEGS ),
-         ] ) ) == []
+   anchors = WalkRouteAnchorBuilder.build( itinerary )
+
+   assert anchors == []
 
 
 def Test_Build_TestEntranceOnlyContentStops_ExpectEmpty(
@@ -271,6 +305,8 @@ def Test_Build_TestEntranceOnlyContentStops_ExpectEmpty(
       ItineraryStopWalkRouteSorter,
       'sort',
       lambda stops: [ entrance ] )
+   itinerary = _itinerary( animals=[ SCHEDULED_LION ] )
 
-   assert WalkRouteAnchorBuilder.build(
-      _itinerary( animals=[ SCHEDULED_LION ] ) ) == []
+   anchors = WalkRouteAnchorBuilder.build( itinerary )
+
+   assert anchors == []

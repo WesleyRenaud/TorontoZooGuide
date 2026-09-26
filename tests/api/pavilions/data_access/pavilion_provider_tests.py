@@ -49,7 +49,9 @@ def _insert_pavilion(
 
 def Test_FetchPavilions_TestEmpty_ExpectEmptyList(
       pavilion_provider_conn: sqlite3.Connection ) -> None:
-   assert PavilionProvider.fetch_pavilions( pavilion_provider_conn ) == []
+   pavilions = PavilionProvider.fetch_pavilions( pavilion_provider_conn )
+
+   assert pavilions == []
 
 def Test_FetchPavilions_TestPopulated_ExpectMappedFields(
       pavilion_provider_conn: sqlite3.Connection ) -> None:

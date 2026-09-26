@@ -31,11 +31,13 @@ def viewing_scope_conn() -> sqlite3.Connection:
 
 def Test_FetchAnimalViewingScopes_TestNoRows_ExpectEmptyList(
       viewing_scope_conn: sqlite3.Connection ) -> None:
-   assert AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
+   animal_viewing_scopes = AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
       viewing_scope_conn,
       species='African Lion',
       exhibit='Africa Savanna',
-   ) == []
+   )
+
+   assert animal_viewing_scopes == []
 
 
 def Test_FetchAnimalViewingScopes_TestNamedAndUnnamed_ExpectSortedNames(
@@ -57,18 +59,22 @@ def Test_FetchAnimalViewingScopes_TestNamedAndUnnamed_ExpectSortedNames(
    )
    viewing_scope_conn.commit()
 
-   assert AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
+   animal_viewing_scopes = AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
       viewing_scope_conn,
       species='Wood Bison',
       exhibit='Canadian Domain',
-   ) == [
+   )
+
+   assert animal_viewing_scopes == [
       AnimalViewingScope.from_enclosure_name( 'Female Herd' ),
       AnimalViewingScope.from_enclosure_name( 'Male Herd' ),
    ]
-   assert AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
+   animal_viewing_scopes = AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
       viewing_scope_conn,
       species='African Lion',
       exhibit='Africa Savanna',
-   ) == [
+   )
+
+   assert animal_viewing_scopes == [
       AnimalViewingScope.from_enclosure_name( None ),
    ]

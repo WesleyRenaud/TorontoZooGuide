@@ -11,12 +11,13 @@ Y_COORD = 67.5
 
 
 def Test_MapRecord_TestRow_ExpectServiceTypeAndCoordinatesMapped() -> None:
-   guest_service = GuestServiceMapper.map_record(
-      make_row( {
-         'SERVICE_TYPE': SERVICE_TYPE,
-         'X_COORD': X_COORD,
-         'Y_COORD': Y_COORD,
-      } ) )
+   row = make_row( {
+      'SERVICE_TYPE': SERVICE_TYPE,
+      'X_COORD': X_COORD,
+      'Y_COORD': Y_COORD,
+   } )
+
+   guest_service = GuestServiceMapper.map_record( row )
 
    assert guest_service.service_type == SERVICE_TYPE
    assert guest_service.x_coord == X_COORD

@@ -97,9 +97,11 @@ def _seed_zoomobile_stations( conn: sqlite3.Connection ) -> None:
 
 def Test_FetchTransportationStationNames_TestEmpty_ExpectEmptyList(
       transportation_station_provider_conn: sqlite3.Connection ) -> None:
-   assert TransportationStationProvider.fetch_transportation_station_names(
+   transportation_station_names = TransportationStationProvider.fetch_transportation_station_names(
       transportation_station_provider_conn,
-      TransportationName.ZOOMOBILE ) == []
+      TransportationName.ZOOMOBILE )
+
+   assert transportation_station_names == []
 
 
 def Test_FetchTransportationStationNames_TestPopulated_ExpectFilteredNames(
@@ -142,9 +144,11 @@ def Test_FetchMainTransportationStationRecord_TestMissing_ExpectNone(
       y_coord=4.0 )
    transportation_station_provider_conn.commit()
 
-   assert TransportationStationProvider.fetch_main_transportation_station_record(
+   main_transportation_station_record = TransportationStationProvider.fetch_main_transportation_station_record(
       transportation_station_provider_conn,
-      TransportationName.ZOOMOBILE ) is None
+      TransportationName.ZOOMOBILE )
+
+   assert main_transportation_station_record is None
 
 
 def Test_FetchMainTransportationStationRecord_TestPresent_ExpectMainStation(
@@ -166,10 +170,12 @@ def Test_FetchTransportationStationRecord_TestMissing_ExpectNone(
       transportation_station_provider_conn: sqlite3.Connection ) -> None:
    _seed_zoomobile_stations( transportation_station_provider_conn )
 
-   assert TransportationStationProvider.fetch_transportation_station_record(
+   transportation_station_record = TransportationStationProvider.fetch_transportation_station_record(
       transportation_station_provider_conn,
       TransportationName.ZOOMOBILE,
-      CANADA ) is None
+      CANADA )
+
+   assert transportation_station_record is None
 
 
 def Test_FetchTransportationStationRecord_TestPresent_ExpectMappedFields(

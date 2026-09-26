@@ -22,6 +22,7 @@ import {
    timelinePillTexts,
    timelineScheduledPillTexts,
 } from '../../helpers/panelRowsTestSetup.mjs';
+import { Strings } from '../../../../scripts/strings.js';
 
 installPanelRowsTestHooks();
 
@@ -75,6 +76,7 @@ test('Test_Scheduled_TestScheduledGenericEventPillRendersOnTheTimeline_ExpectOk'
    }]);
 });
 
+
 test('Test_Scheduled_TestScheduledGuardiansTalkRendersAsTimelineEventCard_ExpectOk', () => {
    const unscheduleCalls = [];
    const removeCalls = [];
@@ -126,7 +128,7 @@ test('Test_Scheduled_TestScheduledGuardiansTalkRendersAsTimelineEventCard_Expect
    );
    assert.equal(tigerEvent.querySelector('.itinerary-day-scheduled-pill--with-menu'), null);
    assert.equal(menuItems.length, 1);
-   assert.equal(menuItems[Position.FIRST]?.textContent, 'Remove');
+   assert.equal(menuItems[Position.FIRST]?.textContent, Strings.itinerary.dayPlanner.remove);
 
    menuItems[Position.FIRST].click();
 
@@ -136,6 +138,7 @@ test('Test_Scheduled_TestScheduledGuardiansTalkRendersAsTimelineEventCard_Expect
       key: new GuardiansTalkScheduleItemKey('Amur Tiger', '1:30 PM', '2:00 PM').toWire(),
    }]);
 });
+
 
 test('Test_Scheduled_TestScheduledWildEncounterRendersAsTimelineEventCard_ExpectOk', () => {
    const unscheduleCalls = [];
@@ -183,7 +186,7 @@ test('Test_Scheduled_TestScheduledWildEncounterRendersAsTimelineEventCard_Expect
    assert.ok(eventCard?.classList.contains('itinerary-day-event-card--with-menu'));
    assert.match(allTextFor(kangarooEvent), /Meeting Spot:/);
    assert.equal(menuItems.length, 1);
-   assert.equal(menuItems[Position.FIRST]?.textContent, 'Remove');
+   assert.equal(menuItems[Position.FIRST]?.textContent, Strings.itinerary.dayPlanner.remove);
 
    menuItems[Position.FIRST].click();
 
@@ -193,6 +196,7 @@ test('Test_Scheduled_TestScheduledWildEncounterRendersAsTimelineEventCard_Expect
       key: new WildEncounterScheduleItemKey('Kangaroo', '3:30 PM', '4:15 PM').toWire(),
    }]);
 });
+
 
 test('Test_Scheduled_TestScheduledAttractionRendersAsTimelineEventCardWith_ExpectOk', () => {
    const unscheduleCalls = [];
@@ -248,8 +252,8 @@ test('Test_Scheduled_TestScheduledAttractionRendersAsTimelineEventCardWith_Expec
    );
    assert.equal(zoomobileEvent.querySelector('.itinerary-day-scheduled-pill'), null);
    assert.equal(menuItems.length, 2);
-   assert.equal(menuItems[Position.FIRST]?.textContent, 'Unschedule');
-   assert.equal(menuItems[Position.SECOND]?.textContent, 'Remove');
+   assert.equal(menuItems[Position.FIRST]?.textContent, Strings.itinerary.dayPlanner.unschedule);
+   assert.equal(menuItems[Position.SECOND]?.textContent, Strings.itinerary.dayPlanner.remove);
 
    menuItems[Position.FIRST].click();
 
@@ -266,6 +270,7 @@ test('Test_Scheduled_TestScheduledAttractionRendersAsTimelineEventCardWith_Expec
       key: 'Zoomobile',
    }]);
 });
+
 
 test('Test_Scheduled_TestScheduledTransportationRendersAsTimelineEventCardWith_ExpectOk', () => {
    const unscheduleCalls = [];
@@ -332,8 +337,8 @@ test('Test_Scheduled_TestScheduledTransportationRendersAsTimelineEventCardWith_E
       /images\/details\/transportations\/zoomobile\.png$/
    );
    assert.equal(menuItems.length, 2);
-   assert.equal(menuItems[Position.FIRST]?.textContent, 'Unschedule');
-   assert.equal(menuItems[Position.SECOND]?.textContent, 'Remove');
+   assert.equal(menuItems[Position.FIRST]?.textContent, Strings.itinerary.dayPlanner.unschedule);
+   assert.equal(menuItems[Position.SECOND]?.textContent, Strings.itinerary.dayPlanner.remove);
 
    menuItems[Position.FIRST].click();
 
@@ -349,6 +354,7 @@ test('Test_Scheduled_TestScheduledTransportationRendersAsTimelineEventCardWith_E
       key: new TransportationScheduleItemKey('Zoomobile', true).toWire(),
    }]);
 });
+
 
 test('Test_Scheduled_TestScheduledPureTransportationTimelineMenuOmitsUnschedule_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -404,9 +410,10 @@ test('Test_Scheduled_TestScheduledPureTransportationTimelineMenuOmitsUnschedule_
    assert.ok(zoomobileEvent);
    assert.deepEqual(
       menuItems.map((item) => item.textContent),
-      ['Remove']
+      [Strings.itinerary.dayPlanner.remove]
    );
 });
+
 
 test('Test_Pre_TestPreOpenWildEncounterKeepsItsStartSlot_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -442,6 +449,7 @@ test('Test_Pre_TestPreOpenWildEncounterKeepsItsStartSlot_ExpectOk', () => {
    assert.match(allTextFor(malaysiaEvent), /8:45 AM/);
    assert.match(allTextFor(malaysiaEvent), /9:45 AM/);
 });
+
 
 test('Test_Scheduled_TestScheduledAnimalPillMenuOffersUnscheduleAndRemove_ExpectOk', () => {
    const unscheduleCalls = [];
@@ -486,7 +494,7 @@ test('Test_Scheduled_TestScheduledAnimalPillMenuOffersUnscheduleAndRemove_Expect
    assert.equal(menuItems.length, 2);
    assert.deepEqual(
       menuItems.map((button) => button.textContent),
-      ['Unschedule', 'Remove']
+      [Strings.itinerary.dayPlanner.unschedule, Strings.itinerary.dayPlanner.remove]
    );
 
    menuItems[Position.FIRST].click();
@@ -501,6 +509,7 @@ test('Test_Scheduled_TestScheduledAnimalPillMenuOffersUnscheduleAndRemove_Expect
       key: 'African Lion||Africa Savanna',
    }]);
 });
+
 
 test('Test_Scheduled_TestScheduledListRowsShowUnscheduleAndRemoveButtons_ExpectOk', () => {
    const unscheduleCalls = [];
@@ -554,10 +563,10 @@ test('Test_Scheduled_TestScheduledListRowsShowUnscheduleAndRemoveButtons_ExpectO
    );
    const dayItemsSections = [...planner.querySelectorAll('.itinerary-day-items-sections')];
    const scheduledList = dayItemsSections.find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(Strings.itinerary.dayPlanner.scheduledTitle)
    ));
    const unscheduledList = dayItemsSections.find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Unscheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(Strings.itinerary.dayPlanner.unscheduledTitle)
    ));
    const scheduledButtons = scheduledList?.querySelectorAll('.itin-panel-item-action-btn') ?? [];
    const tigerRow = [...(scheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
@@ -568,16 +577,16 @@ test('Test_Scheduled_TestScheduledListRowsShowUnscheduleAndRemoveButtons_ExpectO
    assert.equal(scheduledButtons.length, 5);
    assert.equal(
       scheduledButtons.every((button) => (
-         button.textContent === 'Unschedule' || button.textContent === 'Remove'
+         button.textContent === Strings.itinerary.dayPlanner.unschedule || button.textContent === Strings.itinerary.dayPlanner.remove
       )),
       true
    );
    assert.equal(tigerButtons.length, 1);
-   assert.equal(tigerButtons[Position.FIRST]?.textContent, 'Remove');
-   assert.equal(unscheduledList?.querySelectorAll('.itin-panel-item-action-btn').length ?? 0, 0);
+   assert.equal(tigerButtons[Position.FIRST]?.textContent, Strings.itinerary.dayPlanner.remove);
+   assert.equal(unscheduledList.querySelectorAll('.itin-panel-item-action-btn').length, 0);
 
    [...scheduledButtons]
-      .filter((button) => button.textContent === 'Unschedule')
+      .filter((button) => button.textContent === Strings.itinerary.dayPlanner.unschedule)
       .forEach((button) => {
          button.click();
       });
@@ -594,6 +603,7 @@ test('Test_Scheduled_TestScheduledListRowsShowUnscheduleAndRemoveButtons_ExpectO
    ]);
    assert.equal(removeCalls.length, 0);
 });
+
 
 test('Test_Day_TestDayPlannerStacksZooHoursAndArrivalMarkers_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -612,14 +622,15 @@ test('Test_Day_TestDayPlannerStacksZooHoursAndArrivalMarkers_ExpectOk', () => {
    const openTimeCell = [...planner.querySelectorAll('.itinerary-day-time')].find((cell) => (
       cell.querySelector('.itinerary-day-time-label')?.textContent === '9:30 AM'
    ));
-   const arrivalStrip = boundaryMarkerStripByLabel(planner, 'Arrival');
+   const arrivalStrip = boundaryMarkerStripByLabel(planner, Strings.itinerary.dayPlanner.arrivalLabel);
    const markers = arrivalStrip?.querySelectorAll('.itinerary-day-boundary-marker') ?? [];
 
-   assert.match(allTextFor(openTimeCell), /Zoo Opens/);
+   assert.match(allTextFor(openTimeCell), new RegExp(Strings.itinerary.dayPlanner.openLabel));
    assert.ok(arrivalStrip);
    assert.equal(markers.length, 1);
-   assert.equal(arrivalStrip?.querySelector('.itinerary-day-boundary-marker')?.attributes?.['aria-label'], 'Arrival');
+   assert.equal(arrivalStrip?.querySelector('.itinerary-day-boundary-marker')?.attributes?.['aria-label'], Strings.itinerary.dayPlanner.arrivalLabel);
 });
+
 
 test('Test_Day_TestDayPlannerRendersScheduledGuardiansTalksAndWild_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -680,21 +691,21 @@ test('Test_Day_TestDayPlannerRendersScheduledGuardiansTalksAndWild_ExpectOk', ()
    assert.match(text, /Location: Eurasia Wilds/);
    assert.match(text, /African Rainforest\s+Wild Encounter/);
    assert.match(text, /Meeting Spot: Wild Encounter - Africa Meeting Spot/);
-   assert.match(text, /Scheduled Items/);
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.scheduledTitle));
    assert.match(text, /Meet The Guardians \(1\)/);
    assert.match(text, /Wild Encounters \(1\)/);
    assert.match(text, /Animals \(1\)/);
    assert.match(text, /African Lion/);
    assert.match(text, /Attractions \(1\)/);
    assert.match(text, /Zoomobile/);
-   assert.match(text, /Unscheduled Items/);
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.unscheduledTitle));
    assert.match(text, /Animals \(1\)/);
    assert.match(text, /Giant Panda/);
    assert.match(text, /Attractions \(1\)/);
    assert.match(text, /Conservation Carousel/);
    assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Meet The Guardians/);
    assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Wild Encounters/);
-   assert.ok(text.indexOf('Scheduled Items') < text.indexOf('Unscheduled Items'));
+   assert.ok(text.indexOf(Strings.itinerary.dayPlanner.scheduledTitle) < text.indexOf(Strings.itinerary.dayPlanner.unscheduledTitle));
 
    const timelineEventTexts = timelineScheduledPillTexts(planner);
 
@@ -706,10 +717,10 @@ test('Test_Day_TestDayPlannerRendersScheduledGuardiansTalksAndWild_ExpectOk', ()
 
    const dayItemsSections = [...planner.querySelectorAll('.itinerary-day-items-sections')];
    const scheduledList = dayItemsSections.find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(Strings.itinerary.dayPlanner.scheduledTitle)
    ));
    const unscheduledList = dayItemsSections.find((section) => (
-      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Unscheduled Items')
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes(Strings.itinerary.dayPlanner.unscheduledTitle)
    ));
 
    assert.equal(
@@ -720,6 +731,7 @@ test('Test_Day_TestDayPlannerRendersScheduledGuardiansTalksAndWild_ExpectOk', ()
       (unscheduledList?.querySelectorAll('.itin-panel-section-edit-btn').length ?? 0) > 0
    );
 });
+
 
 test('Test_Day_TestDayPlannerPositionsOffSlotScheduledItemsBetween_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -751,6 +763,7 @@ test('Test_Day_TestDayPlannerPositionsOffSlotScheduledItemsBetween_ExpectOk', ()
    assert.equal(lionStrip?.attributes?.['data-offset-fraction'], '0.5');
    assert.equal(lionPill.attributes?.['data-duration-fraction'], '1');
 });
+
 
 test('Test_Day_TestDayPlannerRendersScheduledDurationAsALarger_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -785,7 +798,7 @@ test('Test_Day_TestDayPlannerRendersScheduledDurationAsALarger_ExpectOk', () => 
    assert.equal(polarStrip?.attributes?.['data-scheduled-column'], 'true');
    assert.equal(polarPill.attributes?.['data-duration-fraction'], String(10 / 30));
    assert.equal(
-      Boolean(boundaryMarkerByLabel(planner, 'Arrival')),
+      Boolean(boundaryMarkerByLabel(planner, Strings.itinerary.dayPlanner.arrivalLabel)),
       true
    );
    assert.ok(boundaryMarkerByLabel(planner, 'Departure'));
@@ -796,6 +809,7 @@ test('Test_Day_TestDayPlannerRendersScheduledDurationAsALarger_ExpectOk', () => 
       false
    );
 });
+
 
 test('Test_Day_TestDayPlannerKeepsShortScheduledVisitsReadable_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -832,6 +846,7 @@ test('Test_Day_TestDayPlannerKeepsShortScheduledVisitsReadable_ExpectOk', () => 
    assert.match(allTextFor(lemurPill), /Ring-Tailed Lemur/);
 });
 
+
 test('Test_Day_TestDayPlannerMergesOverlappingScheduledPillsIntoCarousel_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
@@ -866,6 +881,7 @@ test('Test_Day_TestDayPlannerMergesOverlappingScheduledPillsIntoCarousel_ExpectO
    assert.ok(groupedPill);
    assert.match(allTextFor(groupedPill), /\+ 1/);
 });
+
 
 test('Test_Day_TestDayPlannerKeepsScheduledPillsWithinTheTimeline_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(

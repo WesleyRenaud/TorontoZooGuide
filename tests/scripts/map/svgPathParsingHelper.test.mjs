@@ -2,8 +2,23 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { SvgPathParsingHelper } from '../../../scripts/map/svgPathParsingHelper.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+
 
 test('Test_ReadNumber_TestTokenIndex_ExpectParsedFloat', () => {
-   assert.equal(SvgPathParsingHelper.readNumber(['M', '12.5', 'L'], 1), 12.5);
-   assert.equal(Number.isNaN(SvgPathParsingHelper.readNumber(['M'], 1)), true);
+   const value = '12.5';
+   const tokens = ['M', value, 'L'];
+
+   const number = SvgPathParsingHelper.readNumber(tokens, Position.SECOND);
+
+   assert.equal(number, Number(value));
+});
+
+
+test('Test_ReadNumber_TestMissingToken_ExpectNaN', () => {
+   const tokens = ['M'];
+
+   const number = SvgPathParsingHelper.readNumber(tokens, Position.SECOND);
+
+   assert.equal(Number.isNaN(number), true);
 });

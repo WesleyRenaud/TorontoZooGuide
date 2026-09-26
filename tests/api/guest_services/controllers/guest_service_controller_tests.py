@@ -28,12 +28,12 @@ def stub_guest_service_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubGue
 
 def Test_GetGuestServices_TestHttpRequest_ExpectReturnsGuestServices(
       stub_guest_service_coordinator: StubGuestServiceCoordinator ) -> None:
+   guest_service = _sample_guest_service()
    handler = make_handler( '/get-guest-services', {} )
 
    server.HttpRequestHandler.do_POST( handler )
-
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
    assert stub_guest_service_coordinator.calls == [ ( 'get_guest_services', {} ) ]
-   assert result[ 'guest_services' ] == [ _sample_guest_service().to_dict() ]
+   assert result[ 'guest_services' ] == [ guest_service.to_dict() ]

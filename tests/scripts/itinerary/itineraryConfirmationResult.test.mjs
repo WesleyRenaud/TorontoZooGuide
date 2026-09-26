@@ -3,14 +3,31 @@ import test from 'node:test';
 
 import { ItineraryConfirmationResult } from '../../../scripts/itinerary/itineraryConfirmationResult.js';
 
+
 test('Test_CreateItineraryConfirmationCancelledResult_TestPayload_ExpectCancelled', () => {
-   assert.deepEqual(
-      ItineraryConfirmationResult.createItineraryConfirmationCancelledResult({ draft: true }),
-      { draft: true, cancelled: true }
-   );
+   const draft = true;
+   const payload = { draft };
+
+   const result = ItineraryConfirmationResult.createItineraryConfirmationCancelledResult(payload);
+
+   assert.deepEqual(result, { ...payload, cancelled: true });
 });
 
-test('Test_IsItineraryConfirmationCancelled_TestResult_ExpectBoolean', () => {
-   assert.equal(ItineraryConfirmationResult.isItineraryConfirmationCancelled({ cancelled: true }), true);
-   assert.equal(ItineraryConfirmationResult.isItineraryConfirmationCancelled({}), false);
+
+test('Test_IsItineraryConfirmationCancelled_TestCancelled_ExpectTrue', () => {
+   const cancelled = true;
+   const result = { cancelled };
+
+   const isCancelled = ItineraryConfirmationResult.isItineraryConfirmationCancelled(result);
+
+   assert.equal(isCancelled, cancelled);
+});
+
+
+test('Test_IsItineraryConfirmationCancelled_TestMissing_ExpectFalse', () => {
+   const result = {};
+
+   const isCancelled = ItineraryConfirmationResult.isItineraryConfirmationCancelled(result);
+
+   assert.equal(isCancelled, false);
 });

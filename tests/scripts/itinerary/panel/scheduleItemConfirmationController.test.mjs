@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItineraryClient } from '../../../../scripts/api/itineraryClient.js';
-import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { ItineraryErrorTypes } from '../../../../scripts/itinerary/itineraryErrorTypes.js';
 import { ItineraryService } from '../../../../scripts/itinerary/itineraryService.js';
 import { PersistItineraryWarningSuppressor } from '../../../../scripts/itinerary/persistItineraryWarningSuppressor.js';
@@ -15,39 +14,10 @@ import { ScheduleItemConfirmationController } from '../../../../scripts/itinerar
 import { ScheduleItemConfirmationFlowHelper } from '../../../../scripts/itinerary/panel/scheduleItemConfirmationFlowHelper.js';
 import { ScheduleItemNotOnItineraryFragment } from '../../../../scripts/itinerary/panel/scheduleItemNotOnItineraryFragment.js';
 import { WildEncounterUnscheduleFragment } from '../../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 
-test('Test_CreateScheduleItemSaveFailedResult_TestDefault_ExpectSaveFailedType', () => {
-   assert.deepEqual(
-      ScheduleItemConfirmationController.createScheduleItemSaveFailedResult(),
-      { errorType: ItineraryErrorType.SAVE_FAILED }
-   );
-});
-
-test('Test_ScheduleItineraryItemWithConfirmation_TestSuccess_ExpectDispatch', async () => {
-   const originalRequest = ItineraryClient.scheduleItineraryItemRequest;
-   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
-   const originalDispatch = ItineraryService.dispatchScheduleItineraryItemResult;
-   const dispatches = [];
-
-   ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'SUCCESS' });
-   ItineraryErrorTypes.isItinerarySuccess = () => true;
-   ItineraryService.dispatchScheduleItineraryItemResult = (result) => dispatches.push(result);
-
-   try {
-      const result = await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation(
-         { id: 1 },
-         { a: 1 }
-      );
-      assert.deepEqual(result, { errorType: 'SUCCESS' });
-      assert.deepEqual(dispatches, [{ errorType: 'SUCCESS' }]);
-   } finally {
-      ItineraryClient.scheduleItineraryItemRequest = originalRequest;
-      ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
-      ItineraryService.dispatchScheduleItineraryItemResult = originalDispatch;
-   }
-});
-
-test('Test_ScheduleItineraryItemWithConfirmation_TestConfirmationBranches_ExpectHelper', async () => {
+function _installConfirmationMocks({ errorType, issues, helperResult } = {}) {
    const originalRequest = ItineraryClient.scheduleItineraryItemRequest;
    const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
    const originalNotOn = ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation;
@@ -64,130 +34,263 @@ test('Test_ScheduleItineraryItemWithConfirmation_TestConfirmationBranches_Expect
    const helperCalls = [];
 
    ItineraryErrorTypes.isItinerarySuccess = () => false;
+   ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation = () => false;
+   ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation = () => false;
+   ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation = () => false;
+   ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation = () => false;
+   ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation = () => false;
+   ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = () => false;
+   ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = () => false;
+   ItineraryClient.scheduleItineraryItemRequest = async () => (
+      issues === undefined ? { errorType } : { errorType, issues }
+   );
    ScheduleItemConfirmationFlowHelper.requestScheduleItemConfirmation = async (options) => {
       helperCalls.push(options);
-      return { confirmed: options.showConfirmation.name || 'confirmed' };
+      return helperResult ?? { confirmed: options.showConfirmation.name || 'confirmed' };
    };
    ScheduleItemConfirmationFlowHelper.getConfirmationMountEl = () => ({ mount: true });
    PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = async () => {};
    ItineraryBuildWarningsFragment.buildConfirmedOptionsFromBuildWarnings = () => ({ multi: true });
 
-   const branchOrder = [
-      {
-         setup() {
-            ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation = () => true;
-            ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation = () => false;
-            ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = () => false;
-            ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation = () => false;
-            ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation = () => false;
-            ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation = () => false;
-            ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = () => false;
-            ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'ITEM_NOT_ON_ITINERARY' });
-         },
-         expected: ScheduleItemNotOnItineraryFragment.showScheduleItemNotOnItineraryConfirmation,
+   return {
+      helperCalls,
+      restore() {
+         ItineraryClient.scheduleItineraryItemRequest = originalRequest;
+         ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
+         ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation = originalNotOn;
+         ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation = originalOutside;
+         ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation = originalGuardians;
+         ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation = originalWithout;
+         ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation = originalLongWait;
+         ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = originalWild;
+         ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = originalMulti;
+         ScheduleItemConfirmationFlowHelper.requestScheduleItemConfirmation = originalHelper;
+         PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = originalPersist;
+         ScheduleItemConfirmationFlowHelper.getConfirmationMountEl = originalMount;
+         ItineraryBuildWarningsFragment.buildConfirmedOptionsFromBuildWarnings = originalBuildConfirmed;
       },
-      {
-         setup() {
-            ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation = () => false;
-            ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation = () => true;
-            ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'OUTSIDE' });
-         },
-         expected: AttractionOutsideOperatingHoursFragment.showAttractionOutsideOperatingHoursConfirmation,
-      },
-      {
-         setup() {
-            ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation = () => false;
-            ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = () => true;
-            ItineraryClient.scheduleItineraryItemRequest = async () => ({
-               errorType: 'WARN',
-               issues: ['a', 'b'],
-            });
-         },
-         expected: ItineraryBuildWarningsFragment.showItineraryBuildWarningsConfirmation,
-      },
-      {
-         setup() {
-            ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = () => false;
-            ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation = () => true;
-            ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'GT', issues: [] });
-         },
-         expected: GuardiansTalkUnscheduleFragment.showGuardiansTalkUnscheduleConfirmation,
-      },
-      {
-         setup() {
-            ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation = () => false;
-            ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation = () => true;
-            ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'GTWA', issues: [] });
-         },
-         expected: GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation,
-      },
-      {
-         setup() {
-            ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation = () => false;
-            ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation = () => true;
-            ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'WAIT', issues: [] });
-         },
-         expected: FixedTimeItemLongWaitFragment.showFixedTimeItemLongWaitConfirmation,
-      },
-      {
-         setup() {
-            ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation = () => false;
-            ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = () => true;
-            ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'WE', issues: [] });
-         },
-         expected: WildEncounterUnscheduleFragment.showWildEncounterUnscheduleConfirmation,
-      },
-   ];
+   };
+}
+
+
+test('Test_CreateScheduleItemSaveFailedResult_TestDefault_ExpectSaveFailedType', () => {
+   const result = ScheduleItemConfirmationController.createScheduleItemSaveFailedResult();
+
+   assert.deepEqual(result, { errorType: ItineraryErrorType.SAVE_FAILED });
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestSuccess_ExpectDispatch', async () => {
+   const originalRequest = ItineraryClient.scheduleItineraryItemRequest;
+   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const originalDispatch = ItineraryService.dispatchScheduleItineraryItemResult;
+   const dispatches = [];
+   const successResult = { errorType: ItineraryErrorType.SUCCESS };
+   ItineraryClient.scheduleItineraryItemRequest = async () => successResult;
+   ItineraryErrorTypes.isItinerarySuccess = () => true;
+   ItineraryService.dispatchScheduleItineraryItemResult = (result) => {
+      dispatches.push(result);
+   };
 
    try {
-      for (const branch of branchOrder) {
-         branch.setup();
-         await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 1 });
-         assert.equal(helperCalls.at(-1).showConfirmation, branch.expected);
-      }
-
-      const notOnCall = helperCalls[0];
-      assert.deepEqual(notOnCall.buildConfirmedOptions(), {
-         confirmingScheduleItemNotOnItinerary: true,
-      });
-      await notOnCall.beforeConfirm({ doNotShowAgain: true });
-
-      assert.deepEqual(helperCalls[1].buildConfirmedOptions(), {
-         confirmingAttractionOutsideOperatingHours: true,
-      });
-      assert.deepEqual(helperCalls[2].buildConfirmedOptions(), { multi: true });
-      assert.deepEqual(helperCalls[3].buildConfirmedOptions(), {
-         confirmingGuardiansTalkUnschedule: true,
-      });
-      assert.deepEqual(helperCalls[4].buildConfirmedOptions(), {
-         confirmingGuardiansTalkWithoutAnimal: true,
-      });
-      assert.deepEqual(helperCalls[5].buildConfirmedOptions(), {
-         confirmingFixedTimeItemLongWait: true,
-      });
-      assert.deepEqual(helperCalls[6].buildConfirmedOptions(), {
-         confirmingWildEncounterUnschedule: true,
-      });
-
-      ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = () => false;
-      ItineraryClient.scheduleItineraryItemRequest = async () => ({ errorType: 'OTHER' });
-      assert.deepEqual(
-         await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 2 }),
-         { errorType: 'OTHER' }
+      const result = await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation(
+         { id: 1 },
+         { a: 1 }
       );
+
+      assert.deepEqual(result, successResult);
+      assert.deepEqual(dispatches, [successResult]);
    } finally {
       ItineraryClient.scheduleItineraryItemRequest = originalRequest;
       ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
-      ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation = originalNotOn;
-      ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation = originalOutside;
-      ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation = originalGuardians;
-      ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation = originalWithout;
-      ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation = originalLongWait;
-      ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = originalWild;
-      ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = originalMulti;
-      ScheduleItemConfirmationFlowHelper.requestScheduleItemConfirmation = originalHelper;
-      PersistItineraryWarningSuppressor.persistItineraryWarningSuppression = originalPersist;
-      ScheduleItemConfirmationFlowHelper.getConfirmationMountEl = originalMount;
-      ItineraryBuildWarningsFragment.buildConfirmedOptionsFromBuildWarnings = originalBuildConfirmed;
+      ItineraryService.dispatchScheduleItineraryItemResult = originalDispatch;
+   }
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestItemNotOnItinerary_ExpectConfirmation', async () => {
+   const mocks = _installConfirmationMocks({
+      errorType: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+   });
+   ItineraryErrorTypes.requiresScheduleItemNotOnItineraryConfirmation = () => true;
+
+   try {
+      await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 1 });
+      const helperCall = mocks.helperCalls.at(Position.FIRST);
+      const confirmedOptions = helperCall.buildConfirmedOptions();
+
+      assert.equal(
+         helperCall.showConfirmation,
+         ScheduleItemNotOnItineraryFragment.showScheduleItemNotOnItineraryConfirmation
+      );
+      assert.deepEqual(confirmedOptions, {
+         confirmingScheduleItemNotOnItinerary: true,
+      });
+
+      await helperCall.beforeConfirm({ doNotShowAgain: true });
+   } finally {
+      mocks.restore();
+   }
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestAttractionOutsideHours_ExpectConfirmation', async () => {
+   const mocks = _installConfirmationMocks({
+      errorType: ItineraryErrorType.ATTRACTION_OUTSIDE_OPERATING_HOURS,
+   });
+   ItineraryErrorTypes.requiresAttractionOutsideOperatingHoursConfirmation = () => true;
+
+   try {
+      await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 1 });
+      const helperCall = mocks.helperCalls.at(Position.FIRST);
+      const confirmedOptions = helperCall.buildConfirmedOptions();
+
+      assert.equal(
+         helperCall.showConfirmation,
+         AttractionOutsideOperatingHoursFragment.showAttractionOutsideOperatingHoursConfirmation
+      );
+      assert.deepEqual(confirmedOptions, {
+         confirmingAttractionOutsideOperatingHours: true,
+      });
+   } finally {
+      mocks.restore();
+   }
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestMultipleBuildWarnings_ExpectConfirmation', async () => {
+   const issues = ['a', 'b'];
+   const mocks = _installConfirmationMocks({
+      errorType: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+      issues,
+   });
+   ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = () => true;
+
+   try {
+      await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 1 });
+      const helperCall = mocks.helperCalls.at(Position.FIRST);
+      const confirmedOptions = helperCall.buildConfirmedOptions();
+
+      assert.equal(
+         helperCall.showConfirmation,
+         ItineraryBuildWarningsFragment.showItineraryBuildWarningsConfirmation
+      );
+      assert.deepEqual(confirmedOptions, { multi: true });
+   } finally {
+      mocks.restore();
+   }
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestGuardiansTalkUnschedule_ExpectConfirmation', async () => {
+   const mocks = _installConfirmationMocks({
+      errorType: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+      issues: [],
+   });
+   ItineraryErrorTypes.requiresGuardiansTalkUnscheduleConfirmation = () => true;
+
+   try {
+      await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 1 });
+      const helperCall = mocks.helperCalls.at(Position.FIRST);
+      const confirmedOptions = helperCall.buildConfirmedOptions();
+
+      assert.equal(
+         helperCall.showConfirmation,
+         GuardiansTalkUnscheduleFragment.showGuardiansTalkUnscheduleConfirmation
+      );
+      assert.deepEqual(confirmedOptions, {
+         confirmingGuardiansTalkUnschedule: true,
+      });
+   } finally {
+      mocks.restore();
+   }
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestGuardiansTalkWithoutAnimal_ExpectConfirmation', async () => {
+   const mocks = _installConfirmationMocks({
+      errorType: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+      issues: [],
+   });
+   ItineraryErrorTypes.requiresGuardiansTalkWithoutAnimalConfirmation = () => true;
+
+   try {
+      await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 1 });
+      const helperCall = mocks.helperCalls.at(Position.FIRST);
+      const confirmedOptions = helperCall.buildConfirmedOptions();
+
+      assert.equal(
+         helperCall.showConfirmation,
+         GuardiansTalkWithoutAnimalFragment.showGuardiansTalkWithoutAnimalConfirmation
+      );
+      assert.deepEqual(confirmedOptions, {
+         confirmingGuardiansTalkWithoutAnimal: true,
+      });
+   } finally {
+      mocks.restore();
+   }
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestFixedTimeItemLongWait_ExpectConfirmation', async () => {
+   const mocks = _installConfirmationMocks({
+      errorType: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+      issues: [],
+   });
+   ItineraryErrorTypes.requiresFixedTimeItemLongWaitConfirmation = () => true;
+
+   try {
+      await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 1 });
+      const helperCall = mocks.helperCalls.at(Position.FIRST);
+      const confirmedOptions = helperCall.buildConfirmedOptions();
+
+      assert.equal(
+         helperCall.showConfirmation,
+         FixedTimeItemLongWaitFragment.showFixedTimeItemLongWaitConfirmation
+      );
+      assert.deepEqual(confirmedOptions, {
+         confirmingFixedTimeItemLongWait: true,
+      });
+   } finally {
+      mocks.restore();
+   }
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestWildEncounterUnschedule_ExpectConfirmation', async () => {
+   const mocks = _installConfirmationMocks({
+      errorType: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+      issues: [],
+   });
+   ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = () => true;
+
+   try {
+      await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 1 });
+      const helperCall = mocks.helperCalls.at(Position.FIRST);
+      const confirmedOptions = helperCall.buildConfirmedOptions();
+
+      assert.equal(
+         helperCall.showConfirmation,
+         WildEncounterUnscheduleFragment.showWildEncounterUnscheduleConfirmation
+      );
+      assert.deepEqual(confirmedOptions, {
+         confirmingWildEncounterUnschedule: true,
+      });
+   } finally {
+      mocks.restore();
+   }
+});
+
+
+test('Test_ScheduleItineraryItemWithConfirmation_TestUnhandledError_ExpectReturned', async () => {
+   const errorResult = { errorType: ItineraryErrorType.SAVE_FAILED };
+   const mocks = _installConfirmationMocks(errorResult);
+
+   try {
+      const result = await ScheduleItemConfirmationController.scheduleItineraryItemWithConfirmation({ id: 2 });
+
+      assert.deepEqual(result, errorResult);
+   } finally {
+      mocks.restore();
    }
 });

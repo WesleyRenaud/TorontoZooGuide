@@ -12,16 +12,27 @@ from api.itinerary.scheduling.items.itinerary_save_result_builder import Itinera
 from api.itinerary.scheduling.items.schedule_slot_time_resolver import ScheduleSlotTimeResolver
 from api.itinerary.scheduling.items.schedule_window_preparer import ScheduleWindowPreparer
 from api.models import Animal
+from api.shared.calendar_dates import DateValues
+from api.shared.duration_values import DurationValues
 from api.shared.enums import ItineraryErrorType, Position
 
-VISIT_WINDOW = ( 16 * 3600, 16 * 3600 + 5 * 60 )
-DAY_HOURS_WINDOW = ( 9 * 3600 + 30 * 60, 17 * 3600 )
-DURATION_SECONDS = 8 * 60
+DURATION_MINUTES = 8
+VISIT_ARRIVAL = '4:00 PM'
+VISIT_DEPARTURE = '4:05 PM'
+DAY_OPEN = '9:30 AM'
+DAY_CLOSE = '5:00 PM'
+VISIT_WINDOW = (
+   DateValues.time_value_in_seconds( VISIT_ARRIVAL ),
+   DateValues.time_value_in_seconds( VISIT_DEPARTURE ) )
+DAY_HOURS_WINDOW = (
+   DateValues.time_value_in_seconds( DAY_OPEN ),
+   DateValues.time_value_in_seconds( DAY_CLOSE ) )
+DURATION_SECONDS = DurationValues.minutes_to_seconds( DURATION_MINUTES )
 
 SAVED_ITINERARY = SavedItinerary(
    date_value='2026-06-15',
-   arrival_time='4:00 PM',
-   departure_time='4:05 PM' )
+   arrival_time=VISIT_ARRIVAL,
+   departure_time=VISIT_DEPARTURE )
 
 
 @pytest.fixture
@@ -47,14 +58,31 @@ def stub_save_result( monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr( ItinerarySaveResultBuilder, 'save_result', save_result )
 
 
-def Test_EffectiveDurationSeconds_TestDefaultAndOverride_ExpectSeconds() -> None:
-   assert ScheduleSlotTimeResolver.effective_duration_seconds(
+def Test_EffectiveDurationSeconds_TestDefault_ExpectDefaultSeconds() -> None:
+   default_minutes = 40
+
+   seconds = ScheduleSlotTimeResolver.effective_duration_seconds(
       None,
-      40 * 60 ) == 40 * 60
-   assert ScheduleSlotTimeResolver.effective_duration_seconds(
-      20,
-      40 * 60 ) == 20 * 60
-   assert ScheduleSlotTimeResolver.effective_duration_seconds( None, None ) is None
+      DurationValues.minutes_to_seconds( default_minutes ) )
+
+   assert seconds == DurationValues.minutes_to_seconds( default_minutes )
+
+
+def Test_EffectiveDurationSeconds_TestOverride_ExpectOverrideSeconds() -> None:
+   override_minutes = 20
+   default_minutes = 40
+
+   seconds = ScheduleSlotTimeResolver.effective_duration_seconds(
+      override_minutes,
+      DurationValues.minutes_to_seconds( default_minutes ) )
+
+   assert seconds == DurationValues.minutes_to_seconds( override_minutes )
+
+
+def Test_EffectiveDurationSeconds_TestMissing_ExpectNone() -> None:
+   seconds = ScheduleSlotTimeResolver.effective_duration_seconds( None, None )
+
+   assert seconds is None
 
 
 def Test_Resolve_TestRequestedOverlap_ExpectRequestedTimeNotAvailable(
@@ -69,7 +97,7 @@ def Test_Resolve_TestRequestedOverlap_ExpectRequestedTimeNotAvailable(
             species='African Lion',
             exhibit='Africa Savanna',
             start_time='10:00 AM',
-            end_time='10:08 AM' ),
+            end_time=DateValues.add_minutes_to_time( '10:00 AM', DURATION_MINUTES ) ),
       ],
       attractions=[],
       transportations=[],
@@ -87,7 +115,7 @@ def Test_Resolve_TestRequestedOverlap_ExpectRequestedTimeNotAvailable(
    slot, error = ScheduleSlotTimeResolver.resolve(
       schedule_conn,
       SAVED_ITINERARY,
-      ( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      ( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       DURATION_SECONDS,
       start_time='10:00',
       itinerary_context={} )
@@ -147,7 +175,7 @@ def Test_ResolveAllowingVisitExtension_TestShortVisitWindow_ExpectEarlierSlot(
 
    assert error is None
    assert slot is not None
-   assert slot[ Position.SECOND ] == '4:00 PM'
+   assert slot[ Position.SECOND ] == SAVED_ITINERARY.arrival_time
 
 
 def Test_ResolveAllowingVisitExtension_TestRequestedStartAfterDeparture_ExpectSlot(
@@ -159,28 +187,39 @@ def Test_ResolveAllowingVisitExtension_TestRequestedStartAfterDeparture_ExpectSl
       'build_current',
       lambda saved_itinerary, **context: ItineraryBuilder.empty() )
 
-   visit_window = ( 9 * 3600 + 30 * 60, 12 * 3600 )
+   requested_start = '1:00 PM'
+   visit_window = (
+      DateValues.time_value_in_seconds( DAY_OPEN ),
+      DateValues.time_value_in_seconds( '12:00 PM' ) )
+
    slot, error = ScheduleSlotTimeResolver.resolve_allowing_visit_extension(
       schedule_conn,
       SavedItinerary(
          date_value='2026-06-15',
-         arrival_time='9:30 AM',
+         arrival_time=DAY_OPEN,
          departure_time='12:00 PM' ),
       visit_window,
       DURATION_SECONDS,
-      start_time='1:00 PM',
+      start_time=requested_start,
       itinerary_context={},
       day_hours_window=DAY_HOURS_WINDOW )
 
    assert error is None
-   assert slot == ( '1:00 PM', '1:08 PM' )
+   assert slot == (
+      DateValues.normalize_schedule_time( requested_start ),
+      DateValues.add_minutes_to_time( requested_start, DURATION_MINUTES ) )
 
 
 def Test_ResolveAllowingVisitExtension_TestPackAfterFullVisitWindow_ExpectAfterVisitSlot(
       schedule_conn: sqlite3.Connection,
       stub_save_result: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   short_visit_window = ( 9 * 3600 + 30 * 60, 9 * 3600 + 38 * 60 )
+   lion_start = DAY_OPEN
+   lion_end = DateValues.add_minutes_to_time( lion_start, DURATION_MINUTES )
+   duration_minutes = 7
+   short_visit_window = (
+      DateValues.time_value_in_seconds( lion_start ),
+      DateValues.time_value_in_seconds( lion_end ) )
    blocked_itinerary = ItineraryBuilder.build(
       date='2026-06-15',
       selected_exhibits=[],
@@ -188,8 +227,8 @@ def Test_ResolveAllowingVisitExtension_TestPackAfterFullVisitWindow_ExpectAfterV
          Animal(
             species='African Lion',
             exhibit='Africa Savanna',
-            start_time='9:30 AM',
-            end_time='9:38 AM' ),
+            start_time=lion_start,
+            end_time=lion_end ),
       ],
       attractions=[],
       transportations=[],
@@ -197,8 +236,8 @@ def Test_ResolveAllowingVisitExtension_TestPackAfterFullVisitWindow_ExpectAfterV
       guardians_talks=[],
       wild_encounters=[],
       events=[],
-      arrival_time='9:30 AM',
-      departure_time='9:38 AM' )
+      arrival_time=lion_start,
+      departure_time=lion_end )
    monkeypatch.setattr(
       ItineraryBuilder,
       'build_current',
@@ -208,16 +247,18 @@ def Test_ResolveAllowingVisitExtension_TestPackAfterFullVisitWindow_ExpectAfterV
       schedule_conn,
       SavedItinerary(
          date_value='2026-06-15',
-         arrival_time='9:30 AM',
-         departure_time='9:38 AM' ),
+         arrival_time=lion_start,
+         departure_time=lion_end ),
       short_visit_window,
-      7 * 60,
+      DurationValues.minutes_to_seconds( duration_minutes ),
       start_time=None,
       itinerary_context={},
       day_hours_window=DAY_HOURS_WINDOW )
 
    assert error is None
-   assert slot == ( '9:38 AM', '9:45 AM' )
+   assert slot == (
+      lion_end,
+      DateValues.add_minutes_to_time( lion_end, duration_minutes ) )
 
 
 def Test_Resolve_TestPackAfterScheduledLion_ExpectLaterSlot(
@@ -232,7 +273,7 @@ def Test_Resolve_TestPackAfterScheduledLion_ExpectLaterSlot(
             species='African Lion',
             exhibit='Africa Savanna',
             start_time='10:00 AM',
-            end_time='10:08 AM' ),
+            end_time=DateValues.add_minutes_to_time( '10:00 AM', DURATION_MINUTES ) ),
       ],
       attractions=[],
       transportations=[],
@@ -247,20 +288,28 @@ def Test_Resolve_TestPackAfterScheduledLion_ExpectLaterSlot(
       'build_current',
       lambda saved_itinerary, **context: blocked_itinerary )
 
+   lion_start = '10:00 AM'
+   lion_end = DateValues.add_minutes_to_time( lion_start, DURATION_MINUTES )
+   duration_minutes = 7
+
    slot, error = ScheduleSlotTimeResolver.resolve(
       schedule_conn,
       SavedItinerary(
          date_value='2026-06-15',
-         arrival_time='9:30 AM',
-         departure_time='5:00 PM' ),
-      ( 9 * 3600 + 30 * 60, 17 * 3600 ),
-      7 * 60,
+         arrival_time=DAY_OPEN,
+         departure_time=DAY_CLOSE ),
+      (
+         DateValues.time_value_in_seconds( DAY_OPEN ),
+         DateValues.time_value_in_seconds( DAY_CLOSE ) ),
+      DurationValues.minutes_to_seconds( duration_minutes ),
       start_time=None,
       itinerary_context={},
-      earliest_start_seconds=10 * 3600 + 8 * 60 )
+      earliest_start_seconds=DateValues.time_value_in_seconds( lion_end ) )
 
    assert error is None
-   assert slot == ( '10:08 AM', '10:15 AM' )
+   assert slot == (
+      lion_end,
+      DateValues.add_minutes_to_time( lion_end, duration_minutes ) )
 
 
 def Test_ResolveAllowingVisitExtension_TestUnexpectedResolveError_ExpectPropagated(

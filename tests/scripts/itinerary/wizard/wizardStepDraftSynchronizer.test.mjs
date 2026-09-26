@@ -4,61 +4,106 @@ import test from 'node:test';
 import { WizardStepDraftSynchronizer } from '../../../../scripts/itinerary/wizard/wizardStepDraftSynchronizer.js';
 import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 
-test('Test_ResolveDateStepDraftUpdate_TestInvalidOrUnchanged_ExpectNullOrDate', () => {
-   assert.equal(
-      WizardStepDraftSynchronizer.resolveDateStepDraftUpdate({
-         currentDate: null,
-         wizardDate: '2026-06-15',
-      }),
-      null
-   );
-   assert.equal(
-      WizardStepDraftSynchronizer.resolveDateStepDraftUpdate({
-         currentDate: makeNoonDate(2026, 5, 15),
-         wizardDate: '2026-06-15',
-      }),
-      null
-   );
-   assert.equal(
-      WizardStepDraftSynchronizer.resolveDateStepDraftUpdate({
-         currentDate: makeNoonDate(2026, 5, 16),
-         wizardDate: '2026-06-15',
-      }),
-      '2026-06-16'
-   );
+
+test('Test_ResolveDateStepDraftUpdate_TestInvalidDate_ExpectNull', () => {
+   const wizardDate = '2026-06-15';
+
+   const update = WizardStepDraftSynchronizer.resolveDateStepDraftUpdate({
+      currentDate: null,
+      wizardDate,
+   });
+
+   assert.equal(update, null);
 });
 
-test('Test_ShouldSyncSelectionStepDraft_TestController_ExpectSyncRules', () => {
-   assert.equal(
-      WizardStepDraftSynchronizer.shouldSyncSelectionStepDraft({
-         stepConfig: null,
-         stepController: { getSelectionSnapshot: async () => [] },
-      }),
-      false
-   );
-   assert.equal(
-      WizardStepDraftSynchronizer.shouldSyncSelectionStepDraft({
-         stepConfig: { selectionKey: 'animals' },
-         stepController: {
-            getSelectionSnapshot: async () => [],
-            shouldSkipClosingSelectionSync: () => true,
-         },
-      }),
-      false
-   );
-   assert.equal(
-      WizardStepDraftSynchronizer.shouldSyncSelectionStepDraft({
-         stepConfig: { selectionKey: 'animals' },
-         stepController: {
-            getSelectionSnapshot: async () => [],
-            shouldSkipClosingSelectionSync: () => false,
-         },
-      }),
-      true
-   );
+
+test('Test_ResolveDateStepDraftUpdate_TestUnchanged_ExpectNull', () => {
+   const year = 2026;
+   const monthIndex = 5;
+   const day = 15;
+   const wizardDate = '2026-06-15';
+
+   const update = WizardStepDraftSynchronizer.resolveDateStepDraftUpdate({
+      currentDate: makeNoonDate(year, monthIndex, day),
+      wizardDate,
+   });
+
+   assert.equal(update, null);
 });
 
-test('Test_IsWizardDateStep_TestDefaultStep_ExpectIdentified', () => {
-   assert.equal(WizardStepDraftSynchronizer.isWizardDateStep('date'), true);
-   assert.equal(WizardStepDraftSynchronizer.isWizardDateStep('animals'), false);
+
+test('Test_ResolveDateStepDraftUpdate_TestChanged_ExpectDate', () => {
+   const year = 2026;
+   const monthIndex = 5;
+   const day = 16;
+   const wizardDate = '2026-06-15';
+
+   const update = WizardStepDraftSynchronizer.resolveDateStepDraftUpdate({
+      currentDate: makeNoonDate(year, monthIndex, day),
+      wizardDate,
+   });
+
+   assert.equal(update, `${year}-06-${day}`);
+});
+
+
+test('Test_ShouldSyncSelectionStepDraft_TestMissingConfig_ExpectFalse', () => {
+   const stepController = { getSelectionSnapshot: async () => [] };
+
+   const shouldSync = WizardStepDraftSynchronizer.shouldSyncSelectionStepDraft({
+      stepConfig: null,
+      stepController,
+   });
+
+   assert.equal(shouldSync, false);
+});
+
+
+test('Test_ShouldSyncSelectionStepDraft_TestSkipClosing_ExpectFalse', () => {
+   const stepConfig = { selectionKey: 'animals' };
+   const stepController = {
+      getSelectionSnapshot: async () => [],
+      shouldSkipClosingSelectionSync: () => true,
+   };
+
+   const shouldSync = WizardStepDraftSynchronizer.shouldSyncSelectionStepDraft({
+      stepConfig,
+      stepController,
+   });
+
+   assert.equal(shouldSync, false);
+});
+
+
+test('Test_ShouldSyncSelectionStepDraft_TestReady_ExpectTrue', () => {
+   const stepConfig = { selectionKey: 'animals' };
+   const stepController = {
+      getSelectionSnapshot: async () => [],
+      shouldSkipClosingSelectionSync: () => false,
+   };
+
+   const shouldSync = WizardStepDraftSynchronizer.shouldSyncSelectionStepDraft({
+      stepConfig,
+      stepController,
+   });
+
+   assert.equal(shouldSync, true);
+});
+
+
+test('Test_IsWizardDateStep_TestDate_ExpectTrue', () => {
+   const stepKey = 'date';
+
+   const isDateStep = WizardStepDraftSynchronizer.isWizardDateStep(stepKey);
+
+   assert.equal(isDateStep, true);
+});
+
+
+test('Test_IsWizardDateStep_TestAnimals_ExpectFalse', () => {
+   const stepKey = 'animals';
+
+   const isDateStep = WizardStepDraftSynchronizer.isWizardDateStep(stepKey);
+
+   assert.equal(isDateStep, false);
 });

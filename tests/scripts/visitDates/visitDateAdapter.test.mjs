@@ -6,14 +6,21 @@ import { VisitDateValidator } from '../../../scripts/visitDates/visitDateValidat
 import { createDomNode } from '../helpers/domNodeMock.mjs';
 import { makeNoonDate } from '../helpers/visitDateMock.mjs';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+import { Position } from '../../../scripts/shared/enums/position.js';
 
 const floor = makeNoonDate(2026, 5, 15);
 
 installDomTestHooks();
 
+
 test('Test_InitVisitDateFlatpickr_TestMissingInput_ExpectNull', () => {
-   assert.equal(VisitDateAdapter.initVisitDateFlatpickr(null), null);
+   const inputEl = null;
+
+   const instance = VisitDateAdapter.initVisitDateFlatpickr(inputEl);
+
+   assert.equal(instance, null);
 });
+
 
 test('Test_InitVisitDateFlatpickr_TestCallbacks_ExpectReadonlyWired', () => {
    const inputEl = createDomNode('input', 'itin-date-input');
@@ -21,13 +28,17 @@ test('Test_InitVisitDateFlatpickr_TestCallbacks_ExpectReadonlyWired', () => {
    const changeCalls = [];
    const closeCalls = [];
    const flatpickrOptions = [];
+   const readyDate = makeNoonDate(2026, 5, 16);
+   const changeDate = makeNoonDate(2026, 5, 17);
+   const readyIso = VisitDateValidator.toISODate(readyDate);
+   const changeIso = VisitDateValidator.toISODate(changeDate);
 
    const instance = VisitDateAdapter.initVisitDateFlatpickr(inputEl, {
-      defaultDate: makeNoonDate(2026, 5, 16),
+      defaultDate: readyDate,
       daysAhead: 2,
       earliestNoon: floor,
       getTodayFn: () => floor,
-      getMaxDateFn: () => makeNoonDate(2026, 5, 17),
+      getMaxDateFn: () => changeDate,
       onReady: (...args) => {
          readyCalls.push(args);
       },
@@ -39,46 +50,38 @@ test('Test_InitVisitDateFlatpickr_TestCallbacks_ExpectReadonlyWired', () => {
       },
       initFlatpickr: (_input, options) => {
          flatpickrOptions.push(options);
-
          const picker = {
             setDate() {},
          };
-
-         options.onReady(
-            [makeNoonDate(2026, 5, 16)],
-            '2026-06-16',
-            picker
-         );
-         options.onChange(
-            [makeNoonDate(2026, 5, 17)],
-            '2026-06-17',
-            picker
-         );
+         options.onReady([readyDate], readyIso, picker);
+         options.onChange([changeDate], changeIso, picker);
          options.onClose([], '', picker);
-
          return picker;
       },
    });
 
    assert.ok(instance);
    assert.equal(inputEl.getAttribute('readonly'), 'true');
-   assert.equal(flatpickrOptions.length, 1);
-   assert.equal(flatpickrOptions[0].minDate, floor);
-   assert.equal(flatpickrOptions[0].clickOpens, true);
-   assert.equal(readyCalls.length, 1);
-   assert.equal(changeCalls.length, 1);
-   assert.equal(closeCalls.length, 1);
-   assert.equal(readyCalls[0][1], '2026-06-16');
-   assert.equal(changeCalls[0][1], '2026-06-17');
+   assert.equal(flatpickrOptions.length, Position.SECOND);
+   assert.equal(flatpickrOptions.at(Position.FIRST).minDate, floor);
+   assert.equal(flatpickrOptions.at(Position.FIRST).clickOpens, true);
+   assert.equal(readyCalls.length, Position.SECOND);
+   assert.equal(changeCalls.length, Position.SECOND);
+   assert.equal(closeCalls.length, Position.SECOND);
+   assert.equal(readyCalls.at(Position.FIRST).at(Position.SECOND), readyIso);
+   assert.equal(changeCalls.at(Position.FIRST).at(Position.SECOND), changeIso);
 });
+
 
 test('Test_InitVisitDateFlatpickr_TestOmitMaxDateFn_ExpectDerivedMax', () => {
    const inputEl = createDomNode('input', 'itin-date-input');
    const flatpickrOptions = [];
+   const daysAhead = 2;
+   const defaultDate = makeNoonDate(2026, 5, 16);
 
    VisitDateAdapter.initVisitDateFlatpickr(inputEl, {
-      defaultDate: makeNoonDate(2026, 5, 16),
-      daysAhead: 2,
+      defaultDate,
+      daysAhead,
       earliestNoon: floor,
       getTodayFn: () => floor,
       initFlatpickr: (_input, options) => {
@@ -87,5 +90,8 @@ test('Test_InitVisitDateFlatpickr_TestOmitMaxDateFn_ExpectDerivedMax', () => {
       },
    });
 
-   assert.equal(VisitDateValidator.toISODate(flatpickrOptions[0].maxDate), '2026-06-17');
+   assert.equal(
+      VisitDateValidator.toISODate(flatpickrOptions.at(Position.FIRST).maxDate),
+      VisitDateValidator.toISODate(VisitDateValidator.getMaxDate(daysAhead, floor))
+   );
 });

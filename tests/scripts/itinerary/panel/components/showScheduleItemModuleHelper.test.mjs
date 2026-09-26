@@ -3,19 +3,26 @@ import test from 'node:test';
 
 import { ShowScheduleItemModuleHelper } from '../../../../../scripts/itinerary/panel/components/showScheduleItemModuleHelper.js';
 
+
 test('Test_Debounce_TestRapidCalls_ExpectSingleLateInvocation', async () => {
+   const lion = 'African Lion';
+   const tiger = 'Amur Tiger';
+   const gorilla = 'Western Lowland Gorilla';
+   const delayMs = 20;
    let calls = 0;
    let lastArg = null;
    const debounced = ShowScheduleItemModuleHelper.debounce((value) => {
       calls += 1;
       lastArg = value;
-   }, 20);
+   }, delayMs);
 
-   debounced('a');
-   debounced('b');
-   debounced('c');
-   assert.equal(calls, 0);
-   await new Promise((resolve) => setTimeout(resolve, 40));
+   debounced(lion);
+   debounced(tiger);
+   debounced(gorilla);
+   const callsBeforeWait = calls;
+   await new Promise((resolve) => setTimeout(resolve, delayMs * 2));
+
+   assert.equal(callsBeforeWait, 0);
    assert.equal(calls, 1);
-   assert.equal(lastArg, 'c');
+   assert.equal(lastArg, gorilla);
 });

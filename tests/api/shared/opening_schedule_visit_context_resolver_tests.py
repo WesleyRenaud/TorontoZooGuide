@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-from datetime import date
-
+from api.shared.calendar_dates import CalendarDates
 from api.shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
 
 
 VISIT_DAY = 15
 VISIT_MONTH = 6
 VISIT_YEAR = 2026
-WEEKDAY_VISIT_DATE = date( VISIT_YEAR, VISIT_MONTH, VISIT_DAY )
 WEEKEND_VISIT_DAY = 20
-WEEKEND_VISIT_DATE = date( VISIT_YEAR, VISIT_MONTH, WEEKEND_VISIT_DAY )
 
 
 def Test_Resolve_TestWeekdayVisit_ExpectWeekdayContext() -> None:
@@ -19,11 +16,15 @@ def Test_Resolve_TestWeekdayVisit_ExpectWeekdayContext() -> None:
       month=VISIT_MONTH,
       year=VISIT_YEAR )
 
-   assert context.target_date == WEEKDAY_VISIT_DATE
+   assert context.target_date == CalendarDates.visit_target_date(
+      VISIT_MONTH,
+      VISIT_DAY,
+      VISIT_YEAR )
    assert context.normalized_month == VISIT_MONTH
    assert context.normalized_day == VISIT_DAY
-   assert context.weekday == WEEKDAY_VISIT_DATE.weekday()
-   assert context.is_weekend_or_holiday is False
+   assert context.weekday == context.target_date.weekday()
+   assert context.is_weekend_or_holiday is CalendarDates.is_weekend_or_holiday(
+      context.target_date )
 
 
 def Test_Resolve_TestWeekendVisit_ExpectWeekendContext() -> None:
@@ -32,5 +33,9 @@ def Test_Resolve_TestWeekendVisit_ExpectWeekendContext() -> None:
       month=VISIT_MONTH,
       year=VISIT_YEAR )
 
-   assert context.target_date == WEEKEND_VISIT_DATE
-   assert context.is_weekend_or_holiday is True
+   assert context.target_date == CalendarDates.visit_target_date(
+      VISIT_MONTH,
+      WEEKEND_VISIT_DAY,
+      VISIT_YEAR )
+   assert context.is_weekend_or_holiday is CalendarDates.is_weekend_or_holiday(
+      context.target_date )

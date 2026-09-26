@@ -32,7 +32,9 @@ def event_site_provider_conn() -> sqlite3.Connection:
 
 def Test_FetchEventSites_TestEmpty_ExpectEmptyList(
       event_site_provider_conn: sqlite3.Connection ) -> None:
-   assert EventSiteProvider.fetch_event_sites( event_site_provider_conn ) == []
+   event_sites = EventSiteProvider.fetch_event_sites( event_site_provider_conn )
+
+   assert event_sites == []
 
 
 def Test_FetchEventSites_TestPopulated_ExpectMappedFields(

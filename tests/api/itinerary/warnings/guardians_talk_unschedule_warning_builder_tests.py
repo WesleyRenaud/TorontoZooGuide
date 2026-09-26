@@ -5,6 +5,7 @@ from api.itinerary.data_access.saved_itinerary import SavedItinerary
 from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.warnings.guardians_talk_unschedule_warning_builder import GuardiansTalkUnscheduleWarningBuilder
 from api.models.guardians_talk_diff import GuardiansTalkDiff
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 
 
@@ -44,74 +45,96 @@ def _validated( talk: GuardiansTalkDiff ) -> ValidatedItinerary:
 
 
 def Test_IsRequired_TestConfirming_ExpectFalse() -> None:
+   start_time = '10:00 AM'
+   duration_minutes = 30
    talk = GuardiansTalkDiff(
       name=ZEBRA_TALK,
       is_deleted=False,
-      start_time='10:00 AM',
-      end_time='10:30 AM',
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
       location='Africa Savanna' )
+   confirming_guardians_talk_unschedule = True
 
-   assert not GuardiansTalkUnscheduleWarningBuilder.is_required(
+   required = GuardiansTalkUnscheduleWarningBuilder.is_required(
       _saved(),
       _validated( talk ),
-      confirming_guardians_talk_unschedule=True )
+      confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule )
+
+   assert required is False
 
 
 def Test_IsRequired_TestNewTalkOverlapsSavedAnimal_ExpectTrue() -> None:
+   start_time = '10:00 AM'
+   duration_minutes = 30
    talk = GuardiansTalkDiff(
       name=ZEBRA_TALK,
       is_deleted=False,
-      start_time='10:00 AM',
-      end_time='10:30 AM',
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
       location='Africa Savanna' )
+   confirming_guardians_talk_unschedule = False
 
-   assert GuardiansTalkUnscheduleWarningBuilder.is_required(
+   required = GuardiansTalkUnscheduleWarningBuilder.is_required(
       _saved(),
       _validated( talk ),
-      confirming_guardians_talk_unschedule=False )
+      confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule )
+
+   assert required is True
 
 
 def Test_IsRequired_TestNewTalkWithoutOverlap_ExpectFalse() -> None:
+   start_time = '1:00 PM'
+   duration_minutes = 30
    talk = GuardiansTalkDiff(
       name=ZEBRA_TALK,
       is_deleted=False,
-      start_time='1:00 PM',
-      end_time='1:30 PM',
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
       location='Africa Savanna' )
+   confirming_guardians_talk_unschedule = False
 
-   assert not GuardiansTalkUnscheduleWarningBuilder.is_required(
+   required = GuardiansTalkUnscheduleWarningBuilder.is_required(
       _saved(),
       _validated( talk ),
-      confirming_guardians_talk_unschedule=False )
+      confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule )
+
+   assert required is False
 
 
 def Test_NewTalksOverlappingSavedSchedule_TestOverlap_ExpectTalk() -> None:
+   start_time = '10:00 AM'
+   duration_minutes = 30
    talk = GuardiansTalkDiff(
       name=ZEBRA_TALK,
       is_deleted=False,
-      start_time='10:00 AM',
-      end_time='10:30 AM',
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
       location='Africa Savanna' )
+   saved = _saved()
+   validated = _validated( talk )
 
    overlapping = GuardiansTalkUnscheduleWarningBuilder.new_talks_overlapping_saved_schedule(
-      _saved(),
-      _validated( talk ) )
+      saved,
+      validated )
 
-   assert [ item.name for item in overlapping ] == [ ZEBRA_TALK ]
+   assert [ item.name for item in overlapping ] == [ talk.name ]
 
 
 def Test_BuildIssue_TestTalks_ExpectUnscheduleIssue() -> None:
+   start_time = '10:00 AM'
+   duration_minutes = 30
    talk = GuardiansTalkDiff(
       name=ZEBRA_TALK,
       is_deleted=False,
-      start_time='10:00 AM',
-      end_time='10:30 AM',
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
       location='Africa Savanna' )
+   talks = [ talk ]
 
-   issue = GuardiansTalkUnscheduleWarningBuilder.build_issue( [ talk ] )
+   issue = GuardiansTalkUnscheduleWarningBuilder.build_issue( talks )
 
    assert issue.code == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
-   assert [ item.name for item in issue.items ] == [ ZEBRA_TALK ]
+   assert [ item.name for item in issue.items ] == [ talk.name ]
 
 
 def Test_IsRequired_TestNoNewTalks_ExpectFalse() -> None:
@@ -130,8 +153,11 @@ def Test_IsRequired_TestNoNewTalks_ExpectFalse() -> None:
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
    )
+   confirming_guardians_talk_unschedule = False
 
-   assert not GuardiansTalkUnscheduleWarningBuilder.is_required(
+   required = GuardiansTalkUnscheduleWarningBuilder.is_required(
       saved,
       validated,
-      confirming_guardians_talk_unschedule=False )
+      confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule )
+
+   assert required is False

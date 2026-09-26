@@ -9,13 +9,16 @@ import transportationNameValues from '../../../../shared/enums/transportationNam
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_TransportationName_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(transportationNameValues)) {
-      assert.equal(TransportationName[key], value);
-   }
 
+test('Test_TransportationName_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/transportationName.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(transportationNameValues).map((key) => [key, TransportationName[key]])
+   );
+
+   assert.deepEqual(mapped, transportationNameValues);
    assert.deepEqual(transportationNameValues, diskValues);
 });

@@ -63,9 +63,11 @@ def _insert_status(
 
 def Test_FetchClosedExhibitNames_TestEmpty_ExpectEmptyList(
       closed_exhibit_name_conn: sqlite3.Connection ) -> None:
-   assert ClosedExhibitNameProvider.fetch_closed_exhibit_names(
+   closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_exhibit_names == []
 
 
 def Test_FetchClosedExhibitNames_TestCurrentAndFuture_ExpectDistinctSortedExhibits(
@@ -83,9 +85,11 @@ def Test_FetchClosedExhibitNames_TestCurrentAndFuture_ExpectDistinctSortedExhibi
       start_date='2026-10-01',
       end_date='2026-10-15' )
 
-   assert ClosedExhibitNameProvider.fetch_closed_exhibit_names(
+   closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY ) == [ SAVANNA, EURASIA ]
+      TODAY )
+
+   assert closed_exhibit_names == [ SAVANNA, EURASIA ]
 
 
 def Test_FetchClosedExhibitNames_TestExpired_ExpectExcluded(
@@ -97,9 +101,11 @@ def Test_FetchClosedExhibitNames_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert ClosedExhibitNameProvider.fetch_closed_exhibit_names(
+   closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_exhibit_names == []
 
 
 def Test_FetchClosedExhibitNames_TestEndingToday_ExpectIncluded(
@@ -111,9 +117,11 @@ def Test_FetchClosedExhibitNames_TestEndingToday_ExpectIncluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert ClosedExhibitNameProvider.fetch_closed_exhibit_names(
+   closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY ) == [ SAVANNA ]
+      TODAY )
+
+   assert closed_exhibit_names == [ SAVANNA ]
 
 
 def Test_FetchClosedExhibitNames_TestOpenRow_ExpectExcluded(
@@ -125,6 +133,8 @@ def Test_FetchClosedExhibitNames_TestOpenRow_ExpectExcluded(
       start_date='2026-09-01',
       end_date=None )
 
-   assert ClosedExhibitNameProvider.fetch_closed_exhibit_names(
+   closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert closed_exhibit_names == []

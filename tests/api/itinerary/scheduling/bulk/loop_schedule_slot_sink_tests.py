@@ -11,6 +11,7 @@ from api.itinerary.scheduling.bulk.loop_schedule_slot_sink import LoopScheduleSl
 from api.itinerary.scheduling.core.time_block import TimeBlock
 from api.itinerary.transportation.transportation_day_loop import TransportationDayLoop
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 
 LION = ItineraryAnimalRecord(
@@ -82,9 +83,11 @@ def Test_Save_TestPersistDisabled_ExpectSlotsRecordedAndBlockersUpdated(
       slot_sink_conn: sqlite3.Connection ) -> None:
    sink = LoopScheduleSlotSink( persist=False )
    blockers: list[ TimeBlock ] = []
+   animal_start_time = '10:00 AM'
+   attraction_start_time = '11:00 AM'
    slots = [
-      ( LION, '10:00 AM', '10:08 AM' ),
-      ( CAROUSEL, '11:00 AM', '11:20 AM' ),
+      ( LION, animal_start_time, '10:08 AM' ),
+      ( CAROUSEL, attraction_start_time, '11:20 AM' ),
    ]
 
    saved = sink.save( slot_sink_conn, blockers, slots )
@@ -92,19 +95,23 @@ def Test_Save_TestPersistDisabled_ExpectSlotsRecordedAndBlockersUpdated(
    assert saved is True
    assert sink.slots == slots
    assert len( blockers ) == 2
-   assert blockers[ Position.FIRST ].start_seconds == 10 * 3600
-   assert blockers[ Position.SECOND ].start_seconds == 11 * 3600
+   assert blockers[ Position.FIRST ].start_seconds == DateValues.time_value_in_seconds(
+      animal_start_time )
+   assert blockers[ Position.SECOND ].start_seconds == DateValues.time_value_in_seconds(
+      attraction_start_time )
 
 
 def Test_Save_TestPersistAnimalSlot_ExpectDatabaseUpdated(
       slot_sink_conn: sqlite3.Connection ) -> None:
    sink = LoopScheduleSlotSink( persist=True )
    blockers: list[ TimeBlock ] = []
+   start_time = '10:00 AM'
+   end_time = '10:08 AM'
 
    saved = sink.save(
       slot_sink_conn,
       blockers,
-      [ ( LION, '10:00 AM', '10:08 AM' ) ] )
+      [ ( LION, start_time, end_time ) ] )
 
    row = slot_sink_conn.execute(
       """   SELECT START_TIME, END_TIME
@@ -116,8 +123,8 @@ def Test_Save_TestPersistAnimalSlot_ExpectDatabaseUpdated(
 
    assert saved is True
    assert row is not None
-   assert row[ 'START_TIME' ] == '10:00 AM'
-   assert row[ 'END_TIME' ] == '10:08 AM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time
    assert len( blockers ) == 1
 
 
@@ -125,11 +132,13 @@ def Test_Save_TestPersistAttractionSlot_ExpectDatabaseUpdated(
       slot_sink_conn: sqlite3.Connection ) -> None:
    sink = LoopScheduleSlotSink( persist=True )
    blockers: list[ TimeBlock ] = []
+   start_time = '11:00 AM'
+   end_time = '11:20 AM'
 
    saved = sink.save(
       slot_sink_conn,
       blockers,
-      [ ( CAROUSEL, '11:00 AM', '11:20 AM' ) ] )
+      [ ( CAROUSEL, start_time, end_time ) ] )
 
    row = slot_sink_conn.execute(
       """   SELECT START_TIME, END_TIME
@@ -141,8 +150,8 @@ def Test_Save_TestPersistAttractionSlot_ExpectDatabaseUpdated(
 
    assert saved is True
    assert row is not None
-   assert row[ 'START_TIME' ] == '11:00 AM'
-   assert row[ 'END_TIME' ] == '11:20 AM'
+   assert row[ 'START_TIME' ] == start_time
+   assert row[ 'END_TIME' ] == end_time
    assert len( blockers ) == 1
 
 

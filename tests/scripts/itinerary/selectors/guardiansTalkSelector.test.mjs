@@ -7,28 +7,27 @@ import { GuardiansTalkSelectorModel } from '../../../../scripts/itinerary/select
 import { StorageKeys } from '../../../../scripts/itinerary/storageKeys.js';
 import { Strings } from '../../../../scripts/strings.js';
 
+
 test('Test_CreateItineraryGuardiansTalkSelectorController_TestWiring_ExpectFactoryOptions', () => {
    const original = CreateScheduledOccurrenceSelector.createScheduledOccurrenceSelectorController;
    let captured;
-
+   const controllerResult = { selector: true };
+   const callbacks = {
+      mountEl: { id: 'mount' },
+      onNext: () => {},
+      onPrev: () => {},
+      onFinish: () => {},
+      onClose: () => {},
+   };
    CreateScheduledOccurrenceSelector.createScheduledOccurrenceSelectorController = (options) => {
       captured = options;
-      return { selector: true };
+      return controllerResult;
    };
 
    try {
-      const callbacks = {
-         mountEl: { id: 'mount' },
-         onNext: () => {},
-         onPrev: () => {},
-         onFinish: () => {},
-         onClose: () => {},
-      };
+      const controller = GuardiansTalkSelector.createItineraryGuardiansTalkSelectorController(callbacks);
 
-      assert.deepEqual(
-         GuardiansTalkSelector.createItineraryGuardiansTalkSelectorController(callbacks),
-         { selector: true }
-      );
+      assert.deepEqual(controller, controllerResult);
       assert.equal(GuardiansTalkSelector.STORAGE_KEY, StorageKeys.GUARDIANS_KEY);
       assert.equal(captured.mountEl, callbacks.mountEl);
       assert.equal(captured.storageKey, GuardiansTalkSelector.STORAGE_KEY);

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.app_string_provider import AppStringProvider
 from api.transportation.status.transportation_station_status_builder import TransportationStationStatusBuilder
 
 
@@ -30,4 +31,6 @@ def Test_BuildTransportationStationClosedStatus_TestMissingMessage_ExpectDefault
       message='' )
 
    assert status.end_date is None
-   assert STATION_NAME in status.message
+   assert status.message == AppStringProvider.format(
+      'guestStatus.locations.temporarilyClosed',
+      name=STATION_NAME )

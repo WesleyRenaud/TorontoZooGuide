@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateTransportationStationOpenPanel_TestDefault_ExpectPanel', () => {
    const panelEl = TransportationStationOpenView.createTransportationStationOpenPanel();
 

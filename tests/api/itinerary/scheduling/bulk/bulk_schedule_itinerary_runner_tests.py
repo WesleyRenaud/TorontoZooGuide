@@ -25,6 +25,7 @@ from api.itinerary.scheduling.items.prepared_schedule_window import PreparedSche
 from api.itinerary.scheduling.scheduled_endpoint_visit_times_syncer import ScheduledEndpointVisitTimesSyncer
 from api.models import Animal
 from api.models.guardians_talk import GuardiansTalk
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType, Position
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -100,7 +101,7 @@ def stub_bulk_runner_context( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 
 def Test_IsAnimalUnscheduled_TestScheduleTimes_ExpectUnscheduledWhenIncomplete() -> None:
-   assert BulkScheduleItineraryRunner.is_animal_unscheduled(
+   result = BulkScheduleItineraryRunner.is_animal_unscheduled(
       ItineraryAnimalRecord(
          species='African Lion',
          exhibit='Africa Savanna',
@@ -108,7 +109,9 @@ def Test_IsAnimalUnscheduled_TestScheduleTimes_ExpectUnscheduledWhenIncomplete()
          new_likelihood=100,
       )
    )
-   assert BulkScheduleItineraryRunner.is_animal_unscheduled(
+
+   assert result
+   result = BulkScheduleItineraryRunner.is_animal_unscheduled(
       ItineraryAnimalRecord(
          species='African Lion',
          exhibit='Africa Savanna',
@@ -118,7 +121,9 @@ def Test_IsAnimalUnscheduled_TestScheduleTimes_ExpectUnscheduledWhenIncomplete()
          end_time='',
       )
    )
-   assert not BulkScheduleItineraryRunner.is_animal_unscheduled(
+
+   assert result
+   result = BulkScheduleItineraryRunner.is_animal_unscheduled(
       ItineraryAnimalRecord(
          species='African Lion',
          exhibit='Africa Savanna',
@@ -128,7 +133,9 @@ def Test_IsAnimalUnscheduled_TestScheduleTimes_ExpectUnscheduledWhenIncomplete()
          end_time='09:38',
       )
    )
-   assert not BulkScheduleItineraryRunner.is_animal_unscheduled(
+
+   assert not result
+   result = BulkScheduleItineraryRunner.is_animal_unscheduled(
       ItineraryAnimalRecord(
          species='Masai Giraffe',
          exhibit='Africa Savanna',
@@ -138,6 +145,8 @@ def Test_IsAnimalUnscheduled_TestScheduleTimes_ExpectUnscheduledWhenIncomplete()
          added_by_transportation=True,
       )
    )
+
+   assert not result
 
 
 def Test_Run_TestEmptyItinerary_ExpectAlreadyScheduled(
@@ -210,7 +219,7 @@ def Test_Run_TestTalkOnlyItinerary_ExpectSuccess(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=TALK_ONLY_SAVED_ITINERARY,
-      window=( 9 * 3600, 17 * 3600 ),
+      window=( DateValues.time_value_in_seconds( '9:00 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       visit_date=date( 2026, 6, 15 ),
    )
    prep = _TalkOnlyPrep()
@@ -293,7 +302,7 @@ def Test_Run_TestRemainingStopsFromPacker_ExpectSuccessWithNotEnoughTimeIssue(
    )
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=saved_itinerary,
-      window=( 9 * 3600 + 30 * 60, 9 * 3600 + 41 * 60 ),
+      window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '9:41 AM' ) ),
       visit_date=date( 2026, 6, 20 ),
    )
    prep = _TalkOnlyPrep()
@@ -451,7 +460,7 @@ def Test_Run_TestEmptyPackingResult_ExpectFinalize(
    )
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=saved_itinerary,
-      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       visit_date=date( 2026, 6, 20 ),
    )
    prep = _TalkOnlyPrep()

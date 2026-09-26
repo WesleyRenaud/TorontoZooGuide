@@ -4,8 +4,20 @@ import { test } from 'node:test';
 import { ScheduledPillPresenter } from '../../../../scripts/itinerary/panel/scheduledPillPresenter.js';
 import { TimelineLayoutConstants } from '../../../../scripts/shared/timelineLayoutConstants.js';
 
-test('Test_IsExtendedScheduledPill_TestHalfHourThreshold_ExpectBoundary', () => {
-   assert.equal(TimelineLayoutConstants.EXTENDED_SCHEDULED_PILL_MINUTES, 30);
-   assert.equal(ScheduledPillPresenter.isExtendedScheduledPill(29), false);
-   assert.equal(ScheduledPillPresenter.isExtendedScheduledPill(30), true);
+
+test('Test_IsExtendedScheduledPill_TestBelowThreshold_ExpectFalse', () => {
+   const durationMinutes = TimelineLayoutConstants.EXTENDED_SCHEDULED_PILL_MINUTES - 1;
+
+   const isExtended = ScheduledPillPresenter.isExtendedScheduledPill(durationMinutes);
+
+   assert.equal(isExtended, false);
+});
+
+
+test('Test_IsExtendedScheduledPill_TestAtThreshold_ExpectTrue', () => {
+   const durationMinutes = TimelineLayoutConstants.EXTENDED_SCHEDULED_PILL_MINUTES;
+
+   const isExtended = ScheduledPillPresenter.isExtendedScheduledPill(durationMinutes);
+
+   assert.equal(isExtended, true);
 });

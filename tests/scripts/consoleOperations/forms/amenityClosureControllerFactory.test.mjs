@@ -5,41 +5,45 @@ import { AmenityClosureControllerFactory } from '../../../../scripts/consoleOper
 import { EntityClosedFormController } from '../../../../scripts/consoleOperations/forms/entityClosedFormController.js';
 import { Strings } from '../../../../scripts/strings.js';
 
-test('Test_CreateAmenityClosureController_TestWiring_ExpectClosedFormWithSuccessMessage', async () => {
+
+test('Test_CreateAmenityClosureController_TestWiring_ExpectClosedFormWithSuccessMessage', () => {
    const original = EntityClosedFormController.createEntityClosedFormController;
+   const created = { created: true };
+   const loadOptions = async () => [];
+   const populateOptions = () => {};
+   const submitClosedStatus = async () => ({ success: true });
+   const entityEl = {};
+   const entityLabel = 'Gift Shop';
+   const optionsLabel = 'Gift Shops';
+   const giftShop = 'Zootique';
    let captured;
 
    EntityClosedFormController.createEntityClosedFormController = (options) => {
       captured = options;
-      return { created: true };
+      return created;
    };
 
    try {
-      const loadOptions = async () => [];
-      const populateOptions = () => {};
-      const submitClosedStatus = async () => ({ success: true });
-      const entityEl = {};
-
       const controller = AmenityClosureControllerFactory.createAmenityClosureController({
          entityEl,
          loadOptions,
          populateOptions,
          submitClosedStatus,
-         entityLabel: 'Gift Shop',
-         optionsLabel: 'Gift Shops',
+         entityLabel,
+         optionsLabel,
          resultName: result => result.gift_shop,
       });
 
-      assert.deepEqual(controller, { created: true });
+      assert.equal(controller, created);
       assert.equal(captured.entityEl, entityEl);
       assert.equal(captured.loadOptions, loadOptions);
       assert.equal(captured.populateOptions, populateOptions);
       assert.equal(captured.submitClosedStatus, submitClosedStatus);
-      assert.equal(captured.entityLabel, 'Gift Shop');
-      assert.equal(captured.optionsLabel, 'Gift Shops');
+      assert.equal(captured.entityLabel, entityLabel);
+      assert.equal(captured.optionsLabel, optionsLabel);
       assert.equal(
-         captured.successMessage({ gift_shop: 'Zootique' }),
-         Strings.status.closureOverrideSaved('Zootique')
+         captured.successMessage({ gift_shop: giftShop }),
+         Strings.status.closureOverrideSaved(giftShop)
       );
    } finally {
       EntityClosedFormController.createEntityClosedFormController = original;

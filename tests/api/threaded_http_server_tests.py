@@ -25,7 +25,9 @@ class _OkHandler( BaseHTTPRequestHandler ):
 
 
 def Test_RequestQueueSize_TestClassDefault_ExpectLargerThanFive() -> None:
-   assert ThreadedHttpServer.request_queue_size > 5
+   queue_size = ThreadedHttpServer.request_queue_size
+
+   assert queue_size > 5
 
 
 def Test_ServeForever_TestParallelGets_ExpectAllSucceed() -> None:

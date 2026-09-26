@@ -7,6 +7,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateRemovedItemsPopupLayout_TestDefault_ExpectChangedCopy', () => {
    const layout = RemovedItemsPopupLayoutView.createRemovedItemsPopupLayout();
 
@@ -15,10 +16,7 @@ test('Test_CreateRemovedItemsPopupLayout_TestDefault_ExpectChangedCopy', () => {
    assert.equal(layout.closeBtn.type, 'button');
    assert.equal(layout.okBtn.type, 'button');
    assert.equal(layout.okBtn.textContent, Strings.itinerary.actions.accept);
-   assert.equal(
-      layout.content.className,
-      'itin-removed-popup-content'
-   );
+   assert.equal(layout.content.className, 'itin-removed-popup-content');
    assert.ok(
       layout.content.textContent.includes(Strings.itinerary.removedItems.someDetailsChanged)
    );
@@ -29,6 +27,7 @@ test('Test_CreateRemovedItemsPopupLayout_TestDefault_ExpectChangedCopy', () => {
       layout.root.textContent.includes(Strings.itinerary.removedItems.itineraryUpdated)
    );
 });
+
 
 test('Test_CreateRemovedItemsPopupLayout_TestEmptyItinerary_ExpectEmptyCopy', () => {
    const layout = RemovedItemsPopupLayoutView.createRemovedItemsPopupLayout({

@@ -34,12 +34,12 @@ def stub_pavilion_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubPavilion
 
 def Test_GetPavilions_TestHttpRequest_ExpectReturnsPavilions(
       stub_pavilion_coordinator: StubPavilionCoordinator ) -> None:
+   pavilion = _sample_pavilion()
    handler = make_handler( '/get-pavilions', {} )
 
    server.HttpRequestHandler.do_POST( handler )
-
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
    assert stub_pavilion_coordinator.calls == [ ( 'get_pavilions', {} ) ]
-   assert result[ 'pavilions' ] == [ _sample_pavilion().to_dict() ]
+   assert result[ 'pavilions' ] == [ pavilion.to_dict() ]

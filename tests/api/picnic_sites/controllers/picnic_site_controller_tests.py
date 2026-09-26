@@ -25,12 +25,12 @@ def stub_picnic_site_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubPicni
 
 def Test_GetPicnicSites_TestHttpRequest_ExpectReturnsPicnicSites(
       stub_picnic_site_coordinator: StubPicnicSiteCoordinator ) -> None:
+   picnic_site = _sample_picnic_site()
    handler = make_handler( '/get-picnic-sites', {} )
 
    server.HttpRequestHandler.do_POST( handler )
-
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
    assert stub_picnic_site_coordinator.calls == [ ( 'get_picnic_sites', {} ) ]
-   assert result[ 'picnic_sites' ] == [ _sample_picnic_site().to_dict() ]
+   assert result[ 'picnic_sites' ] == [ picnic_site.to_dict() ]

@@ -36,7 +36,9 @@ def Test_GetRestaurantNames_TestProviderNames_ExpectReturned(
       'fetch_restaurant_names',
       lambda _conn: [ RESTAURANT_NAME ] )
 
-   assert RestaurantCoordinator.get_restaurant_names() == [ RESTAURANT_NAME ]
+   restaurant_names = RestaurantCoordinator.get_restaurant_names()
+
+   assert restaurant_names == [ RESTAURANT_NAME ]
 
 def Test_GetRestaurants_TestProvidersAndBuilder_ExpectRestaurants(
       stub_request_connection: None,
@@ -74,11 +76,13 @@ def Test_GetRestaurants_TestProvidersAndBuilder_ExpectRestaurants(
 
    monkeypatch.setattr( RestaurantBuilder, 'build_restaurants', build_restaurants )
 
-   assert RestaurantCoordinator.get_restaurants(
+   restaurants = RestaurantCoordinator.get_restaurants(
       day=VISIT_DAY,
       month=VISIT_MONTH,
       year=VISIT_YEAR,
-      include_closed_restaurants=True ) == [ RESTAURANT ]
+      include_closed_restaurants=True )
+
+   assert restaurants == [ RESTAURANT ]
    assert captured[ 'restaurant_records' ] is restaurant_records
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'schedule_override_records' ] is override_records
@@ -97,12 +101,14 @@ def Test_GetRestaurantsMatchingQuery_TestBuilder_ExpectMatches(
       'build',
       lambda rows, query: rows if query == QUERY else [] )
 
-   assert RestaurantCoordinator.get_restaurants_matching_query(
+   restaurants_matching_query = RestaurantCoordinator.get_restaurants_matching_query(
       query=QUERY,
       day=VISIT_DAY,
       month=VISIT_MONTH,
       year=VISIT_YEAR,
-      include_closed_restaurants=False ) == restaurants
+      include_closed_restaurants=False )
+
+   assert restaurants_matching_query == restaurants
 
 def Test_SetRestaurantAsClosed_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -120,11 +126,13 @@ def Test_SetRestaurantAsClosed_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
 
-   assert RestaurantCoordinator.set_restaurant_as_closed(
+   result = RestaurantCoordinator.set_restaurant_as_closed(
       RESTAURANT_NAME,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( RESTAURANT_NAME, START_DATE, END_DATE, MESSAGE )
 
 def Test_SetRestaurantClosureOverride_TestMutations_ExpectDelegated(
@@ -143,11 +151,13 @@ def Test_SetRestaurantClosureOverride_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
 
-   assert RestaurantCoordinator.set_restaurant_closure_override(
+   result = RestaurantCoordinator.set_restaurant_closure_override(
       RESTAURANT_NAME,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( RESTAURANT_NAME, START_DATE, END_DATE, MESSAGE )
 
 def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
@@ -161,7 +171,7 @@ def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
 
-   assert RestaurantCoordinator.set_restaurant_opening_schedule(
+   result = RestaurantCoordinator.set_restaurant_opening_schedule(
       RESTAURANT_NAME,
       START_DATE,
       END_DATE,
@@ -173,7 +183,9 @@ def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == (
       RESTAURANT_NAME,
       START_DATE,
@@ -196,7 +208,7 @@ def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
 
-   assert RestaurantCoordinator.replace_restaurant_opening_schedule_overlaps(
+   result = RestaurantCoordinator.replace_restaurant_opening_schedule_overlaps(
       RESTAURANT_NAME,
       START_DATE,
       END_DATE,
@@ -208,7 +220,9 @@ def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
 
 def Test_TrimRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -218,7 +232,7 @@ def Test_TrimRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
    monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
 
-   assert RestaurantCoordinator.trim_restaurant_opening_schedule_overlaps(
+   result = RestaurantCoordinator.trim_restaurant_opening_schedule_overlaps(
       RESTAURANT_NAME,
       START_DATE,
       END_DATE,
@@ -230,4 +244,6 @@ def Test_TrimRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       False,
       False,
       False,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True

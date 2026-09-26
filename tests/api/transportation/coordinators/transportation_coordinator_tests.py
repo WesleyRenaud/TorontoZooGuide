@@ -110,10 +110,12 @@ def Test_GetTransportations_TestProviderAndBuilder_ExpectTransportations(
       'build_transportations',
       build_transportations )
 
-   assert TransportationCoordinator.get_transportations(
+   transportations = TransportationCoordinator.get_transportations(
       day=VISIT_DAY,
       month=VISIT_MONTH,
-      year=VISIT_YEAR ) == [ TRANSPORTATION_MODEL ]
+      year=VISIT_YEAR )
+
+   assert transportations == [ TRANSPORTATION_MODEL ]
    assert captured[ 'records' ] is records
    assert captured[ 'context' ] is VISIT_CONTEXT
 
@@ -131,11 +133,13 @@ def Test_GetTransportationsMatchingQuery_TestBuilder_ExpectMatches(
       'build',
       lambda rows, query: rows if query == QUERY else [] )
 
-   assert TransportationCoordinator.get_transportations_matching_query(
+   transportations_matching_query = TransportationCoordinator.get_transportations_matching_query(
       query=QUERY,
       day=VISIT_DAY,
       month=VISIT_MONTH,
-      year=VISIT_YEAR ) == transportations
+      year=VISIT_YEAR )
+
+   assert transportations_matching_query == transportations
 
 
 def Test_GetTransportationRoutes_TestGroupedRoutes_ExpectReturned(
@@ -153,7 +157,9 @@ def Test_GetTransportationRoutes_TestGroupedRoutes_ExpectReturned(
       'group_transportation_routes',
       lambda rows: grouped if rows is route_rows else [] )
 
-   assert TransportationCoordinator.get_transportation_routes() == grouped
+   transportation_routes = TransportationCoordinator.get_transportation_routes()
+
+   assert transportation_routes == grouped
 
 
 def Test_GetTransportationStationNames_TestProviderNames_ExpectReturned(
@@ -166,7 +172,9 @@ def Test_GetTransportationStationNames_TestProviderNames_ExpectReturned(
       if transportation == TransportationName.ZOOMOBILE
       else [] )
 
-   assert TransportationCoordinator.get_transportation_station_names() == [ STATION_NAME ]
+   transportation_station_names = TransportationCoordinator.get_transportation_station_names()
+
+   assert transportation_station_names == [ STATION_NAME ]
 
 
 def Test_GetClosedTransportationStationOptions_TestProviderNames_ExpectReturned(
@@ -191,7 +199,9 @@ def Test_GetClosedTransportationStationOptions_TestProviderNames_ExpectReturned(
       'fetch_closed_transportation_station_names',
       fetch_closed_transportation_station_names )
 
-   assert TransportationCoordinator.get_closed_transportation_station_options() == [ STATION_NAME ]
+   closed_transportation_station_options = TransportationCoordinator.get_closed_transportation_station_options()
+
+   assert closed_transportation_station_options == [ STATION_NAME ]
    assert captured == {
       'transportation': TransportationName.ZOOMOBILE,
       'today': '2026-09-16',
@@ -208,7 +218,9 @@ def Test_GetTransportationRouteIds_TestProviderIds_ExpectReturned(
       if transportation == TransportationName.ZOOMOBILE
       else [] )
 
-   assert TransportationCoordinator.get_transportation_route_ids() == [ ROUTE ]
+   transportation_route_ids = TransportationCoordinator.get_transportation_route_ids()
+
+   assert transportation_route_ids == [ ROUTE ]
 
 
 def Test_GetTransportationStations_TestBuildersAndProviders_ExpectStations(
@@ -246,11 +258,13 @@ def Test_GetTransportationStations_TestBuildersAndProviders_ExpectStations(
       'build_route_transportation_stations',
       build_route_stations )
 
-   assert TransportationCoordinator.get_transportation_stations(
+   transportation_stations = TransportationCoordinator.get_transportation_stations(
       route=ROUTE,
       day=VISIT_DAY,
       month=VISIT_MONTH,
-      year=VISIT_YEAR ) == [ STATION ]
+      year=VISIT_YEAR )
+
+   assert transportation_stations == [ STATION ]
    assert captured[ 'station_records' ] is station_records
    assert captured[ 'status_records' ] is status_records
    assert captured[ 'context' ] is station_context
@@ -291,12 +305,14 @@ def Test_GetTransportationStationsMatchingQuery_TestResolvedRoute_ExpectMatches(
       'build',
       lambda rows, query: matched if rows is stations and query == QUERY else [] )
 
-   assert TransportationCoordinator.get_transportation_stations_matching_query(
+   transportation_stations_matching_query = TransportationCoordinator.get_transportation_stations_matching_query(
       query=QUERY,
       route=ROUTE,
       day=VISIT_DAY,
       month=VISIT_MONTH,
-      year=VISIT_YEAR ) == matched
+      year=VISIT_YEAR )
+
+   assert transportation_stations_matching_query == matched
 
 
 def Test_GetTransportationRoute_TestResolvedRoute_ExpectActiveRoute(
@@ -339,11 +355,13 @@ def Test_GetTransportationRoute_TestResolvedRoute_ExpectActiveRoute(
       if kwargs[ 'route' ] == ROUTE and kwargs[ 'route_source' ] == 'manual'
       else None )
 
-   assert TransportationCoordinator.get_transportation_route(
+   transportation_route = TransportationCoordinator.get_transportation_route(
       route=ROUTE,
       day=VISIT_DAY,
       month=VISIT_MONTH,
-      year=VISIT_YEAR ) == expected
+      year=VISIT_YEAR )
+
+   assert transportation_route == expected
 
 
 def Test_GetActiveTransportationRoute_TestValidRoute_ExpectRoute(
@@ -362,8 +380,10 @@ def Test_GetActiveTransportationRoute_TestValidRoute_ExpectRoute(
       'is_valid_transportation_route',
       lambda route, valid_routes: route in valid_routes )
 
-   assert TransportationCoordinator.get_active_transportation_route(
-      TARGET_DATE ) == ROUTE
+   active_transportation_route = TransportationCoordinator.get_active_transportation_route(
+      TARGET_DATE )
+
+   assert active_transportation_route == ROUTE
 
 
 def Test_GetActiveTransportationRoute_TestInvalidRoute_ExpectNone(
@@ -382,8 +402,10 @@ def Test_GetActiveTransportationRoute_TestInvalidRoute_ExpectNone(
       'is_valid_transportation_route',
       lambda route, valid_routes: route in valid_routes )
 
-   assert TransportationCoordinator.get_active_transportation_route(
-      TARGET_DATE ) is None
+   active_transportation_route = TransportationCoordinator.get_active_transportation_route(
+      TARGET_DATE )
+
+   assert active_transportation_route is None
 
 
 def Test_GetTransportationDayRoute_TestValidRoute_ExpectRoute(
@@ -402,9 +424,11 @@ def Test_GetTransportationDayRoute_TestValidRoute_ExpectRoute(
       'is_valid_transportation_route',
       lambda route, valid_routes: route in valid_routes )
 
-   assert TransportationCoordinator.get_transportation_day_route(
+   transportation_day_route = TransportationCoordinator.get_transportation_day_route(
       month=VISIT_MONTH,
-      day=VISIT_DAY ) == ROUTE
+      day=VISIT_DAY )
+
+   assert transportation_day_route == ROUTE
 
 
 def Test_GetTransportationDayRoute_TestInvalidRoute_ExpectNone(
@@ -423,9 +447,11 @@ def Test_GetTransportationDayRoute_TestInvalidRoute_ExpectNone(
       'is_valid_transportation_route',
       lambda route, valid_routes: route in valid_routes )
 
-   assert TransportationCoordinator.get_transportation_day_route(
+   transportation_day_route = TransportationCoordinator.get_transportation_day_route(
       month=VISIT_MONTH,
-      day=VISIT_DAY ) is None
+      day=VISIT_DAY )
+
+   assert transportation_day_route is None
 
 
 def Test_SetTransportationStationAsClosed_TestBuiltStatus_ExpectSaved(
@@ -457,11 +483,13 @@ def Test_SetTransportationStationAsClosed_TestBuiltStatus_ExpectSaved(
       'save_transportation_station_closed_status',
       save )
 
-   assert TransportationCoordinator.set_transportation_station_as_closed(
+   result = TransportationCoordinator.set_transportation_station_as_closed(
       transportation_station=STATION_NAME,
       start_date=START_DATE,
       end_date=END_DATE,
-      message=MESSAGE ) is True
+      message=MESSAGE )
+
+   assert result is True
    assert captured[ 'transportation' ] == TransportationName.ZOOMOBILE
    assert captured[ 'status' ] is status
 
@@ -485,8 +513,10 @@ def Test_SetTransportationStationAsOpen_TestProvider_ExpectSaved(
       'save_transportation_station_open_status',
       save )
 
-   assert TransportationCoordinator.set_transportation_station_as_open(
-      STATION_NAME ) is True
+   result = TransportationCoordinator.set_transportation_station_as_open(
+      STATION_NAME )
+
+   assert result is True
    assert captured == {
       'transportation': TransportationName.ZOOMOBILE,
       'station': STATION_NAME,
@@ -505,10 +535,12 @@ def Test_SetCurrentTransportationRoute_TestInvalidRoute_ExpectFalse(
       'is_valid_transportation_route',
       lambda route, valid_routes: False )
 
-   assert TransportationCoordinator.set_current_transportation_route(
+   result = TransportationCoordinator.set_current_transportation_route(
       route='winter',
       start_date=START_DATE,
-      end_date=END_DATE ) is False
+      end_date=END_DATE )
+
+   assert result is False
 
 
 def Test_SetCurrentTransportationRoute_TestValidRoute_ExpectSaved(
@@ -547,9 +579,11 @@ def Test_SetCurrentTransportationRoute_TestValidRoute_ExpectSaved(
       'save_current_transportation_route_schedule',
       save )
 
-   assert TransportationCoordinator.set_current_transportation_route(
+   result = TransportationCoordinator.set_current_transportation_route(
       route=ROUTE,
       start_date=START_DATE,
-      end_date=END_DATE ) is True
+      end_date=END_DATE )
+
+   assert result is True
    assert captured[ 'transportation' ] == TransportationName.ZOOMOBILE
    assert captured[ 'schedule' ] is schedule

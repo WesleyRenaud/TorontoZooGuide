@@ -5,20 +5,31 @@ from api.itinerary.data_access.itinerary_event_default_record import ItineraryEv
 from api.shared.enums import ItineraryEventType, Position
 
 
-LUNCH_ROW = {
-   'EVENT_TYPE': 'lunch',
-   'DEFAULT_ITINERARY_DURATION_MINUTES': 40,
-}
-
-
 def Test_MapRecord_TestRow_ExpectEventDefaultRecord() -> None:
-   assert ItineraryEventDefaultMapper.map_record( LUNCH_ROW ) == ItineraryEventDefaultRecord(
-      event_type=ItineraryEventType.LUNCH,
-      default_duration_minutes=40,
-   )
+   event_type = ItineraryEventType.LUNCH
+   default_duration_minutes = 40
+   row = {
+      'EVENT_TYPE': event_type.value,
+      'DEFAULT_ITINERARY_DURATION_MINUTES': default_duration_minutes,
+   }
+
+   record = ItineraryEventDefaultMapper.map_record( row )
+
+   assert record == ItineraryEventDefaultRecord(
+      event_type=ItineraryEventType.normalize( event_type.value ),
+      default_duration_minutes=int( default_duration_minutes ) )
 
 
 def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
-   records = ItineraryEventDefaultMapper.map_records( [ LUNCH_ROW ] )
+   event_type = ItineraryEventType.LUNCH
+   default_duration_minutes = 40
+   row = {
+      'EVENT_TYPE': event_type.value,
+      'DEFAULT_ITINERARY_DURATION_MINUTES': default_duration_minutes,
+   }
+   rows = [ row ]
 
-   assert records[ Position.FIRST ].event_type == ItineraryEventType.LUNCH
+   records = ItineraryEventDefaultMapper.map_records( rows )
+
+   assert records[ Position.FIRST ].event_type == ItineraryEventType.normalize(
+      event_type.value )

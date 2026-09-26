@@ -12,6 +12,7 @@ import { ConsoleTextareaFieldBuilder } from '../../../../scripts/consoleOperatio
 import { ConsoleWeeklyScheduleCheckboxesBuilder } from '../../../../scripts/consoleOperations/templates/consoleWeeklyScheduleCheckboxesBuilder.js';
 import { Strings } from '../../../../scripts/strings.js';
 
+
 test('Test_CreatePanel_TestGiftShopConfig_ExpectShellOptions', () => {
    const originals = {
       createPanelShell: ConsolePanelShellBuilder.createPanelShell,
@@ -23,11 +24,19 @@ test('Test_CreatePanel_TestGiftShopConfig_ExpectShellOptions', () => {
       createActions: ConsoleActionsBuilder.createActions,
       createStatus: ConsoleStatusBuilder.createStatus,
    };
-
+   const panel = { panel: true };
+   const panelId = 'giftShopOpeningSchedulePanel';
+   const title = Strings.panelTitles.giftShopOpeningSchedule;
+   const idPrefix = 'giftShopOpeningSchedule';
+   const entityFieldName = 'GiftShop';
+   const scheduleMessagePlaceholder = Strings.textareas.scheduledClosedMessage('gift shop');
+   const submitId = 'submitGiftShopOpeningSchedule';
+   const statusId = 'giftShopOpeningScheduleStatus';
    let captured;
+
    ConsolePanelShellBuilder.createPanelShell = (options) => {
       captured = options;
-      return { panel: true };
+      return panel;
    };
    ConsoleSelectFieldBuilder.createSelectField = (options) => ({ kind: 'createSelectField', ...options });
    ConsoleSchedulePresetFieldBuilder.createSchedulePresetField = (options) => ({
@@ -45,33 +54,41 @@ test('Test_CreatePanel_TestGiftShopConfig_ExpectShellOptions', () => {
 
    try {
       const result = AmenityOpeningSchedulePanelBuilder.createPanel({
-         panelId: 'giftShopOpeningSchedulePanel',
-         title: Strings.panelTitles.giftShopOpeningSchedule,
+         panelId,
+         title,
          entityLabel: Strings.entityLabels.giftShop,
          emptyOptionLabel: Strings.placeholders.giftShop,
-         idPrefix: 'giftShopOpeningSchedule',
-         entityFieldName: 'GiftShop',
-         scheduleMessagePlaceholder: Strings.textareas.scheduledClosedMessage('gift shop'),
-         submitId: 'submitGiftShopOpeningSchedule',
-         statusId: 'giftShopOpeningScheduleStatus',
+         idPrefix,
+         entityFieldName,
+         scheduleMessagePlaceholder,
+         submitId,
+         statusId,
       });
 
-      assert.deepEqual(result, { panel: true });
-      assert.equal(captured.panelId, 'giftShopOpeningSchedulePanel');
-      assert.equal(captured.title, Strings.panelTitles.giftShopOpeningSchedule);
-      assert.equal(captured.bodyChildren.length, 7);
-      assert.equal(captured.bodyChildren[0].inputId, 'giftShopOpeningScheduleGiftShop');
-      assert.equal(captured.bodyChildren[1].inputId, 'giftShopOpeningSchedulePreset');
-      assert.equal(captured.bodyChildren[2].startDateId, 'giftShopOpeningScheduleStartDate');
-      assert.equal(captured.bodyChildren[2].startHelpText, Strings.help.startImmediately);
-      assert.equal(captured.bodyChildren[2].endDateId, 'giftShopOpeningScheduleEndDate');
-      assert.equal(captured.bodyChildren[2].endHelpText, Strings.help.keepScheduleUntilChanged);
-      assert.equal(captured.bodyChildren[3].dayIds.monday, 'giftShopOpeningScheduleMonday');
-      assert.equal(captured.bodyChildren[3].dayIds.holidays, 'giftShopOpeningScheduleHolidaysOnly');
-      assert.equal(captured.bodyChildren[4].inputId, 'giftShopOpeningScheduleMessage');
-      assert.equal(captured.bodyChildren[4].placeholder, Strings.textareas.scheduledClosedMessage('gift shop'));
-      assert.equal(captured.bodyChildren[5].submitId, 'submitGiftShopOpeningSchedule');
-      assert.equal(captured.bodyChildren[6].statusId, 'giftShopOpeningScheduleStatus');
+      const [
+         entityField,
+         presetField,
+         dateRange,
+         daysField,
+         messageField,
+         actions,
+         status,
+      ] = captured.bodyChildren;
+      assert.equal(result, panel);
+      assert.equal(captured.panelId, panelId);
+      assert.equal(captured.title, title);
+      assert.equal(entityField.inputId, `${idPrefix}${entityFieldName}`);
+      assert.equal(presetField.inputId, `${idPrefix}Preset`);
+      assert.equal(dateRange.startDateId, `${idPrefix}StartDate`);
+      assert.equal(dateRange.startHelpText, Strings.help.startImmediately);
+      assert.equal(dateRange.endDateId, `${idPrefix}EndDate`);
+      assert.equal(dateRange.endHelpText, Strings.help.keepScheduleUntilChanged);
+      assert.equal(daysField.dayIds.monday, `${idPrefix}Monday`);
+      assert.equal(daysField.dayIds.holidays, `${idPrefix}HolidaysOnly`);
+      assert.equal(messageField.inputId, `${idPrefix}Message`);
+      assert.equal(messageField.placeholder, scheduleMessagePlaceholder);
+      assert.equal(actions.submitId, submitId);
+      assert.equal(status.statusId, statusId);
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
       ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;

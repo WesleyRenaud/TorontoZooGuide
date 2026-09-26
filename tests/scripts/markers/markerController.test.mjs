@@ -7,9 +7,11 @@ import { MarkerBuilder } from '../../../scripts/markers/markerBuilder.js';
 import { MarkerGrouper } from '../../../scripts/markers/markerGrouper.js';
 import { MarkerLayerHelper } from '../../../scripts/markers/markerLayerHelper.js';
 import { ItemType } from '../../../scripts/shared/enums/itemType.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
 
 test('Test_CreateMarkerLayer_TestRenderAndLookup_ExpectMarkers', () => {
    const originalRemove = MarkerLayerHelper.removeRenderedMarkers;
@@ -19,23 +21,30 @@ test('Test_CreateMarkerLayer_TestRenderAndLookup_ExpectMarkers', () => {
    const originalShould = MarkerLayerHelper.shouldRenderMarkerGroup;
    const binds = [];
    const removes = [];
+   const renderedKey = '1|2';
+   const skippedKey = '3|4';
+   const mapId = 'map';
 
-   MarkerLayerHelper.removeRenderedMarkers = (mapInner) => { removes.push(mapInner.id); };
+   MarkerLayerHelper.removeRenderedMarkers = (mapInner) => {
+      removes.push(mapInner.id);
+   };
    MarkerBuilder.createMarkerElement = (group) => {
       const el = document.createElement('div');
       el.id = group.key;
       return el;
    };
-   MarkerBuilder.bindMarkerInteractions = (options) => { binds.push(options); };
+   MarkerBuilder.bindMarkerInteractions = (options) => {
+      binds.push(options);
+   };
    MarkerGrouper.groupMarkersByCoordinate = () => new Map([
-      ['1|2', { key: '1|2', items: [{ type: ItemType.ANIMAL }] }],
-      ['3|4', { key: '3|4', items: [{ type: 'skip' }] }],
+      [renderedKey, { key: renderedKey, items: [{ type: ItemType.ANIMAL }] }],
+      [skippedKey, { key: skippedKey, items: [{ type: 'skip' }] }],
    ]);
-   MarkerLayerHelper.shouldRenderMarkerGroup = (group) => group.key === '1|2';
+   MarkerLayerHelper.shouldRenderMarkerGroup = (group) => group.key === renderedKey;
 
    try {
       const mapInner = document.createElement('div');
-      mapInner.id = 'map';
+      mapInner.id = mapId;
       const originalAppend = mapInner.appendChild.bind(mapInner);
       mapInner.appendChild = (child) => {
          if (child?.tagName === '#fragment') {
@@ -53,15 +62,18 @@ test('Test_CreateMarkerLayer_TestRenderAndLookup_ExpectMarkers', () => {
          hover: {},
          enableCoordinateEditing: true,
       });
-
       layer.render([{ type: ItemType.ANIMAL }]);
-      assert.deepEqual(removes, ['map']);
-      assert.equal(mapInner.children.length, 1);
-      assert.equal(mapInner.children[0].id, '1|2');
-      assert.equal(binds[0].enableMarkerCoordinateEditing, CoordinateEditor.enableMarkerCoordinateEditing);
-      assert.equal(layer.getMarkerByCoord('1|2').id, '1|2');
+
+      assert.deepEqual(removes, [mapId]);
+      assert.equal(mapInner.children.length, Position.SECOND);
+      assert.equal(mapInner.children.at(Position.FIRST).id, renderedKey);
+      assert.equal(
+         binds.at(Position.FIRST).enableMarkerCoordinateEditing,
+         CoordinateEditor.enableMarkerCoordinateEditing
+      );
+      assert.equal(layer.getMarkerByCoord(renderedKey).id, renderedKey);
       assert.equal(layer.getMarkerByCoord('missing'), null);
-      assert.equal(layer.getAllMarkers().length, 1);
+      assert.equal(layer.getAllMarkers().length, Position.SECOND);
    } finally {
       MarkerLayerHelper.removeRenderedMarkers = originalRemove;
       MarkerBuilder.createMarkerElement = originalCreate;

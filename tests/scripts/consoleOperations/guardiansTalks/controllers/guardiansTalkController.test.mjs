@@ -11,8 +11,10 @@ import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOpera
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { Strings } from '../../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 installDomTestHooks();
+
 
 test('Test_CreateGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks', async () => {
    const originalCreate = RecurringScheduleFormController.createRecurringScheduleFormController;
@@ -109,7 +111,6 @@ test('Test_CreateGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks'
 
       captured.resetSelection();
       assert.ok(calls.includes('talkClear'));
-
       assert.deepEqual(
          await captured.submitSchedule({
             talk: 'Talk',
@@ -186,6 +187,7 @@ test('Test_CreateGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks'
    }
 });
 
+
 test('Test_CreateGuardiansTalkScheduleController_TestResetWithoutFilter_ExpectPopulate', () => {
    const originalCreate = RecurringScheduleFormController.createRecurringScheduleFormController;
    const originalRows = RecurringScheduleRowsController.createRecurringScheduleRowsController;
@@ -220,7 +222,7 @@ test('Test_CreateGuardiansTalkScheduleController_TestResetWithoutFilter_ExpectPo
 
       captured.resetSelection();
       assert.equal(populateCalls.length, 1);
-      assert.deepEqual(populateCalls[0][1], []);
+      assert.deepEqual(populateCalls.at(Position.FIRST)[Position.SECOND], []);
 
       const talkNameEl = document.createElement('input');
       talkNameEl.value = 'Old Talk';

@@ -52,7 +52,9 @@ def _saved_animal(
 
 
 def Test_Build_TestEmptyInputs_ExpectEmpty() -> None:
-   assert ItineraryAnimalsBuilder.build( [], [] ) == []
+   result = ItineraryAnimalsBuilder.build( [], [] )
+
+   assert result == []
 
 
 def Test_Build_TestFiltersToSavedSpots_ExpectOnlyMatchingAnimals() -> None:
@@ -206,7 +208,9 @@ def Test_Build_TestAppliesSavedSchedule_ExpectTimesAndFlags() -> None:
 def Test_FindSavedAnimalForViewableAnimal_TestNoMatch_ExpectNone() -> None:
    animal = _animal( species='African Lion', exhibit='Africa Savanna' )
 
-   assert ItineraryAnimalsBuilder._find_saved_animal_for_viewable_animal( [], animal ) is None
+   result = ItineraryAnimalsBuilder._find_saved_animal_for_viewable_animal( [], animal )
+
+   assert result is None
 
 
 def Test_ApplyOldLikelihood_TestNoSavedMatch_ExpectUnchanged() -> None:

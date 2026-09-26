@@ -7,11 +7,11 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_ResetTalkDropdown_TestFilterControllerClear_ExpectDelegates', () => {
-   const calls = [];
    const talkNameEl = document.createElement('select');
    const originalPopulate = ConsoleDropdownPopulator.populateGuardiansTalkDropdown;
-
+   const calls = [];
    ConsoleDropdownPopulator.populateGuardiansTalkDropdown = () => {
       calls.push('populate');
    };
@@ -32,27 +32,30 @@ test('Test_ResetTalkDropdown_TestFilterControllerClear_ExpectDelegates', () => {
    }
 });
 
+
 test('Test_ResetTalkDropdown_TestSelectWithoutFilter_ExpectEmptyPopulate', () => {
    const talkNameEl = document.createElement('select');
    const originalPopulate = ConsoleDropdownPopulator.populateGuardiansTalkDropdown;
    let captured;
-
    ConsoleDropdownPopulator.populateGuardiansTalkDropdown = (el, talks) => {
       captured = { el, talks };
    };
 
    try {
       GuardiansTalkDropdownResetHelper.resetTalkDropdown({ talkNameEl });
+
       assert.deepEqual(captured, { el: talkNameEl, talks: [] });
    } finally {
       ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulate;
    }
 });
 
+
 test('Test_ResetTalkDropdown_TestInputWithoutFilter_ExpectClearsValue', () => {
    const talkNameEl = document.createElement('input');
    talkNameEl.value = 'Keeper Talk';
 
    GuardiansTalkDropdownResetHelper.resetTalkDropdown({ talkNameEl });
+
    assert.equal(talkNameEl.value, '');
 });

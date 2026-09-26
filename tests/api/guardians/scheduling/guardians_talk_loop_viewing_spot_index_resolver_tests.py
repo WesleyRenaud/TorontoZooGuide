@@ -49,16 +49,18 @@ PENGUIN_OUTDOOR_LINK = GuardiansTalkAnimalRecord(
 
 
 def Test_Resolve_TestLinkedOutdoorEnclosure_ExpectOutdoorIndex() -> None:
-   assert GuardiansTalkLoopViewingSpotIndexResolver.resolve(
+   result = GuardiansTalkLoopViewingSpotIndexResolver.resolve(
       AFRICA_SAVANNA_LOOP,
       talk_name='African Penguin',
       talk_location='Africa Savanna',
       linked_animals=[ PENGUIN_OUTDOOR_LINK ],
-   ) == 1
+   )
+
+   assert result == 1
 
 
 def Test_Resolve_TestLinkedIndoorGorilla_ExpectIndoorIndex() -> None:
-   assert GuardiansTalkLoopViewingSpotIndexResolver.resolve(
+   result = GuardiansTalkLoopViewingSpotIndexResolver.resolve(
       RAINFOREST_LOOP,
       talk_name='Western Lowland Gorilla',
       talk_location='African Rainforest Pavilion',
@@ -71,11 +73,13 @@ def Test_Resolve_TestLinkedIndoorGorilla_ExpectIndoorIndex() -> None:
             enclosure_name='Indoor',
          ),
       ],
-   ) == 0
+   )
+
+   assert result == 0
 
 
 def Test_Resolve_TestNullEnclosureLion_ExpectLionIndex() -> None:
-   assert GuardiansTalkLoopViewingSpotIndexResolver.resolve(
+   result = GuardiansTalkLoopViewingSpotIndexResolver.resolve(
       AFRICA_SAVANNA_LOOP,
       talk_name='African Lion',
       talk_location='Africa Savanna',
@@ -87,7 +91,9 @@ def Test_Resolve_TestNullEnclosureLion_ExpectLionIndex() -> None:
             exhibit='Africa Savanna',
          ),
       ],
-   ) == 0
+   )
+
+   assert result == 0
 
 
 def Test_Resolve_TestLinkedEnclosureBeforeTalkNameMatch_ExpectOutdoorNotIndoor() -> None:

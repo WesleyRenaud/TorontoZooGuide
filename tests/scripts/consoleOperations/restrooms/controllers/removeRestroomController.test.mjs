@@ -13,6 +13,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateRemoveRestroomAlertController_TestShowAndSubmitSuccess_ExpectStatus', async () => {
    const statuses = [];
    const activations = [];
@@ -32,11 +33,12 @@ test('Test_CreateRemoveRestroomAlertController_TestShowAndSubmitSuccess_ExpectSt
    ConsoleStatusPresenter.setStatus = (...args) => {
       statuses.push(args);
    };
-   ControllerHelper.getFieldValue = () => 'Near Cafe';
+   const restroom = 'Near Cafe';
+   ControllerHelper.getFieldValue = () => restroom;
    ControllerHelper.resetFormFields = () => {};
    ConsoleOperationsClient.removeRestroomAlert = async (payload) => {
-      assert.deepEqual(payload, { restroom: 'Near Cafe' });
-      return { success: true, restroom: 'Near Cafe' };
+      assert.deepEqual(payload, { restroom });
+      return { success: true, restroom };
    };
 
    try {
@@ -58,7 +60,7 @@ test('Test_CreateRemoveRestroomAlertController_TestShowAndSubmitSuccess_ExpectSt
       await submitButtonEl.listeners.click();
       assert.ok(
          statuses.some((entry) => (
-            entry[1] === 'Alert removed for Near Cafe.' && entry[2] === 'is-success'
+            entry[1] === Strings.status.restroomAlertRemoved({ restroom }) && entry[2] === 'is-success'
          ))
       );
    } finally {
@@ -70,6 +72,7 @@ test('Test_CreateRemoveRestroomAlertController_TestShowAndSubmitSuccess_ExpectSt
       ConsoleOperationsClient.removeRestroomAlert = originalRemove;
    }
 });
+
 
 test('Test_CreateRemoveRestroomAlertController_TestValidationAndFailures_ExpectErrorStatus', async () => {
    const statuses = [];

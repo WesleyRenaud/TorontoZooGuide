@@ -83,6 +83,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentDestroyRenderedPanelCh
    assert.equal(cleaned, true);
 });
 
+
 test('Test_ItineraryPanelContent_TestItineraryPanelContentClearRenderedPanelRemovesRenderedChildren_ExpectOk', () => {
    const bodyEl = createDomNode('div', 'side-panel-body');
    bodyEl.appendChild(createDomNode('div', 'panel-child'));
@@ -91,6 +92,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentClearRenderedPanelRemo
 
    assert.equal(bodyEl.children.length, 0);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentOpensTheScheduleModuleFromThe_ExpectOk', () => {
    const bodyEl = createDomNode('div', 'side-panel-body');
@@ -111,6 +113,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
    assert.equal(opened.length, 1);
    assert.deepEqual(opened[0].eventTypes, ['lunch']);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenBulkScheduling_ExpectOk', async () => {
    const bodyEl = createDomNode('div', 'side-panel-body');
@@ -140,6 +143,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
       message: 'Bulk schedule failed',
    }]);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
@@ -175,6 +179,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
    }]);
 });
 
+
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
@@ -209,6 +214,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
    }]);
 });
 
+
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentRefreshesAndShowsNotEnoughTime_ExpectOk', async () => {
    const bodyEl = createDomNode('div', 'side-panel-body');
    let refreshed = false;
@@ -240,6 +246,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
       message: Strings.itinerary.confirmation.bulkScheduleItineraryNotEnoughTimeMessage,
    }]);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentUsesTheGenericErrorWhenBulk_ExpectOk', async () => {
    let refreshed = false;
@@ -279,6 +286,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
       message: Strings.itinerary.errors.generic,
    }]);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentQueuesSuccessFeedbackAfterRebuildSchedule_ExpectOk', async () => {
    let refreshed = false;
@@ -324,6 +332,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
    }]);
 });
 
+
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPanelContentRebuildsWithoutLongWaitConfirmationFor_ExpectOk', async () => {
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: [],
@@ -361,6 +370,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildEmptyItineraryPan
       message: Strings.itinerary.dayPlanner.rebuildScheduleSuccess,
    }]);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
@@ -406,6 +416,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
    }]);
 });
 
+
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentRefreshesAfterArrivalAndDepartureTime_ExpectOk', async () => {
    const arrivalCalls = [];
    const departureCalls = [];
@@ -444,6 +455,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
    assert.deepEqual(departureCalls, ['17:00']);
    assert.equal(refreshed, 2);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentUnschedulesAllItemsAndQueuesSuccess_ExpectOk', async () => {
    let unscheduled = false;
@@ -491,6 +503,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
       message: Strings.itinerary.dayPlanner.unscheduleAllSuccess,
    }]);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenNothingIs_ExpectOk', async () => {
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
@@ -543,6 +556,7 @@ test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelCon
       message: Strings.itinerary.errors.unscheduleAllNothingScheduled,
    }]);
 });
+
 
 test('Test_ItineraryPanelContent_TestItineraryPanelContentBuildItineraryPanelContentShowsErrorFeedbackWhenUnscheduleAll_ExpectOk', async () => {
    let refreshed = false;

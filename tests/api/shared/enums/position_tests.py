@@ -6,6 +6,7 @@ from api.shared.enums.shared_enum_values import SharedEnumValues
 
 def Test_Position_TestSharedJson_ExpectSingleSourceOfTruth() -> None:
    shared_members = SharedEnumValues.load_integers( 'position.json' )
+
    actual = {
       name: member.value
       for name, member in Position.__members__.items()
@@ -15,10 +16,14 @@ def Test_Position_TestSharedJson_ExpectSingleSourceOfTruth() -> None:
 
 
 def Test_Position_TestListIndexing_ExpectElements() -> None:
-   items = [ 'a', 'b', 'c', 'd' ]
+   first = 'a'
+   second = 'b'
+   third = 'c'
+   fourth = 'd'
+   items = [ first, second, third, fourth ]
 
-   assert items[ Position.FIRST ] == 'a'
-   assert items[ Position.SECOND ] == 'b'
-   assert items[ Position.THIRD ] == 'c'
-   assert items[ Position.FOURTH ] == 'd'
-   assert items[ Position.LAST ] == 'd'
+   assert items[ Position.FIRST ] == first
+   assert items[ Position.SECOND ] == second
+   assert items[ Position.THIRD ] == third
+   assert items[ Position.FOURTH ] == fourth
+   assert items[ Position.LAST ] == fourth

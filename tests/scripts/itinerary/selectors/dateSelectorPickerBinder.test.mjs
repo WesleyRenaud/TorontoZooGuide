@@ -8,12 +8,14 @@ import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 const floor = makeNoonDate(2026, 5, 15);
 const maxDate = makeNoonDate(2026, 5, 17);
 
+
 test('Test_CreateDatePickerBinding_TestCallbacks_ExpectModelWired', () => {
    const inputEl = createDomNode('input', 'itin-date-input');
    const syncedDates = [];
    let currentDate = floor;
    let syncedMaxDate = null;
    const flatpickrCalls = [];
+   const selectedDate = makeNoonDate(2026, 5, 16);
 
    const binding = DateSelectorPickerBinder.createDatePickerBinding({
       inputEl,
@@ -51,7 +53,7 @@ test('Test_CreateDatePickerBinding_TestCallbacks_ExpectModelWired', () => {
          };
 
          options.onReady(floor, '2026-06-15', instance);
-         options.onChange(makeNoonDate(2026, 5, 16), '2026-06-16', instance);
+         options.onChange(selectedDate, '2026-06-16', instance);
          options.onClose();
 
          return instance;
@@ -62,14 +64,49 @@ test('Test_CreateDatePickerBinding_TestCallbacks_ExpectModelWired', () => {
    binding.syncBounds();
    binding.close();
 
-   assert.equal(currentDate.getDate(), 16);
+   assert.equal(currentDate, selectedDate);
    assert.match(inputEl.value, /June 16, 2026/);
    assert.equal(syncedDates.length, 3);
    assert.equal(syncedMaxDate, maxDate);
    assert.ok(flatpickrCalls.includes('close'));
+});
 
+
+test('Test_SyncBounds_TestNullDate_ExpectNoFlatpickrUpdate', () => {
+   const inputEl = createDomNode('input', 'itin-date-input');
+   let currentDate = floor;
+   const flatpickrCalls = [];
+   const binding = DateSelectorPickerBinder.createDatePickerBinding({
+      inputEl,
+      getDate: () => currentDate,
+      setDate: (date) => {
+         currentDate = date;
+         return true;
+      },
+      syncInputValue: () => {},
+      earliestDateFloor: floor,
+      getTodayFn: () => floor,
+      getMaxDateFn: () => maxDate,
+      daysAhead: 2,
+      initFlatpickr: (_input, options) => {
+         const instance = {
+            input: _input,
+            close() {},
+            set(property, value) {
+               flatpickrCalls.push(`${property}:${value}`);
+            },
+            setDate() {},
+         };
+
+         options.onReady(floor, '2026-06-15', instance);
+         return instance;
+      },
+   });
+   binding.init();
    currentDate = null;
    const beforeNullSync = flatpickrCalls.length;
+
    binding.syncBounds();
+
    assert.equal(flatpickrCalls.length, beforeNullSync);
 });

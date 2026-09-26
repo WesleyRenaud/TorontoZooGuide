@@ -6,140 +6,169 @@ import { ItineraryNormalizer } from '../../../../scripts/itinerary/itineraryNorm
 import { ItineraryShape } from '../../../../scripts/itinerary/itineraryShape.js';
 import { ItineraryDiff } from '../../../../scripts/itinerary/wizard/itineraryDiff.js';
 import { WizardDiffPresenter } from '../../../../scripts/itinerary/wizard/diff/wizardDiffPresenter.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+
+const _animalVisibilityChangeThreshold = 20;
 
 function _draft(overrides = {}) {
    return ItineraryShape.normalizeItineraryDraft(overrides);
 }
 
+
 test('Test_BuildItineraryDiff_TestSeededRemoved_ExpectRemovedAttractionsAndEncounters', () => {
+   const lion = { species: 'African Lion' };
+   const carousel = { name: 'Conservation Carousel' };
+   const tigerTalk = { name: 'Amur Tiger' };
+   const rainforest = { name: 'African Rainforest' };
    const previous = _draft({
-      animals: [{ species: 'African Lion' }],
-      attractions: [{ name: 'Conservation Carousel' }],
-      guardiansTalks: [{ name: 'Amur Tiger' }],
-      wildEncounters: [{ name: 'African Rainforest' }],
+      animals: [lion],
+      attractions: [carousel],
+      guardiansTalks: [tigerTalk],
+      wildEncounters: [rainforest],
    });
    const validated = _draft({
       animals: [{ species: ' african lion ' }],
       attractions: [{ name: 'Greenhouse' }],
-      guardiansTalks: [{ name: 'Amur Tiger' }],
+      guardiansTalks: [tigerTalk],
       wildEncounters: [],
    });
 
-   const diff = ItineraryDiff.buildItineraryDiff(previous, validated, {}, { animalVisibilityChangeThreshold: 20 });
+   const diff = ItineraryDiff.buildItineraryDiff(previous, validated, {}, {
+      animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold,
+   });
 
    assert.deepEqual(diff.removed.animals, []);
-   assert.deepEqual(diff.removed.attractions, [{ name: 'Conservation Carousel' }]);
+   assert.deepEqual(diff.removed.attractions, [carousel]);
    assert.deepEqual(diff.removed.guardiansTalks, []);
-   assert.deepEqual(diff.removed.wildEncounters, [{ name: 'African Rainforest' }]);
+   assert.deepEqual(diff.removed.wildEncounters, [rainforest]);
    assert.equal(WizardDiffPresenter.hasRemovedItems(diff.removed), true);
 });
 
+
 test('Test_BuildItineraryDiff_TestBackendProvided_ExpectBackendRows', () => {
+   const lion = { species: 'African Lion' };
+   const carousel = { name: 'Conservation Carousel' };
+
    const diff = ItineraryDiff.buildItineraryDiff(
       _draft({
-         animals: [{ species: 'African Lion' }],
-         attractions: [{ name: 'Conservation Carousel' }],
+         animals: [lion],
+         attractions: [carousel],
       }),
       _draft({
-         animals: [{ species: 'African Lion' }],
-         attractions: [{ name: 'Conservation Carousel' }],
+         animals: [lion],
+         attractions: [carousel],
       }),
       {
-         attractions: [{ name: 'Conservation Carousel' }],
+         attractions: [carousel],
       },
-      { animalVisibilityChangeThreshold: 20 }
+      { animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold }
    );
 
-   assert.deepEqual(diff.removed.attractions, [{ name: 'Conservation Carousel' }]);
+   assert.deepEqual(diff.removed.attractions, [carousel]);
 });
 
+
 test('Test_BuildItineraryDiff_TestEmptyBackendTalks_ExpectInferredRemoved', () => {
+   const talk = { name: 'Only On Mondays' };
    const previous = _draft({
-      guardiansTalks: [{ name: 'Only On Mondays' }],
+      guardiansTalks: [talk],
    });
    const validated = _draft();
 
    const diff = ItineraryDiff.buildItineraryDiff(previous, validated, _draft(), {
-      animalVisibilityChangeThreshold: 20,
+      animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold,
    });
 
-   assert.deepEqual(diff.removed.guardiansTalks, [{ name: 'Only On Mondays' }]);
+   assert.deepEqual(diff.removed.guardiansTalks, [talk]);
    assert.equal(WizardDiffPresenter.hasRemovedItems(diff.removed), true);
 });
 
+
 test('Test_BuildItineraryDiff_TestBackendTalkMerge_ExpectMerged', () => {
+   const missingTalk = { name: 'Not On New Day Schedule' };
+   const cancelledName = 'Cancelled On Schedule';
+   const removalReason = 'Cancelled.';
+   const cancelledTalk = {
+      name: cancelledName,
+      removalReason,
+   };
+
    const diff = ItineraryDiff.buildItineraryDiff(
       _draft({
          guardiansTalks: [
-            { name: 'Not On New Day Schedule' },
-            { name: 'Cancelled On Schedule' },
+            missingTalk,
+            { name: cancelledName },
          ],
       }),
       _draft(),
       {
-         guardiansTalks: [
-            {
-               name: 'Cancelled On Schedule',
-               removalReason: 'Cancelled.',
-            },
-         ],
+         guardiansTalks: [cancelledTalk],
       },
-      { animalVisibilityChangeThreshold: 20 }
+      { animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold }
    );
 
    assert.equal(diff.removed.guardiansTalks.length, 2);
    assert.ok(
       diff.removed.guardiansTalks.some(
-         (t) => t.name === 'Cancelled On Schedule' && t.removalReason === 'Cancelled.'
+         (talk) => talk.name === cancelledTalk.name && talk.removalReason === cancelledTalk.removalReason
       )
    );
-   assert.ok(diff.removed.guardiansTalks.some((t) => t.name === 'Not On New Day Schedule'));
+   assert.ok(diff.removed.guardiansTalks.some((talk) => talk.name === missingTalk.name));
 });
 
+
 test('Test_BuildItineraryDiff_TestVisibilityDelta_ExpectReducedAndImproved', () => {
+   const lion = { species: 'African Lion', likelihood: 90 };
+   const tiger = { species: 'Amur Tiger', likelihood: 0.25 };
+   const leopard = { species: 'Snow Leopard', likelihood: 70 };
    const previous = _draft({
-      animals: [
-         { species: 'African Lion', likelihood: 90 },
-         { species: 'Amur Tiger', likelihood: 0.25 },
-         { species: 'Snow Leopard', likelihood: 70 },
-      ],
+      animals: [lion, tiger, leopard],
    });
    const validated = _draft({
       animals: [
-         { species: 'African Lion', likelihood: 60 },
-         { species: 'Amur Tiger', likelihood: 0.7 },
-         { species: 'Snow Leopard', likelihood: 55 },
+         { species: lion.species, likelihood: 60 },
+         { species: tiger.species, likelihood: 0.7 },
+         { species: leopard.species, likelihood: 55 },
       ],
    });
 
-   const diff = ItineraryDiff.buildItineraryDiff(previous, validated, {}, { animalVisibilityChangeThreshold: 20 });
+   const diff = ItineraryDiff.buildItineraryDiff(previous, validated, {}, {
+      animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold,
+   });
 
    assert.deepEqual(
       diff.reducedVisibility.animals.map((animal) => animal.species),
-      ['African Lion']
+      [lion.species]
    );
    assert.deepEqual(
       diff.improvedVisibility.animals.map((animal) => animal.species),
-      ['Amur Tiger']
+      [tiger.species]
    );
    assert.equal(WizardDiffPresenter.hasReducedVisibility(diff.reducedVisibility), true);
    assert.equal(WizardDiffPresenter.hasImprovedVisibility(diff.improvedVisibility), true);
+   assert.equal(diff.reducedVisibility.animals[Position.FIRST].species, lion.species);
+   assert.equal(diff.improvedVisibility.animals[Position.FIRST].species, tiger.species);
 });
 
+
 test('Test_BuildItineraryDiff_TestLostTimes_ExpectUnscheduled', () => {
+   const lionSpecies = 'African Lion';
+   const carouselName = 'Conservation Carousel';
+   const exhibit = 'Africa Savanna';
+
    const diff = ItineraryDiff.buildItineraryDiff(
       _draft({
          animals: [
             {
-               species: 'African Lion',
-               exhibit: 'Africa Savanna',
+               species: lionSpecies,
+               exhibit,
                start_time: '09:00',
                end_time: '09:08',
             },
          ],
          attractions: [
             {
-               name: 'Conservation Carousel',
+               name: carouselName,
                start_time: '09:08',
                end_time: '09:16',
             },
@@ -148,70 +177,77 @@ test('Test_BuildItineraryDiff_TestLostTimes_ExpectUnscheduled', () => {
       _draft({
          animals: [
             {
-               species: 'African Lion',
-               exhibit: 'Africa Savanna',
+               species: lionSpecies,
+               exhibit,
                start_time: '',
                end_time: '',
             },
          ],
          attractions: [
             {
-               name: 'Conservation Carousel',
+               name: carouselName,
                start_time: '',
                end_time: '',
             },
          ],
       }),
       {},
-      { animalVisibilityChangeThreshold: 20 }
+      { animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold }
    );
 
    assert.deepEqual(
       diff.unscheduled.animals.map((animal) => animal.species),
-      ['African Lion']
+      [lionSpecies]
    );
    assert.deepEqual(
       diff.unscheduled.attractions.map((attraction) => attraction.name),
-      ['Conservation Carousel']
+      [carouselName]
    );
    assert.equal(WizardDiffPresenter.hasUnscheduledItems(diff.unscheduled), true);
 });
 
+
 test('Test_BuildItineraryDiff_TestDeletedTalks_ExpectNotUnscheduled', () => {
+   const talkName = 'Spotted Hyena';
+   const location = 'Africa Savanna';
+
    const diff = ItineraryDiff.buildItineraryDiff(
       _draft({
          guardiansTalks: [
             {
-               name: 'Spotted Hyena',
+               name: talkName,
                start_time: '13:00',
                end_time: '13:30',
-               location: 'Africa Savanna',
+               location,
             },
          ],
       }),
       _draft({
          guardiansTalks: [
             {
-               name: 'Spotted Hyena',
+               name: talkName,
                is_deleted: true,
-               location: 'Africa Savanna',
+               location,
             },
          ],
       }),
       {},
-      { animalVisibilityChangeThreshold: 20 }
+      { animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold }
    );
 
    assert.equal(diff.unscheduled.guardiansTalks, undefined);
    assert.deepEqual(diff.removed.guardiansTalks, []);
 });
 
+
 test('Test_BuildItineraryDiff_TestDeletedEncounters_ExpectNotUnscheduled', () => {
+   const encounterName = 'African Rainforest';
+
    const diff = ItineraryDiff.buildItineraryDiff(
       _draft({
          wildEncounters: [
             {
-               name: 'African Rainforest',
+               name: encounterName,
                start_time: '13:00',
                end_time: '13:45',
             },
@@ -220,28 +256,31 @@ test('Test_BuildItineraryDiff_TestDeletedEncounters_ExpectNotUnscheduled', () =>
       _draft({
          wildEncounters: [
             {
-               name: 'African Rainforest',
+               name: encounterName,
                is_deleted: true,
             },
          ],
       }),
       {},
-      { animalVisibilityChangeThreshold: 20 }
+      { animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold }
    );
 
    assert.equal(diff.unscheduled.wildEncounters, undefined);
    assert.deepEqual(diff.removed.wildEncounters, []);
 });
 
+
 test('Test_ApplyItineraryDiffToValidation_TestPriorRemoved_ExpectPreserved', () => {
+   const talkName = 'Spotted Hyena';
+   const location = 'Africa Savanna';
    const previous = _draft({
       date: '2026-06-21',
       guardiansTalks: [
          {
-            name: 'Spotted Hyena',
+            name: talkName,
             start_time: '13:00',
             end_time: '13:30',
-            location: 'Africa Savanna',
+            location,
          },
       ],
    });
@@ -249,9 +288,9 @@ test('Test_ApplyItineraryDiffToValidation_TestPriorRemoved_ExpectPreserved', () 
       date: '2026-06-22',
       guardiansTalks: [
          {
-            name: 'Spotted Hyena',
+            name: talkName,
             is_deleted: true,
-            location: 'Africa Savanna',
+            location,
          },
       ],
    });
@@ -267,25 +306,33 @@ test('Test_ApplyItineraryDiffToValidation_TestPriorRemoved_ExpectPreserved', () 
    assert.equal(validatedItinerary.validation.unscheduled.guardiansTalks, undefined);
    assert.deepEqual(
       validatedItinerary.validation.removed.guardiansTalks.map((talk) => talk.name),
-      ['Spotted Hyena']
+      [talkName]
    );
    assert.equal(WizardDiffPresenter.hasUnscheduledItems(validatedItinerary.validation.unscheduled), false);
    assert.equal(WizardDiffPresenter.hasRemovedItems(validatedItinerary.validation.removed), true);
+   assert.equal(
+      validatedItinerary.validation.removed.guardiansTalks[Position.FIRST].name,
+      talkName
+   );
 });
 
+
 test('Test_BuildItineraryDiff_TestDroppedTalksEncounters_ExpectRemoved', () => {
+   const talkName = 'African Lion';
+   const encounterName = 'African Rainforest';
+
    const diff = ItineraryDiff.buildItineraryDiff(
       _draft({
          guardiansTalks: [
             {
-               name: 'African Lion',
+               name: talkName,
                start_time: '16:30',
                end_time: '16:45',
             },
          ],
          wildEncounters: [
             {
-               name: 'African Rainforest',
+               name: encounterName,
                start_time: '16:30',
                end_time: '16:45',
             },
@@ -293,28 +340,30 @@ test('Test_BuildItineraryDiff_TestDroppedTalksEncounters_ExpectRemoved', () => {
       }),
       _draft(),
       {},
-      { animalVisibilityChangeThreshold: 20 }
+      { animalVisibilityChangeThreshold: _animalVisibilityChangeThreshold }
    );
 
    assert.deepEqual(
       diff.removed.guardiansTalks.map((talk) => talk.name),
-      ['African Lion']
+      [talkName]
    );
    assert.deepEqual(
       diff.removed.wildEncounters.map((encounter) => encounter.name),
-      ['African Rainforest']
+      [encounterName]
    );
    assert.equal(WizardDiffPresenter.hasRemovedItems(diff.removed), true);
    assert.equal(WizardDiffPresenter.hasUnscheduledItems(diff.unscheduled), false);
 });
 
+
 test('Test_BuildItineraryDiff_TestMatchingAttraction_ExpectTransportKept', () => {
+   const transportationName = 'Zoomobile';
    const previous = _draft({
-      attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
+      attractions: [{ name: transportationName, addedAsAttraction: true }],
    });
    const validated = _draft({
       transportations: [{
-         name: 'Zoomobile',
+         name: transportationName,
          added_as_attraction: true,
       }],
    });
@@ -326,34 +375,98 @@ test('Test_BuildItineraryDiff_TestMatchingAttraction_ExpectTransportKept', () =>
    assert.equal(WizardDiffPresenter.isValidatedItineraryEmpty(validated), false);
 });
 
+
 test('Test_BuildItineraryDiff_TestTransportOnly_ExpectAttractionRemoved', () => {
+   const transportationName = 'Zoomobile';
+   const attraction = { name: transportationName, addedAsAttraction: true };
    const previous = _draft({
-      attractions: [{ name: 'Zoomobile', addedAsAttraction: true }],
+      attractions: [attraction],
    });
    const validated = _draft({
       transportations: [{
-         name: 'Zoomobile',
+         name: transportationName,
          added_as_attraction: false,
       }],
    });
 
    const diff = ItineraryDiff.buildItineraryDiff(previous, validated);
 
-   assert.deepEqual(diff.removed.attractions, [{ name: 'Zoomobile', addedAsAttraction: true }]);
+   assert.deepEqual(diff.removed.attractions, [attraction]);
    assert.equal(WizardDiffPresenter.hasRemovedItems(diff.removed), true);
 });
 
-test('Test_SummaryHelpers_TestEmptyResults_ExpectSafeDefaults', () => {
-   assert.equal(WizardDiffPresenter.isValidatedItineraryEmpty(null), true);
-   assert.equal(WizardDiffPresenter.isValidatedItineraryEmpty(_draft()), true);
-   assert.equal(WizardDiffPresenter.isValidatedItineraryEmpty(_draft({
+
+test('Test_IsValidatedItineraryEmpty_TestNull_ExpectTrue', () => {
+   const itinerary = null;
+
+   const isEmpty = WizardDiffPresenter.isValidatedItineraryEmpty(itinerary);
+
+   assert.equal(isEmpty, true);
+});
+
+
+test('Test_IsValidatedItineraryEmpty_TestEmptyDraft_ExpectTrue', () => {
+   const itinerary = _draft();
+
+   const isEmpty = WizardDiffPresenter.isValidatedItineraryEmpty(itinerary);
+
+   assert.equal(isEmpty, true);
+});
+
+
+test('Test_IsValidatedItineraryEmpty_TestAnimals_ExpectFalse', () => {
+   const itinerary = _draft({
       animals: [{ species: 'African Lion' }],
-   })), false);
-   assert.equal(WizardDiffPresenter.isValidatedItineraryEmpty(_draft({
+   });
+
+   const isEmpty = WizardDiffPresenter.isValidatedItineraryEmpty(itinerary);
+
+   assert.equal(isEmpty, false);
+});
+
+
+test('Test_IsValidatedItineraryEmpty_TestTransportations_ExpectFalse', () => {
+   const itinerary = _draft({
       transportations: [{ name: 'Zoomobile' }],
-   })), false);
-   assert.equal(WizardDiffPresenter.hasRemovedItems(null), false);
-   assert.equal(WizardDiffPresenter.hasUnscheduledItems(null), false);
-   assert.equal(WizardDiffPresenter.hasReducedVisibility({ animals: [] }), false);
-   assert.equal(WizardDiffPresenter.hasImprovedVisibility({ animals: [] }), false);
+   });
+
+   const isEmpty = WizardDiffPresenter.isValidatedItineraryEmpty(itinerary);
+
+   assert.equal(isEmpty, false);
+});
+
+
+test('Test_HasRemovedItems_TestNull_ExpectFalse', () => {
+   const removed = null;
+
+   const hasRemoved = WizardDiffPresenter.hasRemovedItems(removed);
+
+   assert.equal(hasRemoved, false);
+});
+
+
+test('Test_HasUnscheduledItems_TestNull_ExpectFalse', () => {
+   const unscheduled = null;
+
+   const hasUnscheduled = WizardDiffPresenter.hasUnscheduledItems(unscheduled);
+
+   assert.equal(hasUnscheduled, false);
+});
+
+
+test('Test_HasReducedVisibility_TestEmptyAnimals_ExpectFalse', () => {
+   const reduced = { animals: [] };
+
+   const hasReduced = WizardDiffPresenter.hasReducedVisibility(reduced);
+
+   assert.equal(hasReduced, false);
+});
+
+
+test('Test_HasImprovedVisibility_TestEmptyAnimals_ExpectFalse', () => {
+   const improved = { animals: [] };
+
+   const hasImproved = WizardDiffPresenter.hasImprovedVisibility(improved);
+
+   assert.equal(hasImproved, false);
 });

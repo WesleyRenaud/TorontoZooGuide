@@ -48,23 +48,22 @@ def Test_Find_TestOverlappingTalkAndEncounter_ExpectRequirements() -> None:
 
    requirements = ItineraryUnscheduleRequirementsFinder.find( _saved(), validated )
 
-   assert [ item.name for item in requirements.talks ] == [ "Grevy's Zebra" ]
-   assert [ item.name for item in requirements.encounters ] == [ 'African Rainforest' ]
+   assert [ item.name for item in requirements.talks ] == [ talk.name ]
+   assert [ item.name for item in requirements.encounters ] == [ encounter.name ]
 
 
 def Test_Find_TestNoOverlaps_ExpectEmptyRequirements() -> None:
+   talk = GuardiansTalkDiff(
+      name="Grevy's Zebra",
+      is_deleted=False,
+      start_time='2:00 PM',
+      end_time='2:30 PM' )
    validated = ValidatedItinerary(
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
       animals=[],
       attractions=[],
-      guardians_talks=[
-         GuardiansTalkDiff(
-            name="Grevy's Zebra",
-            is_deleted=False,
-            start_time='2:00 PM',
-            end_time='2:30 PM' ),
-      ],
+      guardians_talks=[ talk ],
       wild_encounters=[],
       events=[],
    )

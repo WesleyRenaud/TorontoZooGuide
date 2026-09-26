@@ -92,6 +92,16 @@ CLEARED_ITINERARY = ItineraryBuilder.build(
    departure_time='5:00 PM' )
 
 
+def _cleared_save_result(
+      conn: sqlite3.Connection,
+      status: ItineraryErrorType,
+      **context: object ) -> ItinerarySaveResult:
+   return ItinerarySaveResult(
+      status=status,
+      reasons=[],
+      itinerary=CLEARED_ITINERARY )
+
+
 @pytest.fixture
 def unschedule_all_conn() -> sqlite3.Connection:
    conn = sqlite3.connect( ':memory:' )
@@ -110,15 +120,15 @@ def Test_UnscheduleAll_TestScheduledGuestItems_ExpectClearedSchedules(
       unschedule_all_conn: sqlite3.Connection,
       stub_unschedule_all_context: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   cleared_label = 'cleared'
    cleared: list[ str ] = []
    fetch_calls = [ SCHEDULED_SAVED_ITINERARY, UNSCHEDULED_SAVED_ITINERARY ]
-
    monkeypatch.setattr(
       'api.itinerary.operations.all_itinerary_items_unscheduler.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: fetch_calls.pop( 0 ) )
    monkeypatch.setattr(
       'api.itinerary.operations.all_itinerary_items_unscheduler.ItineraryScheduleClearer.clear_all',
-      lambda conn: cleared.append( 'cleared' ) )
+      lambda conn: cleared.append( cleared_label ) )
    monkeypatch.setattr(
       'api.itinerary.operations.all_itinerary_items_unscheduler.ItineraryBuilder.build_current',
       lambda saved_itinerary, **context: CLEARED_ITINERARY )
@@ -130,11 +140,13 @@ def Test_UnscheduleAll_TestScheduledGuestItems_ExpectClearedSchedules(
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator )
 
-   assert cleared == [ 'cleared' ]
+   assert cleared == [ cleared_label ]
    assert result.status == ItineraryErrorType.SUCCESS
-   assert result.itinerary.animals[ Position.FIRST ].start_time is None
-   assert result.itinerary.attractions[ Position.FIRST ].start_time is None
-   assert result.itinerary.events == []
+   assert result.itinerary.animals[ Position.FIRST ].start_time is (
+      CLEARED_ITINERARY.animals[ Position.FIRST ].start_time )
+   assert result.itinerary.attractions[ Position.FIRST ].start_time is (
+      CLEARED_ITINERARY.attractions[ Position.FIRST ].start_time )
+   assert result.itinerary.events == CLEARED_ITINERARY.events
 
 
 def Test_UnscheduleAll_TestScheduledGuestItems_ExpectArrivalDeparturePreserved(
@@ -142,7 +154,6 @@ def Test_UnscheduleAll_TestScheduledGuestItems_ExpectArrivalDeparturePreserved(
       stub_unschedule_all_context: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    fetch_calls = [ SCHEDULED_SAVED_ITINERARY, UNSCHEDULED_SAVED_ITINERARY ]
-
    monkeypatch.setattr(
       'api.itinerary.operations.all_itinerary_items_unscheduler.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: fetch_calls.pop( 0 ) )
@@ -160,8 +171,8 @@ def Test_UnscheduleAll_TestScheduledGuestItems_ExpectArrivalDeparturePreserved(
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator )
 
-   assert result.itinerary.arrival_time == '9:30 AM'
-   assert result.itinerary.departure_time == '5:00 PM'
+   assert result.itinerary.arrival_time == CLEARED_ITINERARY.arrival_time
+   assert result.itinerary.departure_time == CLEARED_ITINERARY.departure_time
 
 
 def Test_UnscheduleAll_TestEmptyItinerary_ExpectError(
@@ -178,10 +189,7 @@ def Test_UnscheduleAll_TestEmptyItinerary_ExpectError(
    monkeypatch.setattr(
       ItinerarySaveResultBuilder,
       'save_result',
-      lambda conn, status, **context: ItinerarySaveResult(
-         status=status,
-         reasons=[],
-         itinerary=CLEARED_ITINERARY ) )
+      _cleared_save_result )
 
    result = AllItineraryItemsUnscheduler.unschedule_all(
       unschedule_all_conn,
@@ -203,10 +211,7 @@ def Test_UnscheduleAll_TestNothingGuestScheduled_ExpectError(
    monkeypatch.setattr(
       ItinerarySaveResultBuilder,
       'save_result',
-      lambda conn, status, **context: ItinerarySaveResult(
-         status=status,
-         reasons=[],
-         itinerary=CLEARED_ITINERARY ) )
+      _cleared_save_result )
 
    result = AllItineraryItemsUnscheduler.unschedule_all(
       unschedule_all_conn,
@@ -222,8 +227,11 @@ def Test_UnscheduleAll_TestAlreadyUnscheduled_ExpectError(
       unschedule_all_conn: sqlite3.Connection,
       stub_unschedule_all_context: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   fetch_calls = [ SCHEDULED_SAVED_ITINERARY, UNSCHEDULED_SAVED_ITINERARY, UNSCHEDULED_SAVED_ITINERARY ]
-
+   fetch_calls = [
+      SCHEDULED_SAVED_ITINERARY,
+      UNSCHEDULED_SAVED_ITINERARY,
+      UNSCHEDULED_SAVED_ITINERARY,
+   ]
    monkeypatch.setattr(
       'api.itinerary.operations.all_itinerary_items_unscheduler.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: fetch_calls.pop( 0 ) )
@@ -236,23 +244,19 @@ def Test_UnscheduleAll_TestAlreadyUnscheduled_ExpectError(
    monkeypatch.setattr(
       ItinerarySaveResultBuilder,
       'save_result',
-      lambda conn, status, **context: ItinerarySaveResult(
-         status=status,
-         reasons=[],
-         itinerary=CLEARED_ITINERARY ) )
-
-   first_result = AllItineraryItemsUnscheduler.unschedule_all(
-      unschedule_all_conn,
-      animal_coordinator=AnimalCoordinator,
-      attraction_coordinator=AttractionCoordinator,
-      guardians_coordinator=GuardiansCoordinator,
-      wild_encounter_coordinator=WildEncounterCoordinator )
-   second_result = AllItineraryItemsUnscheduler.unschedule_all(
+      _cleared_save_result )
+   AllItineraryItemsUnscheduler.unschedule_all(
       unschedule_all_conn,
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator )
 
-   assert first_result.status == ItineraryErrorType.SUCCESS
-   assert second_result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
+   result = AllItineraryItemsUnscheduler.unschedule_all(
+      unschedule_all_conn,
+      animal_coordinator=AnimalCoordinator,
+      attraction_coordinator=AttractionCoordinator,
+      guardians_coordinator=GuardiansCoordinator,
+      wild_encounter_coordinator=WildEncounterCoordinator )
+
+   assert result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED

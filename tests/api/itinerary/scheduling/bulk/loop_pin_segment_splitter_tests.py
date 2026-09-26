@@ -11,6 +11,7 @@ import api.itinerary.scheduling.bulk.loop_pin_segment_splitter as loop_pin_segme
 from api.itinerary.scheduling.bulk.loop_pin_segment_splitter import LoopPinSegmentSplitter
 from api.itinerary.scheduling.bulk.loop_pin_stop_segment import LoopPinStopSegment
 from api.itinerary.scheduling.bulk.loop_schedule_stop import LoopScheduleStop
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import Position, ScheduleItemKind
 from api.walk_graph.domain.master_route_loop import MasterRouteLoop
 from api.walk_graph.domain.master_route_loop import ONE_WAY_LOOP_TRAVERSAL
@@ -106,8 +107,8 @@ def _otter_loop_pin() -> LoopSchedulePin:
          is_fixed_time=True,
          start_time='2:00 PM',
          end_time='2:30 PM' ),
-      start_seconds=14 * 3600,
-      end_seconds=14 * 3600 + 30 * 60,
+      start_seconds=DateValues.time_value_in_seconds( '2:00 PM' ),
+      end_seconds=DateValues.time_value_in_seconds( '2:30 PM' ),
    )
 
 
@@ -134,18 +135,26 @@ def stub_viewing_spot_indexes( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 
 def Test_SegmentIndexForViewingSpot_TestBoundaries_ExpectBeforeAndAfterSegments() -> None:
-   assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
+   result = LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       3,
-      pin_boundaries=[ HYENA_PIN_BOUNDARY ] ) == 0
-   assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
+      pin_boundaries=[ HYENA_PIN_BOUNDARY ] )
+
+   assert result == 0
+   result = LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       HYENA_PIN_BOUNDARY,
-      pin_boundaries=[ HYENA_PIN_BOUNDARY ] ) == 0
-   assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
+      pin_boundaries=[ HYENA_PIN_BOUNDARY ] )
+
+   assert result == 0
+   result = LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       20,
-      pin_boundaries=[ HYENA_PIN_BOUNDARY ] ) == 1
-   assert LoopPinSegmentSplitter.segment_index_for_viewing_spot(
+      pin_boundaries=[ HYENA_PIN_BOUNDARY ] )
+
+   assert result == 1
+   result = LoopPinSegmentSplitter.segment_index_for_viewing_spot(
       None,
-      pin_boundaries=[ HYENA_PIN_BOUNDARY ] ) == 1
+      pin_boundaries=[ HYENA_PIN_BOUNDARY ] )
+
+   assert result == 1
 
 
 def Test_SplitStops_TestSavannaAnimals_ExpectPenguinBeforePin(
@@ -341,7 +350,7 @@ def Test_ScheduleSteps_TestOtterTalkPin_ExpectSegmentsAndGap(
       species='American Alligator',
       exhibit='Americas Pavilion',
    )
-   window_end_seconds = 17 * 3600
+   window_end_seconds = DateValues.time_value_in_seconds( '5:00 PM' )
 
    steps = LoopPinSegmentSplitter.schedule_steps(
       [ outdoor_otter, alligator ],
@@ -369,11 +378,13 @@ def Test_AnimalsBeforeFirstPin_TestEmptySegments_ExpectEmpty(
       'split_stops',
       lambda *_args, **_kwargs: [] )
 
-   assert LoopPinSegmentSplitter.animals_before_first_pin(
+   result = LoopPinSegmentSplitter.animals_before_first_pin(
       [],
       loop_id=AFRICA_LOOP_ID,
       loop_pins=[ _hyena_loop_pin() ],
-   ) == []
+   )
+
+   assert result == []
 
 
 def Test_AnimalsBeforeFirstPin_TestStopsBeforePin_ExpectFirstSegment(
@@ -385,11 +396,13 @@ def Test_AnimalsBeforeFirstPin_TestStopsBeforePin_ExpectFirstSegment(
       enclosure_name='Outdoor',
    )
 
-   assert LoopPinSegmentSplitter.animals_before_first_pin(
+   result = LoopPinSegmentSplitter.animals_before_first_pin(
       [ penguin ],
       loop_id=AFRICA_LOOP_ID,
       loop_pins=[ loop_pin ],
-   ) == [ penguin ]
+   )
+
+   assert result == [ penguin ]
 
 
 def Test_ViewingSpotIndexForStop_TestRealMasterRoute_ExpectResolvedIndex() -> None:
@@ -399,10 +412,12 @@ def Test_ViewingSpotIndexForStop_TestRealMasterRoute_ExpectResolvedIndex() -> No
       enclosure_name='Outdoor',
    )
 
-   assert LoopPinSegmentSplitter.viewing_spot_index_for_stop(
+   result = LoopPinSegmentSplitter.viewing_spot_index_for_stop(
       AFRICA_LOOP_ID,
       penguin,
-   ) == 2
+   )
+
+   assert result == 2
 
 
 def Test_ViewingSpotIndexForStop_TestStopNotOnLoop_ExpectNone() -> None:
@@ -411,10 +426,12 @@ def Test_ViewingSpotIndexForStop_TestStopNotOnLoop_ExpectNone() -> None:
       exhibit='Australasia Outdoor',
    )
 
-   assert LoopPinSegmentSplitter.viewing_spot_index_for_stop(
+   result = LoopPinSegmentSplitter.viewing_spot_index_for_stop(
       AFRICA_LOOP_ID,
       kangaroo,
-   ) is None
+   )
+
+   assert result is None
 
 
 def Test_ViewingSpotIndexForStop_TestUnknownLoopId_ExpectNone() -> None:
@@ -424,10 +441,12 @@ def Test_ViewingSpotIndexForStop_TestUnknownLoopId_ExpectNone() -> None:
       enclosure_name='Outdoor',
    )
 
-   assert LoopPinSegmentSplitter.viewing_spot_index_for_stop(
+   result = LoopPinSegmentSplitter.viewing_spot_index_for_stop(
       'unknown_loop_id',
       penguin,
-   ) is None
+   )
+
+   assert result is None
 
 
 def Test_ViewingSpotIndexForStop_TestDuplicateMatchingIndexes_ExpectMinimum(
@@ -459,7 +478,9 @@ def Test_ViewingSpotIndexForStop_TestDuplicateMatchingIndexes_ExpectMinimum(
       'loops_by_id',
       classmethod( lambda cls: loops ) )
 
-   assert LoopPinSegmentSplitter.viewing_spot_index_for_stop(
+   result = LoopPinSegmentSplitter.viewing_spot_index_for_stop(
       'duplicate_loop',
       penguin,
-   ) == 0
+   )
+
+   assert result == 0

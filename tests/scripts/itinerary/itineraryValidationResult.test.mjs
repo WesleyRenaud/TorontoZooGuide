@@ -3,6 +3,8 @@ import test from 'node:test';
 
 import { ItineraryValidationResult } from '../../../scripts/itinerary/itineraryValidationResult.js';
 import { ItineraryDiff } from '../../../scripts/itinerary/wizard/itineraryDiff.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+
 
 test('Test_ApplyItineraryDiffToValidation_TestDiff_ExpectFlags', () => {
    const originalMerge = ItineraryDiff.mergeRemovedValidationState;
@@ -10,32 +12,36 @@ test('Test_ApplyItineraryDiffToValidation_TestDiff_ExpectFlags', () => {
       ...existing,
       ...incoming,
    });
+   const unscheduledAnimal = { species: 'African Lion' };
+   const removedAnimal = { species: 'Amur Tiger' };
+   const adjustment = { type: 'time' };
+   const normalizedItinerary = {
+      validation: {
+         added: { animals: [] },
+         removed: {},
+         reducedVisibility: { animals: [] },
+         improvedVisibility: { animals: [] },
+         unscheduled: {},
+         adjustments: [],
+         hasChanges: false,
+      },
+   };
+   const diff = {
+      unscheduled: { animals: [unscheduledAnimal], attractions: [] },
+      removed: { animals: [removedAnimal] },
+   };
+   const extras = { adjustments: [adjustment] };
 
    try {
-      const normalizedItinerary = {
-         validation: {
-            added: { animals: [] },
-            removed: {},
-            reducedVisibility: { animals: [] },
-            improvedVisibility: { animals: [] },
-            unscheduled: {},
-            adjustments: [],
-            hasChanges: false,
-         },
-      };
-
       ItineraryValidationResult.applyItineraryDiffToValidation(
          normalizedItinerary,
-         {
-            unscheduled: { animals: [{ species: 'Lion' }], attractions: [] },
-            removed: { animals: [{ species: 'Tiger' }] },
-         },
-         { adjustments: [{ type: 'time' }] }
+         diff,
+         extras
       );
 
-      assert.deepEqual(normalizedItinerary.validation.unscheduled.animals, [{ species: 'Lion' }]);
-      assert.deepEqual(normalizedItinerary.validation.removed.animals, [{ species: 'Tiger' }]);
-      assert.equal(normalizedItinerary.validation.adjustments.length, 1);
+      assert.deepEqual(normalizedItinerary.validation.unscheduled.animals, [unscheduledAnimal]);
+      assert.deepEqual(normalizedItinerary.validation.removed.animals, [removedAnimal]);
+      assert.equal(normalizedItinerary.validation.adjustments[Position.FIRST], adjustment);
       assert.equal(normalizedItinerary.validation.hasChanges, true);
    } finally {
       ItineraryDiff.mergeRemovedValidationState = originalMerge;

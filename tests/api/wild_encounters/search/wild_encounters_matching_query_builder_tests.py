@@ -9,31 +9,36 @@ OTHER_ENCOUNTER_NAME = 'Kangaroo'
 
 
 def Test_Build_TestMatchingQuery_ExpectMatchingEncounterOnly() -> None:
-   wild_encounters = [
-      WildEncounter(
-         name=WILD_ENCOUNTER_NAME,
-         meeting_spot='Rainforest Pavilion',
-         link='https://www.torontozoo.com/wild-encounters/african-rainforest' ),
-      WildEncounter(
-         name=OTHER_ENCOUNTER_NAME,
-         meeting_spot='Australasia',
-         link='' ),
-   ]
+   rainforest = WildEncounter(
+      name=WILD_ENCOUNTER_NAME,
+      meeting_spot='Rainforest Pavilion',
+      link='https://www.torontozoo.com/wild-encounters/african-rainforest' )
+   kangaroo = WildEncounter(
+      name=OTHER_ENCOUNTER_NAME,
+      meeting_spot='Australasia',
+      link='' )
+   wild_encounters = [ rainforest, kangaroo ]
+   query = 'rainforest'
 
-   matches = WildEncountersMatchingQueryBuilder.build( wild_encounters, 'rainforest' )
+   matches = WildEncountersMatchingQueryBuilder.build( wild_encounters, query )
 
-   assert [ encounter.name for encounter in matches ] == [ WILD_ENCOUNTER_NAME ]
+   assert [ encounter.name for encounter in matches ] == [ rainforest.name ]
+
 
 def Test_FilterMatchingQuery_TestMatchingQuery_ExpectMatchingEncounterOnly() -> None:
-   wild_encounters = [
-      WildEncounter(
-         name=WILD_ENCOUNTER_NAME,
-         meeting_spot='Rainforest Pavilion',
-         link='https://www.torontozoo.com/wild-encounters/african-rainforest' ),
-      WildEncounter(
-         name=OTHER_ENCOUNTER_NAME,
-         meeting_spot='Australasia',
-         link='' ),
-   ]
-   matches = WildEncountersMatchingQueryBuilder.filter_matching_query( wild_encounters, 'rainforest' )
-   assert [ encounter.name for encounter in matches ] == [ WILD_ENCOUNTER_NAME ]
+   rainforest = WildEncounter(
+      name=WILD_ENCOUNTER_NAME,
+      meeting_spot='Rainforest Pavilion',
+      link='https://www.torontozoo.com/wild-encounters/african-rainforest' )
+   kangaroo = WildEncounter(
+      name=OTHER_ENCOUNTER_NAME,
+      meeting_spot='Australasia',
+      link='' )
+   wild_encounters = [ rainforest, kangaroo ]
+   query = 'rainforest'
+
+   matches = WildEncountersMatchingQueryBuilder.filter_matching_query(
+      wild_encounters,
+      query )
+
+   assert [ encounter.name for encounter in matches ] == [ rainforest.name ]

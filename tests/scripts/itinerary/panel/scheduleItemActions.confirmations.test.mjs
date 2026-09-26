@@ -2,16 +2,23 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ScheduleItemController } from '../../../../scripts/itinerary/panel/scheduleItemController.js';
-import { MOCK_ERROR_TYPES, mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
+import { ItineraryItemFormatter } from '../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
 import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
-import { Position } from '../../../../scripts/shared/enums/position.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
+import { Strings } from '../../../../scripts/strings.js';
+import { MOCK_ERROR_TYPES, mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
-installScheduleItemActionsTestHooks();
+const visitDate = '2026-06-15';
+const species = 'Amur Tiger';
+const exhibit = 'Eurasia Wilds';
 
 function _mockItineraryDateResponse() {
-   return mockJsonResponse({ date: '2026-06-15' });
+   return mockJsonResponse({ date: visitDate });
 }
+
+installScheduleItemActionsTestHooks();
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemPersistsSuppressionBeforeConfirming_ExpectOk', async () => {
    const requests = [];
@@ -49,9 +56,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    };
 
    const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
-      { date: '2026-06-15', animals: [], attractions: [] },
-      'animals',
-      { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
+      { date: visitDate, animals: [], attractions: [] },
+      ScheduleItemKind.ANIMAL.itemType,
+      { species, exhibit, scheduleItemKind: ScheduleItemKind.ANIMAL.kind },
       []
    );
 
@@ -91,6 +98,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    );
 });
 
+
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingANewAnimal_ExpectOk', async () => {
    const requests = [];
 
@@ -115,9 +123,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    };
 
    const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
-      { date: '2026-06-15', animals: [], attractions: [] },
-      'animals',
-      { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
+      { date: visitDate, animals: [], attractions: [] },
+      ScheduleItemKind.ANIMAL.itemType,
+      { species, exhibit, scheduleItemKind: ScheduleItemKind.ANIMAL.kind },
       []
    );
 
@@ -142,8 +150,12 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    assert.equal(requests[Position.SECOND].body.confirmingScheduleItemNotOnItinerary, true);
 });
 
+
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingATalkWithout_ExpectOk', async () => {
    const requests = [];
+   const talkName = 'Komodo Dragon';
+   const startTime = '2:00 PM';
+   const location = 'Australasia Pavilion';
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
@@ -164,10 +176,10 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
          reasons: isConfirmed ? [] : [{
             code: ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
             items: [{
-               name: 'Komodo Dragon',
+               name: talkName,
                item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-               start_time: '2:00 PM',
-               location: 'Australasia Pavilion',
+               start_time: startTime,
+               location,
             }],
          }],
       });
@@ -178,10 +190,10 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
          date: '2026-06-15',
          animals: [],
          attractions: [],
-         guardiansTalks: [{ name: 'Komodo Dragon' }],
+         guardiansTalks: [{ name: talkName }],
       },
       'guardians_talks',
-      { name: 'Komodo Dragon', scheduleItemKind: 'guardians_talks' },
+      { name: talkName, scheduleItemKind: 'guardians_talks' },
       []
    );
 
@@ -193,9 +205,12 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    const popupMessage = document.querySelector('.tzg-popup-message');
 
    assert.ok(confirmButton);
-   assert.match(
-      popupMessage?.textContent ?? '',
-      /The Komodo Dragon guardians talk at .* does not match an animal on your itinerary\. Do you still want to keep it on your plan\?/
+   assert.equal(
+      popupMessage.textContent,
+      Strings.itinerary.confirmation.guardiansTalkWithoutAnimalMessage(
+         talkName,
+         ItineraryItemFormatter.formatClockTime(startTime)
+      )
    );
    confirmButton.click();
 
@@ -211,8 +226,11 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
 
+
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingAGuardiansTalk_ExpectOk', async () => {
    const requests = [];
+   const talkName = 'African Lion';
+   const startTime = '10:00';
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
@@ -233,9 +251,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
          reasons: isConfirmed ? [] : [{
             code: ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
             items: [{
-               name: 'African Lion',
+               name: talkName,
                item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-               start_time: '10:00',
+               start_time: startTime,
             }],
          }],
       });
@@ -244,12 +262,12 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
-         animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '10:00' }],
+         animals: [{ species, exhibit, start_time: startTime }],
          attractions: [],
-         guardiansTalks: [{ name: 'African Lion' }],
+         guardiansTalks: [{ name: talkName }],
       },
       'guardians_talks',
-      { name: 'African Lion', scheduleItemKind: 'guardians_talks' },
+      { name: talkName, scheduleItemKind: 'guardians_talks' },
       []
    );
 
@@ -261,9 +279,12 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    const popupMessage = document.querySelector('.tzg-popup-message');
 
    assert.ok(confirmButton);
-   assert.match(
-      popupMessage?.textContent ?? '',
-      /Adding the African Lion guardians talk will put it at .* on your day and update your walking route\. Your items will be rescheduled around it\./
+   assert.equal(
+      popupMessage.textContent,
+      Strings.itinerary.confirmation.guardiansTalkRescheduleMessage(
+         talkName,
+         ItineraryItemFormatter.formatClockTime(startTime)
+      )
    );
    confirmButton.click();
 
@@ -278,6 +299,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    assert.equal(requests[Position.FIRST].body.confirmingGuardiansTalkUnschedule, false);
    assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkUnschedule, true);
 });
+
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemReturnsCancelledWhenGuardiansTalkReschedule_ExpectOk', async () => {
    globalThis.fetch = mockScheduleItemFetch({
@@ -299,7 +321,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
-         animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '11:00' }],
+         animals: [{ species, exhibit, start_time: '11:00' }],
          attractions: [],
          guardiansTalks: [{ name: 'Arctic Wolf' }],
       },
@@ -320,8 +342,11 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    assert.equal(result.errorType, ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS);
 });
 
+
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsBeforeSchedulingAWildEncounter_ExpectOk', async () => {
    const requests = [];
+   const encounterName = 'African Rainforest';
+   const startTime = '14:00';
 
    globalThis.fetch = async (url, options = {}) => {
       if (url === '/get-itinerary-date') {
@@ -342,9 +367,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
          reasons: isConfirmed ? [] : [{
             code: ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
             items: [{
-               name: 'African Rainforest',
+               name: encounterName,
                item_type: ItinerarySaveIssueItemType.WILD_ENCOUNTER,
-               start_time: '14:00',
+               start_time: startTime,
             }],
          }],
       });
@@ -353,12 +378,12 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
          date: '2026-06-15',
-         animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '14:00' }],
+         animals: [{ species, exhibit, start_time: startTime }],
          attractions: [],
-         wildEncounters: [{ name: 'African Rainforest' }],
+         wildEncounters: [{ name: encounterName }],
       },
       'wild_encounters',
-      { name: 'African Rainforest', start_time: '14:00', scheduleItemKind: 'wild_encounters' },
+      { name: encounterName, start_time: startTime, scheduleItemKind: 'wild_encounters' },
       []
    );
 
@@ -370,9 +395,12 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    const popupMessage = document.querySelector('.tzg-popup-message');
 
    assert.ok(confirmButton);
-   assert.match(
-      popupMessage?.textContent ?? '',
-      /Adding the African Rainforest wild encounter will put it at .* on your day and update your walking route\. Your items will be rescheduled around it\./
+   assert.equal(
+      popupMessage.textContent,
+      Strings.itinerary.confirmation.wildEncounterRescheduleMessage(
+         encounterName,
+         ItineraryItemFormatter.formatClockTime(startTime)
+      )
    );
    confirmButton.click();
 
@@ -387,6 +415,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    assert.equal(requests[Position.FIRST].body.confirmingWildEncounterUnschedule, false);
    assert.equal(requests[Position.SECOND].body.confirmingWildEncounterUnschedule, true);
 });
+
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemConfirmsMultipleBuildWarningsTogether_ExpectOk', async () => {
    const requests = [];
@@ -452,11 +481,11 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    assert.equal(
       document.querySelector('.itin-top-title')?.textContent,
-      'Your Itinerary Has the Following Issues:'
+      Strings.itinerary.confirmation.saveIssuesTitle
    );
    assert.equal(
       document.querySelectorAll('.itin-build-warning-module').length,
-      2
+      Position.THIRD
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
@@ -472,6 +501,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkUnschedule, true);
    assert.equal(requests[Position.SECOND].body.confirmingGuardiansTalkWithoutAnimal, true);
 });
+
 
 test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemAdjustsAttractionOutsideOperatingHours_ExpectOk', async () => {
    const requests = [];
@@ -496,20 +526,23 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
       });
    };
 
+   const attractionName = 'Splash Island';
+   const startTime = '10:00 AM';
+
    const schedulePromise = ScheduleItemController.scheduleSelectedItineraryItem(
       {
-         date: '2026-06-15',
+         date: visitDate,
          animals: [],
-         attractions: [{ name: 'Splash Island' }],
+         attractions: [{ name: attractionName }],
       },
-      'attractions',
+      ScheduleItemKind.ATTRACTION.itemType,
       {
-         name: 'Splash Island',
-         scheduleItemKind: 'attractions',
+         name: attractionName,
+         scheduleItemKind: ScheduleItemKind.ATTRACTION.kind,
       },
       [],
       {
-         startTime: '10:00 AM',
+         startTime,
       }
    );
 
@@ -521,9 +554,9 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    const confirmButton = document.querySelector('.tzg-popup-confirm');
    const cancelButton = document.querySelector('.tzg-popup-cancel');
 
-   assert.equal(title?.textContent, 'Outside Attraction Hours');
-   assert.equal(confirmButton?.textContent, 'Adjust');
-   assert.equal(cancelButton?.textContent, 'Cancel');
+   assert.equal(title?.textContent, Strings.itinerary.confirmation.attractionOutsideOperatingHoursTitle);
+   assert.equal(confirmButton?.textContent, Strings.itinerary.actions.adjust);
+   assert.equal(cancelButton?.textContent, Strings.itinerary.actions.cancel);
    confirmButton.click();
 
    await new Promise((resolve) => {
@@ -536,5 +569,5 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    assert.equal(requests.length, 2);
    assert.equal(requests[Position.FIRST].body.confirmingAttractionOutsideOperatingHours, false);
    assert.equal(requests[Position.SECOND].body.confirmingAttractionOutsideOperatingHours, true);
-   assert.equal(requests[Position.SECOND].body.startTime, '10:00 AM');
+   assert.equal(requests[Position.SECOND].body.startTime, startTime);
 });

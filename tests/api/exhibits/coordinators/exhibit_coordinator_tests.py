@@ -58,7 +58,9 @@ def Test_GetExhibitsInRegion_TestProviderNames_ExpectReturned(
       'fetch_exhibit_names_in_region',
       lambda _conn, *, region: [ EXHIBIT_NAME ] if region == REGION_NAME else [] )
 
-   assert ExhibitCoordinator.get_exhibits_in_region( REGION_NAME ) == [ EXHIBIT_NAME ]
+   exhibits_in_region = ExhibitCoordinator.get_exhibits_in_region( REGION_NAME )
+
+   assert exhibits_in_region == [ EXHIBIT_NAME ]
 
 
 def Test_GetExhibits_TestProviderNames_ExpectReturned(
@@ -69,7 +71,9 @@ def Test_GetExhibits_TestProviderNames_ExpectReturned(
       'fetch_exhibit_names',
       lambda _conn: [ EXHIBIT_NAME ] )
 
-   assert ExhibitCoordinator.get_exhibits() == [ EXHIBIT_NAME ]
+   exhibits = ExhibitCoordinator.get_exhibits()
+
+   assert exhibits == [ EXHIBIT_NAME ]
 
 
 def Test_GetRegions_TestProviderAndBuilder_ExpectRegions(
@@ -86,7 +90,9 @@ def Test_GetRegions_TestProviderAndBuilder_ExpectRegions(
       'build',
       lambda rows: [ REGION ] if rows is region_rows else [] )
 
-   assert ExhibitCoordinator.get_regions() == [ REGION ]
+   regions = ExhibitCoordinator.get_regions()
+
+   assert regions == [ REGION ]
 
 
 def Test_GetRegionsWithExhibits_TestProviderAndBuilder_ExpectRegions(
@@ -103,7 +109,9 @@ def Test_GetRegionsWithExhibits_TestProviderAndBuilder_ExpectRegions(
       'build',
       lambda rows: [ REGION_WITH_EXHIBITS ] if rows is region_rows else [] )
 
-   assert ExhibitCoordinator.get_regions_with_exhibits() == [ REGION_WITH_EXHIBITS ]
+   regions_with_exhibits = ExhibitCoordinator.get_regions_with_exhibits()
+
+   assert regions_with_exhibits == [ REGION_WITH_EXHIBITS ]
 
 
 def Test_GetNamesOfAnimalsInExhibit_TestProviderNames_ExpectReturned(
@@ -114,7 +122,9 @@ def Test_GetNamesOfAnimalsInExhibit_TestProviderNames_ExpectReturned(
       'fetch_animal_names_in_exhibit',
       lambda _conn, *, exhibit: [ ANIMAL_NAME ] if exhibit == EXHIBIT_NAME else [] )
 
-   assert ExhibitCoordinator.get_names_of_animals_in_exhibit( EXHIBIT_NAME ) == [ ANIMAL_NAME ]
+   names_of_animals_in_exhibit = ExhibitCoordinator.get_names_of_animals_in_exhibit( EXHIBIT_NAME )
+
+   assert names_of_animals_in_exhibit == [ ANIMAL_NAME ]
 
 
 def Test_GetClosedExhibitsForVisitDate_TestProviderAndBuilder_ExpectNames(
@@ -144,10 +154,12 @@ def Test_GetClosedExhibitsForVisitDate_TestProviderAndBuilder_ExpectNames(
       'exhibit_names_closed_on_visit_date',
       exhibit_names_closed_on_visit_date )
 
-   assert ExhibitCoordinator.get_closed_exhibits_for_visit_date(
+   closed_exhibits_for_visit_date = ExhibitCoordinator.get_closed_exhibits_for_visit_date(
       month=VISIT_MONTH,
       day=VISIT_DAY,
-      year=VISIT_YEAR ) == [ EXHIBIT_NAME ]
+      year=VISIT_YEAR )
+
+   assert closed_exhibits_for_visit_date == [ EXHIBIT_NAME ]
    assert captured[ 'records' ] is closure_records
    assert captured[ 'target_date' ] == VISIT_DATE
 
@@ -172,7 +184,9 @@ def Test_GetClosedExhibitOptions_TestProviderNames_ExpectReturned(
       'fetch_closed_exhibit_names',
       fetch_closed_exhibit_names )
 
-   assert ExhibitCoordinator.get_closed_exhibit_options() == [ EXHIBIT_NAME ]
+   closed_exhibit_options = ExhibitCoordinator.get_closed_exhibit_options()
+
+   assert closed_exhibit_options == [ EXHIBIT_NAME ]
    assert captured == { 'today': '2026-09-16' }
 
 
@@ -198,11 +212,13 @@ def Test_SetExhibitAsClosed_TestBuilderAndProvider_ExpectDelegated(
 
    monkeypatch.setattr( ExhibitStatusProvider, 'save_closed_status', save_closed_status )
 
-   assert ExhibitCoordinator.set_exhibit_as_closed(
+   result = ExhibitCoordinator.set_exhibit_as_closed(
       EXHIBIT_NAME,
       START_DATE,
       END_DATE,
-      MESSAGE ) is True
+      MESSAGE )
+
+   assert result is True
    assert captured[ 'args' ] == ( EXHIBIT_NAME, START_DATE, END_DATE, MESSAGE )
 
 
@@ -227,8 +243,10 @@ def Test_SetExhibitAsOpen_TestProvider_ExpectDelegated(
 
    monkeypatch.setattr( ExhibitStatusProvider, 'save_open_status', save_open_status )
 
-   assert ExhibitCoordinator.set_exhibit_as_open(
+   result = ExhibitCoordinator.set_exhibit_as_open(
       EXHIBIT_NAME,
       START_DATE,
-      END_DATE ) is True
+      END_DATE )
+
+   assert result is True
    assert captured[ 'args' ] == ( EXHIBIT_NAME, START_DATE, END_DATE )

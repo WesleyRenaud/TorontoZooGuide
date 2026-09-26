@@ -36,12 +36,14 @@ def restroom_alert_conn() -> sqlite3.Connection:
 
 def Test_SaveAlert_TestNewAlert_ExpectPersistsRow(
       restroom_alert_conn: sqlite3.Connection ) -> None:
-   assert RestroomAlertProvider.save_alert(
+   result = RestroomAlertProvider.save_alert(
       restroom_alert_conn,
       restroom=RESTROOM,
       alert_start_date=ALERT_START_DATE,
       alert_end_date=ALERT_END_DATE,
-      message=MESSAGE ) is True
+      message=MESSAGE )
+
+   assert result is True
 
    row = restroom_alert_conn.execute(
       """   SELECT RESTROOM, ALERT_MESSAGE, ALERT_START_DATE, ALERT_END_DATE
@@ -62,12 +64,14 @@ def Test_SaveAlert_TestExistingAlert_ExpectReplacesRow(
       alert_end_date=ALERT_END_DATE,
       message=MESSAGE )
 
-   assert RestroomAlertProvider.save_alert(
+   result = RestroomAlertProvider.save_alert(
       restroom_alert_conn,
       restroom=RESTROOM,
       alert_start_date='2026-07-01',
       alert_end_date='2026-07-15',
-      message='Updated alert.' ) is True
+      message='Updated alert.' )
+
+   assert result is True
 
    rows = restroom_alert_conn.execute(
       """   SELECT ALERT_MESSAGE, ALERT_START_DATE, ALERT_END_DATE
@@ -89,9 +93,11 @@ def Test_DeleteAlert_TestExistingAlert_ExpectRemovesRow(
       alert_end_date=ALERT_END_DATE,
       message=MESSAGE )
 
-   assert RestroomAlertProvider.delete_alert(
+   result = RestroomAlertProvider.delete_alert(
       restroom_alert_conn,
-      restroom=RESTROOM ) is True
+      restroom=RESTROOM )
+
+   assert result is True
 
    row = restroom_alert_conn.execute(
       """   SELECT 1
@@ -105,6 +111,8 @@ def Test_DeleteAlert_TestExistingAlert_ExpectRemovesRow(
 
 def Test_DeleteAlert_TestMissingAlert_ExpectFalse(
       restroom_alert_conn: sqlite3.Connection ) -> None:
-   assert RestroomAlertProvider.delete_alert(
+   result = RestroomAlertProvider.delete_alert(
       restroom_alert_conn,
-      restroom=RESTROOM ) is False
+      restroom=RESTROOM )
+
+   assert result is False

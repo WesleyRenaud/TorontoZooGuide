@@ -32,30 +32,32 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
+
 test('Test_Behavior_TestItineraryApiGetItineraryRequestMapsVisitBoundaryEventTypesFromBackendC_ExpectOk', async () => {
+   const date = '2026-06-20';
    globalThis.fetch = async () => mockJsonResponse({
-      itinerary: { date: '2026-06-20' },
+      itinerary: { date },
       itinerary_config: BACKEND_ITINERARY_CONFIG,
    });
 
    const result = await ItineraryClient.getItineraryRequest();
 
-   assert.deepEqual(result.itineraryConfig.visitBoundaryEventTypes, {
-      arrival: 'arrival',
-      departure: 'departure',
-   });
+   assert.deepEqual(
+      result.itineraryConfig.visitBoundaryEventTypes,
+      BACKEND_ITINERARY_CONFIG.itinerary_visit_boundary_event_types
+   );
 });
+
 
 test('Test_BuildSchedulableEventTypes_TestExcludesVisitBoundaryTypesFromConfig_ExpectOk', () => {
    const itineraryConfig = {
       eventTypes: BACKEND_ITINERARY_CONFIG.itinerary_event_types,
-      visitBoundaryEventTypes: {
-         arrival: 'arrival',
-         departure: 'departure',
-      },
+      visitBoundaryEventTypes: BACKEND_ITINERARY_CONFIG.itinerary_visit_boundary_event_types,
    };
 
-   assert.deepEqual(ItineraryEventTypes.buildSchedulableEventTypes(itineraryConfig), [
+   const eventTypes = ItineraryEventTypes.buildSchedulableEventTypes(itineraryConfig);
+
+   assert.deepEqual(eventTypes, [
       'breakfast',
       'break',
       'dinner',
@@ -63,58 +65,136 @@ test('Test_BuildSchedulableEventTypes_TestExcludesVisitBoundaryTypesFromConfig_E
       'shopping',
       'snack',
    ]);
-   assert.equal(
-      ItineraryEventTypes.isItineraryVisitBoundaryEventType(
-         'arrival',
-         itineraryConfig.visitBoundaryEventTypes
-      ),
-      true
-   );
-   assert.equal(
-      ItineraryEventTypes.isItineraryVisitBoundaryEventType(
-         'lunch',
-         itineraryConfig.visitBoundaryEventTypes
-      ),
-      false
-   );
 });
 
+
+test('Test_IsItineraryVisitBoundaryEventType_TestArrival_ExpectTrue', () => {
+   const visitBoundaryEventTypes = BACKEND_ITINERARY_CONFIG.itinerary_visit_boundary_event_types;
+   const eventType = visitBoundaryEventTypes.arrival;
+
+   const isBoundary = ItineraryEventTypes.isItineraryVisitBoundaryEventType(
+      eventType,
+      visitBoundaryEventTypes
+   );
+
+   assert.equal(isBoundary, true);
+});
+
+
+test('Test_IsItineraryVisitBoundaryEventType_TestLunch_ExpectFalse', () => {
+   const visitBoundaryEventTypes = BACKEND_ITINERARY_CONFIG.itinerary_visit_boundary_event_types;
+   const eventType = 'lunch';
+
+   const isBoundary = ItineraryEventTypes.isItineraryVisitBoundaryEventType(
+      eventType,
+      visitBoundaryEventTypes
+   );
+
+   assert.equal(isBoundary, false);
+});
+
+
 test('Test_NormalizeVisitBoundaryEventTypes_TestToleratesMissingConfig_ExpectOk', () => {
-   assert.deepEqual(ItineraryEventTypes.normalizeVisitBoundaryEventTypes(), {
+   const visitBoundaryEventTypes = ItineraryEventTypes.normalizeVisitBoundaryEventTypes();
+
+   assert.deepEqual(visitBoundaryEventTypes, {
       arrival: '',
       departure: '',
    });
 });
 
-test('Test_Generic_TestItineraryEventsSkipRemoveConfirmationWhenConfigured_ExpectOk', () => {
+
+test('Test_IsScheduleItemEventType_TestLunch_ExpectTrue', () => {
+   const eventTypes = BACKEND_ITINERARY_CONFIG.itinerary_event_types;
+   const eventType = 'lunch';
+
+   const isEventType = ItineraryEventTypes.isScheduleItemEventType(eventType, eventTypes);
+
+   assert.equal(isEventType, true);
+});
+
+
+test('Test_IsScheduleItemEventType_TestBreak_ExpectTrue', () => {
+   const eventTypes = BACKEND_ITINERARY_CONFIG.itinerary_event_types;
+   const eventType = 'break';
+
+   const isEventType = ItineraryEventTypes.isScheduleItemEventType(eventType, eventTypes);
+
+   assert.equal(isEventType, true);
+});
+
+
+test('Test_IsScheduleItemEventType_TestAnimals_ExpectFalse', () => {
+   const eventTypes = BACKEND_ITINERARY_CONFIG.itinerary_event_types;
+   const eventType = 'animals';
+
+   const isEventType = ItineraryEventTypes.isScheduleItemEventType(eventType, eventTypes);
+
+   assert.equal(isEventType, false);
+});
+
+
+test('Test_RequiresRemoveItineraryItemConfirmation_TestLunch_ExpectFalse', () => {
    const itineraryConfig = {
       eventTypes: BACKEND_ITINERARY_CONFIG.itinerary_event_types,
    };
+   const itemType = 'lunch';
 
-   assert.equal(
-      ItineraryEventTypes.isScheduleItemEventType('lunch', itineraryConfig.eventTypes),
-      true
+   const requiresConfirmation = ItineraryEventTypes.requiresRemoveItineraryItemConfirmation(
+      itemType,
+      itineraryConfig
    );
-   assert.equal(
-      ItineraryEventTypes.isScheduleItemEventType('break', itineraryConfig.eventTypes),
-      true
+
+   assert.equal(requiresConfirmation, false);
+});
+
+
+test('Test_RequiresRemoveItineraryItemConfirmation_TestAnimals_ExpectTrue', () => {
+   const itineraryConfig = {
+      eventTypes: BACKEND_ITINERARY_CONFIG.itinerary_event_types,
+   };
+   const itemType = 'animals';
+
+   const requiresConfirmation = ItineraryEventTypes.requiresRemoveItineraryItemConfirmation(
+      itemType,
+      itineraryConfig
    );
-   assert.equal(
-      ItineraryEventTypes.isScheduleItemEventType('animals', itineraryConfig.eventTypes),
-      false
+
+   assert.equal(requiresConfirmation, true);
+});
+
+
+test('Test_RequiresRemoveItineraryItemConfirmation_TestGuardiansTalks_ExpectTrue', () => {
+   const itineraryConfig = {
+      eventTypes: BACKEND_ITINERARY_CONFIG.itinerary_event_types,
+   };
+   const itemType = 'guardians_talks';
+
+   const requiresConfirmation = ItineraryEventTypes.requiresRemoveItineraryItemConfirmation(
+      itemType,
+      itineraryConfig
    );
-   assert.equal(
-      ItineraryEventTypes.requiresRemoveItineraryItemConfirmation('lunch', itineraryConfig),
-      false
+
+   assert.equal(requiresConfirmation, true);
+});
+
+
+test('Test_IsScheduleItemEventType_TestMissingConfig_ExpectFalse', () => {
+   const eventType = 'lunch';
+
+   const isEventType = ItineraryEventTypes.isScheduleItemEventType(eventType);
+
+   assert.equal(isEventType, false);
+});
+
+
+test('Test_RequiresRemoveItineraryItemConfirmation_TestNullConfig_ExpectTrue', () => {
+   const itemType = 'lunch';
+
+   const requiresConfirmation = ItineraryEventTypes.requiresRemoveItineraryItemConfirmation(
+      itemType,
+      null
    );
-   assert.equal(
-      ItineraryEventTypes.requiresRemoveItineraryItemConfirmation('animals', itineraryConfig),
-      true
-   );
-   assert.equal(
-      ItineraryEventTypes.requiresRemoveItineraryItemConfirmation('guardians_talks', itineraryConfig),
-      true
-   );
-   assert.equal(ItineraryEventTypes.isScheduleItemEventType('lunch'), false);
-   assert.equal(ItineraryEventTypes.requiresRemoveItineraryItemConfirmation('lunch', null), true);
+
+   assert.equal(requiresConfirmation, true);
 });

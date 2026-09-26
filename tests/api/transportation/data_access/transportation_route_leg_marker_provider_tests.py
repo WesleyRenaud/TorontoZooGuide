@@ -95,8 +95,10 @@ def Test_MarkersByLegForMarkers_TestRecords_ExpectGroupedByStations() -> None:
          marker_id='zm-s-252' ),
    ]
 
-   assert TransportationRouteLegMarkerProvider.markers_by_leg_for_markers(
-      markers ) == {
+   result = TransportationRouteLegMarkerProvider.markers_by_leg_for_markers(
+      markers )
+
+   assert result == {
          ( MAIN, CANADA ): [ 'zm-s-005', 'zm-s-006' ],
          ( EURASIA, MAIN ): [ 'zm-s-252' ],
       }
@@ -128,11 +130,13 @@ def Test_FetchTransportationRouteLegMarkersByLeg_TestInsertedRows_ExpectTravelOr
 
 def Test_FetchTransportationRouteLegMarkerIds_TestEmptyLegs_ExpectEmptyList(
       leg_marker_conn: sqlite3.Connection ) -> None:
-   assert TransportationRouteLegMarkerProvider.fetch_transportation_route_leg_marker_ids(
+   transportation_route_leg_marker_ids = TransportationRouteLegMarkerProvider.fetch_transportation_route_leg_marker_ids(
       leg_marker_conn,
       transportation=TransportationName.ZOOMOBILE,
       route=SUMMER_ROUTE,
-      legs=[] ) == []
+      legs=[] )
+
+   assert transportation_route_leg_marker_ids == []
 
 
 def Test_FetchTransportationRouteLegMarkerIds_TestSingleLeg_ExpectTravelOrder(

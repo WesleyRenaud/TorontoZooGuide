@@ -2,13 +2,42 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ScheduleItemController } from '../../../../scripts/itinerary/panel/scheduleItemController.js';
+import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 import { mockJsonResponse, mockScheduleItemFetch, installScheduleItemActionsTestHooks } from '../../helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
 
-test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemDispatchesItineraryUpdatedOnSuccess_ExpectOk', async () => {
-   const events = [];
+const visitDate = '2026-06-15';
+const species = 'Amur Tiger';
+const exhibit = 'Eurasia Wilds';
+const animalRow = {
+   species,
+   exhibit,
+   scheduleItemKind: ScheduleItemKind.ANIMAL.kind,
+};
+const animalItinerary = {
+   date: visitDate,
+   animals: [{ species, exhibit }],
+   attractions: [],
+};
+const emptyItinerary = {
+   date: visitDate,
+   animals: [],
+   attractions: [],
+};
 
+
+test('Test_ScheduleSelectedItineraryItem_TestAnimalSuccess_ExpectItineraryUpdated', async () => {
+   const events = [];
+   const itinerary = {
+      date: visitDate,
+      animals: [{ species, exhibit, start_time: '10:00' }],
+      attractions: [],
+      guardians_talks: [],
+      wild_encounters: [],
+   };
    globalThis.window.dispatchEvent = (event) => {
       if (event.type === 'tzg:itineraryUpdated') {
          events.push(event.detail?.itinerary ?? null);
@@ -16,40 +45,37 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
       return true;
    };
-
    globalThis.fetch = mockScheduleItemFetch({
       routes: {
          '/schedule-itinerary-item': {
-            status: 'success',
+            status: ItineraryErrorType.SUCCESS,
             reasons: [],
-            itinerary: {
-               date: '2026-06-15',
-               animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '10:00' }],
-               attractions: [],
-               guardians_talks: [],
-               wild_encounters: [],
-            },
+            itinerary,
          },
       },
    });
 
    const result = await ScheduleItemController.scheduleSelectedItineraryItem(
-      { date: '2026-06-15', animals: [], attractions: [] },
-      'animals',
-      { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
+      emptyItinerary,
+      ScheduleItemKind.ANIMAL.itemType,
+      animalRow,
       []
    );
+   const updated = events.at(Position.FIRST);
 
-   assert.equal(result.errorType, 'success');
-   assert.equal(events.length, 1);
-   assert.equal(events[0]?.date, '2026-06-15');
-   assert.equal(events[0]?.animals?.length, 1);
-   assert.equal(events[0]?.animals?.[0]?.species, 'Tiger');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
+   assert.equal(events.length, Position.SECOND);
+   assert.equal(updated?.date, visitDate);
+   assert.equal(updated?.animals?.length, Position.SECOND);
+   assert.equal(updated?.animals?.at(Position.FIRST)?.species, species);
 });
 
-test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemSchedulesAnEvent_ExpectOk', async () => {
-   const requests = [];
 
+test('Test_ScheduleSelectedItineraryItem_TestEventType_ExpectRequestPayload', async () => {
+   const requests = [];
+   const itemType = 'lunch';
+   const startTime = '1:30 PM';
+   const durationMinutes = 15;
    globalThis.fetch = async (url, options = {}) => {
       requests.push({
          url,
@@ -60,37 +86,35 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    };
 
    const result = await ScheduleItemController.scheduleSelectedItineraryItem(
-      { date: '2026-06-15', animals: [], attractions: [] },
-      'lunch',
+      emptyItinerary,
+      itemType,
       null,
-      ['lunch'],
-      { startTime: '1:30 PM', durationMinutes: 15 }
+      [itemType],
+      { startTime, durationMinutes }
    );
+   const scheduleRequests = requests.filter((request) => request.url === '/schedule-itinerary-item');
 
-   assert.equal(result.errorType, 'success');
-   assert.deepEqual(
-      requests.filter((request) => request.url === '/schedule-itinerary-item'),
-      [{
-         url: '/schedule-itinerary-item',
-         body: {
-            itemType: 'lunch',
-            key: '',
-            startTime: '1:30 PM',
-            durationMinutes: 15,
-            confirmingScheduleItemNotOnItinerary: false,
-            confirmingAttractionOutsideOperatingHours: false,
-            confirmingGuardiansTalkUnschedule: false,
-            confirmingWildEncounterUnschedule: false,
-            confirmingFixedTimeItemLongWait: false,
-            confirmingGuardiansTalkWithoutAnimal: false,
-         },
-      }]
-   );
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
+   assert.deepEqual(scheduleRequests, [{
+      url: '/schedule-itinerary-item',
+      body: {
+         itemType,
+         key: '',
+         startTime,
+         durationMinutes,
+         confirmingScheduleItemNotOnItinerary: false,
+         confirmingAttractionOutsideOperatingHours: false,
+         confirmingGuardiansTalkUnschedule: false,
+         confirmingWildEncounterUnschedule: false,
+         confirmingFixedTimeItemLongWait: false,
+         confirmingGuardiansTalkWithoutAnimal: false,
+      },
+   }]);
 });
 
-test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemSchedulesWhenTypeIsUnsetBut_ExpectOk', async () => {
-   const urls = [];
 
+test('Test_ScheduleSelectedItineraryItem_TestUnsetTypeWithAnimalRow_ExpectScheduled', async () => {
+   const urls = [];
    globalThis.fetch = async (url, options = {}) => {
       urls.push(url);
 
@@ -98,76 +122,65 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
    };
 
    const result = await ScheduleItemController.scheduleSelectedItineraryItem(
-      {
-         date: '2026-06-15',
-         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
-         attractions: [],
-      },
+      animalItinerary,
       '',
-      {
-         species: 'Tiger',
-         exhibit: 'Savanna',
-         scheduleItemKind: 'animals',
-      },
+      animalRow,
       []
    );
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.deepEqual(urls, ['/get-itinerary-date', '/schedule-itinerary-item']);
 });
 
-test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemReturnsNoAvailableSlotWithoutRefreshing_ExpectOk', async () => {
+
+test('Test_ScheduleSelectedItineraryItem_TestNoAvailableSlot_ExpectErrorWithoutRefresh', async () => {
+   const errorType = ItineraryErrorType.NO_AVAILABLE_SLOT;
    globalThis.fetch = mockScheduleItemFetch({
       routes: {
          '/schedule-itinerary-item': {
-            status: 'noAvailableSlot',
+            status: errorType,
             reasons: [],
          },
       },
    });
 
    const result = await ScheduleItemController.scheduleSelectedItineraryItem(
-      {
-         date: '2026-06-15',
-         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
-         attractions: [],
-      },
-      'animals',
-      { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
+      animalItinerary,
+      ScheduleItemKind.ANIMAL.itemType,
+      animalRow,
       []
    );
 
-   assert.equal(result.errorType, 'noAvailableSlot');
+   assert.equal(result.errorType, errorType);
 });
 
-test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemSurfacesRequestedTimeNotAvailable_ExpectOk', async () => {
+
+test('Test_ScheduleSelectedItineraryItem_TestRequestedTimeNotAvailable_ExpectError', async () => {
+   const errorType = ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE;
+   const startTime = '12:00 PM';
    globalThis.fetch = mockScheduleItemFetch({
       routes: {
          '/schedule-itinerary-item': {
-            status: 'requestedTimeNotAvailable',
+            status: errorType,
             reasons: [],
          },
       },
    });
 
    const result = await ScheduleItemController.scheduleSelectedItineraryItem(
-      { date: '2026-06-15', animals: [], attractions: [] },
-      'animals',
-      {
-         species: 'Tiger',
-         exhibit: 'Savanna',
-         scheduleItemKind: 'animals',
-      },
+      emptyItinerary,
+      ScheduleItemKind.ANIMAL.itemType,
+      animalRow,
       [],
-      { startTime: '12:00 PM' }
+      { startTime }
    );
 
-   assert.equal(result.errorType, 'requestedTimeNotAvailable');
+   assert.equal(result.errorType, errorType);
 });
 
-test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryItemSavesTheEffectiveVisitDateWhen_ExpectOk', async () => {
-   const requests = [];
 
+test('Test_ScheduleSelectedItineraryItem_TestMissingVisitDate_ExpectDateSavedThenScheduled', async () => {
+   const requests = [];
    globalThis.fetch = async (url, options = {}) => {
       requests.push({
          url,
@@ -189,7 +202,7 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
       if (url === '/set-itinerary') {
          return mockJsonResponse({
-            status: 'success',
+            status: ItineraryErrorType.SUCCESS,
             reasons: [],
             itinerary: {
                date: JSON.parse(options.body).date,
@@ -199,13 +212,13 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
                wild_encounters: [],
             },
             itinerary_config: {
-               itinerary_error_types: { SUCCESS: 'success' },
+               itinerary_error_types: { SUCCESS: ItineraryErrorType.SUCCESS },
             },
          });
       }
 
       if (url === '/schedule-itinerary-item') {
-         return mockJsonResponse({ status: 'success', reasons: [] });
+         return mockJsonResponse({ status: ItineraryErrorType.SUCCESS, reasons: [] });
       }
 
       throw new Error(`Unexpected fetch: ${url}`);
@@ -213,20 +226,16 @@ test('Test_ScheduleItemActions_TestScheduleItemActionsScheduleSelectedItineraryI
 
    const result = await ScheduleItemController.scheduleSelectedItineraryItem(
       { animals: [], attractions: [] },
-      'animals',
-      {
-         species: 'Tiger',
-         exhibit: 'Savanna',
-         scheduleItemKind: 'animals',
-      },
+      ScheduleItemKind.ANIMAL.itemType,
+      animalRow,
       []
    );
+   const setItinerary = requests.find((request) => request.url === '/set-itinerary');
+   const lastRequest = requests.at(Position.LAST);
 
-   assert.equal(result.errorType, 'success');
+   assert.equal(result.errorType, ItineraryErrorType.SUCCESS);
    assert.equal(requests.some((request) => request.url === '/get-zoo-hours'), true);
    assert.equal(requests.some((request) => request.url === '/set-itinerary'), true);
-   assert.ok(
-      requests.find((request) => request.url === '/set-itinerary')?.body?.date
-   );
-   assert.equal(requests.at(-1)?.url, '/schedule-itinerary-item');
+   assert.ok(setItinerary?.body?.date);
+   assert.equal(lastRequest?.url, '/schedule-itinerary-item');
 });

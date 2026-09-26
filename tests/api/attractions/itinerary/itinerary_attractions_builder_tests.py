@@ -34,7 +34,9 @@ def _saved_attraction(
 
 
 def Test_Build_TestEmptyInputs_ExpectEmpty() -> None:
-   assert ItineraryAttractionsBuilder.build( [], [] ) == []
+   result = ItineraryAttractionsBuilder.build( [], [] )
+
+   assert result == []
 
 
 def Test_Build_TestFiltersSavedAttractions_ExpectOnlyMatching() -> None:

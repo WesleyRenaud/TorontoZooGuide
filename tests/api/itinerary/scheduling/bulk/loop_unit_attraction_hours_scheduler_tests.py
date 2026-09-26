@@ -26,15 +26,15 @@ from api.walk_graph.domain.walk_graph import WalkGraph
 
 SPLASH_ISLAND = 'Splash Island'
 KANGAROO_WALK_THRU = 'Kangaroo Walk-Thru'
-SPLASH_OPEN_SECONDS = 12 * 3600
-SPLASH_CLOSE_SECONDS = 17 * 3600
-ZOO_CLOSE_SECONDS = 19 * 3600
-TINY_TOUR_END_SECONDS = 11 * 3600 + 30 * 60
-HYENA_TALK_START_SECONDS = 14 * 3600
-KANGAROO_CLOSE_TIGHT_SECONDS = 12 * 3600 + 30 * 60
-CAMEL_TALK_START_SECONDS = 12 * 3600 + 30 * 60
-CAMEL_TALK_END_SECONDS = 13 * 3600
-CAMEL_ENCOUNTER_START_SECONDS = 15 * 3600 + 30 * 60
+SPLASH_OPEN_SECONDS = DateValues.time_value_in_seconds( '12:00 PM' )
+SPLASH_CLOSE_SECONDS = DateValues.time_value_in_seconds( '5:00 PM' )
+ZOO_CLOSE_SECONDS = DateValues.time_value_in_seconds( '7:00 PM' )
+TINY_TOUR_END_SECONDS = DateValues.time_value_in_seconds( '11:30 AM' )
+HYENA_TALK_START_SECONDS = DateValues.time_value_in_seconds( '2:00 PM' )
+KANGAROO_CLOSE_TIGHT_SECONDS = DateValues.time_value_in_seconds( '12:30 PM' )
+CAMEL_TALK_START_SECONDS = DateValues.time_value_in_seconds( '12:30 PM' )
+CAMEL_TALK_END_SECONDS = DateValues.time_value_in_seconds( '1:00 PM' )
+CAMEL_ENCOUNTER_START_SECONDS = DateValues.time_value_in_seconds( '3:30 PM' )
 GREENHOUSE = 'Greenhouse'
 
 DURATION_SECONDS_BY_STOP: dict[ int, int ] = {}
@@ -140,19 +140,19 @@ def Test_Schedule_TestEarlyExitCases_ExpectUnchangedCursor() -> None:
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name=TransportationName.ZOOMOBILE,
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
 
    stops, cursor = LoopUnitAttractionHoursScheduler.schedule(
       object(),
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=9 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600 )
+      window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
    assert stops == [ attraction ]
-   assert cursor == 9 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '9:00 AM' )
 
    prepared_with_loop = PreparedLoopScheduleUnit(
       unit=_loop_unit( 'other-loop', [ attraction ] ),
@@ -162,22 +162,22 @@ def Test_Schedule_TestEarlyExitCases_ExpectUnchangedCursor() -> None:
       prepared_with_loop,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=9 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600 )
+      window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
    assert stops == [ attraction ]
-   assert cursor == 9 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '9:00 AM' )
 
    stops, cursor = LoopUnitAttractionHoursScheduler.schedule(
       object(),
       prepared_with_loop,
       [],
       blockers=[],
-      window_start_seconds=9 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600 )
+      window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
    assert stops == [ attraction ]
-   assert cursor == 9 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '9:00 AM' )
 
 
 def Test_EarliestStartSeconds_TestLoopAndPinCases_ExpectOpenOrNone() -> None:
@@ -189,29 +189,35 @@ def Test_EarliestStartSeconds_TestLoopAndPinCases_ExpectOpenOrNone() -> None:
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name=TransportationName.ZOOMOBILE,
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
 
-   assert LoopUnitAttractionHoursScheduler.earliest_start_seconds(
+   result = LoopUnitAttractionHoursScheduler.earliest_start_seconds(
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( None, [ attraction ] ),
          occupied_seconds=30 * 60 ),
-      [ soft_pin ] ) is None
+      [ soft_pin ] )
 
-   assert LoopUnitAttractionHoursScheduler.earliest_start_seconds(
+   assert result is None
+
+   result = LoopUnitAttractionHoursScheduler.earliest_start_seconds(
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'other-loop', [ attraction ] ),
          occupied_seconds=30 * 60 ),
-      [ soft_pin ] ) is None
+      [ soft_pin ] )
 
-   assert LoopUnitAttractionHoursScheduler.earliest_start_seconds(
+   assert result is None
+
+   result = LoopUnitAttractionHoursScheduler.earliest_start_seconds(
       object(),
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'zoomobile', [ attraction ] ),
          occupied_seconds=30 * 60 ),
-      [ soft_pin ] ) == 10 * 3600
+      [ soft_pin ] )
+
+   assert result == DateValues.time_value_in_seconds( '10:00 AM' )
 
 
 def Test_AttractionStopHelpers_TestSoftPinMatching_ExpectExpectedStop() -> None:
@@ -223,27 +229,35 @@ def Test_AttractionStopHelpers_TestSoftPinMatching_ExpectExpectedStop() -> None:
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name=TransportationName.ZOOMOBILE,
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    other = AttractionHoursSoftPin(
       loop_id='carousel',
       viewing_spot_index=0,
       attraction_name='Conservation Carousel',
-      open_seconds=9 * 3600 + 30 * 60,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
 
-   assert LoopUnitAttractionHoursScheduler._attraction_stop_for_soft_pin(
+   result = LoopUnitAttractionHoursScheduler._attraction_stop_for_soft_pin(
       [ attraction ],
-      soft_pin ) is attraction
-   assert LoopUnitAttractionHoursScheduler._attraction_stop_for_soft_pin(
+      soft_pin )
+
+   assert result is attraction
+   result = LoopUnitAttractionHoursScheduler._attraction_stop_for_soft_pin(
       [ attraction ],
-      other ) is None
-   assert LoopUnitAttractionHoursScheduler._stop_is_soft_pinned_attraction(
+      other )
+
+   assert result is None
+   result = LoopUnitAttractionHoursScheduler._stop_is_soft_pinned_attraction(
       attraction,
-      { TransportationName.ZOOMOBILE } ) is True
-   assert LoopUnitAttractionHoursScheduler._still_unscheduled_stops(
+      { TransportationName.ZOOMOBILE } )
+
+   assert result is True
+   result = LoopUnitAttractionHoursScheduler._still_unscheduled_stops(
       [ attraction ],
-      scheduled_stop_ids={ id( attraction ) } ) == []
+      scheduled_stop_ids={ id( attraction ) } )
+
+   assert result == []
 
 
 def Test_Schedule_TestSplashBeforeOpen_ExpectHeldUntilOpen(
@@ -261,13 +275,13 @@ def Test_Schedule_TestSplashBeforeOpen_ExpectHeldUntilOpen(
       prepared,
       [ _splash_soft_pin() ],
       blockers=[],
-      window_start_seconds=9 * 3600 + 30 * 60,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600 + 30 * 60,
+      window_start_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == []
-   assert cursor == 13 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '1:00 PM' )
    assert slot_sink.slots == [ ( splash, '12:00 PM', '1:00 PM' ) ]
 
 
@@ -289,13 +303,13 @@ def Test_Schedule_TestSplashHoursTooShort_ExpectUnscheduled(
             close_seconds=SPLASH_OPEN_SECONDS + 5 * 60 ),
       ],
       blockers=[],
-      window_start_seconds=9 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == [ splash ]
-   assert cursor == 9 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '9:00 AM' )
    assert slot_sink.slots == []
 
 
@@ -314,8 +328,8 @@ def Test_Schedule_TestAttractionPastWindowEnd_ExpectUnscheduled(
       loop_id='carousel',
       viewing_spot_index=0,
       attraction_name='Conservation Carousel',
-      open_seconds=9 * 3600 + 30 * 60,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -323,13 +337,13 @@ def Test_Schedule_TestAttractionPastWindowEnd_ExpectUnscheduled(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=15 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '3:00 PM' ),
       window_end_seconds=ZOO_CLOSE_SECONDS,
-      cursor_seconds=18 * 3600 + 30 * 60,
+      cursor_seconds=DateValues.time_value_in_seconds( '6:30 PM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == [ carousel ]
-   assert cursor == 18 * 3600 + 30 * 60
+   assert cursor == DateValues.time_value_in_seconds( '6:30 PM' )
    assert slot_sink.slots == []
 
 
@@ -362,7 +376,7 @@ def Test_Schedule_TestBeforeAnimalsPackedContiguously_ExpectEndingAtAttractionOp
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -370,13 +384,13 @@ def Test_Schedule_TestBeforeAnimalsPackedContiguously_ExpectEndingAtAttractionOp
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=10 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=10 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == []
-   assert cursor == 13 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '1:00 PM' )
    assert slot_sink.slots == [
       ( wombat, '11:30 AM', '12:00 PM' ),
       ( walk_thru, '12:00 PM', '1:00 PM' ),
@@ -399,8 +413,8 @@ def Test_Schedule_TestLatePlaceZoomobile_ExpectRightAlignedBeforeDeadline(
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name=TransportationName.ZOOMOBILE,
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -408,9 +422,9 @@ def Test_Schedule_TestLatePlaceZoomobile_ExpectRightAlignedBeforeDeadline(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=10 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       window_end_seconds=SPLASH_OPEN_SECONDS,
-      cursor_seconds=10 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       late_place=True,
       slot_sink=slot_sink )
 
@@ -457,7 +471,7 @@ def Test_Schedule_TestWeaveAnimalsAroundWalkThru_ExpectBeforeAfterOrdering(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -465,13 +479,13 @@ def Test_Schedule_TestWeaveAnimalsAroundWalkThru_ExpectBeforeAfterOrdering(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=10 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=10 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == []
-   assert cursor == 13 * 3600 + 8 * 60
+   assert cursor == DateValues.time_value_in_seconds( '1:08 PM' )
    assert slot_sink.slots == [
       ( wombat, '11:30 AM', '12:00 PM' ),
       ( walk_thru, '12:00 PM', '1:00 PM' ),
@@ -495,8 +509,8 @@ def Test_Schedule_TestZoomobileAfterTinyTourBeforeHyenaTalk_ExpectSlotInMiddleWi
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name=TransportationName.ZOOMOBILE,
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -535,7 +549,7 @@ def Test_Schedule_TestTightKangarooWalkThruHours_ExpectEndingBeforeClose(
       loop_id='australasia',
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
-      open_seconds=11 * 3600,
+      open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       close_seconds=KANGAROO_CLOSE_TIGHT_SECONDS )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
@@ -544,9 +558,9 @@ def Test_Schedule_TestTightKangarooWalkThruHours_ExpectEndingBeforeClose(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=11 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=11 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == []
@@ -572,8 +586,8 @@ def Test_Schedule_TestKangarooBeforeCamelTalk_ExpectEndingBeforeTalkStart(
       loop_id='australasia',
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
-      open_seconds=11 * 3600,
-      close_seconds=15 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '3:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -581,9 +595,9 @@ def Test_Schedule_TestKangarooBeforeCamelTalk_ExpectEndingBeforeTalkStart(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=11 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       window_end_seconds=CAMEL_TALK_START_SECONDS,
-      cursor_seconds=11 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == []
@@ -609,8 +623,8 @@ def Test_Schedule_TestLatePlaceZoomobileAfterCamelTalk_ExpectSlotBeforeEncounter
       loop_id='zoomobile',
       viewing_spot_index=0,
       attraction_name=TransportationName.ZOOMOBILE,
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -656,8 +670,8 @@ def Test_Schedule_TestGreenhouseNearKangarooWalkThru_ExpectAdjacentToWalkThru(
       loop_id='australasia',
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
-      open_seconds=11 * 3600,
-      close_seconds=15 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '3:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -665,9 +679,9 @@ def Test_Schedule_TestGreenhouseNearKangarooWalkThru_ExpectAdjacentToWalkThru(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=11 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       window_end_seconds=CAMEL_TALK_START_SECONDS,
-      cursor_seconds=11 * 3600,
+      cursor_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == []
@@ -680,7 +694,7 @@ def Test_Schedule_TestGreenhouseNearKangarooWalkThru_ExpectAdjacentToWalkThru(
    assert walk_thru_end is not None
    assert greenhouse_start is not None
    assert greenhouse_end is not None
-   assert walk_thru_start >= 11 * 3600
+   assert walk_thru_start >= DateValues.time_value_in_seconds( '11:00 AM' )
    assert greenhouse_end <= CAMEL_TALK_START_SECONDS
    assert (
       abs( greenhouse_start - walk_thru_end ) <= 45 * 60
@@ -705,13 +719,13 @@ def Test_Schedule_TestPersistErrorFromMissingDuration_ExpectStopsAndUnchangedCur
       prepared,
       [ _splash_soft_pin() ],
       blockers=[],
-      window_start_seconds=9 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
    assert unscheduled == [ splash ]
-   assert cursor == 9 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '9:00 AM' )
 
 
 def Test_EarliestStartSeconds_TestBeforeStopsPrepared_ExpectOpenMinusOccupied(
@@ -740,7 +754,7 @@ def Test_EarliestStartSeconds_TestBeforeStopsPrepared_ExpectOpenMinusOccupied(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
 
    earliest = LoopUnitAttractionHoursScheduler.earliest_start_seconds(
       scheduler_conn,
@@ -777,18 +791,20 @@ def Test_EarliestStartSeconds_TestBeforeStopsPrepareFails_ExpectNone(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'prepare_stops',
       lambda conn, walk_graph, stops: None )
 
-   assert LoopUnitAttractionHoursScheduler.earliest_start_seconds(
+   result = LoopUnitAttractionHoursScheduler.earliest_start_seconds(
       scheduler_conn,
       PreparedLoopScheduleUnit(
          unit=_loop_unit( 'australasia', [ wombat, walk_thru ] ),
          occupied_seconds=90 * 60 ),
-      [ soft_pin ] ) is None
+      [ soft_pin ] )
+
+   assert result is None
 
 
 def Test_Schedule_TestMissingAttractionStop_ExpectUnscheduled(
@@ -810,13 +826,13 @@ def Test_Schedule_TestMissingAttractionStop_ExpectUnscheduled(
       prepared,
       [ _splash_soft_pin() ],
       blockers=[],
-      window_start_seconds=9 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       slot_sink=slot_sink )
 
    assert unscheduled == [ animal ]
-   assert cursor == 9 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '9:00 AM' )
    assert slot_sink.slots == []
 
 
@@ -850,7 +866,7 @@ def Test_Schedule_TestBeforeStopsSaveFails_ExpectUnscheduled(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'save',
@@ -861,13 +877,13 @@ def Test_Schedule_TestBeforeStopsSaveFails_ExpectUnscheduled(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=10 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=10 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
    assert unscheduled == [ wombat, walk_thru ]
-   assert cursor == 10 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '10:00 AM' )
 
 
 def Test_Schedule_TestAfterStopsWontFit_ExpectAttractionScheduledAfterUnscheduled(
@@ -894,7 +910,7 @@ def Test_Schedule_TestAfterStopsWontFit_ExpectAttractionScheduledAfterUnschedule
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    slot_sink = LoopScheduleSlotSink( persist=False )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -937,7 +953,7 @@ def Test_Schedule_TestAfterStopsSaveFails_ExpectAttractionKeptAfterUnscheduled(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    save_results = [ True, False ]
 
    def save(
@@ -956,7 +972,7 @@ def Test_Schedule_TestAfterStopsSaveFails_ExpectAttractionKeptAfterUnscheduled(
       [ soft_pin ],
       blockers=[],
       window_start_seconds=SPLASH_OPEN_SECONDS,
-      window_end_seconds=17 * 3600,
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       cursor_seconds=SPLASH_OPEN_SECONDS,
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
@@ -977,9 +993,9 @@ def Test_ScheduleStopsAroundAttractionHours_TestNoneLoopId_ExpectPersistError(
          prepared,
          [ _splash_soft_pin() ],
          blockers=[],
-         window_start_seconds=9 * 3600,
-         window_end_seconds=17 * 3600,
-         cursor_seconds=9 * 3600 )
+         window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+         window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+         cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    assert raised.value.stops == [ splash ]
 
@@ -1012,7 +1028,7 @@ def Test_Schedule_TestBeforeStopsPrepareFails_ExpectUnscheduled(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'prepare_stops',
@@ -1023,13 +1039,13 @@ def Test_Schedule_TestBeforeStopsPrepareFails_ExpectUnscheduled(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=10 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=10 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
    assert unscheduled == [ wombat, walk_thru ]
-   assert cursor == 10 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '10:00 AM' )
 
 
 def Test_Schedule_TestBeforeStopsAssignNone_ExpectUnscheduled(
@@ -1062,7 +1078,7 @@ def Test_Schedule_TestBeforeStopsAssignNone_ExpectUnscheduled(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'assign_contiguous_ending_by',
@@ -1073,13 +1089,13 @@ def Test_Schedule_TestBeforeStopsAssignNone_ExpectUnscheduled(
       prepared,
       [ soft_pin ],
       blockers=[],
-      window_start_seconds=10 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=10 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
    assert unscheduled == [ wombat, walk_thru ]
-   assert cursor == 10 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '10:00 AM' )
 
 
 def Test_Schedule_TestAttractionScheduleTimeInvalid_ExpectUnscheduled(
@@ -1101,13 +1117,13 @@ def Test_Schedule_TestAttractionScheduleTimeInvalid_ExpectUnscheduled(
       prepared,
       [ _splash_soft_pin() ],
       blockers=[],
-      window_start_seconds=9 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
    assert unscheduled == [ splash ]
-   assert cursor == 9 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '9:00 AM' )
 
 
 def Test_Schedule_TestAttractionSaveFails_ExpectUnscheduled(
@@ -1129,13 +1145,13 @@ def Test_Schedule_TestAttractionSaveFails_ExpectUnscheduled(
       prepared,
       [ _splash_soft_pin() ],
       blockers=[],
-      window_start_seconds=9 * 3600,
-      window_end_seconds=17 * 3600,
-      cursor_seconds=9 * 3600,
+      window_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
+      cursor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
    assert unscheduled == [ splash ]
-   assert cursor == 9 * 3600
+   assert cursor == DateValues.time_value_in_seconds( '9:00 AM' )
 
 
 def Test_Schedule_TestAfterStopsPrepareFails_ExpectAttractionUnscheduled(
@@ -1163,7 +1179,7 @@ def Test_Schedule_TestAfterStopsPrepareFails_ExpectAttractionUnscheduled(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
 
    def prepare_stops(
          conn: sqlite3.Connection,
@@ -1190,7 +1206,7 @@ def Test_Schedule_TestAfterStopsPrepareFails_ExpectAttractionUnscheduled(
       [ soft_pin ],
       blockers=[],
       window_start_seconds=SPLASH_OPEN_SECONDS,
-      window_end_seconds=17 * 3600,
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       cursor_seconds=SPLASH_OPEN_SECONDS,
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
@@ -1223,7 +1239,7 @@ def Test_Schedule_TestAfterStopsAssignEmpty_ExpectAttractionUnscheduled(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'assign_contiguous_respecting_attraction_hours',
@@ -1235,7 +1251,7 @@ def Test_Schedule_TestAfterStopsAssignEmpty_ExpectAttractionUnscheduled(
       [ soft_pin ],
       blockers=[],
       window_start_seconds=SPLASH_OPEN_SECONDS,
-      window_end_seconds=17 * 3600,
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       cursor_seconds=SPLASH_OPEN_SECONDS,
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
@@ -1268,7 +1284,7 @@ def Test_Schedule_TestCursorPastWindowEnd_ExpectUnscheduled(
       viewing_spot_index=1,
       attraction_name=KANGAROO_WALK_THRU,
       open_seconds=SPLASH_OPEN_SECONDS,
-      close_seconds=16 * 3600 )
+      close_seconds=DateValues.time_value_in_seconds( '4:00 PM' ) )
    monkeypatch.setattr(
       LoopScheduleSlotAssigner,
       'assign_contiguous_respecting_attraction_hours',
@@ -1276,7 +1292,7 @@ def Test_Schedule_TestCursorPastWindowEnd_ExpectUnscheduled(
          [
             ( tiger, '1:00 PM', '1:08 PM' ),
          ],
-         17 * 3600 + 30 * 60,
+         DateValues.time_value_in_seconds( '5:30 PM' ),
       ) )
 
    unscheduled, cursor = LoopUnitAttractionHoursScheduler.schedule(
@@ -1285,12 +1301,12 @@ def Test_Schedule_TestCursorPastWindowEnd_ExpectUnscheduled(
       [ soft_pin ],
       blockers=[],
       window_start_seconds=SPLASH_OPEN_SECONDS,
-      window_end_seconds=17 * 3600,
+      window_end_seconds=DateValues.time_value_in_seconds( '5:00 PM' ),
       cursor_seconds=SPLASH_OPEN_SECONDS,
       slot_sink=LoopScheduleSlotSink( persist=False ) )
 
    assert unscheduled == []
-   assert cursor == 17 * 3600 + 30 * 60
+   assert cursor == DateValues.time_value_in_seconds( '5:30 PM' )
 
 
 def Test_DurationSecondsOrRaise_TestMissingDuration_ExpectPersistError(

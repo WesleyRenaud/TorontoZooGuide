@@ -10,25 +10,39 @@ CUSTOM_MESSAGE = 'Closed on weekdays this season.'
 
 
 def Test_Build_TestWeekdayFlags_ExpectMappedFields() -> None:
+   monday = True
+   tuesday = False
+   wednesday = True
+   thursday = False
+   friday = True
+   saturday = False
+   sunday = True
+   holidays_only = False
+
    fields = OpeningScheduleWeekdayFieldsBuilder.build(
       name=LOCATION_NAME,
       start_date=START_DATE,
       end_date=END_DATE,
-      monday=True,
-      tuesday=False,
-      wednesday=True,
-      thursday=False,
-      friday=True,
-      saturday=False,
-      sunday=True,
-      holidays_only=False,
+      monday=monday,
+      tuesday=tuesday,
+      wednesday=wednesday,
+      thursday=thursday,
+      friday=friday,
+      saturday=saturday,
+      sunday=sunday,
+      holidays_only=holidays_only,
       message=CUSTOM_MESSAGE )
 
    assert fields.start_date == START_DATE
    assert fields.end_date == END_DATE
-   assert fields.monday is True
-   assert fields.tuesday is False
-   assert fields.holidays_only is False
+   assert fields.monday is monday
+   assert fields.tuesday is tuesday
+   assert fields.wednesday is wednesday
+   assert fields.thursday is thursday
+   assert fields.friday is friday
+   assert fields.saturday is saturday
+   assert fields.sunday is sunday
+   assert fields.holidays_only is holidays_only
    assert fields.message == CUSTOM_MESSAGE
 
 

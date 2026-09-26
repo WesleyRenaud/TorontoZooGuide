@@ -37,9 +37,9 @@ TALK_NODE_ID = 'n-talk'
 ENCOUNTER_NODE_ID = 'n-encounter'
 OFFBOARD_NODE_ID = 'n-offboard'
 ONBOARD_NODE_ID = 'n-onboard'
-ARRIVAL_SECONDS = 9 * 3600 + 30 * 60
-LION_END_SECONDS = 10 * 3600 + 8 * 60
-CAROUSEL_END_SECONDS = 11 * 3600 + 15 * 60
+ARRIVAL_SECONDS = DateValues.time_value_in_seconds( '9:30 AM' )
+LION_END_SECONDS = DateValues.time_value_in_seconds( '10:08 AM' )
+CAROUSEL_END_SECONDS = DateValues.time_value_in_seconds( '11:15 AM' )
 TRAVEL_MINUTES = 6
 TRAVEL_SECONDS = TRAVEL_MINUTES * 60
 EDGE_LENGTH_PX = WalkTravelTimeCalculator.WALK_PX_PER_MINUTE * TRAVEL_MINUTES
@@ -302,46 +302,60 @@ def _event_only_itinerary() -> Itinerary:
 
 def Test_WalkNodeIdForAnimal_TestKnownAnimal_ExpectResolvedNode(
       stub_schedule_item_travel_time_calculator: None ) -> None:
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_animal(
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_animal(
       species='African Lion',
       exhibit='Africa Savanna',
-      enclosure_name=None ) == LION_NODE_ID
+      enclosure_name=None )
+
+   assert result == LION_NODE_ID
 
 
 def Test_WalkNodeIdForAttraction_TestKnownAttraction_ExpectResolvedNode(
       stub_schedule_item_travel_time_calculator: None ) -> None:
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction(
-      CAROUSEL ) == CAROUSEL_NODE_ID
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction(
+      CAROUSEL )
+
+   assert result == CAROUSEL_NODE_ID
 
 
 def Test_WalkNodeIdForAttraction_TestUnknownAttraction_ExpectNone(
       stub_schedule_item_travel_time_calculator: None ) -> None:
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction(
-      'Unknown Ride' ) is None
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_attraction(
+      'Unknown Ride' )
+
+   assert result is None
 
 
 def Test_EntranceTravelSecondsToEarliestItem_TestScheduledLion_ExpectTravelFromEntrance(
       stub_schedule_item_travel_time_calculator: None ) -> None:
-   assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item(
-      _itinerary_with_lion() ) == TRAVEL_SECONDS
+   result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item(
+      _itinerary_with_lion() )
+
+   assert result == TRAVEL_SECONDS
 
 
 def Test_EntranceTravelSecondsToEarliestItem_TestEmptyItinerary_ExpectZero(
       stub_schedule_item_travel_time_calculator: None ) -> None:
-   assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item(
-      _empty_itinerary() ) == 0
+   result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item(
+      _empty_itinerary() )
+
+   assert result == 0
 
 
 def Test_EntranceTravelSecondsFromLatestItem_TestScheduledLion_ExpectTravelToEntrance(
       stub_schedule_item_travel_time_calculator: None ) -> None:
-   assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
-      _itinerary_with_lion() ) == TRAVEL_SECONDS
+   result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
+      _itinerary_with_lion() )
+
+   assert result == TRAVEL_SECONDS
 
 
 def Test_EntranceTravelSecondsFromLatestItem_TestEmptyItinerary_ExpectZero(
       stub_schedule_item_travel_time_calculator: None ) -> None:
-   assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
-      _empty_itinerary() ) == 0
+   result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
+      _empty_itinerary() )
+
+   assert result == 0
 
 
 def Test_EntranceTravelSecondsFromLatestItem_TestGuardiansTalk_ExpectTravelToEntrance(
@@ -357,11 +371,15 @@ def Test_EntranceTravelSecondsFromLatestItem_TestGuardiansTalk_ExpectTravelToEnt
          end_time='12:30 PM' ),
    ]
 
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
-      itinerary ) == TALK_NODE_ID
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
+      itinerary )
+
+   assert result == TALK_NODE_ID
    # Talk is four edges from entrance in TEST_GRAPH.
-   assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
-      itinerary ) == TRAVEL_SECONDS * 4
+   result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
+      itinerary )
+
+   assert result == TRAVEL_SECONDS * 4
 
 
 def Test_EntranceTravelSecondsFromLatestItem_TestSeedAfricanPenguinTalk_ExpectNonZeroTravel(
@@ -380,10 +398,14 @@ def Test_EntranceTravelSecondsFromLatestItem_TestSeedAfricanPenguinTalk_ExpectNo
          end_time='12:30 PM' ),
    ]
 
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
-      itinerary ) is not None
-   assert ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
-      itinerary ) > 0
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
+      itinerary )
+
+   assert result is not None
+   result = ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item(
+      itinerary )
+
+   assert result > 0
 
 
 def Test_WalkNodeIdForLatestScheduledItem_TestTransportationOffboard_ExpectOffboardNode(
@@ -413,8 +435,10 @@ def Test_WalkNodeIdForLatestScheduledItem_TestTransportationOffboard_ExpectOffbo
          ] ),
    ]
 
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
-      itinerary ) == OFFBOARD_NODE_ID
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
+      itinerary )
+
+   assert result == OFFBOARD_NODE_ID
 
 
 def Test_WalkNodeIdForEarliestScheduledItem_TestCoveredByTalkExcluded_ExpectAttractionNode(
@@ -436,8 +460,10 @@ def Test_WalkNodeIdForEarliestScheduledItem_TestCoveredByTalkExcluded_ExpectAttr
          end_time='10:45 AM' ),
    ]
 
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_earliest_scheduled_item(
-      itinerary ) == CAROUSEL_NODE_ID
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_earliest_scheduled_item(
+      itinerary )
+
+   assert result == CAROUSEL_NODE_ID
 
 
 def Test_ScheduledStopsWithWalkNodes_TestTalkAndEncounter_ExpectWalkNodes(
@@ -466,8 +492,8 @@ def Test_ScheduledStopsWithWalkNodes_TestTalkAndEncounter_ExpectWalkNodes(
    stops = ScheduleItemTravelTimeCalculator._scheduled_stops_with_walk_nodes( itinerary )
 
    assert [ ( stop.walk_node_id, stop.start_seconds ) for stop in stops ] == [
-      ( TALK_NODE_ID, 12 * 3600 ),
-      ( ENCOUNTER_NODE_ID, 13 * 3600 ),
+      ( TALK_NODE_ID, DateValues.time_value_in_seconds( '12:00 PM' ) ),
+      ( ENCOUNTER_NODE_ID, DateValues.time_value_in_seconds( '1:00 PM' ) ),
    ]
 
 
@@ -498,11 +524,13 @@ def Test_EarliestScheduleStartSecondsWithTravel_TestAfterPreviousAnimal_ExpectEn
 
 def Test_EarliestScheduleStartSecondsWithTravel_TestMissingWalkNode_ExpectAnchor(
       stub_schedule_item_travel_time_calculator: None ) -> None:
-   assert ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel(
+   result = ScheduleItemTravelTimeCalculator.earliest_schedule_start_seconds_with_travel(
       _saved_itinerary(),
       candidate_walk_node_id=None,
       visit_anchor_seconds=ARRIVAL_SECONDS,
-      itinerary_context={} ) == ARRIVAL_SECONDS
+      itinerary_context={} )
+
+   assert result == ARRIVAL_SECONDS
 
 
 def Test_EarliestScheduleStartSecondsWithTravel_TestOpenAnchorAtNineThirty_ExpectTravelOffset(
@@ -513,7 +541,7 @@ def Test_EarliestScheduleStartSecondsWithTravel_TestOpenAnchorAtNineThirty_Expec
       arrival_time='9:30 AM',
       departure_time='5:00 PM',
    )
-   open_seconds = 9 * 3600 + 30 * 60
+   open_seconds = DateValues.time_value_in_seconds( '9:30 AM' )
 
    monkeypatch.setattr(
       ItineraryBuilder,
@@ -538,7 +566,8 @@ def Test_EarliestScheduleStartSecondsWithTravel_TestOpenAnchorAtNineThirty_Expec
       itinerary_context={} )
 
    assert earliest_start == open_seconds + TRAVEL_SECONDS
-   assert DateValues.schedule_time_key_from_seconds( earliest_start ) == '9:36 AM'
+   assert DateValues.schedule_time_key_from_seconds( earliest_start ) == DateValues.schedule_time_key_from_seconds(
+      open_seconds + TRAVEL_SECONDS )
 
 
 def Test_EarliestScheduleStartSecondsWithTravel_TestStartTimeFilter_ExpectEarlierStopOnly(
@@ -577,13 +606,17 @@ def Test_EarliestScheduleStartSecondsWithTravel_TestStartTimeFilter_ExpectEarlie
 
 
 def Test_WalkNodeIdForEarliestScheduledItem_TestOnlyEventTimed_ExpectNone() -> None:
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_earliest_scheduled_item(
-      _event_only_itinerary() ) is None
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_earliest_scheduled_item(
+      _event_only_itinerary() )
+
+   assert result is None
 
 
 def Test_WalkNodeIdForLatestScheduledItem_TestOnlyEventTimed_ExpectNone() -> None:
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
-      _event_only_itinerary() ) is None
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
+      _event_only_itinerary() )
+
+   assert result is None
 
 
 def Test_WalkNodeIdForLatestScheduledItem_TestEarlierTransportSkipped_ExpectLaterStop(
@@ -645,8 +678,10 @@ def Test_WalkNodeIdForLatestScheduledItem_TestEarlierTransportSkipped_ExpectLate
       arrival_time='9:30 AM',
       departure_time='5:00 PM' )
 
-   assert ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
-      itinerary ) == CAROUSEL_NODE_ID
+   result = ScheduleItemTravelTimeCalculator.walk_node_id_for_latest_scheduled_item(
+      itinerary )
+
+   assert result == CAROUSEL_NODE_ID
 
 
 def Test_ScheduledStopsWithWalkNodes_TestTransportDeletedTalkEncounterAndMissingNode_ExpectFiltered(

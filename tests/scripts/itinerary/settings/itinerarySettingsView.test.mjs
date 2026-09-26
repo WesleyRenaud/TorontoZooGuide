@@ -9,21 +9,22 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_BuildItinerarySettingsView_TestStatuses_ExpectTallCardAndSave', () => {
-   const view = ItinerarySettingsView.buildItinerarySettingsView({
-      statuses: [
-         {
-            status: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-            isSuppressable: true,
-            isSuppressed: false,
-         },
-         {
-            status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-            isSuppressable: true,
-            isSuppressed: true,
-         },
-      ],
-   });
+   const statuses = [
+      {
+         status: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+         isSuppressable: true,
+         isSuppressed: false,
+      },
+      {
+         status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+         isSuppressable: true,
+         isSuppressed: true,
+      },
+   ];
+
+   const view = ItinerarySettingsView.buildItinerarySettingsView({ statuses });
 
    assert.equal(view.root.className, 'itin-overlay itin-settings-overlay');
    assert.equal(view.root.querySelector('.itin-card').className, 'itin-card itin-card-tall');
@@ -36,7 +37,7 @@ test('Test_BuildItinerarySettingsView_TestStatuses_ExpectTallCardAndSave', () =>
       Strings.itinerary.settings.closeAriaLabel
    );
    assert.equal(view.saveButtonEl.textContent, Strings.actions.save);
-   assert.equal(view.checkboxEls.length, 2);
+   assert.equal(view.checkboxEls.length, statuses.length);
    assert.equal(view.checkboxEls[Position.FIRST].checked, true);
    assert.equal(view.checkboxEls[Position.SECOND].checked, false);
    assert.equal(
@@ -44,6 +45,7 @@ test('Test_BuildItinerarySettingsView_TestStatuses_ExpectTallCardAndSave', () =>
       Strings.itinerary.confirmation.shortVisitTitle
    );
 });
+
 
 test('Test_BuildItinerarySettingsView_TestDefaults_ExpectEmptyList', () => {
    const view = ItinerarySettingsView.buildItinerarySettingsView();

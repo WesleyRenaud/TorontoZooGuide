@@ -13,6 +13,7 @@ import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateEndWildEncounterScheduleController_TestWiring_ExpectFormCallbacks', async () => {
    const originalCreate = EndRecurringScheduleFormController.createEndRecurringScheduleFormController;
    const originalGetTimes = ScheduleTimesCheckboxField.getSelectedScheduleTimes;
@@ -87,7 +88,6 @@ test('Test_CreateEndWildEncounterScheduleController_TestWiring_ExpectFormCallbac
 
       captured.resetSelection();
       assert.ok(filterCalls.includes('clear'));
-
       assert.deepEqual(
          await captured.submitEndSchedule({
             wildEncounter: 'Giraffe',

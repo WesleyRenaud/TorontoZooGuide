@@ -18,6 +18,7 @@ from api.itinerary.transportation.transportation_day_loop import TransportationD
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
 from api.shared.operating_hours import OperatingHours
@@ -190,11 +191,11 @@ def applier_conn() -> sqlite3.Connection:
 def Test_TransitTimelineStart_TestScheduleAnchorOnly_ExpectEntranceNode() -> None:
    timeline_start, start_node_id = TransportationTransitRideApplier._transit_timeline_start(
       None,
-      schedule_anchor_seconds=9 * 3600 + 30 * 60,
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
       station_walk_nodes={ MAIN: 'n-main' },
       entrance_node_id='n-entrance' )
 
-   assert timeline_start == 9 * 3600 + 30 * 60
+   assert timeline_start == DateValues.time_value_in_seconds( '9:30 AM' )
    assert start_node_id == 'n-entrance'
 
 
@@ -219,11 +220,11 @@ def Test_TransitTimelineStart_TestAfterAttractionTrip_ExpectAlightNodeAndAnchorS
 
    timeline_start, start_node_id = TransportationTransitRideApplier._transit_timeline_start(
       companion,
-      schedule_anchor_seconds=9 * 3600,
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       station_walk_nodes={ MAIN: 'n-main', CANADA: 'n-canada' },
       entrance_node_id='n-entrance' )
 
-   assert timeline_start == 11 * 3600 + 15 * 60
+   assert timeline_start == DateValues.time_value_in_seconds( '11:15 AM' )
    assert start_node_id == 'n-canada'
 
 
@@ -240,36 +241,38 @@ def Test_TransitTimelineStart_TestCompanionEndsBeforeAnchor_ExpectAnchorSeconds(
 
    timeline_start, start_node_id = TransportationTransitRideApplier._transit_timeline_start(
       companion,
-      schedule_anchor_seconds=9 * 3600 + 30 * 60,
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:30 AM' ),
       station_walk_nodes={ MAIN: 'n-main' },
       entrance_node_id='n-entrance' )
 
-   assert timeline_start == 9 * 3600 + 30 * 60
+   assert timeline_start == DateValues.time_value_in_seconds( '9:30 AM' )
    assert start_node_id == 'n-entrance'
 
 
 def Test_RideWindowWithinOperatingHours_TestBeforeOpen_ExpectShiftedToOpen() -> None:
    operating_hours = OperatingHours(
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
 
    window = TransportationTransitRideApplier._ride_window_within_operating_hours(
-      9 * 3600 + 45 * 60,
+      DateValues.time_value_in_seconds( '9:45 AM' ),
       20 * 60,
       operating_hours )
 
-   assert window == ( 10 * 3600, 10 * 3600 + 20 * 60 )
+   assert window == ( DateValues.time_value_in_seconds( '10:00 AM' ), DateValues.time_value_in_seconds( '10:20 AM' ) )
 
 
 def Test_RideWindowWithinOperatingHours_TestEndsAfterClose_ExpectNone() -> None:
    operating_hours = OperatingHours(
-      open_seconds=10 * 3600,
-      close_seconds=18 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
+      close_seconds=DateValues.time_value_in_seconds( '6:00 PM' ) )
 
-   assert TransportationTransitRideApplier._ride_window_within_operating_hours(
-      17 * 3600 + 45 * 60,
+   result = TransportationTransitRideApplier._ride_window_within_operating_hours(
+      DateValues.time_value_in_seconds( '5:45 PM' ),
       20 * 60,
-      operating_hours ) is None
+      operating_hours )
+
+   assert result is None
 
 
 def Test_BestSavingRide_TestLongWalkToDomain_ExpectMainBoardingRide() -> None:
@@ -393,7 +396,7 @@ def Test_Apply_TestEmptyInputs_ExpectEarlyReturn(
          ),
       ],
       visit_date='2026-07-11',
-      schedule_anchor_seconds=9 * 3600 )
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    TransportationTransitRideApplier.apply(
       applier_conn,
@@ -406,7 +409,7 @@ def Test_Apply_TestEmptyInputs_ExpectEarlyReturn(
       ],
       scheduled_animals=[],
       visit_date='2026-07-11',
-      schedule_anchor_seconds=9 * 3600 )
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    TransportationTransitRideApplier.apply(
       applier_conn,
@@ -428,7 +431,7 @@ def Test_Apply_TestEmptyInputs_ExpectEarlyReturn(
          ),
       ],
       visit_date=None,
-      schedule_anchor_seconds=9 * 3600 )
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
 
 def Test_AnimalAnchors_TestTimedAnimalsSorted_ExpectAnchorsWithDurations(
@@ -489,10 +492,12 @@ def Test_AnimalAnchors_TestMissingWalkNode_ExpectSkipped(
       'api.itinerary.scheduling.bulk.transportation_transit_ride_applier.ViewingSpotWalkNodeIdResolver.resolve',
       lambda *_args, **_kwargs: None )
 
-   assert TransportationTransitRideApplier._animal_anchors(
+   result = TransportationTransitRideApplier._animal_anchors(
       _domain_walk_graph(),
       'n-entrance',
-      [ animal ] ) == []
+      [ animal ] )
+
+   assert result == []
 
 
 def Test_StationWalkNodeIds_TestRouteStationsSnapped_ExpectStationMap(
@@ -540,12 +545,14 @@ def Test_WalkSecondsToStation_TestMissingStation_ExpectZero() -> None:
    walk_graph = _domain_walk_graph()
    adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
 
-   assert TransportationTransitRideApplier._walk_seconds_to_station(
+   result = TransportationTransitRideApplier._walk_seconds_to_station(
       walk_graph=walk_graph,
       adjacency=adjacency,
       station_walk_nodes={ MAIN: 'n-main' },
       from_node_id='n-entrance',
-      station_name=CANADA ) == 0
+      station_name=CANADA )
+
+   assert result == 0
 
 
 def Test_ApplyTimeline_TestRidePastAnimalStart_ExpectShiftBumpAndPersisted(
@@ -602,7 +609,7 @@ def Test_ApplyTimeline_TestRidePastAnimalStart_ExpectShiftBumpAndPersisted(
       ],
       rides_before_animals=[ ride ],
       return_ride=None,
-      timeline_start_seconds=10 * 3600 + 40 * 60,
+      timeline_start_seconds=DateValues.time_value_in_seconds( '10:40 AM' ),
       start_node_id='n-entrance',
       walk_graph=walk_graph,
       adjacency=adjacency,
@@ -650,7 +657,7 @@ def Test_ApplyTimeline_TestNoSegments_ExpectNoPersist(
       ],
       rides_before_animals=[ None ],
       return_ride=None,
-      timeline_start_seconds=9 * 3600,
+      timeline_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       start_node_id='n-entrance',
       walk_graph=_domain_walk_graph(),
       adjacency=WalkGraphAdjacencyBuilder.build( _domain_walk_graph() ),
@@ -731,7 +738,7 @@ def Test_Apply_TestNoRideSegments_ExpectBulkTransitEvaluatedFlag(
          ),
       ],
       visit_date='2026-07-11',
-      schedule_anchor_seconds=9 * 3600 )
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    row = applier_conn.execute(
       """   SELECT BULK_TRANSIT_EVALUATED
@@ -784,7 +791,7 @@ def Test_Apply_TestInvalidVisitDate_ExpectSkipped(
          ),
       ],
       visit_date='not-a-date',
-      schedule_anchor_seconds=9 * 3600 )
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    row = applier_conn.execute(
       """   SELECT BULK_TRANSIT_EVALUATED
@@ -837,7 +844,7 @@ def Test_Apply_TestDayLoopMissing_ExpectSkipped(
          ),
       ],
       visit_date='2026-07-11',
-      schedule_anchor_seconds=9 * 3600 )
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    row = applier_conn.execute(
       """   SELECT BULK_TRANSIT_EVALUATED
@@ -894,7 +901,7 @@ def Test_Apply_TestNoStationNodes_ExpectSkipped(
          ),
       ],
       visit_date='2026-07-11',
-      schedule_anchor_seconds=9 * 3600 )
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    row = applier_conn.execute(
       """   SELECT BULK_TRANSIT_EVALUATED
@@ -958,7 +965,7 @@ def Test_Apply_TestNoAnimalAnchors_ExpectSkipped(
          ),
       ],
       visit_date='2026-07-11',
-      schedule_anchor_seconds=9 * 3600 )
+      schedule_anchor_seconds=DateValues.time_value_in_seconds( '9:00 AM' ) )
 
    row = applier_conn.execute(
       """   SELECT BULK_TRANSIT_EVALUATED
@@ -976,13 +983,15 @@ def Test_BestSavingRide_TestSameNode_ExpectNone() -> None:
    walk_graph = _domain_walk_graph()
    adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
 
-   assert TransportationTransitRideApplier._best_saving_ride(
+   result = TransportationTransitRideApplier._best_saving_ride(
       day_loop=SUMMER_DAY_LOOP,
       station_walk_nodes=_station_walk_nodes( walk_graph ),
       from_node_id='n-main',
       to_node_id='n-main',
       walk_graph=walk_graph,
-      adjacency=adjacency ) is None
+      adjacency=adjacency )
+
+   assert result is None
 
 
 def Test_BestSavingRide_TestUnreachableBoardNode_ExpectNone(
@@ -1004,13 +1013,15 @@ def Test_BestSavingRide_TestUnreachableBoardNode_ExpectNone(
       'api.itinerary.scheduling.bulk.transportation_transit_ride_applier.ShortestPathCalculator.distance',
       distance )
 
-   assert TransportationTransitRideApplier._best_saving_ride(
+   result = TransportationTransitRideApplier._best_saving_ride(
       day_loop=SUMMER_DAY_LOOP,
       station_walk_nodes=_station_walk_nodes( walk_graph ),
       from_node_id='n-entrance',
       to_node_id='n-domain',
       walk_graph=walk_graph,
-      adjacency=adjacency ) is None
+      adjacency=adjacency )
+
+   assert result is None
 
 
 def Test_BestSavingRide_TestNoRouteLegs_ExpectNone(
@@ -1021,13 +1032,15 @@ def Test_BestSavingRide_TestNoRouteLegs_ExpectNone(
       'api.itinerary.scheduling.bulk.transportation_transit_ride_applier.TransportationDayLoopLegSelector.select',
       lambda day_loop, board_station, alight_station: [] )
 
-   assert TransportationTransitRideApplier._best_saving_ride(
+   result = TransportationTransitRideApplier._best_saving_ride(
       day_loop=SUMMER_DAY_LOOP,
       station_walk_nodes=_station_walk_nodes( walk_graph ),
       from_node_id='n-entrance',
       to_node_id='n-domain',
       walk_graph=walk_graph,
-      adjacency=adjacency ) is None
+      adjacency=adjacency )
+
+   assert result is None
 
 
 def Test_BestSavingRide_TestRemainingWalkTooLong_ExpectNone(
@@ -1039,13 +1052,15 @@ def Test_BestSavingRide_TestRemainingWalkTooLong_ExpectNone(
       lambda graph, from_node_id, to_node_id, *, adjacency=None: (
          100.0 if from_node_id == to_node_id else 1000.0 ) )
 
-   assert TransportationTransitRideApplier._best_saving_ride(
+   result = TransportationTransitRideApplier._best_saving_ride(
       day_loop=SUMMER_DAY_LOOP,
       station_walk_nodes=_station_walk_nodes( walk_graph ),
       from_node_id='n-entrance',
       to_node_id='n-domain',
       walk_graph=walk_graph,
-      adjacency=adjacency ) is None
+      adjacency=adjacency )
+
+   assert result is None
 
 
 def Test_BestSavingRide_TestUnreachableDestinationFromAlight_ExpectNone(
@@ -1080,25 +1095,29 @@ def Test_BestSavingRide_TestUnreachableDestinationFromAlight_ExpectNone(
       'api.itinerary.scheduling.bulk.transportation_transit_ride_applier.ShortestPathCalculator.distance',
       distance )
 
-   assert TransportationTransitRideApplier._best_saving_ride(
+   result = TransportationTransitRideApplier._best_saving_ride(
       day_loop=short_day_loop,
       station_walk_nodes=_station_walk_nodes( walk_graph ),
       from_node_id='n-entrance',
       to_node_id='n-domain',
       walk_graph=walk_graph,
-      adjacency=adjacency ) is None
+      adjacency=adjacency )
+
+   assert result is None
 
 
 def Test_WalkSecondsToStation_TestKnownStation_ExpectWalkSeconds() -> None:
    walk_graph = _domain_walk_graph()
    adjacency = WalkGraphAdjacencyBuilder.build( walk_graph )
 
-   assert TransportationTransitRideApplier._walk_seconds_to_station(
+   result = TransportationTransitRideApplier._walk_seconds_to_station(
       walk_graph=walk_graph,
       adjacency=adjacency,
       station_walk_nodes={ MAIN: 'n-main' },
       from_node_id='n-entrance',
-      station_name=MAIN ) > 0
+      station_name=MAIN )
+
+   assert result > 0
 
 
 def Test_ApplyTimeline_TestUntimedAnimal_ExpectSkipped(
@@ -1134,7 +1153,7 @@ def Test_ApplyTimeline_TestUntimedAnimal_ExpectSkipped(
       ],
       rides_before_animals=[ None ],
       return_ride=None,
-      timeline_start_seconds=9 * 3600,
+      timeline_start_seconds=DateValues.time_value_in_seconds( '9:00 AM' ),
       start_node_id='n-entrance',
       walk_graph=_domain_walk_graph(),
       adjacency=WalkGraphAdjacencyBuilder.build( _domain_walk_graph() ),
@@ -1204,7 +1223,7 @@ def Test_ApplyTimeline_TestReturnRide_ExpectReturnSegmentPersisted(
       ],
       rides_before_animals=[ outbound ],
       return_ride=return_ride,
-      timeline_start_seconds=10 * 3600 + 40 * 60,
+      timeline_start_seconds=DateValues.time_value_in_seconds( '10:40 AM' ),
       start_node_id='n-entrance',
       walk_graph=walk_graph,
       adjacency=adjacency,

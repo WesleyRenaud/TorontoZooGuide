@@ -5,60 +5,70 @@ import { ItinerarySettingsPreferenceDiff } from '../../../../scripts/itinerary/s
 import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { Position } from '../../../../scripts/shared/enums/position.js';
 
+
 test('Test_ChangesFromCheckboxes_TestToggles_ExpectChangedStatuses', () => {
+   const arrivalStatus = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
+   const itemStatus = ItineraryErrorType.ITEM_NOT_ON_ITINERARY;
+   const membershipStatus = ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP;
+   const statuses = [
+      {
+         status: arrivalStatus,
+         isSuppressed: false,
+      },
+      {
+         status: itemStatus,
+         isSuppressed: true,
+      },
+      {
+         status: membershipStatus,
+         isSuppressed: false,
+      },
+   ];
+   const checkboxes = [
+      {
+         checked: false,
+         dataset: { status: arrivalStatus },
+      },
+      {
+         checked: true,
+         dataset: { status: itemStatus },
+      },
+      {
+         checked: true,
+         dataset: { status: membershipStatus },
+      },
+      {
+         checked: false,
+         dataset: { status: 'unknownStatus' },
+      },
+      {
+         checked: false,
+         dataset: {},
+      },
+      null,
+   ];
+
    const changes = ItinerarySettingsPreferenceDiff.changesFromCheckboxes(
-      [
-         {
-            status: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-            isSuppressed: false,
-         },
-         {
-            status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-            isSuppressed: true,
-         },
-         {
-            status: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
-            isSuppressed: false,
-         },
-      ],
-      [
-         {
-            checked: false,
-            dataset: { status: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE },
-         },
-         {
-            checked: true,
-            dataset: { status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY },
-         },
-         {
-            checked: true,
-            dataset: { status: ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP },
-         },
-         {
-            checked: false,
-            dataset: { status: 'unknownStatus' },
-         },
-         {
-            checked: false,
-            dataset: {},
-         },
-         null,
-      ]
+      statuses,
+      checkboxes
    );
 
    assert.deepEqual(changes, [
       {
-         status: ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+         status: arrivalStatus,
          showWarning: false,
       },
       {
-         status: ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+         status: itemStatus,
          showWarning: true,
       },
    ]);
    assert.equal(changes[Position.FIRST].showWarning, false);
 });
 
+
 test('Test_ChangesFromCheckboxes_TestDefaults_ExpectEmpty', () => {
-   assert.deepEqual(ItinerarySettingsPreferenceDiff.changesFromCheckboxes(), []);
+   const changes = ItinerarySettingsPreferenceDiff.changesFromCheckboxes();
+
+   assert.deepEqual(changes, []);
 });

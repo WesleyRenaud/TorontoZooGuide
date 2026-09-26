@@ -104,10 +104,12 @@ def Test_IsCancelled_TestMatchingCancellation_ExpectTrue() -> None:
          encounter_time=ENCOUNTER_TIME ),
    ]
 
-   assert WildEncounterOccurrencesBuilder.is_cancelled(
+   flag = WildEncounterOccurrencesBuilder.is_cancelled(
       cancellations,
       '2026-06-15',
       ENCOUNTER_TIME )
+
+   assert flag
 
 
 def Test_Build_TestAllWeekdaysWithCancellation_ExpectCancelledDateExcluded(

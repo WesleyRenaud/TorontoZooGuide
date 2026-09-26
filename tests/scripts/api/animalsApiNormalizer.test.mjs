@@ -3,54 +3,79 @@ import test from 'node:test';
 
 import { AnimalsApiNormalizer } from '../../../scripts/api/animalsApiNormalizer.js';
 
+
 test('Test_NormalizeNamedList_TestValues_ExpectTrimmedNonEmpty', () => {
-   assert.deepEqual(
-      AnimalsApiNormalizer.normalizeNamedList(['  Lion  ', '', 'Tiger', null]),
-      ['Lion', 'Tiger']
-   );
+   const lion = 'Lion';
+   const tiger = 'Tiger';
+   const values = [`  ${lion}  `, '', tiger, null];
+
+   const names = AnimalsApiNormalizer.normalizeNamedList(values);
+
+   assert.deepEqual(names, [lion, tiger]);
 });
+
 
 test('Test_NormalizeRegion_TestFields_ExpectNormalized', () => {
-   assert.deepEqual(
-      AnimalsApiNormalizer.normalizeRegion({ name: '  Africa  ', hasExhibits: true }),
-      { name: 'Africa', hasExhibits: true }
-   );
+   const name = 'Africa';
+   const hasExhibits = true;
+   const region = { name: `  ${name}  `, hasExhibits };
+
+   const normalized = AnimalsApiNormalizer.normalizeRegion(region);
+
+   assert.deepEqual(normalized, { name, hasExhibits });
 });
+
 
 test('Test_NormalizeRegionsResponse_TestRegions_ExpectNamedOnly', () => {
-   assert.deepEqual(
-      AnimalsApiNormalizer.normalizeRegionsResponse({
-         regions: [
-            { name: '  Africa  ', hasExhibits: true },
-            { name: '', hasExhibits: false },
-         ],
-      }),
-      [{ name: 'Africa', hasExhibits: true }]
-   );
+   const name = 'Africa';
+   const hasExhibits = true;
+   const response = {
+      regions: [
+         { name: `  ${name}  `, hasExhibits },
+         { name: '', hasExhibits: false },
+      ],
+   };
+
+   const regions = AnimalsApiNormalizer.normalizeRegionsResponse(response);
+
+   assert.deepEqual(regions, [{ name, hasExhibits }]);
 });
+
 
 test('Test_NormalizeAnimalsResponse_TestAnimals_ExpectNamedList', () => {
-   assert.deepEqual(
-      AnimalsApiNormalizer.normalizeAnimalsResponse({ animals: ['  Lion  ', ''] }),
-      ['Lion']
-   );
+   const species = 'Lion';
+   const response = { animals: [`  ${species}  `, ''] };
+
+   const animals = AnimalsApiNormalizer.normalizeAnimalsResponse(response);
+
+   assert.deepEqual(animals, [species]);
 });
 
-test('Test_NormalizeAnimalInformationResponse_TestFirstValid_ExpectAnimalOrNull', () => {
-   assert.equal(
-      AnimalsApiNormalizer.normalizeAnimalInformationResponse({ information: [] }),
-      null
-   );
+
+test('Test_NormalizeAnimalInformationResponse_TestEmpty_ExpectNull', () => {
+   const response = { information: [] };
+
+   const animal = AnimalsApiNormalizer.normalizeAnimalInformationResponse(response);
+
+   assert.equal(animal, null);
+});
+
+
+test('Test_NormalizeAnimalInformationResponse_TestFirstValid_ExpectAnimal', () => {
+   const species = 'African Lion';
+   const exhibit = 'African Savanna';
+   const latinName = 'Panthera leo';
+   const row = {
+      species: `  ${species}  `,
+      exhibit: `  ${exhibit}  `,
+      latin_name: `  ${latinName}  `,
+   };
 
    const animal = AnimalsApiNormalizer.normalizeAnimalInformationResponse({
-      information: [{
-         species: '  African Lion  ',
-         exhibit: '  African Savanna  ',
-         latin_name: '  Panthera leo  ',
-      }],
+      information: [row],
    });
 
-   assert.equal(animal.species, 'African Lion');
-   assert.equal(animal.exhibit, 'African Savanna');
-   assert.equal(animal.latin_name, 'Panthera leo');
+   assert.equal(animal.species, species);
+   assert.equal(animal.exhibit, exhibit);
+   assert.equal(animal.latin_name, latinName);
 });

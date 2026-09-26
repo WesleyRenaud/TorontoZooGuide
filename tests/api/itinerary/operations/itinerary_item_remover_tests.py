@@ -30,6 +30,10 @@ ZOOMOBILE_ATTRACTION_END = '11:30 AM'
 ZOOMOBILE_TRANSIT_START = '11:30 AM'
 ZOOMOBILE_TRANSIT_END = '12:00 PM'
 ZOOMOBILE_TRANSIT_ROUTE = 'zoomobile-route'
+SUCCESS_RESULT = ItinerarySaveResult(
+   status=ItineraryErrorType.SUCCESS,
+   reasons=[],
+   itinerary=ItineraryBuilder.empty() )
 REMOVER_TRANSPORTATION_SCHEMA = """
 CREATE TABLE ItineraryTransportation (
    TRANSPORTATION           TEXT        NOT NULL,
@@ -82,6 +86,69 @@ CREATE TABLE TransportationAnimal (
    PRIMARY KEY ( SPECIES, EXHIBIT, ENCLOSURE_NAME )
 );
 """
+
+
+def _zoomobile_saved_itinerary() -> SavedItinerary:
+   return SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      transportation_rows=(
+         ItineraryTransportationRecord(
+            transportation=TransportationName.ZOOMOBILE,
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=True,
+            start_time=ZOOMOBILE_ATTRACTION_START,
+            end_time=ZOOMOBILE_ATTRACTION_END,
+         ),
+         ItineraryTransportationRecord(
+            transportation=TransportationName.ZOOMOBILE,
+            old_likelihood=None,
+            new_likelihood=3,
+            added_as_attraction=False,
+            start_time=ZOOMOBILE_TRANSIT_START,
+            end_time=ZOOMOBILE_TRANSIT_END,
+            route=ZOOMOBILE_TRANSIT_ROUTE,
+            bulk_transit_evaluated=True,
+            legs=[
+               ItineraryTransportationLeg(
+                  transportation=TransportationName.ZOOMOBILE,
+                  added_as_attraction=False,
+                  from_station='Station A',
+                  to_station='Station B',
+                  start_time='11:30 AM',
+                  end_time='11:45 AM',
+               ),
+               ItineraryTransportationLeg(
+                  transportation=TransportationName.ZOOMOBILE,
+                  added_as_attraction=False,
+                  from_station='Station B',
+                  to_station='Station C',
+                  start_time='11:45 AM',
+                  end_time='12:00 PM',
+               ),
+            ],
+         ),
+      ),
+   )
+
+
+def _fetch_transit_legs( conn: sqlite3.Connection ) -> list[ tuple[ str, str ] ]:
+   rows = conn.execute(
+      """   SELECT FROM_STATION, TO_STATION
+            FROM ItineraryTransportationLeg
+            WHERE TRANSPORTATION = ?
+              AND ADDED_AS_ATTRACTION = 0
+            ORDER BY START_TIME;
+      """,
+      ( TransportationName.ZOOMOBILE, ),
+   ).fetchall()
+
+   return [
+      ( row[ 'FROM_STATION' ], row[ 'TO_STATION' ] )
+      for row in rows
+   ]
 
 
 @pytest.fixture
@@ -160,88 +227,35 @@ def zoomobile_remover_conn() -> sqlite3.Connection:
    conn.close()
 
 
-def _zoomobile_saved_itinerary() -> SavedItinerary:
-   return SavedItinerary(
-      date_value='2026-06-15',
-      arrival_time='9:30 AM',
-      departure_time='5:00 PM',
-      transportation_rows=(
-         ItineraryTransportationRecord(
-            transportation=TransportationName.ZOOMOBILE,
-            old_likelihood=None,
-            new_likelihood=3,
-            added_as_attraction=True,
-            start_time=ZOOMOBILE_ATTRACTION_START,
-            end_time=ZOOMOBILE_ATTRACTION_END,
-         ),
-         ItineraryTransportationRecord(
-            transportation=TransportationName.ZOOMOBILE,
-            old_likelihood=None,
-            new_likelihood=3,
-            added_as_attraction=False,
-            start_time=ZOOMOBILE_TRANSIT_START,
-            end_time=ZOOMOBILE_TRANSIT_END,
-            route=ZOOMOBILE_TRANSIT_ROUTE,
-            bulk_transit_evaluated=True,
-            legs=[
-               ItineraryTransportationLeg(
-                  transportation=TransportationName.ZOOMOBILE,
-                  added_as_attraction=False,
-                  from_station='Station A',
-                  to_station='Station B',
-                  start_time='11:30 AM',
-                  end_time='11:45 AM',
-               ),
-               ItineraryTransportationLeg(
-                  transportation=TransportationName.ZOOMOBILE,
-                  added_as_attraction=False,
-                  from_station='Station B',
-                  to_station='Station C',
-                  start_time='11:45 AM',
-                  end_time='12:00 PM',
-               ),
-            ],
-         ),
-      ),
-   )
-
-
-def _fetch_transit_legs( conn: sqlite3.Connection ) -> list[ tuple[ str, str ] ]:
-   rows = conn.execute(
-      """   SELECT FROM_STATION, TO_STATION
-            FROM ItineraryTransportationLeg
-            WHERE TRANSPORTATION = ?
-              AND ADDED_AS_ATTRACTION = 0
-            ORDER BY START_TIME;
-      """,
-      ( TransportationName.ZOOMOBILE, ),
-   ).fetchall()
-
-   return [
-      ( row[ 'FROM_STATION' ], row[ 'TO_STATION' ] )
-      for row in rows
-   ]
-
-
 def Test_IsTransitModeTransportationKey_TestTransitRow_ExpectTrue() -> None:
-   assert ItineraryItemRemover.is_transit_mode_transportation_key(
-      TransportationScheduleItemKey(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=False ) )
+   key = TransportationScheduleItemKey(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=False )
+
+   is_transit = ItineraryItemRemover.is_transit_mode_transportation_key( key )
+
+   assert is_transit is True
 
 
 def Test_IsTransitModeTransportationKey_TestAttractionRow_ExpectFalse() -> None:
-   assert not ItineraryItemRemover.is_transit_mode_transportation_key(
-      TransportationScheduleItemKey(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=True ) )
+   key = TransportationScheduleItemKey(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=True )
+
+   is_transit = ItineraryItemRemover.is_transit_mode_transportation_key( key )
+
+   assert is_transit is False
 
 
 def Test_RemoveTransitTransportationAndReschedule_TestNoStops_ExpectSyncCalled(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   sync_label = 'sync'
+   clear_label = 'clear'
    calls: list[ str ] = []
-
+   key = TransportationScheduleItemKey(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=False )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_remover.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: object() )
@@ -257,35 +271,40 @@ def Test_RemoveTransitTransportationAndReschedule_TestNoStops_ExpectSyncCalled(
       lambda saved_before, saved_after: [] )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_remover.ScheduledEndpointVisitTimesSyncer.sync_if_complete',
-      lambda conn, itinerary: calls.append( 'sync' ) )
+      lambda conn, itinerary: calls.append( sync_label ) )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_remover.ScheduledEndpointVisitTimesSyncer.clear_if_became_incomplete',
-      lambda conn, *, previous_itinerary, current_itinerary: calls.append( 'clear' ) )
+      lambda conn, *, previous_itinerary, current_itinerary: calls.append( clear_label ) )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_remover.ItinerarySaveResultBuilder.persist_walk_route',
       lambda conn, **context: None )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_remover.ItinerarySaveResultBuilder.success_result',
-      lambda conn, **context: ItinerarySaveResult(
-         status=ItineraryErrorType.SUCCESS,
-         reasons=[],
-         itinerary=ItineraryBuilder.empty() ) )
+      lambda conn, **context: SUCCESS_RESULT )
 
    result = ItineraryItemRemover.remove_transit_transportation_and_reschedule(
       remover_conn,
-      TransportationScheduleItemKey(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=False ) )
+      key )
 
-   assert result.status == ItineraryErrorType.SUCCESS
-   assert calls == [ 'sync', 'clear' ]
+   assert result.status == SUCCESS_RESULT.status
+   assert calls == [ sync_label, clear_label ]
 
 
 def Test_RemoveTransitTransportationAndReschedule_TestStopsPresent_ExpectBulkRunnerCalled(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
-
+   stops_to_schedule = [
+      ItineraryAnimalRecord(
+         species='African Lion',
+         exhibit='Africa Savanna',
+         start_time='10:00 AM',
+         end_time='10:08 AM',
+      ),
+   ]
+   key = TransportationScheduleItemKey(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=False )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_remover.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: SavedItinerary(
@@ -303,43 +322,20 @@ def Test_RemoveTransitTransportationAndReschedule_TestStopsPresent_ExpectBulkRun
    monkeypatch.setattr(
       BulkScheduleStopSelector,
       'stops_matching_previous',
-      lambda saved_itinerary_before, saved_itinerary_after: [
-         ItineraryAnimalRecord(
-            species='African Lion',
-            exhibit='Africa Savanna',
-            start_time='10:00 AM',
-            end_time='10:08 AM',
-         ),
-      ] )
-
-   def run(
-         conn: sqlite3.Connection,
-         *,
-         stops_to_schedule: list[ ItineraryAnimalRecord ],
-         **context: object ) -> ItinerarySaveResult:
-      captured[ 'stops_to_schedule' ] = stops_to_schedule
-      return ItinerarySaveResult(
-         status=ItineraryErrorType.SUCCESS,
-         reasons=[],
-         itinerary=ItineraryBuilder.empty() )
-
-   monkeypatch.setattr( BulkScheduleItineraryRunner, 'run', run )
+      lambda saved_itinerary_before, saved_itinerary_after: stops_to_schedule )
+   monkeypatch.setattr(
+      BulkScheduleItineraryRunner,
+      'run',
+      lambda conn, *, stops_to_schedule, **context: (
+         captured.__setitem__( 'stops_to_schedule', stops_to_schedule )
+         or SUCCESS_RESULT ) )
 
    result = ItineraryItemRemover.remove_transit_transportation_and_reschedule(
       remover_conn,
-      TransportationScheduleItemKey(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=False ) )
+      key )
 
-   assert result.status == ItineraryErrorType.SUCCESS
-   assert captured[ 'stops_to_schedule' ] == [
-      ItineraryAnimalRecord(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         start_time='10:00 AM',
-         end_time='10:08 AM',
-      ),
-   ]
+   assert result.status == SUCCESS_RESULT.status
+   assert captured[ 'stops_to_schedule' ] == stops_to_schedule
 
 
 def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeDeletedTransitPreserved(
@@ -349,14 +345,13 @@ def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeDeletedTransitPres
       'api.itinerary.operations.itinerary_item_remover.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: _zoomobile_saved_itinerary() )
    transit_legs_before = _fetch_transit_legs( zoomobile_remover_conn )
-
    cur = zoomobile_remover_conn.cursor()
-   ItineraryItemRemover.apply(
+
+   result = ItineraryItemRemover.apply(
       cur,
       AttractionScheduleItemKey( name=TransportationName.ZOOMOBILE ) )
    zoomobile_remover_conn.commit()
    cur.close()
-
    attraction_count = zoomobile_remover_conn.execute(
       """   SELECT COUNT(*) AS COUNT
             FROM ItineraryTransportation
@@ -374,6 +369,7 @@ def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeDeletedTransitPres
       ( TransportationName.ZOOMOBILE, ),
    ).fetchone()
 
+   assert result is None
    assert attraction_count is not None
    assert attraction_count[ 'COUNT' ] == 0
    assert transit_row is not None
@@ -387,19 +383,20 @@ def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeDeletedTransitPres
 def Test_Apply_TestTransportationTransitModeKey_ExpectAttractionRolePreserved(
       zoomobile_remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   key = TransportationScheduleItemKey(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=False )
+   remaining_attraction = TransportationScheduleItemKey(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=True )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_remover.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: _zoomobile_saved_itinerary() )
-
    cur = zoomobile_remover_conn.cursor()
-   ItineraryItemRemover.apply(
-      cur,
-      TransportationScheduleItemKey(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=False ) )
+
+   result = ItineraryItemRemover.apply( cur, key )
    zoomobile_remover_conn.commit()
    cur.close()
-
    rows = zoomobile_remover_conn.execute(
       """   SELECT TRANSPORTATION, ADDED_AS_ATTRACTION
             FROM ItineraryTransportation
@@ -407,108 +404,102 @@ def Test_Apply_TestTransportationTransitModeKey_ExpectAttractionRolePreserved(
       """,
    ).fetchall()
 
+   assert result is None
    assert [
       ( row[ 'TRANSPORTATION' ], row[ 'ADDED_AS_ATTRACTION' ] )
       for row in rows
    ] == [
-      ( TransportationName.ZOOMOBILE, 1 ),
+      ( remaining_attraction.name, int( remaining_attraction.added_as_attraction ) ),
    ]
 
 
 def Test_Apply_TestAnimalKey_ExpectDeleteAnimalCalled(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-
    calls: list[ tuple[ str, str, str | None ] ] = []
-
+   key = AnimalScheduleItemKey(
+      species='African Lion',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor' )
    monkeypatch.setattr(
       RemoveItineraryItemProvider,
       'delete_itinerary_animal',
       lambda cur, *, species, exhibit, enclosure_name: calls.append(
          ( species, exhibit, enclosure_name ) ) )
-
    cur = remover_conn.cursor()
-   ItineraryItemRemover.apply(
-      cur,
-      AnimalScheduleItemKey(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         enclosure_name='Outdoor' ) )
+
+   result = ItineraryItemRemover.apply( cur, key )
    cur.close()
 
-   assert calls == [ ( 'African Lion', 'Africa Savanna', 'Outdoor' ) ]
+   assert result is None
+   assert calls == [ ( key.species, key.exhibit, key.enclosure_name ) ]
 
 
 def Test_Apply_TestGuardiansTalkKey_ExpectDeleteTalkCalled(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-
    calls: list[ str ] = []
-
+   key = GuardiansTalkScheduleItemKey(
+      name='Zebra Talk',
+      start_time='11:00 AM',
+      end_time='11:30 AM' )
    monkeypatch.setattr(
       RemoveItineraryItemProvider,
       'delete_itinerary_guardians_talk',
       lambda cur, *, talk_name: calls.append( talk_name ) )
-
    cur = remover_conn.cursor()
-   ItineraryItemRemover.apply(
-      cur,
-      GuardiansTalkScheduleItemKey(
-         name='Zebra Talk',
-         start_time='11:00 AM',
-         end_time='11:30 AM' ) )
+
+   result = ItineraryItemRemover.apply( cur, key )
    cur.close()
 
-   assert calls == [ 'Zebra Talk' ]
+   assert result is None
+   assert calls == [ key.name ]
 
 
 def Test_Apply_TestWildEncounterKey_ExpectDeleteEncounterCalled(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-
    calls: list[ str ] = []
-
+   key = WildEncounterScheduleItemKey(
+      name='Penguin Encounter',
+      start_time='2:00 PM',
+      end_time='2:20 PM' )
    monkeypatch.setattr(
       RemoveItineraryItemProvider,
       'delete_itinerary_wild_encounter',
       lambda cur, *, wild_encounter: calls.append( wild_encounter ) )
-
    cur = remover_conn.cursor()
-   ItineraryItemRemover.apply(
-      cur,
-      WildEncounterScheduleItemKey(
-         name='Penguin Encounter',
-         start_time='2:00 PM',
-         end_time='2:20 PM' ) )
+
+   result = ItineraryItemRemover.apply( cur, key )
    cur.close()
 
-   assert calls == [ 'Penguin Encounter' ]
+   assert result is None
+   assert calls == [ key.name ]
 
 
 def Test_Apply_TestEventKey_ExpectDeleteEventCalled(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-
    calls: list[ ItineraryEventType ] = []
-
+   event_type = ItineraryEventType.LUNCH
    monkeypatch.setattr(
       RemoveItineraryItemProvider,
       'delete_itinerary_event',
       lambda cur, *, event_type: calls.append( event_type ) )
-
    cur = remover_conn.cursor()
-   ItineraryItemRemover.apply( cur, ItineraryEventType.LUNCH )
+
+   result = ItineraryItemRemover.apply( cur, event_type )
    cur.close()
 
-   assert calls == [ ItineraryEventType.LUNCH ]
+   assert result is None
+   assert calls == [ event_type ]
 
 
 def Test_Apply_TestPlainAttractionKey_ExpectDeleteAttractionCalled(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-
    calls: list[ str ] = []
-
+   key = AttractionScheduleItemKey( name='Conservation Carousel' )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_remover.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: SavedItinerary(
@@ -519,58 +510,48 @@ def Test_Apply_TestPlainAttractionKey_ExpectDeleteAttractionCalled(
       RemoveItineraryItemProvider,
       'delete_itinerary_attraction',
       lambda cur, *, name: calls.append( name ) )
-
    cur = remover_conn.cursor()
-   ItineraryItemRemover.apply(
-      cur,
-      AttractionScheduleItemKey( name='Conservation Carousel' ) )
+
+   result = ItineraryItemRemover.apply( cur, key )
    cur.close()
 
-   assert calls == [ 'Conservation Carousel' ]
+   assert result is None
+   assert calls == [ key.name ]
 
 
 def Test_Remove_TestTransitKey_ExpectTransitReschedulePath(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    called: list[ TransportationScheduleItemKey ] = []
-
+   key = TransportationScheduleItemKey(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=False )
    monkeypatch.setattr(
       ItineraryItemRemover,
       'remove_transit_transportation_and_reschedule',
       lambda conn, schedule_item_key: (
          called.append( schedule_item_key )
-         or ItinerarySaveResult(
-            status=ItineraryErrorType.SUCCESS,
-            reasons=[],
-            itinerary=ItineraryBuilder.empty() ) ) )
+         or SUCCESS_RESULT ) )
 
-   key = TransportationScheduleItemKey(
-      name=TransportationName.ZOOMOBILE,
-      added_as_attraction=False )
    result = ItineraryItemRemover.remove( remover_conn, key )
 
-   assert result.status == ItineraryErrorType.SUCCESS
+   assert result.status == SUCCESS_RESULT.status
    assert called == [ key ]
 
 
 def Test_Remove_TestNonTransitKey_ExpectCommitterPath(
       remover_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-
    calls: list[ AttractionScheduleItemKey ] = []
-
+   key = AttractionScheduleItemKey( name='Conservation Carousel' )
    monkeypatch.setattr(
       ItineraryItemScheduleChangeCommitter,
       'commit',
       lambda conn, schedule_item_key, apply_fn: (
          calls.append( schedule_item_key )
-         or ItinerarySaveResult(
-            status=ItineraryErrorType.SUCCESS,
-            reasons=[],
-            itinerary=ItineraryBuilder.empty() ) ) )
+         or SUCCESS_RESULT ) )
 
-   key = AttractionScheduleItemKey( name='Conservation Carousel' )
    result = ItineraryItemRemover.remove( remover_conn, key )
 
-   assert result.status == ItineraryErrorType.SUCCESS
+   assert result.status == SUCCESS_RESULT.status
    assert calls == [ key ]

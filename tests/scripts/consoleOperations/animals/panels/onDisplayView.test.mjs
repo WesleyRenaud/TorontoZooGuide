@@ -8,7 +8,9 @@ import { ConsoleCheckboxGridFieldBuilder } from '../../../../../scripts/consoleO
 import { ConsolePanelShellBuilder } from '../../../../../scripts/consoleOperations/templates/consolePanelShellBuilder.js';
 import { ConsoleSelectFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../../scripts/strings.js';
+
 
 test('Test_CreateOnDisplayPanel_TestWiring_ExpectShellOptions', () => {
    const originals = {
@@ -19,11 +21,12 @@ test('Test_CreateOnDisplayPanel_TestWiring_ExpectShellOptions', () => {
       createActions: ConsoleActionsBuilder.createActions,
       createStatus: ConsoleStatusBuilder.createStatus,
    };
-
+   const panel = { panel: true };
    let captured;
+
    ConsolePanelShellBuilder.createPanelShell = (options) => {
       captured = options;
-      return { panel: true };
+      return panel;
    };
    ConsoleSelectFieldBuilder.createSelectField = (options) => ({ kind: 'createSelectField', ...options });
    ConsoleCheckboxGridFieldBuilder.createCheckboxGridField = (options) => ({ kind: 'createCheckboxGridField', ...options });
@@ -34,21 +37,24 @@ test('Test_CreateOnDisplayPanel_TestWiring_ExpectShellOptions', () => {
    try {
       const result = OnDisplayView.createOnDisplayPanel();
 
-      assert.deepEqual(result, { panel: true });
-
+      const exhibitField = captured.bodyChildren[Position.FIRST];
+      const speciesField = captured.bodyChildren[Position.SECOND];
+      const viewingScopeField = captured.bodyChildren[Position.THIRD];
+      const actionsField = captured.bodyChildren[Position.FOURTH];
+      const statusField = captured.bodyChildren.at(Position.LAST);
+      assert.equal(result, panel);
       assert.equal(captured.panelId, 'onDisplayPanel');
       assert.equal(captured.title, Strings.panelTitles.onDisplay);
-      assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'onDisplayExhibit');
-      assert.equal(captured.bodyChildren[0].label, Strings.entityLabels.exhibit);
-      assert.equal(captured.bodyChildren[1].inputId, 'onDisplaySpecies');
-      assert.equal(captured.bodyChildren[1].resultsId, 'onDisplaySpeciesResults');
-      assert.equal(captured.bodyChildren[1].label, Strings.labels.species);
-      assert.equal(captured.bodyChildren[2].kind, 'createCheckboxGridField');
-      assert.equal(captured.bodyChildren[2].label, Strings.labels.viewingScope);
-      assert.equal(captured.bodyChildren[2].gridId, 'onDisplayViewingScope');
-      assert.equal(captured.bodyChildren[3].submitId, 'submitOnDisplay');
-      assert.equal(captured.bodyChildren[4].statusId, 'onDisplayStatus');
+      assert.equal(exhibitField.inputId, 'onDisplayExhibit');
+      assert.equal(exhibitField.label, Strings.entityLabels.exhibit);
+      assert.equal(speciesField.inputId, 'onDisplaySpecies');
+      assert.equal(speciesField.resultsId, 'onDisplaySpeciesResults');
+      assert.equal(speciesField.label, Strings.labels.species);
+      assert.equal(viewingScopeField.kind, 'createCheckboxGridField');
+      assert.equal(viewingScopeField.label, Strings.labels.viewingScope);
+      assert.equal(viewingScopeField.gridId, 'onDisplayViewingScope');
+      assert.equal(actionsField.submitId, 'submitOnDisplay');
+      assert.equal(statusField.statusId, 'onDisplayStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
       ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;

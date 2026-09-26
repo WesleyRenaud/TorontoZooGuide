@@ -3,48 +3,59 @@ import test from 'node:test';
 
 import { RemovedItems } from '../../../../../scripts/itinerary/wizard/diff/removedItems.js';
 
+
 test('Test_FindRemovedItemsByField_TestMissingFromValidated_ExpectRemoved', () => {
-   assert.deepEqual(
-      RemovedItems.findRemovedItemsByField(
-         [{ name: 'Carousel' }, { name: 'Zoomobile' }, { name: '' }],
-         [{ name: 'Carousel' }],
-         'name'
-      ),
-      [{ name: 'Zoomobile' }]
+   const carousel = { name: 'Conservation Carousel' };
+   const zoomobile = { name: 'Zoomobile' };
+   const blank = { name: '' };
+   const field = 'name';
+   const previousItems = [carousel, zoomobile, blank];
+   const validatedItems = [carousel];
+
+   const removed = RemovedItems.findRemovedItemsByField(
+      previousItems,
+      validatedItems,
+      field
    );
+
+   assert.deepEqual(removed, [zoomobile]);
 });
+
 
 test('Test_MergeRemovedItems_TestBackendOnly_ExpectBackend', () => {
-   const backend = [{ name: 'Talk', removalReason: 'unavailable' }];
-   assert.deepEqual(
-      RemovedItems.mergeRemovedItems(backend, [], [{ name: 'Talk' }], 'name'),
-      backend
-   );
+   const backend = [{ name: 'Lion Talk', removalReason: 'unavailable' }];
+   const inferred = [];
+   const validated = [{ name: 'Lion Talk' }];
+   const field = 'name';
+
+   const merged = RemovedItems.mergeRemovedItems(backend, inferred, validated, field);
+
+   assert.deepEqual(merged, backend);
 });
+
 
 test('Test_MergeRemovedItems_TestInferredOnly_ExpectInferred', () => {
-   assert.deepEqual(
-      RemovedItems.mergeRemovedItems(
-         null,
-         [{ name: 'Giraffe' }],
-         [],
-         'name'
-      ),
-      [{ name: 'Giraffe' }]
-   );
+   const inferred = [{ name: 'Masai Giraffe' }];
+   const field = 'name';
+
+   const merged = RemovedItems.mergeRemovedItems(null, inferred, [], field);
+
+   assert.deepEqual(merged, inferred);
 });
 
+
 test('Test_MergeRemovedItems_TestBoth_ExpectDedupedUnion', () => {
-   assert.deepEqual(
-      RemovedItems.mergeRemovedItems(
-         [{ name: 'Talk', removalReason: 'closed' }],
-         [{ name: 'Talk' }, { name: 'Encounter' }],
-         [],
-         'name'
-      ),
-      [
-         { name: 'Talk', removalReason: 'closed' },
-         { name: 'Encounter' },
-      ]
+   const talk = { name: 'Lion Talk', removalReason: 'closed' };
+   const encounter = { name: 'Red Panda Encounter' };
+   const inferredTalk = { name: talk.name };
+   const field = 'name';
+
+   const merged = RemovedItems.mergeRemovedItems(
+      [talk],
+      [inferredTalk, encounter],
+      [],
+      field
    );
+
+   assert.deepEqual(merged, [talk, encounter]);
 });

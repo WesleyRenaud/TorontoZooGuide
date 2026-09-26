@@ -7,13 +7,20 @@ import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_CreateUpdateTypeEl_TestTypedUpdate_ExpectClassAndLabel', () => {
-   const typeEl = ExploreUpdateCardHelper.createUpdateTypeEl({ type: 'Animal Closure' });
+   const type = 'Animal Closure';
+
+   const typeEl = ExploreUpdateCardHelper.createUpdateTypeEl({ type });
 
    assert.equal(typeEl.tagName.toUpperCase(), 'SPAN');
-   assert.equal(typeEl.className, 'explore-update-type explore-update-type-animal-closure');
-   assert.equal(typeEl.textContent, 'Animal Closure');
+   assert.equal(
+      typeEl.className,
+      `explore-update-type explore-update-type-${type.toLowerCase().replaceAll(' ', '-')}`
+   );
+   assert.equal(typeEl.textContent, type);
 });
+
 
 test('Test_CreateUpdateTypeEl_TestMissingType_ExpectFallbackLabel', () => {
    const typeEl = ExploreUpdateCardHelper.createUpdateTypeEl({});

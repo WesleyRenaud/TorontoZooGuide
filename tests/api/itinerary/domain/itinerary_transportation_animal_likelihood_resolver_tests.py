@@ -42,6 +42,13 @@ def resolver_conn() -> sqlite3.Connection:
 def Test_Resolve_TestVisitDateAndViewableAnimal_ExpectLikelihood(
       resolver_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   likelihood = 80
+   animal = Animal(
+      species=GIRAFFE_LINK.species,
+      exhibit=GIRAFFE_LINK.exhibit,
+      enclosure_name=GIRAFFE_LINK.enclosure_name,
+      likelihood=likelihood )
+
    def get_animals_for_saved_itinerary(
          *,
          day: int,
@@ -49,13 +56,7 @@ def Test_Resolve_TestVisitDateAndViewableAnimal_ExpectLikelihood(
          year: int,
          saved_animals: list,
          temp: float | None = None ) -> list[ Animal ]:
-      return [
-         Animal(
-            species='Masai Giraffe',
-            exhibit='Africa Savanna',
-            enclosure_name='Outdoor',
-            likelihood=80 ),
-      ]
+      return [ animal ]
 
    monkeypatch.setattr(
       'api.itinerary.domain.itinerary_transportation_animal_likelihood_resolver.'
@@ -66,4 +67,4 @@ def Test_Resolve_TestVisitDateAndViewableAnimal_ExpectLikelihood(
       resolver_conn,
       [ GIRAFFE_LINK ] )
 
-   assert likelihoods.for_link( GIRAFFE_LINK ) == 80
+   assert likelihoods.for_link( GIRAFFE_LINK ) == animal.likelihood

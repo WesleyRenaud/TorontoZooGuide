@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { ScheduleTimeConflictView } from '../../../../scripts/itinerary/panel/scheduleTimeConflictView.js';
+import { AssetKeyNormalizer } from '../../../../scripts/assets/assetKeyNormalizer.js';
 import { ItineraryErrorType } from '../../../../scripts/shared/enums/itineraryErrorType.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
-import { ScheduleTimeConflictView } from '../../../../scripts/itinerary/panel/scheduleTimeConflictView.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
@@ -33,35 +35,54 @@ const guardiansTalk = {
 
 installDomTestHooks();
 
-test('Test_BuildConflictItemImageSrc_TestBuildConflictItemImageSrcMapsWildEncountersAndGuardiansTalksTo_ExpectOk', () => {
+
+test('Test_BuildConflictItemImageSrc_TestWildEncounter_ExpectPath', () => {
+   const src = ScheduleTimeConflictView.buildConflictItemImageSrc(firstEncounter);
+
    assert.equal(
-      ScheduleTimeConflictView.buildConflictItemImageSrc(firstEncounter),
-      'images/details/wild-encounters/from-howls-to-honks.png'
+      src,
+      `images/details/wild-encounters/${AssetKeyNormalizer.normalize(firstEncounter.name)}.png`
    );
-   assert.equal(
-      ScheduleTimeConflictView.buildConflictItemImageSrc(guardiansTalk),
-      'images/details/guardians-talks/african-lion.png'
-   );
-   assert.equal(ScheduleTimeConflictView.buildConflictItemImageSrc({ name: '' }), null);
 });
 
-test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentIgnoresNonWildEncounterIssues_ExpectOk', () => {
-   const { content, conflictGroups } = ScheduleTimeConflictView.createSaveIssuesContent([
-      { type: 'otherIssue', items: [firstEncounter] },
-   ]);
+
+test('Test_BuildConflictItemImageSrc_TestGuardiansTalk_ExpectPath', () => {
+   const src = ScheduleTimeConflictView.buildConflictItemImageSrc(guardiansTalk);
+
+   assert.equal(
+      src,
+      `images/details/guardians-talks/${AssetKeyNormalizer.normalize(guardiansTalk.name)}.png`
+   );
+});
+
+
+test('Test_BuildConflictItemImageSrc_TestBlankName_ExpectNull', () => {
+   const item = { name: '' };
+
+   const src = ScheduleTimeConflictView.buildConflictItemImageSrc(item);
+
+   assert.equal(src, null);
+});
+
+
+test('Test_CreateSaveIssuesContent_TestNonWildEncounter_ExpectEmpty', () => {
+   const issues = [{ type: 'otherIssue', items: [firstEncounter] }];
+
+   const { content, conflictGroups } = ScheduleTimeConflictView.createSaveIssuesContent(issues);
 
    assert.equal(content.className, 'itin-save-issues');
    assert.equal(content.children.length, 0);
    assert.deepEqual(conflictGroups, []);
 });
 
-test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentRendersConflictRowsAndSelectionGroups_ExpectOk', () => {
-   const { content, conflictGroups } = ScheduleTimeConflictView.createSaveIssuesContent([
-      {
-         type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
-         items: [secondEncounter, firstEncounter],
-      },
-   ]);
+
+test('Test_CreateSaveIssuesContent_TestConflictRows_ExpectRendered', () => {
+   const issues = [{
+      type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
+      items: [secondEncounter, firstEncounter],
+   }];
+
+   const { content, conflictGroups } = ScheduleTimeConflictView.createSaveIssuesContent(issues);
 
    const section = content.querySelector('.itin-save-issue-section');
    const rows = content.querySelectorAll('.itin-save-issue-conflict-row');
@@ -72,46 +93,36 @@ test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentRendersConflictRow
       section?.querySelector('.itin-save-issue-section-title')?.textContent,
       Strings.itinerary.confirmation.scheduleConflictsTitle
    );
-   assert.equal(rows.length, 2);
-   assert.equal(buttons.length, 2);
+   assert.equal(rows.length, issues.at(Position.FIRST).items.length);
+   assert.equal(buttons.length, issues.at(Position.FIRST).items.length);
    assert.equal(conflictGroups.length, 1);
-   assert.equal(conflictGroups[0].items.length, 2);
+   assert.equal(conflictGroups.at(Position.FIRST).items.length, issues.at(Position.FIRST).items.length);
    assert.deepEqual(
       new Set(
          [...rows].map(
-            row => row.querySelector('.animal-result-species')?.textContent
+            (row) => row.querySelector('.animal-result-species')?.textContent
          )
       ),
-      new Set(['From Howls to Honks', 'Great Barrier Reef'])
+      new Set([firstEncounter.name, secondEncounter.name])
    );
    assert.ok(
-      rows.every(row => row.querySelector('.animal-result-exhibit'))
+      [...rows].every((row) => row.querySelector('.animal-result-exhibit'))
    );
 });
 
-test('Test_CreateSaveIssuesContent_TestCreateSaveIssuesContentTogglesAddButtonsIntoSelectedRemoveButtons_ExpectOk', () => {
-   const { content } = ScheduleTimeConflictView.createSaveIssuesContent([
-      {
-         type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
-         items: [firstEncounter, secondEncounter],
-      },
-   ]);
 
-   const [firstButton, secondButton] = content.querySelectorAll(
-      '.itin-save-issue-select-btn'
-   );
+test('Test_CreateSaveIssuesContent_TestToggleAdd_ExpectSelectedRemove', () => {
+   const issues = [{
+      type: ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
+      items: [firstEncounter, secondEncounter],
+   }];
 
-   assert.equal(
-      firstButton?.textContent,
-      Strings.itinerary.actions.addSymbol
-   );
+   const { content } = ScheduleTimeConflictView.createSaveIssuesContent(issues);
+   const [firstButton, secondButton] = content.querySelectorAll('.itin-save-issue-select-btn');
 
    firstButton?.click();
 
-   assert.equal(
-      firstButton?.textContent,
-      Strings.itinerary.actions.remove
-   );
+   assert.equal(firstButton?.textContent, Strings.itinerary.actions.remove);
    assert.equal(firstButton?.classList.contains('is-added'), true);
    assert.equal(secondButton?.disabled, true);
 });

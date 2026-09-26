@@ -6,6 +6,7 @@ import { DayPlannerScheduledPillOptions } from '../../../../scripts/itinerary/pa
 import { GuardiansTalkScheduleItemKey } from '../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { allTextFor } from '../../helpers/panelRowsTestSetup.mjs';
+import { Strings } from '../../../../scripts/strings.js';
 import { makeScheduledItem } from '../../helpers/scheduledPillTestSetup.mjs';
 import { Position } from '../../../../scripts/shared/enums/position.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
@@ -31,14 +32,15 @@ test('Test_ResolveScheduledPillOptions_TestPureTransportations_ExpectHideUnsched
          },
          onRemoveItineraryItem: () => {},
       },
-      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+      { scheduledItemMenuAria: 'Menu', unschedule: Strings.itinerary.dayPlanner.unschedule, remove: Strings.itinerary.dayPlanner.remove }
    );
 
    assert.deepEqual(
       options.menuItems?.map((item) => item.label),
-      ['Remove']
+      [Strings.itinerary.dayPlanner.remove]
    );
 });
+
 
 test('Test_ResolveScheduledPillOptions_TestAddedAsAttraction_ExpectKeepUnschedule', () => {
    const options = DayPlannerScheduledPillOptions.resolveScheduledPillOptions(
@@ -56,14 +58,15 @@ test('Test_ResolveScheduledPillOptions_TestAddedAsAttraction_ExpectKeepUnschedul
          onUnscheduleItineraryItem: () => {},
          onRemoveItineraryItem: () => {},
       },
-      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+      { scheduledItemMenuAria: 'Menu', unschedule: Strings.itinerary.dayPlanner.unschedule, remove: Strings.itinerary.dayPlanner.remove }
    );
 
    assert.deepEqual(
       options.menuItems?.map((item) => item.label),
-      ['Unschedule', 'Remove']
+      [Strings.itinerary.dayPlanner.unschedule, Strings.itinerary.dayPlanner.remove]
    );
 });
+
 
 test('Test_ResolveGroupedScheduledPillOptions_TestGroupedPills_ExpectMergedMenus', () => {
    const options = DayPlannerScheduledPillOptions.resolveGroupedScheduledPillOptions(
@@ -75,11 +78,12 @@ test('Test_ResolveGroupedScheduledPillOptions_TestGroupedPills_ExpectMergedMenus
          onUnscheduleItineraryItem: () => {},
          onRemoveItineraryItem: () => {},
       },
-      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+      { scheduledItemMenuAria: 'Menu', unschedule: Strings.itinerary.dayPlanner.unschedule, remove: Strings.itinerary.dayPlanner.remove }
    );
 
    assert.equal(options.menuItems?.length, 4);
 });
+
 
 test('Test_BuildScheduledItemRowsContext_TestGenericEvents_ExpectOnTimeline', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
@@ -109,6 +113,7 @@ test('Test_BuildScheduledItemRowsContext_TestGenericEvents_ExpectOnTimeline', ()
    assert.equal(lunchItems[Position.FIRST].anchorSlotMinutes, 720);
 });
 
+
 test('Test_ResolveScheduledPillOptions_TestGenericEvents_ExpectOnlyRemove', () => {
    const removeRequests = [];
 
@@ -126,11 +131,11 @@ test('Test_ResolveScheduledPillOptions_TestGenericEvents_ExpectOnlyRemove', () =
             removeRequests.push(request);
          },
       },
-      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+      { scheduledItemMenuAria: 'Menu', unschedule: Strings.itinerary.dayPlanner.unschedule, remove: Strings.itinerary.dayPlanner.remove }
    );
 
    assert.equal(options.menuItems?.length, 1);
-   assert.equal(options.menuItems?.[Position.FIRST]?.label, 'Remove');
+   assert.equal(options.menuItems?.[Position.FIRST]?.label, Strings.itinerary.dayPlanner.remove);
 
    options.menuItems?.[Position.FIRST]?.onAction?.();
 
@@ -139,6 +144,7 @@ test('Test_ResolveScheduledPillOptions_TestGenericEvents_ExpectOnlyRemove', () =
       key: '',
    }]);
 });
+
 
 test('Test_ResolveScheduledPillOptions_TestAnimalsAndTalks_ExpectRemove', () => {
    const removeRequests = [];
@@ -153,10 +159,10 @@ test('Test_ResolveScheduledPillOptions_TestAnimalsAndTalks_ExpectRemove', () => 
             removeRequests.push(request);
          },
       },
-      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+      { scheduledItemMenuAria: 'Menu', unschedule: Strings.itinerary.dayPlanner.unschedule, remove: Strings.itinerary.dayPlanner.remove }
    );
 
-   animalOptions.menuItems?.find((item) => item.label === 'Remove')?.onAction?.();
+   animalOptions.menuItems?.find((item) => item.label === Strings.itinerary.dayPlanner.remove)?.onAction?.();
 
    assert.deepEqual(removeRequests, [{
       itemType: 'animals',
@@ -178,11 +184,11 @@ test('Test_ResolveScheduledPillOptions_TestAnimalsAndTalks_ExpectRemove', () => 
             removeRequests.push(request);
          },
       },
-      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+      { scheduledItemMenuAria: 'Menu', unschedule: Strings.itinerary.dayPlanner.unschedule, remove: Strings.itinerary.dayPlanner.remove }
    );
 
    assert.equal(talkOptions.menuItems?.length, 1);
-   assert.equal(talkOptions.menuItems?.[Position.FIRST]?.label, 'Remove');
+   assert.equal(talkOptions.menuItems?.[Position.FIRST]?.label, Strings.itinerary.dayPlanner.remove);
 
    talkOptions.menuItems?.[Position.FIRST]?.onAction?.();
 
@@ -191,6 +197,7 @@ test('Test_ResolveScheduledPillOptions_TestAnimalsAndTalks_ExpectRemove', () => 
       key: amurTigerTalkKey,
    });
 });
+
 
 test('Test_BuildScheduledItemRowsContext_TestSeparateViewingSpots_ExpectDistinct', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
@@ -233,6 +240,7 @@ test('Test_BuildScheduledItemRowsContext_TestSeparateViewingSpots_ExpectDistinct
    assert.equal(context.scheduledAnimalIndexes.size, 2);
 });
 
+
 test('Test_BuildScheduledItemRowsContext_TestCoveredByTalk_ExpectOmitPillKeepScheduled', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {
@@ -270,7 +278,9 @@ test('Test_BuildScheduledItemRowsContext_TestCoveredByTalk_ExpectOmitPillKeepSch
    assert.equal(context.scheduledAnimalIndexes.size, 2);
 });
 
+
 test('Test_BuildScheduledItinerary_TestMissingCollections_ExpectEmpty', () => {
+
    assert.deepEqual(DayPlannerScheduledItems.buildScheduledItinerary({}), {
       animals: [],
       attractions: [],
@@ -279,6 +289,7 @@ test('Test_BuildScheduledItinerary_TestMissingCollections_ExpectEmpty', () => {
       wildEncounters: [],
    });
 });
+
 
 test('Test_BuildScheduledItemRowsContext_TestStationRange_ExpectRendered', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
@@ -329,6 +340,7 @@ test('Test_BuildScheduledItemRowsContext_TestStationRange_ExpectRendered', () =>
       /Main Station → Wildlife Health/
    );
 });
+
 
 test('Test_BuildScheduledItemRowsContext_TestDiscontinuousRides_ExpectSplitPills', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
@@ -410,6 +422,7 @@ test('Test_BuildScheduledItemRowsContext_TestDiscontinuousRides_ExpectSplitPills
    );
 });
 
+
 test('Test_BuildScheduledItemRowsContext_TestTrimmedGuardiansTalk_ExpectScheduledDurationNotCatalogMaximum', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {
@@ -447,6 +460,7 @@ test('Test_BuildScheduledItemRowsContext_TestTrimmedGuardiansTalk_ExpectSchedule
    assert.equal(encounter?.maximumDuration, 45);
 });
 
+
 test('Test_BuildScheduledItemRowsContext_TestMissingScheduledDuration_ExpectCatalogMaximum', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {
@@ -474,6 +488,7 @@ test('Test_BuildScheduledItemRowsContext_TestMissingScheduledDuration_ExpectCata
    assert.equal(talk?.maximumDuration, 30);
 });
 
+
 test('Test_BuildScheduledItemRowsContext_TestDeletedWildEncounters_ExpectOmitted', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {
@@ -500,6 +515,7 @@ test('Test_BuildScheduledItemRowsContext_TestDeletedWildEncounters_ExpectOmitted
    assert.equal(context.scheduledWildEncounterIndexes.size, 0);
 });
 
+
 test('Test_BuildScheduledItemRowsContext_TestDeletedGuardiansTalks_ExpectOmitted', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
       {
@@ -525,6 +541,7 @@ test('Test_BuildScheduledItemRowsContext_TestDeletedGuardiansTalks_ExpectOmitted
    assert.equal([...context.itemsByStart.values()].flat().length, 0);
    assert.equal(context.scheduledGuardiansTalkIndexes.size, 0);
 });
+
 
 test('Test_BuildScheduledItemRowsContext_TestTalksAttractionsAndFilters_ExpectRows', () => {
    const context = DayPlannerScheduledItems.buildScheduledItemRowsContext(
@@ -570,6 +587,7 @@ test('Test_BuildScheduledItemRowsContext_TestTalksAttractionsAndFilters_ExpectRo
    );
 
    const items = [...context.itemsByStart.values()].flat();
+
    assert.ok(items.some((item) => item.scheduleItemKind === 'guardians_talks'));
    assert.ok(items.some((item) => item.scheduleItemKind === 'wild_encounters'));
    assert.ok(items.some((item) => item.scheduleItemKind === ScheduleItemKind.ATTRACTION.itemType));
@@ -577,14 +595,17 @@ test('Test_BuildScheduledItemRowsContext_TestTalksAttractionsAndFilters_ExpectRo
    assert.equal(context.scheduledAnimalIndexes.size, 0);
 });
 
+
 test('Test_MergeScheduledItemsByAnchorSlot_TestNoAnchor_ExpectSkipped', () => {
    const merged = DayPlannerScheduledItems.mergeScheduledItemsByAnchorSlot(
       [{ startMinutes: 100, label: 'X' }],
       [],
       200
    );
+
    assert.equal(merged.size, 0);
 });
+
 
 test('Test_BuildScheduledAndUnscheduledItinerary_TestIndexes_ExpectFiltered', () => {
    const itinerary = {
@@ -619,7 +640,9 @@ test('Test_BuildScheduledAndUnscheduledItinerary_TestIndexes_ExpectFiltered', ()
    });
 });
 
+
 test('Test_BuildUnscheduledItinerary_TestTransportationOnlyAnimals_ExpectOmitted', () => {
+
    assert.deepEqual(DayPlannerScheduledItems.buildUnscheduledItinerary({
       animals: [
          { species: 'African Lion' },

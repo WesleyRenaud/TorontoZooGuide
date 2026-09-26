@@ -1,82 +1,170 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { AssetKeyNormalizer } from '../../../../scripts/assets/assetKeyNormalizer.js';
 import { DayPlannerScheduleController } from '../../../../scripts/itinerary/panel/dayPlannerScheduleController.js';
-import { RowPresenter } from '../../../../scripts/itinerary/panel/rowPresenter.js';
 import { RowPresentationHelper } from '../../../../scripts/itinerary/panel/rowPresentationHelper.js';
+import { RowPresenter } from '../../../../scripts/itinerary/panel/rowPresenter.js';
 import { ScheduledOccurrenceTimeModel } from '../../../../scripts/itinerary/scheduledOccurrenceTimeModel.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
-test('Test_BuildImageSrc_TestParts_ExpectPathOrNull', () => {
+
+test('Test_BuildImageSrc_TestParts_ExpectPath', () => {
+   const directory = 'animals';
+   const exhibit = 'African Savanna';
+   const species = 'African Lion';
+
+   const src = RowPresenter.buildImageSrc(directory, exhibit, species);
+
    assert.equal(
-      RowPresenter.buildImageSrc('animals', 'African Savanna', 'African Lion'),
-      'images/details/animals/african-savanna/african-lion.png'
+      src,
+      `images/details/${[directory, exhibit, species].map((part) => AssetKeyNormalizer.normalize(part)).join('/')}.png`
    );
-   assert.equal(RowPresenter.buildImageSrc('animals', '', 'African Lion'), null);
 });
 
-test('Test_BuildFieldLine_TestValue_ExpectLabeledOrEmpty', () => {
-   assert.equal(RowPresenter.buildFieldLine('Exhibit', 'African Rainforest'), 'Exhibit: African Rainforest');
-   assert.equal(RowPresenter.buildFieldLine('Exhibit', ''), '');
+
+test('Test_BuildImageSrc_TestBlankPart_ExpectNull', () => {
+   const directory = 'animals';
+   const exhibit = '';
+   const species = 'African Lion';
+
+   const src = RowPresenter.buildImageSrc(directory, exhibit, species);
+
+   assert.equal(src, null);
 });
+
+
+test('Test_BuildFieldLine_TestValue_ExpectLabeled', () => {
+   const label = 'Exhibit';
+   const value = 'African Rainforest';
+
+   const line = RowPresenter.buildFieldLine(label, value);
+
+   assert.equal(line, Strings.format.labeledValue(label, value));
+});
+
+
+test('Test_BuildFieldLine_TestBlank_ExpectEmpty', () => {
+   const label = 'Exhibit';
+   const value = '';
+
+   const line = RowPresenter.buildFieldLine(label, value);
+
+   assert.equal(line, value);
+});
+
 
 test('Test_BuildScheduledTimeFieldLine_TestItem_ExpectTimeLine', () => {
    const original = ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange;
-   ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange = () => '11:00 AM - 12:00 PM';
+   const timeRange = '11:00 AM - 12:00 PM';
+   ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange = () => timeRange;
 
    try {
-      assert.equal(
-         RowPresenter.buildScheduledTimeFieldLine({ start_time: '11:00 AM' }),
-         RowPresentationHelper.buildTimeFieldLine('11:00 AM - 12:00 PM')
-      );
+      const line = RowPresenter.buildScheduledTimeFieldLine({ start_time: '11:00 AM' });
+
+      assert.equal(line, RowPresentationHelper.buildTimeFieldLine(timeRange));
    } finally {
       ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange = original;
    }
 });
 
+
 test('Test_BuildApproximateStartTimeFieldLine_TestStartTime_ExpectRounded', () => {
    const originalParse = DayPlannerScheduleController.parseClockTimeMinutes;
    const originalFormat = DayPlannerScheduleController.formatMinutesAsClockTime;
+   const startMinutes = 602;
+   const roundedMinutes = Math.round(startMinutes / 5) * 5;
    DayPlannerScheduleController.parseClockTimeMinutes = (value) => (
-      value ? 602 : Number.NaN
+      value ? startMinutes : Number.NaN
    );
    DayPlannerScheduleController.formatMinutesAsClockTime = (minutes) => `m${minutes}`;
 
    try {
+      const line = RowPresenter.buildApproximateStartTimeFieldLine({ start_time: '10:02 AM' });
+
       assert.equal(
-         RowPresenter.buildApproximateStartTimeFieldLine({ start_time: '10:02 AM' }),
-         RowPresentationHelper.buildTimeFieldLine('~m600')
+         line,
+         RowPresentationHelper.buildTimeFieldLine(
+            Strings.format.approximate(`m${roundedMinutes}`)
+         )
       );
-      assert.equal(RowPresenter.buildApproximateStartTimeFieldLine({}), '');
    } finally {
       DayPlannerScheduleController.parseClockTimeMinutes = originalParse;
       DayPlannerScheduleController.formatMinutesAsClockTime = originalFormat;
    }
 });
 
-test('Test_BuildMetaLines_TestValues_ExpectFiltered', () => {
-   assert.deepEqual(RowPresenter.buildMetaLines(['a', '', 'b', null]), ['a', 'b']);
+
+test('Test_BuildApproximateStartTimeFieldLine_TestMissingStart_ExpectEmpty', () => {
+   const originalParse = DayPlannerScheduleController.parseClockTimeMinutes;
+   const originalFormat = DayPlannerScheduleController.formatMinutesAsClockTime;
+   DayPlannerScheduleController.parseClockTimeMinutes = () => Number.NaN;
+   DayPlannerScheduleController.formatMinutesAsClockTime = (minutes) => `m${minutes}`;
+
+   try {
+      const line = RowPresenter.buildApproximateStartTimeFieldLine({});
+
+      assert.equal(line, '');
+   } finally {
+      DayPlannerScheduleController.parseClockTimeMinutes = originalParse;
+      DayPlannerScheduleController.formatMinutesAsClockTime = originalFormat;
+   }
 });
 
-test('Test_BuildLinkRowProps_TestLink_ExpectHandlers', () => {
-   assert.deepEqual(RowPresenter.buildLinkRowProps(null), {});
 
+test('Test_BuildMetaLines_TestValues_ExpectFiltered', () => {
+   const first = 'African Lion';
+   const second = 'Snow Leopard';
+   const lines = [first, '', second, null];
+
+   const metaLines = RowPresenter.buildMetaLines(lines);
+
+   assert.deepEqual(metaLines, [first, second]);
+});
+
+
+test('Test_BuildLinkRowProps_TestNull_ExpectEmpty', () => {
+   const link = null;
+
+   const props = RowPresenter.buildLinkRowProps(link);
+
+   assert.deepEqual(props, {});
+});
+
+
+test('Test_BuildLinkRowProps_TestLink_ExpectOpens', () => {
+   const link = 'https://example.com';
    const opens = [];
    const originalOpen = window.open;
    window.open = (...args) => { opens.push(args); };
 
    try {
-      const props = RowPresenter.buildLinkRowProps('https://example.com');
-      assert.equal(props.linkText, Strings.common.moreInfo);
+      const props = RowPresenter.buildLinkRowProps(link);
       props.onLinkClick();
-      assert.deepEqual(opens, [['https://example.com', '_blank']]);
 
-      const titleProps = RowPresenter.buildTitleLinkRowProps('https://zoo.example');
-      titleProps.onNameClick();
-      assert.deepEqual(opens[1], ['https://zoo.example', '_blank']);
+      assert.equal(props.linkText, Strings.common.moreInfo);
+      assert.deepEqual(opens.at(Position.FIRST), [link, '_blank']);
+   } finally {
+      window.open = originalOpen;
+   }
+});
+
+
+test('Test_BuildTitleLinkRowProps_TestLink_ExpectOpens', () => {
+   const link = 'https://zoo.example';
+   const opens = [];
+   const originalOpen = window.open;
+   window.open = (...args) => { opens.push(args); };
+
+   try {
+      const props = RowPresenter.buildTitleLinkRowProps(link);
+      props.onNameClick();
+
+      assert.deepEqual(opens.at(Position.FIRST), [link, '_blank']);
    } finally {
       window.open = originalOpen;
    }

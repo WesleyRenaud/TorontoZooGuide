@@ -113,78 +113,8 @@ LION_KEY = AnimalScheduleItemKey(
    species='African Lion',
    exhibit='Africa Savanna',
 )
-
 LION_TALK = 'African Lion'
 RHINO_ENCOUNTER = 'White Rhinoceros'
-
-
-@pytest.fixture
-def unscheduler_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( UNSCHEDULER_SCHEMA )
-   conn.execute(
-      """   INSERT INTO ItineraryAnimal (
-               SPECIES,
-               EXHIBIT,
-               ENCLOSURE_NAME,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, NULL, ?, ? );
-      """,
-      ( 'African Lion', 'Africa Savanna', '10:00 AM', '10:08 AM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryAttraction (
-               ATTRACTION,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, ? );
-      """,
-      ( CAROUSEL, '11:00 AM', '11:20 AM' ) )
-   conn.execute(
-      """   INSERT INTO ItineraryEvent (
-               EVENT_TYPE,
-               START_TIME,
-               END_TIME
-            )
-            VALUES ( ?, ?, ? );
-      """,
-      ( ItineraryEventType.LUNCH.value, '12:00 PM', '12:40 PM' ) )
-   conn.commit()
-
-   yield conn
-
-   conn.close()
-
-
-@pytest.fixture
-def guardians_talk_unscheduler_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( UNSCHEDULER_SCHEMA )
-   conn.execute(
-      """INSERT INTO ItineraryGuardiansTalk ( TALK_NAME, START_TIME, END_TIME )
-         VALUES ( ?, ?, ? );""",
-      ( LION_TALK, '10:00 AM', '10:30 AM' ) )
-   conn.commit()
-   yield conn
-   conn.close()
-
-
-@pytest.fixture
-def wild_encounter_unscheduler_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( UNSCHEDULER_SCHEMA )
-   conn.execute(
-      """INSERT INTO ItineraryWildEncounter ( WILD_ENCOUNTER, START_TIME, END_TIME )
-         VALUES ( ?, ?, ? );""",
-      ( RHINO_ENCOUNTER, '1:00 PM', '1:45 PM' ) )
-   conn.commit()
-   yield conn
-   conn.close()
 
 
 def _insert_zoomobile_transportation_rows( conn: sqlite3.Connection ) -> None:
@@ -294,18 +224,6 @@ def _zoomobile_saved_itinerary() -> SavedItinerary:
    )
 
 
-@pytest.fixture
-def zoomobile_unscheduler_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
-   conn.row_factory = sqlite3.Row
-   conn.executescript( UNSCHEDULER_SCHEMA )
-   _insert_zoomobile_transportation_rows( conn )
-
-   yield conn
-
-   conn.close()
-
-
 def _fetch_transportation_row(
       conn: sqlite3.Connection,
       *,
@@ -349,22 +267,104 @@ def _fetch_transit_legs( conn: sqlite3.Connection ) -> list[ tuple[ str, str, st
    ]
 
 
+@pytest.fixture
+def unscheduler_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( UNSCHEDULER_SCHEMA )
+   conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               ENCLOSURE_NAME,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, NULL, ?, ? );
+      """,
+      ( LION_KEY.species, LION_KEY.exhibit, '10:00 AM', '10:08 AM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryAttraction (
+               ATTRACTION,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ? );
+      """,
+      ( CAROUSEL, '11:00 AM', '11:20 AM' ) )
+   conn.execute(
+      """   INSERT INTO ItineraryEvent (
+               EVENT_TYPE,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( ?, ?, ? );
+      """,
+      ( ItineraryEventType.LUNCH.value, '12:00 PM', '12:40 PM' ) )
+   conn.commit()
+
+   yield conn
+
+   conn.close()
+
+
+@pytest.fixture
+def guardians_talk_unscheduler_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( UNSCHEDULER_SCHEMA )
+   conn.execute(
+      """INSERT INTO ItineraryGuardiansTalk ( TALK_NAME, START_TIME, END_TIME )
+         VALUES ( ?, ?, ? );""",
+      ( LION_TALK, '10:00 AM', '10:30 AM' ) )
+   conn.commit()
+   yield conn
+   conn.close()
+
+
+@pytest.fixture
+def wild_encounter_unscheduler_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( UNSCHEDULER_SCHEMA )
+   conn.execute(
+      """INSERT INTO ItineraryWildEncounter ( WILD_ENCOUNTER, START_TIME, END_TIME )
+         VALUES ( ?, ?, ? );""",
+      ( RHINO_ENCOUNTER, '1:00 PM', '1:45 PM' ) )
+   conn.commit()
+   yield conn
+   conn.close()
+
+
+@pytest.fixture
+def zoomobile_unscheduler_conn() -> sqlite3.Connection:
+   conn = sqlite3.connect( ':memory:' )
+   conn.row_factory = sqlite3.Row
+   conn.executescript( UNSCHEDULER_SCHEMA )
+   _insert_zoomobile_transportation_rows( conn )
+
+   yield conn
+
+   conn.close()
+
+
 def Test_Apply_TestAnimalKey_ExpectClearedSchedule(
       unscheduler_conn: sqlite3.Connection ) -> None:
    cur = unscheduler_conn.cursor()
-   ItineraryItemUnscheduler.apply( cur, LION_KEY )
+
+   result = ItineraryItemUnscheduler.apply( cur, LION_KEY )
    unscheduler_conn.commit()
    cur.close()
-
    row = unscheduler_conn.execute(
       """   SELECT START_TIME, END_TIME
             FROM ItineraryAnimal
             WHERE SPECIES = ?
               AND EXHIBIT = ?;
       """,
-      ( 'African Lion', 'Africa Savanna' ),
+      ( LION_KEY.species, LION_KEY.exhibit ),
    ).fetchone()
 
+   assert result is None
    assert row is not None
    assert row[ 'START_TIME' ] is None
    assert row[ 'END_TIME' ] is None
@@ -373,6 +373,7 @@ def Test_Apply_TestAnimalKey_ExpectClearedSchedule(
 def Test_Apply_TestAttractionKey_ExpectClearedSchedule(
       unscheduler_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   key = AttractionScheduleItemKey( name=CAROUSEL )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_unscheduler.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: SavedItinerary(
@@ -383,22 +384,20 @@ def Test_Apply_TestAttractionKey_ExpectClearedSchedule(
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_unscheduler.SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row',
       lambda saved_itinerary, schedule_item_key: None )
-
    cur = unscheduler_conn.cursor()
-   ItineraryItemUnscheduler.apply(
-      cur,
-      AttractionScheduleItemKey( name=CAROUSEL ) )
+
+   result = ItineraryItemUnscheduler.apply( cur, key )
    unscheduler_conn.commit()
    cur.close()
-
    row = unscheduler_conn.execute(
       """   SELECT START_TIME, END_TIME
             FROM ItineraryAttraction
             WHERE ATTRACTION = ?;
       """,
-      ( CAROUSEL, ),
+      ( key.name, ),
    ).fetchone()
 
+   assert result is None
    assert row is not None
    assert row[ 'START_TIME' ] is None
    assert row[ 'END_TIME' ] is None
@@ -407,13 +406,14 @@ def Test_Apply_TestAttractionKey_ExpectClearedSchedule(
 def Test_Apply_TestEventType_ExpectDeletedRow(
       unscheduler_conn: sqlite3.Connection ) -> None:
    cur = unscheduler_conn.cursor()
-   ItineraryItemUnscheduler.apply( cur, ItineraryEventType.LUNCH )
+
+   result = ItineraryItemUnscheduler.apply( cur, ItineraryEventType.LUNCH )
    unscheduler_conn.commit()
    cur.close()
-
    count = unscheduler_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryEvent;' ).fetchone()
 
+   assert result is None
    assert count is not None
    assert count[ 'COUNT' ] == 0
 
@@ -425,14 +425,13 @@ def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeClearedTransitPres
       'api.itinerary.operations.itinerary_item_unscheduler.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: _zoomobile_saved_itinerary() )
    transit_legs_before = _fetch_transit_legs( zoomobile_unscheduler_conn )
-
    cur = zoomobile_unscheduler_conn.cursor()
-   ItineraryItemUnscheduler.apply(
+
+   result = ItineraryItemUnscheduler.apply(
       cur,
       AttractionScheduleItemKey( name=TransportationName.ZOOMOBILE ) )
    zoomobile_unscheduler_conn.commit()
    cur.close()
-
    attraction_row = _fetch_transportation_row(
       zoomobile_unscheduler_conn,
       added_as_attraction=True )
@@ -440,6 +439,7 @@ def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeClearedTransitPres
       zoomobile_unscheduler_conn,
       added_as_attraction=False )
 
+   assert result is None
    assert attraction_row[ 'START_TIME' ] is None
    assert attraction_row[ 'END_TIME' ] is None
    assert transit_row[ 'START_TIME' ] == ZOOMOBILE_TRANSIT_START
@@ -452,27 +452,26 @@ def Test_Apply_TestAttractionZoomobileKey_ExpectAttractionModeClearedTransitPres
 def Test_Apply_TestTransportationAttractionModeKey_ExpectAttractionModeClearedTransitPreserved(
       zoomobile_unscheduler_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   key = TransportationScheduleItemKey(
+      name=TransportationName.ZOOMOBILE,
+      added_as_attraction=True )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_item_unscheduler.ItineraryProvider.fetch_saved_itinerary',
       lambda conn: _zoomobile_saved_itinerary() )
    transit_legs_before = _fetch_transit_legs( zoomobile_unscheduler_conn )
-
    cur = zoomobile_unscheduler_conn.cursor()
-   ItineraryItemUnscheduler.apply(
-      cur,
-      TransportationScheduleItemKey(
-         name=TransportationName.ZOOMOBILE,
-         added_as_attraction=True ) )
+
+   result = ItineraryItemUnscheduler.apply( cur, key )
    zoomobile_unscheduler_conn.commit()
    cur.close()
-
    attraction_row = _fetch_transportation_row(
       zoomobile_unscheduler_conn,
-      added_as_attraction=True )
+      added_as_attraction=key.added_as_attraction )
    transit_row = _fetch_transportation_row(
       zoomobile_unscheduler_conn,
       added_as_attraction=False )
 
+   assert result is None
    assert attraction_row[ 'START_TIME' ] is None
    assert attraction_row[ 'END_TIME' ] is None
    assert transit_row[ 'START_TIME' ] == ZOOMOBILE_TRANSIT_START
@@ -484,28 +483,32 @@ def Test_Apply_TestTransportationAttractionModeKey_ExpectAttractionModeClearedTr
 
 def Test_Apply_TestGuardiansTalkKey_ExpectDeletedRow(
       guardians_talk_unscheduler_conn: sqlite3.Connection ) -> None:
+   key = GuardiansTalkScheduleItemKey( name=LION_TALK, start_time='10:00 AM' )
    cur = guardians_talk_unscheduler_conn.cursor()
-   ItineraryItemUnscheduler.apply(
-      cur,
-      GuardiansTalkScheduleItemKey( name=LION_TALK, start_time='10:00 AM' ) )
+
+   result = ItineraryItemUnscheduler.apply( cur, key )
    guardians_talk_unscheduler_conn.commit()
    cur.close()
    count = guardians_talk_unscheduler_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryGuardiansTalk;' ).fetchone()
+
+   assert result is None
    assert count is not None
    assert count[ 'COUNT' ] == 0
 
 
 def Test_Apply_TestWildEncounterKey_ExpectDeletedRow(
       wild_encounter_unscheduler_conn: sqlite3.Connection ) -> None:
+   key = WildEncounterScheduleItemKey( name=RHINO_ENCOUNTER, start_time='1:00 PM' )
    cur = wild_encounter_unscheduler_conn.cursor()
-   ItineraryItemUnscheduler.apply(
-      cur,
-      WildEncounterScheduleItemKey( name=RHINO_ENCOUNTER, start_time='1:00 PM' ) )
+
+   result = ItineraryItemUnscheduler.apply( cur, key )
    wild_encounter_unscheduler_conn.commit()
    cur.close()
    count = wild_encounter_unscheduler_conn.execute(
       'SELECT COUNT(*) AS COUNT FROM ItineraryWildEncounter;' ).fetchone()
+
+   assert result is None
    assert count is not None
    assert count[ 'COUNT' ] == 0
 
@@ -513,12 +516,15 @@ def Test_Apply_TestWildEncounterKey_ExpectDeletedRow(
 def Test_Unschedule_TestAnimalKey_ExpectCommitResult(
       unscheduler_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   expected = ItinerarySaveResult(
+      status=ItineraryErrorType.SUCCESS,
+      reasons=[],
+      itinerary=ItineraryBuilder.empty() )
    monkeypatch.setattr(
       ItineraryItemScheduleChangeCommitter,
       'commit',
-      lambda conn, key, apply: ItinerarySaveResult(
-         status=ItineraryErrorType.SUCCESS,
-         reasons=[],
-         itinerary=ItineraryBuilder.empty() ) )
+      lambda conn, key, apply: expected )
+
    result = ItineraryItemUnscheduler.unschedule( unscheduler_conn, LION_KEY )
-   assert result.status == ItineraryErrorType.SUCCESS
+
+   assert result == expected

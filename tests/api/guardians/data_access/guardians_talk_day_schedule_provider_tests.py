@@ -67,9 +67,11 @@ def Test_FetchDayScheduleRecords_TestInvalidTargetDate_ExpectEmpty(
       'fetch_day_schedule_records_from_schedule',
       fetch_day_schedule_records_from_schedule )
 
-   assert GuardiansTalkDayScheduleProvider.fetch_day_schedule_records(
+   day_schedule_records = GuardiansTalkDayScheduleProvider.fetch_day_schedule_records(
       STUB_REQUEST_CONNECTION,
-      None ) == []
+      None )
+
+   assert day_schedule_records == []
 
 
 def Test_FetchDayScheduleRecords_TestDifferentWeekdayTimes_ExpectMatchingTalkTimeOnly(

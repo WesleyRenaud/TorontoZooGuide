@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
@@ -21,78 +22,92 @@ def stub_suppressed_status_provider( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 
 def Test_AppendSuppressedWarning_TestDuplicate_ExpectSingleEntry() -> None:
-   suppressed_warnings: list[ ItineraryErrorType ] = []
+   error_type = ItineraryErrorType.ITEM_NOT_ON_ITINERARY
+   suppressed_warnings: list[ ItineraryErrorType ] = [ error_type ]
 
    ItinerarySuppressedWarningsBuilder.append_suppressed_warning(
       suppressed_warnings,
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
-   ItinerarySuppressedWarningsBuilder.append_suppressed_warning(
-      suppressed_warnings,
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
+      error_type )
 
-   assert suppressed_warnings == [ ItineraryErrorType.ITEM_NOT_ON_ITINERARY ]
+   assert suppressed_warnings == [ error_type ]
 
 
-def Test_RecordIfErrorSuppressed_TestOnlySuppressedTypes_ExpectTracked(
+def Test_RecordIfErrorSuppressed_TestNotSuppressedType_ExpectFalse(
       stub_suppressed_status_provider: None ) -> None:
    suppressed_warnings: list[ ItineraryErrorType ] = []
+   error_type = ItineraryErrorType.ITEM_NOT_ON_ITINERARY
 
-   assert not ItinerarySuppressedWarningsBuilder.record_if_error_suppressed(
-      object(),  # type: ignore[arg-type]
+   recorded = ItinerarySuppressedWarningsBuilder.record_if_error_suppressed(
+      STUB_REQUEST_CONNECTION,
       suppressed_warnings,
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
+      error_type )
 
-   assert ItinerarySuppressedWarningsBuilder.record_if_error_suppressed(
-      object(),  # type: ignore[arg-type]
+   assert recorded is False
+   assert suppressed_warnings == []
+
+
+def Test_RecordIfErrorSuppressed_TestSuppressedType_ExpectTracked(
+      stub_suppressed_status_provider: None ) -> None:
+   suppressed_warnings: list[ ItineraryErrorType ] = []
+   error_type = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+
+   recorded = ItinerarySuppressedWarningsBuilder.record_if_error_suppressed(
+      STUB_REQUEST_CONNECTION,
       suppressed_warnings,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-   assert suppressed_warnings == [ ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ]
+      error_type )
+
+   assert recorded is True
+   assert suppressed_warnings == [ error_type ]
 
 
 def Test_WithSuppressedWarnings_TestEmpty_ExpectOriginalResult() -> None:
-   result = ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
-
-   assert ItinerarySuppressedWarningsBuilder.with_suppressed_warnings( result, () ) is result
-
-
-def Test_WithSuppressedWarnings_TestMerge_ExpectUniqueWarningTypes() -> None:
-   result = ItinerarySaveResult(
-      itinerary=Itinerary( date='2026-06-15' ),
-      suppressed_warnings=( ItineraryErrorType.ITEM_NOT_ON_ITINERARY, ) )
+   date = '2026-06-15'
+   result = ItinerarySaveResult( itinerary=Itinerary( date=date ) )
+   empty_warnings: list[ ItineraryErrorType ] = []
 
    merged = ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
       result,
-      (
-         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-         ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-      ) )
+      empty_warnings )
 
-   assert merged.suppressed_warnings == [
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-   ]
+   assert merged is result
+
+
+def Test_WithSuppressedWarnings_TestMerge_ExpectUniqueWarningTypes() -> None:
+   date = '2026-06-15'
+   existing = ItineraryErrorType.ITEM_NOT_ON_ITINERARY
+   added = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   result = ItinerarySaveResult(
+      itinerary=Itinerary( date=date ),
+      suppressed_warnings=( existing, ) )
+   additional = [ added, existing ]
+
+   merged = ItinerarySuppressedWarningsBuilder.with_suppressed_warnings(
+      result,
+      additional )
+
+   assert merged.suppressed_warnings == [ existing, added ]
 
 
 def Test_WithTimeSetSuppressedWarnings_TestEmpty_ExpectOriginalResult() -> None:
    result = ItineraryTimeSetResult()
-
-   assert ItinerarySuppressedWarningsBuilder.with_time_set_suppressed_warnings(
-      result,
-      () ) is result
-
-
-def Test_WithTimeSetSuppressedWarnings_TestMerge_ExpectUniqueWarningTypes() -> None:
-   result = ItineraryTimeSetResult(
-      suppressed_warnings=( ItineraryErrorType.ITEM_NOT_ON_ITINERARY, ) )
+   empty_warnings: list[ ItineraryErrorType ] = []
 
    merged = ItinerarySuppressedWarningsBuilder.with_time_set_suppressed_warnings(
       result,
-      (
-         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-         ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-      ) )
+      empty_warnings )
 
-   assert merged.suppressed_warnings == [
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-   ]
+   assert merged is result
+
+
+def Test_WithTimeSetSuppressedWarnings_TestMerge_ExpectUniqueWarningTypes() -> None:
+   existing = ItineraryErrorType.ITEM_NOT_ON_ITINERARY
+   added = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   result = ItineraryTimeSetResult(
+      suppressed_warnings=( existing, ) )
+   additional = [ added, existing ]
+
+   merged = ItinerarySuppressedWarningsBuilder.with_time_set_suppressed_warnings(
+      result,
+      additional )
+
+   assert merged.suppressed_warnings == [ existing, added ]

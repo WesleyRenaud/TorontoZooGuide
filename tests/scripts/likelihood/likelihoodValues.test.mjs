@@ -1,72 +1,206 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { LikelihoodValues } from '../../../scripts/likelihood/likelihoodValues.js';
-import { RowAlertPresenter } from '../../../scripts/itinerary/panel/rowAlertPresenter.js';
 import { ItineraryValidator } from '../../../scripts/itinerary/itineraryValidator.js';
+import { RowAlertPresenter } from '../../../scripts/itinerary/panel/rowAlertPresenter.js';
+import { LikelihoodScale } from '../../../scripts/likelihood/likelihoodScale.js';
+import { LikelihoodValues } from '../../../scripts/likelihood/likelihoodValues.js';
+import { Strings } from '../../../scripts/strings.js';
 
-test('Test_LikelihoodToPercent_TestIntegerApiValues_ExpectPercents', () => {
-   assert.equal(LikelihoodValues.likelihoodToPercent(1), 1);
-   assert.equal(LikelihoodValues.likelihoodToPercent(20), 20);
-   assert.equal(LikelihoodValues.likelihoodToPercent(100), 100);
-   assert.equal(LikelihoodValues.likelihoodToPercent(0), 0);
+
+test('Test_LikelihoodToPercent_TestOne_ExpectSame', () => {
+   const value = 1;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, value);
 });
 
-test('Test_LikelihoodToPercent_TestFractionalClientValues_ExpectScaled', () => {
-   assert.equal(LikelihoodValues.likelihoodToPercent(0.25), 25);
-   assert.equal(LikelihoodValues.likelihoodToPercent(0.9), 90);
+
+test('Test_LikelihoodToPercent_TestInteger_ExpectSame', () => {
+   const value = 20;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, value);
 });
 
-test('Test_LikelihoodToFraction_TestLowSavedValues_ExpectPercentSemantics', () => {
-   assert.equal(LikelihoodValues.likelihoodToFraction(1), 0.01);
-   assert.equal(LikelihoodValues.likelihoodToFraction(20), 0.2);
+
+test('Test_LikelihoodToPercent_TestMaximum_ExpectSame', () => {
+   const value = LikelihoodScale.MAX_LIKELIHOOD;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, value);
 });
+
+
+test('Test_LikelihoodToPercent_TestZero_ExpectSame', () => {
+   const value = 0;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, value);
+});
+
+
+test('Test_LikelihoodToPercent_TestQuarterFraction_ExpectScaled', () => {
+   const value = 0.25;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, value * 100);
+});
+
+
+test('Test_LikelihoodToPercent_TestHighFraction_ExpectScaled', () => {
+   const value = 0.9;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, value * 100);
+});
+
+
+test('Test_LikelihoodToFraction_TestOne_ExpectPercentSemantics', () => {
+   const value = 1;
+
+   const fraction = LikelihoodValues.likelihoodToFraction(value);
+
+   assert.equal(fraction, LikelihoodValues.likelihoodToPercent(value) / 100);
+});
+
+
+test('Test_LikelihoodToFraction_TestInteger_ExpectPercentSemantics', () => {
+   const value = 20;
+
+   const fraction = LikelihoodValues.likelihoodToFraction(value);
+
+   assert.equal(fraction, LikelihoodValues.likelihoodToPercent(value) / 100);
+});
+
 
 test('Test_BuildAnimalAlert_TestOnePercentLikelihood_ExpectNotInflated', () => {
+   const likelihoodBefore = 1;
+   const likelihoodAfter = 20;
+
    const alert = RowAlertPresenter.buildAnimalAlert({
-      likelihoodBefore: 1,
-      likelihoodAfter: 20,
+      likelihoodBefore,
+      likelihoodAfter,
    });
 
    assert.equal(
       alert.line,
-      'Projected visibility changed from 1% to 20% on your new date.'
+      Strings.itinerary.removedItems.projectedVisibilityChanged(
+         LikelihoodValues.likelihoodToPercent(likelihoodBefore),
+         LikelihoodValues.likelihoodToPercent(likelihoodAfter)
+      )
    );
 });
 
+
 test('Test_BuildItineraryValidationState_TestOnePercentRising_ExpectImproved', () => {
+   const species = 'Marabou Stork';
+   const exhibit = 'Africa Savanna';
+   const oldLikelihood = 1;
+   const likelihood = 25;
+   const threshold = 20;
+
    const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
-            species: 'Marabou Stork',
-            exhibit: 'Africa Savanna',
-            old_likelihood: 1,
-            likelihood: 25,
+            species,
+            exhibit,
+            old_likelihood: oldLikelihood,
+            likelihood,
          },
       ],
-   }, { animalVisibilityChangeThreshold: 20 });
+   }, { animalVisibilityChangeThreshold: threshold });
 
    assert.deepEqual(
       validation.improvedVisibility.animals.map((animal) => animal.species),
-      ['Marabou Stork']
+      [species]
    );
    assert.deepEqual(validation.reducedVisibility.animals, []);
 });
 
-test('Test_LikelihoodToPercent_TestMissingValues_ExpectNull', () => {
-   assert.equal(LikelihoodValues.likelihoodToPercent(null), null);
-   assert.equal(LikelihoodValues.likelihoodToPercent(undefined), null);
-   assert.equal(LikelihoodValues.likelihoodToPercent(''), null);
-   assert.equal(LikelihoodValues.likelihoodToPercent('not-a-number'), null);
-   assert.equal(LikelihoodValues.likelihoodToPercent(Number.NaN), null);
+
+test('Test_LikelihoodToPercent_TestNull_ExpectNull', () => {
+   const value = null;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, null);
 });
 
-test('Test_LikelihoodToPercent_TestNonIntegerOutsideUnit_ExpectClamped', () => {
-   assert.equal(LikelihoodValues.likelihoodToPercent(12.5), 12.5);
-   assert.equal(LikelihoodValues.likelihoodToPercent(150.5), 100);
+
+test('Test_LikelihoodToPercent_TestUndefined_ExpectNull', () => {
+   const value = undefined;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, null);
 });
 
-test('Test_LikelihoodToFraction_TestNullPercent_ExpectNull', () => {
-   assert.equal(LikelihoodValues.likelihoodToFraction(null), null);
-   assert.equal(LikelihoodValues.likelihoodToFraction(''), null);
+
+test('Test_LikelihoodToPercent_TestEmptyString_ExpectNull', () => {
+   const value = '';
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, null);
+});
+
+
+test('Test_LikelihoodToPercent_TestNonNumeric_ExpectNull', () => {
+   const value = 'not-a-number';
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, null);
+});
+
+
+test('Test_LikelihoodToPercent_TestNaN_ExpectNull', () => {
+   const value = Number.NaN;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, null);
+});
+
+
+test('Test_LikelihoodToPercent_TestNonIntegerOutsideUnit_ExpectSame', () => {
+   const value = 12.5;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, value);
+});
+
+
+test('Test_LikelihoodToPercent_TestAboveMaximum_ExpectClamped', () => {
+   const value = LikelihoodScale.MAX_LIKELIHOOD + 50.5;
+
+   const percent = LikelihoodValues.likelihoodToPercent(value);
+
+   assert.equal(percent, LikelihoodScale.MAX_LIKELIHOOD);
+});
+
+
+test('Test_LikelihoodToFraction_TestNull_ExpectNull', () => {
+   const value = null;
+
+   const fraction = LikelihoodValues.likelihoodToFraction(value);
+
+   assert.equal(fraction, null);
+});
+
+
+test('Test_LikelihoodToFraction_TestEmptyString_ExpectNull', () => {
+   const value = '';
+
+   const fraction = LikelihoodValues.likelihoodToFraction(value);
+
+   assert.equal(fraction, null);
 });

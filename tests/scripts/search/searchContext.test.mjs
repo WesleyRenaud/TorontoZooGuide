@@ -1,22 +1,30 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { SearchContext } from '../../../scripts/search/searchContext.js';
 import { WeatherClient } from '../../../scripts/api/weatherClient.js';
+import { SearchContext } from '../../../scripts/search/searchContext.js';
 import { VisitDateValidator } from '../../../scripts/visitDates/visitDateValidator.js';
 
+
 test('Test_BuildDateSearchContext_TestWithoutTemp_ExpectDateFields', async () => {
-   const context = await SearchContext.buildDateSearchContext('2026-06-15', { includeTemp: false });
-   assert.equal(context.date, '2026-06-15');
-   assert.equal(context.month, VisitDateValidator.getMonth('2026-06-15'));
-   assert.equal(context.day, 15);
+   const date = '2026-06-15';
+
+   const context = await SearchContext.buildDateSearchContext(date, { includeTemp: false });
+
+   assert.equal(context.date, date);
+   assert.equal(context.month, VisitDateValidator.getMonth(date));
+   assert.equal(context.day, VisitDateValidator.getDay(date));
    assert.equal(context.temp, null);
 });
 
+
 test('Test_BuildDateSearchContext_TestEmptyDate_ExpectNullFields', async () => {
-   const context = await SearchContext.buildDateSearchContext('');
+   const date = '';
+
+   const context = await SearchContext.buildDateSearchContext(date);
+
    assert.deepEqual(context, {
-      date: '',
+      date,
       month: null,
       day: null,
       year: null,
@@ -25,29 +33,36 @@ test('Test_BuildDateSearchContext_TestEmptyDate_ExpectNullFields', async () => {
    });
 });
 
+
 test('Test_BuildDateSearchContext_TestWithinWeek_ExpectTemp', async () => {
+   const date = '2026-06-15';
+   const temp = 22;
    const originalWithin = VisitDateValidator.isWithinNextNDays;
    const originalWeather = WeatherClient.fetchWeatherTempForDate;
    VisitDateValidator.isWithinNextNDays = () => true;
-   WeatherClient.fetchWeatherTempForDate = async () => 22;
+   WeatherClient.fetchWeatherTempForDate = async () => temp;
 
    try {
-      const context = await SearchContext.buildDateSearchContext('2026-06-15');
-      assert.equal(context.temp, 22);
+      const context = await SearchContext.buildDateSearchContext(date);
+
+      assert.equal(context.temp, temp);
    } finally {
       VisitDateValidator.isWithinNextNDays = originalWithin;
       WeatherClient.fetchWeatherTempForDate = originalWeather;
    }
 });
 
+
 test('Test_BuildDateSearchContext_TestWeatherError_ExpectNullTemp', async () => {
+   const date = '2026-06-15';
    const originalWithin = VisitDateValidator.isWithinNextNDays;
    const originalWeather = WeatherClient.fetchWeatherTempForDate;
    VisitDateValidator.isWithinNextNDays = () => true;
    WeatherClient.fetchWeatherTempForDate = async () => { throw new Error('fail'); };
 
    try {
-      const context = await SearchContext.buildDateSearchContext('2026-06-15');
+      const context = await SearchContext.buildDateSearchContext(date);
+
       assert.equal(context.temp, null);
    } finally {
       VisitDateValidator.isWithinNextNDays = originalWithin;

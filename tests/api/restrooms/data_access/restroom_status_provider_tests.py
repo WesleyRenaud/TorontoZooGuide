@@ -36,12 +36,14 @@ def restroom_status_conn() -> sqlite3.Connection:
 
 def Test_SaveClosedStatus_TestNewRestroom_ExpectPersistsClosedRow(
       restroom_status_conn: sqlite3.Connection ) -> None:
-   assert RestroomStatusProvider.save_closed_status(
+   result = RestroomStatusProvider.save_closed_status(
       restroom_status_conn,
       restroom=RESTROOM,
       start_date=START_DATE,
       end_date=END_DATE,
-      message=CLOSED_MESSAGE ) is True
+      message=CLOSED_MESSAGE )
+
+   assert result is True
 
    row = restroom_status_conn.execute(
       """   SELECT RESTROOM, IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END
@@ -62,11 +64,13 @@ def Test_SaveOpenStatus_TestPreviouslyClosedRestroom_ExpectClearsClosedMessage(
       end_date=END_DATE,
       message=CLOSED_MESSAGE )
 
-   assert RestroomStatusProvider.save_open_status(
+   result = RestroomStatusProvider.save_open_status(
       restroom_status_conn,
       restroom=RESTROOM,
       start_date=START_DATE,
-      end_date=END_DATE ) is True
+      end_date=END_DATE )
+
+   assert result is True
 
    row = restroom_status_conn.execute(
       """   SELECT IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END
@@ -86,12 +90,14 @@ def Test_SaveClosedStatus_TestExistingRow_ExpectUpdatesClosedFields(
       start_date=START_DATE,
       end_date=END_DATE )
 
-   assert RestroomStatusProvider.save_closed_status(
+   result = RestroomStatusProvider.save_closed_status(
       restroom_status_conn,
       restroom=RESTROOM,
       start_date='2026-07-01',
       end_date='2026-07-15',
-      message='Updated closure.' ) is True
+      message='Updated closure.' )
+
+   assert result is True
 
    row = restroom_status_conn.execute(
       """   SELECT IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END

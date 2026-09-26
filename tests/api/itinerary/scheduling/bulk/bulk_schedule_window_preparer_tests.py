@@ -15,6 +15,7 @@ from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.routing.itinerary_schedule_window import ItineraryScheduleWindow
 from api.itinerary.scheduling.bulk.bulk_schedule_window_preparer import BulkScheduleWindowPreparer
 from api.itinerary.scheduling.items.prepared_schedule_window import PreparedScheduleWindow
+from api.shared.calendar_dates import DateValues
 from api.walk_graph.domain.walk_graph import WalkGraph
 from api.walk_graph.viewing_spot_walk_node_id_resolver import ViewingSpotWalkNodeIdResolver
 
@@ -42,7 +43,7 @@ SAVED_ITINERARY_WITH_TALK = SavedItinerary(
 CAROUSEL = 'Conservation Carousel'
 ENTRANCE_NODE_ID = 'n-entrance'
 LION_NODE_ID = 'n-lion'
-OPEN_ANCHOR_SECONDS = 9 * 3600 + 30 * 60
+OPEN_ANCHOR_SECONDS = DateValues.time_value_in_seconds( '9:30 AM' )
 
 LION = ItineraryAnimalRecord(
    species='African Lion',
@@ -89,11 +90,15 @@ TEST_GRAPH: WalkGraph = {
 
 
 def Test_HasItemsToRebuild_TestEmptyGuestItems_ExpectFalse() -> None:
-   assert not BulkScheduleWindowPreparer.has_items_to_rebuild( EMPTY_SAVED_ITINERARY )
+   result = BulkScheduleWindowPreparer.has_items_to_rebuild( EMPTY_SAVED_ITINERARY )
+
+   assert not result
 
 
 def Test_HasItemsToRebuild_TestGuardiansTalkOnly_ExpectTrue() -> None:
-   assert BulkScheduleWindowPreparer.has_items_to_rebuild( SAVED_ITINERARY_WITH_TALK )
+   result = BulkScheduleWindowPreparer.has_items_to_rebuild( SAVED_ITINERARY_WITH_TALK )
+
+   assert result
 
 
 def Test_HasItemsToRebuild_TestAnimalRow_ExpectTrue() -> None:
@@ -111,7 +116,9 @@ def Test_HasItemsToRebuild_TestAnimalRow_ExpectTrue() -> None:
       ],
    )
 
-   assert BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
+   result = BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
+
+   assert result
 
 
 def Test_HasItemsToRebuild_TestAttractionRow_ExpectTrue() -> None:
@@ -128,7 +135,9 @@ def Test_HasItemsToRebuild_TestAttractionRow_ExpectTrue() -> None:
       ],
    )
 
-   assert BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
+   result = BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
+
+   assert result
 
 
 def Test_HasItemsToRebuild_TestTransportationRow_ExpectTrue() -> None:
@@ -146,7 +155,9 @@ def Test_HasItemsToRebuild_TestTransportationRow_ExpectTrue() -> None:
       ],
    )
 
-   assert BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
+   result = BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
+
+   assert result
 
 
 def Test_HasItemsToRebuild_TestWildEncounterRow_ExpectTrue() -> None:
@@ -164,7 +175,9 @@ def Test_HasItemsToRebuild_TestWildEncounterRow_ExpectTrue() -> None:
       ],
    )
 
-   assert BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
+   result = BulkScheduleWindowPreparer.has_items_to_rebuild( saved )
+
+   assert result
 
 
 def Test_PrepareWindows_TestScheduledGuestItems_ExpectClearAllBeforeRepack(
@@ -176,7 +189,7 @@ def Test_PrepareWindows_TestScheduledGuestItems_ExpectClearAllBeforeRepack(
          arrival_time='9:30 AM',
          departure_time='5:00 PM',
       ),
-      window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
       visit_date=date( 2026, 6, 20 ),
    )
    cleared: list[ str ] = []

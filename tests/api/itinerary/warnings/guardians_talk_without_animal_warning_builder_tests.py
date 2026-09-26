@@ -3,7 +3,6 @@ from __future__ import annotations
 import pytest
 
 from api.animals.search.species_exhibit_key import SpeciesExhibitKey
-from api.animals.search.species_exhibit_key_builder import SpeciesExhibitKeyBuilder
 from api.guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
 from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
@@ -11,6 +10,7 @@ from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
 from api.itinerary.warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 from api.models.animal_diff import AnimalDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType, Position
 
 
@@ -22,7 +22,9 @@ LION_LINK = {
    'exhibit': 'Africa Savanna',
 }
 
-LION_SPECIES_EXHIBIT = SpeciesExhibitKey.from_values( 'African Lion', 'Africa Savanna' )
+LION_SPECIES_EXHIBIT = SpeciesExhibitKey.from_values(
+   LION_LINK[ 'species' ],
+   LION_LINK[ 'exhibit' ] )
 
 
 def _validated_itinerary(
@@ -49,21 +51,21 @@ def stub_guardians_talk_animal_links( monkeypatch: pytest.MonkeyPatch ) -> None:
 
 def Test_TalksWithoutMatchingAnimal_TestDeletedTalk_ExpectOnlyActiveMissingTalk(
       stub_guardians_talk_animal_links: None ) -> None:
+   deleted = GuardiansTalkDiff(
+      name=ZEBRA_TALK,
+      is_deleted=True,
+      location='Africa Savanna' )
+   active = GuardiansTalkDiff(
+      name=LION_TALK,
+      is_deleted=False,
+      location='Africa Savanna' )
+   validated = _validated_itinerary( guardians_talks=[ deleted, active ] )
+
    missing = GuardiansTalkWithoutAnimalWarningBuilder.talks_without_matching_animal(
-      _validated_itinerary(
-         guardians_talks=[
-            GuardiansTalkDiff(
-               name=ZEBRA_TALK,
-               is_deleted=True,
-               location='Africa Savanna' ),
-            GuardiansTalkDiff(
-               name=LION_TALK,
-               is_deleted=False,
-               location='Africa Savanna' ),
-         ] ),
+      validated,
       None )
 
-   assert [ talk.name for talk in missing ] == [ LION_TALK ]
+   assert [ talk.name for talk in missing ] == [ active.name ]
 
 
 def Test_IsRequiredForTalk_TestDeletedTalk_ExpectFalse(
@@ -72,68 +74,79 @@ def Test_IsRequiredForTalk_TestDeletedTalk_ExpectFalse(
       name=ZEBRA_TALK,
       is_deleted=True,
       location='Africa Savanna' )
+   confirming_guardians_talk_without_animal = False
 
-   assert not GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk(
+   required = GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk(
       talk,
       [],
       None,
-      confirming_guardians_talk_without_animal=False )
+      confirming_guardians_talk_without_animal=confirming_guardians_talk_without_animal )
+
+   assert required is False
 
 
 def Test_NewlyAddedWithoutMatchingAnimal_TestSavedTalk_ExpectEmpty(
       stub_guardians_talk_animal_links: None ) -> None:
+   talk = GuardiansTalkDiff(
+      name=LION_TALK,
+      is_deleted=False,
+      location='Africa Savanna' )
+   start_time = '10:00 AM'
+   duration_minutes = 30
+   validated = _validated_itinerary( guardians_talks=[ talk ] )
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      guardians_talk_rows=[
+         ItineraryGuardiansTalkRecord(
+            talk_name=talk.name,
+            start_time=start_time,
+            end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
+            is_deleted=False ),
+      ] )
+
    missing = GuardiansTalkWithoutAnimalWarningBuilder.newly_added_without_matching_animal(
-      _validated_itinerary(
-         guardians_talks=[
-            GuardiansTalkDiff(
-               name=LION_TALK,
-               is_deleted=False,
-               location='Africa Savanna' ),
-         ] ),
+      validated,
       None,
-      saved_itinerary=SavedItinerary(
-         date_value='2026-06-15',
-         arrival_time='9:30 AM',
-         departure_time='5:00 PM',
-         guardians_talk_rows=[
-            ItineraryGuardiansTalkRecord(
-               talk_name=LION_TALK,
-               start_time='10:00 AM',
-               end_time='10:30 AM',
-               is_deleted=False ),
-         ] ) )
+      saved_itinerary=saved_itinerary )
 
    assert missing == []
 
 
 def Test_IsRequired_TestConfirmingFlag_ExpectFalse(
       stub_guardians_talk_animal_links: None ) -> None:
-   assert not GuardiansTalkWithoutAnimalWarningBuilder.is_required(
-      _validated_itinerary(
-         guardians_talks=[
-            GuardiansTalkDiff(
-               name=LION_TALK,
-               is_deleted=False,
-               location='Africa Savanna' ),
-         ] ),
+   talk = GuardiansTalkDiff(
+      name=LION_TALK,
+      is_deleted=False,
+      location='Africa Savanna' )
+   validated = _validated_itinerary( guardians_talks=[ talk ] )
+   confirming_guardians_talk_without_animal = True
+
+   required = GuardiansTalkWithoutAnimalWarningBuilder.is_required(
+      validated,
       None,
-      confirming_guardians_talk_without_animal=True )
+      confirming_guardians_talk_without_animal=confirming_guardians_talk_without_animal )
+
+   assert required is False
 
 
 def Test_BuildIssueFromTalks_TestTalkWithoutAnimal_ExpectWithoutAnimalIssue() -> None:
+   start_time = '12:00 PM'
+   duration_minutes = 30
    talk = GuardiansTalkDiff(
       name=ZEBRA_TALK,
       is_deleted=False,
-      start_time='12:00 PM',
-      end_time='12:30 PM',
+      start_time=start_time,
+      end_time=DateValues.add_minutes_to_time( start_time, duration_minutes ),
       location='Africa Savanna' )
+   talks = [ talk ]
 
-   issue = GuardiansTalkWithoutAnimalWarningBuilder.build_issue_from_talks( [ talk ] )
+   issue = GuardiansTalkWithoutAnimalWarningBuilder.build_issue_from_talks( talks )
 
    assert issue.code == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
-   assert len( issue.items ) == 1
-   assert issue.items[ Position.FIRST ].name == ZEBRA_TALK
-   assert issue.items[ Position.FIRST ].location == 'Africa Savanna'
+   assert issue.items[ Position.FIRST ].name == talk.name
+   assert issue.items[ Position.FIRST ].location == talk.location
 
 
 def Test_TalksWithoutMatchingAnimal_TestLinkedAnimalMatch_ExpectEmpty(
@@ -142,22 +155,21 @@ def Test_TalksWithoutMatchingAnimal_TestLinkedAnimalMatch_ExpectEmpty(
       GuardiansTalkAnimalProvider,
       'fetch_linked_animals',
       lambda conn, talk_name: [ LION_SPECIES_EXHIBIT ] if talk_name == LION_TALK else [] )
+   animal = AnimalDiff(
+      species=LION_SPECIES_EXHIBIT.species,
+      exhibit=LION_SPECIES_EXHIBIT.exhibit,
+      old_likelihood=None,
+      new_likelihood=100 )
+   talk = GuardiansTalkDiff(
+      name=LION_TALK,
+      is_deleted=False,
+      location='Africa Savanna' )
+   validated = _validated_itinerary(
+      animals=[ animal ],
+      guardians_talks=[ talk ] )
 
    missing = GuardiansTalkWithoutAnimalWarningBuilder.talks_without_matching_animal(
-      _validated_itinerary(
-         animals=[
-            AnimalDiff(
-               species='African Lion',
-               exhibit='Africa Savanna',
-               old_likelihood=None,
-               new_likelihood=100 ),
-         ],
-         guardians_talks=[
-            GuardiansTalkDiff(
-               name=LION_TALK,
-               is_deleted=False,
-               location='Africa Savanna' ),
-         ] ),
+      validated,
       None )
 
    assert missing == []
@@ -165,33 +177,36 @@ def Test_TalksWithoutMatchingAnimal_TestLinkedAnimalMatch_ExpectEmpty(
 
 def Test_NewlyAddedWithoutMatchingAnimal_TestNoSavedItinerary_ExpectMissingTalks(
       stub_guardians_talk_animal_links: None ) -> None:
+   talk = GuardiansTalkDiff(
+      name=LION_TALK,
+      is_deleted=False,
+      location='Africa Savanna' )
+   validated = _validated_itinerary( guardians_talks=[ talk ] )
+
    missing = GuardiansTalkWithoutAnimalWarningBuilder.newly_added_without_matching_animal(
-      _validated_itinerary(
-         guardians_talks=[
-            GuardiansTalkDiff(
-               name=LION_TALK,
-               is_deleted=False,
-               location='Africa Savanna' ),
-         ] ),
+      validated,
       None,
       saved_itinerary=None )
 
-   assert [ talk.name for talk in missing ] == [ LION_TALK ]
+   assert [ item.name for item in missing ] == [ talk.name ]
 
 
 def Test_IsRequired_TestMissingAnimalWithoutConfirmation_ExpectTrue(
       stub_guardians_talk_animal_links: None ) -> None:
-   assert GuardiansTalkWithoutAnimalWarningBuilder.is_required(
-      _validated_itinerary(
-         guardians_talks=[
-            GuardiansTalkDiff(
-               name=LION_TALK,
-               is_deleted=False,
-               location='Africa Savanna' ),
-         ] ),
+   talk = GuardiansTalkDiff(
+      name=LION_TALK,
+      is_deleted=False,
+      location='Africa Savanna' )
+   validated = _validated_itinerary( guardians_talks=[ talk ] )
+   confirming_guardians_talk_without_animal = False
+
+   required = GuardiansTalkWithoutAnimalWarningBuilder.is_required(
+      validated,
       None,
-      confirming_guardians_talk_without_animal=False,
-      saved_itinerary=None ) is True
+      confirming_guardians_talk_without_animal=confirming_guardians_talk_without_animal,
+      saved_itinerary=None )
+
+   assert required is True
 
 
 def Test_IsRequiredForTalk_TestMissingLinkedAnimal_ExpectTrue(
@@ -204,9 +219,12 @@ def Test_IsRequiredForTalk_TestMissingLinkedAnimal_ExpectTrue(
       name=ZEBRA_TALK,
       is_deleted=False,
       location='Africa Savanna' )
+   confirming_guardians_talk_without_animal = False
 
-   assert GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk(
+   required = GuardiansTalkWithoutAnimalWarningBuilder.is_required_for_talk(
       talk,
       [],
       None,
-      confirming_guardians_talk_without_animal=False ) is True
+      confirming_guardians_talk_without_animal=confirming_guardians_talk_without_animal )
+
+   assert required is True

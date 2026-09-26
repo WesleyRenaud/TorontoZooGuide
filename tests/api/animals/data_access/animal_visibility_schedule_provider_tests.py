@@ -42,7 +42,7 @@ def animal_visibility_schedule_conn() -> sqlite3.Connection:
 
 def Test_SaveAnimalLimitedViewingSchedule_TestNewSchedule_ExpectPersistsRow(
       animal_visibility_schedule_conn: sqlite3.Connection ) -> None:
-   assert AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
+   result = AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
       animal_visibility_schedule_conn,
       species=SPECIES,
       exhibit=EXHIBIT,
@@ -50,7 +50,9 @@ def Test_SaveAnimalLimitedViewingSchedule_TestNewSchedule_ExpectPersistsRow(
       end_date=END_DATE,
       daily_start_time=DAILY_START_TIME,
       daily_end_time=DAILY_END_TIME,
-      message=MESSAGE ) is True
+      message=MESSAGE )
+
+   assert result is True
 
    row = animal_visibility_schedule_conn.execute(
       """   SELECT
@@ -90,7 +92,7 @@ def Test_SaveAnimalLimitedViewingSchedule_TestExistingSchedule_ExpectUpdatesRow(
       daily_end_time=DAILY_END_TIME,
       message=MESSAGE )
 
-   assert AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
+   result = AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
       animal_visibility_schedule_conn,
       species=SPECIES,
       exhibit=EXHIBIT,
@@ -98,7 +100,9 @@ def Test_SaveAnimalLimitedViewingSchedule_TestExistingSchedule_ExpectUpdatesRow(
       end_date='2026-07-15',
       daily_start_time='10:00',
       daily_end_time='12:00',
-      message='Updated schedule.' ) is True
+      message='Updated schedule.' )
+
+   assert result is True
 
    row = animal_visibility_schedule_conn.execute(
       """   SELECT
@@ -134,10 +138,12 @@ def Test_DeleteAnimalVisibilitySchedule_TestExistingSchedule_ExpectRemovesRow(
       daily_end_time=DAILY_END_TIME,
       message=MESSAGE )
 
-   assert AnimalVisibilityScheduleProvider.delete_animal_visibility_schedule(
+   result = AnimalVisibilityScheduleProvider.delete_animal_visibility_schedule(
       animal_visibility_schedule_conn,
       species=SPECIES,
-      exhibit=EXHIBIT ) is True
+      exhibit=EXHIBIT )
+
+   assert result is True
 
    row = animal_visibility_schedule_conn.execute(
       """   SELECT 1
@@ -152,7 +158,9 @@ def Test_DeleteAnimalVisibilitySchedule_TestExistingSchedule_ExpectRemovesRow(
 
 def Test_DeleteAnimalVisibilitySchedule_TestMissingSchedule_ExpectFalse(
       animal_visibility_schedule_conn: sqlite3.Connection ) -> None:
-   assert AnimalVisibilityScheduleProvider.delete_animal_visibility_schedule(
+   result = AnimalVisibilityScheduleProvider.delete_animal_visibility_schedule(
       animal_visibility_schedule_conn,
       species=SPECIES,
-      exhibit=EXHIBIT ) is False
+      exhibit=EXHIBIT )
+
+   assert result is False

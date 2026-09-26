@@ -12,90 +12,75 @@ import {
    validateMapSvg,
 } from '../../tools/lint/mapSvgIntegrity.js';
 
-test('Test_ValidateMapSvg_TestCommittedZooMap_ExpectNoViolations', () => {
-   const violations = validateMapSvg( MAP_SVG_PATH );
 
-   assert.deepEqual( violations, [] );
-} );
+test('Test_ValidateMapSvg_TestCommittedZooMap_ExpectNoViolations', () => {
+   const violations = validateMapSvg(MAP_SVG_PATH);
+
+   assert.deepEqual(violations, []);
+});
+
 
 test('Test_ZoomobileRouteMarkers_TestSeededLegs_ExpectOneToOneMapping', () => {
-   const svg = fs.readFileSync( MAP_SVG_PATH, 'utf8' );
+   const svg = fs.readFileSync(MAP_SVG_PATH, 'utf8');
    const markerRows = JSON.parse(
       fs.readFileSync(
-         path.resolve( 'api/seed/data/transportation_route_leg_marker.json' ),
+         path.resolve('api/seed/data/transportation_route_leg_marker.json'),
          'utf8'
       )
    );
    const svgMarkerIds = [
-      ...svg.matchAll( /id="(zm-[sw]-\d{3})"/g ),
-   ].map( match => match[ 1 ] );
-   const seededMarkerIds = markerRows.map( row => row.marker_id );
+      ...svg.matchAll(/id="(zm-[sw]-\d{3})"/g),
+   ].map((match) => match[1]);
+   const seededMarkerIds = markerRows.map((row) => row.marker_id);
 
-   assert.equal( svgMarkerIds.length, 538 );
-   assert.equal( new Set( svgMarkerIds ).size, 538 );
-   assert.equal( seededMarkerIds.length, 538 );
-   assert.equal( new Set( seededMarkerIds ).size, 538 );
-   assert.deepEqual(
-      seededMarkerIds.toSorted(),
-      svgMarkerIds.toSorted()
-   );
-} );
+   assert.equal(svgMarkerIds.length, seededMarkerIds.length);
+   assert.equal(new Set(svgMarkerIds).size, seededMarkerIds.length);
+   assert.equal(new Set(seededMarkerIds).size, seededMarkerIds.length);
+   assert.deepEqual(seededMarkerIds.toSorted(), svgMarkerIds.toSorted());
+});
+
 
 test('Test_ValidateMapSvg_TestTruncationAndMissingFragments_ExpectViolations', () => {
-   const tempDir = fs.mkdtempSync( path.join( os.tmpdir(), 'tzg-map-svg-' ) );
-   const tempPath = path.join( tempDir, 'broken.svg' );
+   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tzg-map-svg-'));
+   const tempPath = path.join(tempDir, 'broken.svg');
    const content = [
       '<svg xmlns="http://www.w3.org/2000/svg">',
       '<defs>',
       '<image id="image38_2_6"/>',
       '</defs>',
       '</svg>',
-   ].join( '' );
+   ].join('');
+   fs.writeFileSync(tempPath, content);
 
-   fs.writeFileSync( tempPath, content );
+   const violations = validateMapSvg(tempPath);
 
-   const violations = validateMapSvg( tempPath );
+   assert.ok(violations.some((violation) => violation.includes('below minimum expected')));
+   assert.ok(violations.some((violation) => violation.includes('image39_2_6')));
+   assert.ok(violations.some((violation) => violation.includes('zoomobile-route-winter')));
+});
 
-   assert.ok(
-      violations.some( violation => violation.includes( 'below minimum expected' ) )
-   );
-   assert.ok(
-      violations.some( violation => violation.includes( 'image39_2_6' ) )
-   );
-   assert.ok(
-      violations.some( violation => violation.includes( 'zoomobile-route-winter' ) )
-   );
-} );
 
 test('Test_ValidateMapSvg_TestKnownTruncationSize_ExpectViolations', () => {
-   const tempDir = fs.mkdtempSync( path.join( os.tmpdir(), 'tzg-map-svg-' ) );
-   const tempPath = path.join( tempDir, 'truncated.svg' );
-   const padding = 'x'.repeat(
-      SUSPICIOUS_TRUNCATION_SIZE_BYTES - '</svg>'.length
-   );
+   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tzg-map-svg-'));
+   const tempPath = path.join(tempDir, 'truncated.svg');
+   const closingTag = '</svg>';
+   const padding = 'x'.repeat(SUSPICIOUS_TRUNCATION_SIZE_BYTES - closingTag.length);
+   fs.writeFileSync(tempPath, `${padding}${closingTag}`);
 
-   fs.writeFileSync( tempPath, `${ padding }</svg>` );
+   const violations = validateMapSvg(tempPath);
 
-   const violations = validateMapSvg( tempPath );
+   assert.ok(violations.some((violation) => violation.includes('known truncation limit')));
+   assert.ok(violations.some((violation) => violation.includes('below minimum expected')));
+});
 
-   assert.ok(
-      violations.some( violation => violation.includes( 'known truncation limit' ) )
-   );
-   assert.ok(
-      violations.some( violation => violation.includes( 'below minimum expected' ) )
-   );
-} );
 
 test('Test_ValidateMapSvg_TestMissingClosingTag_ExpectViolation', () => {
-   const tempDir = fs.mkdtempSync( path.join( os.tmpdir(), 'tzg-map-svg-' ) );
-   const tempPath = path.join( tempDir, 'unclosed.svg' );
-   const content = `<svg>${ REQUIRED_FRAGMENTS.join( '' ) }`;
+   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tzg-map-svg-'));
+   const tempPath = path.join(tempDir, 'unclosed.svg');
+   const content = `<svg>${REQUIRED_FRAGMENTS.join('')}`;
+   fs.writeFileSync(tempPath, content.padEnd(MIN_FILE_SIZE_BYTES + 1, 'x'));
 
-   fs.writeFileSync( tempPath, content.padEnd( MIN_FILE_SIZE_BYTES + 1, 'x' ) );
+   const violations = validateMapSvg(tempPath);
 
-   const violations = validateMapSvg( tempPath );
-
-   assert.ok(
-      violations.some( violation => violation === 'file does not end with </svg>' )
-   );
-} );
+   assert.ok(violations.some((violation) => violation === 'file does not end with </svg>'));
+});

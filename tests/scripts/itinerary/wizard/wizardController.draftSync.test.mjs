@@ -10,6 +10,11 @@ import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
 import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 import { createStubStepController, syncedSelection } from '../../helpers/wizardTestFixtures.mjs';
 
+const _year = 2026;
+const _juneIndex = 5;
+const _day = 15;
+const _animalsStep = 'animals';
+
 installDomTestHooks({
    before: () => {
       globalThis.localStorage = createLocalStorageMock();
@@ -18,12 +23,13 @@ installDomTestHooks({
       delete globalThis.localStorage;
    },
 });
+
+
 test('Test_Does_TestDoesNotPromptWhenClosingAfterADate_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const popupConfigs = [];
    let closeHandler = null;
-   const selectedDate = makeNoonDate(2026, 5, 15);
-
+   const selectedDate = makeNoonDate(_year, _juneIndex, _day);
    mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
    await WizardController.openItineraryWizard({
@@ -53,18 +59,19 @@ test('Test_Does_TestDoesNotPromptWhenClosingAfterADate_ExpectOk', async () => {
          syncAnimalDraft: () => {},
       },
    });
-
    await closeHandler?.();
 
    assert.equal(popupConfigs.length, 0);
    assert.equal(mountEl.children.length, 0);
 });
 
+
 test('Test_Skips_TestSkipsDateDraftSyncWhenThePickerDate_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const popupConfigs = [];
    let closeHandler = null;
-   const selectedDate = makeNoonDate(2026, 5, 15);
+   const selectedDate = makeNoonDate(_year, _juneIndex, _day);
+   const visitDate = '2026-06-15';
 
    await WizardController.openItineraryWizard({
       mountEl,
@@ -73,14 +80,14 @@ test('Test_Skips_TestSkipsDateDraftSyncWhenThePickerDate_ExpectOk', async () => 
          resolveEarliestVisitDate: async () => selectedDate,
          createWizardState: () => {
             const wizard = ItineraryWizardStore.createItineraryWizardState({
-               date: '2026-06-15',
+               date: visitDate,
                animals: [],
                attractions: [],
                guardiansTalks: [],
                wildEncounters: [],
             });
 
-            wizard.updateSelection('animals', syncedSelection());
+            wizard.updateSelection(_animalsStep, syncedSelection());
             return wizard;
          },
          createDateStepController: ({ onClose }) => {
@@ -98,11 +105,11 @@ test('Test_Skips_TestSkipsDateDraftSyncWhenThePickerDate_ExpectOk', async () => 
          syncAnimalDraft: () => {},
       },
    });
-
    await closeHandler?.();
 
    assert.equal(popupConfigs.length, 1);
 });
+
 
 test('Test_Skips_TestSkipsSelectionDraftSyncWhenTheStepReports_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
@@ -111,10 +118,10 @@ test('Test_Skips_TestSkipsSelectionDraftSyncWhenTheStepReports_ExpectOk', async 
 
    await WizardController.openItineraryWizard({
       mountEl,
-      startAt: 'animals',
+      startAt: _animalsStep,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => {
             const wizard = ItineraryWizardStore.createItineraryWizardState({
                date: '',
@@ -124,14 +131,14 @@ test('Test_Skips_TestSkipsSelectionDraftSyncWhenTheStepReports_ExpectOk', async 
                wildEncounters: [],
             });
 
-            wizard.updateSelection('animals', syncedSelection());
+            wizard.updateSelection(_animalsStep, syncedSelection());
             return wizard;
          },
          createDateStepController: () => ({ show() {} }),
          selectionStepConfigs: [
             {
-               stepKey: 'animals',
-               selectionKey: 'animals',
+               stepKey: _animalsStep,
+               selectionKey: _animalsStep,
                factory: ({ onClose }) => {
                   closeHandler = onClose;
                   return {
@@ -149,33 +156,33 @@ test('Test_Skips_TestSkipsSelectionDraftSyncWhenTheStepReports_ExpectOk', async 
          syncAnimalDraft: () => {},
       },
    });
-
    await closeHandler?.();
 
    assert.equal(popupConfigs.length, 1);
 });
 
+
 test('Test_Finalize_TestFinalizeOnDoneConsumesPendingValidationAndClearsThe_ExpectOk', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    let finishHandler = null;
    const selectedAnimals = syncedSelection();
+   const visitDate = '2026-06-15';
    const savedItinerary = {
-      date: '2026-06-15',
+      date: visitDate,
       animals: selectedAnimals,
       isActive: true,
    };
    let finishOnDoneCalls = 0;
-
    mountEl.appendChild(createDomNode('div', 'keep-until-close'));
 
    await WizardController.openItineraryWizard({
       mountEl,
-      startAt: 'animals',
+      startAt: _animalsStep,
       deps: {
          loadItinerary: async () => null,
-         resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
          createWizardState: () => ItineraryWizardStore.createItineraryWizardState({
-            date: '2026-06-15',
+            date: visitDate,
             animals: [],
             attractions: [],
             guardiansTalks: [],
@@ -184,8 +191,8 @@ test('Test_Finalize_TestFinalizeOnDoneConsumesPendingValidationAndClearsThe_Expe
          createDateStepController: () => ({ show() {} }),
          selectionStepConfigs: [
             {
-               stepKey: 'animals',
-               selectionKey: 'animals',
+               stepKey: _animalsStep,
+               selectionKey: _animalsStep,
                factory: ({ onFinish }) => {
                   finishHandler = onFinish;
                   return { show() {} };
@@ -202,9 +209,7 @@ test('Test_Finalize_TestFinalizeOnDoneConsumesPendingValidationAndClearsThe_Expe
          syncAnimalDraft: () => {},
       },
    });
-
    finishHandler?.(selectedAnimals);
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });

@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateRestroomOpenPanel_TestDefault_ExpectPanel', () => {
    const panelEl = RestroomOpenView.createRestroomOpenPanel();
 

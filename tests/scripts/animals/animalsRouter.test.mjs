@@ -5,13 +5,21 @@ import { AnimalDetailView } from '../../../scripts/animals/animalDetailView.js';
 import { AnimalsClient } from '../../../scripts/api/animalsClient.js';
 import { AnimalsRouter } from '../../../scripts/animals/animalsRouter.js';
 import { ListView } from '../../../scripts/animals/listView.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+
 
 async function _flush() {
    await Promise.resolve();
    await Promise.resolve();
 }
 
-test('Test_CreateAnimalsRouter_TestRegionExhibitAnimalDetail_ExpectNavigation', async () => {
+
+function _installRouterStubs({
+   renders,
+   getListHandlers,
+   setListHandlers,
+   setDetailHandlers,
+}) {
    const originals = {
       createAnimalsListView: ListView.createAnimalsListView,
       createAnimalDetailView: AnimalDetailView.createAnimalDetailView,
@@ -20,33 +28,25 @@ test('Test_CreateAnimalsRouter_TestRegionExhibitAnimalDetail_ExpectNavigation', 
       getAnimalsInExhibit: AnimalsClient.getAnimalsInExhibit,
       getAnimalInformation: AnimalsClient.getAnimalInformation,
    };
-   const renders = {
-      regions: [],
-      exhibits: [],
-      animals: [],
-      detail: [],
-   };
-   let listHandlers;
-   let detailHandlers;
 
    ListView.createAnimalsListView = () => ({
       renderRegions(regions, handlers) {
          renders.regions.push(regions);
-         listHandlers = handlers;
+         setListHandlers(handlers);
       },
       renderExhibits(regionName, exhibits, handlers) {
          renders.exhibits.push({ regionName, exhibits });
-         listHandlers = handlers;
+         setListHandlers(handlers);
       },
       renderAnimals(regionName, exhibitName, animals, handlers) {
          renders.animals.push({ regionName, exhibitName, animals });
-         listHandlers = handlers;
+         setListHandlers(handlers);
       },
    });
    AnimalDetailView.createAnimalDetailView = () => ({
       render(animalInfo, handlers) {
          renders.detail.push({ animalInfo, handlers });
-         detailHandlers = handlers;
+         setDetailHandlers(handlers);
       },
    });
    AnimalsClient.getRegions = async () => [
@@ -60,53 +60,272 @@ test('Test_CreateAnimalsRouter_TestRegionExhibitAnimalDetail_ExpectNavigation', 
       exhibit,
    });
 
+   return originals;
+}
+
+
+function _restoreRouterStubs(originals) {
+   ListView.createAnimalsListView = originals.createAnimalsListView;
+   AnimalDetailView.createAnimalDetailView = originals.createAnimalDetailView;
+   AnimalsClient.getRegions = originals.getRegions;
+   AnimalsClient.getExhibitsInRegion = originals.getExhibitsInRegion;
+   AnimalsClient.getAnimalsInExhibit = originals.getAnimalsInExhibit;
+   AnimalsClient.getAnimalInformation = originals.getAnimalInformation;
+}
+
+
+test('Test_CreateAnimalsRouter_TestStart_ExpectRegions', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   let detailHandlers;
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: (handlers) => { detailHandlers = handlers; },
+   });
+
+   try {
+      const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
+
+      await router.start();
+      await _flush();
+
+      assert.equal(renders.regions.length, Position.SECOND);
+      assert.ok(listHandlers);
+      assert.equal(detailHandlers, undefined);
+   } finally {
+      _restoreRouterStubs(originals);
+   }
+});
+
+
+test('Test_CreateAnimalsRouter_TestRegionSelected_ExpectExhibits', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   const region = { name: 'Africa', hasExhibits: true };
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: () => {},
+   });
+
    try {
       const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
       await router.start();
       await _flush();
 
-      assert.equal(renders.regions.length, 1);
-      listHandlers.onRegionSelected({ name: 'Africa', hasExhibits: true });
+      listHandlers.onRegionSelected(region);
       await _flush();
-      assert.equal(renders.exhibits[0].regionName, 'Africa');
 
-      listHandlers.onExhibitSelected('Africa-exhibit');
+      assert.equal(renders.exhibits.at(Position.FIRST).regionName, region.name);
+   } finally {
+      _restoreRouterStubs(originals);
+   }
+});
+
+
+test('Test_CreateAnimalsRouter_TestExhibitSelected_ExpectAnimals', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   const region = { name: 'Africa', hasExhibits: true };
+   const exhibitName = `${region.name}-exhibit`;
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: () => {},
+   });
+
+   try {
+      const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
+      await router.start();
       await _flush();
-      assert.equal(renders.animals[0].exhibitName, 'Africa-exhibit');
+      listHandlers.onRegionSelected(region);
+      await _flush();
 
+      listHandlers.onExhibitSelected(exhibitName);
+      await _flush();
+
+      assert.equal(renders.animals.at(Position.FIRST).exhibitName, exhibitName);
+   } finally {
+      _restoreRouterStubs(originals);
+   }
+});
+
+
+test('Test_CreateAnimalsRouter_TestAnimalSelected_ExpectDetail', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   const region = { name: 'Africa', hasExhibits: true };
+   const exhibitName = `${region.name}-exhibit`;
+   const species = 'Lion';
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: () => {},
+   });
+
+   try {
+      const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
+      await router.start();
+      await _flush();
+      listHandlers.onRegionSelected(region);
+      await _flush();
+      listHandlers.onExhibitSelected(exhibitName);
+      await _flush();
+
+      listHandlers.onAnimalSelected(species);
+      await _flush();
+
+      assert.equal(renders.detail.at(Position.FIRST).animalInfo.species, species);
+   } finally {
+      _restoreRouterStubs(originals);
+   }
+});
+
+
+test('Test_CreateAnimalsRouter_TestBackFromDetail_ExpectAnimalsRerendered', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   let detailHandlers;
+   const region = { name: 'Africa', hasExhibits: true };
+   const exhibitName = `${region.name}-exhibit`;
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: (handlers) => { detailHandlers = handlers; },
+   });
+
+   try {
+      const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
+      await router.start();
+      await _flush();
+      listHandlers.onRegionSelected(region);
+      await _flush();
+      listHandlers.onExhibitSelected(exhibitName);
+      await _flush();
       listHandlers.onAnimalSelected('Lion');
       await _flush();
-      assert.equal(renders.detail[0].animalInfo.species, 'Lion');
 
       detailHandlers.onBack();
       await _flush();
+
       assert.equal(renders.animals.length, 2);
-
-      listHandlers.onBack();
-      await _flush();
-      assert.equal(renders.exhibits.length, 2);
-
-      listHandlers.onBack();
-      await _flush();
-      assert.equal(renders.regions.length, 2);
-
-      listHandlers.onRegionSelected({ name: 'Australasia', hasExhibits: false });
-      await _flush();
-      assert.equal(renders.animals.at(-1).regionName, 'Australasia');
-      assert.equal(renders.animals.at(-1).exhibitName, 'Australasia');
-
-      listHandlers.onBack();
-      await _flush();
-      assert.equal(renders.regions.length, 3);
    } finally {
-      ListView.createAnimalsListView = originals.createAnimalsListView;
-      AnimalDetailView.createAnimalDetailView = originals.createAnimalDetailView;
-      AnimalsClient.getRegions = originals.getRegions;
-      AnimalsClient.getExhibitsInRegion = originals.getExhibitsInRegion;
-      AnimalsClient.getAnimalsInExhibit = originals.getAnimalsInExhibit;
-      AnimalsClient.getAnimalInformation = originals.getAnimalInformation;
+      _restoreRouterStubs(originals);
    }
 });
+
+
+test('Test_CreateAnimalsRouter_TestBackFromAnimals_ExpectExhibitsRerendered', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   const region = { name: 'Africa', hasExhibits: true };
+   const exhibitName = `${region.name}-exhibit`;
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: () => {},
+   });
+
+   try {
+      const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
+      await router.start();
+      await _flush();
+      listHandlers.onRegionSelected(region);
+      await _flush();
+      listHandlers.onExhibitSelected(exhibitName);
+      await _flush();
+
+      listHandlers.onBack();
+      await _flush();
+
+      assert.equal(renders.exhibits.length, 2);
+   } finally {
+      _restoreRouterStubs(originals);
+   }
+});
+
+
+test('Test_CreateAnimalsRouter_TestBackFromExhibits_ExpectRegionsRerendered', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   const region = { name: 'Africa', hasExhibits: true };
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: () => {},
+   });
+
+   try {
+      const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
+      await router.start();
+      await _flush();
+      listHandlers.onRegionSelected(region);
+      await _flush();
+
+      listHandlers.onBack();
+      await _flush();
+
+      assert.equal(renders.regions.length, 2);
+   } finally {
+      _restoreRouterStubs(originals);
+   }
+});
+
+
+test('Test_CreateAnimalsRouter_TestRegionWithoutExhibits_ExpectAnimals', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   const region = { name: 'Australasia', hasExhibits: false };
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: () => {},
+   });
+
+   try {
+      const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
+      await router.start();
+      await _flush();
+
+      listHandlers.onRegionSelected(region);
+      await _flush();
+      const lastAnimals = renders.animals.at(Position.LAST);
+
+      assert.equal(lastAnimals.regionName, region.name);
+      assert.equal(lastAnimals.exhibitName, region.name);
+   } finally {
+      _restoreRouterStubs(originals);
+   }
+});
+
+
+test('Test_CreateAnimalsRouter_TestBackFromRegionWithoutExhibits_ExpectRegions', async () => {
+   const renders = { regions: [], exhibits: [], animals: [], detail: [] };
+   let listHandlers;
+   const region = { name: 'Australasia', hasExhibits: false };
+   const originals = _installRouterStubs({
+      renders,
+      setListHandlers: (handlers) => { listHandlers = handlers; },
+      setDetailHandlers: () => {},
+   });
+
+   try {
+      const router = AnimalsRouter.createAnimalsRouter({ listEl: { id: 'list' } });
+      await router.start();
+      await _flush();
+      listHandlers.onRegionSelected(region);
+      await _flush();
+
+      listHandlers.onBack();
+      await _flush();
+
+      assert.equal(renders.regions.length, 2);
+   } finally {
+      _restoreRouterStubs(originals);
+   }
+});
+
 
 test('Test_CreateAnimalsRouter_TestStaleNavigation_ExpectSkippedRender', async () => {
    const originals = {
@@ -116,6 +335,8 @@ test('Test_CreateAnimalsRouter_TestStaleNavigation_ExpectSkippedRender', async (
    };
    let resolveFirst;
    const renders = [];
+   const firstRegions = [{ name: 'First' }];
+   const secondRegions = [{ name: 'Second' }];
 
    ListView.createAnimalsListView = () => ({
       renderRegions(regions) {
@@ -132,11 +353,12 @@ test('Test_CreateAnimalsRouter_TestStaleNavigation_ExpectSkippedRender', async (
    try {
       const router = AnimalsRouter.createAnimalsRouter({ listEl: {} });
       const first = router.start();
-      AnimalsClient.getRegions = async () => [{ name: 'Second' }];
+      AnimalsClient.getRegions = async () => secondRegions;
       await router.start();
-      resolveFirst([{ name: 'First' }]);
+      resolveFirst(firstRegions);
       await first;
-      assert.deepEqual(renders, [[{ name: 'Second' }]]);
+
+      assert.deepEqual(renders, [secondRegions]);
    } finally {
       ListView.createAnimalsListView = originals.createAnimalsListView;
       AnimalDetailView.createAnimalDetailView = originals.createAnimalDetailView;

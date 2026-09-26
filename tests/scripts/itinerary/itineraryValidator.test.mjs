@@ -2,72 +2,75 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItineraryValidator } from '../../../scripts/itinerary/itineraryValidator.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
+
 
 test('Test_BuildItineraryValidationState_TestRemovedSaved_ExpectRemoved', () => {
+   const africanLion = 'African Lion';
+   const africaSavanna = 'Africa Savanna';
+   const conservationCarousel = 'Conservation Carousel';
+   const africanRainforest = 'African Rainforest';
+   const animalVisibilityChangeThreshold = 20;
+   const itineraryAnimalMinLikelihood = 40;
+
    const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
-            species: 'African Lion',
-            exhibit: 'Africa Savanna',
+            species: africanLion,
+            exhibit: africaSavanna,
             old_likelihood: 90,
             likelihood: 0,
          },
       ],
       attractions: [
          {
-            name: 'Conservation Carousel',
+            name: conservationCarousel,
             old_likelihood: 100,
             likelihood: 0,
          },
       ],
       guardiansTalks: [
          {
-            name: 'African Lion',
+            name: africanLion,
             is_deleted: true,
          },
       ],
       wildEncounters: [
          {
-            name: 'African Rainforest',
+            name: africanRainforest,
             is_deleted: true,
          },
       ],
    }, {
-      animalVisibilityChangeThreshold: 20,
-      itineraryAnimalMinLikelihood: 40,
+      animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood,
    });
 
    assert.equal(validation.hasChanges, true);
-   assert.deepEqual(
-      validation.removed.animals.map((animal) => animal.species),
-      ['African Lion']
-   );
+   assert.equal(validation.removed.animals[Position.FIRST].species, africanLion);
    assert.deepEqual(validation.reducedVisibility.animals, []);
-   assert.deepEqual(
-      validation.removed.attractions.map((attraction) => attraction.name),
-      ['Conservation Carousel']
-   );
-   assert.deepEqual(
-      validation.removed.guardiansTalks.map((talk) => talk.name),
-      ['African Lion']
-   );
-   assert.deepEqual(
-      validation.removed.wildEncounters.map((encounter) => encounter.name),
-      ['African Rainforest']
-   );
+   assert.equal(validation.removed.attractions[Position.FIRST].name, conservationCarousel);
+   assert.equal(validation.removed.guardiansTalks[Position.FIRST].name, africanLion);
+   assert.equal(validation.removed.wildEncounters[Position.FIRST].name, africanRainforest);
 });
 
+
 test('Test_BuildItineraryValidationState_TestVisibility_ExpectReducedAndImproved', () => {
+   const africanPenguin = 'African Penguin';
+   const amurTiger = 'Amur Tiger';
+   const animalVisibilityChangeThreshold = 20;
+   const itineraryAnimalMinLikelihood = 40;
+
    const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
-            species: 'African Penguin',
+            species: africanPenguin,
             exhibit: 'Africa Savanna',
             old_likelihood: 90,
             likelihood: 60,
          },
          {
-            species: 'Amur Tiger',
+            species: amurTiger,
             exhibit: 'Eurasia Wilds',
             old_likelihood: 40,
             likelihood: 80,
@@ -80,22 +83,20 @@ test('Test_BuildItineraryValidationState_TestVisibility_ExpectReducedAndImproved
          },
       ],
    }, {
-      animalVisibilityChangeThreshold: 20,
-      itineraryAnimalMinLikelihood: 40,
+      animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood,
    });
 
-   assert.deepEqual(
-      validation.reducedVisibility.animals.map((animal) => animal.species),
-      ['African Penguin']
-   );
-   assert.deepEqual(
-      validation.improvedVisibility.animals.map((animal) => animal.species),
-      ['Amur Tiger']
-   );
+   assert.equal(validation.reducedVisibility.animals[Position.FIRST].species, africanPenguin);
+   assert.equal(validation.improvedVisibility.animals[Position.FIRST].species, amurTiger);
    assert.equal(validation.hasChanges, true);
 });
 
+
 test('Test_BuildItineraryValidationState_TestUnchanged_ExpectNoChanges', () => {
+   const animalVisibilityChangeThreshold = 20;
+   const itineraryAnimalMinLikelihood = 40;
+
    const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
@@ -125,57 +126,56 @@ test('Test_BuildItineraryValidationState_TestUnchanged_ExpectNoChanges', () => {
          },
       ],
    }, {
-      animalVisibilityChangeThreshold: 20,
-      itineraryAnimalMinLikelihood: 40,
+      animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood,
    });
 
    assert.equal(validation.hasChanges, false);
 });
 
+
 test('Test_BuildItineraryValidationState_TestAddedAnimals_ExpectAdded', () => {
+   const whiteRhino = 'White Rhino';
+   const africanLion = 'African Lion';
+   const likelihoodBefore = 20;
+   const likelihoodAfter = 80;
+   const animalVisibilityChangeThreshold = 20;
+   const itineraryAnimalMinLikelihood = 40;
+
    const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
-            species: 'White Rhino',
+            species: whiteRhino,
             exhibit: 'Africa Savanna',
-            old_likelihood: 20,
-            likelihood: 80,
+            old_likelihood: likelihoodBefore,
+            likelihood: likelihoodAfter,
             is_added: true,
          },
          {
-            species: 'African Lion',
+            species: africanLion,
             exhibit: 'Africa Savanna',
             old_likelihood: 50,
             likelihood: 90,
          },
       ],
    }, {
-      animalVisibilityChangeThreshold: 20,
-      itineraryAnimalMinLikelihood: 40,
+      animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood,
    });
 
-   assert.deepEqual(
-      validation.added.animals.map((animal) => ({
-         species: animal.species,
-         likelihoodBefore: animal.likelihoodBefore,
-         likelihoodAfter: animal.likelihoodAfter,
-      })),
-      [
-         {
-            species: 'White Rhino',
-            likelihoodBefore: 20,
-            likelihoodAfter: 80,
-         },
-      ]
-   );
-   assert.deepEqual(
-      validation.improvedVisibility.animals.map((animal) => animal.species),
-      ['African Lion']
-   );
+   const addedAnimal = validation.added.animals[Position.FIRST];
+   assert.equal(addedAnimal.species, whiteRhino);
+   assert.equal(addedAnimal.likelihoodBefore, likelihoodBefore);
+   assert.equal(addedAnimal.likelihoodAfter, likelihoodAfter);
+   assert.equal(validation.improvedVisibility.animals[Position.FIRST].species, africanLion);
    assert.equal(validation.hasChanges, true);
 });
 
+
 test('Test_BuildItineraryValidationState_TestHighIndoor_ExpectNoVisibilityChange', () => {
+   const animalVisibilityChangeThreshold = 20;
+   const itineraryAnimalMinLikelihood = 40;
+
    const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
@@ -194,8 +194,8 @@ test('Test_BuildItineraryValidationState_TestHighIndoor_ExpectNoVisibilityChange
          },
       ],
    }, {
-      animalVisibilityChangeThreshold: 20,
-      itineraryAnimalMinLikelihood: 40,
+      animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood,
    });
 
    assert.equal(validation.hasChanges, false);
@@ -203,35 +203,43 @@ test('Test_BuildItineraryValidationState_TestHighIndoor_ExpectNoVisibilityChange
    assert.deepEqual(validation.improvedVisibility.animals, []);
 });
 
+
 test('Test_BuildItineraryValidationState_TestZeroLikelihood_ExpectNotReduced', () => {
+   const commonWarthog = 'Common Warthog';
+   const marabouStork = 'Marabou Stork';
+   const animalVisibilityChangeThreshold = 20;
+   const itineraryAnimalMinLikelihood = 40;
+
    const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
-            species: 'Common Warthog',
+            species: commonWarthog,
             exhibit: 'Africa Savanna',
             old_likelihood: 80,
             likelihood: 0,
          },
          {
-            species: 'Marabou Stork',
+            species: marabouStork,
             exhibit: 'Africa Savanna',
             old_likelihood: 60,
             likelihood: 0,
          },
       ],
    }, {
-      animalVisibilityChangeThreshold: 20,
-      itineraryAnimalMinLikelihood: 40,
+      animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood,
    });
 
-   assert.deepEqual(
-      validation.removed.animals.map((animal) => animal.species),
-      ['Common Warthog', 'Marabou Stork']
-   );
+   assert.equal(validation.removed.animals[Position.FIRST].species, commonWarthog);
+   assert.equal(validation.removed.animals[Position.SECOND].species, marabouStork);
    assert.deepEqual(validation.reducedVisibility.animals, []);
 });
 
+
 test('Test_BuildItineraryValidationState_TestMissingOldLikelihood_ExpectIgnored', () => {
+   const animalVisibilityChangeThreshold = 20;
+   const itineraryAnimalMinLikelihood = 40;
+
    const validation = ItineraryValidator.buildItineraryValidationState({
       animals: [
          {
@@ -260,8 +268,8 @@ test('Test_BuildItineraryValidationState_TestMissingOldLikelihood_ExpectIgnored'
          },
       ],
    }, {
-      animalVisibilityChangeThreshold: 20,
-      itineraryAnimalMinLikelihood: 40,
+      animalVisibilityChangeThreshold,
+      itineraryAnimalMinLikelihood,
    });
 
    assert.equal(validation.hasChanges, false);

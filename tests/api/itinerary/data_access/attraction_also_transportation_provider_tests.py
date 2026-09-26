@@ -17,6 +17,7 @@ CREATE TABLE Attraction (
 
 CAROUSEL = 'Conservation Carousel'
 
+
 @pytest.fixture
 def attraction_conn() -> sqlite3.Connection:
    conn = sqlite3.connect( ':memory:' )
@@ -37,26 +38,40 @@ def attraction_conn() -> sqlite3.Connection:
 
 def Test_AttractionIsAlsoTransportation_TestZoomobile_ExpectTrue(
       attraction_conn: sqlite3.Connection ) -> None:
-   assert AttractionAlsoTransportationProvider.attraction_is_also_transportation(
+   attraction = TransportationName.ZOOMOBILE
+
+   is_also_transportation = AttractionAlsoTransportationProvider.attraction_is_also_transportation(
       attraction_conn,
-      TransportationName.ZOOMOBILE ) is True
+      attraction )
+
+   assert is_also_transportation is True
 
 
 def Test_AttractionIsAlsoTransportation_TestCarousel_ExpectFalse(
       attraction_conn: sqlite3.Connection ) -> None:
-   assert AttractionAlsoTransportationProvider.attraction_is_also_transportation(
+   attraction = CAROUSEL
+
+   is_also_transportation = AttractionAlsoTransportationProvider.attraction_is_also_transportation(
       attraction_conn,
-      CAROUSEL ) is False
+      attraction )
+
+   assert is_also_transportation is False
 
 
 def Test_AttractionIsAlsoTransportation_TestMissingAttraction_ExpectFalse(
       attraction_conn: sqlite3.Connection ) -> None:
-   assert AttractionAlsoTransportationProvider.attraction_is_also_transportation(
+   attraction = 'Missing Attraction'
+
+   is_also_transportation = AttractionAlsoTransportationProvider.attraction_is_also_transportation(
       attraction_conn,
-      'Missing Attraction' ) is False
+      attraction )
+
+   assert is_also_transportation is False
 
 
 def Test_FetchAlsoTransportationAttractionNames_TestOwnedRows_ExpectZoomobileOnly(
       attraction_conn: sqlite3.Connection ) -> None:
-   assert AttractionAlsoTransportationProvider.fetch_also_transportation_attraction_names(
-      attraction_conn ) == { TransportationName.ZOOMOBILE }
+   names = AttractionAlsoTransportationProvider.fetch_also_transportation_attraction_names(
+      attraction_conn )
+
+   assert names == { TransportationName.ZOOMOBILE }

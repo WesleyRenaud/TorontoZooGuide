@@ -159,16 +159,16 @@ def Test_AssignContiguousRespectingAttractionHours_TestBeforeOpen_ExpectHeldUnti
          travel_before_seconds=0 ),
    ]
    hours = OperatingHours(
-      open_seconds=12 * 3600,
-      close_seconds=17 * 3600 )
+      open_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+      close_seconds=DateValues.time_value_in_seconds( '5:00 PM' ) )
 
    slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous_respecting_attraction_hours(
       stops,
-      start_seconds=10 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       hours_by_attraction_name={ 'Splash Island': hours } )
 
    assert slots == [ ( splash, '12:00 PM', '1:00 PM' ) ]
-   assert end_seconds == 13 * 3600
+   assert end_seconds == DateValues.time_value_in_seconds( '1:00 PM' )
 
 
 def Test_AssignContiguousRespectingAttractionHours_TestCannotFit_ExpectEmpty() -> None:
@@ -183,16 +183,16 @@ def Test_AssignContiguousRespectingAttractionHours_TestCannotFit_ExpectEmpty() -
          travel_before_seconds=0 ),
    ]
    hours = OperatingHours(
-      open_seconds=12 * 3600,
-      close_seconds=12 * 3600 + 5 * 60 )
+      open_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
+      close_seconds=DateValues.time_value_in_seconds( '12:05 PM' ) )
 
    slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous_respecting_attraction_hours(
       stops,
-      start_seconds=12 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '12:00 PM' ),
       hours_by_attraction_name={ 'Splash Island': hours } )
 
    assert slots == []
-   assert end_seconds == 12 * 3600
+   assert end_seconds == DateValues.time_value_in_seconds( '12:00 PM' )
 
 
 def Test_AssignContiguous_TestWarthogBeforeGiraffe_ExpectEndBeforeStart() -> None:
@@ -303,10 +303,12 @@ def Test_PrepareStops_TestMissingDuration_ExpectNone(
       'duration_seconds_for_stop',
       lambda conn, stop: None )
 
-   assert LoopScheduleSlotAssigner.prepare_stops(
+   result = LoopScheduleSlotAssigner.prepare_stops(
       object(),
       object(),
-      [ animal ] ) is None
+      [ animal ] )
+
+   assert result is None
 
 
 def Test_DefaultDurationSecondsForStop_TestAttraction_ExpectAttractionDefault(
@@ -320,9 +322,11 @@ def Test_DefaultDurationSecondsForStop_TestAttraction_ExpectAttractionDefault(
       'api.itinerary.scheduling.bulk.loop_schedule_slot_assigner.ItineraryDefaultDurationProvider.fetch_attraction_default_duration_seconds',
       lambda conn, attraction: 45 * 60 )
 
-   assert LoopScheduleSlotAssigner.default_duration_seconds_for_stop(
+   result = LoopScheduleSlotAssigner.default_duration_seconds_for_stop(
       object(),
-      splash ) == 45 * 60
+      splash )
+
+   assert result == 45 * 60
 
 
 def Test_DefaultDurationSecondsForStop_TestTransportation_ExpectTransportDefault(
@@ -337,9 +341,11 @@ def Test_DefaultDurationSecondsForStop_TestTransportation_ExpectTransportDefault
       'api.itinerary.scheduling.bulk.loop_schedule_slot_assigner.TransportationDefaultDurationResolver.resolve',
       lambda conn, transportation: 60 * 60 )
 
-   assert LoopScheduleSlotAssigner.default_duration_seconds_for_stop(
+   result = LoopScheduleSlotAssigner.default_duration_seconds_for_stop(
       object(),
-      zoomobile ) == 60 * 60
+      zoomobile )
+
+   assert result == 60 * 60
 
 
 def Test_AssignContiguousRespectingAttractionHours_TestInvalidTimeKey_ExpectEmpty(
@@ -362,11 +368,11 @@ def Test_AssignContiguousRespectingAttractionHours_TestInvalidTimeKey_ExpectEmpt
 
    slots, end_seconds = LoopScheduleSlotAssigner.assign_contiguous_respecting_attraction_hours(
       stops,
-      start_seconds=10 * 3600,
+      start_seconds=DateValues.time_value_in_seconds( '10:00 AM' ),
       hours_by_attraction_name=None )
 
    assert slots == []
-   assert end_seconds == 10 * 3600
+   assert end_seconds == DateValues.time_value_in_seconds( '10:00 AM' )
 
 
 def Test_AssignContiguousEndingBy_TestNegativeStart_ExpectNone() -> None:
@@ -378,9 +384,11 @@ def Test_AssignContiguousEndingBy_TestNegativeStart_ExpectNone() -> None:
          travel_before_seconds=0 ),
    ]
 
-   assert LoopScheduleSlotAssigner.assign_contiguous_ending_by(
+   result = LoopScheduleSlotAssigner.assign_contiguous_ending_by(
       stops,
-      end_seconds=0 ) is None
+      end_seconds=0 )
+
+   assert result is None
 
 
 def Test_AssignContiguousEndingBy_TestSegmentOverflow_ExpectNone(
@@ -398,9 +406,11 @@ def Test_AssignContiguousEndingBy_TestSegmentOverflow_ExpectNone(
       'assign_contiguous',
       lambda stops, *, start_seconds: ( [], start_seconds + 400 ) )
 
-   assert LoopScheduleSlotAssigner.assign_contiguous_ending_by(
+   result = LoopScheduleSlotAssigner.assign_contiguous_ending_by(
       stops,
-      end_seconds=300 ) is None
+      end_seconds=300 )
+
+   assert result is None
 
 
 def Test_Save_TestDefaultSlotSink_ExpectDelegates(

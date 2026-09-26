@@ -37,12 +37,14 @@ def exhibit_status_conn() -> sqlite3.Connection:
 
 def Test_SaveClosedStatus_TestNewExhibit_ExpectPersistsClosedRow(
       exhibit_status_conn: sqlite3.Connection ) -> None:
-   assert ExhibitStatusProvider.save_closed_status(
+   result = ExhibitStatusProvider.save_closed_status(
       exhibit_status_conn,
       exhibit=EXHIBIT,
       start_date=START_DATE,
       end_date=END_DATE,
-      message=CLOSED_MESSAGE ) is True
+      message=CLOSED_MESSAGE )
+
+   assert result is True
 
    row = exhibit_status_conn.execute(
       """   SELECT EXHIBIT, IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END
@@ -63,11 +65,13 @@ def Test_SaveOpenStatus_TestPreviouslyClosedExhibit_ExpectClearsClosedMessage(
       end_date=END_DATE,
       message=CLOSED_MESSAGE )
 
-   assert ExhibitStatusProvider.save_open_status(
+   result = ExhibitStatusProvider.save_open_status(
       exhibit_status_conn,
       exhibit=EXHIBIT,
       start_date=START_DATE,
-      end_date=END_DATE ) is True
+      end_date=END_DATE )
+
+   assert result is True
 
    row = exhibit_status_conn.execute(
       """   SELECT IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END

@@ -25,12 +25,12 @@ def stub_defibrillator_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubDef
 
 def Test_GetDefibrillators_TestHttpRequest_ExpectReturnsDefibrillators(
       stub_defibrillator_coordinator: StubDefibrillatorCoordinator ) -> None:
+   defibrillator = _sample_defibrillator()
    handler = make_handler( '/get-defibrillators', {} )
 
    server.HttpRequestHandler.do_POST( handler )
-
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
    assert stub_defibrillator_coordinator.calls == [ ( 'get_defibrillators', {} ) ]
-   assert result[ 'defibrillators' ] == [ _sample_defibrillator().to_dict() ]
+   assert result[ 'defibrillators' ] == [ defibrillator.to_dict() ]

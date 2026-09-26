@@ -4,18 +4,28 @@ from api.guardians.domain.guardians_talk_name_filter import GuardiansTalkNameFil
 
 
 def Test_ShouldReturnEmpty_TestBlankName_ExpectTrue() -> None:
-   talk_filter = GuardiansTalkNameFilter( name='   ' )
+   name = '   '
+   talk_filter = GuardiansTalkNameFilter( name=name )
 
-   assert talk_filter.should_return_empty() is True
+   should_return_empty = talk_filter.should_return_empty()
+
+   assert should_return_empty is True
 
 
 def Test_AllowsTalkName_TestNormalizedMatch_ExpectTrue() -> None:
-   talk_filter = GuardiansTalkNameFilter( name=' African Lion ' )
+   name = 'African Lion'
+   talk_filter = GuardiansTalkNameFilter( name=f' { name } ' )
 
-   assert talk_filter.allows_talk_name( 'AFRICAN LION' ) is True
+   allowed = talk_filter.allows_talk_name( name.upper() )
+
+   assert allowed is True
 
 
 def Test_AllowsTalkName_TestDifferentName_ExpectFalse() -> None:
-   talk_filter = GuardiansTalkNameFilter( name='African Lion' )
+   name = 'African Lion'
+   other_name = 'Polar Bear'
+   talk_filter = GuardiansTalkNameFilter( name=name )
 
-   assert talk_filter.allows_talk_name( 'Polar Bear' ) is False
+   allowed = talk_filter.allows_talk_name( other_name )
+
+   assert allowed is False

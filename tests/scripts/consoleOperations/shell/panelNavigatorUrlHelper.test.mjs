@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { PanelNavigator } from '../../../../scripts/consoleOperations/shell/panelNavigator.js';
 import { PanelNavigatorUrlHelper } from '../../../../scripts/consoleOperations/shell/panelNavigatorUrlHelper.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -11,7 +12,9 @@ function _createLocation(href) {
    return { href };
 }
 
-test('Test_UpdateConsolePanelUrl_TestSetAndClear_ExpectReplaceState', () => {
+
+test('Test_UpdateConsolePanelUrl_TestSet_ExpectReplaceState', () => {
+   const panelId = 'animals';
    const calls = [];
    const location = _createLocation('https://example.test/console');
    const history = {
@@ -20,63 +23,118 @@ test('Test_UpdateConsolePanelUrl_TestSetAndClear_ExpectReplaceState', () => {
       },
    };
 
-   PanelNavigatorUrlHelper.updateConsolePanelUrl('animals', { location, history });
+   PanelNavigatorUrlHelper.updateConsolePanelUrl(panelId, { location, history });
+
+   assert.match(calls.at(Position.FIRST), new RegExp(`${PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM}=${panelId}`));
+});
+
+
+test('Test_UpdateConsolePanelUrl_TestClear_ExpectParamRemoved', () => {
+   const calls = [];
+   const location = _createLocation('https://example.test/console');
+   const history = {
+      replaceState(_state, _title, url) {
+         calls.push(String(url));
+      },
+   };
+
    PanelNavigatorUrlHelper.updateConsolePanelUrl('', { location, history });
 
-   assert.match(calls[0], /panel=animals/);
-   assert.equal(new URL(calls[1]).searchParams.has(PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM), false);
+   assert.equal(
+      new URL(calls.at(Position.FIRST)).searchParams.has(PanelNavigator.ACTIVE_CONSOLE_PANEL_QUERY_PARAM),
+      false
+   );
 });
 
-test('Test_GetPanelIdFromUrl_TestPresentAndMissing_ExpectPanelId', () => {
-   assert.equal(
-      PanelNavigatorUrlHelper.getPanelIdFromUrl(
-         _createLocation('https://example.test/console?panel=animals')
-      ),
-      'animals'
-   );
-   assert.equal(
-      PanelNavigatorUrlHelper.getPanelIdFromUrl(_createLocation('https://example.test/console')),
-      ''
-   );
-   assert.equal(PanelNavigatorUrlHelper.getPanelIdFromUrl(null), '');
+
+test('Test_GetPanelIdFromUrl_TestPresent_ExpectPanelId', () => {
+   const panelId = 'animals';
+   const location = _createLocation(`https://example.test/console?panel=${panelId}`);
+
+   const resolved = PanelNavigatorUrlHelper.getPanelIdFromUrl(location);
+
+   assert.equal(resolved, panelId);
 });
+
+
+test('Test_GetPanelIdFromUrl_TestMissing_ExpectEmpty', () => {
+   const location = _createLocation('https://example.test/console');
+
+   const resolved = PanelNavigatorUrlHelper.getPanelIdFromUrl(location);
+
+   assert.equal(resolved, '');
+});
+
+
+test('Test_GetPanelIdFromUrl_TestNull_ExpectEmpty', () => {
+   const location = null;
+
+   const resolved = PanelNavigatorUrlHelper.getPanelIdFromUrl(location);
+
+   assert.equal(resolved, '');
+});
+
 
 test('Test_FindMenuButtonForPanel_TestMatchingButton_ExpectButton', () => {
+   const panelId = 'animals';
    const button = document.createElement('button');
    button.className = 'console-operations-menu-btn';
-   button.dataset.panelTarget = 'animals';
+   button.dataset.panelTarget = panelId;
    document.body.appendChild(button);
 
-   assert.equal(
-      PanelNavigatorUrlHelper.findMenuButtonForPanel(document, 'animals'),
-      button
-   );
+   const found = PanelNavigatorUrlHelper.findMenuButtonForPanel(document, panelId);
+
+   assert.equal(found, button);
 });
 
-test('Test_GetDefaultLocationAndHistory_TestGlobals_ExpectValues', () => {
+
+test('Test_GetDefaultLocation_TestGlobals_ExpectValue', () => {
    const originalLocation = globalThis.location;
-   const originalHistory = globalThis.history;
    const location = { href: 'https://example.test/' };
-   const history = { replaceState() {} };
 
    try {
       globalThis.location = location;
-      globalThis.history = history;
-      assert.equal(PanelNavigatorUrlHelper.getDefaultLocation(), location);
-      assert.equal(PanelNavigatorUrlHelper.getDefaultHistory(), history);
+      const resolved = PanelNavigatorUrlHelper.getDefaultLocation();
+
+      assert.equal(resolved, location);
    } finally {
       globalThis.location = originalLocation;
+   }
+});
+
+
+test('Test_GetDefaultHistory_TestGlobals_ExpectValue', () => {
+   const originalHistory = globalThis.history;
+   const history = { replaceState() {} };
+
+   try {
+      globalThis.history = history;
+      const resolved = PanelNavigatorUrlHelper.getDefaultHistory();
+
+      assert.equal(resolved, history);
+   } finally {
       globalThis.history = originalHistory;
    }
 });
 
-test('Test_UpdateConsolePanelUrl_TestMissingLocationOrHistory_ExpectNoOp', () => {
+
+test('Test_UpdateConsolePanelUrl_TestMissingLocation_ExpectNoOp', () => {
+   const panelId = 'animals';
+
    assert.doesNotThrow(() => {
-      PanelNavigatorUrlHelper.updateConsolePanelUrl('animals', {
+      PanelNavigatorUrlHelper.updateConsolePanelUrl(panelId, {
          location: null,
          history: { replaceState() {} },
       });
-      PanelNavigatorUrlHelper.updateConsolePanelUrl('animals', {
+   });
+});
+
+
+test('Test_UpdateConsolePanelUrl_TestMissingHistory_ExpectNoOp', () => {
+   const panelId = 'animals';
+
+   assert.doesNotThrow(() => {
+      PanelNavigatorUrlHelper.updateConsolePanelUrl(panelId, {
          location: _createLocation('https://example.test/'),
          history: {},
       });

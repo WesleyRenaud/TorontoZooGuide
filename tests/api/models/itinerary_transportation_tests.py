@@ -4,6 +4,8 @@ from api.models.itinerary_transportation import ItineraryTransportation
 from api.models.itinerary_transportation_leg import ItineraryTransportationLeg
 from api.models.itinerary_transportation_station import ItineraryTransportationStation
 from api.shared.enums.itinerary_transportation_station_role import ItineraryTransportationStationRole
+from api.shared.value_conversion import ValueConversion
+
 
 def Test_ToDict_TestZoomobile_ExpectSerializedFields() -> None:
    transportation = ItineraryTransportation(
@@ -36,8 +38,11 @@ def Test_ToDict_TestZoomobile_ExpectSerializedFields() -> None:
 
    result = transportation.to_dict()
 
-   assert result[ 'name' ] == 'Zoomobile'
-   assert result[ 'added_as_attraction' ] is True
-   assert result[ 'bulk_transit_evaluated' ] is True
-   assert len( result[ 'legs' ] ) == 1
-   assert len( result[ 'stations' ] ) == 1
+   assert result[ 'name' ] == transportation.name
+   assert result[ 'added_as_attraction' ] is ValueConversion.as_boolean(
+      transportation.added_as_attraction )
+   assert result[ 'bulk_transit_evaluated' ] is ValueConversion.as_boolean(
+      transportation.bulk_transit_evaluated )
+   assert result[ 'legs' ] == [ leg.to_dict() for leg in transportation.legs ]
+   assert result[ 'stations' ] == [
+      station.to_dict() for station in transportation.stations ]

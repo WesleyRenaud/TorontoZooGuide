@@ -24,13 +24,30 @@ installDomTestHooks({
    },
 });
 
-test('Test_CreateLikelihoodWarning_TestLevels_ExpectWarningOrNull', () => {
-   assert.equal(AnimalSelectorRendererHelper.createLikelihoodWarning(''), null);
 
-   const low = AnimalSelectorRendererHelper.createLikelihoodWarning('low');
-   assert.equal(low.className, 'itin-likelihood-warning low');
-   assert.equal(low.title, Strings.itinerary.selectors.lowVisibilityHint);
+test('Test_CreateLikelihoodWarning_TestEmpty_ExpectNull', () => {
+   const level = '';
 
-   const medium = AnimalSelectorRendererHelper.createLikelihoodWarning('medium');
-   assert.equal(medium.title, Strings.itinerary.confirmation.animalMayBeOffDisplay);
+   const warning = AnimalSelectorRendererHelper.createLikelihoodWarning(level);
+
+   assert.equal(warning, null);
+});
+
+
+test('Test_CreateLikelihoodWarning_TestLow_ExpectLowHint', () => {
+   const level = 'low';
+
+   const warning = AnimalSelectorRendererHelper.createLikelihoodWarning(level);
+
+   assert.equal(warning.className, `itin-likelihood-warning ${level}`);
+   assert.equal(warning.title, Strings.itinerary.selectors.lowVisibilityHint);
+});
+
+
+test('Test_CreateLikelihoodWarning_TestMedium_ExpectOffDisplayTitle', () => {
+   const level = 'medium';
+
+   const warning = AnimalSelectorRendererHelper.createLikelihoodWarning(level);
+
+   assert.equal(warning.title, Strings.itinerary.confirmation.animalMayBeOffDisplay);
 });

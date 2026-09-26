@@ -9,13 +9,16 @@ import itineraryErrorTypeValues from '../../../../shared/enums/itineraryErrorTyp
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
-test('Test_ItineraryErrorType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
-   for (const [key, value] of Object.entries(itineraryErrorTypeValues)) {
-      assert.equal(ItineraryErrorType[key], value);
-   }
 
+test('Test_ItineraryErrorType_TestSharedJson_ExpectSingleSourceOfTruth', () => {
    const diskValues = JSON.parse(
       readFileSync(path.join(root, 'shared/enums/itineraryErrorType.json'), 'utf8')
    );
+
+   const mapped = Object.fromEntries(
+      Object.keys(itineraryErrorTypeValues).map((key) => [key, ItineraryErrorType[key]])
+   );
+
+   assert.deepEqual(mapped, itineraryErrorTypeValues);
    assert.deepEqual(itineraryErrorTypeValues, diskValues);
 });

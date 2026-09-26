@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { DayPlannerTimelineView } from '../../../../scripts/itinerary/panel/components/dayPlannerTimelineView.js';
+import { RegionColors } from '../../../../scripts/shared/regionColors.js';
 import { ScheduleItemKind } from '../../../../scripts/shared/enums/scheduleItemKind.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
@@ -21,9 +22,14 @@ function _makeEventCardRow(className = 'itin-panel-item') {
 
 installDomTestHooks();
 
-test('Test_Colors_TestColorsTalkEventCardsFromLocationExhibit_ExpectOk', () => {
+
+test('Test_AppendScheduledItems_TestTalkLocation_ExpectAustralasiaColor', () => {
    const { gridLine } = _makeTimelineGridLine();
    const row = _makeEventCardRow();
+   const item = {
+      name: 'Komodo Dragon',
+      location: 'Australasia Pavilion',
+   };
 
    DayPlannerTimelineView.appendScheduledItems(gridLine, [{
       items: [{
@@ -31,24 +37,27 @@ test('Test_Colors_TestColorsTalkEventCardsFromLocationExhibit_ExpectOk', () => {
          maximumDuration: 30,
          offsetFraction: 0,
          scheduleItemKind: ScheduleItemKind.GUARDIANS_TALK.itemType,
-         item: {
-            name: 'Komodo Dragon',
-            location: 'Australasia Pavilion',
-         },
+         item,
       }],
    }]);
 
    const card = gridLine.querySelector('.itinerary-day-event-card');
+   const slug = RegionColors.resolveRegionColorSlugForScheduledItem(item);
 
    assert.ok(card);
    assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-colored'));
-   assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-australasia'));
-   assert.equal(card.getAttribute('data-region-slug'), 'australasia');
+   assert.ok(card.classList.contains(`itinerary-day-scheduled-pill--region-${slug}`));
+   assert.equal(card.getAttribute('data-region-slug'), slug);
 });
 
-test('Test_Colors_TestColorsAttractionEventCardsFromRegion_ExpectOk', () => {
+
+test('Test_AppendScheduledItems_TestAttractionRegion_ExpectFrontCourtyardColor', () => {
    const { gridLine } = _makeTimelineGridLine();
    const row = _makeEventCardRow();
+   const item = {
+      name: 'Zoomobile',
+      region: 'Front Courtyard',
+   };
 
    DayPlannerTimelineView.appendScheduledItems(gridLine, [{
       items: [{
@@ -56,23 +65,27 @@ test('Test_Colors_TestColorsAttractionEventCardsFromRegion_ExpectOk', () => {
          maximumDuration: 15,
          offsetFraction: 0,
          scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
-         item: {
-            name: 'Zoomobile',
-            region: 'Front Courtyard',
-         },
+         item,
       }],
    }]);
 
    const card = gridLine.querySelector('.itinerary-day-event-card');
+   const slug = RegionColors.resolveRegionColorSlugForScheduledItem(item);
 
    assert.ok(card);
-   assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-front-courtyard'));
-   assert.equal(card.getAttribute('data-region-slug'), 'front-courtyard');
+   assert.ok(card.classList.contains(`itinerary-day-scheduled-pill--region-${slug}`));
+   assert.equal(card.getAttribute('data-region-slug'), slug);
 });
 
-test('Test_Colors_TestColorsWildEncounterEventCardsFromRegion_ExpectOk', () => {
+
+test('Test_AppendScheduledItems_TestWildEncounterRegion_ExpectAmericasColor', () => {
    const { gridLine } = _makeTimelineGridLine();
    const row = _makeEventCardRow();
+   const item = {
+      name: 'Capybara',
+      meeting_spot: 'Wild Encounter - Mayan Temple Meeting Spot',
+      region: 'Americas',
+   };
 
    DayPlannerTimelineView.appendScheduledItems(gridLine, [{
       items: [{
@@ -80,17 +93,14 @@ test('Test_Colors_TestColorsWildEncounterEventCardsFromRegion_ExpectOk', () => {
          maximumDuration: 30,
          offsetFraction: 0,
          scheduleItemKind: ScheduleItemKind.WILD_ENCOUNTER.itemType,
-         item: {
-            name: 'Capybara',
-            meeting_spot: 'Wild Encounter - Mayan Temple Meeting Spot',
-            region: 'Americas',
-         },
+         item,
       }],
    }]);
 
    const card = gridLine.querySelector('.itinerary-day-event-card');
+   const slug = RegionColors.resolveRegionColorSlugForScheduledItem(item);
 
    assert.ok(card);
-   assert.ok(card.classList.contains('itinerary-day-scheduled-pill--region-americas'));
-   assert.equal(card.getAttribute('data-region-slug'), 'americas');
+   assert.ok(card.classList.contains(`itinerary-day-scheduled-pill--region-${slug}`));
+   assert.equal(card.getAttribute('data-region-slug'), slug);
 });

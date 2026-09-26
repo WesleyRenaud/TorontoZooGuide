@@ -7,7 +7,9 @@ from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 
 def Test_GetAnimalSpeciesNames_TestSeededDatabase_ExpectReturnsSpecies(
       db: SeededDatabase ) -> None:
-   assert AnimalCoordinator.get_animal_species_names()
+   species_names = AnimalCoordinator.get_animal_species_names()
+
+   assert species_names
 
 
 def Test_Close_TestCalledTwice_ExpectIdempotent(

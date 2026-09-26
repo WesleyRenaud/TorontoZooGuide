@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { SelectorControllerFactory } from '../../../../scripts/itinerary/selectors/selectorControllerFactory.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { createDomNode } from '../../helpers/domNodeMock.mjs';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from '../../helpers/localStorageMock.mjs';
@@ -28,9 +29,11 @@ installDomTestHooks({
    },
 });
 
-test('Test_Show_TestShowAndHideManageTheMountElementAnd_ExpectOk', async () => {
+
+test('Test_Show_TestMountAndHide_ExpectManaged', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const searchedQueries = [];
+   const emptyQuery = '';
    const controller = SelectorControllerFactory.createItinerarySelectorController({
       mountEl,
       storageKey: 'tzg.test-selector',
@@ -53,19 +56,18 @@ test('Test_Show_TestShowAndHideManageTheMountElementAnd_ExpectOk', async () => {
    controller.show();
 
    assert.equal(mountEl.children.length, 1);
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-
-   assert.deepEqual(searchedQueries, ['']);
+   assert.deepEqual(searchedQueries, [emptyQuery]);
 
    controller.hide();
 
    assert.equal(mountEl.children.length, 0);
 });
 
-test('Test_ShouldSkipClosingSelectionSync_TestShouldSkipClosingSelectionSyncDetectsUnchangedSelectionsAfterShow_ExpectOk', () => {
+
+test('Test_ShouldSkipClosingSelectionSync_TestUnchangedAfterShow_ExpectTrue', () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const controller = SelectorControllerFactory.createItinerarySelectorController({
       mountEl,
@@ -80,16 +82,19 @@ test('Test_ShouldSkipClosingSelectionSync_TestShouldSkipClosingSelectionSyncDete
          }),
       },
    });
-
    controller.show();
 
-   assert.equal(controller.shouldSkipClosingSelectionSync(), true);
+   const shouldSkip = controller.shouldSkipClosingSelectionSync();
+
+   assert.equal(shouldSkip, true);
 });
 
-test('Test_Next_TestNextAndCloseHandlersReceiveTheCurrentSelection_ExpectOk', async () => {
+
+test('Test_NextAndClose_TestHandlers_ExpectCurrentSelection', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const nextSnapshots = [];
    const closeCalls = [];
+   const closed = 'closed';
    let builtElements = null;
    const controller = SelectorControllerFactory.createItinerarySelectorController({
       mountEl,
@@ -100,7 +105,7 @@ test('Test_Next_TestNextAndCloseHandlersReceiveTheCurrentSelection_ExpectOk', as
          nextSnapshots.push(snapshot);
       },
       onClose: () => {
-         closeCalls.push('closed');
+         closeCalls.push(closed);
       },
       deps: {
          buildElements: (...args) => {
@@ -115,16 +120,17 @@ test('Test_Next_TestNextAndCloseHandlersReceiveTheCurrentSelection_ExpectOk', as
          }),
       },
    });
-
    controller.show();
+
    builtElements?.nextButtonEl.click();
    builtElements?.closeButtonEl.click();
 
    assert.deepEqual(nextSnapshots, [[]]);
-   assert.deepEqual(closeCalls, ['closed']);
+   assert.deepEqual(closeCalls, [closed]);
 });
 
-test('Test_Prev_TestPrevAndFinishHandlersReceiveTheCurrentSelection_ExpectOk', async () => {
+
+test('Test_PrevAndFinish_TestHandlers_ExpectCurrentSelection', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const prevSnapshots = [];
    const finishSnapshots = [];
@@ -153,8 +159,8 @@ test('Test_Prev_TestPrevAndFinishHandlersReceiveTheCurrentSelection_ExpectOk', a
          }),
       },
    });
-
    controller.show();
+
    builtElements?.prevButtonEl.click();
    builtElements?.finishButtonEl.click();
 
@@ -162,9 +168,11 @@ test('Test_Prev_TestPrevAndFinishHandlersReceiveTheCurrentSelection_ExpectOk', a
    assert.deepEqual(finishSnapshots, [[]]);
 });
 
-test('Test_RenderExtraControls_TestRenderExtraControlsCanRerunTheCurrentSearch_ExpectOk', async () => {
+
+test('Test_RenderExtraControls_TestRerunSearch_ExpectCurrentQuery', async () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const searchedQueries = [];
+   const emptyQuery = '';
    const controller = SelectorControllerFactory.createItinerarySelectorController({
       mountEl,
       storageKey: 'tzg.test-selector-extra',
@@ -187,15 +195,15 @@ test('Test_RenderExtraControls_TestRenderExtraControlsCanRerunTheCurrentSearch_E
    });
 
    controller.show();
-
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
 
-   assert.deepEqual(searchedQueries, ['', '']);
+   assert.deepEqual(searchedQueries, [emptyQuery, emptyQuery]);
 });
 
-test('Test_Show_TestShowReusesTheBuiltShellOnSubsequentOpens_ExpectOk', () => {
+
+test('Test_Show_TestSubsequentOpens_ExpectReusedShell', () => {
    const mountEl = createDomNode('div', 'wizard-mount');
    const controller = SelectorControllerFactory.createItinerarySelectorController({
       mountEl,
@@ -212,17 +220,17 @@ test('Test_Show_TestShowReusesTheBuiltShellOnSubsequentOpens_ExpectOk', () => {
          }),
       },
    });
-
    controller.show();
-   const firstRoot = mountEl.children[0];
+   const firstRoot = mountEl.children.at(Position.FIRST);
 
    controller.hide();
    controller.show();
 
-   assert.equal(mountEl.children[0], firstRoot);
+   assert.equal(mountEl.children.at(Position.FIRST), firstRoot);
 });
 
-test('Test_Show_TestMissingMountAndResults_ExpectEarlyReturns', async () => {
+
+test('Test_Show_TestMissingMount_ExpectNoSearch', async () => {
    const onRowsCalls = [];
    const controllerWithoutMount = SelectorControllerFactory.createItinerarySelectorController({
       storageKey: 'tzg.test-selector-no-mount',
@@ -240,9 +248,15 @@ test('Test_Show_TestMissingMountAndResults_ExpectEarlyReturns', async () => {
 
    controllerWithoutMount.show();
    controllerWithoutMount.hide();
-   assert.deepEqual(onRowsCalls, []);
 
+   assert.deepEqual(onRowsCalls, []);
+});
+
+
+test('Test_Show_TestMissingResults_ExpectNoMount', async () => {
+   const onRowsCalls = [];
    const mountEl = createDomNode('div', 'wizard-mount');
+   const withMount = 'with-mount';
    const controller = SelectorControllerFactory.createItinerarySelectorController({
       mountEl,
       storageKey: 'tzg.test-selector-no-results',
@@ -258,7 +272,7 @@ test('Test_Show_TestMissingMountAndResults_ExpectEarlyReturns', async () => {
          createSearchRunner: (options) => ({
             runCurrentQuery: async () => {
                options.onRows([{ id: 'lion' }]);
-               onRowsCalls.push('with-mount');
+               onRowsCalls.push(withMount);
             },
             scheduleCurrentQuery: () => {},
          }),
@@ -269,6 +283,7 @@ test('Test_Show_TestMissingMountAndResults_ExpectEarlyReturns', async () => {
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
-   assert.ok(onRowsCalls.includes('with-mount'));
+
+   assert.ok(onRowsCalls.includes(withMount));
    assert.equal(mountEl.children.length, 0);
 });

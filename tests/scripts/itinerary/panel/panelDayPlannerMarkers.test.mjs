@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import { mock, test } from 'node:test';
 
 import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
-import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
-import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
 import { TimelineLayoutConstants } from '../../../../scripts/shared/timelineLayoutConstants.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
+import { ZooClockTimeHelper } from '../../../../scripts/shared/zooClockTimeHelper.js';
+import { Strings } from '../../../../scripts/strings.js';
 import {
    EMPTY_ITINERARY,
    TEST_ITINERARY_CONFIG,
@@ -13,33 +14,36 @@ import {
    boundaryMarkerStripByLabel,
    createNode,
    documentListeners,
-   imageSrcFor,
    installPanelRowsTestHooks,
-   textFor,
-   timelinePillTexts,
-   timelineScheduledPillTexts,
 } from '../../helpers/panelRowsTestSetup.mjs';
 
 installPanelRowsTestHooks();
 
-test('Test_Day_TestDayPlannerStartsAtEarlyAdmissionWhenAvailable_ExpectOk', () => {
-   const planner = DayPlannerBuilder.makeDayPlannerPreview({
+test('Test_MakeDayPlannerPreview_TestEarlyAdmissionAvailable_ExpectEarlyAndOpenLabels', () => {
+   const earlyAdmissionTime = '09:00';
+   const openTime = '09:30';
+   const zooHours = {
       date: '2026-06-20',
-      earlyAdmissionTime: '09:00',
-      openTime: '09:30',
+      earlyAdmissionTime,
+      openTime,
       lastAdmissionTime: '18:00',
       closeTime: '19:00',
-   }, EMPTY_ITINERARY);
+   };
+
+   const planner = DayPlannerBuilder.makeDayPlannerPreview(zooHours, EMPTY_ITINERARY);
    const text = allTextFor(planner);
 
-   assert.match(text, /9:00 AM/);
-   assert.match(text, /Early Admission/);
-   assert.match(text, /9:30 AM/);
-   assert.match(text, /Zoo Opens/);
+   assert.match(text, new RegExp(ZooClockTimeHelper.formatClockTime(earlyAdmissionTime)));
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.earlyAdmissionLabel));
+   assert.match(text, new RegExp(ZooClockTimeHelper.formatClockTime(openTime)));
+   assert.match(text, new RegExp(Strings.itinerary.dayPlanner.openLabel));
 });
 
-test('Test_Arrival_TestArrivalMarkerRemoveMenuClearsArrivalTimeThrough_ExpectOk', () => {
+
+test('Test_MakeDayPlannerPreview_TestArrivalMarkerRemove_ExpectArrivalCleared', () => {
    const arrivalRemovals = [];
+   const arrivalLabel = Strings.itinerary.dayPlanner.arrivalLabel;
+
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
@@ -58,19 +62,21 @@ test('Test_Arrival_TestArrivalMarkerRemoveMenuClearsArrivalTimeThrough_ExpectOk'
          },
       }
    );
-   const arrivalMarker = boundaryMarkerByLabel(planner, 'Arrival');
+   const arrivalMarker = boundaryMarkerByLabel(planner, arrivalLabel);
    const openPill = [...planner.querySelectorAll('.itinerary-day-time-boundary-label')].find((label) => (
-      allTextFor(label).includes('Zoo Opens')
+      allTextFor(label).includes(Strings.itinerary.dayPlanner.openLabel)
    ));
 
    assert.ok(arrivalMarker?.classList.contains('itinerary-day-boundary-marker--with-menu'));
    assert.equal(arrivalMarker?.attributes?.['data-boundary-marker-kind'], 'arrival');
-   assert.equal(arrivalMarker?.attributes?.['aria-label'], 'Arrival');
+   assert.equal(arrivalMarker?.attributes?.['aria-label'], arrivalLabel);
    assert.ok(openPill);
 
    arrivalMarker?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
-   assert.deepEqual(arrivalRemovals, [ '' ]);
+
+   assert.deepEqual(arrivalRemovals, ['']);
 });
+
 
 test('Test_Day_TestDayPlannerHeaderClearButtonsRemoveArrivalAnd_ExpectOk', async () => {
    const arrivalChanges = [];
@@ -99,18 +105,25 @@ test('Test_Day_TestDayPlannerHeaderClearButtonsRemoveArrivalAnd_ExpectOk', async
    );
    const clearButtons = [...planner.querySelectorAll('.itinerary-day-time-clear-btn')];
 
-   assert.equal(clearButtons.length, 2);
-   assert.equal(clearButtons[0].attributes?.['aria-label'], 'Clear arrival time');
-   assert.equal(clearButtons[1].attributes?.['aria-label'], 'Clear departure time');
+   assert.equal(clearButtons.length, Position.THIRD);
+   assert.equal(
+      clearButtons.at(Position.FIRST).attributes?.['aria-label'],
+      Strings.itinerary.dayPlanner.clearArrivalTimeAria
+   );
+   assert.equal(
+      clearButtons.at(Position.SECOND).attributes?.['aria-label'],
+      Strings.itinerary.dayPlanner.clearDepartureTimeAria
+   );
 
-   clearButtons[0].click();
+   clearButtons.at(Position.FIRST).click();
    await Promise.resolve();
-   clearButtons[1].click();
+   clearButtons.at(Position.SECOND).click();
    await Promise.resolve();
 
-   assert.deepEqual(arrivalChanges, [ '' ]);
-   assert.deepEqual(departureChanges, [ '' ]);
+   assert.deepEqual(arrivalChanges, ['']);
+   assert.deepEqual(departureChanges, ['']);
 });
+
 
 test('Test_Day_TestDayPlannerHeaderDisablesClearButtonsWhenTimes_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -131,9 +144,10 @@ test('Test_Day_TestDayPlannerHeaderDisablesClearButtonsWhenTimes_ExpectOk', () =
    );
    const clearButtons = [...planner.querySelectorAll('.itinerary-day-time-clear-btn')];
 
-   assert.equal(clearButtons.length, 2);
+   assert.equal(clearButtons.length, Position.THIRD);
    assert.ok(clearButtons.every((button) => button.disabled));
 });
+
 
 test('Test_Day_TestDayPlannerDepartureInputRejectsInvalidPickerValue_ExpectOk', async (t) => {
    mock.timers.enable({ apis: ['setTimeout'] });
@@ -189,21 +203,24 @@ test('Test_Day_TestDayPlannerDepartureInputRejectsInvalidPickerValue_ExpectOk', 
       }
    );
    const inputs = [...planner.querySelectorAll('.itinerary-day-time-input')];
-   const departureInput = inputs[1];
+   const departureInput = inputs.at(Position.SECOND);
    const outsideTarget = createNode('button');
+   const invalidDeparture = '8:00 PM';
+   const restoredDeparture = ZooClockTimeHelper.formatClockTime('18:30');
 
-   departureInput.value = '8:00 PM';
+   departureInput.value = invalidDeparture;
    documentListeners.get('mousedown')?.forEach((handler) => {
       handler({ target: outsideTarget });
    });
    await Promise.resolve();
 
    assert.deepEqual(departureChanges, []);
-   assert.equal(pickerInstances[1]?.closeCalled, true);
-   assert.equal(departureInput.value, '6:30 PM');
+   assert.equal(pickerInstances.at(Position.SECOND)?.closeCalled, true);
+   assert.equal(departureInput.value, restoredDeparture);
 
    mock.timers.tick(TimelineLayoutConstants.DAY_PLANNER_ACTION_FEEDBACK_DISMISS_MS);
 });
+
 
 test('Test_Departure_TestDepartureMarkerRemoveMenuClearsDepartureTimeThrough_ExpectOk', () => {
    const departureRemovals = [];
@@ -230,35 +247,41 @@ test('Test_Departure_TestDepartureMarkerRemoveMenuClearsDepartureTimeThrough_Exp
    assert.ok(departureMarker?.classList.contains('itinerary-day-boundary-marker--with-menu'));
    assert.equal(departureMarker?.attributes?.['data-boundary-marker-kind'], 'departure');
    assert.equal(departureMarker?.attributes?.['aria-label'], 'Departure');
+
    departureMarker?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
-   assert.deepEqual(departureRemovals, [ '' ]);
+
+   assert.deepEqual(departureRemovals, ['']);
 });
 
+
 test('Test_Day_TestDayPlannerKeepsScheduledItemsVisibleWhenThey_ExpectOk', () => {
+   const capybaraName = 'Capybara';
+   const arrivalTime = '09:30';
+
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
-         openTime: '09:30',
+         openTime: arrivalTime,
          lastAdmissionTime: '18:00',
          closeTime: '19:00',
       },
       {
-         arrivalTime: '09:30',
+         arrivalTime,
          itineraryConfig: TEST_ITINERARY_CONFIG,
          ...EMPTY_ITINERARY,
          animals: [
             {
-               species: 'Capybara',
+               species: capybaraName,
                exhibit: 'Indo-Malaya',
-               start_time: '09:30',
+               start_time: arrivalTime,
                end_time: '09:45',
             },
          ],
       }
    );
-   const arrivalStrip = boundaryMarkerStripByLabel(planner, 'Arrival');
+   const arrivalStrip = boundaryMarkerStripByLabel(planner, Strings.itinerary.dayPlanner.arrivalLabel);
    const capybaraPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
-      allTextFor(pill).includes('Capybara')
+      allTextFor(pill).includes(capybaraName)
    ));
    const capybaraStrip = capybaraPill?.parentElement;
 
@@ -269,6 +292,7 @@ test('Test_Day_TestDayPlannerKeepsScheduledItemsVisibleWhenThey_ExpectOk', () =>
    assert.equal(arrivalStrip?.attributes?.['data-visit-boundary-placement'], 'ends-at-anchor');
    assert.notEqual(arrivalStrip, capybaraStrip);
 });
+
 
 test('Test_Day_TestDayPlannerStacksDepartureMarkerAndClosePills_ExpectOk', () => {
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
@@ -284,23 +308,29 @@ test('Test_Day_TestDayPlannerStacksDepartureMarkerAndClosePills_ExpectOk', () =>
          ...EMPTY_ITINERARY,
       }
    );
+   const closeTime = ZooClockTimeHelper.formatClockTime('18:00');
    const timeCells = planner.querySelectorAll('.itinerary-day-time');
    const closeTimeCells = [...timeCells].filter((cell) => (
-      cell.querySelector('.itinerary-day-time-label')?.textContent === '6:00 PM'
+      cell.querySelector('.itinerary-day-time-label')?.textContent === closeTime
    ));
-
-   assert.equal(closeTimeCells.length, 1);
-   assert.match(allTextFor(closeTimeCells[0]), /Zoo Closes/);
-
-   const pillStrips = planner.querySelectorAll('.itinerary-day-pill-strip');
    const departureStrip = boundaryMarkerStripByLabel(planner, 'Departure');
 
+   assert.equal(closeTimeCells.length, Position.SECOND);
+   assert.match(allTextFor(closeTimeCells.at(Position.FIRST)), new RegExp(Strings.itinerary.dayPlanner.closeLabel));
    assert.ok(departureStrip);
-   assert.equal(departureStrip.querySelectorAll('.itinerary-day-boundary-marker').length, 1);
+   assert.equal(
+      departureStrip.querySelectorAll('.itinerary-day-boundary-marker').length,
+      Position.SECOND
+   );
    assert.equal(departureStrip.attributes?.['data-visit-boundary-placement'], 'starts-at-anchor');
 });
 
+
 test('Test_Day_TestDayPlannerPositionsOffSlotArrivalAndDeparture_ExpectOk', () => {
+   const arrivalTime = '09:45';
+   const departureTime = '17:15';
+   const offsetFraction = '0.5';
+
    const planner = DayPlannerBuilder.makeDayPlannerPreview(
       {
          date: '2026-06-20',
@@ -309,8 +339,8 @@ test('Test_Day_TestDayPlannerPositionsOffSlotArrivalAndDeparture_ExpectOk', () =
          closeTime: '19:00',
       },
       {
-         arrivalTime: '09:45',
-         departureTime: '17:15',
+         arrivalTime,
+         departureTime,
          itineraryConfig: TEST_ITINERARY_CONFIG,
          ...EMPTY_ITINERARY,
       }
@@ -318,13 +348,13 @@ test('Test_Day_TestDayPlannerPositionsOffSlotArrivalAndDeparture_ExpectOk', () =
    const timeLabels = [...planner.querySelectorAll('.itinerary-day-time-label')].map(
       (cell) => cell.textContent
    );
-   const arrivalStrip = boundaryMarkerStripByLabel(planner, 'Arrival');
+   const arrivalStrip = boundaryMarkerStripByLabel(planner, Strings.itinerary.dayPlanner.arrivalLabel);
    const departureStrip = boundaryMarkerStripByLabel(planner, 'Departure');
 
-   assert.ok(!timeLabels.includes('9:45 AM'));
-   assert.ok(!timeLabels.includes('5:15 PM'));
-   assert.ok(boundaryMarkerByLabel(planner, 'Arrival'));
+   assert.ok(!timeLabels.includes(ZooClockTimeHelper.formatClockTime(arrivalTime)));
+   assert.ok(!timeLabels.includes(ZooClockTimeHelper.formatClockTime(departureTime)));
+   assert.ok(boundaryMarkerByLabel(planner, Strings.itinerary.dayPlanner.arrivalLabel));
    assert.ok(boundaryMarkerByLabel(planner, 'Departure'));
-   assert.equal(arrivalStrip?.attributes?.['data-offset-fraction'], '0.5');
-   assert.equal(departureStrip?.attributes?.['data-offset-fraction'], '0.5');
+   assert.equal(arrivalStrip?.attributes?.['data-offset-fraction'], offsetFraction);
+   assert.equal(departureStrip?.attributes?.['data-offset-fraction'], offsetFraction);
 });

@@ -9,7 +9,6 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.operations.itinerary_save_context_builder import ItinerarySaveContextBuilder
-from api.models import Itinerary
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -28,6 +27,13 @@ CURRENT_ITINERARY = ItineraryBuilder.build(
    departure_time='5:00 PM',
 )
 
+CONTROLLER_KWARGS = {
+   'animal_coordinator': AnimalCoordinator,
+   'attraction_coordinator': AttractionCoordinator,
+   'guardians_coordinator': GuardiansCoordinator,
+   'wild_encounter_coordinator': WildEncounterCoordinator,
+}
+
 
 @pytest.fixture
 def context_builder_conn() -> sqlite3.Connection:
@@ -37,18 +43,20 @@ def context_builder_conn() -> sqlite3.Connection:
 
 
 def Test_ControllerKwargs_TestCoordinators_ExpectKwargsDict() -> None:
+   visit_date_temp = 72.0
+
    kwargs = ItinerarySaveContextBuilder.controller_kwargs(
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator,
-      visit_date_temp=72.0 )
+      visit_date_temp=visit_date_temp )
 
    assert kwargs[ 'animal_coordinator' ] is AnimalCoordinator
    assert kwargs[ 'attraction_coordinator' ] is AttractionCoordinator
    assert kwargs[ 'guardians_coordinator' ] is GuardiansCoordinator
    assert kwargs[ 'wild_encounter_coordinator' ] is WildEncounterCoordinator
-   assert kwargs[ 'visit_date_temp' ] == 72.0
+   assert kwargs[ 'visit_date_temp' ] == visit_date_temp
 
 
 def Test_CurrentItinerary_TestSavedItinerary_ExpectBuiltItinerary(
@@ -60,21 +68,24 @@ def Test_CurrentItinerary_TestSavedItinerary_ExpectBuiltItinerary(
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_context_builder.ItineraryBuilder.build_current',
       lambda saved_itinerary, **kwargs: CURRENT_ITINERARY )
-
    controller_kwargs = ItinerarySaveContextBuilder.controller_kwargs(
       animal_coordinator=AnimalCoordinator,
       attraction_coordinator=AttractionCoordinator,
       guardians_coordinator=GuardiansCoordinator,
       wild_encounter_coordinator=WildEncounterCoordinator )
 
-   assert ItinerarySaveContextBuilder.current_itinerary(
+   itinerary = ItinerarySaveContextBuilder.current_itinerary(
       context_builder_conn,
-      controller_kwargs ) == CURRENT_ITINERARY
+      controller_kwargs )
+
+   assert itinerary == CURRENT_ITINERARY
 
 
 def Test_ErrorResult_TestStatus_ExpectSaveResultWithCurrentItinerary(
       context_builder_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   status = ItineraryErrorType.TIME_OUT_OF_BOUNDS
+   suppressed_warnings = [ ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ]
    monkeypatch.setattr(
       ItinerarySaveContextBuilder,
       'current_itinerary',
@@ -82,15 +93,10 @@ def Test_ErrorResult_TestStatus_ExpectSaveResultWithCurrentItinerary(
 
    result = ItinerarySaveContextBuilder.error_result(
       context_builder_conn,
-      ItineraryErrorType.TIME_OUT_OF_BOUNDS,
-      {
-         'animal_coordinator': AnimalCoordinator,
-         'attraction_coordinator': AttractionCoordinator,
-         'guardians_coordinator': GuardiansCoordinator,
-         'wild_encounter_coordinator': WildEncounterCoordinator,
-      },
-      suppressed_warnings=[ ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ] )
+      status,
+      CONTROLLER_KWARGS,
+      suppressed_warnings=suppressed_warnings )
 
-   assert result.status == ItineraryErrorType.TIME_OUT_OF_BOUNDS
+   assert result.status == status
    assert result.itinerary == CURRENT_ITINERARY
-   assert result.suppressed_warnings == [ ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ]
+   assert result.suppressed_warnings == suppressed_warnings

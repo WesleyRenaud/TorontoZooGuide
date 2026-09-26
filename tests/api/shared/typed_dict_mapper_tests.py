@@ -15,30 +15,32 @@ class SampleSerializable():
 
 
 def Test_ToDictWithType_TestSerializable_ExpectAddsFallbackType() -> None:
-   result = TypedDictMapper.to_dict_with_type(
-      SampleSerializable( name='Carousel' ),
-      'attraction' )
+   name = 'Carousel'
+   fallback_type = 'attraction'
+   sample = SampleSerializable( name=name )
 
-   assert result == {
-      'name': 'Carousel',
-      'type': 'attraction',
-   }
+   result = TypedDictMapper.to_dict_with_type( sample, fallback_type )
+
+   assert result[ 'name' ] == sample.name
+   assert result[ 'type' ] == fallback_type
 
 
 def Test_ToDictWithType_TestExistingType_ExpectRetainsExistingType() -> None:
-   result = TypedDictMapper.to_dict_with_type(
-      { 'name': 'Carousel', 'type': 'customType' },
-      'attraction' )
+   existing_type = 'customType'
+   fallback_type = 'attraction'
+   payload = { 'name': 'Carousel', 'type': existing_type }
 
-   assert result[ 'type' ] == 'customType'
+   result = TypedDictMapper.to_dict_with_type( payload, fallback_type )
+
+   assert result[ 'type' ] == existing_type
 
 
 def Test_ToDictWithType_TestPlainDict_ExpectAddsFallbackType() -> None:
-   result = TypedDictMapper.to_dict_with_type(
-      { 'name': 'Carousel' },
-      'attraction' )
+   name = 'Carousel'
+   fallback_type = 'attraction'
+   payload = { 'name': name }
 
-   assert result == {
-      'name': 'Carousel',
-      'type': 'attraction',
-   }
+   result = TypedDictMapper.to_dict_with_type( payload, fallback_type )
+
+   assert result[ 'name' ] == name
+   assert result[ 'type' ] == fallback_type

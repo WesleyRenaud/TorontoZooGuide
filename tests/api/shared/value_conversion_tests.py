@@ -19,43 +19,80 @@ from api.shared.value_conversion import ValueConversion
    ]
 )
 def Test_AsBoolean( value: Any, expected: bool ) -> None:
-   assert ValueConversion.as_boolean( value ) is expected
+   flag = ValueConversion.as_boolean( value )
+
+   assert flag is expected
 
 
-@pytest.mark.parametrize(
-   'value, expected',
-   [
-      ( None, '' ),
-      ( '  Lion  ', 'Lion' ),
-      ( 42, '42' ),
-   ]
-)
-def Test_AsTrimmedString( value: Any, expected: str ) -> None:
-   assert ValueConversion.as_trimmed_string( value ) == expected
+def Test_AsTrimmedString_TestNone_ExpectEmpty() -> None:
+   value = None
+
+   trimmed = ValueConversion.as_trimmed_string( value )
+
+   assert trimmed == ''
 
 
-@pytest.mark.parametrize(
-   'value, expected',
-   [
-      ( None, None ),
-      ( '   ', None ),
-      ( '  Lion  ', 'Lion' ),
-   ]
-)
-def Test_AsNullableString( value: Any, expected: str | None ) -> None:
-   assert ValueConversion.as_nullable_string( value ) == expected
+def Test_AsTrimmedString_TestWhitespace_ExpectTrimmed() -> None:
+   name = 'Lion'
+   value = f'  { name }  '
+
+   trimmed = ValueConversion.as_trimmed_string( value )
+
+   assert trimmed == name
 
 
-@pytest.mark.parametrize(
-   'value, expected',
-   [
-      ( None, [] ),
-      ( 'Alert message.', [ 'Alert message.' ] ),
-   ]
-)
-def Test_AsSingletonList( value: str | None, expected: list[ str ] ) -> None:
-   assert ValueConversion.as_singleton_list( value ) == expected
+def Test_AsTrimmedString_TestNumber_ExpectCoerced() -> None:
+   value = 42
+
+   trimmed = ValueConversion.as_trimmed_string( value )
+
+   assert trimmed == str( value )
+
+
+def Test_AsNullableString_TestNone_ExpectNone() -> None:
+   value = None
+
+   trimmed = ValueConversion.as_nullable_string( value )
+
+   assert trimmed is None
+
+
+def Test_AsNullableString_TestBlank_ExpectNone() -> None:
+   value = '   '
+
+   trimmed = ValueConversion.as_nullable_string( value )
+
+   assert trimmed is None
+
+
+def Test_AsNullableString_TestWhitespace_ExpectTrimmed() -> None:
+   name = 'Lion'
+   value = f'  { name }  '
+
+   trimmed = ValueConversion.as_nullable_string( value )
+
+   assert trimmed == name
+
+
+def Test_AsSingletonList_TestNone_ExpectEmpty() -> None:
+   value = None
+
+   result = ValueConversion.as_singleton_list( value )
+
+   assert result == []
+
+
+def Test_AsSingletonList_TestMessage_ExpectList() -> None:
+   message = 'Alert message.'
+
+   result = ValueConversion.as_singleton_list( message )
+
+   assert result == [ message ]
 
 
 def Test_AsNullableBoolean_TestNone_ExpectNone() -> None:
-   assert ValueConversion.as_nullable_boolean( None ) is None
+   value = None
+
+   flag = ValueConversion.as_nullable_boolean( value )
+
+   assert flag is None

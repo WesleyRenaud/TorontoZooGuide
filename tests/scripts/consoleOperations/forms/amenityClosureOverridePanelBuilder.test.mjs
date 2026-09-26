@@ -8,7 +8,9 @@ import { ConsolePanelShellBuilder } from '../../../../scripts/consoleOperations/
 import { ConsoleSelectFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleSelectFieldBuilder.js';
 import { ConsoleStatusBuilder } from '../../../../scripts/consoleOperations/templates/consoleStatusBuilder.js';
 import { ConsoleTextareaFieldBuilder } from '../../../../scripts/consoleOperations/templates/consoleTextareaFieldBuilder.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
+
 
 test('Test_CreatePanel_TestGiftShopConfig_ExpectShellOptions', () => {
    const originals = {
@@ -19,11 +21,21 @@ test('Test_CreatePanel_TestGiftShopConfig_ExpectShellOptions', () => {
       createActions: ConsoleActionsBuilder.createActions,
       createStatus: ConsoleStatusBuilder.createStatus,
    };
-
+   const panel = { panel: true };
+   const panelId = 'giftShopClosureOverridePanel';
+   const title = Strings.panelTitles.giftShopClosureOverride;
+   const idPrefix = 'giftShopClosureOverride';
+   const entityFieldName = 'GiftShop';
+   const endHelpText = Strings.help.continueUntilReopened('gift shop');
+   const messageLabel = Strings.labels.closedMessage;
+   const messagePlaceholder = Strings.textareas.closedMessage('gift shop');
+   const submitId = 'submitGiftShopClosureOverride';
+   const statusId = 'giftShopClosureOverrideStatus';
    let captured;
+
    ConsolePanelShellBuilder.createPanelShell = (options) => {
       captured = options;
-      return { panel: true };
+      return panel;
    };
    ConsoleSelectFieldBuilder.createSelectField = (options) => ({ kind: 'createSelectField', ...options });
    ConsoleDateRangeFieldsBuilder.createDateRangeFields = (options) => ({ kind: 'createDateRangeFields', ...options });
@@ -33,36 +45,37 @@ test('Test_CreatePanel_TestGiftShopConfig_ExpectShellOptions', () => {
 
    try {
       const result = AmenityClosureOverridePanelBuilder.createPanel({
-         panelId: 'giftShopClosureOverridePanel',
-         title: Strings.panelTitles.giftShopClosureOverride,
+         panelId,
+         title,
          entityLabel: Strings.entityLabels.giftShop,
          emptyOptionLabel: Strings.placeholders.giftShop,
-         idPrefix: 'giftShopClosureOverride',
-         entityFieldName: 'GiftShop',
-         endHelpText: Strings.help.continueUntilReopened('gift shop'),
-         messageLabel: Strings.labels.closedMessage,
-         messagePlaceholder: Strings.textareas.closedMessage('gift shop'),
-         submitId: 'submitGiftShopClosureOverride',
-         statusId: 'giftShopClosureOverrideStatus',
+         idPrefix,
+         entityFieldName,
+         endHelpText,
+         messageLabel,
+         messagePlaceholder,
+         submitId,
+         statusId,
       });
 
-      assert.deepEqual(result, { panel: true });
-      assert.equal(captured.panelId, 'giftShopClosureOverridePanel');
-      assert.equal(captured.title, Strings.panelTitles.giftShopClosureOverride);
-      assert.equal(captured.bodyChildren.length, 5);
-      assert.equal(captured.bodyChildren[0].inputId, 'giftShopClosureOverrideGiftShop');
-      assert.equal(captured.bodyChildren[1].startDateId, 'giftShopClosureOverrideStartDate');
-      assert.equal(captured.bodyChildren[1].startHelpText, Strings.help.startImmediately);
-      assert.equal(captured.bodyChildren[1].endDateId, 'giftShopClosureOverrideEndDate');
-      assert.equal(
-         captured.bodyChildren[1].endHelpText,
-         Strings.help.continueUntilReopened('gift shop')
-      );
-      assert.equal(captured.bodyChildren[2].inputId, 'giftShopClosureOverrideMessage');
-      assert.equal(captured.bodyChildren[2].label, Strings.labels.closedMessage);
-      assert.equal(captured.bodyChildren[2].placeholder, Strings.textareas.closedMessage('gift shop'));
-      assert.equal(captured.bodyChildren[3].submitId, 'submitGiftShopClosureOverride');
-      assert.equal(captured.bodyChildren[4].statusId, 'giftShopClosureOverrideStatus');
+      const entityField = captured.bodyChildren[Position.FIRST];
+      const dateRange = captured.bodyChildren[Position.SECOND];
+      const messageField = captured.bodyChildren[Position.THIRD];
+      const actions = captured.bodyChildren[Position.FOURTH];
+      const status = captured.bodyChildren.at(Position.LAST);
+      assert.equal(result, panel);
+      assert.equal(captured.panelId, panelId);
+      assert.equal(captured.title, title);
+      assert.equal(entityField.inputId, `${idPrefix}${entityFieldName}`);
+      assert.equal(dateRange.startDateId, `${idPrefix}StartDate`);
+      assert.equal(dateRange.startHelpText, Strings.help.startImmediately);
+      assert.equal(dateRange.endDateId, `${idPrefix}EndDate`);
+      assert.equal(dateRange.endHelpText, endHelpText);
+      assert.equal(messageField.inputId, `${idPrefix}Message`);
+      assert.equal(messageField.label, messageLabel);
+      assert.equal(messageField.placeholder, messagePlaceholder);
+      assert.equal(actions.submitId, submitId);
+      assert.equal(status.statusId, statusId);
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
       ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;

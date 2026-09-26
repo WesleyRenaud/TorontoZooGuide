@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ScheduleTimeConflictContentBuilder } from '../../../../scripts/itinerary/panel/scheduleTimeConflictContentBuilder.js';
 import { ScheduleTimeConflictButtonStore } from '../../../../scripts/itinerary/panel/scheduleTimeConflictButtonStore.js';
+import { ScheduleTimeConflictContentBuilder } from '../../../../scripts/itinerary/panel/scheduleTimeConflictContentBuilder.js';
 import { ScheduleTimeConflictView } from '../../../../scripts/itinerary/panel/scheduleTimeConflictView.js';
 import { RowPresenter } from '../../../../scripts/itinerary/panel/rowPresenter.js';
 import { ScheduledOccurrenceSorter } from '../../../../scripts/itinerary/scheduledOccurrenceSorter.js';
@@ -10,10 +10,9 @@ import { ResultRenderer } from '../../../../scripts/itinerary/selectors/base/res
 import { ScheduleConflictChecker } from '../../../../scripts/itinerary/wizard/scheduleConflictChecker.js';
 import { ScheduleOverrideSelectionFragment } from '../../../../scripts/itinerary/wizard/scheduleOverrideSelectionFragment.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
+import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
-
-installDomTestHooks();
 
 const wildItem = {
    name: 'From Howls to Honks',
@@ -32,28 +31,34 @@ const talkItem = {
    location: 'Africa Savanna',
 };
 
+const selectedState = 'selected';
+
+installDomTestHooks();
+
+
 test('Test_RefreshConflictSelectionButtons_TestEntries_ExpectStoreApplied', () => {
    const originalState = ScheduleTimeConflictButtonStore.getConflictSelectionButtonState;
    const originalApply = ScheduleTimeConflictButtonStore.applyConflictSelectionButtonState;
    const applies = [];
-
-   ScheduleTimeConflictButtonStore.getConflictSelectionButtonState = () => 'selected';
+   ScheduleTimeConflictButtonStore.getConflictSelectionButtonState = () => selectedState;
    ScheduleTimeConflictButtonStore.applyConflictSelectionButtonState = (...args) => {
       applies.push(args);
    };
+   const button = document.createElement('button');
 
    try {
-      const button = document.createElement('button');
       ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons(
          [{ button, item: wildItem }],
          { items: [] }
       );
-      assert.deepEqual(applies, [[button, 'selected']]);
+
+      assert.deepEqual(applies, [[button, selectedState]]);
    } finally {
       ScheduleTimeConflictButtonStore.getConflictSelectionButtonState = originalState;
       ScheduleTimeConflictButtonStore.applyConflictSelectionButtonState = originalApply;
    }
 });
+
 
 test('Test_HandleConflictItemButtonClick_TestSelectedToggle_ExpectRefresh', () => {
    const originalSelected = ScheduleConflictChecker.isConflictItemSelected;
@@ -61,7 +66,6 @@ test('Test_HandleConflictItemButtonClick_TestSelectedToggle_ExpectRefresh', () =
    const originalRefresh = ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons;
    const toggles = [];
    const refreshes = [];
-
    ScheduleConflictChecker.isConflictItemSelected = () => true;
    ScheduleConflictChecker.toggleConflictItemSelection = (...args) => {
       toggles.push(args);
@@ -76,14 +80,16 @@ test('Test_HandleConflictItemButtonClick_TestSelectedToggle_ExpectRefresh', () =
          wildItem,
          []
       );
-      assert.equal(toggles.length, 1);
-      assert.equal(refreshes.length, 1);
+
+      assert.equal(toggles.length, Position.SECOND);
+      assert.equal(refreshes.length, Position.SECOND);
    } finally {
       ScheduleConflictChecker.isConflictItemSelected = originalSelected;
       ScheduleConflictChecker.toggleConflictItemSelection = originalToggle;
       ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons = originalRefresh;
    }
 });
+
 
 test('Test_HandleConflictItemButtonClick_TestTrimOverride_ExpectConfirmation', () => {
    const originalSelected = ScheduleConflictChecker.isConflictItemSelected;
@@ -93,7 +99,6 @@ test('Test_HandleConflictItemButtonClick_TestTrimOverride_ExpectConfirmation', (
    const originalRefresh = ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons;
    let confirmHandler = null;
    const toggles = [];
-
    ScheduleConflictChecker.isConflictItemSelected = () => false;
    ScheduleConflictChecker.conflictItemRequiresTrimOverride = () => true;
    ScheduleOverrideSelectionFragment.showScheduleOverrideSelectionConfirmation = ({ onConfirm }) => {
@@ -106,9 +111,12 @@ test('Test_HandleConflictItemButtonClick_TestTrimOverride_ExpectConfirmation', (
 
    try {
       ScheduleTimeConflictContentBuilder.handleConflictItemButtonClick({ items: [] }, talkItem, []);
+
       assert.equal(typeof confirmHandler, 'function');
+
       confirmHandler();
-      assert.equal(toggles.length, 1);
+
+      assert.equal(toggles.length, Position.SECOND);
    } finally {
       ScheduleConflictChecker.isConflictItemSelected = originalSelected;
       ScheduleConflictChecker.conflictItemRequiresTrimOverride = originalRequires;
@@ -118,13 +126,13 @@ test('Test_HandleConflictItemButtonClick_TestTrimOverride_ExpectConfirmation', (
    }
 });
 
+
 test('Test_HandleConflictItemButtonClick_TestDirectSelect_ExpectToggle', () => {
    const originalSelected = ScheduleConflictChecker.isConflictItemSelected;
    const originalRequires = ScheduleConflictChecker.conflictItemRequiresTrimOverride;
    const originalToggle = ScheduleConflictChecker.toggleConflictItemSelection;
    const originalRefresh = ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons;
    const toggles = [];
-
    ScheduleConflictChecker.isConflictItemSelected = () => false;
    ScheduleConflictChecker.conflictItemRequiresTrimOverride = () => false;
    ScheduleConflictChecker.toggleConflictItemSelection = (...args) => {
@@ -134,7 +142,8 @@ test('Test_HandleConflictItemButtonClick_TestDirectSelect_ExpectToggle', () => {
 
    try {
       ScheduleTimeConflictContentBuilder.handleConflictItemButtonClick({ items: [] }, wildItem, []);
-      assert.equal(toggles.length, 1);
+
+      assert.equal(toggles.length, Position.SECOND);
    } finally {
       ScheduleConflictChecker.isConflictItemSelected = originalSelected;
       ScheduleConflictChecker.conflictItemRequiresTrimOverride = originalRequires;
@@ -143,22 +152,38 @@ test('Test_HandleConflictItemButtonClick_TestDirectSelect_ExpectToggle', () => {
    }
 });
 
-test('Test_CreateScheduleConflictSubtitle_TestTalkAndWild_ExpectLabels', () => {
+
+test('Test_CreateScheduleConflictSubtitle_TestTalk_ExpectLocation', () => {
    const originalField = RowPresenter.buildScheduledTimeFieldLine;
-   RowPresenter.buildScheduledTimeFieldLine = () => '1:00 PM – 1:30 PM';
+   const scheduledTime = '1:00 PM – 1:30 PM';
+   RowPresenter.buildScheduledTimeFieldLine = () => scheduledTime;
 
    try {
       const talkSubtitle = ScheduleTimeConflictContentBuilder.createScheduleConflictSubtitle(talkItem);
-      assert.match(talkSubtitle.textContent, new RegExp(Strings.labels.location));
-      assert.match(talkSubtitle.textContent, /Africa Savanna/);
 
-      const wildSubtitle = ScheduleTimeConflictContentBuilder.createScheduleConflictSubtitle(wildItem);
-      assert.match(wildSubtitle.textContent, new RegExp(Strings.itinerary.selectors.meetingSpot));
-      assert.match(wildSubtitle.textContent, /Mayan Temple/);
+      assert.match(talkSubtitle.textContent, new RegExp(Strings.labels.location));
+      assert.match(talkSubtitle.textContent, new RegExp(talkItem.location));
    } finally {
       RowPresenter.buildScheduledTimeFieldLine = originalField;
    }
 });
+
+
+test('Test_CreateScheduleConflictSubtitle_TestWildEncounter_ExpectMeetingSpot', () => {
+   const originalField = RowPresenter.buildScheduledTimeFieldLine;
+   const scheduledTime = '1:00 PM – 1:30 PM';
+   RowPresenter.buildScheduledTimeFieldLine = () => scheduledTime;
+
+   try {
+      const wildSubtitle = ScheduleTimeConflictContentBuilder.createScheduleConflictSubtitle(wildItem);
+
+      assert.match(wildSubtitle.textContent, new RegExp(Strings.itinerary.selectors.meetingSpot));
+      assert.match(wildSubtitle.textContent, new RegExp(wildItem.meeting_spot));
+   } finally {
+      RowPresenter.buildScheduledTimeFieldLine = originalField;
+   }
+});
+
 
 test('Test_CreateWildEncounterConflictRowAndSection_TestIssues_ExpectRows', () => {
    const originalSort = ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime;
@@ -167,8 +192,8 @@ test('Test_CreateWildEncounterConflictRowAndSection_TestIssues_ExpectRows', () =
    const originalText = ResultRenderer.createSelectorTextColumn;
    const originalCreateSelection = ScheduleConflictChecker.createConflictSelection;
    const originalRefresh = ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons;
+   const originalHandle = ScheduleTimeConflictContentBuilder.handleConflictItemButtonClick;
    const clicks = [];
-
    ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = (items) => items;
    ScheduleTimeConflictView.buildConflictItemImageSrc = () => 'img.png';
    ResultRenderer.createSelectorTextColumn = ({ title }) => {
@@ -183,8 +208,6 @@ test('Test_CreateWildEncounterConflictRowAndSection_TestIssues_ExpectRows', () =
    };
    ScheduleConflictChecker.createConflictSelection = () => ({ items: [] });
    ScheduleTimeConflictContentBuilder.refreshConflictSelectionButtons = () => {};
-
-   const originalHandle = ScheduleTimeConflictContentBuilder.handleConflictItemButtonClick;
    ScheduleTimeConflictContentBuilder.handleConflictItemButtonClick = (...args) => {
       clicks.push(args);
    };
@@ -193,17 +216,17 @@ test('Test_CreateWildEncounterConflictRowAndSection_TestIssues_ExpectRows', () =
       const { section, conflictGroups } = ScheduleTimeConflictContentBuilder.createWildEncounterConflictSection([
          { items: [wildItem, talkItem] },
       ]);
+      const title = section.querySelector('.itin-save-issue-section-title')?.textContent;
+      const rows = section.querySelectorAll('.itin-save-issue-conflict-row');
 
       assert.equal(section.className, 'itin-save-issue-section');
-      assert.equal(
-         section.querySelector('.itin-save-issue-section-title')?.textContent,
-         Strings.itinerary.confirmation.scheduleConflictsTitle
-      );
-      assert.equal(section.querySelectorAll('.itin-save-issue-conflict-row').length, 2);
-      assert.equal(conflictGroups.length, 1);
+      assert.equal(title, Strings.itinerary.confirmation.scheduleConflictsTitle);
+      assert.equal(rows.length, Position.THIRD);
+      assert.equal(conflictGroups.length, Position.SECOND);
 
       section.querySelector('.itin-save-issue-select-btn')?.click();
-      assert.equal(clicks.length, 1);
+
+      assert.equal(clicks.length, Position.SECOND);
    } finally {
       ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = originalSort;
       ScheduleTimeConflictView.buildConflictItemImageSrc = originalImage;

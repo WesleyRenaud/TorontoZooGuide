@@ -6,17 +6,28 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
 
+
 test('Test_El_TestTagClassText_ExpectElement', () => {
-   const node = ItineraryPanelHelper.el('span', 'row-title', 'African Lion');
-   assert.equal(node.tagName.toUpperCase(), 'SPAN');
-   assert.equal(node.className, 'row-title');
-   assert.equal(node.textContent, 'African Lion');
+   const tag = 'span';
+   const className = 'row-title';
+   const text = 'African Lion';
+
+   const node = ItineraryPanelHelper.el(tag, className, text);
+
+   assert.equal(node.tagName.toUpperCase(), tag.toUpperCase());
+   assert.equal(node.className, className);
+   assert.equal(node.textContent, text);
 });
 
+
 test('Test_SafeImg_TestSrc_ExpectLazyImage', () => {
-   const img = ItineraryPanelHelper.safeImg('/images/icon.png');
-   assert.equal(img.tagName.toUpperCase(), 'IMG');
-   assert.equal(img.src, '/images/icon.png');
-   assert.equal(img.alt, '');
-   assert.equal(img.loading, 'lazy');
+   const tag = 'img';
+   const src = '/images/icon.png';
+
+   const image = ItineraryPanelHelper.safeImg(src);
+
+   assert.equal(image.tagName.toUpperCase(), tag.toUpperCase());
+   assert.equal(image.src, src);
+   assert.equal(image.alt, '');
+   assert.equal(image.loading, 'lazy');
 });

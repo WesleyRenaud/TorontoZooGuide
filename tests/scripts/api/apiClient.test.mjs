@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
 import { ApiClient } from '../../../scripts/api/apiClient.js';
+import { ApiClientHelper } from '../../../scripts/api/apiClientHelper.js';
 
 function _mockResponse({
    ok = true,
@@ -21,68 +22,78 @@ afterEach(() => {
    delete globalThis.fetch;
 });
 
+
 test('Test_PostJson_TestValidPayload_ExpectParsedResponse', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/set-itinerary');
-      assert.deepEqual(options, {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-         },
-         body: JSON.stringify({
-            date: '2026-06-15',
-            animals: ['African Lion'],
-         }),
-      });
+   const url = '/set-itinerary';
+   const date = '2026-06-15';
+   const animal = 'African Lion';
+   const data = {
+      date,
+      animals: [animal],
+   };
+   const success = true;
+   globalThis.fetch = async (requestedUrl, options) => {
+      assert.equal(requestedUrl, url);
+      assert.deepEqual(options, ApiClientHelper.buildJsonRequestOptions(data));
 
       return _mockResponse({
-         text: '{"success":true}',
+         text: JSON.stringify({ success }),
       });
    };
 
-   assert.deepEqual(await ApiClient.postJson('/set-itinerary', {
-      date: '2026-06-15',
-      animals: ['African Lion'],
-   }), {
-      success: true,
-   });
+   const payload = await ApiClient.postJson(url, data);
+
+   assert.deepEqual(payload, { success });
 });
+
 
 test('Test_PostJson_TestEmptyBody_ExpectEmptyObject', async () => {
+   const url = '/clear-itinerary';
    globalThis.fetch = async () => _mockResponse({ text: '   ' });
 
-   assert.deepEqual(await ApiClient.postJson('/clear-itinerary'), {});
+   const payload = await ApiClient.postJson(url);
+
+   assert.deepEqual(payload, {});
 });
 
+
 test('Test_PostJson_TestInvalidJson_ExpectThrows', async () => {
+   const url = '/get-itinerary';
    globalThis.fetch = async () => _mockResponse({ text: '{not-json' });
 
+   const request = ApiClient.postJson(url);
+
    await assert.rejects(
-      () => ApiClient.postJson('/get-itinerary'),
-      /Invalid JSON response from \/get-itinerary/
+      request,
+      new RegExp(`Invalid JSON response from ${url}`)
    );
 });
 
+
 test('Test_PostJson_TestHttpError_ExpectApiClientErrorMetadata', async () => {
+   const url = '/set-itinerary';
+   const status = 500;
+   const statusText = 'Internal Server Error';
+   const errorMessage = 'Could not save itinerary.';
+   const payload = { error: errorMessage };
    globalThis.fetch = async () => _mockResponse({
       ok: false,
-      status: 500,
-      statusText: 'Internal Server Error',
-      text: '{"error":"Could not save itinerary."}',
+      status,
+      statusText,
+      text: JSON.stringify(payload),
    });
 
+   const request = ApiClient.postJson(url);
+
    await assert.rejects(
-      async () => {
-         await ApiClient.postJson('/set-itinerary');
-      },
+      request,
       (error) => {
          assert.equal(error.name, 'ApiClientError');
-         assert.equal(error.message, 'Could not save itinerary. (/set-itinerary)');
-         assert.equal(error.status, 500);
-         assert.equal(error.statusText, 'Internal Server Error');
-         assert.equal(error.url, '/set-itinerary');
-         assert.deepEqual(error.payload, { error: 'Could not save itinerary.' });
+         assert.equal(error.message, `${errorMessage} (${url})`);
+         assert.equal(error.status, status);
+         assert.equal(error.statusText, statusText);
+         assert.equal(error.url, url);
+         assert.deepEqual(error.payload, payload);
          return true;
       }
    );

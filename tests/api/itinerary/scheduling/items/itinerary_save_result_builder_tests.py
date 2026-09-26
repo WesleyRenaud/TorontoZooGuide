@@ -68,33 +68,37 @@ def stub_saved_itinerary_build( monkeypatch: pytest.MonkeyPatch ) -> None:
 def Test_SaveResult_TestErrorStatus_ExpectResultWithReasons(
       save_result_builder_conn: sqlite3.Connection,
       stub_saved_itinerary_build: None ) -> None:
-   reason = ItineraryResultReason( code=ItineraryErrorType.TIME_OUT_OF_BOUNDS )
+   status = ItineraryErrorType.TIME_OUT_OF_BOUNDS
+   reason = ItineraryResultReason( code=status )
+   suppressed_warnings = [ ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ]
 
    result = ItinerarySaveResultBuilder.save_result(
       save_result_builder_conn,
-      ItineraryErrorType.TIME_OUT_OF_BOUNDS,
+      status,
       reasons=[ reason ],
-      suppressed_warnings=[ ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ],
+      suppressed_warnings=suppressed_warnings,
       **ITINERARY_CONTEXT )
 
-   assert result.status == ItineraryErrorType.TIME_OUT_OF_BOUNDS
+   assert result.status == status
    assert result.reasons == [ reason ]
-   assert result.suppressed_warnings == [ ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE ]
+   assert result.suppressed_warnings == suppressed_warnings
    assert result.itinerary == CURRENT_ITINERARY
 
 
 def Test_SuccessResult_TestAdjustments_ExpectSuccessItinerary(
       save_result_builder_conn: sqlite3.Connection,
       stub_saved_itinerary_build: None ) -> None:
+   suppressed_warnings = [ ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP ]
+
    result = ItinerarySaveResultBuilder.success_result(
       save_result_builder_conn,
       adjustments=[ ADJUSTMENT ],
-      suppressed_warnings=[ ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP ],
+      suppressed_warnings=suppressed_warnings,
       **ITINERARY_CONTEXT )
 
    assert result.status == ItineraryErrorType.SUCCESS
    assert result.adjustments == [ ADJUSTMENT ]
-   assert result.suppressed_warnings == [ ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP ]
+   assert result.suppressed_warnings == suppressed_warnings
    assert result.itinerary == CURRENT_ITINERARY
 
 

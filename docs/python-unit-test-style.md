@@ -41,6 +41,37 @@ def Test_GetRestaurantNames_TestProviderNames_ExpectReturned() -> None:
    ...
 ```
 
+## Arrange, act, assert
+
+Every non-parametrized test uses blank-line arrange / act / assert. Assign the
+act to a named result. Do not label the sections with comments.
+
+Expected values must come from arranged inputs, the arranged object, or
+production helpers — never from a second copy of the same literal, and never
+from a number that was calculated by hand.
+
+```python
+def Test_MinutesToSeconds_TestMinutes_ExpectSeconds() -> None:
+   duration_minutes = 6
+
+   seconds = DurationValues.minutes_to_seconds( duration_minutes )
+
+   assert seconds == duration_minutes * 60
+
+
+def Test_ToDict_TestBooleanFlags_ExpectFrontendShape() -> None:
+   animal = Animal(
+      species='Amur Tiger',
+      has_limited_viewing_schedule=1,
+      viewing_alert_messages=[] )
+
+   result = animal.to_dict()
+
+   assert result[ 'species' ] == animal.species
+   assert result[ 'has_limited_viewing_schedule' ] is ValueConversion.as_boolean(
+      animal.has_limited_viewing_schedule )
+```
+
 Parametrized table-driven tests may use the short form `Test_[Method]` when decorated with `@pytest.mark.parametrize`:
 
 ```python

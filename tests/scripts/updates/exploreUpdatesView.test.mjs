@@ -5,7 +5,9 @@ import { ExploreFragment } from '../../../scripts/updates/exploreFragment.js';
 import { ExploreUpdatesChromeHelper } from '../../../scripts/updates/exploreUpdatesChromeHelper.js';
 import { ExploreUpdatesView } from '../../../scripts/updates/exploreUpdatesView.js';
 import { Strings } from '../../../scripts/strings.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+
 
 function _buildExploreDom() {
    const section = document.createElement('section');
@@ -35,47 +37,98 @@ function _buildExploreDom() {
 
 installDomTestHooks();
 
+
 test('Test_GetExploreSectionAndHeader_TestClosest_ExpectNodes', () => {
    const { section, header, toggle, listEl } = _buildExploreDom();
 
-   assert.equal(ExploreUpdatesView.getExploreSectionEl(listEl), section);
-   assert.equal(ExploreUpdatesView.getExploreHeaderEl(listEl), header);
-   assert.equal(ExploreUpdatesView.getExploreToggleEl(listEl), toggle);
-   assert.equal(ExploreUpdatesView.getExploreSectionEl(document.createElement('div')), null);
+   const foundSection = ExploreUpdatesView.getExploreSectionEl(listEl);
+   const foundHeader = ExploreUpdatesView.getExploreHeaderEl(listEl);
+   const foundToggle = ExploreUpdatesView.getExploreToggleEl(listEl);
+
+   assert.equal(foundSection, section);
+   assert.equal(foundHeader, header);
+   assert.equal(foundToggle, toggle);
 });
 
-test('Test_GetExploreTabEl_TestTabs_ExpectButtons', () => {
-   const { updatesTab, eventsTab, listEl } = _buildExploreDom();
 
-   assert.equal(
-      ExploreUpdatesView.getExploreTabEl(listEl, ExploreFragment.EXPLORE_TAB.UPDATES),
-      updatesTab
-   );
-   assert.equal(
-      ExploreUpdatesView.getExploreTabEl(listEl, ExploreFragment.EXPLORE_TAB.EVENTS),
-      eventsTab
-   );
-   assert.equal(
-      ExploreUpdatesView.getExploreTabEl(document.createElement('div'), ExploreFragment.EXPLORE_TAB.UPDATES),
-      null
-   );
+test('Test_GetExploreSectionEl_TestUnrelated_ExpectNull', () => {
+   const section = ExploreUpdatesView.getExploreSectionEl(document.createElement('div'));
+
+   assert.equal(section, null);
 });
 
-test('Test_SetExploreSectionVisibility_TestFlag_ExpectHidden', () => {
+
+test('Test_GetExploreTabEl_TestUpdates_ExpectButton', () => {
+   const { updatesTab, listEl } = _buildExploreDom();
+
+   const tab = ExploreUpdatesView.getExploreTabEl(listEl, ExploreFragment.EXPLORE_TAB.UPDATES);
+
+   assert.equal(tab, updatesTab);
+});
+
+
+test('Test_GetExploreTabEl_TestEvents_ExpectButton', () => {
+   const { eventsTab, listEl } = _buildExploreDom();
+
+   const tab = ExploreUpdatesView.getExploreTabEl(listEl, ExploreFragment.EXPLORE_TAB.EVENTS);
+
+   assert.equal(tab, eventsTab);
+});
+
+
+test('Test_GetExploreTabEl_TestMissing_ExpectNull', () => {
+   const tab = ExploreUpdatesView.getExploreTabEl(
+      document.createElement('div'),
+      ExploreFragment.EXPLORE_TAB.UPDATES
+   );
+
+   assert.equal(tab, null);
+});
+
+
+test('Test_SetExploreSectionVisibility_TestHidden_ExpectTrue', () => {
    const { section, listEl } = _buildExploreDom();
 
    ExploreUpdatesView.setExploreSectionVisibility(listEl, false);
+
    assert.equal(section.hidden, true);
-   ExploreUpdatesView.setExploreSectionVisibility(listEl, true);
-   assert.equal(section.hidden, false);
-   ExploreUpdatesView.setExploreSectionVisibility(document.createElement('div'), true);
 });
 
-test('Test_RenderExploreNav_TestItemCount_ExpectNavOrCleared', () => {
+
+test('Test_SetExploreSectionVisibility_TestVisible_ExpectFalse', () => {
+   const { section, listEl } = _buildExploreDom();
+
+   ExploreUpdatesView.setExploreSectionVisibility(listEl, true);
+
+   assert.equal(section.hidden, false);
+});
+
+
+test('Test_SetExploreSectionVisibility_TestMissingSection_ExpectNoOp', () => {
+   const set = () => ExploreUpdatesView.setExploreSectionVisibility(document.createElement('div'), true);
+
+   assert.doesNotThrow(set);
+});
+
+
+test('Test_RenderExploreNav_TestSingleItem_ExpectNoNav', () => {
+   const { header, listEl } = _buildExploreDom();
+
+   ExploreUpdatesView.renderExploreNav({
+      listEl,
+      itemCount: Position.SECOND,
+      activeTab: ExploreFragment.EXPLORE_TAB.UPDATES,
+      onStep: () => {},
+   });
+
+   assert.equal(header.querySelector('.explore-update-nav'), null);
+});
+
+
+test('Test_RenderExploreNav_TestMultipleItems_ExpectNav', () => {
    const { header, listEl } = _buildExploreDom();
    const steps = [];
    const originalCreate = ExploreUpdatesChromeHelper.createArrowButton;
-
    ExploreUpdatesChromeHelper.createArrowButton = ({ onClick, label }) => {
       const button = document.createElement('button');
       button.textContent = label;
@@ -86,46 +139,70 @@ test('Test_RenderExploreNav_TestItemCount_ExpectNavOrCleared', () => {
    try {
       ExploreUpdatesView.renderExploreNav({
          listEl,
-         itemCount: 1,
-         activeTab: ExploreFragment.EXPLORE_TAB.UPDATES,
-         onStep: (delta) => steps.push(delta),
-      });
-      assert.equal(header.querySelector('.explore-update-nav'), null);
-
-      ExploreUpdatesView.renderExploreNav({
-         listEl,
          itemCount: 3,
          activeTab: ExploreFragment.EXPLORE_TAB.UPDATES,
          onStep: (delta) => steps.push(delta),
       });
-
       const nav = header.querySelector('.explore-update-nav');
+      nav.children.at(Position.FIRST).click();
+      nav.children.at(Position.SECOND).click();
+
       assert.ok(nav);
       assert.equal(nav.children.length, 2);
-      nav.children[0].click();
-      nav.children[1].click();
-      assert.deepEqual(steps, [-1, 1]);
+      assert.deepEqual(steps, [Position.LAST, Position.SECOND]);
+   } finally {
+      ExploreUpdatesChromeHelper.createArrowButton = originalCreate;
+   }
+});
 
+
+test('Test_ClearExploreNav_TestExisting_ExpectRemoved', () => {
+   const { header, listEl } = _buildExploreDom();
+   const originalCreate = ExploreUpdatesChromeHelper.createArrowButton;
+   ExploreUpdatesChromeHelper.createArrowButton = ({ onClick, label }) => {
+      const button = document.createElement('button');
+      button.textContent = label;
+      button.addEventListener('click', onClick);
+      return button;
+   };
+
+   try {
+      ExploreUpdatesView.renderExploreNav({
+         listEl,
+         itemCount: 3,
+         activeTab: ExploreFragment.EXPLORE_TAB.UPDATES,
+         onStep: () => {},
+      });
       ExploreUpdatesView.clearExploreNav(header);
+
       assert.equal(header.querySelector('.explore-update-nav'), null);
    } finally {
       ExploreUpdatesChromeHelper.createArrowButton = originalCreate;
    }
 });
 
+
 test('Test_SyncExploreCollapsedState_TestCollapsed_ExpectAria', () => {
    const { section, toggle, listEl } = _buildExploreDom();
 
    ExploreUpdatesView.syncExploreCollapsedState({ listEl, isCollapsed: true });
+
    assert.equal(section.classList.contains('is-collapsed'), true);
    assert.equal(toggle.getAttribute('aria-label'), Strings.map.showUpdates);
    assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+});
+
+
+test('Test_SyncExploreCollapsedState_TestExpanded_ExpectAria', () => {
+   const { section, toggle, listEl } = _buildExploreDom();
 
    ExploreUpdatesView.syncExploreCollapsedState({ listEl, isCollapsed: false });
+
    assert.equal(section.classList.contains('is-collapsed'), false);
    assert.equal(toggle.getAttribute('aria-label'), Strings.map.hideUpdates);
    assert.equal(toggle.getAttribute('aria-expanded'), 'true');
 });
+
 
 test('Test_SyncExploreCollapsedState_TestMissingToggle_ExpectSectionOnly', () => {
    const section = document.createElement('section');
@@ -135,8 +212,10 @@ test('Test_SyncExploreCollapsedState_TestMissingToggle_ExpectSectionOnly', () =>
    document.body.appendChild(section);
 
    ExploreUpdatesView.syncExploreCollapsedState({ listEl, isCollapsed: true });
+
    assert.equal(section.classList.contains('is-collapsed'), true);
 });
+
 
 test('Test_SyncExploreTabs_TestActiveAndDisabled_ExpectState', () => {
    const { updatesTab, eventsTab, listEl } = _buildExploreDom();
@@ -144,7 +223,7 @@ test('Test_SyncExploreTabs_TestActiveAndDisabled_ExpectState', () => {
    ExploreUpdatesView.syncExploreTabs({
       listEl,
       activeTab: ExploreFragment.EXPLORE_TAB.EVENTS,
-      updatesCount: 0,
+      updatesCount: Position.FIRST,
       eventsCount: 2,
    });
 

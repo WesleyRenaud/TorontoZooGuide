@@ -16,7 +16,9 @@ WIRE_ROW = {
 
 
 def Test_FromWire_TestInvalidRow_ExpectNone() -> None:
-   assert GuardiansTalkScheduleRowInput.from_wire( {} ) is None
+   result = GuardiansTalkScheduleRowInput.from_wire( {} )
+
+   assert result is None
 
 
 def Test_FromWire_TestValidRow_ExpectMapsTalkTimeField() -> None:

@@ -40,104 +40,122 @@ const attractionConfig = Object.freeze({
    getConfirmPrompt: (strings) => strings.attractionWithoutAnimalConfirmPrompt,
 });
 
-test('Test_HasWithoutAnimalIssue_TestMatching_ExpectDetected', () => {
-   assert.equal(
-      ScheduleItemWithoutAnimalFragment.hasWithoutAnimalIssue([
-         { type: guardiansTalkConfig.issueType },
-      ], guardiansTalkConfig),
-      true
-   );
-   assert.equal(
-      ScheduleItemWithoutAnimalFragment.hasWithoutAnimalIssue([
-         { type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT },
-      ], guardiansTalkConfig),
-      false
-   );
+
+test('Test_HasWithoutAnimalIssue_TestMatching_ExpectTrue', () => {
+   const issues = [{ type: guardiansTalkConfig.issueType }];
+
+   const hasIssue = ScheduleItemWithoutAnimalFragment.hasWithoutAnimalIssue(issues, guardiansTalkConfig);
+
+   assert.equal(hasIssue, true);
 });
+
+
+test('Test_HasWithoutAnimalIssue_TestOtherType_ExpectFalse', () => {
+   const issues = [{ type: ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT }];
+
+   const hasIssue = ScheduleItemWithoutAnimalFragment.hasWithoutAnimalIssue(issues, guardiansTalkConfig);
+
+   assert.equal(hasIssue, false);
+});
+
 
 test('Test_GetPrimaryFromWithoutAnimalIssues_TestItem_ExpectNoTime', () => {
-   assert.deepEqual(
-      ScheduleItemWithoutAnimalFragment.getPrimaryFromWithoutAnimalIssues([
-         {
-            type: guardiansTalkConfig.issueType,
-            items: [{ name: 'Komodo Dragon' }],
-         },
-      ], guardiansTalkConfig),
-      { talkName: 'Komodo Dragon' }
+   const talkName = 'Komodo Dragon';
+   const issues = [{
+      type: guardiansTalkConfig.issueType,
+      items: [{ name: talkName }],
+   }];
+
+   const item = ScheduleItemWithoutAnimalFragment.getPrimaryFromWithoutAnimalIssues(
+      issues,
+      guardiansTalkConfig
    );
+
+   assert.deepEqual(item, { [guardiansTalkConfig.nameKey]: talkName });
 });
+
 
 test('Test_GetItemsFromWithoutAnimalIssues_TestNamedItems_ExpectAll', () => {
-   assert.deepEqual(
-      ScheduleItemWithoutAnimalFragment.getItemsFromWithoutAnimalIssues([{
-         type: guardiansTalkConfig.issueType,
-         items: [
-            {
-               name: 'Western Grey Kangaroo',
-               start_time: '11:00 AM',
-            },
-            {
-               name: 'African Lion',
-               start_time: '2:00 PM',
-            },
-         ],
-      }], guardiansTalkConfig),
-      [
-         {
-            talkName: 'Western Grey Kangaroo',
-            talkTime: '11:00 AM',
-         },
-         {
-            talkName: 'African Lion',
-            talkTime: '2:00 PM',
-         },
-      ]
+   const kangaroo = 'Western Grey Kangaroo';
+   const kangarooTime = '11:00 AM';
+   const lion = 'African Lion';
+   const lionTime = '2:00 PM';
+   const issues = [{
+      type: guardiansTalkConfig.issueType,
+      items: [
+         { name: kangaroo, start_time: kangarooTime },
+         { name: lion, start_time: lionTime },
+      ],
+   }];
+
+   const items = ScheduleItemWithoutAnimalFragment.getItemsFromWithoutAnimalIssues(
+      issues,
+      guardiansTalkConfig
    );
+
+   assert.deepEqual(items, [
+      { [guardiansTalkConfig.nameKey]: kangaroo, [guardiansTalkConfig.timeKey]: kangarooTime },
+      { [guardiansTalkConfig.nameKey]: lion, [guardiansTalkConfig.timeKey]: lionTime },
+   ]);
 });
+
 
 test('Test_GetNamesFromWithoutAnimalIssues_TestNamesAndBlanks_ExpectFiltered', () => {
-   assert.deepEqual(
-      ScheduleItemWithoutAnimalFragment.getNamesFromWithoutAnimalIssues([{
-         type: attractionConfig.issueType,
-         items: [
-            { name: '  Kangaroo Walk-Thru  ', start_time: '11:00' },
-            { name: '' },
-            { name: 'Splash Island', start_time: '2:00 PM' },
-         ],
-      }], attractionConfig),
-      ['Kangaroo Walk-Thru', 'Splash Island']
+   const kangaroo = 'Kangaroo Walk-Thru';
+   const splashIsland = 'Splash Island';
+   const issues = [{
+      type: attractionConfig.issueType,
+      items: [
+         { name: `  ${kangaroo}  `, start_time: '11:00' },
+         { name: '' },
+         { name: splashIsland, start_time: '2:00 PM' },
+      ],
+   }];
+
+   const names = ScheduleItemWithoutAnimalFragment.getNamesFromWithoutAnimalIssues(
+      issues,
+      attractionConfig
    );
+
+   assert.deepEqual(names, [kangaroo, splashIsland]);
 });
+
 
 test('Test_WithoutAnimalMessage_TestWithTime_ExpectBody', () => {
-   assert.match(
-      ScheduleItemWithoutAnimalFragment.withoutAnimalMessage({
-         attractionName: 'Splash Island',
-         attractionTime: '2:00 PM',
-      }, attractionConfig),
-      /Splash Island.*2:00 PM/
-   );
+   const attractionName = 'Splash Island';
+   const attractionTime = '2:00 PM';
+
+   const message = ScheduleItemWithoutAnimalFragment.withoutAnimalMessage({
+      attractionName,
+      attractionTime,
+   }, attractionConfig);
+
+   assert.equal(message, attractionConfig.getBodyMessage(attractionName, attractionTime, Strings.itinerary.confirmation));
 });
 
+
 test('Test_WithoutAnimalMessage_TestWithConfirmPrompt_ExpectPrompt', () => {
+   const attractionName = 'Kangaroo Walk-Thru';
+
    const message = ScheduleItemWithoutAnimalFragment.withoutAnimalMessage({
-      attractionName: 'Kangaroo Walk-Thru',
+      attractionName,
    }, attractionConfig, {
       includeConfirmPrompt: true,
       strings: Strings.itinerary.confirmation,
    });
 
-   assert.match(message, /Kangaroo Walk-Thru/);
-   assert.match(message, /Do you still want to keep it on your plan/);
+   assert.equal(message, attractionConfig.getMessageWithoutTime(attractionName));
 });
 
+
 test('Test_ShowWithoutAnimalConfirmation_TestMessage_ExpectNoTime', () => {
+   const talkName = 'Komodo Dragon';
    let confirmed = false;
 
    ScheduleItemWithoutAnimalFragment.showWithoutAnimalConfirmation({
       issues: [{
          type: guardiansTalkConfig.issueType,
-         items: [{ name: 'Komodo Dragon' }],
+         items: [{ name: talkName }],
       }],
       onConfirm: () => {
          confirmed = true;
@@ -145,16 +163,12 @@ test('Test_ShowWithoutAnimalConfirmation_TestMessage_ExpectNoTime', () => {
    }, guardiansTalkConfig);
 
    const popupMessage = document.querySelector('.tzg-popup-message');
-
-   assert.equal(
-      popupMessage?.textContent,
-      'The Komodo Dragon guardians talk does not match an animal on your itinerary. Do you still want to keep it on your plan?'
-   );
-
    document.querySelector('.tzg-popup-confirm')?.click();
 
+   assert.equal(popupMessage?.textContent, guardiansTalkConfig.getMessageWithoutTime(talkName));
    assert.equal(confirmed, true);
 });
+
 
 test('Test_ShowWithoutAnimalConfirmation_TestMultiple_ExpectNoOp', () => {
    ScheduleItemWithoutAnimalFragment.showWithoutAnimalConfirmation({
@@ -170,8 +184,11 @@ test('Test_ShowWithoutAnimalConfirmation_TestMultiple_ExpectNoOp', () => {
       },
    }, guardiansTalkConfig);
 
-   assert.equal(document.querySelector('.tzg-popup'), null);
+   const popup = document.querySelector('.tzg-popup');
+
+   assert.equal(popup, null);
 });
+
 
 test('Test_ShowWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', () => {
    ScheduleItemWithoutAnimalFragment.showWithoutAnimalConfirmation({
@@ -181,5 +198,7 @@ test('Test_ShowWithoutAnimalConfirmation_TestMissingName_ExpectNoOp', () => {
       },
    }, attractionConfig);
 
-   assert.equal(document.querySelector('.tzg-popup'), null);
+   const popup = document.querySelector('.tzg-popup');
+
+   assert.equal(popup, null);
 });

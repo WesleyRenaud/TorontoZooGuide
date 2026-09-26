@@ -86,6 +86,7 @@ async function _assertConfirmationFlagPath({
    const restore = _stubErrorTypeChecks(activeType);
    const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation;
    const payloads = [];
+   const date = '2026-06-15';
 
    ItineraryClient.setItineraryRequest = async () => ({
       errorType,
@@ -98,8 +99,9 @@ async function _assertConfirmationFlagPath({
    };
 
    try {
-      await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations({ date: '2026-06-15' });
-      assert.equal(payloads[0][expectedFlag], true);
+      await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations({ date });
+
+      assert.equal(payloads[Position.FIRST][expectedFlag], true);
    } finally {
       ItineraryClient.setItineraryRequest = originalRequest;
       fragment[showMethod] = originalShow;
@@ -108,39 +110,61 @@ async function _assertConfirmationFlagPath({
    }
 }
 
+
 test('Test_CreateConfirmedSetItineraryResult_TestArgs_ExpectWrapped', () => {
-   assert.deepEqual(
-      ItineraryServiceSaveConfirmer.createConfirmedSetItineraryResult({ ok: true }, { date: '2026-06-15' }),
-      {
-         result: { ok: true },
-         diffBaseline: { date: '2026-06-15' },
-      }
+   const result = { ok: true };
+   const date = '2026-06-15';
+   const diffBaseline = { date };
+
+   const confirmed = ItineraryServiceSaveConfirmer.createConfirmedSetItineraryResult(
+      result,
+      diffBaseline
    );
+
+   assert.equal(confirmed.result, result);
+   assert.equal(confirmed.diffBaseline, diffBaseline);
 });
 
-test('Test_GetSetItineraryResultPayload_TestWithAndWithoutItinerary_ExpectPayload', () => {
+
+test('Test_GetSetItineraryResultPayload_TestWithItinerary_ExpectPayload', () => {
    const original = ItineraryShape.toSetItineraryPayload;
+   const date = '2026-06-15';
    ItineraryShape.toSetItineraryPayload = (itinerary) => ({ date: itinerary.date });
 
    try {
-      assert.deepEqual(
-         ItineraryServiceSaveConfirmer.getSetItineraryResultPayload({
-            itinerary: { date: '2026-06-15' },
-         }),
-         { date: '2026-06-15' }
-      );
-      assert.deepEqual(ItineraryServiceSaveConfirmer.getSetItineraryResultPayload({}), {});
+      const payload = ItineraryServiceSaveConfirmer.getSetItineraryResultPayload({
+         itinerary: { date },
+      });
+
+      assert.equal(payload.date, date);
    } finally {
       ItineraryShape.toSetItineraryPayload = original;
    }
 });
 
-test('Test_RequestSetItineraryConfirmation_TestConfirmAndCancel_ExpectResults', async () => {
+
+test('Test_GetSetItineraryResultPayload_TestEmpty_ExpectEmptyObject', () => {
+   const original = ItineraryShape.toSetItineraryPayload;
+   ItineraryShape.toSetItineraryPayload = (itinerary) => ({ date: itinerary.date });
+
+   try {
+      const payload = ItineraryServiceSaveConfirmer.getSetItineraryResultPayload({});
+
+      assert.deepEqual(payload, {});
+   } finally {
+      ItineraryShape.toSetItineraryPayload = original;
+   }
+});
+
+
+test('Test_RequestSetItineraryConfirmation_TestConfirm_ExpectConfirmedResult', async () => {
    const originalRequest = ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations;
    const originalCancelled = ItineraryConfirmationResult.createItineraryConfirmationCancelledResult;
+   const date = '2026-06-15';
+   const confirmedPayload = { date, confirmed: true };
+   const diffBaseline = { base: true };
+   const beforeConfirmCalls = [];
    let confirmHandler = null;
-   let cancelHandler = null;
-
    ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = async (payload, baseline) => ({
       result: { confirmed: true, payload },
       diffBaseline: baseline,
@@ -151,65 +175,92 @@ test('Test_RequestSetItineraryConfirmation_TestConfirmAndCancel_ExpectResults', 
    });
 
    try {
-      const beforeConfirmCalls = [];
       const confirmedPromise = ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation({
          showConfirmation: ({ onConfirm }) => {
             confirmHandler = onConfirm;
          },
          initialResult: { issues: ['a'] },
-         payload: { date: '2026-06-15' },
-         diffBaseline: { base: true },
-         buildConfirmedPayload: () => ({ date: '2026-06-15', confirmed: true }),
+         payload: { date },
+         diffBaseline,
+         buildConfirmedPayload: () => confirmedPayload,
          beforeConfirm: async (...args) => {
             beforeConfirmCalls.push(args);
          },
       });
-      await confirmHandler({ doNotShowAgain: true });
-      assert.equal(beforeConfirmCalls.length, 1);
-      assert.deepEqual(beforeConfirmCalls[Position.FIRST], [{ doNotShowAgain: true }]);
-      assert.deepEqual(await confirmedPromise, {
-         result: {
-            confirmed: true,
-            payload: { date: '2026-06-15', confirmed: true },
-         },
-         diffBaseline: { base: true },
-      });
+      const doNotShowAgain = true;
+      await confirmHandler({ doNotShowAgain });
+      const confirmed = await confirmedPromise;
 
-      const cancelledPromise = ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation({
-         showConfirmation: ({ onCancel }) => {
-            cancelHandler = onCancel;
-         },
-         initialResult: { issues: ['b'] },
-         payload: {},
-         diffBaseline: null,
-         buildConfirmedPayload: () => ({}),
-      });
-      cancelHandler();
-      assert.deepEqual(await cancelledPromise, { cancelled: true, issues: ['b'] });
+      assert.equal(beforeConfirmCalls.length, 1);
+      assert.deepEqual(beforeConfirmCalls[Position.FIRST], [{ doNotShowAgain }]);
+      assert.equal(confirmed.result.confirmed, true);
+      assert.deepEqual(confirmed.result.payload, confirmedPayload);
+      assert.equal(confirmed.diffBaseline, diffBaseline);
    } finally {
       ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = originalRequest;
       ItineraryConfirmationResult.createItineraryConfirmationCancelledResult = originalCancelled;
    }
 });
 
+
+test('Test_RequestSetItineraryConfirmation_TestCancel_ExpectCancelledResult', async () => {
+   const originalRequest = ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations;
+   const originalCancelled = ItineraryConfirmationResult.createItineraryConfirmationCancelledResult;
+   const issues = ['b'];
+   const cancelledResult = { cancelled: true, issues };
+   let cancelHandler = null;
+   ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = async (payload, baseline) => ({
+      result: { confirmed: true, payload },
+      diffBaseline: baseline,
+   });
+   ItineraryConfirmationResult.createItineraryConfirmationCancelledResult = ({ issues: nextIssues }) => ({
+      cancelled: true,
+      issues: nextIssues,
+   });
+
+   try {
+      const cancelledPromise = ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation({
+         showConfirmation: ({ onCancel }) => {
+            cancelHandler = onCancel;
+         },
+         initialResult: { issues },
+         payload: {},
+         diffBaseline: null,
+         buildConfirmedPayload: () => ({}),
+      });
+      cancelHandler();
+      const cancelled = await cancelledPromise;
+
+      assert.deepEqual(cancelled, cancelledResult);
+   } finally {
+      ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = originalRequest;
+      ItineraryConfirmationResult.createItineraryConfirmationCancelledResult = originalCancelled;
+   }
+});
+
+
 test('Test_RequestSetItineraryWithConfirmations_TestSuccess_ExpectConfirmed', async () => {
    const originalRequest = ItineraryClient.setItineraryRequest;
    const restore = _stubErrorTypeChecks(null);
-   ItineraryClient.setItineraryRequest = async () => ({ errorType: 'success', itinerary: {} });
+   const date = '2026-06-15';
+   const diffBaseline = 'base';
+   const apiResult = { errorType: 'success', itinerary: {} };
+   ItineraryClient.setItineraryRequest = async () => apiResult;
 
    try {
-      assert.deepEqual(
-         await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations({ date: '2026-06-15' }, 'base'),
-         {
-            result: { errorType: 'success', itinerary: {} },
-            diffBaseline: 'base',
-         }
+      const confirmed = await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations(
+         { date },
+         diffBaseline
       );
+
+      assert.equal(confirmed.result, apiResult);
+      assert.equal(confirmed.diffBaseline, diffBaseline);
    } finally {
       ItineraryClient.setItineraryRequest = originalRequest;
       restore();
    }
 });
+
 
 test('Test_RequestSetItineraryWithConfirmations_TestConflictPath_ExpectConfirmation', async () => {
    const originalRequest = ItineraryClient.setItineraryRequest;
@@ -217,17 +268,19 @@ test('Test_RequestSetItineraryWithConfirmations_TestConflictPath_ExpectConfirmat
    const originalApply = WildEncounterConflictResolver.applyConflictSelectionToItineraryDraft;
    const originalPayload = ItineraryServiceSaveConfirmer.getSetItineraryResultPayload;
    const restore = _stubErrorTypeChecks('conflict');
+   const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation;
+   const date = '2026-06-15';
+   const species = 'Lion';
    let shown = null;
    let confirmCalls = 0;
-
    ItineraryClient.setItineraryRequest = async (payload) => {
       if (payload.overridingConflictingGuardiansTalks) {
-         return { errorType: 'success', itinerary: { date: '2026-06-15' } };
+         return { errorType: 'success', itinerary: { date } };
       }
       return {
          errorType: 'conflict',
          issues: [{ type: 'conflict' }],
-         itinerary: { animals: [{ species: 'Lion' }], attractions: [] },
+         itinerary: { animals: [{ species }], attractions: [] },
       };
    };
    ScheduleTimeConflictFragment.showScheduleTimeConflictConfirmation = (args) => {
@@ -239,11 +292,9 @@ test('Test_RequestSetItineraryWithConfirmations_TestConflictPath_ExpectConfirmat
       wildEncounters: [{ name: 'Encounter' }],
    });
    ItineraryServiceSaveConfirmer.getSetItineraryResultPayload = () => ({
-      animals: [{ species: 'Lion' }],
+      animals: [{ species }],
       attractions: [],
    });
-
-   const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation;
    ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation = async (options) => {
       confirmCalls += 1;
       options.showConfirmation({
@@ -263,6 +314,7 @@ test('Test_RequestSetItineraryWithConfirmations_TestConflictPath_ExpectConfirmat
          guardiansTalks: [],
          wildEncounters: [],
       });
+
       assert.equal(confirmCalls, 1);
       assert.equal(result.result.errorType, 'success');
       assert.ok(shown);
@@ -276,6 +328,7 @@ test('Test_RequestSetItineraryWithConfirmations_TestConflictPath_ExpectConfirmat
    }
 });
 
+
 test('Test_RequestSetItineraryWithConfirmations_TestTalkUnschedule_ExpectFlag', async () => {
    await _assertConfirmationFlagPath({
       activeType: 'talkUnschedule',
@@ -285,6 +338,7 @@ test('Test_RequestSetItineraryWithConfirmations_TestTalkUnschedule_ExpectFlag', 
       expectedFlag: 'confirmingGuardiansTalkUnschedule',
    });
 });
+
 
 test('Test_RequestSetItineraryWithConfirmations_TestTalkWithoutAnimal_ExpectFlag', async () => {
    await _assertConfirmationFlagPath({
@@ -296,6 +350,7 @@ test('Test_RequestSetItineraryWithConfirmations_TestTalkWithoutAnimal_ExpectFlag
    });
 });
 
+
 test('Test_RequestSetItineraryWithConfirmations_TestAttractionWithoutAnimal_ExpectFlag', async () => {
    await _assertConfirmationFlagPath({
       activeType: 'attractionWithout',
@@ -305,6 +360,7 @@ test('Test_RequestSetItineraryWithConfirmations_TestAttractionWithoutAnimal_Expe
       expectedFlag: 'confirmingAttractionWithoutAnimal',
    });
 });
+
 
 test('Test_RequestSetItineraryWithConfirmations_TestLongWait_ExpectFlag', async () => {
    await _assertConfirmationFlagPath({
@@ -316,6 +372,7 @@ test('Test_RequestSetItineraryWithConfirmations_TestLongWait_ExpectFlag', async 
    });
 });
 
+
 test('Test_RequestSetItineraryWithConfirmations_TestWildUnschedule_ExpectFlag', async () => {
    await _assertConfirmationFlagPath({
       activeType: 'wildUnschedule',
@@ -325,6 +382,7 @@ test('Test_RequestSetItineraryWithConfirmations_TestWildUnschedule_ExpectFlag', 
       expectedFlag: 'confirmingWildEncounterUnschedule',
    });
 });
+
 
 test('Test_RequestSetItineraryWithConfirmations_TestEarlyAdmission_ExpectFlag', async () => {
    await _assertConfirmationFlagPath({
@@ -336,22 +394,25 @@ test('Test_RequestSetItineraryWithConfirmations_TestEarlyAdmission_ExpectFlag', 
    });
 });
 
+
 test('Test_RequestSetItineraryWithConfirmations_TestMultiWarnings_ExpectMergedOptions', async () => {
    const originalRequest = ItineraryClient.setItineraryRequest;
    const originalShow = ItineraryBuildWarningsFragment.showItineraryBuildWarningsConfirmation;
    const originalBuild = ItineraryBuildWarningsFragment.buildConfirmedOptionsFromBuildWarnings;
    const restore = _stubErrorTypeChecks('multiWarnings');
    const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation;
+   const date = '2026-06-15';
+   const confirmingGuardiansTalkUnschedule = true;
+   const confirmingFixedTimeItemLongWait = true;
    let payload = null;
-
    ItineraryClient.setItineraryRequest = async () => ({
       errorType: 'other',
       issues: [{ type: 'a' }, { type: 'b' }],
    });
    ItineraryBuildWarningsFragment.showItineraryBuildWarningsConfirmation = () => {};
    ItineraryBuildWarningsFragment.buildConfirmedOptionsFromBuildWarnings = () => ({
-      confirmingGuardiansTalkUnschedule: true,
-      confirmingFixedTimeItemLongWait: true,
+      confirmingGuardiansTalkUnschedule,
+      confirmingFixedTimeItemLongWait,
    });
    ItineraryServiceSaveConfirmer.requestSetItineraryConfirmation = async (options) => {
       payload = options.buildConfirmedPayload();
@@ -359,9 +420,10 @@ test('Test_RequestSetItineraryWithConfirmations_TestMultiWarnings_ExpectMergedOp
    };
 
    try {
-      await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations({ date: '2026-06-15' });
-      assert.equal(payload.confirmingGuardiansTalkUnschedule, true);
-      assert.equal(payload.confirmingFixedTimeItemLongWait, true);
+      await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations({ date });
+
+      assert.equal(payload.confirmingGuardiansTalkUnschedule, confirmingGuardiansTalkUnschedule);
+      assert.equal(payload.confirmingFixedTimeItemLongWait, confirmingFixedTimeItemLongWait);
    } finally {
       ItineraryClient.setItineraryRequest = originalRequest;
       ItineraryBuildWarningsFragment.showItineraryBuildWarningsConfirmation = originalShow;
@@ -371,22 +433,23 @@ test('Test_RequestSetItineraryWithConfirmations_TestMultiWarnings_ExpectMergedOp
    }
 });
 
+
 test('Test_RequestSetItineraryWithConfirmations_TestUnhandledError_ExpectPassthrough', async () => {
    const originalRequest = ItineraryClient.setItineraryRequest;
    const restore = _stubErrorTypeChecks(null);
-   ItineraryClient.setItineraryRequest = async () => ({
-      errorType: 'unknown',
-      issues: [],
-   });
+   const date = '2026-06-15';
+   const diffBaseline = 'base';
+   const apiResult = { errorType: 'unknown', issues: [] };
+   ItineraryClient.setItineraryRequest = async () => apiResult;
 
    try {
-      assert.deepEqual(
-         await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations({ date: '2026-06-15' }, 'base'),
-         {
-            result: { errorType: 'unknown', issues: [] },
-            diffBaseline: 'base',
-         }
+      const confirmed = await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations(
+         { date },
+         diffBaseline
       );
+
+      assert.equal(confirmed.result, apiResult);
+      assert.equal(confirmed.diffBaseline, diffBaseline);
    } finally {
       ItineraryClient.setItineraryRequest = originalRequest;
       restore();

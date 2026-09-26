@@ -7,6 +7,7 @@ from api.itinerary.transportation.transportation_day_loop import TransportationD
 from api.itinerary.transportation.transportation_day_loop_fetcher import TransportationDayLoopFetcher
 from api.itinerary.transportation.transportation_default_duration_resolver import TransportationDefaultDurationResolver
 from api.itinerary.transportation.transportation_route_leg_segment import TransportationRouteLegSegment
+from api.shared.duration_values import DurationValues
 from api.shared.enums.transportation_name import TransportationName
 
 
@@ -24,18 +25,22 @@ SUMMER_LOOP = TransportationDayLoop(
 
 def Test_Resolve_TestVisitDateAndLoop_ExpectDurationSeconds(
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   visit_date = '2026-06-15'
    monkeypatch.setattr(
       ItineraryProvider,
       'fetch_itinerary_date',
-      lambda conn: '2026-06-15' )
+      lambda conn: visit_date )
    monkeypatch.setattr(
       TransportationDayLoopFetcher,
       'fetch',
       lambda conn, *, transportation, target_date: SUMMER_LOOP )
 
-   assert TransportationDefaultDurationResolver.resolve(
+   seconds = TransportationDefaultDurationResolver.resolve(
       None,
-      TransportationName.ZOOMOBILE ) == 20 * 60
+      TransportationName.ZOOMOBILE )
+
+   assert seconds == DurationValues.minutes_to_seconds(
+      SUMMER_LOOP.duration_minutes() )
 
 
 def Test_Resolve_TestMissingVisitDate_ExpectNone(
@@ -45,22 +50,27 @@ def Test_Resolve_TestMissingVisitDate_ExpectNone(
       'fetch_itinerary_date',
       lambda conn: None )
 
-   assert TransportationDefaultDurationResolver.resolve(
+   seconds = TransportationDefaultDurationResolver.resolve(
       None,
-      TransportationName.ZOOMOBILE ) is None
+      TransportationName.ZOOMOBILE )
+
+   assert seconds is None
 
 
 def Test_Resolve_TestMissingLoop_ExpectNone(
       monkeypatch: pytest.MonkeyPatch ) -> None:
+   visit_date = '2026-06-15'
    monkeypatch.setattr(
       ItineraryProvider,
       'fetch_itinerary_date',
-      lambda conn: '2026-06-15' )
+      lambda conn: visit_date )
    monkeypatch.setattr(
       TransportationDayLoopFetcher,
       'fetch',
       lambda conn, *, transportation, target_date: None )
 
-   assert TransportationDefaultDurationResolver.resolve(
+   seconds = TransportationDefaultDurationResolver.resolve(
       None,
-      TransportationName.ZOOMOBILE ) is None
+      TransportationName.ZOOMOBILE )
+
+   assert seconds is None

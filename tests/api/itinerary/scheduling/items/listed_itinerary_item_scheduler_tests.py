@@ -22,12 +22,13 @@ from api.itinerary.scheduling.items.listed_schedule_target import ListedSchedule
 from api.itinerary.scheduling.items.parsed_schedule_time_options import ParsedScheduleTimeOptions
 from api.itinerary.scheduling.items.prepared_schedule_window import PreparedScheduleWindow
 from api.itinerary.scheduling.items.schedule_item_travel_time_calculator import ScheduleItemTravelTimeCalculator
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from api.shared.operating_hours import OperatingHours
 
 
 VISIT_DATE = date( 2026, 6, 20 )
-VISIT_WINDOW = ( 9 * 3600 + 30 * 60, 17 * 3600 )
+VISIT_WINDOW = ( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) )
 ZOO_HOURS = OperatingHours.from_schedule_times( '9:30 AM', '5:00 PM' )
 assert ZOO_HOURS is not None
 
@@ -379,8 +380,8 @@ def Test_Schedule_TestRequestedStartAfterDeparture_ExpectExplicitStart(
          departure_time='12:00 PM',
          animal_rows=SAVED_ITINERARY.animal_rows,
       ),
-      visit_window=( 9 * 3600 + 30 * 60, 12 * 3600 ),
-      day_hours_window=( 9 * 3600 + 30 * 60, 17 * 3600 ),
+      visit_window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '12:00 PM' ) ),
+      day_hours_window=( DateValues.time_value_in_seconds( '9:30 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) ),
    )
 
    result = ListedItineraryItemScheduler.schedule(
@@ -399,7 +400,7 @@ def Test_Schedule_TestEarlyAdmissionWindow_ExpectNineAmStart(
       stub_save_result: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    committed_times: list[ tuple[ str, str ] ] = []
-   early_admission_window = ( 9 * 3600, 17 * 3600 )
+   early_admission_window = ( DateValues.time_value_in_seconds( '9:00 AM' ), DateValues.time_value_in_seconds( '5:00 PM' ) )
    prepared_window = PreparedScheduleWindow(
       saved_itinerary=SavedItinerary(
          date_value='2026-06-20',
@@ -553,10 +554,12 @@ def Test_WalkNodeIdForListedItem_TestAttraction_ExpectAttractionNode(
 def Test_WalkNodeIdForListedItem_TestUnknownKey_ExpectNone(
       scheduler_conn: sqlite3.Connection ) -> None:
 
-   assert ListedItineraryItemScheduler._walk_node_id_for_listed_item(
+   result = ListedItineraryItemScheduler._walk_node_id_for_listed_item(
       scheduler_conn,
       GuardiansTalkScheduleItemKey(
          name='African Lion',
          start_time='2:00 PM',
       ),
-   ) is None
+   )
+
+   assert result is None

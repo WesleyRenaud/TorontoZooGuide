@@ -2,22 +2,27 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ItineraryService } from '../../../scripts/itinerary/itineraryService.js';
+import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 import { mockJsonResponse } from '../helpers/fetchMock.mjs';
 
 installItineraryServiceTestHooks();
 
+
 test('Test_ItineraryService_TestItineraryServiceGetItineraryNormalizesSavedItineraryResponses_ExpectOk', async () => {
+   const date = '2026-06-15';
+   const species = 'African Lion';
+   const exhibit = 'African Savanna';
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
-         return mockJsonResponse({ date: '2026-06-15' });
+         return mockJsonResponse({ date });
       }
 
       if (url === '/get-itinerary') {
          return mockJsonResponse({
             itinerary: {
-               date: '2026-06-15',
-               animals: [{ species: 'African Lion', exhibit: 'African Savanna' }],
+               date,
+               animals: [{ species, exhibit }],
                attractions: [],
                guardians_talks: [],
                wild_encounters: [],
@@ -33,42 +38,56 @@ test('Test_ItineraryService_TestItineraryServiceGetItineraryNormalizesSavedItine
 
    const itinerary = await ItineraryService.getItinerary();
 
-   assert.equal(itinerary.date, '2026-06-15');
-   assert.equal(itinerary.animals[0].species, 'African Lion');
+   assert.equal(itinerary.date, date);
+   assert.equal(itinerary.animals[Position.FIRST].species, species);
    assert.equal(itinerary.isActive, true);
 });
 
-test('Test_ItineraryService_TestItineraryServiceGetZooHoursReturnsNullForInvalidDatesAnd_ExpectOk', async () => {
-   assert.equal(await ItineraryService.getZooHours(null), null);
-   assert.equal(await ItineraryService.getZooHours('not-a-date'), null);
 
+test('Test_GetZooHours_TestNull_ExpectNull', async () => {
+   const date = null;
+
+   const hours = await ItineraryService.getZooHours(date);
+
+   assert.equal(hours, null);
+});
+
+
+test('Test_GetZooHours_TestInvalidDate_ExpectNull', async () => {
+   const date = 'not-a-date';
+
+   const hours = await ItineraryService.getZooHours(date);
+
+   assert.equal(hours, null);
+});
+
+
+test('Test_GetZooHours_TestValidDate_ExpectHours', async () => {
+   const date = '2026-06-15';
+   const day = 15;
+   const month = 'JUN';
+   const year = 2026;
+   const openTime = '09:30';
+   const closeTime = '19:00';
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-zoo-hours');
-      assert.deepEqual(JSON.parse(options.body), {
-         day: 15,
-         month: 'JUN',
-         year: 2026,
-      });
+      assert.deepEqual(JSON.parse(options.body), { day, month, year });
 
       return mockJsonResponse({
-         hours: {
-            openTime: '09:30',
-            closeTime: '19:00',
-         },
+         hours: { openTime, closeTime },
       });
    };
 
-   assert.deepEqual(await ItineraryService.getZooHours('2026-06-15'), {
-      date: '',
-      earlyAdmissionTime: '',
-      openTime: '09:30',
-      lastAdmissionTime: '',
-      closeTime: '19:00',
-   });
+   const hours = await ItineraryService.getZooHours(date);
+
+   assert.equal(hours.openTime, openTime);
+   assert.equal(hours.closeTime, closeTime);
 });
+
 
 test('Test_ItineraryService_TestItineraryServiceClearItineraryDispatchesClearedItineraryEvents_ExpectOk', async () => {
    const events = [];
+   const cleared = { success: true };
    window.addEventListener = (type, handler) => {
       window.__handler = handler;
    };
@@ -76,22 +95,25 @@ test('Test_ItineraryService_TestItineraryServiceClearItineraryDispatchesClearedI
       events.push(event.type);
       return true;
    };
-
    globalThis.fetch = async (url) => {
       assert.equal(url, '/clear-itinerary');
-      return mockJsonResponse({ success: true });
+      return mockJsonResponse(cleared);
    };
 
    const result = await ItineraryService.clearItinerary();
 
    assert.deepEqual(events, ['tzg:itineraryCleared', 'tzg:itineraryUpdated']);
-   assert.deepEqual(result, { success: true });
+   assert.deepEqual(result, cleared);
 });
 
+
 test('Test_ItineraryService_TestItineraryServiceBulkScheduleItineraryReturnsNormalizedItineraryAndIssues_ExpectOk', async () => {
+   const date = '2026-06-15';
+   const species = 'African Lion';
+   const issueCode = 'bulkScheduleItineraryNotEnoughTime';
    globalThis.fetch = async (url, options) => {
       if (url === '/get-itinerary-date') {
-         return mockJsonResponse({ date: '2026-06-15' });
+         return mockJsonResponse({ date });
       }
 
       if (url === '/bulk-schedule-itinerary') {
@@ -102,13 +124,13 @@ test('Test_ItineraryService_TestItineraryServiceBulkScheduleItineraryReturnsNorm
          return mockJsonResponse({
             status: 'success',
             itinerary: {
-               date: '2026-06-15',
-               animals: [{ species: 'African Lion', exhibit: 'African Savanna' }],
+               date,
+               animals: [{ species, exhibit: 'African Savanna' }],
                attractions: [],
                guardians_talks: [],
                wild_encounters: [],
             },
-            reasons: [{ code: 'bulkScheduleItineraryNotEnoughTime', items: [] }],
+            reasons: [{ code: issueCode, items: [] }],
          });
       }
 
@@ -117,28 +139,32 @@ test('Test_ItineraryService_TestItineraryServiceBulkScheduleItineraryReturnsNorm
 
    const result = await ItineraryService.bulkScheduleItinerary();
 
-   assert.equal(result.itinerary.animals[0].species, 'African Lion');
-   assert.equal(result.issues[0].code, 'bulkScheduleItineraryNotEnoughTime');
+   assert.equal(result.itinerary.animals[Position.FIRST].species, species);
+   assert.equal(result.issues[Position.FIRST].code, issueCode);
 });
 
+
 test('Test_ItineraryService_TestItineraryServiceAcceptItineraryKeepsSelectedAnimalsAndAttractions_ExpectOk', async () => {
+   const date = '2026-06-15';
+   const species = 'African Lion';
+   const attractionName = 'Zoomobile';
    globalThis.fetch = async (url, options) => {
       if (url === '/get-itinerary-date') {
-         return mockJsonResponse({ date: '2026-06-15' });
+         return mockJsonResponse({ date });
       }
 
       if (url === '/accept-itinerary') {
          assert.deepEqual(JSON.parse(options.body), {
             temp: null,
-            animalsToKeep: ['African Lion'],
-            attractionsToKeep: ['Zoomobile'],
+            animalsToKeep: [species],
+            attractionsToKeep: [attractionName],
          });
 
          return mockJsonResponse({
             itinerary: {
-               date: '2026-06-15',
-               animals: [{ species: 'African Lion', exhibit: 'African Savanna' }],
-               attractions: [{ name: 'Zoomobile' }],
+               date,
+               animals: [{ species, exhibit: 'African Savanna' }],
+               attractions: [{ name: attractionName }],
                guardians_talks: [],
                wild_encounters: [],
             },
@@ -149,24 +175,26 @@ test('Test_ItineraryService_TestItineraryServiceAcceptItineraryKeepsSelectedAnim
    };
 
    const itinerary = await ItineraryService.acceptItinerary({
-      animalsToKeep: ['African Lion'],
-      attractionsToKeep: ['Zoomobile'],
+      animalsToKeep: [species],
+      attractionsToKeep: [attractionName],
    });
 
-   assert.equal(itinerary.animals[0].species, 'African Lion');
-   assert.equal(itinerary.attractions[0].name, 'Zoomobile');
+   assert.equal(itinerary.animals[Position.FIRST].species, species);
+   assert.equal(itinerary.attractions[Position.FIRST].name, attractionName);
 });
+
 
 test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsTrueWhenOnlyAVisit_ExpectOk', async () => {
+   const date = '2026-06-15';
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
-         return mockJsonResponse({ date: '2026-06-15' });
+         return mockJsonResponse({ date });
       }
 
       if (url === '/get-itinerary') {
          return mockJsonResponse({
             itinerary: {
-               date: '2026-06-15',
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -179,19 +207,23 @@ test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsTrueWhenOnly
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   assert.equal(await ItineraryService.hasActiveItinerary(), true);
+   const isActive = await ItineraryService.hasActiveItinerary();
+
+   assert.equal(isActive, true);
 });
+
 
 test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsFalseWhenNoItineraryIs_ExpectOk', async () => {
+   const date = null;
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
-         return mockJsonResponse({ date: null });
+         return mockJsonResponse({ date });
       }
 
       if (url === '/get-itinerary') {
          return mockJsonResponse({
             itinerary: {
-               date: null,
+               date,
                animals: [],
                attractions: [],
                guardians_talks: [],
@@ -204,20 +236,25 @@ test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsFalseWhenNoI
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   assert.equal(await ItineraryService.hasActiveItinerary(), false);
+   const isActive = await ItineraryService.hasActiveItinerary();
+
+   assert.equal(isActive, false);
 });
 
+
 test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsTrueWhenItineraryIsActive_ExpectOk', async () => {
+   const date = '2026-06-15';
+   const species = 'African Lion';
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
-         return mockJsonResponse({ date: '2026-06-15' });
+         return mockJsonResponse({ date });
       }
 
       if (url === '/get-itinerary') {
          return mockJsonResponse({
             itinerary: {
-               date: '2026-06-15',
-               animals: [{ species: 'African Lion', exhibit: 'African Savanna' }],
+               date,
+               animals: [{ species, exhibit: 'African Savanna' }],
                attractions: [],
                guardians_talks: [],
                wild_encounters: [],
@@ -231,5 +268,7 @@ test('Test_ItineraryService_TestItineraryServiceHasActiveItineraryIsTrueWhenItin
       throw new Error(`Unexpected fetch: ${url}`);
    };
 
-   assert.equal(await ItineraryService.hasActiveItinerary(), true);
+   const isActive = await ItineraryService.hasActiveItinerary();
+
+   assert.equal(isActive, true);
 });

@@ -4,18 +4,28 @@ from api.wild_encounters.domain.wild_encounter_name_filter import WildEncounterN
 
 
 def Test_ShouldReturnEmpty_TestBlankName_ExpectTrue() -> None:
-   encounter_filter = WildEncounterNameFilter( name='' )
+   name = ''
+   encounter_filter = WildEncounterNameFilter( name=name )
 
-   assert encounter_filter.should_return_empty() is True
+   should_return_empty = encounter_filter.should_return_empty()
+
+   assert should_return_empty is True
 
 
 def Test_AllowsWildEncounterName_TestNormalizedMatch_ExpectTrue() -> None:
-   encounter_filter = WildEncounterNameFilter( name=' african rainforest ' )
+   name = 'African Rainforest'
+   encounter_filter = WildEncounterNameFilter( name=f' { name.lower() } ' )
 
-   assert encounter_filter.allows_wild_encounter_name( 'African Rainforest' ) is True
+   allowed = encounter_filter.allows_wild_encounter_name( name )
+
+   assert allowed is True
 
 
 def Test_AllowsWildEncounterName_TestDifferentName_ExpectFalse() -> None:
-   encounter_filter = WildEncounterNameFilter( name='African Rainforest' )
+   name = 'African Rainforest'
+   other_name = 'Kangaroo'
+   encounter_filter = WildEncounterNameFilter( name=name )
 
-   assert encounter_filter.allows_wild_encounter_name( 'Kangaroo' ) is False
+   allowed = encounter_filter.allows_wild_encounter_name( other_name )
+
+   assert allowed is False

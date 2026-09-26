@@ -69,6 +69,8 @@ def Test_ForMapLocation_TestKangarooWalkThru_ExpectMatchingRow(
 
 def Test_ForMapLocation_TestUnknownLocation_ExpectNone(
       stub_map_location_walk_nodes: None ) -> None:
-   assert MapLocationWalkNodeLookup.for_map_location(
+   result = MapLocationWalkNodeLookup.for_map_location(
       MapLocationKind.ATTRACTION,
-      'Unknown Attraction' ) is None
+      'Unknown Attraction' )
+
+   assert result is None

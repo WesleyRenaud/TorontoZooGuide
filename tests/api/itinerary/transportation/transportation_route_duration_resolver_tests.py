@@ -35,10 +35,12 @@ def Test_Minutes_TestSummerLoop_ExpectDurationSum(
       'fetch',
       lambda conn, *, transportation, target_date: SUMMER_LOOP )
 
-   assert TransportationRouteDurationResolver.minutes(
+   minutes = TransportationRouteDurationResolver.minutes(
       None,
       transportation=TransportationName.ZOOMOBILE,
-      target_date=VISIT_DATE ) == 75
+      target_date=VISIT_DATE )
+
+   assert minutes == SUMMER_LOOP.duration_minutes()
 
 
 def Test_Minutes_TestMissingLoop_ExpectNone(
@@ -48,7 +50,9 @@ def Test_Minutes_TestMissingLoop_ExpectNone(
       'fetch',
       lambda conn, *, transportation, target_date: None )
 
-   assert TransportationRouteDurationResolver.minutes(
+   minutes = TransportationRouteDurationResolver.minutes(
       None,
       transportation=TransportationName.ZOOMOBILE,
-      target_date=VISIT_DATE ) is None
+      target_date=VISIT_DATE )
+
+   assert minutes is None

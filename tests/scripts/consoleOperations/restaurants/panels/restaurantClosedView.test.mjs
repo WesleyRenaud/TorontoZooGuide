@@ -22,6 +22,7 @@ function _findById(node, id) {
 
 installDomTestHooks();
 
+
 test('Test_CreateRestaurantClosedPanel_TestDefault_ExpectPanel', () => {
    const panelEl = RestaurantClosedView.createRestaurantClosedPanel();
 

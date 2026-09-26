@@ -263,6 +263,7 @@ def Test_GetGuardiansTalkScheduleLocationOptions_TestHttpRequest_ExpectWritesLoc
 
 def Test_GetGuardiansTalkOccurrences_TestHttpRequest_ExpectMapsTalkAndLocation(
       stub_guardians_coordinator: StubGuardiansCoordinator ) -> None:
+   occurrence = _sample_occurrence()
    handler = make_handler(
       '/get-guardians-talk-occurrences',
       {
@@ -277,7 +278,7 @@ def Test_GetGuardiansTalkOccurrences_TestHttpRequest_ExpectMapsTalkAndLocation(
 
    assert result[ 'talk' ] == TALK_NAME
    assert result[ 'location' ] == TALK_LOCATION
-   assert result[ 'occurrences' ] == [ _sample_occurrence().to_dict() ]
+   assert result[ 'occurrences' ] == [ occurrence.to_dict() ]
 
 
 def Test_SetGuardiansTalkSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

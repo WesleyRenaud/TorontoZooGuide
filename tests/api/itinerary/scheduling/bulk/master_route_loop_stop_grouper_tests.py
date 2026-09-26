@@ -97,13 +97,16 @@ def Test_Group_TestMixedLoopAndUnmappedAnimals_ExpectSortedLoopGroups(
 
    groups = MasterRouteLoopStopGrouper.group( animals )
 
-   assert len( groups ) == 3
    assert [ animal.species for animal in groups[ Position.FIRST ] ] == [
-      'African Penguin',
-      'African Lion',
+      AFRICAN_PENGUIN.species,
+      AFRICAN_LION.species,
    ]
-   assert [ animal.species for animal in groups[ Position.SECOND ] ] == [ 'Cheetah' ]
-   assert [ animal.species for animal in groups[ Position.THIRD ] ] == [ 'Unknown Animal' ]
+   assert [ animal.species for animal in groups[ Position.SECOND ] ] == [
+      INDO_CHEETAH.species,
+   ]
+   assert [ animal.species for animal in groups[ Position.THIRD ] ] == [
+      UNKNOWN_ANIMAL.species,
+   ]
 
 
 def Test_Group_TestWarthogBeforeGiraffe_ExpectSeparateLoopGroupsInRouteOrder(
@@ -115,9 +118,10 @@ def Test_Group_TestWarthogBeforeGiraffe_ExpectSeparateLoopGroupsInRouteOrder(
 
    groups = MasterRouteLoopStopGrouper.group( animals )
 
-   assert len( groups ) == 2
-   assert [ animal.species for animal in groups[ Position.FIRST ] ] == [ 'Warthog' ]
-   assert [ animal.species for animal in groups[ Position.SECOND ] ] == [ 'Masai Giraffe' ]
+   assert [ animal.species for animal in groups[ Position.FIRST ] ] == [ WARTHOG.species ]
+   assert [ animal.species for animal in groups[ Position.SECOND ] ] == [
+      MASAI_GIRAFFE.species,
+   ]
 
 
 def Test_Group_TestSavannaLoopAnimals_ExpectSingleLoopGroup(
@@ -130,11 +134,10 @@ def Test_Group_TestSavannaLoopAnimals_ExpectSingleLoopGroup(
 
    groups = MasterRouteLoopStopGrouper.group( animals )
 
-   assert len( groups ) == 1
    assert [ animal.species for animal in groups[ Position.FIRST ] ] == [
-      'African Penguin',
-      'African Lion',
-      'Cheetah',
+      AFRICAN_PENGUIN.species,
+      AFRICAN_LION.species,
+      AFRICA_SAVANNA_CHEETAH.species,
    ]
 
 
@@ -147,9 +150,14 @@ def Test_Group_TestAnimalGrouperDelegate_ExpectSameGroups(
       UNKNOWN_ANIMAL,
    ]
 
-   assert MasterRouteLoopAnimalGrouper.group( animals ) == MasterRouteLoopStopGrouper.group(
-      animals )
+   groups = MasterRouteLoopAnimalGrouper.group( animals )
+
+   assert groups == MasterRouteLoopStopGrouper.group( animals )
 
 
 def Test_Group_TestEmptyStops_ExpectEmpty() -> None:
-   assert MasterRouteLoopStopGrouper.group( [] ) == []
+   stops: list[ ItineraryAnimalRecord ] = []
+
+   groups = MasterRouteLoopStopGrouper.group( stops )
+
+   assert groups == []

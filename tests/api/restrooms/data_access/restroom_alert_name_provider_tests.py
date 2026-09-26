@@ -59,9 +59,11 @@ def _insert_alert(
 
 def Test_FetchRestroomAlertNames_TestEmpty_ExpectEmptyList(
       restroom_alert_name_conn: sqlite3.Connection ) -> None:
-   assert RestroomAlertNameProvider.fetch_restroom_alert_names(
+   restroom_alert_names = RestroomAlertNameProvider.fetch_restroom_alert_names(
       restroom_alert_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert restroom_alert_names == []
 
 
 def Test_FetchRestroomAlertNames_TestCurrentAndFuture_ExpectDistinctSortedRestrooms(
@@ -82,9 +84,11 @@ def Test_FetchRestroomAlertNames_TestCurrentAndFuture_ExpectDistinctSortedRestro
       start_date='2026-09-01',
       end_date=None )
 
-   assert RestroomAlertNameProvider.fetch_restroom_alert_names(
+   restroom_alert_names = RestroomAlertNameProvider.fetch_restroom_alert_names(
       restroom_alert_name_conn,
-      TODAY ) == [ AFRICA, ENTRANCE, SPLASH ]
+      TODAY )
+
+   assert restroom_alert_names == [ AFRICA, ENTRANCE, SPLASH ]
 
 
 def Test_FetchRestroomAlertNames_TestExpired_ExpectExcluded(
@@ -95,9 +99,11 @@ def Test_FetchRestroomAlertNames_TestExpired_ExpectExcluded(
       start_date='2026-08-01',
       end_date='2026-09-15' )
 
-   assert RestroomAlertNameProvider.fetch_restroom_alert_names(
+   restroom_alert_names = RestroomAlertNameProvider.fetch_restroom_alert_names(
       restroom_alert_name_conn,
-      TODAY ) == []
+      TODAY )
+
+   assert restroom_alert_names == []
 
 
 def Test_FetchRestroomAlertNames_TestEndingToday_ExpectIncluded(
@@ -108,6 +114,8 @@ def Test_FetchRestroomAlertNames_TestEndingToday_ExpectIncluded(
       start_date='2026-09-01',
       end_date=TODAY )
 
-   assert RestroomAlertNameProvider.fetch_restroom_alert_names(
+   restroom_alert_names = RestroomAlertNameProvider.fetch_restroom_alert_names(
       restroom_alert_name_conn,
-      TODAY ) == [ AFRICA ]
+      TODAY )
+
+   assert restroom_alert_names == [ AFRICA ]

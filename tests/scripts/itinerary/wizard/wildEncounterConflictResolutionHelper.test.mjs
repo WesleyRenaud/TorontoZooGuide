@@ -4,26 +4,59 @@ import test from 'node:test';
 import { WildEncounterConflictResolutionHelper } from '../../../../scripts/itinerary/wizard/wildEncounterConflictResolutionHelper.js';
 import { ItinerarySaveIssueItemType } from '../../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 
-test('Test_ToConflictResolutionDraftItem_TestGuardiansAndWild_ExpectShape', () => {
-   assert.deepEqual(
-      WildEncounterConflictResolutionHelper.toConflictResolutionDraftItem({
-         item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
-         name: 'Lion Talk',
-         location: 'Theatre',
-      }),
-      { name: 'Lion Talk', location: 'Theatre' }
-   );
-   assert.deepEqual(
-      WildEncounterConflictResolutionHelper.toConflictResolutionDraftItem({
-         name: 'Red Panda',
-         meeting_spot: 'Pavilion',
-      }),
-      { name: 'Red Panda', meeting_spot: 'Pavilion' }
-   );
+
+test('Test_ToConflictResolutionDraftItem_TestGuardiansTalk_ExpectNameAndLocation', () => {
+   const name = 'Lion Talk';
+   const location = 'Theatre';
+   const item = {
+      item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
+      name,
+      location,
+   };
+
+   const draftItem = WildEncounterConflictResolutionHelper.toConflictResolutionDraftItem(item);
+
+   assert.deepEqual(draftItem, { name, location });
 });
 
-test('Test_GetDraftItemName_TestInputs_ExpectName', () => {
-   assert.equal(WildEncounterConflictResolutionHelper.getDraftItemName('Carousel'), 'Carousel');
-   assert.equal(WildEncounterConflictResolutionHelper.getDraftItemName({ name: 'Zoomobile' }), 'Zoomobile');
-   assert.equal(WildEncounterConflictResolutionHelper.getDraftItemName({}), '');
+
+test('Test_ToConflictResolutionDraftItem_TestWildEncounter_ExpectNameAndMeetingSpot', () => {
+   const name = 'Red Panda';
+   const meetingSpot = 'Pavilion';
+   const item = {
+      name,
+      meeting_spot: meetingSpot,
+   };
+
+   const draftItem = WildEncounterConflictResolutionHelper.toConflictResolutionDraftItem(item);
+
+   assert.deepEqual(draftItem, { name, meeting_spot: meetingSpot });
+});
+
+
+test('Test_GetDraftItemName_TestString_ExpectName', () => {
+   const name = 'Carousel';
+
+   const draftName = WildEncounterConflictResolutionHelper.getDraftItemName(name);
+
+   assert.equal(draftName, name);
+});
+
+
+test('Test_GetDraftItemName_TestObject_ExpectName', () => {
+   const name = 'Zoomobile';
+   const item = { name };
+
+   const draftName = WildEncounterConflictResolutionHelper.getDraftItemName(item);
+
+   assert.equal(draftName, name);
+});
+
+
+test('Test_GetDraftItemName_TestEmptyObject_ExpectEmpty', () => {
+   const item = {};
+
+   const draftName = WildEncounterConflictResolutionHelper.getDraftItemName(item);
+
+   assert.equal(draftName, '');
 });

@@ -5,8 +5,10 @@ import { ScheduleTimesCheckboxField } from '../../../../../scripts/consoleOperat
 import { WildEncounterScheduleTimesFilter } from '../../../../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 import { ConsoleScheduleTimesCheckboxFieldBuilder } from '../../../../../scripts/consoleOperations/templates/consoleScheduleTimesCheckboxFieldBuilder.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
 installDomTestHooks();
+
 
 test('Test_CreateWildEncounterScheduleTimesFilterController_TestSelectedEncounter_ExpectTimesLoaded', async () => {
    const wildEncounterEl = document.createElement('select');
@@ -36,10 +38,11 @@ test('Test_CreateWildEncounterScheduleTimesFilterController_TestSelectedEncounte
 
    assert.equal(timesEl.hidden, false);
    assert.equal(checkboxes.length, 2);
-   assert.equal(checkboxes[0].value, '2:00 PM');
-   assert.equal(checkboxes[1].value, '3:30 PM');
-   assert.equal(checkboxes[0].checked, false);
+   assert.equal(checkboxes.at(Position.FIRST).value, '2:00 PM');
+   assert.equal(checkboxes.at(Position.SECOND).value, '3:30 PM');
+   assert.equal(checkboxes.at(Position.FIRST).checked, false);
 });
+
 
 test('Test_CreateWildEncounterScheduleTimesFilterController_TestSingleTime_ExpectAutoSelect', async () => {
    const wildEncounterEl = document.createElement('select');
@@ -62,8 +65,10 @@ test('Test_CreateWildEncounterScheduleTimesFilterController_TestSingleTime_Expec
       timesEl.querySelector('.console-operations-schedule-times-single')?.textContent,
       '1:30 AM'
    );
+
    assert.deepEqual(ScheduleTimesCheckboxField.getSelectedScheduleTimes(timesEl), [ '1:30 AM' ]);
 });
+
 
 test('Test_CreateWildEncounterScheduleTimesFilterController_TestDefaultLoaderClearAndError_ExpectHandled', async () => {
    const wildEncounterEl = document.createElement('select');

@@ -1,52 +1,128 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { WildEncounterOccurrenceFilter } from '../../../../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
-import { OccurrenceFilterController } from '../../../../../scripts/consoleOperations/helpers/occurrenceFilterController.js';
-import { ScheduleTimesCheckboxField } from '../../../../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
 import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOperationsClient.js';
+import { ScheduleTimesCheckboxField } from '../../../../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
+import { OccurrenceFilterController } from '../../../../../scripts/consoleOperations/helpers/occurrenceFilterController.js';
+import { WildEncounterOccurrenceFilter } from '../../../../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
+import { Position } from '../../../../../scripts/shared/enums/position.js';
 
-test('Test_CreateWildEncounterOccurrenceFilterController_TestWiring_ExpectFilter', async () => {
+
+test('Test_CreateWildEncounterOccurrenceFilterController_TestCreate_ExpectFilter', () => {
+   const originalCreate = OccurrenceFilterController.createOccurrenceFilterController;
+   const originalResolve = ScheduleTimesCheckboxField.resolveScheduleTimesListEl;
+   const originalUpdate = ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList;
+   OccurrenceFilterController.createOccurrenceFilterController = () => ({ filter: true });
+   ScheduleTimesCheckboxField.resolveScheduleTimesListEl = () => ({ id: 'list' });
+   ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = () => {};
+
+   try {
+      const created = WildEncounterOccurrenceFilter.createWildEncounterOccurrenceFilterController({
+         wildEncounterEl: { value: 'Giraffe' },
+         dateEl: { value: '2026-06-15' },
+         timesEl: {},
+      });
+
+      assert.deepEqual(created, { filter: true });
+   } finally {
+      OccurrenceFilterController.createOccurrenceFilterController = originalCreate;
+      ScheduleTimesCheckboxField.resolveScheduleTimesListEl = originalResolve;
+      ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = originalUpdate;
+   }
+});
+
+
+test('Test_CreateWildEncounterOccurrenceFilterController_TestSelectionValues_ExpectEncounter', () => {
+   const wildEncounter = 'Giraffe';
    const originalCreate = OccurrenceFilterController.createOccurrenceFilterController;
    const originalResolve = ScheduleTimesCheckboxField.resolveScheduleTimesListEl;
    const originalUpdate = ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList;
    let captured;
-   const updates = [];
-
    OccurrenceFilterController.createOccurrenceFilterController = (options) => {
       captured = options;
       return { filter: true };
    };
    ScheduleTimesCheckboxField.resolveScheduleTimesListEl = () => ({ id: 'list' });
-   ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = (...args) => { updates.push(args); };
+   ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = () => {};
 
    try {
-      assert.deepEqual(
-         WildEncounterOccurrenceFilter.createWildEncounterOccurrenceFilterController({
-            wildEncounterEl: { value: 'Giraffe' },
-            dateEl: { value: '2026-06-15' },
-            timesEl: {},
-         }),
-         { filter: true }
-      );
-
-      captured.populateTimes(['11:00 AM']);
-      assert.equal(updates.length, 1);
-      assert.deepEqual(captured.getSelectionValues(), { wildEncounter: 'Giraffe' });
-      assert.equal(captured.isSelectionReady({ wildEncounter: 'Giraffe' }), true);
-
-      const originalGet = ConsoleOperationsClient.getWildEncounterOccurrences;
-      ConsoleOperationsClient.getWildEncounterOccurrences = async () => ({
-         occurrences: [{ time: '1:00 PM' }],
+      WildEncounterOccurrenceFilter.createWildEncounterOccurrenceFilterController({
+         wildEncounterEl: { value: wildEncounter },
+         dateEl: { value: '2026-06-15' },
+         timesEl: {},
       });
-      try {
-         assert.deepEqual(
-            await captured.loadOccurrences({ wildEncounter: 'Giraffe' }),
-            [{ time: '1:00 PM' }]
-         );
-      } finally {
-         ConsoleOperationsClient.getWildEncounterOccurrences = originalGet;
-      }
+      const selection = captured.getSelectionValues();
+
+      assert.deepEqual(selection, { wildEncounter });
+   } finally {
+      OccurrenceFilterController.createOccurrenceFilterController = originalCreate;
+      ScheduleTimesCheckboxField.resolveScheduleTimesListEl = originalResolve;
+      ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = originalUpdate;
+   }
+});
+
+
+test('Test_CreateWildEncounterOccurrenceFilterController_TestLoadOccurrences_ExpectClientOccurrences', async () => {
+   const wildEncounter = 'Giraffe';
+   const time = '1:00 PM';
+   const occurrences = [{ time }];
+   const originalCreate = OccurrenceFilterController.createOccurrenceFilterController;
+   const originalResolve = ScheduleTimesCheckboxField.resolveScheduleTimesListEl;
+   const originalUpdate = ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList;
+   const originalGet = ConsoleOperationsClient.getWildEncounterOccurrences;
+   let captured;
+   OccurrenceFilterController.createOccurrenceFilterController = (options) => {
+      captured = options;
+      return { filter: true };
+   };
+   ScheduleTimesCheckboxField.resolveScheduleTimesListEl = () => ({ id: 'list' });
+   ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = () => {};
+   ConsoleOperationsClient.getWildEncounterOccurrences = async () => ({ occurrences });
+
+   try {
+      WildEncounterOccurrenceFilter.createWildEncounterOccurrenceFilterController({
+         wildEncounterEl: { value: wildEncounter },
+         dateEl: { value: '2026-06-15' },
+         timesEl: {},
+      });
+      const loaded = await captured.loadOccurrences({ wildEncounter });
+
+      assert.deepEqual(loaded, occurrences);
+   } finally {
+      OccurrenceFilterController.createOccurrenceFilterController = originalCreate;
+      ScheduleTimesCheckboxField.resolveScheduleTimesListEl = originalResolve;
+      ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = originalUpdate;
+      ConsoleOperationsClient.getWildEncounterOccurrences = originalGet;
+   }
+});
+
+
+test('Test_CreateWildEncounterOccurrenceFilterController_TestPopulateTimes_ExpectUpdate', () => {
+   const times = ['11:00 AM'];
+   const originalCreate = OccurrenceFilterController.createOccurrenceFilterController;
+   const originalResolve = ScheduleTimesCheckboxField.resolveScheduleTimesListEl;
+   const originalUpdate = ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList;
+   let captured;
+   const updates = [];
+   OccurrenceFilterController.createOccurrenceFilterController = (options) => {
+      captured = options;
+      return { filter: true };
+   };
+   ScheduleTimesCheckboxField.resolveScheduleTimesListEl = () => ({ id: 'list' });
+   ScheduleTimesCheckboxField.updateScheduleTimesCheckboxList = (...args) => {
+      updates.push(args);
+   };
+
+   try {
+      WildEncounterOccurrenceFilter.createWildEncounterOccurrenceFilterController({
+         wildEncounterEl: { value: 'Giraffe' },
+         dateEl: { value: '2026-06-15' },
+         timesEl: {},
+      });
+      captured.populateTimes(times);
+
+      assert.equal(updates.length, 1);
+      assert.deepEqual(updates.at(Position.FIRST)[Position.SECOND].times, times);
    } finally {
       OccurrenceFilterController.createOccurrenceFilterController = originalCreate;
       ScheduleTimesCheckboxField.resolveScheduleTimesListEl = originalResolve;
