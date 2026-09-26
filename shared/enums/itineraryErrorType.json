@@ -17,6 +17,7 @@
    "REQUESTED_TIME_NOT_AVAILABLE": "requestedTimeNotAvailable",
    "SAVE_FAILED": "saveFailed",
    "SCHEDULE_WINDOW_UNAVAILABLE": "scheduleWindowUnavailable",
+   "SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS": "scheduledItemOutsideVisitHours",
    "SUCCESS": "success",
    "TIME_ORDER_INVALID": "timeOrderInvalid",
    "TIME_OUT_OF_BOUNDS": "timeOutOfBounds",

@@ -3,6 +3,7 @@ from __future__ import annotations
 from api_test_support.request_connection_test_support import STUB_REQUEST_CONNECTION
 import pytest
 
+from api.itinerary.conflicts.visit_window_overflow_issue_finder import VisitWindowOverflowIssueFinder
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.accept_itinerary_provider import AcceptItineraryProvider
 from api.itinerary.data_access.clear_itinerary_provider import ClearItineraryProvider
@@ -19,6 +20,7 @@ from api.itinerary.operations.itinerary_item_unscheduler import ItineraryItemUns
 from api.itinerary.operations.itinerary_setter import ItinerarySetter
 from api.itinerary.operations.itinerary_warning_suppressor import ItineraryWarningSuppressor
 from api.itinerary.operations.suppress_itinerary_warning_result import SuppressItineraryWarningResult
+from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.bulk.bulk_schedule_itinerary_runner import BulkScheduleItineraryRunner
 from api.itinerary.scheduling.bulk.bulk_schedule_stop_selector import BulkScheduleStopSelector
@@ -488,6 +490,42 @@ def Test_SetArrivalTime_TestShortVisitWarning_ExpectTooCloseStatus(
    assert result.status == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
 
 
+def Test_SetArrivalTime_TestOverflowWarning_ExpectOutsideHoursStatus(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   overflow_reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_saved_itinerary',
+      lambda _conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_itinerary_date',
+      lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_record',
+      lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
+   monkeypatch.setattr(
+      FixedZooScheduleStartTimesBuilder,
+      'from_saved_itinerary',
+      lambda _saved: [] )
+   monkeypatch.setattr(
+      ItineraryArrivalTimeValidator,
+      'validate_for_zoo_hours',
+      lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
+   monkeypatch.setattr(
+      VisitWindowOverflowIssueFinder,
+      'find_from_saved_itinerary',
+      lambda *_args, **_kwargs: [ overflow_reason ] )
+
+   result = ItineraryCoordinator.set_arrival_time( ARRIVAL_TIME )
+
+   assert result.status == ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS
+   assert result.reasons == [ overflow_reason ]
+
+
 def Test_SetArrivalTime_TestValidTime_ExpectPersistedAndItinerary(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -626,6 +664,38 @@ def Test_SetDepartureTime_TestShortVisitWarning_ExpectTooCloseStatus(
    result = ItineraryCoordinator.set_departure_time( DEPARTURE_TIME )
 
    assert result.status == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+
+
+def Test_SetDepartureTime_TestOverflowWarning_ExpectOutsideHoursStatus(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   overflow_reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_saved_itinerary',
+      lambda _conn: SAVED_ITINERARY )
+   monkeypatch.setattr(
+      ItineraryProvider,
+      'fetch_itinerary_date',
+      lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_record',
+      lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
+   monkeypatch.setattr(
+      ItineraryDepartureTimeValidator,
+      'validate_for_zoo_hours',
+      lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
+   monkeypatch.setattr(
+      VisitWindowOverflowIssueFinder,
+      'find_from_saved_itinerary',
+      lambda *_args, **_kwargs: [ overflow_reason ] )
+
+   result = ItineraryCoordinator.set_departure_time( DEPARTURE_TIME )
+
+   assert result.status == ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS
+   assert result.reasons == [ overflow_reason ]
 
 
 def Test_SetDepartureTime_TestValidTime_ExpectPersistedAndItinerary(

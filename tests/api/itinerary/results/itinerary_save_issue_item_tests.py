@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from api.itinerary.results.itinerary_save_issue_item import ItinerarySaveIssueItem
+from api.models.attraction_diff import AttractionDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
 from api.shared.enums import ItinerarySaveIssueItemType
+from api.shared.enums import ItineraryVisitWindowOverflowEnd
 
 
 def Test_FromGuardiansTalkDiff_TestTalk_ExpectIssueItemDict() -> None:
@@ -24,6 +26,28 @@ def Test_FromGuardiansTalkDiff_TestTalk_ExpectIssueItemDict() -> None:
    assert result[ 'meeting_spot' ] == ''
    assert result[ 'location' ] == talk.location
    assert result[ 'link' ] == ''
+   assert result[ 'overflow_end' ] is None
+
+
+def Test_FromAttractionDiff_TestAttraction_ExpectIssueItemDict() -> None:
+   attraction = AttractionDiff(
+      name='Splash Island',
+      old_likelihood=None,
+      new_likelihood=100,
+      start_time='12:00 PM',
+      end_time='12:30 PM' )
+   overflow_end = ItineraryVisitWindowOverflowEnd.DEPARTURE
+
+   issue_item = ItinerarySaveIssueItem.from_attraction_diff(
+      attraction,
+      overflow_end=overflow_end )
+   result = issue_item.to_dict()
+
+   assert result[ 'name' ] == attraction.name
+   assert result[ 'start_time' ] == attraction.start_time
+   assert result[ 'end_time' ] == attraction.end_time
+   assert result[ 'item_type' ] == ItinerarySaveIssueItemType.ATTRACTION
+   assert result[ 'overflow_end' ] == overflow_end.value
 
 
 def Test_FromWildEncounterDiff_TestEncounter_ExpectIssueItemDict() -> None:
@@ -45,3 +69,4 @@ def Test_FromWildEncounterDiff_TestEncounter_ExpectIssueItemDict() -> None:
    assert result[ 'meeting_spot' ] == encounter.meeting_spot
    assert result[ 'location' ] == ''
    assert result[ 'link' ] == encounter.link
+   assert result[ 'overflow_end' ] is None

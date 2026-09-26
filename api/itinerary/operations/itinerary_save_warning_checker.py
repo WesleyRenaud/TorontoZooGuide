@@ -16,6 +16,7 @@ from ..warnings.fixed_time_item_long_wait_warning_builder import FixedTimeItemLo
 from ..warnings.guardians_talk_without_animal_warning_builder import GuardiansTalkWithoutAnimalWarningBuilder
 from ..warnings.itinerary_suppressed_warnings_builder import ItinerarySuppressedWarningsBuilder
 from ..warnings.short_visit_warning_builder import ShortVisitWarningBuilder
+from ..warnings.visit_window_overflow_warning_builder import VisitWindowOverflowWarningBuilder
 from ...zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
 
 
@@ -39,6 +40,17 @@ class ItinerarySaveWarningChecker():
       save_input = context.save_input
       controller_kwargs = context.itinerary_controller_kwargs
       suppressed_warnings: list[ ItineraryErrorType ] = []
+      overflow_warning = VisitWindowOverflowWarningBuilder.build(
+         save_input.arrival_time,
+         save_input.departure_time,
+         context.validated_itinerary,
+         context.current_itinerary )
+
+      if overflow_warning is not None:
+         return (
+            replace( context, suppressed_warnings=suppressed_warnings ),
+            overflow_warning )
+
       zoo_hours_record = (
          ZooHoursProvider.fetch_zoo_hours_record(
             context.conn,

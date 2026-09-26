@@ -57,6 +57,14 @@
          "javascriptClass": "ItinerarySaveIssueItemType"
       },
       {
+         "id": "itineraryVisitWindowOverflowEnd",
+         "json": "itineraryVisitWindowOverflowEnd.json",
+         "pythonModule": "api/shared/enums/itinerary_visit_window_overflow_end.py",
+         "pythonClass": "ItineraryVisitWindowOverflowEnd",
+         "javascriptModule": "scripts/shared/enums/itineraryVisitWindowOverflowEnd.js",
+         "javascriptClass": "ItineraryVisitWindowOverflowEnd"
+      },
+      {
          "id": "openingScheduleOverlapErrorType",
          "json": "openingScheduleOverlapErrorType.json",
          "pythonModule": "api/shared/enums/opening_schedule_overlap_error_type.py",

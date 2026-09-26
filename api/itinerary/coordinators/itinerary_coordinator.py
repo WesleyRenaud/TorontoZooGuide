@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from ..conflicts.visit_window_overflow_issue_finder import VisitWindowOverflowIssueFinder
 from ..data_access.accept_itinerary_provider import AcceptItineraryProvider
 from ..data_access.clear_itinerary_provider import ClearItineraryProvider
 from ..data_access.itinerary_provider import ItineraryProvider
@@ -284,6 +285,16 @@ class ItineraryCoordinator():
          return ItineraryTimeSetResult( status=validation_error )
 
       suppressed_warnings: list[ ItineraryErrorType ] = []
+      overflow_issues = VisitWindowOverflowIssueFinder.find_from_saved_itinerary(
+         normalized_arrival_time,
+         saved_itinerary.departure_time,
+         saved_itinerary )
+
+      if overflow_issues:
+         return ItineraryTimeSetResult(
+            status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+            reasons=overflow_issues,
+            suppressed_warnings=suppressed_warnings )
 
       if EarlyAdmissionWarningBuilder.is_required(
             conn,
@@ -340,6 +351,16 @@ class ItineraryCoordinator():
          return ItineraryTimeSetResult( status=validation_error )
 
       suppressed_warnings: list[ ItineraryErrorType ] = []
+      overflow_issues = VisitWindowOverflowIssueFinder.find_from_saved_itinerary(
+         saved_itinerary.arrival_time,
+         normalized_departure_time,
+         saved_itinerary )
+
+      if overflow_issues:
+         return ItineraryTimeSetResult(
+            status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+            reasons=overflow_issues,
+            suppressed_warnings=suppressed_warnings )
 
       if ShortVisitWarningBuilder.is_required(
             conn,
