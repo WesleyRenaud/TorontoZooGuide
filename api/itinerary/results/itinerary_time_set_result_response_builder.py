@@ -17,7 +17,9 @@ class ItineraryTimeSetResultResponseBuilder():
    ) -> dict[ str, object ]:
       payload: dict[ str, object ] = {
          'status': result.status.value,
-         'reasons': [],
+         'reasons': [
+            reason.to_dict() for reason in result.reasons
+         ],
          'suppressed_warnings': [
             warning.value for warning in result.suppressed_warnings
          ],

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from api.itinerary.results.itinerary_path_builder import ItineraryPathBuilder
+from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
 from api.itinerary.results.itinerary_time_set_result import ItineraryTimeSetResult
 from api.itinerary.results.itinerary_time_set_result_response_builder import ItineraryTimeSetResultResponseBuilder
 from api.models import Itinerary
@@ -27,6 +28,19 @@ def Test_ToDict_TestItinerary_ExpectPayload() -> None:
    assert payload[ 'itinerary_config' ] == ItineraryConfigBuilder.to_dict()
    assert payload[ 'itinerary_path' ] == ItineraryPathBuilder.build( None )
    assert payload[ 'itinerary' ] == result.itinerary.to_dict()
+
+
+def Test_ToDict_TestReasons_ExpectSerializedReasons() -> None:
+   reason = ItineraryResultReason(
+      code=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS )
+   result = ItineraryTimeSetResult(
+      status=ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+      reasons=[ reason ] )
+
+   payload = ItineraryTimeSetResultResponseBuilder.to_dict( result )
+
+   assert payload[ 'reasons' ] == [ reason.to_dict() ]
+   assert payload[ 'status' ] == result.status.value
 
 
 def Test_ToDict_TestNoItinerary_ExpectOmittedItinerary() -> None:
