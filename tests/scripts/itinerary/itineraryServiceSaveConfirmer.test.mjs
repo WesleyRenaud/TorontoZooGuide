@@ -13,6 +13,7 @@ import { GuardiansTalkUnscheduleFragment } from '../../../scripts/itinerary/pane
 import { GuardiansTalkWithoutAnimalFragment } from '../../../scripts/itinerary/panel/guardiansTalkWithoutAnimalFragment.js';
 import { ItineraryBuildWarningsFragment } from '../../../scripts/itinerary/panel/itineraryBuildWarningsFragment.js';
 import { ScheduleTimeConflictFragment } from '../../../scripts/itinerary/panel/scheduleTimeConflictFragment.js';
+import { ShortVisitFragment } from '../../../scripts/itinerary/panel/shortVisitFragment.js';
 import { WildEncounterUnscheduleFragment } from '../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
 import { WildEncounterConflictResolver } from '../../../scripts/itinerary/wizard/wildEncounterConflictResolver.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
@@ -391,6 +392,17 @@ test('Test_RequestSetItineraryWithConfirmations_TestEarlyAdmission_ExpectFlag', 
       fragment: EarlyAdmissionFragment,
       showMethod: 'showEarlyAdmissionConfirmation',
       expectedFlag: 'confirmingEarlyAdmission',
+   });
+});
+
+
+test('Test_RequestSetItineraryWithConfirmations_TestShortVisit_ExpectFlag', async () => {
+   await _assertConfirmationFlagPath({
+      activeType: 'shortVisit',
+      errorType: 'shortVisit',
+      fragment: ShortVisitFragment,
+      showMethod: 'showShortVisitConfirmation',
+      expectedFlag: 'confirmingShortVisit',
    });
 });
 

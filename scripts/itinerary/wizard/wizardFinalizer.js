@@ -14,7 +14,7 @@ export class WizardFinalizer {
    static async finalizeItineraryWizard(
    draft = {},
    mountEl,
-   { onDone, deps = {} } = {},
+   { onDone, confirmingShortVisit = false, confirmingEarlyAdmission = false, deps = {} } = {},
 ) {
       const {
          normalizeDraft = ItineraryShape.normalizeItineraryDraft,
@@ -28,13 +28,17 @@ export class WizardFinalizer {
       } = deps;
 
       const finalItinerary = WizardFinalizerHelper.createFinalItineraryDraft(draft, normalizeDraft);
+      const visitTimeConfirmations = {
+         confirmingShortVisit,
+         confirmingEarlyAdmission,
+      };
 
       let savedItinerary;
 
       try {
          savedItinerary = await WizardFinalizerHelper.saveFinalItinerary(
             finalItinerary,
-            {},
+            visitTimeConfirmations,
             saveItineraryFn,
          );
       }
@@ -64,7 +68,10 @@ export class WizardFinalizer {
             showProceedConfirmation,
             saveFinalItinerary: (itinerary, options) => WizardFinalizerHelper.saveFinalItinerary(
                itinerary,
-               options,
+               {
+                  ...visitTimeConfirmations,
+                  ...options,
+               },
                saveItineraryFn,
             ),
          });

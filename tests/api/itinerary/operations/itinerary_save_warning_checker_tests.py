@@ -74,6 +74,9 @@ def _base_warning_stubs( monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_warning_checker.EarlyAdmissionWarningBuilder.is_required',
       lambda conn, arrival_time, zoo_hours_record, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ShortVisitWarningBuilder.is_required',
+      lambda conn, arrival_time, departure_time, **kwargs: False )
 
 
 def _error_result_from_status(
@@ -105,6 +108,39 @@ def Test_Check_TestEarlyAdmissionRequired_ExpectWarningResult(
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_warning_checker.EarlyAdmissionWarningBuilder.is_required',
       lambda conn, arrival_time, zoo_hours_record, **kwargs: True )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ItinerarySaveContextBuilder.error_result',
+      _error_result_from_status )
+
+   updated_context, warning = ItinerarySaveWarningChecker.check(
+      _save_context( warning_checker_conn ),
+      confirming_short_visit=False,
+      confirming_early_admission=False,
+      confirming_guardians_talk_unschedule=False,
+      confirming_wild_encounter_unschedule=False,
+      confirming_fixed_time_item_long_wait=False,
+      confirming_guardians_talk_without_animal=False,
+      confirming_attraction_without_animal=False,
+      overriding_conflicting_guardians_talks=False )
+
+   assert warning is not None
+   assert warning.status == status
+   assert updated_context.suppressed_warnings == []
+
+
+def Test_Check_TestShortVisitRequired_ExpectWarningResult(
+      warning_checker_conn: sqlite3.Connection,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   status = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ZooHoursProvider.fetch_zoo_hours_record',
+      lambda conn, date_value: object() )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.EarlyAdmissionWarningBuilder.is_required',
+      lambda conn, arrival_time, zoo_hours_record, **kwargs: False )
+   monkeypatch.setattr(
+      'api.itinerary.operations.itinerary_save_warning_checker.ShortVisitWarningBuilder.is_required',
+      lambda conn, arrival_time, departure_time, **kwargs: True )
    monkeypatch.setattr(
       'api.itinerary.operations.itinerary_save_warning_checker.ItinerarySaveContextBuilder.error_result',
       _error_result_from_status )

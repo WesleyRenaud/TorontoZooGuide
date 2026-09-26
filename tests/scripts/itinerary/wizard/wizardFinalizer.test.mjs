@@ -152,6 +152,8 @@ test('Test_Opens_TestOpensTheSaveIssuesNoticeWhenTheBackend_ExpectOk', async () 
    assert.equal(saveCalls.length, 2);
    assert.deepEqual(saveCalls[Position.SECOND].options, {
       ...overrideOptions,
+      confirmingShortVisit: false,
+      confirmingEarlyAdmission: false,
       selectedExhibits: [],
    });
 });
