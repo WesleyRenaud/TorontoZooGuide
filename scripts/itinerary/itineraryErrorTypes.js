@@ -38,6 +38,13 @@ export class ItineraryErrorTypes {
       return errorType === ItineraryErrorType.SUCCESS;
    }
 
+   static requiresVisitWindowOverflowConfirmation(errorType) {
+      return ItineraryConfirmationRegistry.requiresConfirmation(
+         errorType,
+         ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS
+      );
+   }
+
    static requiresShortVisitConfirmation(errorType) {
       return ItineraryConfirmationRegistry.requiresConfirmation(
          errorType,

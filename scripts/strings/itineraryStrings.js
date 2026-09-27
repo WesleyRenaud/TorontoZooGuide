@@ -134,6 +134,13 @@ export class ItineraryStrings {
             'These selections overlap in time. We’ll fit them into your day by shortening some activities, with Wild Encounters taking priority.'
          ),
          scheduleOverrideSelectionTitle: 'Adjust Activity Times?',
+         visitWindowOverflowTitle: 'Scheduled Items Outside Visit Hours',
+         visitWindowOverflowMessage: (
+            'These items start before arrival or end after departure. Keep an item to expand that visit time, including walking time to or from the entrance. Dropped items will be removed from your itinerary.'
+         ),
+         visitWindowOverflowArrivalEnd: 'Starts before arrival',
+         visitWindowOverflowDepartureEnd: 'Ends after departure',
+         visitWindowOverflowBothEnds: 'Starts before arrival and ends after departure',
          shortVisitTitle: 'Short Visit?',
          shortVisitMessage: (
             'Your arrival and departure times are very close together. Are you sure you want to save these times?'

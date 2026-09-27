@@ -8,6 +8,7 @@ import { AttractionOutsideOperatingHoursFragment } from '../../../scripts/itiner
 import { AttractionWithoutAnimalFragment } from '../../../scripts/itinerary/panel/attractionWithoutAnimalFragment.js';
 import { EarlyAdmissionFragment } from '../../../scripts/itinerary/panel/earlyAdmissionFragment.js';
 import { ScheduleItemNotOnItineraryFragment } from '../../../scripts/itinerary/panel/scheduleItemNotOnItineraryFragment.js';
+import { VisitWindowOverflowFragment } from '../../../scripts/itinerary/panel/visitWindowOverflowFragment.js';
 import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
 
@@ -55,6 +56,36 @@ test('Test_GetConfirmationEntry_TestAttractionWithoutAnimal_ExpectFragment', () 
       entry.showConfirmation,
       AttractionWithoutAnimalFragment.showAttractionWithoutAnimalConfirmation
    );
+});
+
+
+test('Test_GetConfirmationEntry_TestOverflow_ExpectFragment', () => {
+   const errorType = ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS;
+
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
+   assert.equal(
+      entry.showConfirmation,
+      VisitWindowOverflowFragment.showVisitWindowOverflowConfirmation
+   );
+   assert.equal(entry.confirmFlag, 'confirmingVisitWindowOverflow');
+});
+
+
+test('Test_BuildConfirmedPayload_TestOverflowKeepItems_ExpectMerged', () => {
+   const date = '2026-06-15';
+   const payload = { date };
+   const keptVisitWindowOverflowItems = [{ name: 'African Lion' }];
+   const errorType = ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS;
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
+   const confirmed = ItineraryConfirmationRegistry.buildConfirmedPayload(entry, payload)({
+      keptVisitWindowOverflowItems,
+   });
+
+   assert.equal(confirmed.date, date);
+   assert.equal(confirmed.confirmingVisitWindowOverflow, true);
+   assert.deepEqual(confirmed.keptVisitWindowOverflowItems, keptVisitWindowOverflowItems);
 });
 
 
@@ -107,7 +138,10 @@ test('Test_GetSetItineraryConfirmationEntries_TestFlags_ExpectConfirmFlags', () 
 });
 
 
-test('Test_GetTimeChangeConfirmationEntries_TestFragments_ExpectEarlyThenShort', () => {
+test('Test_GetTimeChangeConfirmationEntries_TestFragments_ExpectOverflowThenEarlyThenShort', () => {
+   const overflow = ItineraryConfirmationRegistry.TIME_CHANGE_CONFIRMATIONS[
+      ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS
+   ];
    const earlyAdmission = ItineraryConfirmationRegistry.TIME_CHANGE_CONFIRMATIONS[
       ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
    ];
@@ -119,10 +153,14 @@ test('Test_GetTimeChangeConfirmationEntries_TestFragments_ExpectEarlyThenShort',
 
    assert.equal(
       entries[Position.FIRST].showConfirmation,
-      earlyAdmission.showConfirmation
+      overflow.showConfirmation
    );
    assert.equal(
       entries[Position.SECOND].showConfirmation,
+      earlyAdmission.showConfirmation
+   );
+   assert.equal(
+      entries[Position.THIRD].showConfirmation,
       shortVisit.showConfirmation
    );
 });
@@ -199,6 +237,29 @@ test('Test_BuildConfirmedOptions_TestFlag_ExpectTrue', () => {
    const options = ItineraryConfirmationRegistry.buildConfirmedOptions(entry)();
 
    assert.equal(options[entry.confirmFlag], true);
+});
+
+
+test('Test_ExtraConfirmedFields_TestOverflowBuilder_ExpectKeepItems', () => {
+   const errorType = ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS;
+   const keptVisitWindowOverflowItems = [{ name: 'African Lion' }];
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
+   const extraFields = ItineraryConfirmationRegistry.extraConfirmedFields(entry, {
+      keptVisitWindowOverflowItems,
+   });
+
+   assert.deepEqual(extraFields, { keptVisitWindowOverflowItems });
+});
+
+
+test('Test_ExtraConfirmedFields_TestMissingBuilder_ExpectEmpty', () => {
+   const errorType = ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
+   const entry = ItineraryConfirmationRegistry.getConfirmationEntry(errorType);
+
+   const extraFields = ItineraryConfirmationRegistry.extraConfirmedFields(entry);
+
+   assert.deepEqual(extraFields, {});
 });
 
 
