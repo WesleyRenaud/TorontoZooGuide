@@ -11,6 +11,7 @@ import { ItineraryValidationResult } from '../../../scripts/itinerary/itineraryV
 import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { EarlyAdmissionFragment } from '../../../scripts/itinerary/panel/earlyAdmissionFragment.js';
 import { ShortVisitFragment } from '../../../scripts/itinerary/panel/shortVisitFragment.js';
+import { VisitWindowOverflowFragment } from '../../../scripts/itinerary/panel/visitWindowOverflowFragment.js';
 import { PersistItineraryWarningSuppressor } from '../../../scripts/itinerary/persistItineraryWarningSuppressor.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
 
@@ -20,6 +21,35 @@ test('Test_CreateItineraryTimeChangeCancelledError_TestDefault_ExpectNamedError'
 
    assert.equal(error.name, 'ItineraryTimeChangeCancelledError');
    assert.match(error.message, /cancelled/i);
+});
+
+
+test('Test_RequestConfirmedItineraryTimeChange_TestBuildConfirmationOptions_ExpectMerged', async () => {
+   const timeValue = '09:00 AM';
+   const confirmationOptions = { confirmingShortVisit: false };
+   const confirmingVisitWindowOverflow = true;
+   const keptVisitWindowOverflowItems = [{ name: 'African Lion' }];
+   const errorType = ItineraryErrorType.SUCCESS;
+
+   const result = await ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
+      showConfirmation: ({ onConfirm }) => onConfirm({
+         keptVisitWindowOverflowItems,
+      }),
+      requestFn: async (time, options) => ({ errorType, time, options }),
+      timeValue,
+      confirmationOptions,
+      buildConfirmationOptions: (confirmArg) => ({
+         confirmingVisitWindowOverflow,
+         keptVisitWindowOverflowItems: confirmArg.keptVisitWindowOverflowItems,
+      }),
+   });
+
+   assert.equal(result.time, timeValue);
+   assert.deepEqual(result.options, {
+      ...confirmationOptions,
+      confirmingVisitWindowOverflow,
+      keptVisitWindowOverflowItems,
+   });
 });
 
 
@@ -169,6 +199,40 @@ test('Test_SetItineraryTimeWithConfirmation_TestEarlyAdmission_ExpectConfirmed',
    } finally {
       ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
       ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = originalEarly;
+      ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = originalRequest;
+   }
+});
+
+
+test('Test_SetItineraryTimeWithConfirmation_TestOverflow_ExpectConfirmed', async () => {
+   const originalIsSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const originalOverflow = ItineraryErrorTypes.requiresVisitWindowOverflowConfirmation;
+   const originalRequest = ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange;
+   const requests = [];
+   const timeValue = '11:00 AM';
+   const issues = [{ type: ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS }];
+   ItineraryErrorTypes.isItinerarySuccess = () => false;
+   ItineraryErrorTypes.requiresVisitWindowOverflowConfirmation = () => true;
+   ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = async (options) => {
+      requests.push(options);
+      return { confirmed: true };
+   };
+
+   try {
+      const result = await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(
+         async () => ({ issues }),
+         timeValue
+      );
+
+      assert.equal(result.confirmed, true);
+      assert.equal(
+         requests[Position.FIRST].showConfirmation,
+         VisitWindowOverflowFragment.showVisitWindowOverflowConfirmation
+      );
+      assert.deepEqual(requests[Position.FIRST].issues, issues);
+   } finally {
+      ItineraryErrorTypes.isItinerarySuccess = originalIsSuccess;
+      ItineraryErrorTypes.requiresVisitWindowOverflowConfirmation = originalOverflow;
       ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange = originalRequest;
    }
 });

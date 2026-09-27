@@ -197,6 +197,17 @@ test('Test_RequiresGuardiansTalkWildEncounterTimeConflictConfirmation_TestActive
 });
 
 
+test('Test_RequiresVisitWindowOverflowConfirmation_TestActive_ExpectTrue', () => {
+   const errorType = ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS;
+
+   const requiresConfirmation = ItineraryErrorTypes.requiresVisitWindowOverflowConfirmation(
+      errorType
+   );
+
+   assert.equal(requiresConfirmation, true);
+});
+
+
 test('Test_RequiresShortVisitConfirmation_TestUnsuppressed_ExpectTrue', () => {
    const errorType = ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE;
 

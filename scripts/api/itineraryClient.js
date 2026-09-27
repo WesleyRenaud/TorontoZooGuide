@@ -71,12 +71,16 @@ export class ItineraryClient {
       {
          confirmingShortVisit = false,
          confirmingEarlyAdmission = false,
+         confirmingVisitWindowOverflow = false,
+         keptVisitWindowOverflowItems = [],
       } = {}
    ) {
       const response = await ApiClient.postJson('/set-itinerary-arrival-time', {
          arrivalTime: ValueNormalizer.asTrimmedString(arrivalTime),
          confirmingShortVisit,
          confirmingEarlyAdmission,
+         confirmingVisitWindowOverflow,
+         keptVisitWindowOverflowItems,
       });
 
       return ItineraryApiNormalizer.normalizeItineraryTimeSetResponse(response);
@@ -84,11 +88,17 @@ export class ItineraryClient {
 
    static async setItineraryDepartureTimeRequest(
       departureTime,
-      { confirmingShortVisit = false } = {}
+      {
+         confirmingShortVisit = false,
+         confirmingVisitWindowOverflow = false,
+         keptVisitWindowOverflowItems = [],
+      } = {}
    ) {
       const response = await ApiClient.postJson('/set-itinerary-departure-time', {
          departureTime: ValueNormalizer.asTrimmedString(departureTime),
          confirmingShortVisit,
+         confirmingVisitWindowOverflow,
+         keptVisitWindowOverflowItems,
       });
 
       return ItineraryApiNormalizer.normalizeItineraryTimeSetResponse(response);

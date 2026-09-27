@@ -14,6 +14,7 @@ import { GuardiansTalkWithoutAnimalFragment } from '../../../scripts/itinerary/p
 import { ItineraryBuildWarningsFragment } from '../../../scripts/itinerary/panel/itineraryBuildWarningsFragment.js';
 import { ScheduleTimeConflictFragment } from '../../../scripts/itinerary/panel/scheduleTimeConflictFragment.js';
 import { ShortVisitFragment } from '../../../scripts/itinerary/panel/shortVisitFragment.js';
+import { VisitWindowOverflowFragment } from '../../../scripts/itinerary/panel/visitWindowOverflowFragment.js';
 import { WildEncounterUnscheduleFragment } from '../../../scripts/itinerary/panel/wildEncounterUnscheduleFragment.js';
 import { WildEncounterConflictResolver } from '../../../scripts/itinerary/wizard/wildEncounterConflictResolver.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
@@ -29,6 +30,7 @@ function _stubErrorTypeChecks(activeType) {
       wildUnschedule: ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation,
       shortVisit: ItineraryErrorTypes.requiresShortVisitConfirmation,
       earlyAdmission: ItineraryErrorTypes.requiresEarlyAdmissionConfirmation,
+      overflow: ItineraryErrorTypes.requiresVisitWindowOverflowConfirmation,
       multiWarnings: ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings,
    };
 
@@ -57,6 +59,9 @@ function _stubErrorTypeChecks(activeType) {
    ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = (type) => (
       type === 'earlyAdmission' && activeType === 'earlyAdmission'
    );
+   ItineraryErrorTypes.requiresVisitWindowOverflowConfirmation = (type) => (
+      type === 'overflow' && activeType === 'overflow'
+   );
    ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = (issues) => (
       activeType === 'multiWarnings' && Boolean(issues?.length)
    );
@@ -71,6 +76,7 @@ function _stubErrorTypeChecks(activeType) {
       ItineraryErrorTypes.requiresWildEncounterUnscheduleConfirmation = originals.wildUnschedule;
       ItineraryErrorTypes.requiresShortVisitConfirmation = originals.shortVisit;
       ItineraryErrorTypes.requiresEarlyAdmissionConfirmation = originals.earlyAdmission;
+      ItineraryErrorTypes.requiresVisitWindowOverflowConfirmation = originals.overflow;
       ItineraryBuildWarningsFragment.hasMultipleItineraryBuildWarnings = originals.multiWarnings;
    };
 }
@@ -392,6 +398,17 @@ test('Test_RequestSetItineraryWithConfirmations_TestEarlyAdmission_ExpectFlag', 
       fragment: EarlyAdmissionFragment,
       showMethod: 'showEarlyAdmissionConfirmation',
       expectedFlag: 'confirmingEarlyAdmission',
+   });
+});
+
+
+test('Test_RequestSetItineraryWithConfirmations_TestOverflow_ExpectFlag', async () => {
+   await _assertConfirmationFlagPath({
+      activeType: 'overflow',
+      errorType: 'overflow',
+      fragment: VisitWindowOverflowFragment,
+      showMethod: 'showVisitWindowOverflowConfirmation',
+      expectedFlag: 'confirmingVisitWindowOverflow',
    });
 });
 

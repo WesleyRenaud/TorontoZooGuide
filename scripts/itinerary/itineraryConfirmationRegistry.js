@@ -6,6 +6,7 @@ import { GuardiansTalkUnscheduleFragment } from './panel/guardiansTalkUnschedule
 import { GuardiansTalkWithoutAnimalFragment } from './panel/guardiansTalkWithoutAnimalFragment.js';
 import { ScheduleItemNotOnItineraryFragment } from './panel/scheduleItemNotOnItineraryFragment.js';
 import { ShortVisitFragment } from './panel/shortVisitFragment.js';
+import { VisitWindowOverflowFragment } from './panel/visitWindowOverflowFragment.js';
 import { WildEncounterUnscheduleFragment } from './panel/wildEncounterUnscheduleFragment.js';
 import { PersistItineraryWarningSuppressor } from './persistItineraryWarningSuppressor.js';
 import { ItineraryErrorType } from '../shared/enums/itineraryErrorType.js';
@@ -55,6 +56,15 @@ export class ItineraryConfirmationRegistry {
    });
 
    static SET_ITINERARY_CONFIRMATIONS = Object.freeze({
+      [ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS]: Object.freeze({
+         requiresMethod: 'requiresVisitWindowOverflowConfirmation',
+         showConfirmation: VisitWindowOverflowFragment.showVisitWindowOverflowConfirmation,
+         confirmFlag: 'confirmingVisitWindowOverflow',
+         confirmationPropsWithIssues: true,
+         buildConfirmedFields: ({ keptVisitWindowOverflowItems = [] } = {}) => ({
+            keptVisitWindowOverflowItems,
+         }),
+      }),
       [ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP]: Object.freeze({
          requiresMethod: 'requiresEarlyAdmissionConfirmation',
          showConfirmation: EarlyAdmissionFragment.showEarlyAdmissionConfirmation,
@@ -95,6 +105,15 @@ export class ItineraryConfirmationRegistry {
    });
 
    static TIME_CHANGE_CONFIRMATIONS = Object.freeze({
+      [ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS]: Object.freeze({
+         requiresMethod: 'requiresVisitWindowOverflowConfirmation',
+         showConfirmation: VisitWindowOverflowFragment.showVisitWindowOverflowConfirmation,
+         confirmFlag: 'confirmingVisitWindowOverflow',
+         confirmationPropsWithIssues: true,
+         buildConfirmedFields: ({ keptVisitWindowOverflowItems = [] } = {}) => ({
+            keptVisitWindowOverflowItems,
+         }),
+      }),
       [ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP]: Object.freeze({
          requiresMethod: 'requiresEarlyAdmissionConfirmation',
          showConfirmation: EarlyAdmissionFragment.showEarlyAdmissionConfirmation,
@@ -160,10 +179,22 @@ export class ItineraryConfirmationRegistry {
       });
    }
 
+   static extraConfirmedFields(entry, ...confirmationArgs) {
+      if (!entry.buildConfirmedFields) {
+         return {};
+      }
+
+      return entry.buildConfirmedFields(...confirmationArgs);
+   }
+
    static buildConfirmedPayload(entry, payload) {
-      return () => ({
+      return (...confirmationArgs) => ({
          ...payload,
          [entry.confirmFlag]: true,
+         ...ItineraryConfirmationRegistry.extraConfirmedFields(
+            entry,
+            ...confirmationArgs
+         ),
       });
    }
 
@@ -186,6 +217,13 @@ export class ItineraryConfirmationRegistry {
          confirmationOptions: {
             [entry.confirmFlag]: true,
          },
+         buildConfirmationOptions: (...confirmationArgs) => ({
+            [entry.confirmFlag]: true,
+            ...ItineraryConfirmationRegistry.extraConfirmedFields(
+               entry,
+               ...confirmationArgs
+            ),
+         }),
       };
    }
 }

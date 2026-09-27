@@ -3,11 +3,131 @@ import { test } from 'node:test';
 
 import { ItineraryServiceFormatter } from '../../../scripts/itinerary/itineraryServiceFormatter.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
+import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
+import { ItinerarySaveIssueItemType } from '../../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
 import { installItineraryServiceTestHooks } from '../helpers/itineraryServiceTestSetup.mjs';
 import { Strings } from '../../../scripts/strings.js';
 
 installItineraryServiceTestHooks();
+
+
+test('Test_ItineraryServiceTime_TestSetArrivalTimeConfirmsOverflowKeepBeforeRetrying_ExpectOk', async () => {
+   const requests = [];
+   const date = '2026-06-20';
+   const arrivalTime = '11:00 AM';
+   const talkName = 'African Lion';
+   const talkStart = '10:00 AM';
+   ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
+      suppressedErrorTypes: [],
+   });
+   globalThis.fetch = async (url, options) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body),
+      });
+
+      if (url === '/get-itinerary-date') {
+         return {
+            ok: true,
+            status: 200,
+            statusText: 'OK',
+            text: async () => JSON.stringify({ date }),
+         };
+      }
+
+      if (url === '/get-itinerary') {
+         return {
+            ok: true,
+            status: 200,
+            statusText: 'OK',
+            text: async () => JSON.stringify({
+               status: 'success',
+               reasons: [],
+               itinerary: {
+                  date,
+                  animals: [],
+                  attractions: [],
+                  guardians_talks: [],
+                  wild_encounters: [],
+               },
+            }),
+         };
+      }
+
+      const isConfirmed = Boolean(
+         requests.at(Position.LAST).body.confirmingVisitWindowOverflow
+      );
+
+      return {
+         ok: true,
+         status: 200,
+         statusText: 'OK',
+         text: async () => JSON.stringify({
+            status: isConfirmed
+               ? ItineraryErrorType.SUCCESS
+               : ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+            reasons: isConfirmed
+               ? []
+               : [
+                  {
+                     code: ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS,
+                     items: [
+                        {
+                           name: talkName,
+                           item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
+                           start_time: talkStart,
+                           end_time: '10:30 AM',
+                        },
+                     ],
+                  },
+               ],
+            itinerary: {
+               date,
+               arrival_time: isConfirmed ? arrivalTime : '',
+               animals: [],
+               attractions: [],
+               guardians_talks: [],
+               wild_encounters: [],
+            },
+         }),
+      };
+   };
+
+   const setPromise = ItineraryServiceFormatter.setItineraryArrivalTime(arrivalTime);
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   assert.equal(
+      document.querySelector('.itin-save-issue-conflict-message').textContent,
+      Strings.itinerary.confirmation.visitWindowOverflowMessage
+   );
+
+   document.querySelector('.tzg-popup-confirm').click();
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+   await setPromise;
+   const setRequests = requests.filter((request) => (
+      request.url === '/set-itinerary-arrival-time'
+   ));
+
+   assert.equal(setRequests.length, 2);
+   assert.deepEqual(setRequests[Position.SECOND].body, {
+      arrivalTime,
+      confirmingShortVisit: false,
+      confirmingEarlyAdmission: false,
+      confirmingVisitWindowOverflow: true,
+      keptVisitWindowOverflowItems: [
+         {
+            name: talkName,
+            item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
+            start_time: talkStart,
+         },
+      ],
+   });
+});
 
 
 test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeConfirmsEarlyAdmissionWarningBeforeRetrying_ExpectOk', async () => {
@@ -98,11 +218,15 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryArrivalTimeC
       arrivalTime,
       confirmingShortVisit: false,
       confirmingEarlyAdmission: false,
+      confirmingVisitWindowOverflow: false,
+      keptVisitWindowOverflowItems: [],
    });
    assert.deepEqual(setRequests[Position.SECOND].body, {
       arrivalTime,
       confirmingShortVisit: false,
       confirmingEarlyAdmission: true,
+      confirmingVisitWindowOverflow: false,
+      keptVisitWindowOverflowItems: [],
    });
 });
 
@@ -194,6 +318,8 @@ test('Test_ItineraryServiceTime_TestItineraryServiceTimeSetItineraryDepartureTim
    assert.deepEqual(setRequests[Position.SECOND].body, {
       departureTime,
       confirmingShortVisit: true,
+      confirmingVisitWindowOverflow: false,
+      keptVisitWindowOverflowItems: [],
    });
 });
 

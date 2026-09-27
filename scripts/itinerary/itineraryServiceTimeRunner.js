@@ -18,20 +18,35 @@ export class ItineraryServiceTimeRunner {
       showConfirmation,
       requestFn,
       timeValue,
+      issues = [],
       suppressionType,
       confirmationOptions,
+      buildConfirmationOptions,
+      continueWithConfirmation,
    }) {
       return new Promise((resolve, reject) => {
          showConfirmation({
-            onConfirm: async ({ doNotShowAgain = false } = {}) => {
+            issues,
+            onConfirm: async (confirmArg = {}) => {
                try {
-                  if (doNotShowAgain) {
+                  if (confirmArg.doNotShowAgain) {
                      await PersistItineraryWarningSuppressor.persistItineraryWarningSuppression(suppressionType);
                   }
 
+                  if (continueWithConfirmation) {
+                     resolve(await continueWithConfirmation(confirmArg));
+                     return;
+                  }
+
+                  const confirmedOptions = buildConfirmationOptions
+                     ? {
+                        ...confirmationOptions,
+                        ...buildConfirmationOptions(confirmArg),
+                     }
+                     : confirmationOptions;
                   const confirmedResult = await requestFn(
                      timeValue,
-                     confirmationOptions
+                     confirmedOptions
                   );
 
                   if (!ItineraryErrorTypes.isItinerarySuccess(confirmedResult.errorType)) {
@@ -54,8 +69,12 @@ export class ItineraryServiceTimeRunner {
       });
    }
 
-   static async setItineraryTimeWithConfirmation(requestFn, timeValue) {
-      const initialResult = await requestFn(timeValue);
+   static async setItineraryTimeWithConfirmation(
+      requestFn,
+      timeValue,
+      confirmationOptions = {}
+   ) {
+      const initialResult = await requestFn(timeValue, confirmationOptions);
 
       if (ItineraryErrorTypes.isItinerarySuccess(initialResult.errorType)) {
          return initialResult;
@@ -63,10 +82,30 @@ export class ItineraryServiceTimeRunner {
 
       for (const entry of ItineraryConfirmationRegistry.getTimeChangeConfirmationEntries()) {
          if (ItineraryErrorTypes[entry.requiresMethod](initialResult.errorType)) {
+            const timeChangeOptions = ItineraryConfirmationRegistry.buildTimeChangeConfirmationOptions(
+               entry
+            );
+
             return ItineraryServiceTimeRunner.requestConfirmedItineraryTimeChange({
                requestFn,
                timeValue,
-               ...ItineraryConfirmationRegistry.buildTimeChangeConfirmationOptions(entry),
+               issues: initialResult.issues,
+               ...timeChangeOptions,
+               confirmationOptions: {
+                  ...confirmationOptions,
+                  ...timeChangeOptions.confirmationOptions,
+               },
+               continueWithConfirmation: (confirmArg) => (
+                  ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(
+                     requestFn,
+                     timeValue,
+                     {
+                        ...confirmationOptions,
+                        ...timeChangeOptions.confirmationOptions,
+                        ...timeChangeOptions.buildConfirmationOptions(confirmArg),
+                     }
+                  )
+               ),
             });
          }
       }

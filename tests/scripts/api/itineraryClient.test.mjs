@@ -260,6 +260,8 @@ test('Test_SetItineraryArrivalTimeRequest_TestTrimmedTime_ExpectNormalized', asy
             arrivalTime,
             confirmingShortVisit: false,
             confirmingEarlyAdmission: false,
+            confirmingVisitWindowOverflow: false,
+            keptVisitWindowOverflowItems: [],
          },
       ],
    ]);
@@ -291,6 +293,8 @@ test('Test_SetItineraryDepartureTimeRequest_TestEmptyTime_ExpectNormalized', asy
          {
             departureTime,
             confirmingShortVisit: false,
+            confirmingVisitWindowOverflow: false,
+            keptVisitWindowOverflowItems: [],
          },
       ],
    ]);
