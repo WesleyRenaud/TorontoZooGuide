@@ -1,0 +1,73 @@
+{
+  "id": "ITIN-21",
+  "title": "Scheduled items outside visit hours",
+  "preconditions": "npm run seed, npm start. Run `npm run clear:itinerary-config` so persist warnings are not skipped.",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Clear confirmation skips",
+      "do": "From the project root, run `npm run clear:itinerary-config`, then reload **Itinerary**.",
+      "expect": "Command reports no **Don't show this again** skips (or clears any that were on)."
+    },
+    {
+      "number": 2,
+      "name": "Save a talk without visit times",
+      "do": "Use **Build Itinerary** / **Edit Itinerary**. On **Set Visit Date**, pick a today-or-future date that lists a Meet the Guardians talk. Leave **Arrival time** and **Departure time** blank, then continue. Add that talk, then **Finish** (confirm any unrelated save warnings if they appear).",
+      "expect": "The itinerary saves. Day Planner shows the talk as a pill at its offered time. Arrival and departure fill in around the talk (arrival a few minutes before it starts, departure a few minutes after it ends, for walking)."
+    },
+    {
+      "number": 3,
+      "name": "Next does not prompt overflow",
+      "do": "Note the talk start time. Click **Edit Itinerary**. On **Set Visit Date**, set **Arrival time** later than that start (keep departure at least **2 hours** after arrival), then click **Next**.",
+      "expect": "The next wizard step appears. **Scheduled Items Outside Visit Hours** does not appear. **Short Visit?** and **Early Admission Hours** do not appear."
+    },
+    {
+      "number": 4,
+      "name": "Finish shows overflow",
+      "do": "Click **Finish**.",
+      "expect": "**Scheduled Items Outside Visit Hours** lists the talk, kept by default, with **Starts before arrival**. Confirm uses **Proceed**."
+    },
+    {
+      "number": 5,
+      "name": "Cancel Finish overflow",
+      "do": "Click **Cancel**.",
+      "expect": "The builder stays open. Arrival stays at the time you set. The talk is still on the itinerary."
+    },
+    {
+      "number": 6,
+      "name": "Drop removes the talk",
+      "do": "Click **Finish** again. On **Scheduled Items Outside Visit Hours**, toggle the talk off (the keep control switches from remove to add), then click **Proceed**.",
+      "expect": "The itinerary saves. The talk is removed from the itinerary (List and Day Planner), not merely unscheduled. Arrival is the time you set."
+    },
+    {
+      "number": 7,
+      "name": "Keep expands arrival plus walk",
+      "do": "Click **Edit Itinerary** and add the same talk again, leaving the visit times as they are. Click **Finish**, leave the talk kept, and click **Proceed**.",
+      "expect": "The itinerary saves. Day Planner has the talk. Arrival is earlier than the talk start, not merely equal to it (walk from the entrance is included). Departure stays at the time you set."
+    },
+    {
+      "number": 8,
+      "name": "Day Planner arrival shows overflow",
+      "do": "On Day Planner, set **Arrival time** later than the talk start.",
+      "expect": "**Scheduled Items Outside Visit Hours** lists the talk with **Starts before arrival**."
+    },
+    {
+      "number": 9,
+      "name": "Day Planner cancel restores arrival",
+      "do": "Click **Cancel**.",
+      "expect": "Arrival returns to its saved time. The talk stays on the itinerary."
+    },
+    {
+      "number": 10,
+      "name": "Day Planner departure shows overflow",
+      "do": "Reload **Itinerary**. On Day Planner, set **Departure time** earlier than the talk end, keeping arrival at least **2 hours** before that departure.",
+      "expect": "**Scheduled Items Outside Visit Hours** lists the talk with **Ends after departure**."
+    },
+    {
+      "number": 11,
+      "name": "Departure pinch expands plus walk",
+      "do": "Leave the talk kept and click **Proceed**.",
+      "expect": "Departure is later than the time you set, not merely equal to the talk end (walk back to the entrance is included). Arrival does not change. The talk stays on the itinerary."
+    }
+  ]
+}

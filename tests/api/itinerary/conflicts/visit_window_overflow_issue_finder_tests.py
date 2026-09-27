@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from api.itinerary.conflicts.visit_window_overflow_issue_finder import VisitWindowOverflowIssueFinder
-from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from api.itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
-from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
-from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.itinerary.domain.itinerary_builder import ItineraryBuilder
 from api.itinerary.results.itinerary_result_reason import ItineraryResultReason
+from api.models import Attraction
+from api.models import GuardiansTalk
+from api.models import Itinerary
+from api.models import WildEncounter
 from api.models.attraction_diff import AttractionDiff
 from api.models.guardians_talk_diff import GuardiansTalkDiff
 from api.models.wild_encounter_diff import WildEncounterDiff
@@ -48,6 +49,25 @@ def _find(
       guardians_talks=talks or [],
       wild_encounters=encounters or [],
       attractions=attractions or [] )
+
+
+def _itinerary(
+      *,
+      guardians_talks: list[ GuardiansTalk ],
+      wild_encounters: list[ WildEncounter ],
+      attractions: list[ Attraction ] ) -> Itinerary:
+   return ItineraryBuilder.build(
+      date='2026-06-15',
+      selected_exhibits=[],
+      animals=[],
+      attractions=attractions,
+      transportations=[],
+      transportation_stations=[],
+      guardians_talks=guardians_talks,
+      wild_encounters=wild_encounters,
+      events=[],
+      arrival_time=ARRIVAL_TIME,
+      departure_time=DEPARTURE_TIME )
 
 
 def Test_Find_TestBlankArrival_ExpectEmpty() -> None:
@@ -177,41 +197,58 @@ def Test_Find_TestInvalidTimeRange_ExpectEmpty() -> None:
    assert issues == []
 
 
-def Test_FindFromSavedItinerary_TestTalkBeforeArrival_ExpectOverflow() -> None:
-   saved_itinerary = SavedItinerary(
-      date_value='2026-06-15',
-      arrival_time=ARRIVAL_TIME,
-      departure_time=DEPARTURE_TIME,
-      guardians_talk_rows=[
-         ItineraryGuardiansTalkRecord(
-            talk_name=TALK_NAME,
+def Test_FindFromItinerary_TestTalkBeforeArrival_ExpectOverflowWithLocation() -> None:
+   itinerary = _itinerary(
+      guardians_talks=[
+         GuardiansTalk(
+            name=TALK_NAME,
+            location='Africa Savanna',
+            x_coord=0,
+            y_coord=0,
             start_time='10:00 AM',
-            end_time='10:30 AM',
-            is_deleted=False ),
+            end_time='10:30 AM' ),
       ],
-      wild_encounter_rows=[
-         ItineraryWildEncounterRecord(
-            wild_encounter=ENCOUNTER_NAME,
-            start_time='12:00 PM',
-            end_time='12:30 PM',
-            is_deleted=False ),
-      ],
-      attraction_rows=[
-         ItineraryAttractionRecord(
-            attraction=ATTRACTION_NAME,
-            old_likelihood=None,
-            new_likelihood=100,
-            start_time=None,
-            end_time=None ),
+      wild_encounters=[],
+      attractions=[
+         Attraction(
+            name=ATTRACTION_NAME,
+            free_with_admission=True,
+            likelihood=100 ),
       ] )
 
-   issues = VisitWindowOverflowIssueFinder.find_from_saved_itinerary(
+   issues = VisitWindowOverflowIssueFinder.find_from_itinerary(
       ARRIVAL_TIME,
       DEPARTURE_TIME,
-      saved_itinerary )
+      itinerary )
 
    item = issues[ Position.FIRST ].items[ Position.FIRST ]
 
    assert len( issues[ Position.FIRST ].items ) == 1
    assert item.name == TALK_NAME
+   assert item.location == 'Africa Savanna'
    assert item.overflow_end == ItineraryVisitWindowOverflowEnd.ARRIVAL
+
+
+def Test_FindFromItinerary_TestEncounterAfterDeparture_ExpectOverflowWithMeetingSpot() -> None:
+   itinerary = _itinerary(
+      guardians_talks=[],
+      wild_encounters=[
+         WildEncounter(
+            name=ENCOUNTER_NAME,
+            meeting_spot='Africa Meeting Spot',
+            link='',
+            start_time='12:45 PM',
+            end_time='1:15 PM' ),
+      ],
+      attractions=[] )
+
+   issues = VisitWindowOverflowIssueFinder.find_from_itinerary(
+      ARRIVAL_TIME,
+      DEPARTURE_TIME,
+      itinerary )
+
+   item = issues[ Position.FIRST ].items[ Position.FIRST ]
+
+   assert item.name == ENCOUNTER_NAME
+   assert item.meeting_spot == 'Africa Meeting Spot'
+   assert item.overflow_end == ItineraryVisitWindowOverflowEnd.DEPARTURE

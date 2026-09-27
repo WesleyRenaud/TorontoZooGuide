@@ -14,11 +14,10 @@ installDomTestHooks();
 test('Test_ShowEarlyAdmissionConfirmation_TestDefaults_ExpectPopup', () => {
    const calls = [];
    const originalShow = ConfirmFragment.showItineraryConfirmPopup;
-   const originalMount = ItineraryPanelFragment.getItineraryPanelMountEl;
    ConfirmFragment.showItineraryConfirmPopup = (args) => { calls.push(args); };
-   ItineraryPanelFragment.getItineraryPanelMountEl = () => null;
    const onConfirm = () => {};
    const onCancel = () => {};
+   const mountEl = ItineraryPanelFragment.getItineraryConfirmationMountEl();
 
    try {
       EarlyAdmissionFragment.showEarlyAdmissionConfirmation({ onConfirm, onCancel });
@@ -30,9 +29,8 @@ test('Test_ShowEarlyAdmissionConfirmation_TestDefaults_ExpectPopup', () => {
       assert.equal(confirmation.message, Strings.itinerary.confirmation.earlyAdmissionMessage);
       assert.equal(confirmation.onConfirm, onConfirm);
       assert.equal(confirmation.onCancel, onCancel);
-      assert.equal(confirmation.mountEl, document.body);
+      assert.equal(confirmation.mountEl, mountEl);
    } finally {
       ConfirmFragment.showItineraryConfirmPopup = originalShow;
-      ItineraryPanelFragment.getItineraryPanelMountEl = originalMount;
    }
 });

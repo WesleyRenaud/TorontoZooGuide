@@ -9,8 +9,7 @@ export class ShortVisitFragment {
          message: Strings.itinerary.confirmation.shortVisitMessage,
          doNotShowAgainLabel: Strings.itinerary.confirmation.doNotShowAgain,
          cancelText: Strings.itinerary.actions.cancel,
-         mountEl: ItineraryPanelFragment.getItineraryPanelMountEl()
-            ?? document.body,
+         mountEl: ItineraryPanelFragment.getItineraryConfirmationMountEl(),
          onConfirm,
          onCancel,
       });

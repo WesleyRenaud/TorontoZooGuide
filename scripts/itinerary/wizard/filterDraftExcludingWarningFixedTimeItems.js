@@ -1,10 +1,13 @@
 import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { ScheduleConflictChecker } from './scheduleConflictChecker.js';
+import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
 import { WarningFixedTimeDraftFilter } from './warningFixedTimeDraftFilter.js';
 
 export class FilterDraftExcludingWarningFixedTimeItems {
-   static filterDraftExcludingWarningFixedTimeItems(draft = {}, issues = []) {
-      const warningItems = issues.flatMap((issue) => issue.items ?? []);
+   static filterDraftExcludingWarningFixedTimeItems(draft, issues = []) {
+      const warningItems = issues
+         .filter((issue) => issue.type !== ItineraryErrorType.SCHEDULED_ITEM_OUTSIDE_VISIT_HOURS)
+         .flatMap((issue) => issue.items);
       const rejectedTalkKeys = WarningFixedTimeDraftFilter.rejectedOccurrenceKeys(
          warningItems,
          ScheduleConflictChecker.isGuardiansTalkConflictItem
@@ -15,12 +18,12 @@ export class FilterDraftExcludingWarningFixedTimeItems {
       );
 
       return {
-         [SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks]: (
-            draft[SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks] ?? []
-         ).filter((talk) => WarningFixedTimeDraftFilter.keepDraftItem(talk, rejectedTalkKeys)),
-         [SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters]: (
-            draft[SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters] ?? []
-         ).filter((encounter) => (
+         [SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks]: draft[
+            SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.guardiansTalks
+         ].filter((talk) => WarningFixedTimeDraftFilter.keepDraftItem(talk, rejectedTalkKeys)),
+         [SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters]: draft[
+            SectionConfigs.ITINERARY_PANEL_SECTION_KEYS.wildEncounters
+         ].filter((encounter) => (
             WarningFixedTimeDraftFilter.keepDraftItem(encounter, rejectedEncounterKeys)
          )),
       };

@@ -14,6 +14,21 @@ export class ItineraryPanelFragment {
 
    }
 
+   static getItineraryConfirmationMountEl() {
+      const overlayMountEl = document.getElementById('itineraryFlow');
+
+      if (overlayMountEl) {
+         for (const child of overlayMountEl.children) {
+            if (child.classList.contains('itin-overlay')) {
+               return overlayMountEl;
+            }
+         }
+      }
+
+      return ItineraryPanelFragment.getItineraryPanelMountEl();
+
+   }
+
    static createItineraryPopupLayout({
       popupClassName = '',
       title = Strings.common.headsUp,

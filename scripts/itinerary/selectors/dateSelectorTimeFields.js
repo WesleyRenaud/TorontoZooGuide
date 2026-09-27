@@ -14,11 +14,18 @@ export class DateSelectorTimeFields {
       };
    }
 
+   static visitTimeValidationStrings(strings = Strings) {
+      return {
+         ...strings.itinerary.dayPlanner,
+         timeOrderInvalid: strings.itinerary.errors.timeOrderInvalid,
+      };
+   }
+
    static resolveVisitTimesValidationError(
       arrivalTime,
       departureTime,
       zooHours,
-      strings = Strings.itinerary.dayPlanner
+      strings = DateSelectorTimeFields.visitTimeValidationStrings()
    ) {
       if (!zooHours) {
          return null;
@@ -27,12 +34,17 @@ export class DateSelectorTimeFields {
       const arrivalBounds = DayPlannerScheduleController.buildArrivalTimeBounds(zooHours);
       const departureBounds = DayPlannerScheduleController.buildDepartureTimeBounds(zooHours);
 
-      return DayPlannerScheduleController.resolveArrivalTimeValidationError(
+      const arrivalError = DayPlannerScheduleController.resolveArrivalTimeValidationError(
          arrivalTime,
          arrivalBounds,
          departureTime,
          strings
-      ) || DayPlannerScheduleController.resolveDepartureTimeValidationError(
+      );
+      if (arrivalError) {
+         return arrivalError;
+      }
+
+      return DayPlannerScheduleController.resolveDepartureTimeValidationError(
          departureTime,
          departureBounds,
          arrivalTime,
@@ -44,7 +56,7 @@ export class DateSelectorTimeFields {
       arrivalTime,
       departureTime,
       zooHours,
-      strings = Strings.itinerary.dayPlanner
+      strings = DateSelectorTimeFields.visitTimeValidationStrings()
    ) {
       return !DateSelectorTimeFields.resolveVisitTimesValidationError(
          arrivalTime,
@@ -70,7 +82,7 @@ export class DateSelectorTimeFields {
          return;
       }
 
-      const dayPlannerStrings = strings.itinerary.dayPlanner;
+      const dayPlannerStrings = DateSelectorTimeFields.visitTimeValidationStrings(strings);
       const arrivalBounds = zooHours
          ? DayPlannerScheduleController.buildArrivalTimeBounds(zooHours)
          : null;

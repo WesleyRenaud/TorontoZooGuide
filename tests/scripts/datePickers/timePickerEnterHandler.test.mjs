@@ -9,6 +9,29 @@ import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 installDomTestHooks();
 
 
+function _createOpenPickerInstance({ hour, minute, amPm }) {
+   return {
+      isOpen: true,
+      calendarContainer: document.createElement('div'),
+      config: {
+         dateFormat: 'h:i K',
+         time_24hr: false,
+      },
+      selectedDates: [],
+      hourElement: { value: hour },
+      minuteElement: { value: minute },
+      amPM: { textContent: amPm },
+      formatDate(date) {
+         const hours = date.getHours();
+         const minutes = String(date.getMinutes()).padStart(2, '0');
+         const displayHour = hours % 12 || 12;
+
+         return `${displayHour}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
+      },
+   };
+}
+
+
 test('Test_ResolveOpenTimePickerValue_TestInputValue_ExpectPreferInput', () => {
    const original = ReadOpenPickerFormatter.readOpenPickerTime;
    const time = '1:00 PM';
@@ -51,6 +74,46 @@ test('Test_ResolveOpenTimePickerValue_TestNullInput_ExpectPickerTime', () => {
    } finally {
       ReadOpenPickerFormatter.readOpenPickerTime = original;
    }
+});
+
+
+test('Test_ResolvePickerControlsValue_TestTypedMinuteNotInInput_ExpectControlTime', () => {
+   const inputEl = { value: '11:48 AM' };
+   const instance = _createOpenPickerInstance({ hour: '11', minute: '30', amPm: 'AM' });
+
+   const resolved = TimePickerEnterHandler.resolvePickerControlsValue(inputEl, instance);
+
+   assert.equal(resolved, '11:30 AM');
+});
+
+
+test('Test_ResolvePickerControlsValue_TestBlankMinute_ExpectInputValue', () => {
+   const time = '11:48 AM';
+   const inputEl = { value: time };
+   const instance = _createOpenPickerInstance({ hour: '11', minute: '', amPm: 'AM' });
+
+   const resolved = TimePickerEnterHandler.resolvePickerControlsValue(inputEl, instance);
+
+   assert.equal(resolved, time);
+});
+
+
+test('Test_WireTimePickerEnterCommit_TestEnterInPickerControls_ExpectControlTime', () => {
+   const commits = [];
+   const inputEl = document.createElement('input');
+   inputEl.value = '11:48 AM';
+   const instance = _createOpenPickerInstance({ hour: '11', minute: '30', amPm: 'AM' });
+   TimePickerEnterHandler.wireTimePickerEnterCommit(inputEl, instance, (nextTime) => {
+      commits.push(nextTime);
+   });
+
+   instance.calendarContainer.listeners.keydown({
+      key: 'Enter',
+      preventDefault() {},
+      stopImmediatePropagation() {},
+   });
+
+   assert.deepEqual(commits, ['11:30 AM']);
 });
 
 

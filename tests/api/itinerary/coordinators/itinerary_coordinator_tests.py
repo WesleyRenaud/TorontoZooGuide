@@ -434,6 +434,10 @@ def Test_SetArrivalTime_TestEarlyAdmissionWarning_ExpectMembershipStatus(
       'fetch_itinerary_date',
       lambda _conn: ITINERARY_DATE )
    monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+   monkeypatch.setattr(
       ZooHoursProvider,
       'fetch_zoo_hours_record',
       lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
@@ -466,6 +470,10 @@ def Test_SetArrivalTime_TestShortVisitWarning_ExpectTooCloseStatus(
       ItineraryProvider,
       'fetch_itinerary_date',
       lambda _conn: ITINERARY_DATE )
+   monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
    monkeypatch.setattr(
       ZooHoursProvider,
       'fetch_zoo_hours_record',
@@ -506,6 +514,10 @@ def Test_SetArrivalTime_TestOverflowWarning_ExpectOutsideHoursStatus(
       'fetch_itinerary_date',
       lambda _conn: ITINERARY_DATE )
    monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+   monkeypatch.setattr(
       ZooHoursProvider,
       'fetch_zoo_hours_record',
       lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
@@ -519,7 +531,7 @@ def Test_SetArrivalTime_TestOverflowWarning_ExpectOutsideHoursStatus(
       lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
    monkeypatch.setattr(
       VisitWindowOverflowIssueFinder,
-      'find_from_saved_itinerary',
+      'find_from_itinerary',
       lambda *_args, **_kwargs: [ overflow_reason ] )
 
    result = ItineraryCoordinator.set_arrival_time( ARRIVAL_TIME )
@@ -558,7 +570,7 @@ def Test_SetArrivalTime_TestOverflowConfirmedDropAll_ExpectPersistedAndDropped(
       lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
    monkeypatch.setattr(
       VisitWindowOverflowIssueFinder,
-      'find_from_saved_itinerary',
+      'find_from_itinerary',
       lambda *_args, **_kwargs: [ overflow_reason ] )
    monkeypatch.setattr(
       VisitWindowOverflowChangeApplier,
@@ -636,7 +648,7 @@ def Test_SetArrivalTime_TestOverflowConfirmedKeep_ExpectExpandedArrival(
       lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
    monkeypatch.setattr(
       VisitWindowOverflowIssueFinder,
-      'find_from_saved_itinerary',
+      'find_from_itinerary',
       lambda *_args, **_kwargs: [ overflow_reason ] )
    monkeypatch.setattr(
       VisitWindowOverflowChangeApplier,
@@ -715,7 +727,7 @@ def Test_SetArrivalTime_TestOverflowConfirmedKeepBoth_ExpectArrivalAndDepartureP
       lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
    monkeypatch.setattr(
       VisitWindowOverflowIssueFinder,
-      'find_from_saved_itinerary',
+      'find_from_itinerary',
       lambda *_args, **_kwargs: [ overflow_reason ] )
    monkeypatch.setattr(
       VisitWindowOverflowChangeApplier,
@@ -783,6 +795,10 @@ def Test_SetArrivalTime_TestOverflowConfirmedThenShortVisit_ExpectTooCloseWithou
       'fetch_itinerary_date',
       lambda _conn: ITINERARY_DATE )
    monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+   monkeypatch.setattr(
       ZooHoursProvider,
       'fetch_zoo_hours_record',
       lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
@@ -796,7 +812,7 @@ def Test_SetArrivalTime_TestOverflowConfirmedThenShortVisit_ExpectTooCloseWithou
       lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
    monkeypatch.setattr(
       VisitWindowOverflowIssueFinder,
-      'find_from_saved_itinerary',
+      'find_from_itinerary',
       lambda *_args, **_kwargs: [ overflow_reason ] )
    monkeypatch.setattr(
       VisitWindowOverflowChangeApplier,
@@ -959,6 +975,10 @@ def Test_SetDepartureTime_TestShortVisitWarning_ExpectTooCloseStatus(
       'fetch_itinerary_date',
       lambda _conn: ITINERARY_DATE )
    monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+   monkeypatch.setattr(
       ZooHoursProvider,
       'fetch_zoo_hours_record',
       lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
@@ -990,6 +1010,10 @@ def Test_SetDepartureTime_TestOverflowWarning_ExpectOutsideHoursStatus(
       'fetch_itinerary_date',
       lambda _conn: ITINERARY_DATE )
    monkeypatch.setattr(
+      ItineraryBuilder,
+      'build_current',
+      lambda *_args, **_kwargs: ITINERARY )
+   monkeypatch.setattr(
       ZooHoursProvider,
       'fetch_zoo_hours_record',
       lambda *_args, **_kwargs: ZOO_HOURS_RECORD )
@@ -999,7 +1023,7 @@ def Test_SetDepartureTime_TestOverflowWarning_ExpectOutsideHoursStatus(
       lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
    monkeypatch.setattr(
       VisitWindowOverflowIssueFinder,
-      'find_from_saved_itinerary',
+      'find_from_itinerary',
       lambda *_args, **_kwargs: [ overflow_reason ] )
 
    result = ItineraryCoordinator.set_departure_time( DEPARTURE_TIME )
@@ -1034,7 +1058,7 @@ def Test_SetDepartureTime_TestOverflowConfirmedDropAll_ExpectPersistedAndDropped
       lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
    monkeypatch.setattr(
       VisitWindowOverflowIssueFinder,
-      'find_from_saved_itinerary',
+      'find_from_itinerary',
       lambda *_args, **_kwargs: [ overflow_reason ] )
    monkeypatch.setattr(
       VisitWindowOverflowChangeApplier,
@@ -1106,7 +1130,7 @@ def Test_SetDepartureTime_TestOverflowConfirmedKeepBoth_ExpectArrivalAndDepartur
       lambda *_args, **_kwargs: ItineraryErrorType.SUCCESS )
    monkeypatch.setattr(
       VisitWindowOverflowIssueFinder,
-      'find_from_saved_itinerary',
+      'find_from_itinerary',
       lambda *_args, **_kwargs: [ overflow_reason ] )
    monkeypatch.setattr(
       VisitWindowOverflowChangeApplier,

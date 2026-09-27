@@ -2,10 +2,7 @@ import { ItineraryConfirmationRegistry } from './itineraryConfirmationRegistry.j
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItineraryService } from './itineraryService.js';
-import { ItineraryShape } from './itineraryShape.js';
-import { ItineraryValidationResult } from './itineraryValidationResult.js';
 import { PersistItineraryWarningSuppressor } from './persistItineraryWarningSuppressor.js';
-import { ItineraryDiff } from './wizard/itineraryDiff.js';
 
 export class ItineraryServiceTimeRunner {
    static createItineraryTimeChangeCancelledError() {
@@ -113,32 +110,21 @@ export class ItineraryServiceTimeRunner {
       throw new Error(ItineraryErrorTypes.resolveItineraryErrorMessage(initialResult.errorType));
    }
 
-   static buildValidatedTimeSetItinerary(previousItinerary, result) {
+   static buildValidatedTimeSetItinerary(result) {
       if (!result?.itinerary) {
          return null;
       }
 
       const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-      const timeDiff = ItineraryDiff.buildItineraryDiff(
-         ItineraryShape.normalizeItineraryDraft(previousItinerary),
-         normalizedItinerary,
-         {},
-         normalizedItinerary.itineraryConfig ?? {}
-      );
 
       normalizedItinerary.saveIssues = result.issues;
-      ItineraryValidationResult.applyItineraryDiffToValidation(normalizedItinerary, timeDiff);
 
       return normalizedItinerary;
    }
 
    static async setItineraryTimeAndDispatch(requestFn, timeValue) {
-      const previousItinerary = await ItineraryService.getItinerary();
       const result = await ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation(requestFn, timeValue);
-      const normalizedItinerary = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary(
-         previousItinerary,
-         result
-      );
+      const normalizedItinerary = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary(result);
 
       if (normalizedItinerary) {
          ItineraryService.dispatchItineraryUpdated(normalizedItinerary);

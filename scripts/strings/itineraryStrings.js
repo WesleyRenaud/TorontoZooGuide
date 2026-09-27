@@ -136,7 +136,7 @@ export class ItineraryStrings {
          scheduleOverrideSelectionTitle: 'Adjust Activity Times?',
          visitWindowOverflowTitle: 'Scheduled Items Outside Visit Hours',
          visitWindowOverflowMessage: (
-            'These items start before arrival or end after departure. Keep an item to expand that visit time, including walking time to or from the entrance. Dropped items will be removed from your itinerary.'
+            'Kept items stay on your itinerary, and visit hours expand to cover them. Dropped items are removed.'
          ),
          visitWindowOverflowArrivalEnd: 'Starts before arrival',
          visitWindowOverflowDepartureEnd: 'Ends after departure',

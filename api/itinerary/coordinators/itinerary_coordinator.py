@@ -294,10 +294,10 @@ class ItineraryCoordinator():
          return ItineraryTimeSetResult( status=validation_error )
 
       suppressed_warnings: list[ ItineraryErrorType ] = []
-      overflow_issues = VisitWindowOverflowIssueFinder.find_from_saved_itinerary(
+      overflow_issues = VisitWindowOverflowIssueFinder.find_from_itinerary(
          normalized_arrival_time,
          saved_itinerary.departure_time,
-         saved_itinerary )
+         cls._current_itinerary( conn ) )
 
       resolved_arrival_time = normalized_arrival_time
       resolved_departure_time = saved_itinerary.departure_time
@@ -384,10 +384,10 @@ class ItineraryCoordinator():
          return ItineraryTimeSetResult( status=validation_error )
 
       suppressed_warnings: list[ ItineraryErrorType ] = []
-      overflow_issues = VisitWindowOverflowIssueFinder.find_from_saved_itinerary(
+      overflow_issues = VisitWindowOverflowIssueFinder.find_from_itinerary(
          saved_itinerary.arrival_time,
          normalized_departure_time,
-         saved_itinerary )
+         cls._current_itinerary( conn ) )
 
       resolved_arrival_time = saved_itinerary.arrival_time
       resolved_departure_time = normalized_departure_time
