@@ -13,7 +13,7 @@ Release cycle notes for the first guest-ready cut of the Toronto Zoo Guide: map 
 
 Canonical suites live under [`docs/manual-tests/`](../../manual-tests/). Open the hub at [`docs/manual-tests/index.html`](../../manual-tests/index.html) in a real browser (not GitHub’s HTML preview).
 
-Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-20**, then **CON-01 → CON-15**.
+Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-21**, then **CON-01 → CON-15**.
 
 ### Map
 
@@ -35,7 +35,7 @@ Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-20**, then **C
 |----|-------|
 | ITIN-01 | Wizard happy path |
 | ITIN-02 | Date-only finish + Clear |
-| ITIN-03 | Arrival / departure / Early Admission |
+| ITIN-03 | Date-step times, Next vs Finish Short Visit, Day Planner + Early Admission |
 | ITIN-04 | Schedule module |
 | ITIN-05 | Rebuild / Unschedule all |
 | ITIN-06 | Off-display animal confirm |
@@ -53,6 +53,7 @@ Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-20**, then **C
 | ITIN-18 | **Attraction May Be Closed** |
 | ITIN-19 | Settings gear: suppressible warning toggles |
 | ITIN-20 | Zoomobile ride-viewable animals after rebuild |
+| ITIN-21 | Scheduled items outside visit hours (keep vs drop) |
 
 ### Console
 

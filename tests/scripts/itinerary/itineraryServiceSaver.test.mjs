@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { ItineraryClient } from '../../../scripts/api/itineraryClient.js';
 import { ItineraryDiff } from '../../../scripts/itinerary/wizard/itineraryDiff.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { ItineraryNormalizer } from '../../../scripts/itinerary/itineraryNormalizer.js';
@@ -17,11 +18,13 @@ test('Test_SaveItinerary_TestCancelledConfirmation_ExpectCancelledResult', async
    const originalPayload = ItineraryShape.toSetItineraryPayload;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
    const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations;
+   const originalDateRequest = ItineraryClient.getItineraryDateRequest;
    const date = '2026-06-15';
    const selectedExhibits = ['Africa'];
    const cancelled = { cancelled: true };
    ItineraryShape.toSetItineraryPayload = () => ({ date });
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: false });
+   ItineraryClient.getItineraryDateRequest = async () => ({ date });
    ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = async () => cancelled;
 
    try {
@@ -35,6 +38,7 @@ test('Test_SaveItinerary_TestCancelledConfirmation_ExpectCancelledResult', async
       ItineraryShape.toSetItineraryPayload = originalPayload;
       ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
       ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = originalConfirm;
+      ItineraryClient.getItineraryDateRequest = originalDateRequest;
    }
 });
 
@@ -43,12 +47,14 @@ test('Test_SaveItinerary_TestVisitTimeConfirmations_ExpectPayloadFlags', async (
    const originalPayload = ItineraryShape.toSetItineraryPayload;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
    const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations;
+   const originalDateRequest = ItineraryClient.getItineraryDateRequest;
    const date = '2026-06-15';
    const confirmingShortVisit = true;
    const confirmingEarlyAdmission = true;
    const payloads = [];
    ItineraryShape.toSetItineraryPayload = () => ({ date });
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: false });
+   ItineraryClient.getItineraryDateRequest = async () => ({ date });
    ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = async (payload) => {
       payloads.push(payload);
       return { cancelled: true };
@@ -66,6 +72,7 @@ test('Test_SaveItinerary_TestVisitTimeConfirmations_ExpectPayloadFlags', async (
       ItineraryShape.toSetItineraryPayload = originalPayload;
       ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
       ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = originalConfirm;
+      ItineraryClient.getItineraryDateRequest = originalDateRequest;
    }
 });
 
@@ -74,12 +81,14 @@ test('Test_SaveItinerary_TestErrorType_ExpectThrowsResolvedMessage', async () =>
    const originalPayload = ItineraryShape.toSetItineraryPayload;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
    const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations;
+   const originalDateRequest = ItineraryClient.getItineraryDateRequest;
    const originalSuccess = ItineraryErrorTypes.isItinerarySuccess;
    const originalResolve = ItineraryErrorTypes.resolveItineraryErrorMessage;
    const date = '2026-06-15';
    const message = 'save failed';
    ItineraryShape.toSetItineraryPayload = () => ({ date });
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: null });
+   ItineraryClient.getItineraryDateRequest = async () => ({ date });
    ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = async () => ({
       cancelled: false,
       result: { errorType: 'boom' },
@@ -97,16 +106,18 @@ test('Test_SaveItinerary_TestErrorType_ExpectThrowsResolvedMessage', async () =>
       ItineraryShape.toSetItineraryPayload = originalPayload;
       ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
       ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = originalConfirm;
+      ItineraryClient.getItineraryDateRequest = originalDateRequest;
       ItineraryErrorTypes.isItinerarySuccess = originalSuccess;
       ItineraryErrorTypes.resolveItineraryErrorMessage = originalResolve;
    }
 });
 
 
-test('Test_SaveItinerary_TestSuccess_ExpectNormalizedDispatch', async () => {
+test('Test_SaveItinerary_TestDateChanged_ExpectDiffAppliedAndDispatched', async () => {
    const originalPayload = ItineraryShape.toSetItineraryPayload;
    const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
    const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations;
+   const originalDateRequest = ItineraryClient.getItineraryDateRequest;
    const originalSuccess = ItineraryErrorTypes.isItinerarySuccess;
    const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
    const originalDraft = ItineraryShape.normalizeItineraryDraft;
@@ -121,6 +132,7 @@ test('Test_SaveItinerary_TestSuccess_ExpectNormalizedDispatch', async () => {
    const normalized = { date, itineraryConfig: { a: 1 } };
    ItineraryShape.toSetItineraryPayload = () => ({ date });
    ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: true });
+   ItineraryClient.getItineraryDateRequest = async () => ({ date: '2026-06-14' });
    ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = async (payload) => {
       assert.deepEqual(payload.selectedExhibits, []);
       assert.equal(payload.temp, true);
@@ -156,6 +168,7 @@ test('Test_SaveItinerary_TestSuccess_ExpectNormalizedDispatch', async () => {
       ItineraryShape.toSetItineraryPayload = originalPayload;
       ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
       ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = originalConfirm;
+      ItineraryClient.getItineraryDateRequest = originalDateRequest;
       ItineraryErrorTypes.isItinerarySuccess = originalSuccess;
       ItineraryNormalizer.normalizeItineraryFromApiResult = originalNormalize;
       ItineraryShape.normalizeItineraryDraft = originalDraft;
@@ -163,4 +176,48 @@ test('Test_SaveItinerary_TestSuccess_ExpectNormalizedDispatch', async () => {
       ItineraryValidationResult.applyItineraryDiffToValidation = originalApply;
       ItineraryService.dispatchItineraryUpdated = originalDispatch;
    }
+});
+
+
+test('Test_SaveItinerary_TestSameDate_ExpectNoDiff', async (t) => {
+   const originalPayload = ItineraryShape.toSetItineraryPayload;
+   const originalContext = ItinerarySearchContext.getItineraryDateSearchContext;
+   const originalDateRequest = ItineraryClient.getItineraryDateRequest;
+   const originalConfirm = ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations;
+   const originalSuccess = ItineraryErrorTypes.isItinerarySuccess;
+   const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
+   const originalDiff = ItineraryDiff.buildItineraryDiff;
+   const originalDispatch = ItineraryService.dispatchItineraryUpdated;
+   t.after(() => {
+      ItineraryShape.toSetItineraryPayload = originalPayload;
+      ItinerarySearchContext.getItineraryDateSearchContext = originalContext;
+      ItineraryClient.getItineraryDateRequest = originalDateRequest;
+      ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = originalConfirm;
+      ItineraryErrorTypes.isItinerarySuccess = originalSuccess;
+      ItineraryNormalizer.normalizeItineraryFromApiResult = originalNormalize;
+      ItineraryDiff.buildItineraryDiff = originalDiff;
+      ItineraryService.dispatchItineraryUpdated = originalDispatch;
+   });
+   const date = '2026-06-15';
+   const normalized = { date };
+   const diffCalls = [];
+   const dispatches = [];
+   ItineraryShape.toSetItineraryPayload = () => ({ date });
+   ItinerarySearchContext.getItineraryDateSearchContext = async () => ({ temp: true });
+   ItineraryClient.getItineraryDateRequest = async () => ({ date });
+   ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations = async () => ({
+      cancelled: false,
+      result: { errorType: 'success', issues: [] },
+      diffBaseline: null,
+   });
+   ItineraryErrorTypes.isItinerarySuccess = () => true;
+   ItineraryNormalizer.normalizeItineraryFromApiResult = () => normalized;
+   ItineraryDiff.buildItineraryDiff = (...args) => diffCalls.push(args);
+   ItineraryService.dispatchItineraryUpdated = (itinerary) => dispatches.push(itinerary);
+
+   const result = await ItineraryServiceSaver.saveItinerary({ date });
+
+   assert.equal(result, normalized);
+   assert.deepEqual(diffCalls, []);
+   assert.deepEqual(dispatches, [normalized]);
 });

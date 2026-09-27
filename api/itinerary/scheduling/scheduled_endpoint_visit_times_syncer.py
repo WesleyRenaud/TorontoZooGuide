@@ -29,8 +29,22 @@ class ScheduledEndpointVisitTimesSyncer():
          cls,
          conn: Types.Connection,
          itinerary: Itinerary ) -> None:
-      """Set arrival/departure from scheduled endpoints when fully scheduled."""
-      cls._apply_from_endpoints( conn, itinerary )
+      """Fill unset arrival/departure from scheduled endpoints when fully scheduled.
+
+      Times the guest already set are left alone.
+      """
+      if not cls._has_endpoints( itinerary ):
+         return
+
+      if not DateValues.normalize_schedule_time_key( itinerary.arrival_time ):
+         ItineraryTimeProvider.set_itinerary_arrival_time(
+            conn,
+            cls._endpoint_arrival_time( itinerary ) )
+
+      if not DateValues.normalize_schedule_time_key( itinerary.departure_time ):
+         ItineraryTimeProvider.set_itinerary_departure_time(
+            conn,
+            cls._endpoint_departure_time( itinerary ) )
 
 
    @classmethod
@@ -45,7 +59,17 @@ class ScheduledEndpointVisitTimesSyncer():
       from that item back to the entrance. Always overwrites when the day is fully
       scheduled so callers share one derivation.
       """
-      cls.seed_if_complete( conn, itinerary )
+      if not cls._has_endpoints( itinerary ):
+         return
+
+      arrival_time = cls._endpoint_arrival_time( itinerary )
+      departure_time = cls._endpoint_departure_time( itinerary )
+
+      if itinerary.arrival_time != arrival_time:
+         ItineraryTimeProvider.set_itinerary_arrival_time( conn, arrival_time )
+
+      if itinerary.departure_time != departure_time:
+         ItineraryTimeProvider.set_itinerary_departure_time( conn, departure_time )
 
 
    @classmethod
@@ -55,14 +79,17 @@ class ScheduledEndpointVisitTimesSyncer():
          *,
          previous_itinerary: Itinerary | None,
          current_itinerary: Itinerary ) -> None:
-      """Clear arrival/departure when the itinerary leaves a fully-scheduled state."""
+      """Clear arrival/departure when a fully-scheduled itinerary gains unscheduled guest items.
+
+      An itinerary left with nothing on it keeps the guest's times.
+      """
       if previous_itinerary is None:
          return
 
       if not cls.is_fully_scheduled( previous_itinerary ):
          return
 
-      if cls.is_fully_scheduled( current_itinerary ):
+      if not GuestItemScheduleStatusChecker.has_unscheduled_guest_items( current_itinerary ):
          return
 
       if DateValues.normalize_schedule_time_key( current_itinerary.arrival_time ):
@@ -73,31 +100,22 @@ class ScheduledEndpointVisitTimesSyncer():
 
 
    @classmethod
-   def _apply_from_endpoints(
-         cls,
-         conn: Types.Connection,
-         itinerary: Itinerary ) -> None:
+   def _has_endpoints( cls, itinerary: Itinerary ) -> bool:
       if not cls.is_fully_scheduled( itinerary ):
-         return
+         return False
 
-      earliest_start_seconds = TimeBlockBuilder.earliest_start_seconds( itinerary )
-      latest_end_seconds = TimeBlockBuilder.latest_end_seconds( itinerary )
+      return TimeBlockBuilder.latest_end_seconds( itinerary ) is not None
 
-      if earliest_start_seconds is None or latest_end_seconds is None:
-         return
 
-      arrival_seconds = (
-         earliest_start_seconds
+   @classmethod
+   def _endpoint_arrival_time( cls, itinerary: Itinerary ) -> Types.ScheduleTimeKey:
+      return DateValues.schedule_time_key_from_seconds(
+         TimeBlockBuilder.earliest_start_seconds( itinerary )
          - ScheduleItemTravelTimeCalculator.entrance_travel_seconds_to_earliest_item( itinerary ) )
-      departure_seconds = (
-         latest_end_seconds
+
+
+   @classmethod
+   def _endpoint_departure_time( cls, itinerary: Itinerary ) -> Types.ScheduleTimeKey:
+      return DateValues.schedule_time_key_from_seconds(
+         TimeBlockBuilder.latest_end_seconds( itinerary )
          + ScheduleItemTravelTimeCalculator.entrance_travel_seconds_from_latest_item( itinerary ) )
-      arrival_time = DateValues.schedule_time_key_from_seconds( arrival_seconds )
-      departure_time = DateValues.schedule_time_key_from_seconds(
-         departure_seconds )
-
-      if itinerary.arrival_time != arrival_time:
-         ItineraryTimeProvider.set_itinerary_arrival_time( conn, arrival_time )
-
-      if itinerary.departure_time != departure_time:
-         ItineraryTimeProvider.set_itinerary_departure_time( conn, departure_time )

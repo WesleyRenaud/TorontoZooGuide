@@ -15,6 +15,22 @@ import { Strings } from '../../../scripts/strings.js';
 installItineraryServiceTestHooks();
 
 
+function _withNoSavedItinerary(handler) {
+   return async (url, options) => {
+      if (url === '/get-itinerary-date') {
+         return {
+            ok: true,
+            status: 200,
+            statusText: 'OK',
+            text: async () => JSON.stringify({ date: null }),
+         };
+      }
+
+      return handler(url, options);
+   };
+}
+
+
 test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryIncludesSelectedExhibitsInTheBackend_ExpectOk', async () => {
    const date = '2026-06-15';
    const africaSavanna = 'Africa Savanna';
@@ -31,7 +47,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryIncludesSel
       StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify([africaSavanna, '  ', eurasia])
    );
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(JSON.parse(options.body), {
          date,
@@ -64,7 +80,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryIncludesSel
             reasons: [],
          }),
       };
-   };
+   });
 
    await ItineraryServiceSaver.saveItinerary(draft, { selectedExhibits });
 });
@@ -84,7 +100,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryOmitsSelect
       StorageKeys.SELECTED_EXHIBITS_KEY,
       JSON.stringify([africaSavanna])
    );
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(JSON.parse(options.body).selectedExhibits, []);
 
@@ -103,7 +119,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryOmitsSelect
             reasons: [],
          }),
       };
-   };
+   });
 
    await ItineraryServiceSaver.saveItinerary(draft);
 });
@@ -125,7 +141,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -160,7 +176,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
             },
          }),
       };
-   };
+   });
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
       date,
@@ -208,7 +224,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -241,7 +257,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
             },
          }),
       };
-   };
+   });
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
       date,
@@ -284,7 +300,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       },
       suppressed_error_types: [],
    };
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -318,7 +334,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
             },
          }),
       };
-   };
+   });
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
       date,
@@ -422,7 +438,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
       },
       suppressed_error_types: [],
    };
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -456,7 +472,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryConfirmsBef
             },
          }),
       };
-   };
+   });
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
       date,
@@ -506,7 +522,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -569,7 +585,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryResolvesSch
             },
          }),
       };
-   };
+   });
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
       date,
@@ -623,7 +639,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -686,7 +702,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
             },
          }),
       };
-   };
+   });
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
       date,
@@ -743,7 +759,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
    ItineraryErrorTypes.syncSuppressedItineraryErrorTypes({
       suppressedErrorTypes: itineraryConfig.suppressed_error_types,
    });
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -806,7 +822,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryPreservesSa
             },
          }),
       };
-   };
+   });
 
    const savePromise = ItineraryServiceSaver.saveItinerary({
       date,
@@ -837,7 +853,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
    const date = '2026-08-17';
    const name = 'Zoomobile';
    const addedAsAttraction = true;
-   globalThis.fetch = async (url, options) => {
+   globalThis.fetch = _withNoSavedItinerary(async (url, options) => {
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(JSON.parse(options.body).transportations, [{
          name,
@@ -865,7 +881,7 @@ test('Test_ItineraryServiceSave_TestItineraryServiceSaveSaveItineraryDoesNotDiff
             },
          }),
       };
-   };
+   });
 
    const result = await ItineraryServiceSaver.saveItinerary({
       date,

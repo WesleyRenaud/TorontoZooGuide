@@ -23,7 +23,7 @@ export class VisitWindowOverflowView {
    static buildItemImageSrc(item) {
       return RowPresenter.buildImageSrc(
          VisitWindowOverflowView.imageDirectoryForItem(item),
-         item?.name
+         item.name
       );
    }
 

@@ -1,3 +1,4 @@
+import { ItineraryClient } from '../api/itineraryClient.js';
 import { ItineraryErrorTypes } from './itineraryErrorTypes.js';
 import { ItineraryNormalizer } from './itineraryNormalizer.js';
 import { ItinerarySearchContext } from './itinerarySearchContext.js';
@@ -27,6 +28,7 @@ export class ItineraryServiceSaver {
          confirmingEarlyAdmission,
       };
 
+      const { date: savedDate } = await ItineraryClient.getItineraryDateRequest();
       const confirmationResult = await ItineraryServiceSaveConfirmer.requestSetItineraryWithConfirmations(basePayload);
 
       if (confirmationResult.cancelled) {
@@ -40,18 +42,23 @@ export class ItineraryServiceSaver {
       }
 
       const normalizedItinerary = ItineraryNormalizer.normalizeItineraryFromApiResult(result);
-      const saveDiff = ItineraryDiff.buildItineraryDiff(
-         ItineraryShape.normalizeItineraryDraft(diffBaseline ?? itinerary),
-         normalizedItinerary,
-         {},
-         normalizedItinerary.itineraryConfig ?? {}
-      );
 
       normalizedItinerary.saveIssues = result.issues;
-      ItineraryValidationResult.applyItineraryDiffToValidation(
-         normalizedItinerary,
-         saveDiff,
-         { adjustments: result.adjustments ?? [] });
+
+      if (normalizedItinerary.date !== savedDate) {
+         const saveDiff = ItineraryDiff.buildItineraryDiff(
+            ItineraryShape.normalizeItineraryDraft(diffBaseline ?? itinerary),
+            normalizedItinerary,
+            {},
+            normalizedItinerary.itineraryConfig ?? {}
+         );
+
+         ItineraryValidationResult.applyItineraryDiffToValidation(
+            normalizedItinerary,
+            saveDiff,
+            { adjustments: result.adjustments ?? [] });
+      }
+
       ItineraryService.dispatchItineraryUpdated(normalizedItinerary);
 
       return normalizedItinerary;

@@ -1,4 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
+import { OpenPickerTimeHelper } from './openPickerTimeHelper.js';
 import { ReadOpenPickerFormatter } from './readOpenPickerFormatter.js';
 
 export class TimePickerEnterHandler {
@@ -6,6 +7,15 @@ export class TimePickerEnterHandler {
       return ValueNormalizer.asTrimmedString(inputEl?.value)
          || ReadOpenPickerFormatter.readOpenPickerTime(instance)
          || '';
+   }
+
+   static resolvePickerControlsValue(inputEl, instance) {
+      // The hour/minute spinners only write back to the input on blur, so a
+      // freshly typed minute is visible in the controls but not the input.
+      return OpenPickerTimeHelper.readTimeFromPickerControls(
+         instance,
+         OpenPickerTimeHelper.getPickerDateFormat(instance)
+      ) || TimePickerEnterHandler.resolveOpenTimePickerValue(inputEl, instance);
    }
 
    static commitTimeToInput(time, instance, inputEl) {
@@ -24,7 +34,7 @@ export class TimePickerEnterHandler {
          return;
       }
 
-      const onEnter = (event) => {
+      const makeOnEnter = (resolveTime) => (event) => {
          if (event.key !== 'Enter') {
             return;
          }
@@ -32,7 +42,7 @@ export class TimePickerEnterHandler {
          event.preventDefault();
          event.stopImmediatePropagation();
 
-         const time = TimePickerEnterHandler.resolveOpenTimePickerValue(inputEl, instance);
+         const time = resolveTime(inputEl, instance);
 
          if (!time) {
             return;
@@ -43,7 +53,11 @@ export class TimePickerEnterHandler {
 
       if (!inputEl.__tzgTimeEnterWired) {
          inputEl.__tzgTimeEnterWired = true;
-         inputEl.addEventListener('keydown', onEnter, true);
+         inputEl.addEventListener(
+            'keydown',
+            makeOnEnter(TimePickerEnterHandler.resolveOpenTimePickerValue),
+            true
+         );
       }
 
       if (
@@ -51,7 +65,11 @@ export class TimePickerEnterHandler {
          && !instance.__tzgTimeEnterWired
       ) {
          instance.__tzgTimeEnterWired = true;
-         instance.calendarContainer.addEventListener('keydown', onEnter, true);
+         instance.calendarContainer.addEventListener(
+            'keydown',
+            makeOnEnter(TimePickerEnterHandler.resolvePickerControlsValue),
+            true
+         );
       }
    }
 }

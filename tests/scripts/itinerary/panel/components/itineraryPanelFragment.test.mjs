@@ -56,6 +56,27 @@ test('Test_GetItineraryPanelMountEl_TestPanel_ExpectElement', () => {
 });
 
 
+test('Test_GetItineraryConfirmationMountEl_TestWizardClosed_ExpectPanel', () => {
+   const panel = document.querySelector('.itinerary-panel');
+
+   const mount = ItineraryPanelFragment.getItineraryConfirmationMountEl();
+
+   assert.equal(mount, panel);
+});
+
+
+test('Test_GetItineraryConfirmationMountEl_TestWizardOpen_ExpectFlow', () => {
+   const flow = document.getElementById('itineraryFlow');
+   const overlay = document.createElement('div');
+   overlay.className = 'itin-overlay';
+   flow.appendChild(overlay);
+
+   const mount = ItineraryPanelFragment.getItineraryConfirmationMountEl();
+
+   assert.equal(mount, flow);
+});
+
+
 test('Test_CreateItineraryPopupLayout_TestMessageAndActions_ExpectStructure', () => {
    const popupClassName = 'tzg-confirm';
    const title = 'Heads up';

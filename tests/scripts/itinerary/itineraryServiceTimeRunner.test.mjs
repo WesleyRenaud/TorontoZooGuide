@@ -1,13 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ItineraryDiff } from '../../../scripts/itinerary/wizard/itineraryDiff.js';
 import { ItineraryErrorTypes } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { ItineraryNormalizer } from '../../../scripts/itinerary/itineraryNormalizer.js';
 import { ItineraryService } from '../../../scripts/itinerary/itineraryService.js';
 import { ItineraryServiceTimeRunner } from '../../../scripts/itinerary/itineraryServiceTimeRunner.js';
-import { ItineraryShape } from '../../../scripts/itinerary/itineraryShape.js';
-import { ItineraryValidationResult } from '../../../scripts/itinerary/itineraryValidationResult.js';
 import { ItineraryErrorType } from '../../../scripts/shared/enums/itineraryErrorType.js';
 import { EarlyAdmissionFragment } from '../../../scripts/itinerary/panel/earlyAdmissionFragment.js';
 import { ShortVisitFragment } from '../../../scripts/itinerary/panel/shortVisitFragment.js';
@@ -302,62 +299,39 @@ test('Test_SetItineraryTimeWithConfirmation_TestHardFail_ExpectRejected', async 
 
 
 test('Test_BuildValidatedTimeSetItinerary_TestNullResult_ExpectNull', () => {
-   const previousItinerary = {};
    const result = null;
 
-   const validated = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary(
-      previousItinerary,
-      result
-   );
+   const validated = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary(result);
 
    assert.equal(validated, null);
 });
 
 
-test('Test_BuildValidatedTimeSetItinerary_TestResult_ExpectNormalizedDiff', () => {
+test('Test_BuildValidatedTimeSetItinerary_TestResult_ExpectNormalizedWithIssues', (t) => {
    const originalNormalize = ItineraryNormalizer.normalizeItineraryFromApiResult;
-   const originalShape = ItineraryShape.normalizeItineraryDraft;
-   const originalDiff = ItineraryDiff.buildItineraryDiff;
-   const originalApply = ItineraryValidationResult.applyItineraryDiffToValidation;
-   const applies = [];
-   const issues = ['warn'];
-   const diff = { changed: true };
-   ItineraryNormalizer.normalizeItineraryFromApiResult = () => ({
-      animals: [],
-      itineraryConfig: { a: 1 },
-   });
-   ItineraryShape.normalizeItineraryDraft = (draft) => ({ ...draft, shaped: true });
-   ItineraryDiff.buildItineraryDiff = () => diff;
-   ItineraryValidationResult.applyItineraryDiffToValidation = (itinerary, nextDiff) => {
-      applies.push({ itinerary, diff: nextDiff });
-   };
-
-   try {
-      const validated = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary(
-         { previous: true },
-         { itinerary: { animals: [] }, issues }
-      );
-
-      assert.deepEqual(validated.saveIssues, issues);
-      assert.deepEqual(applies[Position.FIRST].diff, diff);
-   } finally {
+   t.after(() => {
       ItineraryNormalizer.normalizeItineraryFromApiResult = originalNormalize;
-      ItineraryShape.normalizeItineraryDraft = originalShape;
-      ItineraryDiff.buildItineraryDiff = originalDiff;
-      ItineraryValidationResult.applyItineraryDiffToValidation = originalApply;
-   }
+   });
+   const issues = ['warn'];
+   const normalized = { animals: [] };
+   ItineraryNormalizer.normalizeItineraryFromApiResult = () => normalized;
+
+   const validated = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary(
+      { itinerary: { animals: [] }, issues }
+   );
+
+   assert.equal(validated, normalized);
+   assert.deepEqual(validated.saveIssues, issues);
 });
 
 
 test('Test_SetItineraryTimeAndDispatch_TestValidated_ExpectDispatch', async () => {
-   const originalGet = ItineraryService.getItinerary;
    const originalSet = ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation;
    const originalBuild = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary;
    const originalDispatch = ItineraryService.dispatchItineraryUpdated;
    const dispatches = [];
    const validated = { validated: true };
    const timeValue = '10:00 AM';
-   ItineraryService.getItinerary = async () => ({ previous: true });
    ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation = async () => ({ itinerary: { ok: true } });
    ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = () => validated;
    ItineraryService.dispatchItineraryUpdated = (itinerary) => dispatches.push(itinerary);
@@ -371,7 +345,6 @@ test('Test_SetItineraryTimeAndDispatch_TestValidated_ExpectDispatch', async () =
       assert.equal(result, validated);
       assert.deepEqual(dispatches, [validated]);
    } finally {
-      ItineraryService.getItinerary = originalGet;
       ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation = originalSet;
       ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = originalBuild;
       ItineraryService.dispatchItineraryUpdated = originalDispatch;
@@ -380,13 +353,11 @@ test('Test_SetItineraryTimeAndDispatch_TestValidated_ExpectDispatch', async () =
 
 
 test('Test_SetItineraryTimeAndDispatch_TestUnvalidated_ExpectRawResult', async () => {
-   const originalGet = ItineraryService.getItinerary;
    const originalSet = ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation;
    const originalBuild = ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary;
    const originalDispatch = ItineraryService.dispatchItineraryUpdated;
    const rawResult = { itinerary: { ok: true } };
    const timeValue = '10:00 AM';
-   ItineraryService.getItinerary = async () => ({ previous: true });
    ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation = async () => rawResult;
    ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = () => null;
    ItineraryService.dispatchItineraryUpdated = () => {};
@@ -399,7 +370,6 @@ test('Test_SetItineraryTimeAndDispatch_TestUnvalidated_ExpectRawResult', async (
 
       assert.equal(result, rawResult);
    } finally {
-      ItineraryService.getItinerary = originalGet;
       ItineraryServiceTimeRunner.setItineraryTimeWithConfirmation = originalSet;
       ItineraryServiceTimeRunner.buildValidatedTimeSetItinerary = originalBuild;
       ItineraryService.dispatchItineraryUpdated = originalDispatch;

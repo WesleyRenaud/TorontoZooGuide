@@ -10,63 +10,75 @@
     },
     {
       "number": 2,
-      "name": "Valid times",
-      "do": "Set a sensible arrival before departure.",
-      "expect": "Times accepted; no blocking validation."
+      "name": "Date-step times",
+      "do": "From the bottom nav, open **Itinerary**. Use **Build Itinerary** / **Edit Itinerary**. On **Set Visit Date**, confirm **Arrival time** and **Departure time** are present.",
+      "expect": "The date step shows **Arrival time** and **Departure time** with the same labels as Day Planner."
     },
     {
       "number": 3,
-      "name": "Invalid order",
-      "do": "Set departure before arrival.",
-      "expect": "Validation bubble/error on arrival/departure."
+      "name": "Next does not prompt",
+      "do": "Set arrival **10:00 AM** and departure **11:00 AM**, then click **Next**.",
+      "expect": "The next wizard step appears. **Short Visit?**, **Early Admission Hours**, and **Scheduled Items Outside Visit Hours** do not appear."
     },
     {
       "number": 4,
-      "name": "Short visit",
-      "do": "With both arrival and departure set, change them to a visit shorter than **2 hours** (e.g. arrival **10:00 AM**, departure **11:00 AM**).",
+      "name": "Finish short visit",
+      "do": "Click **Finish** with those same times.",
       "expect": "**Short Visit?** confirmation appears."
     },
     {
       "number": 5,
-      "name": "Longer visit",
-      "do": "Change arrival and departure so the visit is at least **2 hours** (e.g. arrival **10:00 AM**, departure **2:00 PM**).",
-      "expect": "Times are kept. **Short Visit?** does not appear."
+      "name": "Cancel Finish short visit",
+      "do": "Click **Cancel** on **Short Visit?**.",
+      "expect": "The builder stays open. The itinerary is not saved with those times."
     },
     {
       "number": 6,
+      "name": "Confirm Finish short visit",
+      "do": "Click **Finish** again, then confirm **Short Visit?** (leave **Don't show this again** unchecked).",
+      "expect": "The itinerary saves. Day Planner shows arrival **10:00 AM** and departure **11:00 AM**."
+    },
+    {
+      "number": 7,
+      "name": "Invalid order",
+      "do": "On Day Planner, set **Arrival time** to **12:00 PM** while departure is **11:00 AM**.",
+      "expect": "Validation bubble: **Arrival time must be before departure.** Times stay **10:00 AM** / **11:00 AM**."
+    },
+    {
+      "number": 8,
+      "name": "Longer visit",
+      "do": "On Day Planner, set arrival **10:00 AM** and departure **2:00 PM**.",
+      "expect": "Times are kept. **Short Visit?** does not appear."
+    },
+    {
+      "number": 9,
       "name": "Early admission date",
       "do": "Via **Edit Itinerary** / **Set Visit Date**, pick a **today-or-future** visit date whose Day Planner shows **Early Admission** before **Zoo Opens** (seed weekends/holidays: Early Admission **9:00 AM**, Zoo Opens **9:30 AM**, through Labor Day). If no such date is selectable, mark **Blocked**.",
       "expect": "**Early Admission** appears on the timeline before **Zoo Opens** \u2014 or suite **Blocked** if early-admission season has ended."
     },
     {
-      "number": 7,
+      "number": 10,
       "name": "Arrival during early admission",
-      "do": "If not Blocked: set **Arrival time** to **9:00 AM** (before Zoo Opens). Keep departure at least **2 hours** later so **Short Visit?** does not appear.",
+      "do": "If not Blocked: on Day Planner, set **Arrival time** to **9:00 AM** (before Zoo Opens). Keep departure at least **2 hours** later so **Short Visit?** does not appear.",
       "expect": "**Early Admission Hours** confirmation appears (members/sensory message, with **Don't show this again**)."
     },
     {
-      "number": 8,
+      "number": 11,
       "name": "Cancel early admission",
       "do": "If not Blocked: click **Cancel** on that confirmation.",
-      "expect": "Arrival is not saved; the field returns to the previous time (or empty)."
+      "expect": "Arrival is not saved; the field returns to the previous time."
     },
     {
-      "number": 9,
+      "number": 12,
       "name": "Confirm early admission",
       "do": "If not Blocked: set **Arrival time** to **9:00 AM** again and click **Confirm**.",
       "expect": "Arrival **9:00 AM** is kept."
     },
     {
-      "number": 10,
+      "number": 13,
       "name": "Arrival after open",
       "do": "If not Blocked: set **Arrival time** to **10:00 AM** (at or after **Zoo Opens**).",
       "expect": "Arrival is kept. **Early Admission Hours** does not appear."
-    },
-    {
-      "number": 11,
-      "name": "Day Planner still usable",
-      "do": "Open Day Planner if items are scheduled.",
-      "expect": "Day Planner loads without error."
     }
   ]
 }

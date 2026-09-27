@@ -85,7 +85,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 |----|------|-------|
 | ITIN-01 | [json](itinerary/ITIN-01-wizard-happy-path.json) | Full wizard Finish |
 | ITIN-02 | [json](itinerary/ITIN-02-date-only-finish-and-clear.json) | Date-only finish + Clear |
-| ITIN-03 | [json](itinerary/ITIN-03-arrival-departure-early-admission.json) | Times + Early Admission. **Don’t show this again** is the same store as the itinerary settings gear (**ITIN-19**). |
+| ITIN-03 | [json](itinerary/ITIN-03-arrival-departure-early-admission.json) | Date-step times, Next (draft) vs Finish (Short Visit), Day Planner times + Early Admission. **Don’t show this again** is the same store as the itinerary settings gear (**ITIN-19**). |
 | ITIN-04 | [json](itinerary/ITIN-04-schedule-module.json) | Schedule module + pills |
 | ITIN-05 | [json](itinerary/ITIN-05-rebuild-and-unschedule-all.json) | Rebuild / Unschedule all |
 | ITIN-06 | [json](itinerary/ITIN-06-off-display-low-likelihood-confirm.json) | Off-display / low likelihood confirm |
@@ -103,6 +103,7 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | ITIN-18 | [json](itinerary/ITIN-18-closed-attraction-confirm.json) | **Attraction May Be Closed** |
 | ITIN-19 | [json](itinerary/ITIN-19-warning-settings.json) | Settings gear: Save, discard confirm, Short Visit / Early Admission / Add to Itinerary |
 | ITIN-20 | [json](itinerary/ITIN-20-zoomobile-ride-animals.json) | Rebuild adds Zoomobile-viewable animals (lime ring; hidden on List and Day Planner) |
+| ITIN-21 | [json](itinerary/ITIN-21-visit-window-overflow.json) | **Scheduled Items Outside Visit Hours**: Next vs Finish, pinch, walk, keep vs drop, Day Planner parity |
 
 ### Console (`console/`)
 
@@ -126,4 +127,4 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 
 ## Recommended run order
 
-MAP-01 → MAP-09, then ITIN-01 → ITIN-20, then CON-01 → CON-15.
+MAP-01 → MAP-09, then ITIN-01 → ITIN-21, then CON-01 → CON-15.

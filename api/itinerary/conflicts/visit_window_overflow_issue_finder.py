@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..data_access.saved_itinerary import SavedItinerary
+from ...models import Itinerary
 from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
@@ -47,59 +47,61 @@ class VisitWindowOverflowIssueFinder():
 
 
    @classmethod
-   def find_from_saved_itinerary(
+   def find_from_itinerary(
          cls,
          arrival_time: Types.ScheduleTimeKey,
          departure_time: Types.ScheduleTimeKey,
-         saved_itinerary: SavedItinerary ) -> list[ ItineraryResultReason ]:
+         itinerary: Itinerary ) -> list[ ItineraryResultReason ]:
       return cls.find(
          arrival_time,
          departure_time,
-         guardians_talks=cls._talks_from_saved_itinerary( saved_itinerary ),
-         wild_encounters=cls._encounters_from_saved_itinerary( saved_itinerary ),
-         attractions=cls._attractions_from_saved_itinerary( saved_itinerary ) )
+         guardians_talks=cls._talks_from_itinerary( itinerary ),
+         wild_encounters=cls._encounters_from_itinerary( itinerary ),
+         attractions=cls._attractions_from_itinerary( itinerary ) )
 
 
    @classmethod
-   def _talks_from_saved_itinerary(
+   def _talks_from_itinerary(
          cls,
-         saved_itinerary: SavedItinerary ) -> list[ GuardiansTalkDiff ]:
+         itinerary: Itinerary ) -> list[ GuardiansTalkDiff ]:
       return [
          GuardiansTalkDiff(
-            name=talk.talk_name,
+            name=talk.name,
             is_deleted=talk.is_deleted,
             start_time=talk.start_time,
-            end_time=talk.end_time )
-         for talk in saved_itinerary.guardians_talk_rows
+            end_time=talk.end_time,
+            location=talk.location )
+         for talk in itinerary.guardians_talks
       ]
 
 
    @classmethod
-   def _encounters_from_saved_itinerary(
+   def _encounters_from_itinerary(
          cls,
-         saved_itinerary: SavedItinerary ) -> list[ WildEncounterDiff ]:
+         itinerary: Itinerary ) -> list[ WildEncounterDiff ]:
       return [
          WildEncounterDiff(
-            name=encounter.wild_encounter,
+            name=encounter.name,
             is_deleted=encounter.is_deleted,
             start_time=encounter.start_time,
-            end_time=encounter.end_time )
-         for encounter in saved_itinerary.wild_encounter_rows
+            end_time=encounter.end_time,
+            meeting_spot=encounter.meeting_spot )
+         for encounter in itinerary.wild_encounters
       ]
 
 
    @classmethod
-   def _attractions_from_saved_itinerary(
+   def _attractions_from_itinerary(
          cls,
-         saved_itinerary: SavedItinerary ) -> list[ AttractionDiff ]:
+         itinerary: Itinerary ) -> list[ AttractionDiff ]:
       return [
          AttractionDiff(
-            name=attraction.attraction,
+            name=attraction.name,
             old_likelihood=attraction.old_likelihood,
-            new_likelihood=attraction.new_likelihood,
+            new_likelihood=attraction.likelihood,
             start_time=attraction.start_time,
             end_time=attraction.end_time )
-         for attraction in saved_itinerary.attraction_rows
+         for attraction in itinerary.attractions
       ]
 
 

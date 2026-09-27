@@ -67,6 +67,17 @@ test('Test_AreVisitTimesValid_TestReversed_ExpectFalse', () => {
 });
 
 
+test('Test_ResolveVisitTimesValidationError_TestReversedArrival_ExpectTimeOrderInvalid', () => {
+   const error = DateSelectorTimeFields.resolveVisitTimesValidationError(
+      _departureTime,
+      _arrivalTime,
+      _zooHours
+   );
+
+   assert.equal(error, Strings.itinerary.errors.timeOrderInvalid);
+});
+
+
 test('Test_Mount_TestMissingContainer_ExpectNoOp', () => {
    assert.doesNotThrow(() => {
       DateSelectorTimeFields.mount();
@@ -130,4 +141,32 @@ test('Test_Mount_TestValidationCallbacks_ExpectArrivalAndDepartureChecks', () =>
       departureInvalidMessage,
       dayPlannerStrings.departureTimeAfterArrivalInvalid
    );
+});
+
+
+test('Test_Mount_TestReversedArrival_ExpectTimeOrderInvalid', () => {
+   const containerEl = createDomNode('div', 'itin-date-time-fields');
+   const timeConfigs = [];
+
+   DateSelectorTimeFields.mount({
+      containerEl,
+      arrivalTime: _arrivalTime,
+      departureTime: _departureTime,
+      zooHours: _zooHours,
+      makeTimeInput: (config) => {
+         timeConfigs.push(config);
+         return createDomNode('label', 'itinerary-day-time-control', config.label);
+      },
+      getArrivalTime: () => _arrivalTime,
+      getDepartureTime: () => _departureTime,
+   });
+
+   const arrivalConfig = timeConfigs.at(Position.FIRST);
+   const reversedArrivalTime = _departureTime;
+
+   const isArrivalValid = arrivalConfig.validateTime(reversedArrivalTime);
+   const arrivalInvalidMessage = arrivalConfig.resolveInvalidMessage(reversedArrivalTime);
+
+   assert.equal(isArrivalValid, false);
+   assert.equal(arrivalInvalidMessage, Strings.itinerary.errors.timeOrderInvalid);
 });

@@ -16,10 +16,9 @@ export class VisitWindowOverflowFragment {
          bodyContent: content,
          confirmText: Strings.itinerary.confirmation.saveIssuesButton,
          cancelText: Strings.itinerary.actions.cancel,
-         mountEl: ItineraryPanelFragment.getItineraryPanelMountEl()
-            ?? document.body,
+         mountEl: ItineraryPanelFragment.getItineraryConfirmationMountEl(),
          onConfirm: () => {
-            onConfirm?.({
+            onConfirm({
                keptVisitWindowOverflowItems: getKeptItems(),
             });
          },

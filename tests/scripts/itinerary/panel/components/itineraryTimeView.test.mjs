@@ -246,28 +246,49 @@ test('Test_MakeItineraryTimeInput_TestOnChangeThrows_ExpectReject', async () => 
 });
 
 
-test('Test_MakeItineraryTimeInput_TestCancelledError_ExpectSilentReject', async () => {
+test('Test_MakeItineraryTimeInput_TestCancelledError_ExpectCommittedValueRestored', async (t) => {
    const deps = _installTimeInputDeps();
+   t.after(() => deps.restore());
+   const committedTime = '10:48 AM';
+   const field = ItineraryTimeView.makeItineraryTimeInput({
+      label: 'Arrival',
+      value: committedTime,
+      onChange: async () => {
+         const error = new Error('cancelled');
+         error.name = 'ItineraryTimeChangeCancelledError';
+         throw error;
+      },
+      clearAriaLabel: 'Clear',
+   });
 
-   try {
-      const field = ItineraryTimeView.makeItineraryTimeInput({
-         label: 'Departure',
-         value: '',
-         onChange: async () => {
-            const error = new Error('cancelled');
-            error.name = 'ItineraryTimeChangeCancelledError';
-            throw error;
-         },
-         invalidMessage: 'Departure time must be between opening and closing.',
-         clearAriaLabel: 'Clear',
-      });
-      await deps.getPickerOptions().onClose([], '11:00 AM', deps.flatpickrInstance);
+   await deps.getPickerOptions().onClose([], '11:30 AM', deps.flatpickrInstance);
 
-      assert.deepEqual(deps.bubble.showCalls, []);
-      assert.equal(field.querySelector('.itinerary-day-time-input').value, '');
-   } finally {
-      deps.restore();
-   }
+   assert.deepEqual(deps.bubble.showCalls, []);
+   assert.equal(field.querySelector('.itinerary-day-time-input').value, committedTime);
+});
+
+
+test('Test_MakeItineraryTimeInput_TestResubmitAfterCancel_ExpectOnChangeAgain', async (t) => {
+   const deps = _installTimeInputDeps();
+   t.after(() => deps.restore());
+   const typedTime = '11:30 AM';
+   const changes = [];
+   ItineraryTimeView.makeItineraryTimeInput({
+      label: 'Arrival',
+      value: '10:48 AM',
+      onChange: async (value) => {
+         changes.push(value);
+         const error = new Error('cancelled');
+         error.name = 'ItineraryTimeChangeCancelledError';
+         throw error;
+      },
+      clearAriaLabel: 'Clear',
+   });
+   await deps.getPickerOptions().onClose([], typedTime, deps.flatpickrInstance);
+
+   await deps.getPickerOptions().onClose([], typedTime, deps.flatpickrInstance);
+
+   assert.deepEqual(changes, [typedTime, typedTime]);
 });
 
 
