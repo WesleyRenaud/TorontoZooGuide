@@ -1535,6 +1535,14 @@
         {
           "kind": "animal",
           "key": [
+            "Mourning Dove",
+            "African Rainforest Pavilion",
+            null
+          ]
+        },
+        {
+          "kind": "animal",
+          "key": [
             "Naked Mole Rat",
             "African Rainforest Pavilion",
             null
@@ -1560,14 +1568,6 @@
           "kind": "animal",
           "key": [
             "South African Crested Porcupine",
-            "African Rainforest Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Speckled Mousebird",
             "African Rainforest Pavilion",
             null
           ]

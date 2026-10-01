@@ -329,6 +329,13 @@
     "include_all_viewing_spots": null
   },
   {
+    "species": "Mourning Dove",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "include_all_viewing_spots": null
+  },
+  {
     "species": "Red Panda",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
@@ -1079,13 +1086,6 @@
   },
   {
     "species": "South African Crested Porcupine",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
-    "species": "Speckled Mousebird",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
