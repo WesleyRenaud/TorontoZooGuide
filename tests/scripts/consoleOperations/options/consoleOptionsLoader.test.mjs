@@ -377,3 +377,44 @@ test('Test_LoadExhibitsForSpecies_TestClientResult_ExpectExhibits', async () => 
       ConsoleOperationsClient.getExhibitsForSpecies = originalGet;
    }
 });
+
+
+test('Test_LoadOffDisplayForSeasonExhibits_TestSpecies_ExpectSeasonOnlyPayload', async (t) => {
+   const species = 'Marabou Stork';
+   const exhibits = ['Africa Savanna'];
+   const originalGet = ConsoleOperationsClient.getOffDisplayExhibitOptions;
+   const payloads = [];
+   t.after(() => {
+      ConsoleOperationsClient.getOffDisplayExhibitOptions = originalGet;
+   });
+   ConsoleOperationsClient.getOffDisplayExhibitOptions = async (payload) => {
+      payloads.push(payload);
+      return { exhibits };
+   };
+
+   const loaded = await ConsoleOptionsLoader.loadOffDisplayForSeasonExhibits(species);
+
+   assert.deepEqual(loaded, exhibits);
+   assert.deepEqual(payloads, [{ species, forSeasonOnly: true }]);
+});
+
+
+test('Test_LoadOffDisplayForSeasonViewingScopes_TestSpeciesAndExhibit_ExpectSeasonOnlyPayload', async (t) => {
+   const species = 'Marabou Stork';
+   const exhibit = 'Africa Savanna';
+   const viewingScopes = [{ enclosureName: 'White Rhino Viewing', label: 'White Rhino Viewing' }];
+   const originalGet = ConsoleOperationsClient.getOffDisplayViewingScopeOptions;
+   const payloads = [];
+   t.after(() => {
+      ConsoleOperationsClient.getOffDisplayViewingScopeOptions = originalGet;
+   });
+   ConsoleOperationsClient.getOffDisplayViewingScopeOptions = async (payload) => {
+      payloads.push(payload);
+      return { viewingScopes };
+   };
+
+   const loaded = await ConsoleOptionsLoader.loadOffDisplayForSeasonViewingScopes({ species, exhibit });
+
+   assert.deepEqual(loaded, viewingScopes);
+   assert.deepEqual(payloads, [{ species, exhibit, forSeasonOnly: true }]);
+});

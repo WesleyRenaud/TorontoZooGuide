@@ -15,7 +15,8 @@ class AnimalStatusProvider():
          viewing_scope: AnimalViewingScope,
          start_date: Types.DateInput,
          end_date: Types.DateInput,
-         message: str ) -> None:
+         message: str,
+         is_off_display_for_season: bool ) -> None:
       cur.execute(
          """   INSERT INTO AnimalStatus (
                   SPECIES,
@@ -24,9 +25,10 @@ class AnimalStatusProvider():
                   IS_OFF_DISPLAY,
                   OFF_DISPLAY_START,
                   OFF_DISPLAY_END,
-                  OFF_DISPLAY_MESSAGE
+                  OFF_DISPLAY_MESSAGE,
+                  OFF_DISPLAY_FOR_SEASON
                )
-               VALUES (?, ?, ?, 1, ?, ?, ?);
+               VALUES (?, ?, ?, 1, ?, ?, ?, ?);
          """,
          (
             species,
@@ -35,6 +37,7 @@ class AnimalStatusProvider():
             start_date,
             end_date,
             message,
+            is_off_display_for_season,
          ) )
 
 
@@ -47,7 +50,8 @@ class AnimalStatusProvider():
          viewing_scopes: list[ AnimalViewingScope ],
          start_date: Types.DateInput,
          end_date: Types.DateInput,
-         message: str ) -> bool:
+         message: str,
+         is_off_display_for_season: bool ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -65,7 +69,8 @@ class AnimalStatusProvider():
                viewing_scope=viewing_scope,
                start_date=start_date,
                end_date=end_date,
-               message=message )
+               message=message,
+               is_off_display_for_season=is_off_display_for_season )
 
          conn.commit()
          return True

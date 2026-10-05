@@ -124,6 +124,7 @@ export class ConsoleStrings {
       eventLocationExample: 'Example: Front Courtyard',
       eventNameExample: 'Example: Conservation Carousel Ride Night',
       offDisplayReason: 'Enter the reason this animal is off display',
+      offDisplayForSeasonReason: 'Enter the reason this animal is off display for the season',
       optionalScheduleMessage: scheduleName => (
          `Enter an optional message for this ${scheduleName} schedule`
       ),
@@ -159,7 +160,9 @@ export class ConsoleStrings {
       giftShopOpeningSchedule: 'Set gift shop opening schedule',
       guardiansTalkSchedule: 'Set Meet the Guardians talk schedule',
       offDisplay: 'Set animal as off display',
+      offDisplayForSeason: 'Set animal as off display for the season',
       onDisplay: 'Set animal as on display',
+      onDisplayForSeason: 'Set animal as on display for the season',
       removeRestroomAlert: 'Remove restroom alert',
       removeViewingAlert: 'Remove animal viewing alert',
       removeVisibilitySchedule: 'Remove visibility schedule',
@@ -180,6 +183,12 @@ export class ConsoleStrings {
    static status = {
       animalOffDisplay: result => `${result.species} in ${result.exhibit} was set as off display.`,
       animalOnDisplay: result => `${result.species} in ${result.exhibit} was set as on display.`,
+      animalOffDisplayForSeason: result => (
+         `${result.species} in ${result.exhibit} was set as off display for the season.`
+      ),
+      animalOnDisplayForSeason: result => (
+         `${result.species} in ${result.exhibit} was set as on display for the season.`
+      ),
       closed: name => `${name} was set as closed.`,
       closureOverrideSaved: name => `${name} closure override was saved.`,
       drinkingFountainsClosed: 'Drinking fountains were set as closed.',

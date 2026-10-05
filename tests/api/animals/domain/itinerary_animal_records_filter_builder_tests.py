@@ -43,6 +43,7 @@ def _make_animal_viewability_record(
       off_display_message=None,
       off_display_start=None,
       off_display_end=None,
+      is_off_display_for_season=None,
       schedule_start_date=None,
       schedule_end_date=None,
       daily_start_time=None,

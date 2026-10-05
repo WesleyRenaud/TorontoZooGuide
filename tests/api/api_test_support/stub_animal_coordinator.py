@@ -90,24 +90,32 @@ class StubAnimalCoordinator():
       return [ self.animal_exhibit ]
 
 
-   def get_off_display_animal_options( self, exhibit: str | None = None ) -> list[ str ]:
+   def get_off_display_animal_options(
+         self,
+         exhibit: str | None,
+         for_season_only: bool ) -> list[ str ]:
       self.calls.append(
          (
             'get_off_display_animal_options',
             {
                'exhibit': exhibit,
+               'for_season_only': for_season_only,
             }
          )
       )
       return list( self.species_names )
 
 
-   def get_off_display_exhibit_options( self, species: str ) -> list[ str ]:
+   def get_off_display_exhibit_options(
+         self,
+         species: str,
+         for_season_only: bool ) -> list[ str ]:
       self.calls.append(
          (
             'get_off_display_exhibit_options',
             {
                'species': species,
+               'for_season_only': for_season_only,
             }
          )
       )
@@ -117,13 +125,15 @@ class StubAnimalCoordinator():
    def get_off_display_viewing_scope_options(
          self,
          species: str,
-         exhibit: str ) -> list[ AnimalViewingScope ]:
+         exhibit: str,
+         for_season_only: bool ) -> list[ AnimalViewingScope ]:
       self.calls.append(
          (
             'get_off_display_viewing_scope_options',
             {
                'species': species,
                'exhibit': exhibit,
+               'for_season_only': for_season_only,
             }
          )
       )

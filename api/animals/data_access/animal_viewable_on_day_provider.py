@@ -33,6 +33,7 @@ _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
                   s.OFF_DISPLAY_MESSAGE,
                   s.OFF_DISPLAY_START,
                   s.OFF_DISPLAY_END,
+                  s.OFF_DISPLAY_FOR_SEASON,
                   vs.SCHEDULE_START_DATE,
                   vs.SCHEDULE_END_DATE,
                   vs.DAILY_START_TIME,

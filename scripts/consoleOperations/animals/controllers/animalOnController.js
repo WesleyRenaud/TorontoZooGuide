@@ -5,7 +5,23 @@ import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
 
 export class AnimalOnController {
-   static createAnimalOnDisplayController({
+   static createAnimalOnDisplayController(refs) {
+      return AnimalOnController.createController(refs, {
+         successMessage: result => Strings.status.animalOnDisplay(result),
+         loadExhibits: ConsoleOptionsLoader.loadOffDisplayExhibits,
+         loadViewingScopes: ConsoleOptionsLoader.loadOffDisplayViewingScopes,
+      });
+   }
+
+   static createAnimalOnDisplayForSeasonController(refs) {
+      return AnimalOnController.createController(refs, {
+         successMessage: result => Strings.status.animalOnDisplayForSeason(result),
+         loadExhibits: ConsoleOptionsLoader.loadOffDisplayForSeasonExhibits,
+         loadViewingScopes: ConsoleOptionsLoader.loadOffDisplayForSeasonViewingScopes,
+      });
+   }
+
+   static createController({
       showButtonEl,
       panelEl,
       cancelButtonEl,
@@ -15,7 +31,11 @@ export class AnimalOnController {
       exhibitEl,
       viewingScopeEl,
       activatePanel,
-   } = {}) {
+   }, {
+      successMessage,
+      loadExhibits,
+      loadViewingScopes,
+   }) {
       return AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
          showButtonEl,
          panelEl,
@@ -33,10 +53,10 @@ export class AnimalOnController {
                viewingScopes,
             })
          ),
-         successMessage: result => Strings.status.animalOnDisplay(result),
-         loadExhibits: ConsoleOptionsLoader.loadOffDisplayExhibits,
-         loadExhibitsForSpecies: ConsoleOptionsLoader.loadOffDisplayExhibits,
-         loadViewingScopes: ConsoleOptionsLoader.loadOffDisplayViewingScopes,
+         successMessage,
+         loadExhibits,
+         loadExhibitsForSpecies: loadExhibits,
+         loadViewingScopes,
          loadAnimalViewingScopes: AnimalsClient.getAnimalViewingScopes,
       });
    }

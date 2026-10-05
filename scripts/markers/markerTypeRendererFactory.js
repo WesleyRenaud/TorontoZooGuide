@@ -12,6 +12,11 @@ export class MarkerTypeRendererFactory {
 
    static CLOSED_RESTROOM_ICON_TOKEN = 'closed';
 
+   static OFF_DISPLAY_FOR_SEASON_VISUAL = Object.freeze({
+      colour: '#9fd3f0',
+      iconToken: 'off-display',
+   });
+
    static FIRST_AID_AND_FAMILY_CENTER_TYPE = 'First Aid & Family Center';
 
    static GENERIC_ICON_PATHS = Object.freeze({
@@ -128,18 +133,30 @@ export class MarkerTypeRendererFactory {
       };
    }
 
+   static getAnimalVisual(animal) {
+      if (animal?.is_off_display_for_season) {
+         return MarkerTypeRendererFactory.OFF_DISPLAY_FOR_SEASON_VISUAL;
+      }
+
+      const { colour } = MarkerVisualHelper.getLikelihoodVisual(animal?.likelihood);
+
+      return {
+         colour,
+         iconToken: colour.replace('#', ''),
+      };
+   }
+
    static renderAnimalMarker(markerEl, items) {
       const animal = items[0];
       const count = items.length;
-      const { colour } = MarkerVisualHelper.getLikelihoodVisual(animal?.likelihood);
-      const colourForUrl = String(colour || '').replace('#', '');
+      const { colour, iconToken } = MarkerTypeRendererFactory.getAnimalVisual(animal);
 
       if (count > 1) {
          MarkerVisualHelper.applyCountMarker(markerEl, count, colour);
       } else {
          MarkerVisualHelper.applyBackgroundImage(
             markerEl,
-            IconUrlProvider.getAnimalIconUrl(animal?.exhibit, animal?.species, colourForUrl),
+            IconUrlProvider.getAnimalIconUrl(animal?.exhibit, animal?.species, iconToken),
             colour
          );
       }

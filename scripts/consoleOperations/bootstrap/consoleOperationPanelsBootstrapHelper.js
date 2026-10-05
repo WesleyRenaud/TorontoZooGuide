@@ -1,4 +1,6 @@
+import { OffDisplayForSeasonView } from '../animals/panels/offDisplayForSeasonView.js';
 import { OffDisplayView } from '../animals/panels/offDisplayView.js';
+import { OnDisplayForSeasonView } from '../animals/panels/onDisplayForSeasonView.js';
 import { OnDisplayView } from '../animals/panels/onDisplayView.js';
 import { RemoveViewingAlertView } from '../animals/panels/removeViewingAlertView.js';
 import { RemoveVisibilityScheduleView } from '../animals/panels/removeVisibilityScheduleView.js';
@@ -42,6 +44,8 @@ export class ConsoleOperationPanelsBootstrapHelper {
    animals: [
       OffDisplayView.createOffDisplayPanel,
       OnDisplayView.createOnDisplayPanel,
+      OffDisplayForSeasonView.createOffDisplayForSeasonPanel,
+      OnDisplayForSeasonView.createOnDisplayForSeasonPanel,
       VisibilityScheduleView.createVisibilitySchedulePanel,
       RemoveVisibilityScheduleView.createRemoveVisibilitySchedulePanel,
       ViewingAlertView.createViewingAlertPanel,

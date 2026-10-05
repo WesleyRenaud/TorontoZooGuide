@@ -246,7 +246,7 @@ def Test_GetOffDisplayAnimalOptions_TestHttpRequest_ExpectMapsExhibitAndSpeciesR
       stub_animal_coordinator: StubAnimalCoordinator ) -> None:
    handler = make_handler(
       '/get-off-display-animal-options',
-      { 'exhibit': ANIMAL_EXHIBIT }
+      { 'exhibit': ANIMAL_EXHIBIT, 'forSeasonOnly': True }
    )
 
    server.HttpRequestHandler.do_POST( handler )
@@ -260,6 +260,7 @@ def Test_GetOffDisplayAnimalOptions_TestHttpRequest_ExpectMapsExhibitAndSpeciesR
          'get_off_display_animal_options',
          {
             'exhibit': ANIMAL_EXHIBIT,
+            'for_season_only': True,
          }
       )
    ]
@@ -280,6 +281,7 @@ def Test_GetOffDisplayAnimalOptions_TestDirectCallWithoutExhibit_ExpectCoordinat
          'get_off_display_animal_options',
          {
             'exhibit': None,
+            'for_season_only': False,
          }
       )
    ]
@@ -295,7 +297,9 @@ def Test_GetOffDisplayExhibitOptions_TestDirectCall_ExpectWritesExhibitsFromCoor
    assert handler.json_response() == {
       'exhibits': [ ANIMAL_EXHIBIT ],
    }
-   assert stub_animal_coordinator.calls == [ ( 'get_off_display_exhibit_options', { 'species': None } ) ]
+   assert stub_animal_coordinator.calls == [
+      ( 'get_off_display_exhibit_options', { 'species': None, 'for_season_only': False } ),
+   ]
 
 
 def Test_GetOffDisplayExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoordinator(
@@ -308,14 +312,16 @@ def Test_GetOffDisplayExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoo
    assert response_json( handler ) == {
       'exhibits': [ ANIMAL_EXHIBIT ],
    }
-   assert stub_animal_coordinator.calls == [ ( 'get_off_display_exhibit_options', { 'species': None } ) ]
+   assert stub_animal_coordinator.calls == [
+      ( 'get_off_display_exhibit_options', { 'species': None, 'for_season_only': False } ),
+   ]
 
 
 def Test_GetOffDisplayExhibitOptions_TestHttpRequestWithSpecies_ExpectMapsSpecies(
       stub_animal_coordinator: StubAnimalCoordinator ) -> None:
    handler = make_handler(
       '/get-off-display-exhibit-options',
-      { 'species': ANIMAL_NAME }
+      { 'species': ANIMAL_NAME, 'forSeasonOnly': True }
    )
 
    server.HttpRequestHandler.do_POST( handler )
@@ -329,6 +335,7 @@ def Test_GetOffDisplayExhibitOptions_TestHttpRequestWithSpecies_ExpectMapsSpecie
          'get_off_display_exhibit_options',
          {
             'species': ANIMAL_NAME,
+            'for_season_only': True,
          }
       )
    ]
@@ -338,7 +345,7 @@ def Test_GetOffDisplayViewingScopeOptions_TestHttpRequest_ExpectViewingScopesRes
       stub_animal_coordinator: StubAnimalCoordinator ) -> None:
    handler = make_handler(
       '/get-off-display-viewing-scope-options',
-      { 'species': ANIMAL_NAME, 'exhibit': ANIMAL_EXHIBIT }
+      { 'species': ANIMAL_NAME, 'exhibit': ANIMAL_EXHIBIT, 'forSeasonOnly': True }
    )
 
    server.HttpRequestHandler.do_POST( handler )
@@ -356,6 +363,7 @@ def Test_GetOffDisplayViewingScopeOptions_TestHttpRequest_ExpectViewingScopesRes
          {
             'species': ANIMAL_NAME,
             'exhibit': ANIMAL_EXHIBIT,
+            'for_season_only': True,
          }
       )
    ]
@@ -555,7 +563,8 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse
          'viewingScopes': [ 'Male Herd' ],
          'startDate': OFF_DISPLAY_START_DATE,
          'endDate': OFF_DISPLAY_END_DATE,
-         'message': OFF_DISPLAY_MESSAGE
+         'message': OFF_DISPLAY_MESSAGE,
+         'isOffDisplayForSeason': True
       }
    )
 
@@ -575,7 +584,8 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse
             ],
             'start_date': OFF_DISPLAY_START_DATE,
             'end_date': OFF_DISPLAY_END_DATE,
-            'message': OFF_DISPLAY_MESSAGE
+            'message': OFF_DISPLAY_MESSAGE,
+            'is_off_display_for_season': True
          }
       )
    ]

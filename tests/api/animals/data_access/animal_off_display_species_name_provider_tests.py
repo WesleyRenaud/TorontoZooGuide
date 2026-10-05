@@ -23,6 +23,7 @@ CREATE TABLE AnimalStatus (
    OFF_DISPLAY_START    TEXT,
    OFF_DISPLAY_END      TEXT,
    OFF_DISPLAY_MESSAGE  TEXT,
+   OFF_DISPLAY_FOR_SEASON INTEGER NOT NULL DEFAULT 0,
    PRIMARY KEY ( SPECIES, EXHIBIT, VIEWING_SCOPE )
 );
 """
@@ -46,6 +47,7 @@ def _insert_status(
       exhibit: str,
       viewing_scope: str = 'all',
       is_off_display: int = 1,
+      is_off_display_for_season: int = 0,
       start_date: str | None,
       end_date: str | None ) -> None:
    conn.execute(
@@ -56,9 +58,10 @@ def _insert_status(
                IS_OFF_DISPLAY,
                OFF_DISPLAY_START,
                OFF_DISPLAY_END,
-               OFF_DISPLAY_MESSAGE
+               OFF_DISPLAY_MESSAGE,
+               OFF_DISPLAY_FOR_SEASON
             )
-            VALUES ( ?, ?, ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
       """,
       (
          species,
@@ -68,6 +71,7 @@ def _insert_status(
          start_date,
          end_date,
          'Off display.',
+         is_off_display_for_season,
       ) )
    conn.commit()
 
@@ -76,7 +80,8 @@ def Test_FetchOffDisplaySpeciesNames_TestEmpty_ExpectEmptyList(
       off_display_species_conn: sqlite3.Connection ) -> None:
    off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert off_display_species_names == []
 
@@ -104,7 +109,8 @@ def Test_FetchOffDisplaySpeciesNames_TestCurrentAndFuture_ExpectIncluded(
 
    off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert off_display_species_names == [ LION, TIGER, GIRAFFE ]
 
@@ -127,7 +133,8 @@ def Test_FetchOffDisplaySpeciesNames_TestExpiredAndOnDisplay_ExpectExcluded(
 
    off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert off_display_species_names == []
 
@@ -143,7 +150,8 @@ def Test_FetchOffDisplaySpeciesNames_TestEndingToday_ExpectIncluded(
 
    off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert off_display_species_names == [ LION ]
 
@@ -167,7 +175,8 @@ def Test_FetchOffDisplaySpeciesNames_TestDuplicateScopes_ExpectDistinctSpecies(
 
    off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
       off_display_species_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert off_display_species_names == [ LION ]
 
@@ -190,6 +199,56 @@ def Test_FetchOffDisplaySpeciesNamesInExhibit_TestMatchingExhibit_ExpectMatching
    off_display_species_names_in_exhibit = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names_in_exhibit(
       off_display_species_conn,
       TODAY,
-      SAVANNA )
+      SAVANNA,
+      for_season_only=False )
 
    assert off_display_species_names_in_exhibit == [ LION ]
+
+
+def Test_FetchOffDisplaySpeciesNames_TestForSeasonOnly_ExpectSeasonSpeciesOnly(
+      off_display_species_conn: sqlite3.Connection ) -> None:
+   _insert_status(
+      off_display_species_conn,
+      species=LION,
+      exhibit=SAVANNA,
+      start_date='2026-09-01',
+      end_date=None )
+   _insert_status(
+      off_display_species_conn,
+      species=TIGER,
+      exhibit=EURASIA,
+      is_off_display_for_season=1,
+      start_date='2026-09-01',
+      end_date=None )
+
+   off_display_species_names = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
+      off_display_species_conn,
+      TODAY,
+      for_season_only=True )
+
+   assert off_display_species_names == [ TIGER ]
+
+
+def Test_FetchOffDisplaySpeciesNamesInExhibit_TestForSeasonOnly_ExpectSeasonSpeciesOnly(
+      off_display_species_conn: sqlite3.Connection ) -> None:
+   _insert_status(
+      off_display_species_conn,
+      species=LION,
+      exhibit=SAVANNA,
+      start_date='2026-09-01',
+      end_date=None )
+   _insert_status(
+      off_display_species_conn,
+      species=GIRAFFE,
+      exhibit=SAVANNA,
+      is_off_display_for_season=1,
+      start_date='2026-09-01',
+      end_date=None )
+
+   off_display_species_names_in_exhibit = AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names_in_exhibit(
+      off_display_species_conn,
+      TODAY,
+      SAVANNA,
+      for_season_only=True )
+
+   assert off_display_species_names_in_exhibit == [ GIRAFFE ]

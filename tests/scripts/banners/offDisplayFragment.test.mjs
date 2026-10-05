@@ -106,3 +106,29 @@ test('Test_CreateOffDisplayBanner_TestPlannedOverridesZoomobileOnly_ExpectPlanne
    );
    assert.equal(bannerEl.querySelectorAll('.off-display-closed-message').length, Position.SECOND);
 });
+
+
+test('Test_CreateOffDisplayBanner_TestOffDisplayForSeason_ExpectSeasonStyle', () => {
+   const banner = OffDisplayFragment.createOffDisplayBanner();
+
+   banner.sync({
+      off_display_message: 'The African Lion is off display for the season.',
+      is_off_display_for_season: true,
+   });
+   const bannerEl = document.body.children.at(Position.LAST);
+
+   assert.equal(bannerEl.classList.contains('off-display-closed-banner--season'), true);
+});
+
+
+test('Test_CreateOffDisplayBanner_TestTemporarilyOffDisplay_ExpectNoSeasonStyle', () => {
+   const banner = OffDisplayFragment.createOffDisplayBanner();
+
+   banner.sync({
+      off_display_message: 'Temporarily off display.',
+      is_off_display_for_season: false,
+   });
+   const bannerEl = document.body.children.at(Position.LAST);
+
+   assert.equal(bannerEl.classList.contains('off-display-closed-banner--season'), false);
+});

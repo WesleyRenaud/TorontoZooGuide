@@ -1,0 +1,66 @@
+{
+  "id": "CON-16",
+  "title": "Animal off/on display for the season",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open off-for-season op",
+      "do": "Select **Set animal as off display for the season**.",
+      "expect": "Off display for the season form opens with **Exhibit**, **Species**, **Start date**, **Last day** and **Reason**."
+    },
+    {
+      "number": 2,
+      "name": "Unique species fills exhibit",
+      "do": "In **Species**, type **African Lion** and select it from the suggestions.",
+      "expect": "**African Lion** stays selected. **Exhibit** fills with **Africa Savanna**. **Viewing scope** is not shown."
+    },
+    {
+      "number": 3,
+      "name": "Submit with blank reason",
+      "do": "Leave **Start date**, **Last day** and **Reason** blank. Click **Save**.",
+      "expect": "Success that **African Lion** in **Africa Savanna** was set as off display for the season."
+    },
+    {
+      "number": 4,
+      "name": "Map without include",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. Leave **Include off display animals** unchecked.",
+      "expect": "**African Lion** marker is absent."
+    },
+    {
+      "number": 5,
+      "name": "Winter-blue marker",
+      "do": "Enable **Include off display animals**.",
+      "expect": "**African Lion** marker appears with a light winter-blue background. Click it and the message reads **The African Lion is off display for the season.**"
+    },
+    {
+      "number": 6,
+      "name": "Regular off display keeps likelihood colour",
+      "do": "In Console, use **Set animal as off display** for **Cheetah** in **Africa Savanna**, then return to the map with **Include off display animals** enabled.",
+      "expect": "**Cheetah** uses its usual likelihood colour, not winter blue. Only season off-display animals are winter blue."
+    },
+    {
+      "number": 7,
+      "name": "On-for-season lists season only",
+      "do": "In Console, open **Set animal as on display for the season**. Leave **Exhibit** empty. In **Species**, type **Cheetah**, then **African Lion**.",
+      "expect": "**Cheetah** is not suggested because it is not off for the season. **African Lion** is suggested; choosing it fills **Exhibit** with **Africa Savanna**."
+    },
+    {
+      "number": 8,
+      "name": "Submit on for season",
+      "do": "Click **Save**.",
+      "expect": "Success that **African Lion** in **Africa Savanna** was set as on display for the season."
+    },
+    {
+      "number": 9,
+      "name": "Regular on display cleanup",
+      "do": "Open **Set animal as on display**. Select **Cheetah** with **Exhibit** **Africa Savanna** and click **Save**.",
+      "expect": "Success that **Cheetah** in **Africa Savanna** was set as on display."
+    },
+    {
+      "number": 10,
+      "name": "Map restored",
+      "do": "From the bottom nav, return to **Map** on **Specific Map** today with **Include off display animals** unchecked.",
+      "expect": "**African Lion** and **Cheetah** show as normal on-display markers again."
+    }
+  ]
+}

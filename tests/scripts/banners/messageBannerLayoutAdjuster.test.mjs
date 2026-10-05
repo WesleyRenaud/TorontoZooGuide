@@ -40,6 +40,15 @@ test('Test_CreateWarningIcon_TestDefaults_ExpectSvg', () => {
 });
 
 
+test('Test_CreateSnowflakeIcon_TestDefaults_ExpectSvg', () => {
+   const icon = MessageBannerLayoutAdjuster.createSnowflakeIcon();
+
+   assert.equal(icon.namespaceURI, MessageBannerLayoutAdjuster.SVG_NS);
+   assert.equal(icon.getAttribute('class'), 'off-display-snowflake-icon');
+   assert.equal(icon.children[0].getAttribute('d'), MessageBannerLayoutAdjuster.SNOWFLAKE_PATH);
+});
+
+
 test('Test_GetDesktopWidthRange_TestViewport_ExpectClamped', () => {
    const viewportWidth = 800;
    window.innerWidth = viewportWidth;

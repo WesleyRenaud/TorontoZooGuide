@@ -43,6 +43,8 @@ export class ConsoleControllersBootstrapHelper {
    static ANIMAL_SPECIES_AUTOCOMPLETE_KEYS = [
       'offDisplay',
       'onDisplay',
+      'offDisplayForSeason',
+      'onDisplayForSeason',
       'visibilitySchedule',
       'removeVisibilitySchedule',
       'viewingAlert',
@@ -50,6 +52,7 @@ export class ConsoleControllersBootstrapHelper {
    ];
    static ANIMAL_SPECIES_SOURCE_METHOD_BY_KEY = {
       onDisplay: 'createOffDisplayAnimalSpeciesSource',
+      onDisplayForSeason: 'createOffDisplayForSeasonAnimalSpeciesSource',
       removeVisibilitySchedule: 'createVisibilityScheduleAnimalSpeciesSource',
       removeViewingAlert: 'createViewingAlertAnimalSpeciesSource',
    };
@@ -61,6 +64,14 @@ export class ConsoleControllersBootstrapHelper {
    {
       createController: AnimalOnController.createAnimalOnDisplayController,
       getRefs: refs => refs.animals.onDisplay,
+   },
+   {
+      createController: AnimalOffController.createAnimalOffDisplayForSeasonController,
+      getRefs: refs => refs.animals.offDisplayForSeason,
+   },
+   {
+      createController: AnimalOnController.createAnimalOnDisplayForSeasonController,
+      getRefs: refs => refs.animals.onDisplayForSeason,
    },
    {
       createController: AnimalVisibilityController.createAnimalVisibilityScheduleController,

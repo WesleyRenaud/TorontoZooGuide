@@ -20,7 +20,8 @@ def Test_Build_TestCustomMessage_ExpectMappedStatus() -> None:
       viewing_scopes=[ OUTDOOR_YARD ],
       start_date=START_DATE,
       end_date=END_DATE,
-      message=CUSTOM_MESSAGE )
+      message=CUSTOM_MESSAGE,
+      is_off_display_for_season=False )
 
    assert status.species == SPECIES
    assert status.exhibit == EXHIBIT
@@ -28,6 +29,7 @@ def Test_Build_TestCustomMessage_ExpectMappedStatus() -> None:
    assert status.start_date == START_DATE
    assert status.end_date == END_DATE
    assert status.message == CUSTOM_MESSAGE
+   assert status.is_off_display_for_season is False
 
 
 def Test_Build_TestMissingMessage_ExpectDefaultGuestMessage() -> None:
@@ -39,9 +41,26 @@ def Test_Build_TestMissingMessage_ExpectDefaultGuestMessage() -> None:
       viewing_scopes=[ unnamed_scope ],
       start_date=START_DATE,
       end_date=None,
-      message='' )
+      message='',
+      is_off_display_for_season=False )
 
    assert status.end_date is None
    assert status.message == AppStringProvider.format(
       'guestStatus.animals.temporarilyOffDisplay',
+      species=SPECIES )
+
+
+def Test_Build_TestMissingMessageForSeason_ExpectSeasonGuestMessage() -> None:
+   status = AnimalOffDisplayStatusBuilder.build(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      viewing_scopes=[ OUTDOOR_YARD ],
+      start_date=START_DATE,
+      end_date=END_DATE,
+      message='',
+      is_off_display_for_season=True )
+
+   assert status.is_off_display_for_season is True
+   assert status.message == AppStringProvider.format(
+      'guestStatus.animals.offDisplayForSeason',
       species=SPECIES )

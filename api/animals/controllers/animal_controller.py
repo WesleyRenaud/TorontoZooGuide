@@ -110,7 +110,8 @@ class AnimalController():
       data = handler._read_json_body()
 
       species = AnimalCoordinator.get_off_display_animal_options(
-         exhibit=data.get( 'exhibit' ) )
+         exhibit=data.get( 'exhibit' ),
+         for_season_only=bool( data.get( 'forSeasonOnly' ) ) )
 
       handler._write_json( {
          'species': species,
@@ -122,7 +123,8 @@ class AnimalController():
       data = handler._read_json_body()
 
       exhibits = AnimalCoordinator.get_off_display_exhibit_options(
-         species=data.get( 'species' ) )
+         species=data.get( 'species' ),
+         for_season_only=bool( data.get( 'forSeasonOnly' ) ) )
 
       handler._write_json( {
          'exhibits': exhibits,
@@ -135,7 +137,8 @@ class AnimalController():
 
       viewing_scopes = AnimalCoordinator.get_off_display_viewing_scope_options(
          species=data.get( 'species' ),
-         exhibit=data.get( 'exhibit' ) )
+         exhibit=data.get( 'exhibit' ),
+         for_season_only=bool( data.get( 'forSeasonOnly' ) ) )
 
       handler._write_json( {
          'viewingScopes': [
@@ -202,6 +205,7 @@ class AnimalController():
       end_date = data.get( 'endDate' )
       message = data.get( 'message' )
       viewing_scopes = AnimalViewingScopeMapper.map_payload( data.get( 'viewingScopes' ) )
+      is_off_display_for_season = bool( data.get( 'isOffDisplayForSeason' ) )
 
       success = AnimalCoordinator.set_animal_as_off_display(
          species=species,
@@ -209,7 +213,8 @@ class AnimalController():
          start_date=start_date,
          end_date=end_date,
          message=message,
-         viewing_scopes=viewing_scopes )
+         viewing_scopes=viewing_scopes,
+         is_off_display_for_season=is_off_display_for_season )
 
       response = {
          'success': success,

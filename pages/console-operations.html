@@ -70,11 +70,35 @@
 
                      <button
                         type="button"
+                        id="showOffDisplayForSeasonForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="offDisplayForSeasonPanel"
+                     >
+                        <span class="console-operations-menu-btn-number">3</span>
+                        <span class="console-operations-menu-btn-label">
+                           {{ panelTitles.offDisplayForSeason }}
+                        </span>
+                     </button>
+
+                     <button
+                        type="button"
+                        id="showOnDisplayForSeasonForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="onDisplayForSeasonPanel"
+                     >
+                        <span class="console-operations-menu-btn-number">4</span>
+                        <span class="console-operations-menu-btn-label">
+                           {{ panelTitles.onDisplayForSeason }}
+                        </span>
+                     </button>
+
+                     <button
+                        type="button"
                         id="showVisibilityScheduleForm"
                         class="console-operations-menu-btn"
                         data-panel-target="visibilitySchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">3</span>
+                        <span class="console-operations-menu-btn-number">5</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.visibilitySchedule }}
                         </span>
@@ -86,7 +110,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="removeVisibilitySchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">4</span>
+                        <span class="console-operations-menu-btn-number">6</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.removeVisibilitySchedule }}
                         </span>
@@ -98,7 +122,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="viewingAlertPanel"
                      >
-                        <span class="console-operations-menu-btn-number">5</span>
+                        <span class="console-operations-menu-btn-number">7</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.viewingAlert }}
                         </span>
@@ -110,7 +134,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="removeViewingAlertPanel"
                      >
-                        <span class="console-operations-menu-btn-number">6</span>
+                        <span class="console-operations-menu-btn-number">8</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.removeViewingAlert }}
                         </span>
@@ -122,7 +146,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="exhibitClosedPanel"
                      >
-                        <span class="console-operations-menu-btn-number">7</span>
+                        <span class="console-operations-menu-btn-number">9</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.exhibitClosed }}
                         </span>
@@ -134,7 +158,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="exhibitOpenPanel"
                      >
-                        <span class="console-operations-menu-btn-number">8</span>
+                        <span class="console-operations-menu-btn-number">10</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.exhibitOpen }}
                         </span>
@@ -146,7 +170,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="restaurantClosedPanel"
                      >
-                        <span class="console-operations-menu-btn-number">9</span>
+                        <span class="console-operations-menu-btn-number">11</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.restaurantClosed }}
                         </span>
@@ -158,7 +182,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="restaurantClosureOverridePanel"
                      >
-                        <span class="console-operations-menu-btn-number">10</span>
+                        <span class="console-operations-menu-btn-number">12</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.restaurantClosureOverride }}
                         </span>
@@ -170,7 +194,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="restaurantOpeningSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">11</span>
+                        <span class="console-operations-menu-btn-number">13</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.restaurantOpeningSchedule }}
                         </span>
@@ -182,7 +206,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="restroomClosedPanel"
                      >
-                        <span class="console-operations-menu-btn-number">12</span>
+                        <span class="console-operations-menu-btn-number">14</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.restroomClosed }}
                         </span>
@@ -194,7 +218,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="restroomOpenPanel"
                      >
-                        <span class="console-operations-menu-btn-number">13</span>
+                        <span class="console-operations-menu-btn-number">15</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.restroomOpen }}
                         </span>
@@ -206,7 +230,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="restroomAlertPanel"
                      >
-                        <span class="console-operations-menu-btn-number">14</span>
+                        <span class="console-operations-menu-btn-number">16</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.restroomAlert }}
                         </span>
@@ -218,7 +242,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="removeRestroomAlertPanel"
                      >
-                        <span class="console-operations-menu-btn-number">15</span>
+                        <span class="console-operations-menu-btn-number">17</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.removeRestroomAlert }}
                         </span>
@@ -230,7 +254,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="giftShopClosedPanel"
                      >
-                        <span class="console-operations-menu-btn-number">16</span>
+                        <span class="console-operations-menu-btn-number">18</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.giftShopClosed }}
                         </span>
@@ -242,7 +266,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="giftShopClosureOverridePanel"
                      >
-                        <span class="console-operations-menu-btn-number">17</span>
+                        <span class="console-operations-menu-btn-number">19</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.giftShopClosureOverride }}
                         </span>
@@ -254,7 +278,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="giftShopOpeningSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">18</span>
+                        <span class="console-operations-menu-btn-number">20</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.giftShopOpeningSchedule }}
                         </span>
@@ -266,7 +290,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="attractionClosedPanel"
                      >
-                        <span class="console-operations-menu-btn-number">19</span>
+                        <span class="console-operations-menu-btn-number">21</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.attractionClosed }}
                         </span>
@@ -278,7 +302,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="attractionClosureOverridePanel"
                      >
-                        <span class="console-operations-menu-btn-number">20</span>
+                        <span class="console-operations-menu-btn-number">22</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.attractionClosureOverride }}
                         </span>
@@ -290,7 +314,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="attractionOpeningSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">21</span>
+                        <span class="console-operations-menu-btn-number">23</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.attractionOpeningSchedule }}
                         </span>
@@ -302,7 +326,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="attractionHoursSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">22</span>
+                        <span class="console-operations-menu-btn-number">24</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.attractionHoursSchedule }}
                         </span>
@@ -314,7 +338,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="transportationStationClosedPanel"
                      >
-                        <span class="console-operations-menu-btn-number">23</span>
+                        <span class="console-operations-menu-btn-number">25</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.transportationStationClosed }}
                         </span>
@@ -326,7 +350,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="transportationStationOpenPanel"
                      >
-                        <span class="console-operations-menu-btn-number">24</span>
+                        <span class="console-operations-menu-btn-number">26</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.transportationStationOpen }}
                         </span>
@@ -338,7 +362,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="transportationRoutePanel"
                      >
-                        <span class="console-operations-menu-btn-number">25</span>
+                        <span class="console-operations-menu-btn-number">27</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.transportationRoute }}
                         </span>
@@ -350,7 +374,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="guardiansTalkSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">26</span>
+                        <span class="console-operations-menu-btn-number">28</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.guardiansTalkSchedule }}
                         </span>
@@ -362,7 +386,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="endGuardiansTalkSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">27</span>
+                        <span class="console-operations-menu-btn-number">29</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.endGuardiansTalkSchedule }}
                         </span>
@@ -374,7 +398,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="addGuardiansTalkOccurrencePanel"
                      >
-                        <span class="console-operations-menu-btn-number">28</span>
+                        <span class="console-operations-menu-btn-number">30</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.addGuardiansTalkOccurrence }}
                         </span>
@@ -386,7 +410,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="cancelGuardiansTalkOccurrencePanel"
                      >
-                        <span class="console-operations-menu-btn-number">29</span>
+                        <span class="console-operations-menu-btn-number">31</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.cancelGuardiansTalkOccurrence }}
                         </span>
@@ -398,7 +422,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="wildEncounterSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">30</span>
+                        <span class="console-operations-menu-btn-number">32</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.wildEncounterSchedule }}
                         </span>
@@ -410,7 +434,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="endWildEncounterSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">31</span>
+                        <span class="console-operations-menu-btn-number">33</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.endWildEncounterSchedule }}
                         </span>
@@ -422,7 +446,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="cancelWildEncounterOccurrencePanel"
                      >
-                        <span class="console-operations-menu-btn-number">32</span>
+                        <span class="console-operations-menu-btn-number">34</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.cancelWildEncounterOccurrence }}
                         </span>
@@ -434,7 +458,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="drinkingFountainsClosedPanel"
                      >
-                        <span class="console-operations-menu-btn-number">33</span>
+                        <span class="console-operations-menu-btn-number">35</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.drinkingFountainsClosed }}
                         </span>
@@ -446,7 +470,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="drinkingFountainsOpenPanel"
                      >
-                        <span class="console-operations-menu-btn-number">34</span>
+                        <span class="console-operations-menu-btn-number">36</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.drinkingFountainsOpen }}
                         </span>
@@ -458,7 +482,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="createUpdatePanel"
                      >
-                        <span class="console-operations-menu-btn-number">35</span>
+                        <span class="console-operations-menu-btn-number">37</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.createUpdate }}
                         </span>
@@ -470,7 +494,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="endUpdatePanel"
                      >
-                        <span class="console-operations-menu-btn-number">36</span>
+                        <span class="console-operations-menu-btn-number">38</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.endUpdate }}
                         </span>
@@ -482,7 +506,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="editUpdatePanel"
                      >
-                        <span class="console-operations-menu-btn-number">37</span>
+                        <span class="console-operations-menu-btn-number">39</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.editUpdate }}
                         </span>
@@ -494,7 +518,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="createEventPanel"
                      >
-                        <span class="console-operations-menu-btn-number">38</span>
+                        <span class="console-operations-menu-btn-number">40</span>
                         <span class="console-operations-menu-btn-label">
                            {{ panelTitles.createEvent }}
                         </span>

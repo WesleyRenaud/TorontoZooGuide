@@ -9,7 +9,8 @@ class AnimalOffDisplayExhibitNameProvider():
    def fetch_off_display_exhibit_names(
          cls,
          conn: Types.Connection,
-         today: Types.DateKey ) -> list[ str ]:
+         today: Types.DateKey,
+         for_season_only: bool ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -22,9 +23,13 @@ class AnimalOffDisplayExhibitNameProvider():
                         OFF_DISPLAY_END IS NULL
                         OR OFF_DISPLAY_END >= ?
                      )
+                     AND (
+                        ? = 0
+                        OR OFF_DISPLAY_FOR_SEASON = 1
+                     )
                   ORDER BY EXHIBIT;
             """,
-            ( today, ) )
+            ( today, for_season_only ) )
 
          return [ row[ Position.FIRST ] for row in data.fetchall() ]
 
@@ -37,7 +42,8 @@ class AnimalOffDisplayExhibitNameProvider():
          cls,
          conn: Types.Connection,
          today: Types.DateKey,
-         species: str ) -> list[ str ]:
+         species: str,
+         for_season_only: bool ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -50,10 +56,14 @@ class AnimalOffDisplayExhibitNameProvider():
                         OFF_DISPLAY_END IS NULL
                         OR OFF_DISPLAY_END >= ?
                      )
+                     AND (
+                        ? = 0
+                        OR OFF_DISPLAY_FOR_SEASON = 1
+                     )
                      AND SPECIES = ?
                   ORDER BY EXHIBIT;
             """,
-            ( today, species ) )
+            ( today, for_season_only, species ) )
 
          return [ row[ Position.FIRST ] for row in data.fetchall() ]
 

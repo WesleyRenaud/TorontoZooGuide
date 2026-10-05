@@ -44,6 +44,23 @@ export class ConsoleOptionsLoader {
       return result.viewingScopes;
    }
 
+   static async loadOffDisplayForSeasonExhibits(species) {
+      const result = await ConsoleOperationsClient.getOffDisplayExhibitOptions({
+         species,
+         forSeasonOnly: true,
+      });
+      return result.exhibits;
+   }
+
+   static async loadOffDisplayForSeasonViewingScopes({ species, exhibit }) {
+      const result = await ConsoleOperationsClient.getOffDisplayViewingScopeOptions({
+         species,
+         exhibit,
+         forSeasonOnly: true,
+      });
+      return result.viewingScopes;
+   }
+
    static async loadVisibilityScheduleExhibits(species) {
       const result = await ConsoleOperationsClient.getAnimalVisibilityScheduleExhibitOptions(
          species ? { species } : {}

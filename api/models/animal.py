@@ -23,6 +23,7 @@ class Animal:
          seasonal_viewing_summary: str | None = None,
          seasonal_viewing_information: str | None = None,
          off_display_message: str | None = None,
+         is_off_display_for_season: bool = False,
          enclosure_type: str | None = None,
          enclosure_name: str | None = None,
          x_coord: float | None = None,
@@ -57,6 +58,7 @@ class Animal:
       self.seasonal_viewing_summary = seasonal_viewing_summary
       self.seasonal_viewing_information = seasonal_viewing_information
       self.off_display_message = off_display_message
+      self.is_off_display_for_season = is_off_display_for_season
       self.enclosure_type = enclosure_type
       self.enclosure_name = enclosure_name
       self.x_coord = x_coord
@@ -104,6 +106,7 @@ class Animal:
          'seasonal_viewing_summary': self.seasonal_viewing_summary,
          'seasonal_viewing_information': self.seasonal_viewing_information,
          'off_display_message': self.off_display_message,
+         'is_off_display_for_season': ValueConversion.as_boolean( self.is_off_display_for_season ),
          'enclosure_type': self.enclosure_type,
          'enclosure_name': self.enclosure_name,
          'x_coord': self.x_coord,

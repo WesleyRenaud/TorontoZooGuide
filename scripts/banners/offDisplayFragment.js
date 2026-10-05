@@ -33,6 +33,7 @@ export class OffDisplayFragment {
 
             return [...new Set(messages)];
          },
+         isOffDisplayForSeason: animal => Boolean(animal.is_off_display_for_season),
       });
    }
 }

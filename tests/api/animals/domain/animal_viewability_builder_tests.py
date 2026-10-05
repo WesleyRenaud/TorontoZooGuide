@@ -61,6 +61,7 @@ def _make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityR
       'off_display_message': None,
       'off_display_start': None,
       'off_display_end': None,
+      'is_off_display_for_season': None,
       'schedule_start_date': None,
       'schedule_end_date': None,
       'daily_start_time': None,
@@ -383,6 +384,53 @@ def Test_BuildViewableAnimalFromRecord_TestOffDisplay_ExpectZeroLikelihoodAndMes
    assert animal.species == SPECIES
    assert animal.likelihood == 0
    assert animal.off_display_message == OFF_DISPLAY_MESSAGE
+   assert animal.is_off_display_for_season is False
+
+
+def Test_BuildViewableAnimalFromRecord_TestOffDisplayForSeason_ExpectSeasonFlag(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      is_off_display=1,
+      off_display_message=OFF_DISPLAY_MESSAGE,
+      off_display_start=SCHEDULE_START_DATE,
+      off_display_end=SCHEDULE_END_DATE,
+      is_off_display_for_season=1 )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.is_off_display_for_season is True
+
+
+def Test_BuildViewableAnimalFromRecord_TestExpiredOffDisplayForSeason_ExpectNoSeasonFlag(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      is_off_display=1,
+      off_display_message=OFF_DISPLAY_MESSAGE,
+      off_display_start=SCHEDULE_START_DATE,
+      off_display_end=SCHEDULE_END_DATE,
+      is_off_display_for_season=1,
+      enclosure_type='Outdoor',
+      min_temperature=0,
+      animal_day_seasonal_multiplier=1.0,
+      exhibit_day_seasonal_availability_multiplier=1.0 )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=EXPIRED_TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.is_off_display_for_season is False
 
 
 def Test_BuildViewableAnimalFromRecord_TestClosedExhibit_ExpectZeroLikelihoodAndClosedMessage(

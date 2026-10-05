@@ -88,6 +88,7 @@ function _createController({
    exhibit = 'Savanna',
    startDate = '2026-06-01',
    message = 'Vet care',
+   createController = AnimalOffController.createAnimalOffDisplayController,
 } = {}) {
    const submitButtonEl = document.createElement('button');
    const cancelButtonEl = document.createElement('button');
@@ -100,7 +101,7 @@ function _createController({
    startDateEl.value = startDate;
    messageEl.value = message;
 
-   const controller = AnimalOffController.createAnimalOffDisplayController({
+   const controller = createController({
       showButtonEl: document.createElement('button'),
       submitButtonEl,
       cancelButtonEl,
@@ -164,6 +165,7 @@ test('Test_CreateAnimalOffDisplayController_TestSubmitSuccess_ExpectStatus', asy
          startDate,
          endDate: null,
          message,
+         isOffDisplayForSeason: false,
       });
       return { success: true, species, exhibit };
    };
@@ -299,4 +301,45 @@ test('Test_CreateAnimalOffDisplayController_TestHideAndCancel_ExpectPanelHidden'
    } finally {
       _restore(originals);
    }
+});
+
+
+test('Test_CreateAnimalOffDisplayForSeasonController_TestSubmitSuccess_ExpectSeasonPayloadAndStatus', async (t) => {
+   const statuses = [];
+   const payloads = [];
+   const species = 'Marabou Stork';
+   const exhibit = 'Africa Savanna';
+   const viewingScopes = ['White Rhino Viewing'];
+   const startDate = '2026-10-05';
+   const originals = _installBaseStubs({ statuses, viewingScopes });
+   t.after(() => _restore(originals));
+   ConsoleOperationsClient.setAnimalOffDisplay = async (payload) => {
+      payloads.push(payload);
+      return { success: true, species, exhibit };
+   };
+   const { submitButtonEl } = _createController({
+      species,
+      exhibit,
+      startDate,
+      message: '',
+      createController: AnimalOffController.createAnimalOffDisplayForSeasonController,
+   });
+
+   await submitButtonEl.listeners.click();
+
+   assert.deepEqual(payloads, [{
+      species,
+      exhibit,
+      viewingScopes,
+      startDate,
+      endDate: null,
+      message: '',
+      isOffDisplayForSeason: true,
+   }]);
+   assert.ok(
+      statuses.some((entry) => (
+         entry[Position.SECOND] === Strings.status.animalOffDisplayForSeason({ species, exhibit })
+         && entry[Position.THIRD] === 'is-success'
+      ))
+   );
 });
