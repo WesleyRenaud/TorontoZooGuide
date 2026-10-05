@@ -75,6 +75,7 @@ test('Test_CreateAnimalExhibitAutofillController_TestMultipleExhibits_ExpectNarr
    const speciesEl = document.createElement('input');
    const exhibitEl = _createSelect(['Africa Savanna']);
    speciesEl.value = 'Bactrian Camel';
+   exhibitEl.value = '';
 
    AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
       speciesEl,
@@ -93,7 +94,38 @@ test('Test_CreateAnimalExhibitAutofillController_TestMultipleExhibits_ExpectNarr
 });
 
 
-test('Test_CreateAnimalExhibitAutofillController_TestEmptySpecies_ExpectRestoresExhibitList', async () => {
+test('Test_CreateAnimalExhibitAutofillController_TestSelectedExhibitMultipleExhibits_ExpectNarrowsAndKeepsSelection', async () => {
+   const africaSavanna = 'Africa Savanna';
+   const speciesExhibits = [africaSavanna, 'African Rainforest Pavilion', 'Kids Zoo'];
+   const uniqueFills = [];
+   const speciesEl = document.createElement('input');
+   const exhibitEl = _createSelect([africaSavanna, 'Eurasia Wilds']);
+   speciesEl.value = 'Marabou Stork';
+   exhibitEl.value = africaSavanna;
+
+   AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
+      speciesEl,
+      exhibitEl,
+      loadExhibits: async () => [africaSavanna, 'Eurasia Wilds'],
+      loadExhibitsForSpecies: async () => speciesExhibits,
+      populateExhibits: _populateExhibits,
+      onUniqueFill: () => {
+         uniqueFills.push(true);
+      },
+   });
+
+   await speciesEl.listeners.change();
+
+   assert.equal(exhibitEl.value, africaSavanna);
+   assert.deepEqual(
+      exhibitEl.children.map((optionEl) => optionEl.value),
+      speciesExhibits
+   );
+   assert.deepEqual(uniqueFills, []);
+});
+
+
+test('Test_CreateAnimalExhibitAutofillController_TestEmptySpecies_ExpectRestoresExhibitListAndKeepsSelection', async () => {
    const africaSavanna = 'Africa Savanna';
    const eurasiaWilds = 'Eurasia Wilds';
    const exhibits = [africaSavanna, eurasiaWilds];
@@ -114,7 +146,7 @@ test('Test_CreateAnimalExhibitAutofillController_TestEmptySpecies_ExpectRestores
 
    await speciesEl.listeners.change();
 
-   assert.equal(exhibitEl.value, '');
+   assert.equal(exhibitEl.value, eurasiaWilds);
    assert.equal(exhibitEl.children.length, exhibits.length);
    assert.equal(exhibitEl.children[Position.FIRST].value, africaSavanna);
    assert.equal(exhibitEl.children[Position.SECOND].value, eurasiaWilds);
@@ -152,7 +184,7 @@ test('Test_CreateAnimalExhibitAutofillController_TestClearSpeciesInput_ExpectKee
 });
 
 
-test('Test_CreateAnimalExhibitAutofillController_TestClearSpeciesInput_ExpectClearsExhibit', async () => {
+test('Test_CreateAnimalExhibitAutofillController_TestClearSpeciesInput_ExpectRestoresListAndKeepsExhibit', async () => {
    const africanLion = 'African Lion';
    const africaSavanna = 'Africa Savanna';
    const eurasiaWilds = 'Eurasia Wilds';
@@ -179,7 +211,7 @@ test('Test_CreateAnimalExhibitAutofillController_TestClearSpeciesInput_ExpectCle
    speciesEl.value = '';
    await speciesEl.listeners.input();
 
-   assert.equal(exhibitEl.value, '');
+   assert.equal(exhibitEl.value, africaSavanna);
    assert.equal(populated.length, 1);
    assert.deepEqual(populated[Position.FIRST], exhibits);
 });
@@ -214,7 +246,7 @@ test('Test_CreateAnimalExhibitAutofillController_TestNoMatches_ExpectEmptyExhibi
    const speciesEl = document.createElement('input');
    const exhibitEl = _createSelect([africaSavanna]);
    speciesEl.value = africanLion;
-   exhibitEl.value = africaSavanna;
+   exhibitEl.value = '';
 
    AnimalExhibitAutofillController.createAnimalExhibitAutofillController({
       speciesEl,
@@ -238,7 +270,7 @@ test('Test_CreateAnimalExhibitAutofillController_TestMissingFields_ExpectNoop', 
 });
 
 
-test('Test_CreateAnimalExhibitAutofillController_TestSpeciesLoadThrows_ExpectClearsExhibit', async () => {
+test('Test_CreateAnimalExhibitAutofillController_TestSpeciesLoadThrows_ExpectKeepsExhibit', async () => {
    const africanLion = 'African Lion';
    const africaSavanna = 'Africa Savanna';
    const speciesEl = document.createElement('input');
@@ -262,11 +294,11 @@ test('Test_CreateAnimalExhibitAutofillController_TestSpeciesLoadThrows_ExpectCle
 
    await speciesEl.listeners.change();
 
-   assert.equal(exhibitEl.value, '');
+   assert.equal(exhibitEl.value, africaSavanna);
 });
 
 
-test('Test_CreateAnimalExhibitAutofillController_TestEmptySpeciesLoadThrows_ExpectClearsExhibit', async () => {
+test('Test_CreateAnimalExhibitAutofillController_TestEmptySpeciesLoadThrows_ExpectKeepsExhibit', async () => {
    const africaSavanna = 'Africa Savanna';
    const speciesEl = document.createElement('input');
    const exhibitEl = _createSelect([africaSavanna]);
@@ -289,5 +321,5 @@ test('Test_CreateAnimalExhibitAutofillController_TestEmptySpeciesLoadThrows_Expe
 
    await speciesEl.listeners.change();
 
-   assert.equal(exhibitEl.value, '');
+   assert.equal(exhibitEl.value, africaSavanna);
 });
