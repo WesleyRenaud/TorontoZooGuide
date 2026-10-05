@@ -1680,6 +1680,20 @@
     "animals_at_the_zoo": null
   },
   {
+    "species": "Mourning Dove",
+    "latin_name": "Zenaida Macroura",
+    "min_temperature": null,
+    "general_viewing_tips": "The mourning dove can be found in the small aviary on the elevated pathway near the mixed waterfowl enclosure.",
+    "seasonal_viewing_tips": null,
+    "identification": "The mourning dove is a medium-sized dove, measuring about 23–32 cm in length with a slim body, long pointed tail, and small head. Their soft gray-brown plumage is marked with subtle black spots on the wings and a pinkish wash on the chest. Their eyes are dark, surrounded by a delicate ring of bare skin, and the bill is short and slender. The species gets its common name from the soft, mournful cooing calls heard at dawn and dusk.",
+    "habitat_and_range": "Mourning doves are native to North and Central America, ranging from southern Canada through much of the United States and into parts of Mexico and Central America. They inhabit open woodlands, farmland, urban parks, gardens, and scrubby habitats, often near water and scattered trees or shrubs. They are highly adaptable and can thrive in both rural and suburban landscapes.",
+    "diet_and_feeding": "These doves are primarily granivorous, feeding on seeds from grasses, weeds, and crops, as well as small berries and occasional insects. They forage on the ground, often walking deliberately and pecking at the soil. Their digestive system is specialized to process seeds efficiently, enabling them to survive on a varied and often sparse diet.",
+    "behaviour_and_social_life": "Mourning doves are usually seen alone or in pairs, though they may gather in loose flocks at feeding sites. They are gentle, calm birds with a strong tendency to roost in trees or on exposed perches. Their soft cooing calls are a key part of courtship and territory communication. They are generally non-aggressive, but males may display courtship behaviours such as bowing and strutting during breeding season.",
+    "adaptations": "Mourning doves are well adapted to open and semi-open habitats. Their swift, direct flight and strong wings allow efficient travel over long distances, while their small, sturdy feet are suited for perching and walking on the ground. Their feeding adaptations support seed-based diets, and their muted brown-gray plumage provides camouflage in dry grasses and woodland edges. Their ability to drink quickly by sucking water into the bill helps them survive in hot, dry habitats.",
+    "reproduction_and_life_cycle": "Mourning doves breed multiple times each year, often producing 2–3 broods. The female typically lays 2 white eggs in a simple twig nest, often placed in trees, shrubs, or on sheltered ledges. Incubation lasts about 14 days, and both parents help care for the young. Chicks remain in the nest for around 12–15 days before fledging. These doves can live 1–3 years in the wild, though they may live longer in protected environments.",
+    "animals_at_the_zoo": null
+  },
+  {
     "species": "Naked Mole Rat",
     "latin_name": "Heterocephalus Glaber",
     "min_temperature": null,
@@ -2392,20 +2406,6 @@
     "adaptations": "White rhinos are superbly adapted to grazing and grassland survival. Their wide, prehensile lips and massive jaws allow them to harvest large amounts of grass efficiently. Thick skin provides protection against predators and environmental hazards, while deep folds help channel water and mud during wallowing. Horns are made of keratin and serve as defensive weapons, social signals, and tools for digging or clearing vegetation. Strong limbs and a heavy, muscular body support movement across uneven terrain, while acute hearing and smell compensate for relatively poor eyesight.",
     "reproduction_and_life_cycle": "Females reach sexual maturity at 6–7 years, males at 10–12 years. Gestation lasts about 16 months, usually resulting in a single calf weighing 40–65 kg at birth. Calves are nursed for 12–18 months but may start grazing earlier. Lifespan in the wild is 40–50 years, and they can live slightly longer in managed care. Calf survival depends heavily on maternal care and habitat security.",
     "animals_at_the_zoo": "The Toronto Zoo is home to four Southern white rhinoceros. There is an adult male, Tom, adult females Sabi and Zohari, and youngster Kifaru. Kifaru is a male and was born in December of 2023. Sabi, Zohari, and Kifaru all go on exhibit together, while Tom is solitary."
-  },
-  {
-    "species": "Speckled Mousebird",
-    "latin_name": "Colius Striatus",
-    "min_temperature": null,
-    "general_viewing_tips": "The speckled mousebird can be found in the small aviary on the elevated pathway near the mixed waterfowl enclosure.",
-    "seasonal_viewing_tips": null,
-    "identification": "Speckled mousebirds are small to medium-sized birds, measuring 25–30 cm in length, with a long, thin tail that accounts for about half of their total length. Their plumage is soft gray-brown with fine white speckling, giving a subtly mottled appearance. They have a small, rounded head with a short crest, and dark eyes with a short, slightly curved bill adapted for feeding on fruit and foliage. Their legs are strong, allowing them to climb and scurry along branches in a mouse-like fashion, which gives the species its common name.",
-    "habitat_and_range": "Speckled mousebirds are native to sub-Saharan Africa, including countries such as South Africa, Botswana, Zimbabwe, and Kenya. They inhabit savannas, woodland edges, gardens, and scrublands, often near fruiting trees and shrubs. They are highly arboreal but will move on the ground or between branches when foraging.",
-    "diet_and_feeding": "These birds are primarily herbivorous, feeding on fruits, berries, leaves, buds, and flowers. They forage in small groups, often moving slowly and deliberately through foliage. Their diet provides essential nutrients and fiber, and their foraging behaviour also contributes to seed dispersal. Occasionally, they may nibble on insects or other small invertebrates to supplement their diet.",
-    "behaviour_and_social_life": "Speckled mousebirds are highly social, usually found in small flocks of 6–20 individuals. They are active and agile, using their strong feet and flexible toes to grasp branches and move in a climbing or hanging posture. Mousebirds are vocal, communicating with soft chirps and whistles. Social behaviours include mutual preening, huddling for warmth, and cooperative alertness against predators.",
-    "adaptations": "Mousebirds have several unique adaptations for arboreal life. Their strong feet with reversible outer toes allow them to climb, hang upside down, and move efficiently through foliage. The long tail aids balance during movement, while their soft plumage provides insulation. Their diet and digestive system are adapted to process fibrous plant material, and their social behaviour increases survival through shared vigilance and cooperative care of young.",
-    "reproduction_and_life_cycle": "Breeding occurs during times of food abundance, often synchronized with fruiting seasons. Females lay 2–6 eggs in small, loosely constructed nests made of twigs and leaves, usually located in dense foliage. Both parents help incubate the eggs for about 13–16 days, and chicks are altricial, requiring care and feeding for several weeks before fledging. Lifespan in the wild is typically 6–8 years, with longer survival in managed care.",
-    "animals_at_the_zoo": null
   },
   {
     "species": "Spider Tortoise",

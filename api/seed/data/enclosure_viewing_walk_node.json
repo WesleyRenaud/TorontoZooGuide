@@ -1260,6 +1260,15 @@
     "snap_distance_px": 55.521
   },
   {
+    "species": "Mourning Dove",
+    "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
     "species": "Naked Mole Rat",
     "exhibit": "African Rainforest Pavilion",
     "enclosure_type": "Indoor",
@@ -1798,15 +1807,6 @@
     "y": 50.29,
     "walk_node_id": "v-0363",
     "snap_distance_px": 41.706
-  },
-  {
-    "species": "Speckled Mousebird",
-    "exhibit": "African Rainforest Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 45.865,
-    "y": 64.211,
-    "walk_node_id": "v-0255",
-    "snap_distance_px": 10.829
   },
   {
     "species": "Spider Tortoise",
