@@ -563,17 +563,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Mourning Dove",
-    "exhibit": "African Rainforest Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 45.865,
-    "y_coord": 64.211,
-    "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Red Panda",
     "exhibit": "Africa Savanna",
     "name": null,
@@ -1344,17 +1333,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Yellow-Vented Bulbul",
-    "exhibit": "African Rainforest Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 45.865,
-    "y_coord": 64.211,
-    "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Zebra Finch",
     "exhibit": "Americas Pavilion",
     "name": null,
@@ -1939,6 +1917,17 @@
     "is_zoomobile_only": false
   },
   {
+    "species": "Mourning Dove",
+    "exhibit": "African Rainforest Pavilion",
+    "name": null,
+    "enclosure_type": "Indoor",
+    "seasonally_off_display_message": null,
+    "x_coord": 45.865,
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1,
+    "is_zoomobile_only": false
+  },
+  {
     "species": "Naked Mole Rat",
     "exhibit": "African Rainforest Pavilion",
     "name": null,
@@ -2024,6 +2013,17 @@
     "x_coord": 45.865,
     "y_coord": 64.211,
     "default_itinerary_duration_minutes": 2,
+    "is_zoomobile_only": false
+  },
+  {
+    "species": "Yellow-Vented Bulbul",
+    "exhibit": "African Rainforest Pavilion",
+    "name": null,
+    "enclosure_type": "Indoor",
+    "seasonally_off_display_message": null,
+    "x_coord": 45.865,
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1,
     "is_zoomobile_only": false
   },
   {
@@ -2673,6 +2673,17 @@
     "x_coord": 64.786,
     "y_coord": 72.611,
     "default_itinerary_duration_minutes": 3,
+    "is_zoomobile_only": false
+  },
+  {
+    "species": "Abyssinian Ground Hornbill",
+    "exhibit": "Kids Zoo",
+    "name": null,
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": "The Abyssinian ground hornbills are most likely inside and off-display on this day due to cooler weather.",
+    "x_coord": 66.827,
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 1,
     "is_zoomobile_only": false
   },
   {
