@@ -1,5 +1,14 @@
 [
   {
+    "species": "Abyssinian Ground Hornbill",
+    "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
     "species": "African Lion",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",

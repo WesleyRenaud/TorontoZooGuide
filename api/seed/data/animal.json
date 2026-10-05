@@ -1,5 +1,19 @@
 [
   {
+    "species": "Abyssinian Ground Hornbill",
+    "latin_name": "Bucorvus Abyssinicus",
+    "min_temperature": 15,
+    "general_viewing_tips": "The Abyssinian ground hornbill can be found in the Kids Zoo.",
+    "seasonal_viewing_tips": "Abyssinian ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.",
+    "identification": "The Abyssinian ground hornbill is a large, black bird standing 90–120 cm tall, with a wingspan of 1.2–1.8 m. Its face and throat are bare, red skin, contrasting with glossy black plumage. Both sexes look similar, though males have larger throat wattles. It has a large, downward-curved bill, used for foraging and displaying. The legs are long and powerful, adapted for walking and running across the savanna or forest edge.",
+    "habitat_and_range": "This hornbill is native to sub-Saharan Africa, inhabiting savannas, open woodlands, and grasslands. It prefers areas with scattered trees for nesting but spends most of its time on the ground searching for food. Its terrestrial habits make it unique among hornbills, which are often arboreal.",
+    "diet_and_feeding": "Abyssinian ground hornbills are omnivorous, feeding on insects, reptiles, amphibians, small mammals, seeds, and fruits. They use their large bill to dig, flip over debris, and probe for prey. Their opportunistic feeding helps control insect and small vertebrate populations.",
+    "behaviour_and_social_life": "These hornbills are social birds, usually seen in pairs or small family groups. They are mostly diurnal, walking long distances while foraging. They perform elaborate displays and vocalizations, including booming calls that carry across long distances. Breeding involves cooperative behaviours, with older offspring helping parents feed chicks.",
+    "adaptations": "The Abyssinian ground hornbill is adapted for a terrestrial, open-habitat lifestyle. Its strong legs and large feet allow fast running and digging, while the large bill handles diverse prey and vegetation. Bare facial skin reduces overheating, and deep calls allow communication across distances. Its social structure improves survival, as group members share vigilance and chick-rearing duties.",
+    "reproduction_and_life_cycle": "Breeding occurs seasonally, with females laying 1–3 eggs in tree cavities. Only one chick usually survives, with parents and helper birds feeding it for several months. Sexual maturity is reached around 4–5 years, and individuals can live 50 years or more in the wild and in managed care.",
+    "animals_at_the_zoo": null
+  },
+  {
     "species": "African Lion",
     "latin_name": "Panthera Leo",
     "min_temperature": -10,
