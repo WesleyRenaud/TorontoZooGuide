@@ -16,46 +16,25 @@ export class AnimalExhibitAutofillController {
          };
       }
 
-      async function restoreExhibits() {
-         const exhibits = await loadExhibits();
-         populateExhibits?.(exhibitEl, exhibits);
-         exhibitEl.value = '';
-      }
-
       async function applySpecies() {
          const species = ControllerHelper.getFieldValue(speciesEl);
-
-         if (!species) {
-            try {
-               await restoreExhibits();
-            }
-            catch (err) {
-               exhibitEl.value = '';
-            }
-
-            return;
-         }
-
-         let uniqueFill = false;
+         const selectedExhibit = ControllerHelper.getFieldValue(exhibitEl);
+         let exhibits;
 
          try {
-            const exhibits = await loadExhibitsForSpecies(species);
-            populateExhibits?.(exhibitEl, exhibits);
-
-            if (exhibits.length === 1) {
-               exhibitEl.value = exhibits[Position.FIRST];
-               uniqueFill = true;
-            }
-            else {
-               exhibitEl.value = '';
-            }
+            exhibits = species
+               ? await loadExhibitsForSpecies(species)
+               : await loadExhibits();
          }
          catch (err) {
-            exhibitEl.value = '';
             return;
          }
 
-         if (uniqueFill) {
+         populateExhibits?.(exhibitEl, exhibits);
+         exhibitEl.value = selectedExhibit;
+
+         if (!selectedExhibit && species && exhibits.length === 1) {
+            exhibitEl.value = exhibits[Position.FIRST];
             await onUniqueFill?.();
          }
       }
