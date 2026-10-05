@@ -37,6 +37,10 @@
    --color-danger-text: #8b1a1a;
    --color-warning: #ffd54d;
    --color-warning-text: #2f2f2f;
+   --color-season: #4a8fc4;
+   --color-season-darker: #3f7fb3;
+   --color-season-icon: #9fd3f0;
+   --color-season-icon-text: #00375c;
 
    /* ── Map marker category colors ── */
    --color-marker-teal: #2f7a63;

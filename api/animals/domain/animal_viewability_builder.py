@@ -245,6 +245,7 @@ class AnimalViewabilityBuilder():
          seasonal_viewing_summary=animal.seasonal_viewing_summary,
          seasonal_viewing_information=animal.seasonal_viewing_information,
          off_display_message=display_message,
+         is_off_display_for_season=is_off_display and bool( animal.is_off_display_for_season ),
          enclosure_type=animal.enclosure_type,
          enclosure_name=animal.enclosure_name,
          x_coord=animal.x_coord,

@@ -93,29 +93,39 @@ class AnimalCoordinator():
 
 
    @classmethod
-   def get_off_display_animal_options( cls, exhibit: str | None = None ) -> list[ str ]:
+   def get_off_display_animal_options(
+         cls,
+         exhibit: str | None,
+         for_season_only: bool ) -> list[ str ]:
       if exhibit:
          return AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names_in_exhibit(
             RequestConnectionProvider.get(),
             today=DateValues.today_date_key(),
-            exhibit=exhibit )
+            exhibit=exhibit,
+            for_season_only=for_season_only )
 
       return AnimalOffDisplaySpeciesNameProvider.fetch_off_display_species_names(
          RequestConnectionProvider.get(),
-         today=DateValues.today_date_key() )
+         today=DateValues.today_date_key(),
+         for_season_only=for_season_only )
 
 
    @classmethod
-   def get_off_display_exhibit_options( cls, species: str ) -> list[ str ]:
+   def get_off_display_exhibit_options(
+         cls,
+         species: str,
+         for_season_only: bool ) -> list[ str ]:
       if species:
          return AnimalOffDisplayExhibitNameProvider.fetch_off_display_exhibit_names_for_species(
             RequestConnectionProvider.get(),
             today=DateValues.today_date_key(),
-            species=species )
+            species=species,
+            for_season_only=for_season_only )
 
       return AnimalOffDisplayExhibitNameProvider.fetch_off_display_exhibit_names(
          RequestConnectionProvider.get(),
-         today=DateValues.today_date_key() )
+         today=DateValues.today_date_key(),
+         for_season_only=for_season_only )
 
 
    @classmethod
@@ -185,12 +195,14 @@ class AnimalCoordinator():
    def get_off_display_viewing_scope_options(
          cls,
          species: str,
-         exhibit: str ) -> list[ AnimalViewingScope ]:
+         exhibit: str,
+         for_season_only: bool ) -> list[ AnimalViewingScope ]:
       return AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key(),
          species=species,
-         exhibit=exhibit )
+         exhibit=exhibit,
+         for_season_only=for_season_only )
 
 
    @classmethod
@@ -201,14 +213,16 @@ class AnimalCoordinator():
          start_date: Types.DateInput,
          end_date: Types.DateInput,
          message: str,
-         viewing_scopes: list[ AnimalViewingScope ] ) -> bool:
+         viewing_scopes: list[ AnimalViewingScope ],
+         is_off_display_for_season: bool ) -> bool:
       status = AnimalOffDisplayStatusBuilder.build(
          species=species,
          exhibit=exhibit,
          viewing_scopes=viewing_scopes,
          start_date=start_date,
          end_date=end_date,
-         message=message )
+         message=message,
+         is_off_display_for_season=is_off_display_for_season )
 
       return AnimalStatusProvider.save_animal_off_display_status(
          RequestConnectionProvider.get(),
@@ -217,7 +231,8 @@ class AnimalCoordinator():
          viewing_scopes=status.viewing_scopes,
          start_date=status.start_date,
          end_date=status.end_date,
-         message=status.message )
+         message=status.message,
+         is_off_display_for_season=status.is_off_display_for_season )
 
 
    @classmethod

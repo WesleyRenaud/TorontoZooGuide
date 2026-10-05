@@ -60,6 +60,7 @@ CREATE TABLE AnimalStatus (
    OFF_DISPLAY_MESSAGE  TEXT,
    OFF_DISPLAY_START    TEXT,
    OFF_DISPLAY_END      TEXT,
+   OFF_DISPLAY_FOR_SEASON INTEGER NOT NULL DEFAULT 0,
    PRIMARY KEY ( SPECIES, EXHIBIT, VIEWING_SCOPE )
 );
 
@@ -240,10 +241,11 @@ def Test_FetchAnimalsViewableOnDayRecords_TestJoinedStatusScheduleAlertAndMultip
    animal_viewable_on_day_conn.execute(
       """   INSERT INTO AnimalStatus (
                SPECIES, EXHIBIT, VIEWING_SCOPE, IS_OFF_DISPLAY,
-               OFF_DISPLAY_MESSAGE, OFF_DISPLAY_START, OFF_DISPLAY_END
-            ) VALUES ( ?, ?, ?, ?, ?, ?, ? );
+               OFF_DISPLAY_MESSAGE, OFF_DISPLAY_START, OFF_DISPLAY_END,
+               OFF_DISPLAY_FOR_SEASON
+            ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
       """,
-      ( SPECIES, EXHIBIT, 'Outdoor Yard', 1, 'Off display.', '2026-06-01', '2026-06-30' ),
+      ( SPECIES, EXHIBIT, 'Outdoor Yard', 1, 'Off display.', '2026-06-01', '2026-06-30', 1 ),
    )
    animal_viewable_on_day_conn.execute(
       """   INSERT INTO AnimalVisibilitySchedule (
@@ -295,6 +297,7 @@ def Test_FetchAnimalsViewableOnDayRecords_TestJoinedStatusScheduleAlertAndMultip
    assert record.off_display_message == 'Off display.'
    assert record.off_display_start == '2026-06-01'
    assert record.off_display_end == '2026-06-30'
+   assert record.is_off_display_for_season == 1
    assert record.schedule_start_date == '2026-06-01'
    assert record.schedule_end_date == '2026-06-30'
    assert record.daily_start_time == '09:00'

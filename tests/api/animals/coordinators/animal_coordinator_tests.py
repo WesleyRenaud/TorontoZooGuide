@@ -1146,9 +1146,11 @@ def Test_GetOffDisplayAnimalOptions_TestProviderNames_ExpectReturned(
    def fetch_off_display_species_names_in_exhibit(
          _conn: Types.Connection,
          today: str,
-         exhibit: str ) -> list[ str ]:
+         exhibit: str,
+         for_season_only: bool ) -> list[ str ]:
       captured[ 'today' ] = today
       captured[ 'exhibit' ] = exhibit
+      captured[ 'for_season_only' ] = for_season_only
       return [ SPECIES ]
 
    monkeypatch.setattr(
@@ -1160,12 +1162,15 @@ def Test_GetOffDisplayAnimalOptions_TestProviderNames_ExpectReturned(
       'fetch_off_display_species_names_in_exhibit',
       fetch_off_display_species_names_in_exhibit )
 
-   off_display_animal_options = AnimalCoordinator.get_off_display_animal_options( exhibit=EXHIBIT )
+   off_display_animal_options = AnimalCoordinator.get_off_display_animal_options(
+      exhibit=EXHIBIT,
+      for_season_only=True )
 
    assert off_display_animal_options == [ SPECIES ]
    assert captured == {
       'today': '2026-09-16',
       'exhibit': EXHIBIT,
+      'for_season_only': True,
    }
 
 
@@ -1176,8 +1181,10 @@ def Test_GetOffDisplayAnimalOptions_TestBlankExhibit_ExpectProviderCalledWithout
 
    def fetch_off_display_species_names(
          _conn: Types.Connection,
-         today: str ) -> list[ str ]:
+         today: str,
+         for_season_only: bool ) -> list[ str ]:
       captured[ 'today' ] = today
+      captured[ 'for_season_only' ] = for_season_only
       return []
 
    monkeypatch.setattr(
@@ -1189,10 +1196,15 @@ def Test_GetOffDisplayAnimalOptions_TestBlankExhibit_ExpectProviderCalledWithout
       'fetch_off_display_species_names',
       fetch_off_display_species_names )
 
-   off_display_animal_options = AnimalCoordinator.get_off_display_animal_options()
+   off_display_animal_options = AnimalCoordinator.get_off_display_animal_options(
+      exhibit=None,
+      for_season_only=False )
 
    assert off_display_animal_options == []
-   assert captured == { 'today': '2026-09-16' }
+   assert captured == {
+      'today': '2026-09-16',
+      'for_season_only': False,
+   }
 
 
 def Test_GetOffDisplayExhibitOptions_TestProviderNames_ExpectReturned(
@@ -1202,8 +1214,10 @@ def Test_GetOffDisplayExhibitOptions_TestProviderNames_ExpectReturned(
 
    def fetch_off_display_exhibit_names(
          _conn: Types.Connection,
-         today: str ) -> list[ str ]:
+         today: str,
+         for_season_only: bool ) -> list[ str ]:
       captured[ 'today' ] = today
+      captured[ 'for_season_only' ] = for_season_only
       return [ EXHIBIT ]
 
    monkeypatch.setattr(
@@ -1215,10 +1229,15 @@ def Test_GetOffDisplayExhibitOptions_TestProviderNames_ExpectReturned(
       'fetch_off_display_exhibit_names',
       fetch_off_display_exhibit_names )
 
-   off_display_exhibit_options = AnimalCoordinator.get_off_display_exhibit_options( species='' )
+   off_display_exhibit_options = AnimalCoordinator.get_off_display_exhibit_options(
+      species='',
+      for_season_only=True )
 
    assert off_display_exhibit_options == [ EXHIBIT ]
-   assert captured == { 'today': '2026-09-16' }
+   assert captured == {
+      'today': '2026-09-16',
+      'for_season_only': True,
+   }
 
 
 def Test_GetOffDisplayExhibitOptions_TestSpecies_ExpectProviderCalledWithSpecies(
@@ -1229,9 +1248,11 @@ def Test_GetOffDisplayExhibitOptions_TestSpecies_ExpectProviderCalledWithSpecies
    def fetch_off_display_exhibit_names_for_species(
          _conn: Types.Connection,
          today: str,
-         species: str ) -> list[ str ]:
+         species: str,
+         for_season_only: bool ) -> list[ str ]:
       captured[ 'today' ] = today
       captured[ 'species' ] = species
+      captured[ 'for_season_only' ] = for_season_only
       return [ EXHIBIT ]
 
    monkeypatch.setattr(
@@ -1243,12 +1264,15 @@ def Test_GetOffDisplayExhibitOptions_TestSpecies_ExpectProviderCalledWithSpecies
       'fetch_off_display_exhibit_names_for_species',
       fetch_off_display_exhibit_names_for_species )
 
-   off_display_exhibit_options = AnimalCoordinator.get_off_display_exhibit_options( species=SPECIES )
+   off_display_exhibit_options = AnimalCoordinator.get_off_display_exhibit_options(
+      species=SPECIES,
+      for_season_only=False )
 
    assert off_display_exhibit_options == [ EXHIBIT ]
    assert captured == {
       'today': '2026-09-16',
       'species': SPECIES,
+      'for_season_only': False,
    }
 
 
@@ -1521,10 +1545,12 @@ def Test_GetOffDisplayViewingScopeOptions_TestProviderScopes_ExpectReturned(
          _conn: Types.Connection,
          today: str,
          species: str,
-         exhibit: str ) -> list[ AnimalViewingScope ]:
+         exhibit: str,
+         for_season_only: bool ) -> list[ AnimalViewingScope ]:
       captured[ 'today' ] = today
       captured[ 'species' ] = species
       captured[ 'exhibit' ] = exhibit
+      captured[ 'for_season_only' ] = for_season_only
       return [ AnimalViewingScope.from_enclosure_name( 'Indoor' ) ]
 
    monkeypatch.setattr(
@@ -1536,7 +1562,10 @@ def Test_GetOffDisplayViewingScopeOptions_TestProviderScopes_ExpectReturned(
       'fetch_off_display_viewing_scopes',
       fetch_off_display_viewing_scopes )
 
-   off_display_viewing_scope_options = AnimalCoordinator.get_off_display_viewing_scope_options( SPECIES, EXHIBIT )
+   off_display_viewing_scope_options = AnimalCoordinator.get_off_display_viewing_scope_options(
+      SPECIES,
+      EXHIBIT,
+      for_season_only=True )
 
    assert off_display_viewing_scope_options == [
       AnimalViewingScope.from_enclosure_name( 'Indoor' ),
@@ -1545,6 +1574,7 @@ def Test_GetOffDisplayViewingScopeOptions_TestProviderScopes_ExpectReturned(
       'today': '2026-09-16',
       'species': SPECIES,
       'exhibit': EXHIBIT,
+      'for_season_only': True,
    }
 
 def Test_GetAnimalsViewableOnDay_TestProvidersAndBuilder_ExpectAnimals(
@@ -1646,13 +1676,18 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
       viewing_scopes=[ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ],
       start_date=START_DATE,
       end_date=END_DATE,
-      message=MESSAGE )
+      message=MESSAGE,
+      is_off_display_for_season=True )
    captured: dict[ str, Any ] = {}
+
+   def build( **kwargs: Any ) -> AnimalOffDisplayStatus:
+      captured[ 'build_is_off_display_for_season' ] = kwargs[ 'is_off_display_for_season' ]
+      return status
 
    monkeypatch.setattr(
       AnimalOffDisplayStatusBuilder,
       'build',
-      lambda **_kwargs: status )
+      build )
 
    def save_animal_off_display_status(
          _conn: Types.Connection,
@@ -1662,14 +1697,16 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
          viewing_scopes: list[ AnimalViewingScope ],
          start_date: Types.DateInput,
          end_date: Types.DateInput,
-         message: str ) -> bool:
+         message: str,
+         is_off_display_for_season: bool ) -> bool:
       captured[ 'args' ] = (
          species,
          exhibit,
          viewing_scopes,
          start_date,
          end_date,
-         message )
+         message,
+         is_off_display_for_season )
       return True
 
    monkeypatch.setattr(
@@ -1683,16 +1720,19 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
       START_DATE,
       END_DATE,
       MESSAGE,
-      viewing_scopes=[ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ] )
+      viewing_scopes=[ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ],
+      is_off_display_for_season=True )
 
    assert result is True
+   assert captured[ 'build_is_off_display_for_season' ] is True
    assert captured[ 'args' ] == (
       SPECIES,
       EXHIBIT,
       [ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ],
       START_DATE,
       END_DATE,
-      MESSAGE )
+      MESSAGE,
+      True )
 
 def Test_SetAnimalAsOnDisplay_TestProvider_ExpectDelegated(
       stub_request_connection: None,

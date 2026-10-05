@@ -4,6 +4,7 @@ export class GuestStatusStrings {
    static guestStatus = {
       animals: {
          temporarilyOffDisplay: 'The {species} is temporarily off-display.',
+         offDisplayForSeason: 'The {species} is off display for the season.',
          viewingAlert: 'The {species} may be less visible than usual at this time.',
          singleHabitatAlternateEnclosureViewingAlert: (
             'If you do not see the {species} {chosenLocation}, '

@@ -14,6 +14,12 @@ function _installCreateElementNS() {
    };
 }
 
+
+function _getIconClass(bannerEl) {
+   const iconEl = bannerEl.querySelector('.off-display-closed-icon');
+   return iconEl.children[0].getAttribute('class');
+}
+
 installDomTestHooks({ before: _installCreateElementNS });
 
 
@@ -51,6 +57,35 @@ test('Test_CreateSingleMessageBanner_TestUpdatedMessage_ExpectSameElement', () =
 
    assert.equal(document.body.children.at(Position.LAST), el);
    assert.match(el.textContent, new RegExp(nextMessage));
+});
+
+
+test('Test_CreateMessageBanner_TestOffDisplayForSeason_ExpectSeasonStyleAndSnowflake', () => {
+   const banner = MessageFragment.createMessageBanner({
+      getMessages: item => [item.message],
+      isOffDisplayForSeason: item => item.isSeason,
+   });
+
+   banner.sync({ message: 'Off for the season', isSeason: true });
+   const el = document.body.children.at(Position.LAST);
+
+   assert.equal(el.classList.contains('off-display-closed-banner--season'), true);
+   assert.equal(_getIconClass(el), 'off-display-snowflake-icon');
+});
+
+
+test('Test_CreateMessageBanner_TestSeasonThenRegular_ExpectWarningRestored', () => {
+   const banner = MessageFragment.createMessageBanner({
+      getMessages: item => [item.message],
+      isOffDisplayForSeason: item => item.isSeason,
+   });
+   banner.sync({ message: 'Off for the season', isSeason: true });
+   const el = document.body.children.at(Position.LAST);
+
+   banner.sync({ message: 'Temporarily off display', isSeason: false });
+
+   assert.equal(el.classList.contains('off-display-closed-banner--season'), false);
+   assert.equal(_getIconClass(el), 'off-display-warning-icon');
 });
 
 

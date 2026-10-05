@@ -36,6 +36,7 @@ class AnimalViewabilityMapper():
          off_display_message=row[ 'OFF_DISPLAY_MESSAGE' ],
          off_display_start=row[ 'OFF_DISPLAY_START' ],
          off_display_end=row[ 'OFF_DISPLAY_END' ],
+         is_off_display_for_season=row[ 'OFF_DISPLAY_FOR_SEASON' ],
          schedule_start_date=row[ 'SCHEDULE_START_DATE' ],
          schedule_end_date=row[ 'SCHEDULE_END_DATE' ],
          daily_start_time=row[ 'DAILY_START_TIME' ],

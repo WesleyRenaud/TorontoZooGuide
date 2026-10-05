@@ -11,7 +11,8 @@ class AnimalOffDisplayViewingScopeProvider():
          conn: Types.Connection,
          today: Types.DateKey,
          species: str,
-         exhibit: str ) -> list[ AnimalViewingScope ]:
+         exhibit: str,
+         for_season_only: bool ) -> list[ AnimalViewingScope ]:
       cur = conn.cursor()
 
       try:
@@ -23,12 +24,17 @@ class AnimalOffDisplayViewingScopeProvider():
                         OFF_DISPLAY_END IS NULL
                         OR OFF_DISPLAY_END >= ?
                      )
+                     AND (
+                        ? = 0
+                        OR OFF_DISPLAY_FOR_SEASON = 1
+                     )
                      AND SPECIES = ?
                      AND EXHIBIT = ?
                   ORDER BY VIEWING_SCOPE;
             """,
             (
                today,
+               for_season_only,
                species,
                exhibit,
             ) ).fetchall()

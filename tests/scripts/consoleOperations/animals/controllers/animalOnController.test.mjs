@@ -93,6 +93,7 @@ function _createController({
    panelEl = { id: 'animal-on' },
    species = 'Lion',
    exhibit = 'Savanna',
+   createController = AnimalOnController.createAnimalOnDisplayController,
 } = {}) {
    const showButtonEl = document.createElement('button');
    const submitButtonEl = document.createElement('button');
@@ -102,7 +103,7 @@ function _createController({
    speciesEl.value = species;
    exhibitEl.value = exhibit;
 
-   const controller = AnimalOnController.createAnimalOnDisplayController({
+   const controller = createController({
       showButtonEl,
       submitButtonEl,
       cancelButtonEl,
@@ -275,4 +276,57 @@ test('Test_CreateAnimalOnDisplayController_TestHideAndCancel_ExpectPanelHidden',
    } finally {
       _restore(originals);
    }
+});
+
+
+test('Test_CreateAnimalOnDisplayForSeasonController_TestShow_ExpectSeasonLoaders', async (t) => {
+   const activations = [];
+   const autofillArgs = [];
+   const scopeArgs = [];
+   const originals = _installBaseStubs({ autofillArgs, scopeArgs });
+   t.after(() => _restore(originals));
+   ControllerHelper.loadOptionsAndShowPanel = async (options) => {
+      activations.push(options.loadOptions);
+   };
+   const { controller } = _createController({
+      createController: AnimalOnController.createAnimalOnDisplayForSeasonController,
+   });
+
+   await controller.show();
+
+   assert.deepEqual(activations, [ConsoleOptionsLoader.loadOffDisplayForSeasonExhibits]);
+   assert.equal(autofillArgs[Position.FIRST].loadExhibits, ConsoleOptionsLoader.loadOffDisplayForSeasonExhibits);
+   assert.equal(autofillArgs[Position.FIRST].loadExhibitsForSpecies, ConsoleOptionsLoader.loadOffDisplayForSeasonExhibits);
+   assert.equal(scopeArgs[Position.FIRST].loadViewingScopes, ConsoleOptionsLoader.loadOffDisplayForSeasonViewingScopes);
+   assert.equal(scopeArgs[Position.FIRST].loadAnimalViewingScopes, AnimalsClient.getAnimalViewingScopes);
+});
+
+
+test('Test_CreateAnimalOnDisplayForSeasonController_TestSubmitSuccess_ExpectSeasonStatus', async (t) => {
+   const statuses = [];
+   const payloads = [];
+   const species = 'Marabou Stork';
+   const exhibit = 'Africa Savanna';
+   const viewingScopes = ['White Rhino Viewing'];
+   const originals = _installBaseStubs({ statuses, viewingScopes });
+   t.after(() => _restore(originals));
+   ConsoleOperationsClient.setAnimalOnDisplay = async (payload) => {
+      payloads.push(payload);
+      return { success: true, species, exhibit };
+   };
+   const { submitButtonEl } = _createController({
+      species,
+      exhibit,
+      createController: AnimalOnController.createAnimalOnDisplayForSeasonController,
+   });
+
+   await submitButtonEl.listeners.click();
+
+   assert.deepEqual(payloads, [{ species, exhibit, viewingScopes }]);
+   assert.ok(
+      statuses.some((entry) => (
+         entry[Position.SECOND] === Strings.status.animalOnDisplayForSeason({ species, exhibit })
+         && entry[Position.THIRD] === 'is-success'
+      ))
+   );
 });

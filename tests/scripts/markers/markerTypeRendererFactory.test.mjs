@@ -297,6 +297,45 @@ test('Test_RenderAnimalMarker_TestCountAndLimited_ExpectVisuals', () => {
    }
 });
 
+test('Test_RenderAnimalMarker_TestOffDisplayForSeason_ExpectWinterIcon', (t) => {
+   const calls = [];
+   const originalBg = MarkerVisualHelper.applyBackgroundImage;
+   const originalAnimalUrl = IconUrlProvider.getAnimalIconUrl;
+   t.after(() => {
+      MarkerVisualHelper.applyBackgroundImage = originalBg;
+      IconUrlProvider.getAnimalIconUrl = originalAnimalUrl;
+   });
+   MarkerVisualHelper.applyBackgroundImage = (...args) => calls.push(args);
+   IconUrlProvider.getAnimalIconUrl = (...args) => args.join('|');
+   const markerEl = _markerEl();
+
+   MarkerTypeRendererFactory.renderAnimalMarker(markerEl, [{
+      species: 'Marabou Stork',
+      exhibit: 'Africa Savanna',
+      likelihood: 0,
+      is_off_display_for_season: true,
+   }]);
+
+   assert.deepEqual(calls, [[markerEl, 'Africa Savanna|Marabou Stork|off-display', '#9fd3f0']]);
+});
+
+test('Test_RenderAnimalMarker_TestOffDisplayForSeasonCount_ExpectWinterCountColour', (t) => {
+   const calls = [];
+   const originalCount = MarkerVisualHelper.applyCountMarker;
+   t.after(() => {
+      MarkerVisualHelper.applyCountMarker = originalCount;
+   });
+   MarkerVisualHelper.applyCountMarker = (...args) => calls.push(args);
+   const markerEl = _markerEl();
+
+   MarkerTypeRendererFactory.renderAnimalMarker(markerEl, [
+      { species: 'Marabou Stork', exhibit: 'Africa Savanna', is_off_display_for_season: true },
+      { species: 'White-Headed Vulture', exhibit: 'Africa Savanna', is_off_display_for_season: true },
+   ]);
+
+   assert.deepEqual(calls, [[markerEl, 2, '#9fd3f0']]);
+});
+
 test('Test_RenderRestroomMarker_TestClosedAndAlert_ExpectVisuals', () => {
    const calls = [];
    const originalClass = MarkerVisualHelper.applyMarkerClass;

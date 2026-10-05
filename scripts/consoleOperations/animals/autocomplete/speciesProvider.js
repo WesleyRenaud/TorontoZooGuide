@@ -22,6 +22,27 @@ export class SpeciesProvider {
       });
    }
 
+   static async fetchOffDisplayForSeasonSpecies() {
+      const result = await ConsoleOperationsClient.getOffDisplayAnimalOptions({ forSeasonOnly: true });
+      return result.species;
+   }
+
+   static async fetchOffDisplayForSeasonSpeciesInExhibit(exhibit) {
+      const result = await ConsoleOperationsClient.getOffDisplayAnimalOptions({
+         exhibit,
+         forSeasonOnly: true,
+      });
+      return result.species;
+   }
+
+   static createOffDisplayForSeasonAnimalSpeciesSource() {
+      return SpeciesProvider.createAnimalSpeciesSource({
+         fetchAllSpecies: SpeciesProvider.fetchOffDisplayForSeasonSpecies,
+         fetchSpeciesForExhibit: SpeciesProvider.fetchOffDisplayForSeasonSpeciesInExhibit,
+         cacheLists: false,
+      });
+   }
+
    static async fetchVisibilityScheduleSpecies() {
       const result = await ConsoleOperationsClient.getAnimalVisibilityScheduleOptions();
       return result.species;

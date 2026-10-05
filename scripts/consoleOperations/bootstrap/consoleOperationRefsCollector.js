@@ -27,6 +27,22 @@ export class ConsoleOperationRefsCollector {
                viewingScopeEl: 'ViewingScope',
             },
          },
+         offDisplayForSeason: {
+            operationName: 'offDisplayForSeason',
+            includeAnimalSpecies: true,
+            includeDateRange: true,
+            fieldSuffixes: {
+               viewingScopeEl: 'ViewingScope',
+               messageEl: 'Message',
+            },
+         },
+         onDisplayForSeason: {
+            operationName: 'onDisplayForSeason',
+            includeAnimalSpecies: true,
+            fieldSuffixes: {
+               viewingScopeEl: 'ViewingScope',
+            },
+         },
          visibilitySchedule: {
             operationName: 'visibilitySchedule',
             includeAnimalSpecies: true,

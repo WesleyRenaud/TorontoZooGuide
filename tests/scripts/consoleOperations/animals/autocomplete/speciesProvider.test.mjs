@@ -425,3 +425,72 @@ test('Test_CreateViewingAlertAnimalSpeciesSource_TestExhibit_ExpectExhibitSpecie
       SpeciesProvider.fetchViewingAlertSpeciesInExhibit = originalExhibit;
    }
 });
+
+
+test('Test_FetchOffDisplayForSeasonSpecies_TestClientPayload_ExpectSeasonOnlyPayload', async (t) => {
+   const stork = 'Marabou Stork';
+   const originalGet = ConsoleOperationsClient.getOffDisplayAnimalOptions;
+   const payloads = [];
+   t.after(() => {
+      ConsoleOperationsClient.getOffDisplayAnimalOptions = originalGet;
+   });
+   ConsoleOperationsClient.getOffDisplayAnimalOptions = async (payload) => {
+      payloads.push(payload);
+      return { species: [stork] };
+   };
+
+   const species = await SpeciesProvider.fetchOffDisplayForSeasonSpecies();
+
+   assert.deepEqual(species, [stork]);
+   assert.deepEqual(payloads, [{ forSeasonOnly: true }]);
+});
+
+
+test('Test_FetchOffDisplayForSeasonSpeciesInExhibit_TestClientPayload_ExpectSeasonOnlyPayload', async (t) => {
+   const stork = 'Marabou Stork';
+   const exhibit = 'Africa Savanna';
+   const originalGet = ConsoleOperationsClient.getOffDisplayAnimalOptions;
+   const payloads = [];
+   t.after(() => {
+      ConsoleOperationsClient.getOffDisplayAnimalOptions = originalGet;
+   });
+   ConsoleOperationsClient.getOffDisplayAnimalOptions = async (payload) => {
+      payloads.push(payload);
+      return { species: [stork] };
+   };
+
+   const species = await SpeciesProvider.fetchOffDisplayForSeasonSpeciesInExhibit(exhibit);
+
+   assert.deepEqual(species, [stork]);
+   assert.deepEqual(payloads, [{ exhibit, forSeasonOnly: true }]);
+});
+
+
+test('Test_CreateOffDisplayForSeasonAnimalSpeciesSource_TestExhibit_ExpectSeasonFetchers', async (t) => {
+   const stork = 'Marabou Stork';
+   const vulture = 'White-Headed Vulture';
+   const exhibit = 'Africa Savanna';
+   const originalAll = SpeciesProvider.fetchOffDisplayForSeasonSpecies;
+   const originalExhibit = SpeciesProvider.fetchOffDisplayForSeasonSpeciesInExhibit;
+   const calls = [];
+   t.after(() => {
+      SpeciesProvider.fetchOffDisplayForSeasonSpecies = originalAll;
+      SpeciesProvider.fetchOffDisplayForSeasonSpeciesInExhibit = originalExhibit;
+   });
+   SpeciesProvider.fetchOffDisplayForSeasonSpecies = async () => {
+      calls.push('all');
+      return [vulture];
+   };
+   SpeciesProvider.fetchOffDisplayForSeasonSpeciesInExhibit = async (requestedExhibit) => {
+      calls.push(requestedExhibit);
+      return [stork];
+   };
+   const source = SpeciesProvider.createOffDisplayForSeasonAnimalSpeciesSource();
+
+   const allSpecies = await source.loadForExhibit('');
+   const exhibitSpecies = await source.loadForExhibit(exhibit);
+
+   assert.deepEqual(allSpecies, [vulture]);
+   assert.deepEqual(exhibitSpecies, [stork]);
+   assert.deepEqual(calls, ['all', exhibit]);
+});

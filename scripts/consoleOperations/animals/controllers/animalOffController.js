@@ -3,7 +3,21 @@ import { AnimalDisplayStatusControllerFactory } from '../../forms/animalDisplayS
 import { Strings } from '../../../strings.js';
 
 export class AnimalOffController {
-   static createAnimalOffDisplayController({
+   static createAnimalOffDisplayController(refs) {
+      return AnimalOffController.createController(refs, {
+         isOffDisplayForSeason: false,
+         successMessage: result => Strings.status.animalOffDisplay(result),
+      });
+   }
+
+   static createAnimalOffDisplayForSeasonController(refs) {
+      return AnimalOffController.createController(refs, {
+         isOffDisplayForSeason: true,
+         successMessage: result => Strings.status.animalOffDisplayForSeason(result),
+      });
+   }
+
+   static createController({
       showButtonEl,
       panelEl,
       cancelButtonEl,
@@ -16,7 +30,10 @@ export class AnimalOffController {
       endDateEl,
       messageEl,
       activatePanel,
-   } = {}) {
+   }, {
+      isOffDisplayForSeason,
+      successMessage,
+   }) {
       return AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
          showButtonEl,
          panelEl,
@@ -44,8 +61,9 @@ export class AnimalOffController {
             startDate: startDate || null,
             endDate: endDate || null,
             message,
+            isOffDisplayForSeason,
          }),
-         successMessage: result => Strings.status.animalOffDisplay(result),
+         successMessage,
       });
    }
 }

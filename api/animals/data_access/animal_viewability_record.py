@@ -32,6 +32,7 @@ class AnimalViewabilityRecord:
    off_display_message: str | None
    off_display_start: Types.DateKey | None
    off_display_end: Types.DateKey | None
+   is_off_display_for_season: bool | None
    schedule_start_date: Types.DateKey | None
    schedule_end_date: Types.DateKey | None
    daily_start_time: Types.ScheduleTimeKey

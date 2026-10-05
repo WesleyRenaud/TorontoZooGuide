@@ -13,7 +13,7 @@ Release cycle notes for the first guest-ready cut of the Toronto Zoo Guide: map 
 
 Canonical suites live under [`docs/manual-tests/`](../../manual-tests/). Open the hub at [`docs/manual-tests/index.html`](../../manual-tests/index.html) in a real browser (not GitHub’s HTML preview).
 
-Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-21**, then **CON-01 → CON-15**.
+Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-21**, then **CON-01 → CON-16**.
 
 ### Map
 
@@ -59,7 +59,7 @@ Recommended order: **MAP-01 → MAP-09**, then **ITIN-01 → ITIN-21**, then **C
 
 | ID | Focus |
 |----|-------|
-| CON-01 … CON-15 | Live ops with map/itinerary verify on today (see [manual-tests README](../../manual-tests/README.md)) |
+| CON-01 … CON-16 | Live ops with map/itinerary verify on today (see [manual-tests README](../../manual-tests/README.md)) |
 
 ## Guest walkthrough
 

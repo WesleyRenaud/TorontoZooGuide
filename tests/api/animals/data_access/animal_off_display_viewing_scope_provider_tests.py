@@ -21,6 +21,7 @@ CREATE TABLE AnimalStatus (
    OFF_DISPLAY_START    TEXT,
    OFF_DISPLAY_END      TEXT,
    OFF_DISPLAY_MESSAGE  TEXT,
+   OFF_DISPLAY_FOR_SEASON INTEGER NOT NULL DEFAULT 0,
    PRIMARY KEY ( SPECIES, EXHIBIT, VIEWING_SCOPE )
 );
 """
@@ -44,6 +45,7 @@ def _insert_status(
       exhibit: str,
       viewing_scope: str,
       is_off_display: int = 1,
+      is_off_display_for_season: int = 0,
       start_date: str | None,
       end_date: str | None ) -> None:
    conn.execute(
@@ -54,9 +56,10 @@ def _insert_status(
                IS_OFF_DISPLAY,
                OFF_DISPLAY_START,
                OFF_DISPLAY_END,
-               OFF_DISPLAY_MESSAGE
+               OFF_DISPLAY_MESSAGE,
+               OFF_DISPLAY_FOR_SEASON
             )
-            VALUES ( ?, ?, ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
       """,
       (
          species,
@@ -66,6 +69,7 @@ def _insert_status(
          start_date,
          end_date,
          'Off display.',
+         is_off_display_for_season,
       ) )
    conn.commit()
 
@@ -76,7 +80,8 @@ def Test_FetchOffDisplayViewingScopes_TestEmpty_ExpectEmptyList(
       off_display_scope_conn,
       TODAY,
       ORANGUTAN,
-      PAVILION )
+      PAVILION,
+      for_season_only=False )
 
    assert off_display_viewing_scopes == []
 
@@ -124,7 +129,8 @@ def Test_FetchOffDisplayViewingScopes_TestCurrentClosedEnclosures_ExpectThoseSco
       off_display_scope_conn,
       TODAY,
       ORANGUTAN,
-      PAVILION )
+      PAVILION,
+      for_season_only=False )
 
    assert off_display_viewing_scopes == [
       AnimalViewingScope.from_enclosure_name( 'Indoor' ),
@@ -146,8 +152,39 @@ def Test_FetchOffDisplayViewingScopes_TestEndingToday_ExpectIncluded(
       off_display_scope_conn,
       TODAY,
       ORANGUTAN,
-      PAVILION )
+      PAVILION,
+      for_season_only=False )
 
    assert off_display_viewing_scopes == [
       AnimalViewingScope.from_enclosure_name( None ),
+   ]
+
+
+def Test_FetchOffDisplayViewingScopes_TestForSeasonOnly_ExpectSeasonScopesOnly(
+      off_display_scope_conn: sqlite3.Connection ) -> None:
+   _insert_status(
+      off_display_scope_conn,
+      species=ORANGUTAN,
+      exhibit=PAVILION,
+      viewing_scope='Outdoor',
+      is_off_display_for_season=1,
+      start_date='2026-09-01',
+      end_date=None )
+   _insert_status(
+      off_display_scope_conn,
+      species=ORANGUTAN,
+      exhibit=PAVILION,
+      viewing_scope='Indoor',
+      start_date='2026-09-01',
+      end_date=None )
+
+   off_display_viewing_scopes = AnimalOffDisplayViewingScopeProvider.fetch_off_display_viewing_scopes(
+      off_display_scope_conn,
+      TODAY,
+      ORANGUTAN,
+      PAVILION,
+      for_season_only=True )
+
+   assert off_display_viewing_scopes == [
+      AnimalViewingScope.from_enclosure_name( 'Outdoor' ),
    ]

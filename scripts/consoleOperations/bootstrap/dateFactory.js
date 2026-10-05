@@ -5,6 +5,7 @@ export class DateFactory {
    static DATE_PICKER_BINDINGS = {
       dateRanges: [
          ['animals', 'offDisplay'],
+         ['animals', 'offDisplayForSeason'],
          ['animals', 'viewingAlert'],
          ['exhibits', 'closed'],
          ['exhibits', 'open'],

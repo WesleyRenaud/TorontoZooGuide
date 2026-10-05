@@ -16,9 +16,12 @@ class AnimalOffDisplayStatusBuilder():
          viewing_scopes: list[ AnimalViewingScope ],
          start_date: Types.DateInput,
          end_date: Types.DateInput,
-         message: str ) -> AnimalOffDisplayStatus:
+         message: str,
+         is_off_display_for_season: bool ) -> AnimalOffDisplayStatus:
       if not message:
-         message = AppStringProvider.format( 'guestStatus.animals.temporarilyOffDisplay', species=species )
+         message = AppStringProvider.format(
+            cls._default_message_key( is_off_display_for_season ),
+            species=species )
 
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,
@@ -30,4 +33,13 @@ class AnimalOffDisplayStatusBuilder():
          viewing_scopes=viewing_scopes,
          start_date=date_range.start_date,
          end_date=date_range.end_date,
-         message=message )
+         message=message,
+         is_off_display_for_season=is_off_display_for_season )
+
+
+   @classmethod
+   def _default_message_key( cls, is_off_display_for_season: bool ) -> str:
+      if is_off_display_for_season:
+         return 'guestStatus.animals.offDisplayForSeason'
+
+      return 'guestStatus.animals.temporarilyOffDisplay'

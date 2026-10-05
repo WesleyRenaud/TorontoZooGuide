@@ -4,8 +4,10 @@ import { Strings } from '../strings.js';
 export class MessageFragment {
    static createMessageBanner({
       getMessages = () => [],
+      isOffDisplayForSeason = () => false,
    } = {}) {
       let element = null;
+      let iconElement = null;
       let textElement = null;
 
       function createMessageElement(message) {
@@ -21,6 +23,15 @@ export class MessageFragment {
          );
       }
 
+      function renderSeason(banner, isSeason) {
+         banner.classList.toggle('off-display-closed-banner--season', isSeason);
+         iconElement.replaceChildren(
+            isSeason
+               ? MessageBannerLayoutAdjuster.createSnowflakeIcon()
+               : MessageBannerLayoutAdjuster.createWarningIcon()
+         );
+      }
+
       function ensure() {
          if (element) {
             return element;
@@ -30,9 +41,8 @@ export class MessageFragment {
          element.className = 'off-display-closed-banner';
          element.style.display = 'none';
 
-         const iconElement = document.createElement('div');
+         iconElement = document.createElement('div');
          iconElement.className = 'off-display-closed-icon';
-         iconElement.appendChild(MessageBannerLayoutAdjuster.createWarningIcon());
 
          textElement = document.createElement('div');
          textElement.className = 'off-display-closed-text';
@@ -69,6 +79,7 @@ export class MessageFragment {
          }
 
          const banner = ensure();
+         renderSeason(banner, isOffDisplayForSeason(item));
          renderMessages(messages);
          banner.style.display = 'flex';
          MessageBannerLayoutAdjuster.adjustBannerWidth(banner);

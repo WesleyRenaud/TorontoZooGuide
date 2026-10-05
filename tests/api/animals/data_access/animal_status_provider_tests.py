@@ -25,6 +25,7 @@ CREATE TABLE AnimalStatus (
    OFF_DISPLAY_START    TEXT,
    OFF_DISPLAY_END      TEXT,
    OFF_DISPLAY_MESSAGE  TEXT,
+   OFF_DISPLAY_FOR_SEASON INTEGER NOT NULL DEFAULT 0,
    PRIMARY KEY ( SPECIES, EXHIBIT, VIEWING_SCOPE )
 );
 """
@@ -51,7 +52,8 @@ def _status_rows( conn: sqlite3.Connection ) -> list[ tuple ]:
                   IS_OFF_DISPLAY,
                   OFF_DISPLAY_START,
                   OFF_DISPLAY_END,
-                  OFF_DISPLAY_MESSAGE
+                  OFF_DISPLAY_MESSAGE,
+                  OFF_DISPLAY_FOR_SEASON
                FROM AnimalStatus
                WHERE SPECIES = ?
                   AND EXHIBIT = ?
@@ -70,13 +72,14 @@ def Test_SaveAnimalOffDisplayStatus_TestSelectedEnclosures_ExpectPersistsRows(
       viewing_scopes=[ MALE_HERD, FEMALE_HERD ],
       start_date=START_DATE,
       end_date=END_DATE,
-      message=MESSAGE )
+      message=MESSAGE,
+      is_off_display_for_season=False )
 
    assert result is True
 
    assert _status_rows( animal_status_conn ) == [
-      ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE ),
-      ( 'Male Herd', 1, START_DATE, END_DATE, MESSAGE ),
+      ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE, 0 ),
+      ( 'Male Herd', 1, START_DATE, END_DATE, MESSAGE, 0 ),
    ]
 
 
@@ -89,7 +92,8 @@ def Test_SaveAnimalOffDisplayStatus_TestOneEnclosure_ExpectLeavesOtherStatus(
       viewing_scopes=[ FEMALE_HERD ],
       start_date=START_DATE,
       end_date=END_DATE,
-      message=MESSAGE )
+      message=MESSAGE,
+      is_off_display_for_season=False )
 
    result = AnimalStatusProvider.save_animal_off_display_status(
       animal_status_conn,
@@ -98,13 +102,14 @@ def Test_SaveAnimalOffDisplayStatus_TestOneEnclosure_ExpectLeavesOtherStatus(
       viewing_scopes=[ MALE_HERD ],
       start_date='2026-07-01',
       end_date='2026-07-15',
-      message='Male paddock closed.' )
+      message='Male paddock closed.',
+      is_off_display_for_season=False )
 
    assert result is True
 
    assert _status_rows( animal_status_conn ) == [
-      ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE ),
-      ( 'Male Herd', 1, '2026-07-01', '2026-07-15', 'Male paddock closed.' ),
+      ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE, 0 ),
+      ( 'Male Herd', 1, '2026-07-01', '2026-07-15', 'Male paddock closed.', 0 ),
    ]
 
 
@@ -117,7 +122,8 @@ def Test_SaveAnimalOnDisplayStatus_TestSelectedEnclosures_ExpectClearsThoseStatu
       viewing_scopes=[ MALE_HERD, FEMALE_HERD ],
       start_date=START_DATE,
       end_date=END_DATE,
-      message=MESSAGE )
+      message=MESSAGE,
+      is_off_display_for_season=False )
 
    result = AnimalStatusProvider.save_animal_on_display_status(
       animal_status_conn,
@@ -128,7 +134,7 @@ def Test_SaveAnimalOnDisplayStatus_TestSelectedEnclosures_ExpectClearsThoseStatu
    assert result is True
 
    assert _status_rows( animal_status_conn ) == [
-      ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE ),
+      ( 'Female Herd', 1, START_DATE, END_DATE, MESSAGE, 0 ),
    ]
 
 
@@ -141,3 +147,22 @@ def Test_SaveAnimalOnDisplayStatus_TestNoMatchingStatus_ExpectFalse(
       viewing_scopes=[ MALE_HERD ] )
 
    assert result is False
+
+
+def Test_SaveAnimalOffDisplayStatus_TestOffDisplayForSeason_ExpectPersistsSeasonFlag(
+      animal_status_conn: sqlite3.Connection ) -> None:
+   result = AnimalStatusProvider.save_animal_off_display_status(
+      animal_status_conn,
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      viewing_scopes=[ MALE_HERD ],
+      start_date=START_DATE,
+      end_date=END_DATE,
+      message=MESSAGE,
+      is_off_display_for_season=True )
+
+   assert result is True
+
+   assert _status_rows( animal_status_conn ) == [
+      ( 'Male Herd', 1, START_DATE, END_DATE, MESSAGE, 1 ),
+   ]
