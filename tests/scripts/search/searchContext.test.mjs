@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { WeatherClient } from '../../../scripts/api/weatherClient.js';
 import { SearchContext } from '../../../scripts/search/searchContext.js';
 import { VisitDateValidator } from '../../../scripts/visitDates/visitDateValidator.js';
+import { DailyHighTemperatureResolver } from '../../../scripts/weather/dailyHighTemperatureResolver.js';
 
 
 test('Test_BuildDateSearchContext_TestWithoutTemp_ExpectDateFields', async () => {
@@ -38,9 +38,9 @@ test('Test_BuildDateSearchContext_TestWithinWeek_ExpectTemp', async () => {
    const date = '2026-06-15';
    const temp = 22;
    const originalWithin = VisitDateValidator.isWithinNextNDays;
-   const originalWeather = WeatherClient.fetchWeatherTempForDate;
+   const originalWeather = DailyHighTemperatureResolver.resolve;
    VisitDateValidator.isWithinNextNDays = () => true;
-   WeatherClient.fetchWeatherTempForDate = async () => temp;
+   DailyHighTemperatureResolver.resolve = async () => temp;
 
    try {
       const context = await SearchContext.buildDateSearchContext(date);
@@ -48,7 +48,7 @@ test('Test_BuildDateSearchContext_TestWithinWeek_ExpectTemp', async () => {
       assert.equal(context.temp, temp);
    } finally {
       VisitDateValidator.isWithinNextNDays = originalWithin;
-      WeatherClient.fetchWeatherTempForDate = originalWeather;
+      DailyHighTemperatureResolver.resolve = originalWeather;
    }
 });
 
@@ -56,9 +56,9 @@ test('Test_BuildDateSearchContext_TestWithinWeek_ExpectTemp', async () => {
 test('Test_BuildDateSearchContext_TestWeatherError_ExpectNullTemp', async () => {
    const date = '2026-06-15';
    const originalWithin = VisitDateValidator.isWithinNextNDays;
-   const originalWeather = WeatherClient.fetchWeatherTempForDate;
+   const originalWeather = DailyHighTemperatureResolver.resolve;
    VisitDateValidator.isWithinNextNDays = () => true;
-   WeatherClient.fetchWeatherTempForDate = async () => { throw new Error('fail'); };
+   DailyHighTemperatureResolver.resolve = async () => { throw new Error('fail'); };
 
    try {
       const context = await SearchContext.buildDateSearchContext(date);
@@ -66,6 +66,6 @@ test('Test_BuildDateSearchContext_TestWeatherError_ExpectNullTemp', async () => 
       assert.equal(context.temp, null);
    } finally {
       VisitDateValidator.isWithinNextNDays = originalWithin;
-      WeatherClient.fetchWeatherTempForDate = originalWeather;
+      DailyHighTemperatureResolver.resolve = originalWeather;
    }
 });
