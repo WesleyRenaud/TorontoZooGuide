@@ -1,5 +1,5 @@
-import { WeatherClient } from '../api/weatherClient.js';
 import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
+import { DailyHighTemperatureResolver } from '../weather/dailyHighTemperatureResolver.js';
 
 export class SearchContext {
    /**
@@ -28,7 +28,7 @@ export class SearchContext {
       }
 
       try {
-         const temp = await WeatherClient.fetchWeatherTempForDate(date);
+         const temp = await DailyHighTemperatureResolver.resolve(date);
          return { date, month, day, year, dayOfWeek, temp };
       } catch {
          return { date, month, day, year, dayOfWeek, temp: null };

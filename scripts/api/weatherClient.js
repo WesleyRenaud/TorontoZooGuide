@@ -1,11 +1,17 @@
 import { WeatherApiFetcher } from './weatherApiFetcher.js';
 
 export class WeatherClient {
-   static fetchWeatherTempForDate(dateStr) {
-      if (WeatherApiFetcher.isTodayDate(dateStr)) {
-         return WeatherApiFetcher.fetchCurrentTemp();
-      }
+   static getCurrentTemp() {
+      return WeatherApiFetcher.fetchJson('weather').then(data => data.main.temp);
+   }
 
-      return WeatherApiFetcher.fetchForecastDateTemp(dateStr);
+   static getForecast() {
+      return WeatherApiFetcher.fetchJson('forecast').then(data => ({
+         timezoneOffsetSeconds: data.city.timezone,
+         slots: data.list.map(slot => ({
+            unixSeconds: slot.dt,
+            tempMax: slot.main.temp_max,
+         })),
+      }));
    }
 }
