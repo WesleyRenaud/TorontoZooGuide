@@ -2676,17 +2676,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Abyssinian Ground Hornbill",
-    "exhibit": "Kids Zoo",
-    "name": null,
-    "enclosure_type": "Outdoor",
-    "seasonally_off_display_message": "The Abyssinian ground hornbills are most likely inside and off-display on this day due to cooler weather.",
-    "x_coord": 66.827,
-    "y_coord": 80.627,
-    "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "African Spurred Tortoise",
     "exhibit": "Kids Zoo",
     "name": null,
