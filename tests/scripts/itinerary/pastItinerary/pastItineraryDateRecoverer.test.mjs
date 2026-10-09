@@ -71,7 +71,7 @@ test('Test_RecoverPastItineraryDate_TestFinish_ExpectSavesAndCompletes', async (
    assert.equal(result, dateController);
    assert.equal(events[Position.FIRST], 'show');
    assert.equal(capturedControllerOptions.mountEl.id, mountId);
-   assert.equal(capturedControllerOptions.initialDate, earliestSelectableDate);
+   assert.equal(capturedControllerOptions.earliestSelectableDate, earliestSelectableDate);
    assert.equal(capturedControllerOptions.hideNextButton, true);
    assert.equal(capturedControllerOptions.titleText, Strings.itinerary.stale.recoveryTitle);
 

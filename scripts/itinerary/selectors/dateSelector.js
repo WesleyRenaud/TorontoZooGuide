@@ -10,7 +10,6 @@ import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 export class DateSelector {
    static createItineraryDateSelectorController({
    mountEl,
-   initialDate = null,
    initialArrivalTime = null,
    initialDepartureTime = null,
    earliestSelectableDate = null,
@@ -81,7 +80,6 @@ export class DateSelector {
       }
 
       const model = DateSelectionModel.createDateSelectionModel({
-         initialDate,
          syncInputValue,
          onDateChanged: (date) => {
             void refreshTimeFields(date);

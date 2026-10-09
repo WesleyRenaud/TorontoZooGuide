@@ -24,12 +24,9 @@ export class PastItineraryDateRecoverer {
          return null;
       }
 
-      const initialDate = earliestSelectableDate ?? null;
-
       const dateController = createDateController({
          mountEl,
-         initialDate,
-         earliestSelectableDate: initialDate,
+         earliestSelectableDate,
          hideNextButton: true,
          titleText: Strings.itinerary.stale.recoveryTitle,
          subtitleText: Strings.itinerary.stale.recoverySubtitle,
