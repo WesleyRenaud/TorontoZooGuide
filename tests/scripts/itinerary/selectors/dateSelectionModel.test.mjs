@@ -123,19 +123,33 @@ test('Test_CreateDateSelectionModel_TestStoredDate_ExpectPreferred', () => {
 });
 
 
-test('Test_CreateDateSelectionModel_TestInitialDate_ExpectPreferredOverStored', () => {
+test('Test_CreateDateSelectionModel_TestStoredAndCurrentDate_ExpectStoredDate', () => {
    const storedDate = '2026-06-18';
-   const initialDate = makeNoonDate(2026, 5, 20);
    const model = DateSelectionModel.createDateSelectionModel({
-      initialDate,
       earliestDateFloor: floor,
       getTodayFn: () => floor,
       getStoredDate: () => storedDate,
    });
+   model.setDate(makeNoonDate(2026, 5, 20));
 
    const displayDate = model.getDisplayDate();
 
-   assert.equal(VisitDateValidator.toISODate(displayDate), VisitDateValidator.toISODate(initialDate));
+   assert.equal(VisitDateValidator.toISODate(displayDate), storedDate);
+});
+
+
+test('Test_CreateDateSelectionModel_TestCurrentDateWithoutStoredDate_ExpectCurrentDate', () => {
+   const selectedDate = makeNoonDate(2026, 5, 18);
+   const model = DateSelectionModel.createDateSelectionModel({
+      earliestDateFloor: floor,
+      getTodayFn: () => floor,
+      getStoredDate: () => null,
+   });
+   model.setDate(selectedDate);
+
+   const displayDate = model.getDisplayDate();
+
+   assert.equal(VisitDateValidator.toISODate(displayDate), VisitDateValidator.toISODate(selectedDate));
 });
 
 

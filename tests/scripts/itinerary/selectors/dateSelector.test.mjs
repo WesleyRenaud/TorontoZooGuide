@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { DraftStore } from '../../../../scripts/itinerary/draftStore.js';
 import { DateSelector } from '../../../../scripts/itinerary/selectors/dateSelector.js';
 import { DateSelectorView } from '../../../../scripts/itinerary/selectors/dateSelectorView.js';
 import { Position } from '../../../../scripts/shared/enums/position.js';
@@ -24,6 +25,16 @@ const _zooHours = {
 function _createStubPicker() {
    return {
       init() {},
+      close() {},
+      syncBounds() {},
+   };
+}
+
+function _createFloorSelectingPicker({ setDate }) {
+   return {
+      init() {
+         setDate(floor, { updateInput: true, persist: false });
+      },
       close() {},
       syncBounds() {},
    };
@@ -109,6 +120,43 @@ test('Test_CreateItineraryDateSelectorController_TestNext_ExpectSavedDate', asyn
 
    assert.deepEqual(savedDates, [VisitDateValidator.toISODate(selectedDate)]);
    assert.equal(mountEl.children.length, 1);
+});
+
+
+test('Test_CreateItineraryDateSelectorController_TestShowAgainAfterNext_ExpectSelectedDateKept', async () => {
+   const mountEl = createDomNode('div', 'wizard-mount');
+   const selectedDate = makeNoonDate(2026, 5, 18);
+   const controller = _createController({
+      mountEl,
+      deps: { createPicker: _createFloorSelectingPicker },
+   });
+   controller.show();
+   controller.setDate(selectedDate);
+   await Promise.resolve();
+   mountEl.querySelector('.itin-next')?.click();
+   controller.hide();
+
+   controller.show();
+
+   assert.equal(
+      VisitDateValidator.toISODate(controller.getDate()),
+      VisitDateValidator.toISODate(selectedDate)
+   );
+});
+
+
+test('Test_CreateItineraryDateSelectorController_TestStoredDate_ExpectStoredOverPickerFloor', () => {
+   const mountEl = createDomNode('div', 'wizard-mount');
+   const storedDate = '2026-06-18';
+   DraftStore.setStoredItineraryDate(storedDate);
+   const controller = _createController({
+      mountEl,
+      deps: { createPicker: _createFloorSelectingPicker },
+   });
+
+   controller.show();
+
+   assert.equal(VisitDateValidator.toISODate(controller.getDate()), storedDate);
 });
 
 

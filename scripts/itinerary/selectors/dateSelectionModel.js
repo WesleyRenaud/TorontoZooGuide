@@ -26,7 +26,6 @@ export class DateSelectionModel {
    }
 
    static createDateSelectionModel({
-      initialDate = null,
       syncInputValue = () => {},
       onDateChanged = () => {},
       earliestDateFloor = null,
@@ -110,10 +109,9 @@ export class DateSelectionModel {
 
       function getDisplayDate() {
          const savedDate = DateSelectionModel.readSavedItineraryVisitDate(getStoredDate);
-         const selectedDate = initialDate || savedDate || floor;
 
          return VisitDateValidator.clampToAllowedVisitDate(
-            selectedDate,
+            savedDate || currentDate,
             daysAhead,
             floor,
             getTodayFn()

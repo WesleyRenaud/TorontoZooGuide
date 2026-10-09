@@ -9,7 +9,6 @@ import { ItineraryWizardStore } from './itineraryWizardStore.js';
 import { SectionConfigs } from '../panel/sectionConfigs.js';
 import { Strings } from '../../strings.js';
 import { VisitDateResolver } from '../visitDateResolver.js';
-import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 import { WizardControllerHelper } from './wizardControllerHelper.js';
 import { WizardDraft } from './wizardDraft.js';
 import { WizardFinalizer } from './wizardFinalizer.js';
@@ -258,22 +257,8 @@ export class WizardController {
          await finish({ date });
       }
 
-      function resolveDateStepInitialDate() {
-         if (!wizardState.date) {
-            return earliestVisitNoon;
-         }
-
-         return VisitDateValidator.clampToAllowedVisitDate(
-            VisitDateValidator.parseLocalDate(wizardState.date),
-            VisitDateValidator.DEFAULT_DAYS_AHEAD,
-            earliestVisitNoon,
-            earliestVisitNoon
-         );
-      }
-
       wizardSteps.date = createDateStepController({
          mountEl,
-         initialDate: resolveDateStepInitialDate(),
          initialArrivalTime: wizardState.arrivalTime,
          initialDepartureTime: wizardState.departureTime,
          earliestSelectableDate: earliestVisitNoon,
