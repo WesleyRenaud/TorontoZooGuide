@@ -181,7 +181,9 @@ def Test_GetClosedExhibitOptions_TestDirectCall_ExpectWritesExhibitsFromCoordina
    assert handler.json_response() == {
       'exhibits': [ EXHIBIT_NAME ],
    }
-   assert stub_exhibit_coordinator.calls == [ ( 'get_closed_exhibit_options', {} ) ]
+   assert stub_exhibit_coordinator.calls == [
+      ( 'get_closed_exhibit_options', { 'for_season_only': False } ),
+   ]
 
 
 def Test_GetClosedExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoordinator(
@@ -194,7 +196,21 @@ def Test_GetClosedExhibitOptions_TestHttpRequest_ExpectWritesExhibitsFromCoordin
    assert response_json( handler ) == {
       'exhibits': [ EXHIBIT_NAME ],
    }
-   assert stub_exhibit_coordinator.calls == [ ( 'get_closed_exhibit_options', {} ) ]
+   assert stub_exhibit_coordinator.calls == [
+      ( 'get_closed_exhibit_options', { 'for_season_only': False } ),
+   ]
+
+
+def Test_GetClosedExhibitOptions_TestForSeasonOnly_ExpectSeasonFilterPassed(
+      stub_exhibit_coordinator: StubExhibitCoordinator ) -> None:
+   handler = make_handler( '/get-closed-exhibit-options', { 'forSeasonOnly': True } )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert stub_exhibit_coordinator.calls == [
+      ( 'get_closed_exhibit_options', { 'for_season_only': True } ),
+   ]
 
 
 def Test_SetExhibitClosed_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
@@ -222,6 +238,7 @@ def Test_SetExhibitClosed_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
             'start_date': CLOSURE_START_DATE,
             'end_date': CLOSURE_END_DATE,
             'message': CLOSURE_MESSAGE,
+            'is_closed_for_season': False,
          }
       )
    ]
@@ -231,6 +248,36 @@ def Test_SetExhibitClosed_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
    assert result[ 'endDate' ] == CLOSURE_END_DATE
    assert result[ 'message' ] == CLOSURE_MESSAGE
    assert result.get( 'error' ) is None
+
+
+def Test_SetExhibitClosed_TestClosedForSeason_ExpectSeasonFlagPassed(
+      stub_exhibit_coordinator: StubExhibitCoordinator ) -> None:
+   handler = make_handler(
+      '/set-exhibit-closed',
+      {
+         'exhibit': EXHIBIT_NAME,
+         'startDate': CLOSURE_START_DATE,
+         'endDate': None,
+         'message': '',
+         'isClosedForSeason': True,
+      }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert stub_exhibit_coordinator.calls == [
+      (
+         'set_exhibit_as_closed',
+         {
+            'exhibit': EXHIBIT_NAME,
+            'start_date': CLOSURE_START_DATE,
+            'end_date': None,
+            'message': '',
+            'is_closed_for_season': True,
+         }
+      )
+   ]
 
 
 def Test_SetExhibitClosed_TestHttpRequest_ExpectCouldNotSetClosedApiError(

@@ -39,7 +39,8 @@ CLOSED_STATUS = ExhibitClosedStatus(
    exhibit=EXHIBIT_NAME,
    start_date=START_DATE,
    end_date=END_DATE,
-   message=MESSAGE )
+   message=MESSAGE,
+   is_closed_for_season=True )
 DATE_RANGE = DateRange(
    start_date=START_DATE,
    end_date=END_DATE )
@@ -171,8 +172,10 @@ def Test_GetClosedExhibitOptions_TestProviderNames_ExpectReturned(
 
    def fetch_closed_exhibit_names(
          _conn: Types.Connection,
-         today: str ) -> list[ str ]:
+         today: str,
+         for_season_only: bool ) -> list[ str ]:
       captured[ 'today' ] = today
+      captured[ 'for_season_only' ] = for_season_only
       return [ EXHIBIT_NAME ]
 
    monkeypatch.setattr(
@@ -184,10 +187,10 @@ def Test_GetClosedExhibitOptions_TestProviderNames_ExpectReturned(
       'fetch_closed_exhibit_names',
       fetch_closed_exhibit_names )
 
-   closed_exhibit_options = ExhibitCoordinator.get_closed_exhibit_options()
+   closed_exhibit_options = ExhibitCoordinator.get_closed_exhibit_options( for_season_only=True )
 
    assert closed_exhibit_options == [ EXHIBIT_NAME ]
-   assert captured == { 'today': '2026-09-16' }
+   assert captured == { 'today': '2026-09-16', 'for_season_only': True }
 
 
 def Test_SetExhibitAsClosed_TestBuilderAndProvider_ExpectDelegated(
@@ -195,10 +198,11 @@ def Test_SetExhibitAsClosed_TestBuilderAndProvider_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   monkeypatch.setattr(
-      ExhibitStatusBuilder,
-      'build_closed_status',
-      lambda **_kwargs: CLOSED_STATUS )
+   def build_closed_status( **kwargs: object ) -> ExhibitClosedStatus:
+      captured[ 'builder_kwargs' ] = kwargs
+      return CLOSED_STATUS
+
+   monkeypatch.setattr( ExhibitStatusBuilder, 'build_closed_status', build_closed_status )
 
    def save_closed_status(
          _conn: Types.Connection,
@@ -206,8 +210,9 @@ def Test_SetExhibitAsClosed_TestBuilderAndProvider_ExpectDelegated(
          exhibit: str,
          start_date: Types.DateInput,
          end_date: Types.DateInput,
-         message: str ) -> bool:
-      captured[ 'args' ] = ( exhibit, start_date, end_date, message )
+         message: str,
+         is_closed_for_season: bool ) -> bool:
+      captured[ 'args' ] = ( exhibit, start_date, end_date, message, is_closed_for_season )
       return True
 
    monkeypatch.setattr( ExhibitStatusProvider, 'save_closed_status', save_closed_status )
@@ -216,10 +221,18 @@ def Test_SetExhibitAsClosed_TestBuilderAndProvider_ExpectDelegated(
       EXHIBIT_NAME,
       START_DATE,
       END_DATE,
-      MESSAGE )
+      MESSAGE,
+      is_closed_for_season=True )
 
    assert result is True
-   assert captured[ 'args' ] == ( EXHIBIT_NAME, START_DATE, END_DATE, MESSAGE )
+   assert captured[ 'builder_kwargs' ] == {
+      'exhibit': EXHIBIT_NAME,
+      'start_date': START_DATE,
+      'end_date': END_DATE,
+      'message': MESSAGE,
+      'is_closed_for_season': True,
+   }
+   assert captured[ 'args' ] == ( EXHIBIT_NAME, START_DATE, END_DATE, MESSAGE, True )
 
 
 def Test_SetExhibitAsOpen_TestProvider_ExpectDelegated(

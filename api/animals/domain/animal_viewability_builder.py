@@ -245,7 +245,10 @@ class AnimalViewabilityBuilder():
          seasonal_viewing_summary=animal.seasonal_viewing_summary,
          seasonal_viewing_information=animal.seasonal_viewing_information,
          off_display_message=display_message,
-         is_off_display_for_season=is_off_display and bool( animal.is_off_display_for_season ),
+         is_off_display_for_season=cls._is_off_display_for_season(
+            animal,
+            is_off_display=is_off_display,
+            exhibit_status=exhibit_status ),
          enclosure_type=animal.enclosure_type,
          enclosure_name=animal.enclosure_name,
          x_coord=animal.x_coord,
@@ -285,6 +288,17 @@ class AnimalViewabilityBuilder():
          min_temperature=animal.min_temperature,
          day_seasonal_multiplier=animal.animal_day_seasonal_multiplier,
          exhibit_day_seasonal_availability_multiplier=applied_exhibit_day_availability_multiplier )
+
+
+   @classmethod
+   def _is_off_display_for_season(
+         cls,
+         animal: AnimalViewabilityRecord,
+         is_off_display: bool,
+         exhibit_status: ScheduleStatus ) -> bool:
+      is_exhibit_closed = exhibit_status == ScheduleStatus.CLOSED
+
+      return ( is_off_display or is_exhibit_closed ) and bool( animal.is_off_display_for_season )
 
 
    @classmethod

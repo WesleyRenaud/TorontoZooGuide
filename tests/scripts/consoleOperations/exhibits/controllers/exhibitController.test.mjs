@@ -58,6 +58,7 @@ test('Test_CreateExhibitClosedController_TestSubmitClosedStatus_ExpectPayload', 
          startDate: null,
          endDate: null,
          message,
+         isClosedForSeason: false,
       });
    } finally {
       ConsoleOperationsClient.setExhibitClosed = originalSet;
@@ -78,4 +79,55 @@ test('Test_CreateExhibitClosedController_TestSuccessMessage_ExpectCatalogMessage
    } finally {
       capture.restore();
    }
+});
+
+
+test('Test_CreateExhibitClosedForSeasonController_TestWiring_ExpectLoadOptions', (t) => {
+   const capture = _captureClosedForm();
+   t.after(capture.restore);
+
+   ExhibitController.createExhibitClosedForSeasonController({ exhibitEl: { id: 'e' } });
+
+   assert.equal(capture.getCaptured().loadOptions, ConsoleOptionsLoader.loadExhibits);
+});
+
+
+test('Test_CreateExhibitClosedForSeasonController_TestSubmitClosedStatus_ExpectSeasonPayload', async (t) => {
+   const exhibit = 'Kids Zoo';
+   const startDate = '2026-10-19';
+   const capture = _captureClosedForm();
+   const originalSet = ConsoleOperationsClient.setExhibitClosed;
+   ConsoleOperationsClient.setExhibitClosed = async (payload) => payload;
+   t.after(() => {
+      ConsoleOperationsClient.setExhibitClosed = originalSet;
+      capture.restore();
+   });
+   ExhibitController.createExhibitClosedForSeasonController({ exhibitEl: { id: 'e' } });
+
+   const payload = await capture.getCaptured().submitClosedStatus({
+      entity: exhibit,
+      startDate,
+      endDate: '',
+      message: '',
+   });
+
+   assert.deepEqual(payload, {
+      exhibit,
+      startDate,
+      endDate: null,
+      message: '',
+      isClosedForSeason: true,
+   });
+});
+
+
+test('Test_CreateExhibitClosedForSeasonController_TestSuccessMessage_ExpectSeasonMessage', (t) => {
+   const exhibit = 'Kids Zoo';
+   const capture = _captureClosedForm();
+   t.after(capture.restore);
+   ExhibitController.createExhibitClosedForSeasonController({ exhibitEl: { id: 'e' } });
+
+   const status = capture.getCaptured().successMessage({ exhibit });
+
+   assert.equal(status, Strings.status.closedForSeason(exhibit));
 });

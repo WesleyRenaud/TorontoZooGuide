@@ -63,10 +63,11 @@ class ExhibitCoordinator():
 
 
    @classmethod
-   def get_closed_exhibit_options( cls ) -> list[ str ]:
+   def get_closed_exhibit_options( cls, for_season_only: bool ) -> list[ str ]:
       return ClosedExhibitNameProvider.fetch_closed_exhibit_names(
          RequestConnectionProvider.get(),
-         today=DateValues.today_date_key() )
+         today=DateValues.today_date_key(),
+         for_season_only=for_season_only )
 
 
    @classmethod
@@ -75,19 +76,22 @@ class ExhibitCoordinator():
          exhibit: str,
          start_date: Types.DateInput,
          end_date: Types.DateInput,
-         message: str ) -> bool:
+         message: str,
+         is_closed_for_season: bool ) -> bool:
       status = ExhibitStatusBuilder.build_closed_status(
          exhibit=exhibit,
          start_date=start_date,
          end_date=end_date,
-         message=message )
+         message=message,
+         is_closed_for_season=is_closed_for_season )
 
       return ExhibitStatusProvider.save_closed_status(
          RequestConnectionProvider.get(),
          exhibit=status.exhibit,
          start_date=status.start_date,
          end_date=status.end_date,
-         message=status.message )
+         message=status.message,
+         is_closed_for_season=status.is_closed_for_season )
 
 
    @classmethod

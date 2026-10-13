@@ -9,8 +9,8 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/get-exhibits', {});
    }
 
-   static getClosedExhibitOptions() {
-      return ApiClient.postJson('/get-closed-exhibit-options', {});
+   static getClosedExhibitOptions(payload) {
+      return ApiClient.postJson('/get-closed-exhibit-options', payload);
    }
 
    static getRestaurantNameOptions() {

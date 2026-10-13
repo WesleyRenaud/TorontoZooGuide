@@ -98,6 +98,14 @@ export class ConsoleControllersBootstrapHelper {
       getRefs: refs => refs.exhibits.open,
    },
    {
+      createController: ExhibitController.createExhibitClosedForSeasonController,
+      getRefs: refs => refs.exhibits.closedForSeason,
+   },
+   {
+      createController: ExhibitOpenController.createExhibitOpenForSeasonController,
+      getRefs: refs => refs.exhibits.openForSeason,
+   },
+   {
       createController: RestaurantController.createRestaurantClosedController,
       getRefs: refs => refs.restaurants.closed,
    },

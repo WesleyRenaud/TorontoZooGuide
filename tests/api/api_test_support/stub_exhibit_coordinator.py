@@ -80,8 +80,8 @@ class StubExhibitCoordinator():
       return list( self.exhibit_names )
 
 
-   def get_closed_exhibit_options( self ) -> list[ str ]:
-      self.calls.append( ( 'get_closed_exhibit_options', {} ) )
+   def get_closed_exhibit_options( self, **kwargs: Any ) -> list[ str ]:
+      self.calls.append( ( 'get_closed_exhibit_options', kwargs ) )
       return list( self.closed_exhibit_names )
 
 

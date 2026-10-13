@@ -21,12 +21,14 @@ def Test_BuildClosedStatus_TestCustomMessage_ExpectMessageRetained() -> None:
       exhibit=EXHIBIT_NAME,
       start_date=CLOSURE_START_DATE,
       end_date=CLOSURE_END_DATE,
-      message=CUSTOM_CLOSED_MESSAGE )
+      message=CUSTOM_CLOSED_MESSAGE,
+      is_closed_for_season=False )
 
    assert status.exhibit == EXHIBIT_NAME
    assert status.start_date == CLOSURE_START_DATE
    assert status.end_date == CLOSURE_END_DATE
    assert status.message == CUSTOM_CLOSED_MESSAGE
+   assert status.is_closed_for_season is False
 
 
 def Test_BuildClosedStatus_TestEmptyMessage_ExpectDefaultGuestStatusMessage() -> None:
@@ -34,11 +36,26 @@ def Test_BuildClosedStatus_TestEmptyMessage_ExpectDefaultGuestStatusMessage() ->
       exhibit=EXHIBIT_NAME,
       start_date=CLOSURE_START_DATE,
       end_date=CLOSURE_END_DATE,
-      message='' )
+      message='',
+      is_closed_for_season=False )
 
    assert status.message == AppStringProvider.format(
       'guestStatus.locations.temporarilyClosed',
       name=EXHIBIT_NAME )
+
+
+def Test_BuildClosedStatus_TestClosedForSeasonWithEmptyMessage_ExpectSeasonMessageAndFlag() -> None:
+   status = ExhibitStatusBuilder.build_closed_status(
+      exhibit=EXHIBIT_NAME,
+      start_date=CLOSURE_START_DATE,
+      end_date=None,
+      message='',
+      is_closed_for_season=True )
+
+   assert status.message == AppStringProvider.format(
+      'guestStatus.locations.closedForSeason',
+      name=EXHIBIT_NAME )
+   assert status.is_closed_for_season is True
 
 
 def Test_IsClosureActiveOnVisitDate_TestInactiveClosure_ExpectFalse() -> None:

@@ -37,12 +37,12 @@ test('Test_GetExhibitOptions_TestNoArgs_ExpectPosted', async () => {
 });
 
 
-test('Test_GetClosedExhibitOptions_TestNoArgs_ExpectPosted', async () => {
+test('Test_GetClosedExhibitOptions_TestPayload_ExpectPosted', async () => {
    const url = '/get-closed-exhibit-options';
-   const payload = {};
+   const payload = { forSeasonOnly: true };
    _echoPostJson();
 
-   const result = await ConsoleOperationsClient.getClosedExhibitOptions();
+   const result = await ConsoleOperationsClient.getClosedExhibitOptions(payload);
 
    assert.deepEqual(result, { ok: true, url, payload });
 });

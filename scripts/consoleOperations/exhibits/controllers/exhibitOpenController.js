@@ -5,14 +5,31 @@ import { ConsoleOptionsLoader } from '../../options/consoleOptionsLoader.js';
 import { Strings } from '../../../strings.js';
 
 export class ExhibitOpenController {
-   static createExhibitOpenController({
+   static createExhibitOpenController(refs) {
+      return ExhibitOpenController.createController(refs, {
+         loadOptions: ConsoleOptionsLoader.loadClosedExhibits,
+         successMessage: result => Strings.status.explicitlyOpen(result.exhibit),
+      });
+   }
+
+   static createExhibitOpenForSeasonController(refs) {
+      return ExhibitOpenController.createController(refs, {
+         loadOptions: ConsoleOptionsLoader.loadClosedForSeasonExhibits,
+         successMessage: result => Strings.status.openForSeason(result.exhibit),
+      });
+   }
+
+   static createController({
       exhibitEl,
       ...controllerOptions
-   } = {}) {
+   }, {
+      loadOptions,
+      successMessage,
+   }) {
       return AmenityOpenControllerFactory.createAmenityOpenController({
          ...controllerOptions,
          entityEl: exhibitEl,
-         loadOptions: ConsoleOptionsLoader.loadClosedExhibits,
+         loadOptions,
          populateOptions: ConsoleDropdownPopulator.populateExhibitDropdown,
          submitOpenStatus: ({ entity, startDate, endDate }) => ConsoleOperationsClient.setExhibitOpen({
             exhibit: entity,
@@ -21,7 +38,7 @@ export class ExhibitOpenController {
          }),
          entityLabel: Strings.entityLabels.exhibit,
          optionsLabel: Strings.entityLabels.exhibits,
-         resultName: result => result.exhibit,
+         successMessage,
       });
    }
 }

@@ -85,11 +85,12 @@ CREATE TABLE AnimalViewingAlert (
 );
 
 CREATE TABLE ExhibitStatus (
-   EXHIBIT         TEXT NOT NULL PRIMARY KEY,
-   IS_CLOSED       INTEGER NOT NULL,
-   CLOSED_MESSAGE  TEXT,
-   CLOSED_START    TEXT,
-   CLOSED_END      TEXT
+   EXHIBIT            TEXT NOT NULL PRIMARY KEY,
+   IS_CLOSED          INTEGER NOT NULL,
+   CLOSED_MESSAGE     TEXT,
+   CLOSED_START       TEXT,
+   CLOSED_END         TEXT,
+   CLOSED_FOR_SEASON  INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE AnimalDaySeasonalViewabilityMultiplier (
@@ -196,6 +197,16 @@ def _seed_base_animal(
    )
 
 
+def _insert_exhibit_closed_for_season( conn: sqlite3.Connection ) -> None:
+   conn.execute(
+      """   INSERT INTO ExhibitStatus (
+               EXHIBIT, IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END, CLOSED_FOR_SEASON
+            ) VALUES ( ?, ?, ?, ?, ?, ? );
+      """,
+      ( EXHIBIT, 1, 'Closed for the season.', '2026-10-19', None, 1 ),
+   )
+
+
 def Test_FetchAnimalsViewableOnDayRecords_TestEmpty_ExpectEmptyList(
       animal_viewable_on_day_conn: sqlite3.Connection ) -> None:
    animals_viewable_on_day_records = AnimalViewableOnDayProvider.fetch_animals_viewable_on_day_records(
@@ -264,10 +275,10 @@ def Test_FetchAnimalsViewableOnDayRecords_TestJoinedStatusScheduleAlertAndMultip
    )
    animal_viewable_on_day_conn.execute(
       """   INSERT INTO ExhibitStatus (
-               EXHIBIT, IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END
-            ) VALUES ( ?, ?, ?, ?, ? );
+               EXHIBIT, IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END, CLOSED_FOR_SEASON
+            ) VALUES ( ?, ?, ?, ?, ?, ? );
       """,
-      ( EXHIBIT, 1, 'Closed for maintenance.', '2026-06-01', '2026-06-05' ),
+      ( EXHIBIT, 1, 'Closed for maintenance.', '2026-06-01', '2026-06-05', 0 ),
    )
    animal_viewable_on_day_conn.execute(
       """   INSERT INTO AnimalDaySeasonalViewabilityMultiplier (
@@ -312,6 +323,43 @@ def Test_FetchAnimalsViewableOnDayRecords_TestJoinedStatusScheduleAlertAndMultip
    assert record.closed_end == '2026-06-05'
    assert record.animal_day_seasonal_multiplier == 0.4
    assert record.exhibit_day_seasonal_availability_multiplier == 0.7
+
+
+def Test_FetchAnimalsViewableOnDayRecords_TestExhibitClosedForSeason_ExpectAnimalSeasonFlag(
+      animal_viewable_on_day_conn: sqlite3.Connection ) -> None:
+   _seed_base_animal( animal_viewable_on_day_conn )
+   _insert_exhibit_closed_for_season( animal_viewable_on_day_conn )
+   animal_viewable_on_day_conn.commit()
+
+   records = AnimalViewableOnDayProvider.fetch_animals_viewable_on_day_records(
+      animal_viewable_on_day_conn,
+      VISIT_MONTH,
+      VISIT_DAY )
+
+   assert records[ Position.FIRST ].is_off_display_for_season == 1
+
+
+def Test_FetchAnimalsViewableOnDayRecords_TestOffDisplayInSeasonClosedExhibit_ExpectAnimalFlagWins(
+      animal_viewable_on_day_conn: sqlite3.Connection ) -> None:
+   _seed_base_animal( animal_viewable_on_day_conn )
+   animal_viewable_on_day_conn.execute(
+      """   INSERT INTO AnimalStatus (
+               SPECIES, EXHIBIT, VIEWING_SCOPE, IS_OFF_DISPLAY,
+               OFF_DISPLAY_MESSAGE, OFF_DISPLAY_START, OFF_DISPLAY_END,
+               OFF_DISPLAY_FOR_SEASON
+            ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
+      """,
+      ( SPECIES, EXHIBIT, 'Outdoor Yard', 1, 'Vet care.', '2026-10-19', None, 0 ),
+   )
+   _insert_exhibit_closed_for_season( animal_viewable_on_day_conn )
+   animal_viewable_on_day_conn.commit()
+
+   records = AnimalViewableOnDayProvider.fetch_animals_viewable_on_day_records(
+      animal_viewable_on_day_conn,
+      VISIT_MONTH,
+      VISIT_DAY )
+
+   assert records[ Position.FIRST ].is_off_display_for_season == 0
 
 
 def Test_FetchAnimalsViewableOnDayRecords_TestExhibitFilter_ExpectOnlyMatchingExhibits(

@@ -453,6 +453,55 @@ def Test_BuildViewableAnimalFromRecord_TestClosedExhibit_ExpectZeroLikelihoodAnd
 
    assert animal.likelihood == 0
    assert animal.off_display_message == CLOSED_MESSAGE
+   assert animal.is_off_display_for_season is False
+
+
+def Test_BuildViewableAnimalFromRecord_TestExhibitClosedForSeason_ExpectSeasonFlag(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      is_closed=1,
+      closed_message=CLOSED_MESSAGE,
+      closed_start=SCHEDULE_START_DATE,
+      closed_end=SCHEDULE_END_DATE,
+      is_off_display_for_season=1,
+      enclosure_type='Indoor' )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.likelihood == 0
+   assert animal.off_display_message == CLOSED_MESSAGE
+   assert animal.is_off_display_for_season is True
+
+
+def Test_BuildViewableAnimalFromRecord_TestExhibitClosedForSeasonAfterEndDate_ExpectNoSeasonFlag(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = _make_animal_viewability_record(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      is_closed=1,
+      closed_message=CLOSED_MESSAGE,
+      closed_start=SCHEDULE_START_DATE,
+      closed_end=SCHEDULE_END_DATE,
+      is_off_display_for_season=1,
+      enclosure_type='Indoor' )
+   monkeypatch.setattr( ViewingWalkNodeIdApplier, 'apply', lambda _animal: None )
+
+   animal = AnimalViewabilityBuilder.build_viewable_animal_from_record(
+      record,
+      target_date=EXPIRED_TARGET_DATE,
+      temp=TEMP,
+      sigma=SIGMA )
+
+   assert animal.likelihood > 0
+   assert animal.off_display_message is None
+   assert animal.is_off_display_for_season is False
 
 
 def Test_BuildViewableAnimalFromRecord_TestLimitedViewingAndAlert_ExpectFlagsAndMessages(

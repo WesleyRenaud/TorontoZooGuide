@@ -16,19 +16,31 @@ class ExhibitStatusBuilder():
          exhibit: str,
          start_date: Types.DateInput,
          end_date: Types.DateInput,
-         message: str ) -> ExhibitClosedStatus:
+         message: str,
+         is_closed_for_season: bool ) -> ExhibitClosedStatus:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 
       if not message:
-         message = AppStringProvider.format( 'guestStatus.locations.temporarilyClosed', name=exhibit )
+         message = AppStringProvider.format(
+            cls._default_message_key( is_closed_for_season ),
+            name=exhibit )
 
       return ExhibitClosedStatus(
          exhibit=exhibit,
          start_date=date_range.start_date,
          end_date=date_range.end_date,
-         message=message )
+         message=message,
+         is_closed_for_season=is_closed_for_season )
+
+
+   @classmethod
+   def _default_message_key( cls, is_closed_for_season: bool ) -> str:
+      if is_closed_for_season:
+         return 'guestStatus.locations.closedForSeason'
+
+      return 'guestStatus.locations.temporarilyClosed'
 
 
    @classmethod

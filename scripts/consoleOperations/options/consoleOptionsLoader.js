@@ -25,7 +25,12 @@ export class ConsoleOptionsLoader {
    }
 
    static async loadClosedExhibits() {
-      const result = await ConsoleOperationsClient.getClosedExhibitOptions();
+      const result = await ConsoleOperationsClient.getClosedExhibitOptions({});
+      return result.exhibits;
+   }
+
+   static async loadClosedForSeasonExhibits() {
+      const result = await ConsoleOperationsClient.getClosedExhibitOptions({ forSeasonOnly: true });
       return result.exhibits;
    }
 
