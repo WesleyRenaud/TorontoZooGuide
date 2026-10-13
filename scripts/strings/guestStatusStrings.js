@@ -38,6 +38,7 @@ export class GuestStatusStrings {
       },
       locations: {
          temporarilyClosed: 'The {name} is temporarily closed.',
+         closedForSeason: 'The {name} is closed for the season.',
          notScheduledToBeOpenToday: (
             'The {name} is not scheduled to be open today.'
          ),

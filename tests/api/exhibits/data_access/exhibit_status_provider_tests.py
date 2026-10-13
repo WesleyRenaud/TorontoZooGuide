@@ -15,11 +15,12 @@ END_DATE = '2026-06-30'
 
 EXHIBIT_STATUS_SCHEMA = """
 CREATE TABLE ExhibitStatus (
-   EXHIBIT          TEXT NOT NULL PRIMARY KEY,
-   IS_CLOSED        INTEGER NOT NULL,
-   CLOSED_MESSAGE   TEXT,
-   CLOSED_START     TEXT,
-   CLOSED_END       TEXT
+   EXHIBIT             TEXT NOT NULL PRIMARY KEY,
+   IS_CLOSED           INTEGER NOT NULL,
+   CLOSED_MESSAGE      TEXT,
+   CLOSED_START        TEXT,
+   CLOSED_END          TEXT,
+   CLOSED_FOR_SEASON   INTEGER NOT NULL DEFAULT 0
 );
 """
 
@@ -35,6 +36,15 @@ def exhibit_status_conn() -> sqlite3.Connection:
    conn.close()
 
 
+def _fetch_status_row( conn: sqlite3.Connection ) -> sqlite3.Row:
+   return conn.execute(
+      """   SELECT EXHIBIT, IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END, CLOSED_FOR_SEASON
+            FROM ExhibitStatus
+            WHERE EXHIBIT = ?;
+      """,
+      ( EXHIBIT, ) ).fetchone()
+
+
 def Test_SaveClosedStatus_TestNewExhibit_ExpectPersistsClosedRow(
       exhibit_status_conn: sqlite3.Connection ) -> None:
    result = ExhibitStatusProvider.save_closed_status(
@@ -42,18 +52,48 @@ def Test_SaveClosedStatus_TestNewExhibit_ExpectPersistsClosedRow(
       exhibit=EXHIBIT,
       start_date=START_DATE,
       end_date=END_DATE,
-      message=CLOSED_MESSAGE )
+      message=CLOSED_MESSAGE,
+      is_closed_for_season=False )
 
    assert result is True
+   assert tuple( _fetch_status_row( exhibit_status_conn ) ) == (
+      EXHIBIT, 1, CLOSED_MESSAGE, START_DATE, END_DATE, 0 )
 
-   row = exhibit_status_conn.execute(
-      """   SELECT EXHIBIT, IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END
-            FROM ExhibitStatus
-            WHERE EXHIBIT = ?;
-      """,
-      ( EXHIBIT, ) ).fetchone()
 
-   assert tuple( row ) == ( EXHIBIT, 1, CLOSED_MESSAGE, START_DATE, END_DATE )
+def Test_SaveClosedStatus_TestClosedForSeason_ExpectPersistsSeasonFlag(
+      exhibit_status_conn: sqlite3.Connection ) -> None:
+   result = ExhibitStatusProvider.save_closed_status(
+      exhibit_status_conn,
+      exhibit=EXHIBIT,
+      start_date=START_DATE,
+      end_date=END_DATE,
+      message=CLOSED_MESSAGE,
+      is_closed_for_season=True )
+
+   assert result is True
+   assert tuple( _fetch_status_row( exhibit_status_conn ) ) == (
+      EXHIBIT, 1, CLOSED_MESSAGE, START_DATE, END_DATE, 1 )
+
+
+def Test_SaveClosedStatus_TestExistingSeasonClosure_ExpectSeasonFlagReplaced(
+      exhibit_status_conn: sqlite3.Connection ) -> None:
+   ExhibitStatusProvider.save_closed_status(
+      exhibit_status_conn,
+      exhibit=EXHIBIT,
+      start_date=START_DATE,
+      end_date=END_DATE,
+      message=CLOSED_MESSAGE,
+      is_closed_for_season=True )
+
+   ExhibitStatusProvider.save_closed_status(
+      exhibit_status_conn,
+      exhibit=EXHIBIT,
+      start_date=START_DATE,
+      end_date=END_DATE,
+      message=CLOSED_MESSAGE,
+      is_closed_for_season=False )
+
+   assert _fetch_status_row( exhibit_status_conn )[ 'CLOSED_FOR_SEASON' ] == 0
 
 
 def Test_SaveOpenStatus_TestPreviouslyClosedExhibit_ExpectClearsClosedMessage(
@@ -63,7 +103,8 @@ def Test_SaveOpenStatus_TestPreviouslyClosedExhibit_ExpectClearsClosedMessage(
       exhibit=EXHIBIT,
       start_date=START_DATE,
       end_date=END_DATE,
-      message=CLOSED_MESSAGE )
+      message=CLOSED_MESSAGE,
+      is_closed_for_season=True )
 
    result = ExhibitStatusProvider.save_open_status(
       exhibit_status_conn,
@@ -72,15 +113,8 @@ def Test_SaveOpenStatus_TestPreviouslyClosedExhibit_ExpectClearsClosedMessage(
       end_date=END_DATE )
 
    assert result is True
-
-   row = exhibit_status_conn.execute(
-      """   SELECT IS_CLOSED, CLOSED_MESSAGE, CLOSED_START, CLOSED_END
-            FROM ExhibitStatus
-            WHERE EXHIBIT = ?;
-      """,
-      ( EXHIBIT, ) ).fetchone()
-
-   assert tuple( row ) == ( 0, None, START_DATE, END_DATE )
+   assert tuple( _fetch_status_row( exhibit_status_conn ) ) == (
+      EXHIBIT, 0, None, START_DATE, END_DATE, 0 )
 
 
 def Test_FetchClosureRecords_TestMixedStatuses_ExpectOnlyClosedExhibits(
@@ -90,7 +124,8 @@ def Test_FetchClosureRecords_TestMixedStatuses_ExpectOnlyClosedExhibits(
       exhibit=EXHIBIT,
       start_date=START_DATE,
       end_date=END_DATE,
-      message=CLOSED_MESSAGE )
+      message=CLOSED_MESSAGE,
+      is_closed_for_season=False )
    ExhibitStatusProvider.save_open_status(
       exhibit_status_conn,
       exhibit='Indo-Malaya',

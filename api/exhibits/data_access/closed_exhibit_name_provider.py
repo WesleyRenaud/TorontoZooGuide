@@ -9,7 +9,8 @@ class ClosedExhibitNameProvider():
    def fetch_closed_exhibit_names(
          cls,
          conn: Types.Connection,
-         today: Types.DateKey ) -> list[ str ]:
+         today: Types.DateKey,
+         for_season_only: bool ) -> list[ str ]:
       cur = conn.cursor()
 
       try:
@@ -22,9 +23,13 @@ class ClosedExhibitNameProvider():
                         CLOSED_END IS NULL
                         OR CLOSED_END >= ?
                      )
+                     AND (
+                        ? = 0
+                        OR CLOSED_FOR_SEASON = 1
+                     )
                   ORDER BY EXHIBIT;
             """,
-            ( today, ) )
+            ( today, for_season_only ) )
 
          return [ row[ Position.FIRST ] for row in data.fetchall() ]
 

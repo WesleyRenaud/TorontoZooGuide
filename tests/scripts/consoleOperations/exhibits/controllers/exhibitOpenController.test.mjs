@@ -78,3 +78,52 @@ test('Test_CreateExhibitOpenController_TestSuccessMessage_ExpectCatalogMessage',
       capture.restore();
    }
 });
+
+
+test('Test_CreateExhibitOpenForSeasonController_TestWiring_ExpectSeasonLoadOptions', (t) => {
+   const capture = _captureOpenForm();
+   t.after(capture.restore);
+
+   ExhibitOpenController.createExhibitOpenForSeasonController({ exhibitEl: { id: 'exhibit' } });
+
+   assert.equal(capture.getCaptured().loadOptions, ConsoleOptionsLoader.loadClosedForSeasonExhibits);
+   assert.equal(capture.getCaptured().entityLabel, Strings.entityLabels.exhibit);
+});
+
+
+test('Test_CreateExhibitOpenForSeasonController_TestSubmitOpenStatus_ExpectPayload', async (t) => {
+   const exhibit = 'Kids Zoo';
+   const startDate = '2027-04-09';
+   const capture = _captureOpenForm();
+   const originalSet = ConsoleOperationsClient.setExhibitOpen;
+   ConsoleOperationsClient.setExhibitOpen = async (payload) => payload;
+   t.after(() => {
+      ConsoleOperationsClient.setExhibitOpen = originalSet;
+      capture.restore();
+   });
+   ExhibitOpenController.createExhibitOpenForSeasonController({ exhibitEl: { id: 'exhibit' } });
+
+   const payload = await capture.getCaptured().submitOpenStatus({
+      entity: exhibit,
+      startDate,
+      endDate: '',
+   });
+
+   assert.deepEqual(payload, {
+      exhibit,
+      startDate,
+      endDate: null,
+   });
+});
+
+
+test('Test_CreateExhibitOpenForSeasonController_TestSuccessMessage_ExpectSeasonMessage', (t) => {
+   const exhibit = 'Kids Zoo';
+   const capture = _captureOpenForm();
+   t.after(capture.restore);
+   ExhibitOpenController.createExhibitOpenForSeasonController({ exhibitEl: { id: 'exhibit' } });
+
+   const message = capture.getCaptured().successMessage({ exhibit });
+
+   assert.equal(message, Strings.status.openForSeason(exhibit));
+});

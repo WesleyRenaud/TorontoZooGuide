@@ -125,7 +125,8 @@ Content lives in the `.json` files below. Run them all from [`index.html`](index
 | CON-14 | [json](console/CON-14-create-event.json) | Create event |
 | CON-15 | [json](console/CON-15-console-validation-errors.json) | Validation errors |
 | CON-16 | [json](console/CON-16-animal-off-on-display-for-season.json) | Off/on display for the season + winter-blue map marker |
+| CON-17 | [json](console/CON-17-exhibit-closed-open-for-season.json) | Exhibit closed/open for the season + winter-blue animal markers |
 
 ## Recommended run order
 
-MAP-01 → MAP-09, then ITIN-01 → ITIN-21, then CON-01 → CON-16.
+MAP-01 → MAP-09, then ITIN-01 → ITIN-21, then CON-01 → CON-17.

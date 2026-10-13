@@ -55,7 +55,10 @@ class ExhibitController():
 
    @staticmethod
    def get_closed_exhibit_options( handler: JsonRequestHandler ) -> None:
-      exhibits = ExhibitCoordinator.get_closed_exhibit_options()
+      data = handler._read_json_body()
+
+      exhibits = ExhibitCoordinator.get_closed_exhibit_options(
+         for_season_only=bool( data.get( 'forSeasonOnly' ) ) )
 
       handler._write_json( {
          'exhibits': exhibits,
@@ -88,12 +91,14 @@ class ExhibitController():
       start_date = data.get( 'startDate' )
       end_date = data.get( 'endDate' )
       message = data.get( 'message' )
+      is_closed_for_season = bool( data.get( 'isClosedForSeason' ) )
 
       success = ExhibitCoordinator.set_exhibit_as_closed(
          exhibit=exhibit,
          start_date=start_date,
          end_date=end_date,
-         message=message )
+         message=message,
+         is_closed_for_season=is_closed_for_season )
 
       response = {
          'success': success,

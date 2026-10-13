@@ -13,7 +13,9 @@ import { AttractionOpeningScheduleView } from '../attractions/panels/attractionO
 import { DrinkingFountainsClosedView } from '../drinkingFountains/panels/drinkingFountainsClosedView.js';
 import { DrinkingFountainsOpenView } from '../drinkingFountains/panels/drinkingFountainsOpenView.js';
 import { CreateEventView } from '../events/panels/createEventView.js';
+import { ExhibitClosedForSeasonView } from '../exhibits/panels/exhibitClosedForSeasonView.js';
 import { ExhibitClosedView } from '../exhibits/panels/exhibitClosedView.js';
+import { ExhibitOpenForSeasonView } from '../exhibits/panels/exhibitOpenForSeasonView.js';
 import { ExhibitOpenView } from '../exhibits/panels/exhibitOpenView.js';
 import { GiftShopClosedView } from '../giftShops/panels/giftShopClosedView.js';
 import { GiftShopClosureOverrideView } from '../giftShops/panels/giftShopClosureOverrideView.js';
@@ -54,6 +56,8 @@ export class ConsoleOperationPanelsBootstrapHelper {
    exhibits: [
       ExhibitClosedView.createExhibitClosedPanel,
       ExhibitOpenView.createExhibitOpenPanel,
+      ExhibitClosedForSeasonView.createExhibitClosedForSeasonPanel,
+      ExhibitOpenForSeasonView.createExhibitOpenForSeasonPanel,
    ],
    restaurants: [
       RestaurantClosedView.createRestaurantClosedPanel,

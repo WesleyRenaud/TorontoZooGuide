@@ -1,0 +1,60 @@
+{
+  "id": "CON-17",
+  "title": "Exhibit closed/open for the season",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open closed-for-season op",
+      "do": "Select **Set exhibit as closed for the season**.",
+      "expect": "Closed for the season form opens with **Exhibit**, **Start date**, **Last day** and **Closure message**."
+    },
+    {
+      "number": 2,
+      "name": "Submit with blank message",
+      "do": "Select **Kids Zoo**. Leave **Start date**, **Last day** and **Closure message** blank. Click **Save**.",
+      "expect": "Success that **Kids Zoo** was set as closed for the season."
+    },
+    {
+      "number": 3,
+      "name": "Map without include",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. Leave **Include off display animals** unchecked.",
+      "expect": "**Kids Zoo** animal markers such as **Guinea Pig** and **Rabbit** are absent. The **Kids Zoo** closed-exhibit overlay looks the same as for any other closed exhibit."
+    },
+    {
+      "number": 4,
+      "name": "Winter-blue markers",
+      "do": "Enable **Include off display animals**.",
+      "expect": "Every **Kids Zoo** animal marker appears with a light winter-blue background. Click **Guinea Pig**: the popup is blue with a snowflake and reads **The Kids Zoo is closed for the season.**"
+    },
+    {
+      "number": 5,
+      "name": "Regular closure keeps likelihood colour",
+      "do": "In Console, use **Set exhibit as closed** for **Americas Pavilion** with blank dates, then return to the map with **Include off display animals** enabled.",
+      "expect": "**Americas Pavilion** animals use their usual likelihood colour, not winter blue. Only animals in season-closed exhibits are winter blue."
+    },
+    {
+      "number": 6,
+      "name": "Open-for-season lists season only",
+      "do": "In Console, open **Set exhibit as open for the season** and expand **Exhibit**.",
+      "expect": "**Kids Zoo** is listed. **Americas Pavilion** is not listed because it is not closed for the season."
+    },
+    {
+      "number": 7,
+      "name": "Submit open for season",
+      "do": "Select **Kids Zoo**, leave the dates blank and click **Save**.",
+      "expect": "Success that **Kids Zoo** was set as open for the season."
+    },
+    {
+      "number": 8,
+      "name": "Regular open cleanup",
+      "do": "Open **Set exhibit as open**. Select **Americas Pavilion** and click **Save**.",
+      "expect": "Success that **Americas Pavilion** was set as explicitly open."
+    },
+    {
+      "number": 9,
+      "name": "Map restored",
+      "do": "From the bottom nav, return to **Map** on **Specific Map** today with **Include off display animals** unchecked.",
+      "expect": "**Kids Zoo** and **Americas Pavilion** animals show as normal on-display markers again, with no closed-exhibit overlay on either exhibit."
+    }
+  ]
+}

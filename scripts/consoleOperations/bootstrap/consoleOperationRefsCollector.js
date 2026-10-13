@@ -86,6 +86,21 @@ export class ConsoleOperationRefsCollector {
                exhibitEl: 'Exhibit',
             },
          },
+         closedForSeason: {
+            operationName: 'exhibitClosedForSeason',
+            includeDateRange: true,
+            fieldSuffixes: {
+               exhibitEl: 'Exhibit',
+               messageEl: 'Message',
+            },
+         },
+         openForSeason: {
+            operationName: 'exhibitOpenForSeason',
+            includeDateRange: true,
+            fieldSuffixes: {
+               exhibitEl: 'Exhibit',
+            },
+         },
       },
       restaurants: {
          closed: {

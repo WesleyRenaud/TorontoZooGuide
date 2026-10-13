@@ -13,7 +13,8 @@ class ExhibitStatusProvider():
          exhibit: str,
          start_date: Types.DateInput,
          end_date: Types.DateInput,
-         message: str ) -> bool:
+         message: str,
+         is_closed_for_season: bool ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -23,20 +24,23 @@ class ExhibitStatusProvider():
                      IS_CLOSED,
                      CLOSED_MESSAGE,
                      CLOSED_START,
-                     CLOSED_END
+                     CLOSED_END,
+                     CLOSED_FOR_SEASON
                   )
-                  VALUES (?, 1, ?, ?, ?)
+                  VALUES (?, 1, ?, ?, ?, ?)
                   ON CONFLICT(EXHIBIT) DO UPDATE SET
                      IS_CLOSED = 1,
                      CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
                      CLOSED_START = excluded.CLOSED_START,
-                     CLOSED_END = excluded.CLOSED_END;
+                     CLOSED_END = excluded.CLOSED_END,
+                     CLOSED_FOR_SEASON = excluded.CLOSED_FOR_SEASON;
             """,
             (
                exhibit,
                message,
                start_date,
                end_date,
+               is_closed_for_season,
             ) )
 
          conn.commit()
@@ -69,7 +73,8 @@ class ExhibitStatusProvider():
                      IS_CLOSED = 0,
                      CLOSED_MESSAGE = NULL,
                      CLOSED_START = excluded.CLOSED_START,
-                     CLOSED_END = excluded.CLOSED_END;
+                     CLOSED_END = excluded.CLOSED_END,
+                     CLOSED_FOR_SEASON = 0;
             """,
             (
                exhibit,

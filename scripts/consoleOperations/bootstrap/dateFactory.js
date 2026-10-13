@@ -9,6 +9,8 @@ export class DateFactory {
          ['animals', 'viewingAlert'],
          ['exhibits', 'closed'],
          ['exhibits', 'open'],
+         ['exhibits', 'closedForSeason'],
+         ['exhibits', 'openForSeason'],
          ['restaurants', 'closed'],
          ['restaurants', 'closureOverride'],
          ['restaurants', 'openingSchedule'],

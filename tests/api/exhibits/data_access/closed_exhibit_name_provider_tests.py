@@ -14,11 +14,12 @@ KIDS_ZOO = 'Kids Zoo'
 
 EXHIBIT_STATUS_SCHEMA = """
 CREATE TABLE ExhibitStatus (
-   EXHIBIT          TEXT NOT NULL PRIMARY KEY,
-   IS_CLOSED        INTEGER NOT NULL,
-   CLOSED_MESSAGE   TEXT,
-   CLOSED_START     TEXT,
-   CLOSED_END       TEXT
+   EXHIBIT             TEXT NOT NULL PRIMARY KEY,
+   IS_CLOSED           INTEGER NOT NULL,
+   CLOSED_MESSAGE      TEXT,
+   CLOSED_START        TEXT,
+   CLOSED_END          TEXT,
+   CLOSED_FOR_SEASON   INTEGER NOT NULL DEFAULT 0
 );
 """
 
@@ -40,16 +41,18 @@ def _insert_status(
       exhibit: str,
       is_closed: int,
       start_date: str | None,
-      end_date: str | None ) -> None:
+      end_date: str | None,
+      is_closed_for_season: int = 0 ) -> None:
    conn.execute(
       """   INSERT INTO ExhibitStatus (
                EXHIBIT,
                IS_CLOSED,
                CLOSED_MESSAGE,
                CLOSED_START,
-               CLOSED_END
+               CLOSED_END,
+               CLOSED_FOR_SEASON
             )
-            VALUES ( ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ? );
       """,
       (
          exhibit,
@@ -57,6 +60,7 @@ def _insert_status(
          'Closed for maintenance.',
          start_date,
          end_date,
+         is_closed_for_season,
       ) )
    conn.commit()
 
@@ -65,7 +69,8 @@ def Test_FetchClosedExhibitNames_TestEmpty_ExpectEmptyList(
       closed_exhibit_name_conn: sqlite3.Connection ) -> None:
    closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert closed_exhibit_names == []
 
@@ -87,7 +92,8 @@ def Test_FetchClosedExhibitNames_TestCurrentAndFuture_ExpectDistinctSortedExhibi
 
    closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert closed_exhibit_names == [ SAVANNA, EURASIA ]
 
@@ -103,7 +109,8 @@ def Test_FetchClosedExhibitNames_TestExpired_ExpectExcluded(
 
    closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert closed_exhibit_names == []
 
@@ -119,7 +126,8 @@ def Test_FetchClosedExhibitNames_TestEndingToday_ExpectIncluded(
 
    closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert closed_exhibit_names == [ SAVANNA ]
 
@@ -135,6 +143,55 @@ def Test_FetchClosedExhibitNames_TestOpenRow_ExpectExcluded(
 
    closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
       closed_exhibit_name_conn,
-      TODAY )
+      TODAY,
+      for_season_only=False )
 
    assert closed_exhibit_names == []
+
+
+def Test_FetchClosedExhibitNames_TestMixedSeasonClosures_ExpectAllWhenNotSeasonOnly(
+      closed_exhibit_name_conn: sqlite3.Connection ) -> None:
+   _insert_status(
+      closed_exhibit_name_conn,
+      exhibit=SAVANNA,
+      is_closed=1,
+      start_date='2026-09-01',
+      end_date='2026-09-30' )
+   _insert_status(
+      closed_exhibit_name_conn,
+      exhibit=KIDS_ZOO,
+      is_closed=1,
+      start_date='2026-09-01',
+      end_date=None,
+      is_closed_for_season=1 )
+
+   closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
+      closed_exhibit_name_conn,
+      TODAY,
+      for_season_only=False )
+
+   assert closed_exhibit_names == [ SAVANNA, KIDS_ZOO ]
+
+
+def Test_FetchClosedExhibitNames_TestMixedSeasonClosures_ExpectSeasonOnly(
+      closed_exhibit_name_conn: sqlite3.Connection ) -> None:
+   _insert_status(
+      closed_exhibit_name_conn,
+      exhibit=SAVANNA,
+      is_closed=1,
+      start_date='2026-09-01',
+      end_date='2026-09-30' )
+   _insert_status(
+      closed_exhibit_name_conn,
+      exhibit=KIDS_ZOO,
+      is_closed=1,
+      start_date='2026-09-01',
+      end_date=None,
+      is_closed_for_season=1 )
+
+   closed_exhibit_names = ClosedExhibitNameProvider.fetch_closed_exhibit_names(
+      closed_exhibit_name_conn,
+      TODAY,
+      for_season_only=True )
+
+   assert closed_exhibit_names == [ KIDS_ZOO ]

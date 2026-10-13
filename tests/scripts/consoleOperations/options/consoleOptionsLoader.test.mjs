@@ -136,15 +136,39 @@ test('Test_LoadWildEncounters_TestDelegation_ExpectCachedLoaderArgs', async () =
 test('Test_LoadClosedExhibits_TestClientResult_ExpectExhibits', async () => {
    const exhibits = ['Canadian Domain', 'Kids Zoo'];
    const originalGet = ConsoleOperationsClient.getClosedExhibitOptions;
-   ConsoleOperationsClient.getClosedExhibitOptions = async () => ({ exhibits });
+   const payloads = [];
+   ConsoleOperationsClient.getClosedExhibitOptions = async (payload) => {
+      payloads.push(payload);
+      return { exhibits };
+   };
 
    try {
       const loaded = await ConsoleOptionsLoader.loadClosedExhibits();
 
       assert.deepEqual(loaded, exhibits);
+      assert.deepEqual(payloads, [{}]);
    } finally {
       ConsoleOperationsClient.getClosedExhibitOptions = originalGet;
    }
+});
+
+
+test('Test_LoadClosedForSeasonExhibits_TestClientResult_ExpectSeasonPayloadAndExhibits', async (t) => {
+   const exhibits = ['Kids Zoo'];
+   const originalGet = ConsoleOperationsClient.getClosedExhibitOptions;
+   const payloads = [];
+   ConsoleOperationsClient.getClosedExhibitOptions = async (payload) => {
+      payloads.push(payload);
+      return { exhibits };
+   };
+   t.after(() => {
+      ConsoleOperationsClient.getClosedExhibitOptions = originalGet;
+   });
+
+   const loaded = await ConsoleOptionsLoader.loadClosedForSeasonExhibits();
+
+   assert.deepEqual(loaded, exhibits);
+   assert.deepEqual(payloads, [{ forSeasonOnly: true }]);
 });
 
 
