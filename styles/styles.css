@@ -838,6 +838,10 @@ html.home-page {
    overflow: hidden;
 }
 
+#mapStage {
+   position: absolute;
+}
+
 #zooMapMount {
    position: absolute;
    inset: 0;

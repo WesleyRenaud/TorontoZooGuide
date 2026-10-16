@@ -4,11 +4,16 @@ import { MarkerGrouper } from './markerGrouper.js';
 import { MarkerLayerHelper } from './markerLayerHelper.js';
 
 export class MarkerController {
-   static createMarkerLayer({ mapInner, tooltip, hover, enableCoordinateEditing = false }) {
+   static createMarkerLayer({
+      markerSurface,
+      tooltip,
+      hover,
+      enableCoordinateEditing = false,
+   }) {
       const markerElsByCoord = new Map();
 
       function clear() {
-         MarkerLayerHelper.removeRenderedMarkers(mapInner);
+         MarkerLayerHelper.removeRenderedMarkers(markerSurface);
          markerElsByCoord.clear();
       }
 
@@ -20,7 +25,7 @@ export class MarkerController {
          MarkerBuilder.bindMarkerInteractions({
             markerEl,
             group,
-            mapInner,
+            mapInner: markerSurface,
             tooltip,
             hover,
             enableCoordinateEditing,
@@ -45,7 +50,7 @@ export class MarkerController {
 
       function render(items) {
          clear();
-         mapInner.appendChild(buildMarkerFragment(items));
+         markerSurface.appendChild(buildMarkerFragment(items));
       }
 
       function getMarkerByCoord(key) {

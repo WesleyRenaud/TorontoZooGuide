@@ -1,6 +1,7 @@
 import { AppConfig } from '../config/appConfig.js';
 import { MapDataSourceFactory } from './mapDataSourceFactory.js';
 import { MapRuntimeFactory } from './mapRuntimeFactory.js';
+import { MapStageController } from './mapStageController.js';
 import { MapStore } from './mapStore.js';
 import { MapUpdater } from './mapUpdater.js';
 import { HoverFragment } from '../markers/hoverFragment.js';
@@ -44,7 +45,7 @@ export class MapFactory {
       MapRuntimeFactory.initMapLabels(showMapLabelsCheckbox);
 
       const markers = MarkerController.createMarkerLayer({
-         mapInner,
+         markerSurface: MapStageController.mount(mapInner),
          tooltip,
          hover,
          enableCoordinateEditing,
