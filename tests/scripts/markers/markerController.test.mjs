@@ -57,7 +57,7 @@ test('Test_CreateMarkerLayer_TestRenderAndLookup_ExpectMarkers', () => {
       };
 
       const layer = MarkerController.createMarkerLayer({
-         mapInner,
+         markerSurface: mapInner,
          tooltip: {},
          hover: {},
          enableCoordinateEditing: true,
@@ -76,6 +76,59 @@ test('Test_CreateMarkerLayer_TestRenderAndLookup_ExpectMarkers', () => {
       assert.equal(layer.getAllMarkers().length, Position.SECOND);
    } finally {
       MarkerLayerHelper.removeRenderedMarkers = originalRemove;
+      MarkerBuilder.createMarkerElement = originalCreate;
+      MarkerBuilder.bindMarkerInteractions = originalBind;
+      MarkerGrouper.groupMarkersByCoordinate = originalGroup;
+      MarkerLayerHelper.shouldRenderMarkerGroup = originalShould;
+   }
+});
+
+
+test('Test_CreateMarkerLayer_TestMarkerSurface_ExpectMarkersOnSurface', () => {
+   const originalCreate = MarkerBuilder.createMarkerElement;
+   const originalBind = MarkerBuilder.bindMarkerInteractions;
+   const originalGroup = MarkerGrouper.groupMarkersByCoordinate;
+   const originalShould = MarkerLayerHelper.shouldRenderMarkerGroup;
+   const binds = [];
+   const markerSurface = document.createElement('div');
+   const renderedKey = '10|20';
+   const originalAppend = markerSurface.appendChild.bind(markerSurface);
+   markerSurface.appendChild = (child) => {
+      if (child?.tagName === '#fragment') {
+         for (const nested of [...child.children]) {
+            originalAppend(nested);
+         }
+         return child;
+      }
+      return originalAppend(child);
+   };
+
+   MarkerBuilder.createMarkerElement = (group) => {
+      const el = document.createElement('div');
+      el.id = group.key;
+      return el;
+   };
+   MarkerBuilder.bindMarkerInteractions = (options) => {
+      binds.push(options);
+   };
+   MarkerGrouper.groupMarkersByCoordinate = () => new Map([
+      [renderedKey, { key: renderedKey, items: [{ type: ItemType.ANIMAL }] }],
+   ]);
+   MarkerLayerHelper.shouldRenderMarkerGroup = () => true;
+
+   try {
+      const layer = MarkerController.createMarkerLayer({
+         markerSurface,
+         tooltip: {},
+         hover: {},
+      });
+      layer.render([{ type: ItemType.ANIMAL }]);
+
+      assert.equal(markerSurface.children.length, Position.SECOND);
+      assert.equal(markerSurface.children.at(Position.FIRST).id, renderedKey);
+      assert.equal(binds.at(Position.FIRST).mapInner, markerSurface);
+      assert.equal(layer.getMarkerByCoord(renderedKey).id, renderedKey);
+   } finally {
       MarkerBuilder.createMarkerElement = originalCreate;
       MarkerBuilder.bindMarkerInteractions = originalBind;
       MarkerGrouper.groupMarkersByCoordinate = originalGroup;
