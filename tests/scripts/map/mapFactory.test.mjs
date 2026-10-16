@@ -4,6 +4,7 @@ import test from 'node:test';
 import { MapFactory } from '../../../scripts/map/mapFactory.js';
 import { MapRuntimeFactory } from '../../../scripts/map/mapRuntimeFactory.js';
 import { MapDataSourceFactory } from '../../../scripts/map/mapDataSourceFactory.js';
+import { MapStageController } from '../../../scripts/map/mapStageController.js';
 import { MapStore } from '../../../scripts/map/mapStore.js';
 import { MapUpdater } from '../../../scripts/map/mapUpdater.js';
 import { HoverFragment } from '../../../scripts/markers/hoverFragment.js';
@@ -49,8 +50,17 @@ test('Test_CreateMapRuntime_TestWiredDeps_ExpectRuntimeParts', () => {
 
    MapRuntimeFactory.hasRequiredRuntimeElements = () => true;
    PanzoomAdapter.createPanzoom = (el, options) => {
+      const frame = MapStageController.frameFor(el.parentElement);
       assert.equal(options.contain, AppConfig.DEFAULT_MAP_CONTAIN);
-      return { panzoom: true, el };
+      assert.equal(options.startX, frame.left);
+      assert.equal(options.startY, frame.top);
+      assert.equal(el.id, 'mapStage');
+      return {
+         panzoom: true,
+         el,
+         getScale: () => 1,
+         pan() {},
+      };
    };
    MapStore.createMapStore = () => ({ store: true });
    MapDataSourceFactory.createDataSources = (store) => ({ sources: true, store });
@@ -68,6 +78,8 @@ test('Test_CreateMapRuntime_TestWiredDeps_ExpectRuntimeParts', () => {
    try {
       const parent = document.createElement('div');
       const mapInner = document.createElement('div');
+      mapInner.clientWidth = 2000;
+      mapInner.clientHeight = 800;
       parent.appendChild(mapInner);
 
       const runtime = MapFactory.createMapRuntime({

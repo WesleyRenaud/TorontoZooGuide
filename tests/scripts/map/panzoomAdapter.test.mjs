@@ -27,6 +27,8 @@ test('Test_CreatePanzoom_TestContain_ExpectWiredPanzoom', () => {
       assert.equal(options.minScale, 1);
       assert.equal(options.maxScale, 10);
       assert.equal(options.contain, contain);
+      assert.equal(options.startX, Position.FIRST);
+      assert.equal(options.startY, Position.FIRST);
       return panzoom;
    };
    PanzoomLabelPresenter.createSvgLabelVisibilityHandler = () => {

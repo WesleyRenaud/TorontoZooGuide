@@ -6,10 +6,12 @@ export class PanzoomAdapter {
       maxScale: 10,
    });
 
-   static createPanzoom(mapInner, { contain }) {
+   static createPanzoom(mapInner, { contain, startX = 0, startY = 0 }) {
       const panzoom = globalThis.Panzoom(mapInner, {
          ...PanzoomAdapter.PANZOOM_SCALE_RANGE,
          contain,
+         startX,
+         startY,
       });
 
       mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
