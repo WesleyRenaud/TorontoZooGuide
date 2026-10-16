@@ -33,22 +33,37 @@ export class MapStageController {
       };
    }
 
-   static apply(stage, mapInner) {
-      const rect = MapStageController.coverRect(
+   static frameFor(mapInner) {
+      return MapStageController.coverRect(
          mapInner?.clientWidth,
          mapInner?.clientHeight,
          ZooMapConstants.ZOO_MAP_WIDTH_PX,
          ZooMapConstants.ZOO_MAP_HEIGHT_PX
       );
+   }
+
+   static apply(stage, mapInner) {
+      const rect = MapStageController.frameFor(mapInner);
 
       if (!stage || !rect) {
+         return null;
+      }
+
+      stage.style.left = '0px';
+      stage.style.top = '0px';
+      stage.style.width = `${rect.width}px`;
+      stage.style.height = `${rect.height}px`;
+      return rect;
+   }
+
+   static syncPan(panzoom, rect) {
+      if (panzoom.getScale() === 1) {
+         panzoom.pan(rect.left, rect.top, { animate: false });
          return;
       }
 
-      stage.style.left = `${rect.left}px`;
-      stage.style.top = `${rect.top}px`;
-      stage.style.width = `${rect.width}px`;
-      stage.style.height = `${rect.height}px`;
+      const pan = panzoom.getPan();
+      panzoom.pan(pan.x, pan.y, { animate: false });
    }
 
    static findStage(mapInner) {
@@ -84,23 +99,26 @@ export class MapStageController {
       observer.observe(mapInner);
    }
 
-   static mount(mapInner) {
+   static mount(mapInner, onFrame) {
       if (!mapInner) {
          return null;
       }
 
       const existingStage = MapStageController.findStage(mapInner);
+      const stage = existingStage || MapStageController.createStage(mapInner);
+      const publish = () => {
+         const rect = MapStageController.apply(stage, mapInner);
 
-      if (existingStage) {
-         MapStageController.apply(existingStage, mapInner);
-         return existingStage;
-      }
+         if (rect && onFrame) {
+            onFrame(rect);
+         }
+      };
 
-      const stage = MapStageController.createStage(mapInner);
       MapStageController.apply(stage, mapInner);
-      MapStageController.observe(mapInner, () => {
-         MapStageController.apply(stage, mapInner);
-      });
+
+      if (!existingStage) {
+         MapStageController.observe(mapInner, publish);
+      }
 
       return stage;
    }

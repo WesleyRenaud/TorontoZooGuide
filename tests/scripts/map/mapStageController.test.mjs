@@ -76,7 +76,7 @@ test('Test_Apply_TestMissingStage_ExpectNoThrow', () => {
       clientHeight: WIDE_CONTAINER_HEIGHT,
    });
 
-   assert.equal(applied, undefined);
+   assert.equal(applied, null);
 });
 
 
@@ -138,6 +138,7 @@ test('Test_Mount_TestPrepend_ExpectCoverSizedStage', () => {
       assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH}px`);
       assert.equal(stage.style.height, `${height}px`);
       assert.equal(stage.style.left, `${Position.FIRST}px`);
+      assert.equal(stage.style.top, `${Position.FIRST}px`);
       assert.equal(observed.at(Position.FIRST), mapInner);
       assert.equal(observed.length, Position.SECOND);
    } finally {
@@ -167,6 +168,7 @@ test('Test_Mount_TestExistingStage_ExpectReuse', () => {
       assert.equal(secondStage, firstStage);
       assert.equal(secondStage.style.height, `${NARROW_CONTAINER_HEIGHT}px`);
       assert.equal(secondStage.style.top, `${Position.FIRST}px`);
+      assert.equal(secondStage.style.left, `${Position.FIRST}px`);
       assert.equal(secondStage.style.width, `${width}px`);
    } finally {
       globalThis.ResizeObserver = originalObserver;
@@ -196,4 +198,71 @@ test('Test_Apply_TestMissingContainer_ExpectUnset', () => {
    MapStageController.apply(stage, null);
 
    assert.equal(stage.style.width, undefined);
+});
+
+
+test('Test_SyncPan_TestScaleOne_ExpectCentered', () => {
+   const pans = [];
+   const rect = { left: -40, top: 0 };
+
+   MapStageController.syncPan({
+      getScale: () => 1,
+      pan: (x, y, options) => {
+         pans.push({ x, y, options });
+      },
+   }, rect);
+
+   assert.equal(pans.at(Position.FIRST).x, rect.left);
+   assert.equal(pans.at(Position.FIRST).y, rect.top);
+   assert.equal(pans.at(Position.FIRST).options.animate, false);
+});
+
+
+test('Test_SyncPan_TestZoomed_ExpectCurrentPan', () => {
+   const pans = [];
+   const currentPan = { x: 5, y: -8 };
+
+   MapStageController.syncPan({
+      getScale: () => 2,
+      getPan: () => currentPan,
+      pan: (x, y) => {
+         pans.push({ x, y });
+      },
+   }, { left: -40, top: 0 });
+
+   assert.equal(pans.at(Position.FIRST).x, currentPan.x);
+   assert.equal(pans.at(Position.FIRST).y, currentPan.y);
+});
+
+
+test('Test_Mount_TestOnFrame_ExpectRect', () => {
+   const originalObserver = globalThis.ResizeObserver;
+   const frames = [];
+   globalThis.ResizeObserver = class ResizeObserver {
+      constructor(callback) {
+         this.callback = callback;
+      }
+
+      observe() {
+         this.callback();
+      }
+   };
+   const mapInner = _stageBox(document.createElement('div'));
+   mapInner.prepend = (stage) => {
+      stage.parentElement = mapInner;
+      mapInner.children.unshift(stage);
+   };
+
+   try {
+      MapStageController.mount(mapInner, (rect) => {
+         frames.push(rect);
+      });
+      const height = WIDE_CONTAINER_WIDTH / _contentAspect();
+
+      assert.equal(frames.at(Position.FIRST).width, WIDE_CONTAINER_WIDTH);
+      assert.equal(frames.at(Position.FIRST).height, height);
+      assert.equal(frames.at(Position.FIRST).top, (WIDE_CONTAINER_HEIGHT - height) / 2);
+   } finally {
+      globalThis.ResizeObserver = originalObserver;
+   }
 });

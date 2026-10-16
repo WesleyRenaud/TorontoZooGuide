@@ -31,7 +31,25 @@ export class MapFactory {
          return null;
       }
 
-      const panzoom = PanzoomAdapter.createPanzoom(mapInner, { contain: AppConfig.DEFAULT_MAP_CONTAIN });
+      let panzoom = null;
+      const markerSurface = MapStageController.mount(mapInner, (rect) => {
+         MapStageController.syncPan(panzoom, rect);
+      });
+      const frame = MapStageController.frameFor(mapInner);
+      const panzoomOptions = {
+         contain: AppConfig.DEFAULT_MAP_CONTAIN,
+      };
+
+      if (frame) {
+         panzoomOptions.startX = frame.left;
+         panzoomOptions.startY = frame.top;
+      }
+
+      panzoom = PanzoomAdapter.createPanzoom(markerSurface, panzoomOptions);
+
+      if (frame) {
+         MapStageController.syncPan(panzoom, frame);
+      }
       const store = MapStore.createMapStore();
       const sources = MapDataSourceFactory.createDataSources(store);
       const hover = HoverFragment.createHoverTooltip(hoverTooltipEl);
@@ -45,7 +63,7 @@ export class MapFactory {
       MapRuntimeFactory.initMapLabels(showMapLabelsCheckbox);
 
       const markers = MarkerController.createMarkerLayer({
-         markerSurface: MapStageController.mount(mapInner),
+         markerSurface,
          tooltip,
          hover,
          enableCoordinateEditing,

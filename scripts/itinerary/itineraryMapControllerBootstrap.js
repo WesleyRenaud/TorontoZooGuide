@@ -1,6 +1,7 @@
 import { ItineraryMapController } from './itineraryMapController.js';
 import { ItineraryService } from './itineraryService.js';
 import { MapFactory } from '../map/mapFactory.js';
+import { MapStageController } from '../map/mapStageController.js';
 
 export class ItineraryMapControllerBootstrap {
    static ITINERARY_MAP_FILTERS = Object.freeze({
@@ -73,7 +74,8 @@ export class ItineraryMapControllerBootstrap {
       const { repositionTooltips } = runtime;
       const refreshMap = () => ItineraryMapControllerBootstrap.refreshItineraryMap(runtime);
 
-      mapInner?.addEventListener('panzoomchange', repositionTooltips);
+      mapInner.querySelector(`#${MapStageController.STAGE_ID}`)
+         .addEventListener('panzoomchange', repositionTooltips);
       window.addEventListener('resize', repositionTooltips);
       window.addEventListener('tzg:itineraryUpdated', refreshMap);
 
