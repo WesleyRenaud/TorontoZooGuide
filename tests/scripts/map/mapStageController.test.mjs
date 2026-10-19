@@ -192,6 +192,20 @@ test('Test_Mount_TestWithoutPrepend_ExpectAppended', () => {
 });
 
 
+test('Test_Apply_TestNoMarkerLayer_ExpectStageSize', () => {
+   const stage = document.createElement('div');
+   const mapInner = {
+      clientWidth: WIDE_CONTAINER_WIDTH,
+      clientHeight: WIDE_CONTAINER_HEIGHT,
+   };
+
+   const rect = MapStageController.apply(stage, mapInner);
+
+   assert.equal(rect.width, WIDE_CONTAINER_WIDTH);
+   assert.equal(stage.querySelector(`#${MapStageController.MARKER_LAYER_ID}`), null);
+});
+
+
 test('Test_Apply_TestMissingContainer_ExpectUnset', () => {
    const stage = document.createElement('div');
 
@@ -232,6 +246,26 @@ test('Test_SyncPan_TestZoomed_ExpectCurrentPan', () => {
 
    assert.equal(pans.at(Position.FIRST).x, currentPan.x);
    assert.equal(pans.at(Position.FIRST).y, currentPan.y);
+});
+
+
+test('Test_Mount_TestMarkerLayer_ExpectVisiblePanel', () => {
+   const originalObserver = globalThis.ResizeObserver;
+   delete globalThis.ResizeObserver;
+   const mapInner = _stageBox(document.createElement('div'));
+
+   try {
+      const stage = MapStageController.mount(mapInner);
+      const layer = stage.querySelector(`#${MapStageController.MARKER_LAYER_ID}`);
+      const rect = MapStageController.frameFor(mapInner);
+
+      assert.equal(layer.style.left, `${-rect.left}px`);
+      assert.equal(layer.style.top, `${-rect.top}px`);
+      assert.equal(layer.style.width, `${WIDE_CONTAINER_WIDTH}px`);
+      assert.equal(layer.style.height, `${WIDE_CONTAINER_HEIGHT}px`);
+   } finally {
+      globalThis.ResizeObserver = originalObserver;
+   }
 });
 
 

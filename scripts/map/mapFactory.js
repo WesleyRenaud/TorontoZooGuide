@@ -32,7 +32,7 @@ export class MapFactory {
       }
 
       let panzoom = null;
-      const markerSurface = MapStageController.mount(mapInner, (rect) => {
+      const stage = MapStageController.mount(mapInner, (rect) => {
          MapStageController.syncPan(panzoom, rect);
       });
       const frame = MapStageController.frameFor(mapInner);
@@ -45,7 +45,7 @@ export class MapFactory {
          panzoomOptions.startY = frame.top;
       }
 
-      panzoom = PanzoomAdapter.createPanzoom(markerSurface, panzoomOptions);
+      panzoom = PanzoomAdapter.createPanzoom(stage, panzoomOptions);
 
       if (frame) {
          MapStageController.syncPan(panzoom, frame);
@@ -63,7 +63,7 @@ export class MapFactory {
       MapRuntimeFactory.initMapLabels(showMapLabelsCheckbox);
 
       const markers = MarkerController.createMarkerLayer({
-         markerSurface,
+         markerSurface: stage.querySelector(`#${MapStageController.MARKER_LAYER_ID}`),
          tooltip,
          hover,
          enableCoordinateEditing,

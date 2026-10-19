@@ -3,6 +3,8 @@ import { ZooMapConstants } from '../shared/zooMapConstants.js';
 export class MapStageController {
    static STAGE_ID = 'mapStage';
 
+   static MARKER_LAYER_ID = 'markerLayer';
+
    static coverRect(containerWidth, containerHeight, contentWidth, contentHeight) {
       if (!(containerWidth > 0) || !(containerHeight > 0) || !(contentWidth > 0) || !(contentHeight > 0)) {
          return null;
@@ -53,7 +55,34 @@ export class MapStageController {
       stage.style.top = '0px';
       stage.style.width = `${rect.width}px`;
       stage.style.height = `${rect.height}px`;
+      MapStageController.placeMarkerLayer(stage, mapInner, rect);
       return rect;
+   }
+
+   static placeMarkerLayer(stage, mapInner, rect) {
+      const layer = stage.querySelector?.(`#${MapStageController.MARKER_LAYER_ID}`);
+
+      if (!layer) {
+         return;
+      }
+
+      layer.style.left = `${-rect.left}px`;
+      layer.style.top = `${-rect.top}px`;
+      layer.style.width = `${mapInner.clientWidth}px`;
+      layer.style.height = `${mapInner.clientHeight}px`;
+   }
+
+   static ensureMarkerLayer(stage) {
+      const existing = stage.querySelector?.(`#${MapStageController.MARKER_LAYER_ID}`);
+
+      if (existing) {
+         return existing;
+      }
+
+      const layer = document.createElement('div');
+      layer.id = MapStageController.MARKER_LAYER_ID;
+      stage.appendChild(layer);
+      return layer;
    }
 
    static syncPan(panzoom, rect) {
@@ -78,6 +107,8 @@ export class MapStageController {
       if (mount) {
          stage.appendChild(mount);
       }
+
+      MapStageController.ensureMarkerLayer(stage);
 
       if (typeof mapInner.prepend === 'function') {
          mapInner.prepend(stage);
@@ -106,6 +137,7 @@ export class MapStageController {
 
       const existingStage = MapStageController.findStage(mapInner);
       const stage = existingStage || MapStageController.createStage(mapInner);
+      MapStageController.ensureMarkerLayer(stage);
       const publish = () => {
          const rect = MapStageController.apply(stage, mapInner);
 

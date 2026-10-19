@@ -842,6 +842,11 @@ html.home-page {
    position: absolute;
 }
 
+#markerLayer {
+   position: absolute;
+   pointer-events: none;
+}
+
 #zooMapMount {
    position: absolute;
    inset: 0;
@@ -1083,6 +1088,7 @@ nav ul li a:hover {
    height: 48px;
    border-radius: 50%;
    transform: translate(-50%, -50%);
+   pointer-events: auto;
    cursor: pointer;
    z-index: 10;
 
