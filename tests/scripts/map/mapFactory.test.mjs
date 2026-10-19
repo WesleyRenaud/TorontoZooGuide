@@ -44,9 +44,19 @@ test('Test_CreateMapRuntime_TestWiredDeps_ExpectRuntimeParts', () => {
    const originalFocus = MapRuntimeFactory.createMapFocus;
    const originalUpdater = MapUpdater.createMapUpdater;
    const originalRepositioner = MapRuntimeFactory.createTooltipRepositioner;
+   const originalObserver = globalThis.ResizeObserver;
    const labelInits = [];
    const checkbox = { id: 'labels' };
    const repositioned = 'repositioned';
+   let resizeMap = null;
+
+   globalThis.ResizeObserver = class ResizeObserver {
+      constructor(callback) {
+         resizeMap = callback;
+      }
+
+      observe() {}
+   };
 
    MapRuntimeFactory.hasRequiredRuntimeElements = () => true;
    PanzoomAdapter.createPanzoom = (el, options) => {
@@ -97,9 +107,11 @@ test('Test_CreateMapRuntime_TestWiredDeps_ExpectRuntimeParts', () => {
       assert.equal(runtime.markers.markers, true);
       assert.equal(runtime.focus.focus, true);
       assert.equal(runtime.updater.updater, true);
+      resizeMap();
       assert.equal(runtime.repositionTooltips(), repositioned);
       assert.deepEqual(labelInits, [checkbox]);
    } finally {
+      globalThis.ResizeObserver = originalObserver;
       MapRuntimeFactory.hasRequiredRuntimeElements = originalHas;
       PanzoomAdapter.createPanzoom = originalPanzoom;
       MapStore.createMapStore = originalStore;
