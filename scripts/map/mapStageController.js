@@ -5,6 +5,10 @@ export class MapStageController {
 
    static MARKER_LAYER_ID = 'markerLayer';
 
+   static anchoredMarkerLayers = new WeakSet();
+
+   static COVER_SLACK_PX = 1;
+
    static coverRect(containerWidth, containerHeight, contentWidth, contentHeight) {
       if (!(containerWidth > 0) || !(containerHeight > 0) || !(contentWidth > 0) || !(contentHeight > 0)) {
          return null;
@@ -51,25 +55,29 @@ export class MapStageController {
          return null;
       }
 
+      const stageWidth = rect.width + MapStageController.COVER_SLACK_PX;
+      const stageHeight = rect.height + MapStageController.COVER_SLACK_PX;
+
       stage.style.left = '0px';
       stage.style.top = '0px';
-      stage.style.width = `${rect.width}px`;
-      stage.style.height = `${rect.height}px`;
-      MapStageController.placeMarkerLayer(stage, mapInner, rect);
+      stage.style.width = `${stageWidth}px`;
+      stage.style.height = `${stageHeight}px`;
+      MapStageController.placeMarkerLayer(stage, mapInner, rect, stageWidth, stageHeight);
       return rect;
    }
 
-   static placeMarkerLayer(stage, mapInner, rect) {
+   static placeMarkerLayer(stage, mapInner, rect, stageWidth, stageHeight) {
       const layer = stage.querySelector?.(`#${MapStageController.MARKER_LAYER_ID}`);
 
-      if (!layer) {
+      if (!layer || MapStageController.anchoredMarkerLayers.has(layer)) {
          return;
       }
 
-      layer.style.left = `${-rect.left}px`;
-      layer.style.top = `${-rect.top}px`;
-      layer.style.width = `${mapInner.clientWidth}px`;
-      layer.style.height = `${mapInner.clientHeight}px`;
+      MapStageController.anchoredMarkerLayers.add(layer);
+      layer.style.left = `${(-rect.left / stageWidth) * 100}%`;
+      layer.style.top = `${(-rect.top / stageHeight) * 100}%`;
+      layer.style.width = `${(mapInner.clientWidth / stageWidth) * 100}%`;
+      layer.style.height = `${(mapInner.clientHeight / stageHeight) * 100}%`;
    }
 
    static ensureMarkerLayer(stage) {
