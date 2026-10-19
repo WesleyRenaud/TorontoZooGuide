@@ -135,8 +135,8 @@ test('Test_Mount_TestPrepend_ExpectCoverSizedStage', () => {
       assert.equal(stage.id, MapStageController.STAGE_ID);
       assert.equal(mapInner.children.at(Position.FIRST), stage);
       assert.equal(zooMapMount.parentElement, stage);
-      assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH}px`);
-      assert.equal(stage.style.height, `${height}px`);
+      assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH + MapStageController.COVER_SLACK_PX}px`);
+      assert.equal(stage.style.height, `${height + MapStageController.COVER_SLACK_PX}px`);
       assert.equal(stage.style.left, `${Position.FIRST}px`);
       assert.equal(stage.style.top, `${Position.FIRST}px`);
       assert.equal(observed.at(Position.FIRST), mapInner);
@@ -166,10 +166,10 @@ test('Test_Mount_TestExistingStage_ExpectReuse', () => {
       const width = NARROW_CONTAINER_HEIGHT * _contentAspect();
 
       assert.equal(secondStage, firstStage);
-      assert.equal(secondStage.style.height, `${NARROW_CONTAINER_HEIGHT}px`);
+      assert.equal(secondStage.style.height, `${NARROW_CONTAINER_HEIGHT + MapStageController.COVER_SLACK_PX}px`);
       assert.equal(secondStage.style.top, `${Position.FIRST}px`);
       assert.equal(secondStage.style.left, `${Position.FIRST}px`);
-      assert.equal(secondStage.style.width, `${width}px`);
+      assert.equal(secondStage.style.width, `${width + MapStageController.COVER_SLACK_PX}px`);
    } finally {
       globalThis.ResizeObserver = originalObserver;
    }
@@ -185,7 +185,7 @@ test('Test_Mount_TestWithoutPrepend_ExpectAppended', () => {
       const stage = MapStageController.mount(mapInner);
 
       assert.equal(mapInner.children.at(Position.LAST), stage);
-      assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH}px`);
+      assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH + MapStageController.COVER_SLACK_PX}px`);
    } finally {
       globalThis.ResizeObserver = originalObserver;
    }
@@ -249,7 +249,7 @@ test('Test_SyncPan_TestZoomed_ExpectCurrentPan', () => {
 });
 
 
-test('Test_Mount_TestMarkerLayer_ExpectVisiblePanel', () => {
+test('Test_Mount_TestMarkerLayer_ExpectAnchoredToFirstFrame', () => {
    const originalObserver = globalThis.ResizeObserver;
    delete globalThis.ResizeObserver;
    const mapInner = _stageBox(document.createElement('div'));
@@ -258,14 +258,50 @@ test('Test_Mount_TestMarkerLayer_ExpectVisiblePanel', () => {
       const stage = MapStageController.mount(mapInner);
       const layer = stage.querySelector(`#${MapStageController.MARKER_LAYER_ID}`);
       const rect = MapStageController.frameFor(mapInner);
+      const stageWidth = rect.width + MapStageController.COVER_SLACK_PX;
+      const stageHeight = rect.height + MapStageController.COVER_SLACK_PX;
 
-      assert.equal(layer.style.left, `${-rect.left}px`);
-      assert.equal(layer.style.top, `${-rect.top}px`);
-      assert.equal(layer.style.width, `${WIDE_CONTAINER_WIDTH}px`);
-      assert.equal(layer.style.height, `${WIDE_CONTAINER_HEIGHT}px`);
+      assert.equal(layer.style.left, `${(-rect.left / stageWidth) * 100}%`);
+      assert.equal(layer.style.top, `${(-rect.top / stageHeight) * 100}%`);
+      assert.equal(layer.style.width, `${(mapInner.clientWidth / stageWidth) * 100}%`);
+      assert.equal(layer.style.height, `${(mapInner.clientHeight / stageHeight) * 100}%`);
    } finally {
       globalThis.ResizeObserver = originalObserver;
    }
+});
+
+
+test('Test_Apply_TestResize_ExpectMarkerLayerStays', () => {
+   const stage = document.createElement('div');
+   const layer = document.createElement('div');
+   const mapInner = _stageBox({ clientWidth: 0, clientHeight: 0 });
+
+   layer.id = MapStageController.MARKER_LAYER_ID;
+   stage.appendChild(layer);
+   MapStageController.apply(stage, mapInner);
+
+   const anchored = {
+      left: layer.style.left,
+      top: layer.style.top,
+      width: layer.style.width,
+      height: layer.style.height,
+   };
+   const resized = MapStageController.coverRect(
+      NARROW_CONTAINER_WIDTH,
+      NARROW_CONTAINER_HEIGHT,
+      ZooMapConstants.ZOO_MAP_WIDTH_PX,
+      ZooMapConstants.ZOO_MAP_HEIGHT_PX
+   );
+
+   mapInner.clientWidth = NARROW_CONTAINER_WIDTH;
+   mapInner.clientHeight = NARROW_CONTAINER_HEIGHT;
+   MapStageController.apply(stage, mapInner);
+
+   assert.equal(layer.style.left, anchored.left);
+   assert.equal(layer.style.top, anchored.top);
+   assert.equal(layer.style.width, anchored.width);
+   assert.equal(layer.style.height, anchored.height);
+   assert.equal(stage.style.width, `${resized.width + MapStageController.COVER_SLACK_PX}px`);
 });
 
 
