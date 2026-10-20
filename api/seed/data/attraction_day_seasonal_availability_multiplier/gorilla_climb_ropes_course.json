@@ -365,510 +365,510 @@
       "month": 3,
       "day": 1,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.015
     },
     {
       "month": 3,
       "day": 2,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.03
     },
     {
       "month": 3,
       "day": 3,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.045
     },
     {
       "month": 3,
       "day": 4,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.061
     },
     {
       "month": 3,
       "day": 5,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.076
     },
     {
       "month": 3,
       "day": 6,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.091
     },
     {
       "month": 3,
       "day": 7,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.106
     },
     {
       "month": 3,
       "day": 8,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.121
     },
     {
       "month": 3,
       "day": 9,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.136
     },
     {
       "month": 3,
       "day": 10,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.152
     },
     {
       "month": 3,
       "day": 11,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.167
     },
     {
       "month": 3,
       "day": 12,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.182
     },
     {
       "month": 3,
       "day": 13,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.197
     },
     {
       "month": 3,
       "day": 14,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.212
     },
     {
       "month": 3,
       "day": 15,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.227
     },
     {
       "month": 3,
       "day": 16,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.242
     },
     {
       "month": 3,
       "day": 17,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.258
     },
     {
       "month": 3,
       "day": 18,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.273
     },
     {
       "month": 3,
       "day": 19,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.288
     },
     {
       "month": 3,
       "day": 20,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.303
     },
     {
       "month": 3,
       "day": 21,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.318
     },
     {
       "month": 3,
       "day": 22,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.333
     },
     {
       "month": 3,
       "day": 23,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.348
     },
     {
       "month": 3,
       "day": 24,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.364
     },
     {
       "month": 3,
       "day": 25,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.379
     },
     {
       "month": 3,
       "day": 26,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.394
     },
     {
       "month": 3,
       "day": 27,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.409
     },
     {
       "month": 3,
       "day": 28,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.424
     },
     {
       "month": 3,
       "day": 29,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.439
     },
     {
       "month": 3,
       "day": 30,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.455
     },
     {
       "month": 3,
       "day": 31,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.47
     },
     {
       "month": 4,
       "day": 1,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekday": 0.018,
+      "weekend_holiday": 0.485
     },
     {
       "month": 4,
       "day": 2,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 3,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 4,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 5,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 6,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 7,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 8,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 9,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 10,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 11,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 12,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 13,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 14,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 15,
-      "weekday": 0.0,
-      "weekend_holiday": 0.0
-    },
-    {
-      "month": 4,
-      "day": 16,
-      "weekday": 0.0,
-      "weekend_holiday": 0.05
-    },
-    {
-      "month": 4,
-      "day": 17,
-      "weekday": 0.0,
-      "weekend_holiday": 0.1
-    },
-    {
-      "month": 4,
-      "day": 18,
-      "weekday": 0.0,
-      "weekend_holiday": 0.15
-    },
-    {
-      "month": 4,
-      "day": 19,
-      "weekday": 0.0,
-      "weekend_holiday": 0.2
-    },
-    {
-      "month": 4,
-      "day": 20,
-      "weekday": 0.0,
-      "weekend_holiday": 0.25
-    },
-    {
-      "month": 4,
-      "day": 21,
-      "weekday": 0.0,
-      "weekend_holiday": 0.3
-    },
-    {
-      "month": 4,
-      "day": 22,
-      "weekday": 0.0,
-      "weekend_holiday": 0.35
-    },
-    {
-      "month": 4,
-      "day": 23,
-      "weekday": 0.0,
-      "weekend_holiday": 0.4
-    },
-    {
-      "month": 4,
-      "day": 24,
-      "weekday": 0.0,
-      "weekend_holiday": 0.45
-    },
-    {
-      "month": 4,
-      "day": 25,
-      "weekday": 0.0,
+      "weekday": 0.036,
       "weekend_holiday": 0.5
     },
     {
       "month": 4,
+      "day": 3,
+      "weekday": 0.055,
+      "weekend_holiday": 0.515
+    },
+    {
+      "month": 4,
+      "day": 4,
+      "weekday": 0.073,
+      "weekend_holiday": 0.53
+    },
+    {
+      "month": 4,
+      "day": 5,
+      "weekday": 0.091,
+      "weekend_holiday": 0.545
+    },
+    {
+      "month": 4,
+      "day": 6,
+      "weekday": 0.109,
+      "weekend_holiday": 0.561
+    },
+    {
+      "month": 4,
+      "day": 7,
+      "weekday": 0.127,
+      "weekend_holiday": 0.576
+    },
+    {
+      "month": 4,
+      "day": 8,
+      "weekday": 0.145,
+      "weekend_holiday": 0.591
+    },
+    {
+      "month": 4,
+      "day": 9,
+      "weekday": 0.164,
+      "weekend_holiday": 0.606
+    },
+    {
+      "month": 4,
+      "day": 10,
+      "weekday": 0.182,
+      "weekend_holiday": 0.621
+    },
+    {
+      "month": 4,
+      "day": 11,
+      "weekday": 0.2,
+      "weekend_holiday": 0.636
+    },
+    {
+      "month": 4,
+      "day": 12,
+      "weekday": 0.218,
+      "weekend_holiday": 0.652
+    },
+    {
+      "month": 4,
+      "day": 13,
+      "weekday": 0.236,
+      "weekend_holiday": 0.667
+    },
+    {
+      "month": 4,
+      "day": 14,
+      "weekday": 0.255,
+      "weekend_holiday": 0.682
+    },
+    {
+      "month": 4,
+      "day": 15,
+      "weekday": 0.273,
+      "weekend_holiday": 0.697
+    },
+    {
+      "month": 4,
+      "day": 16,
+      "weekday": 0.291,
+      "weekend_holiday": 0.712
+    },
+    {
+      "month": 4,
+      "day": 17,
+      "weekday": 0.309,
+      "weekend_holiday": 0.727
+    },
+    {
+      "month": 4,
+      "day": 18,
+      "weekday": 0.327,
+      "weekend_holiday": 0.742
+    },
+    {
+      "month": 4,
+      "day": 19,
+      "weekday": 0.345,
+      "weekend_holiday": 0.758
+    },
+    {
+      "month": 4,
+      "day": 20,
+      "weekday": 0.364,
+      "weekend_holiday": 0.773
+    },
+    {
+      "month": 4,
+      "day": 21,
+      "weekday": 0.382,
+      "weekend_holiday": 0.788
+    },
+    {
+      "month": 4,
+      "day": 22,
+      "weekday": 0.4,
+      "weekend_holiday": 0.803
+    },
+    {
+      "month": 4,
+      "day": 23,
+      "weekday": 0.418,
+      "weekend_holiday": 0.818
+    },
+    {
+      "month": 4,
+      "day": 24,
+      "weekday": 0.436,
+      "weekend_holiday": 0.833
+    },
+    {
+      "month": 4,
+      "day": 25,
+      "weekday": 0.455,
+      "weekend_holiday": 0.848
+    },
+    {
+      "month": 4,
       "day": 26,
-      "weekday": 0.0,
-      "weekend_holiday": 0.55
+      "weekday": 0.473,
+      "weekend_holiday": 0.864
     },
     {
       "month": 4,
       "day": 27,
-      "weekday": 0.0,
-      "weekend_holiday": 0.6
+      "weekday": 0.491,
+      "weekend_holiday": 0.879
     },
     {
       "month": 4,
       "day": 28,
-      "weekday": 0.0,
-      "weekend_holiday": 0.65
+      "weekday": 0.509,
+      "weekend_holiday": 0.894
     },
     {
       "month": 4,
       "day": 29,
-      "weekday": 0.0,
-      "weekend_holiday": 0.7
+      "weekday": 0.527,
+      "weekend_holiday": 0.909
     },
     {
       "month": 4,
       "day": 30,
-      "weekday": 0.0,
-      "weekend_holiday": 0.75
+      "weekday": 0.545,
+      "weekend_holiday": 0.924
     },
     {
       "month": 5,
       "day": 1,
-      "weekday": 0.0,
-      "weekend_holiday": 0.8
+      "weekday": 0.564,
+      "weekend_holiday": 0.939
     },
     {
       "month": 5,
       "day": 2,
-      "weekday": 0.0,
-      "weekend_holiday": 0.85
+      "weekday": 0.582,
+      "weekend_holiday": 0.955
     },
     {
       "month": 5,
       "day": 3,
-      "weekday": 0.0,
-      "weekend_holiday": 0.9
+      "weekday": 0.6,
+      "weekend_holiday": 0.97
     },
     {
       "month": 5,
       "day": 4,
-      "weekday": 0.0,
-      "weekend_holiday": 0.95
+      "weekday": 0.618,
+      "weekend_holiday": 0.985
     },
     {
       "month": 5,
       "day": 5,
-      "weekday": 0.0,
+      "weekday": 0.636,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 6,
-      "weekday": 0.05,
+      "weekday": 0.655,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 7,
-      "weekday": 0.1,
+      "weekday": 0.673,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 8,
-      "weekday": 0.15,
+      "weekday": 0.691,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 9,
-      "weekday": 0.2,
+      "weekday": 0.709,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 10,
-      "weekday": 0.25,
+      "weekday": 0.727,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 11,
-      "weekday": 0.3,
+      "weekday": 0.745,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 12,
-      "weekday": 0.35,
+      "weekday": 0.764,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 13,
-      "weekday": 0.4,
+      "weekday": 0.782,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 14,
-      "weekday": 0.45,
-      "weekend_holiday": 1.0
-    },
-    {
-      "month": 5,
-      "day": 15,
-      "weekday": 0.5,
-      "weekend_holiday": 1.0
-    },
-    {
-      "month": 5,
-      "day": 16,
-      "weekday": 0.55,
-      "weekend_holiday": 1.0
-    },
-    {
-      "month": 5,
-      "day": 17,
-      "weekday": 0.6,
-      "weekend_holiday": 1.0
-    },
-    {
-      "month": 5,
-      "day": 18,
-      "weekday": 0.65,
-      "weekend_holiday": 1.0
-    },
-    {
-      "month": 5,
-      "day": 19,
-      "weekday": 0.7,
-      "weekend_holiday": 1.0
-    },
-    {
-      "month": 5,
-      "day": 20,
-      "weekday": 0.75,
-      "weekend_holiday": 1.0
-    },
-    {
-      "month": 5,
-      "day": 21,
       "weekday": 0.8,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
+      "day": 15,
+      "weekday": 0.818,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 5,
+      "day": 16,
+      "weekday": 0.836,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 5,
+      "day": 17,
+      "weekday": 0.855,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 5,
+      "day": 18,
+      "weekday": 0.873,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 5,
+      "day": 19,
+      "weekday": 0.891,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 5,
+      "day": 20,
+      "weekday": 0.909,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 5,
+      "day": 21,
+      "weekday": 0.927,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 5,
       "day": 22,
-      "weekday": 0.85,
+      "weekday": 0.945,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 23,
-      "weekday": 0.9,
+      "weekday": 0.964,
       "weekend_holiday": 1.0
     },
     {
       "month": 5,
       "day": 24,
-      "weekday": 0.95,
+      "weekday": 0.982,
       "weekend_holiday": 1.0
     },
     {
@@ -1480,440 +1480,440 @@
     {
       "month": 9,
       "day": 3,
-      "weekday": 0.957,
+      "weekday": 0.983,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 4,
-      "weekday": 0.913,
+      "weekday": 0.966,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 5,
-      "weekday": 0.87,
+      "weekday": 0.949,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 6,
-      "weekday": 0.826,
+      "weekday": 0.932,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 7,
-      "weekday": 0.783,
+      "weekday": 0.915,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 8,
-      "weekday": 0.739,
+      "weekday": 0.898,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 9,
-      "weekday": 0.696,
+      "weekday": 0.881,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 10,
-      "weekday": 0.652,
+      "weekday": 0.864,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 11,
-      "weekday": 0.609,
+      "weekday": 0.847,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 12,
-      "weekday": 0.565,
+      "weekday": 0.831,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 13,
-      "weekday": 0.522,
+      "weekday": 0.814,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 14,
-      "weekday": 0.478,
+      "weekday": 0.797,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 15,
-      "weekday": 0.435,
+      "weekday": 0.78,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 16,
-      "weekday": 0.391,
+      "weekday": 0.763,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 17,
-      "weekday": 0.348,
+      "weekday": 0.746,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 18,
-      "weekday": 0.304,
+      "weekday": 0.729,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 19,
-      "weekday": 0.261,
+      "weekday": 0.712,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 20,
-      "weekday": 0.217,
+      "weekday": 0.695,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 21,
-      "weekday": 0.174,
+      "weekday": 0.678,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 22,
-      "weekday": 0.13,
+      "weekday": 0.661,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 23,
-      "weekday": 0.087,
+      "weekday": 0.644,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 24,
-      "weekday": 0.043,
+      "weekday": 0.627,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 25,
-      "weekday": 0.0,
+      "weekday": 0.61,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 26,
-      "weekday": 0.0,
+      "weekday": 0.593,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 27,
-      "weekday": 0.0,
+      "weekday": 0.576,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 28,
-      "weekday": 0.0,
+      "weekday": 0.559,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 29,
-      "weekday": 0.0,
+      "weekday": 0.542,
       "weekend_holiday": 1.0
     },
     {
       "month": 9,
       "day": 30,
-      "weekday": 0.0,
+      "weekday": 0.525,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 1,
-      "weekday": 0.0,
+      "weekday": 0.508,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 2,
-      "weekday": 0.0,
+      "weekday": 0.492,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 3,
-      "weekday": 0.0,
+      "weekday": 0.475,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 4,
-      "weekday": 0.0,
+      "weekday": 0.458,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 5,
-      "weekday": 0.0,
+      "weekday": 0.441,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 6,
-      "weekday": 0.0,
+      "weekday": 0.424,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 7,
-      "weekday": 0.0,
+      "weekday": 0.407,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 8,
-      "weekday": 0.0,
+      "weekday": 0.39,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 9,
-      "weekday": 0.0,
+      "weekday": 0.373,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 10,
-      "weekday": 0.0,
+      "weekday": 0.356,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 11,
-      "weekday": 0.0,
+      "weekday": 0.339,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 12,
-      "weekday": 0.0,
+      "weekday": 0.322,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 13,
-      "weekday": 0.0,
+      "weekday": 0.305,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 14,
-      "weekday": 0.0,
+      "weekday": 0.288,
       "weekend_holiday": 1.0
     },
     {
       "month": 10,
       "day": 15,
-      "weekday": 0.0,
-      "weekend_holiday": 0.941
+      "weekday": 0.271,
+      "weekend_holiday": 0.969
     },
     {
       "month": 10,
       "day": 16,
-      "weekday": 0.0,
-      "weekend_holiday": 0.882
+      "weekday": 0.254,
+      "weekend_holiday": 0.938
     },
     {
       "month": 10,
       "day": 17,
-      "weekday": 0.0,
-      "weekend_holiday": 0.824
+      "weekday": 0.237,
+      "weekend_holiday": 0.906
     },
     {
       "month": 10,
       "day": 18,
-      "weekday": 0.0,
-      "weekend_holiday": 0.765
+      "weekday": 0.22,
+      "weekend_holiday": 0.875
     },
     {
       "month": 10,
       "day": 19,
-      "weekday": 0.0,
-      "weekend_holiday": 0.706
+      "weekday": 0.203,
+      "weekend_holiday": 0.844
     },
     {
       "month": 10,
       "day": 20,
-      "weekday": 0.0,
-      "weekend_holiday": 0.647
+      "weekday": 0.186,
+      "weekend_holiday": 0.812
     },
     {
       "month": 10,
       "day": 21,
-      "weekday": 0.0,
-      "weekend_holiday": 0.588
+      "weekday": 0.169,
+      "weekend_holiday": 0.781
     },
     {
       "month": 10,
       "day": 22,
-      "weekday": 0.0,
-      "weekend_holiday": 0.529
+      "weekday": 0.153,
+      "weekend_holiday": 0.75
     },
     {
       "month": 10,
       "day": 23,
-      "weekday": 0.0,
-      "weekend_holiday": 0.471
+      "weekday": 0.136,
+      "weekend_holiday": 0.719
     },
     {
       "month": 10,
       "day": 24,
-      "weekday": 0.0,
-      "weekend_holiday": 0.412
+      "weekday": 0.119,
+      "weekend_holiday": 0.688
     },
     {
       "month": 10,
       "day": 25,
-      "weekday": 0.0,
-      "weekend_holiday": 0.353
+      "weekday": 0.102,
+      "weekend_holiday": 0.656
     },
     {
       "month": 10,
       "day": 26,
-      "weekday": 0.0,
-      "weekend_holiday": 0.294
+      "weekday": 0.085,
+      "weekend_holiday": 0.625
     },
     {
       "month": 10,
       "day": 27,
-      "weekday": 0.0,
-      "weekend_holiday": 0.235
+      "weekday": 0.068,
+      "weekend_holiday": 0.594
     },
     {
       "month": 10,
       "day": 28,
-      "weekday": 0.0,
-      "weekend_holiday": 0.176
+      "weekday": 0.051,
+      "weekend_holiday": 0.562
     },
     {
       "month": 10,
       "day": 29,
-      "weekday": 0.0,
-      "weekend_holiday": 0.118
+      "weekday": 0.034,
+      "weekend_holiday": 0.531
     },
     {
       "month": 10,
       "day": 30,
-      "weekday": 0.0,
-      "weekend_holiday": 0.059
+      "weekday": 0.017,
+      "weekend_holiday": 0.5
     },
     {
       "month": 10,
       "day": 31,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.469
     },
     {
       "month": 11,
       "day": 1,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.438
     },
     {
       "month": 11,
       "day": 2,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.406
     },
     {
       "month": 11,
       "day": 3,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.375
     },
     {
       "month": 11,
       "day": 4,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.344
     },
     {
       "month": 11,
       "day": 5,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.312
     },
     {
       "month": 11,
       "day": 6,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.281
     },
     {
       "month": 11,
       "day": 7,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.25
     },
     {
       "month": 11,
       "day": 8,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.219
     },
     {
       "month": 11,
       "day": 9,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.188
     },
     {
       "month": 11,
       "day": 10,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.156
     },
     {
       "month": 11,
       "day": 11,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.125
     },
     {
       "month": 11,
       "day": 12,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.094
     },
     {
       "month": 11,
       "day": 13,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.062
     },
     {
       "month": 11,
       "day": 14,
       "weekday": 0.0,
-      "weekend_holiday": 0.0
+      "weekend_holiday": 0.031
     },
     {
       "month": 11,
