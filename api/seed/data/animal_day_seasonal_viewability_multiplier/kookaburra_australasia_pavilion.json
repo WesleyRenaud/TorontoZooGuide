@@ -510,200 +510,200 @@
     {
       "month": 4,
       "day": 11,
-      "value": 0.0
+      "value": 0.025
     },
     {
       "month": 4,
       "day": 12,
-      "value": 0.0
+      "value": 0.05
     },
     {
       "month": 4,
       "day": 13,
-      "value": 0.0
+      "value": 0.075
     },
     {
       "month": 4,
       "day": 14,
-      "value": 0.0
+      "value": 0.1
     },
     {
       "month": 4,
       "day": 15,
-      "value": 0.0
+      "value": 0.125
     },
     {
       "month": 4,
       "day": 16,
-      "value": 0.0
+      "value": 0.15
     },
     {
       "month": 4,
       "day": 17,
-      "value": 0.0
+      "value": 0.175
     },
     {
       "month": 4,
       "day": 18,
-      "value": 0.0
+      "value": 0.2
     },
     {
       "month": 4,
       "day": 19,
-      "value": 0.0
+      "value": 0.225
     },
     {
       "month": 4,
       "day": 20,
-      "value": 0.0
+      "value": 0.25
     },
     {
       "month": 4,
       "day": 21,
-      "value": 0.0
+      "value": 0.275
     },
     {
       "month": 4,
       "day": 22,
-      "value": 0.0
+      "value": 0.3
     },
     {
       "month": 4,
       "day": 23,
-      "value": 0.0
+      "value": 0.325
     },
     {
       "month": 4,
       "day": 24,
-      "value": 0.0
+      "value": 0.35
     },
     {
       "month": 4,
       "day": 25,
-      "value": 0.0
+      "value": 0.375
     },
     {
       "month": 4,
       "day": 26,
-      "value": 0.0
+      "value": 0.4
     },
     {
       "month": 4,
       "day": 27,
-      "value": 0.0
+      "value": 0.425
     },
     {
       "month": 4,
       "day": 28,
-      "value": 0.0
+      "value": 0.45
     },
     {
       "month": 4,
       "day": 29,
-      "value": 0.0
+      "value": 0.475
     },
     {
       "month": 4,
       "day": 30,
-      "value": 0.0
-    },
-    {
-      "month": 5,
-      "day": 1,
-      "value": 0.05
-    },
-    {
-      "month": 5,
-      "day": 2,
-      "value": 0.1
-    },
-    {
-      "month": 5,
-      "day": 3,
-      "value": 0.15
-    },
-    {
-      "month": 5,
-      "day": 4,
-      "value": 0.2
-    },
-    {
-      "month": 5,
-      "day": 5,
-      "value": 0.25
-    },
-    {
-      "month": 5,
-      "day": 6,
-      "value": 0.3
-    },
-    {
-      "month": 5,
-      "day": 7,
-      "value": 0.35
-    },
-    {
-      "month": 5,
-      "day": 8,
-      "value": 0.4
-    },
-    {
-      "month": 5,
-      "day": 9,
-      "value": 0.45
-    },
-    {
-      "month": 5,
-      "day": 10,
       "value": 0.5
     },
     {
       "month": 5,
-      "day": 11,
+      "day": 1,
+      "value": 0.525
+    },
+    {
+      "month": 5,
+      "day": 2,
       "value": 0.55
     },
     {
       "month": 5,
-      "day": 12,
+      "day": 3,
+      "value": 0.575
+    },
+    {
+      "month": 5,
+      "day": 4,
       "value": 0.6
     },
     {
       "month": 5,
-      "day": 13,
+      "day": 5,
+      "value": 0.625
+    },
+    {
+      "month": 5,
+      "day": 6,
       "value": 0.65
     },
     {
       "month": 5,
-      "day": 14,
+      "day": 7,
+      "value": 0.675
+    },
+    {
+      "month": 5,
+      "day": 8,
       "value": 0.7
     },
     {
       "month": 5,
-      "day": 15,
+      "day": 9,
+      "value": 0.725
+    },
+    {
+      "month": 5,
+      "day": 10,
       "value": 0.75
     },
     {
       "month": 5,
-      "day": 16,
+      "day": 11,
+      "value": 0.775
+    },
+    {
+      "month": 5,
+      "day": 12,
       "value": 0.8
     },
     {
       "month": 5,
-      "day": 17,
+      "day": 13,
+      "value": 0.825
+    },
+    {
+      "month": 5,
+      "day": 14,
       "value": 0.85
     },
     {
       "month": 5,
-      "day": 18,
+      "day": 15,
+      "value": 0.875
+    },
+    {
+      "month": 5,
+      "day": 16,
       "value": 0.9
     },
     {
       "month": 5,
-      "day": 19,
+      "day": 17,
+      "value": 0.925
+    },
+    {
+      "month": 5,
+      "day": 18,
       "value": 0.95
     },
     {
       "month": 5,
+      "day": 19,
+      "value": 0.975
+    },
+    {
+      "month": 5,
       "day": 20,
       "value": 1.0
     },
@@ -1445,157 +1445,157 @@
     {
       "month": 10,
       "day": 15,
-      "value": 0.94
+      "value": 0.969
     },
     {
       "month": 10,
       "day": 16,
-      "value": 0.88
+      "value": 0.938
     },
     {
       "month": 10,
       "day": 17,
-      "value": 0.82
+      "value": 0.906
     },
     {
       "month": 10,
       "day": 18,
-      "value": 0.76
+      "value": 0.875
     },
     {
       "month": 10,
       "day": 19,
-      "value": 0.7
+      "value": 0.844
     },
     {
       "month": 10,
       "day": 20,
-      "value": 0.64
+      "value": 0.812
     },
     {
       "month": 10,
       "day": 21,
-      "value": 0.58
+      "value": 0.781
     },
     {
       "month": 10,
       "day": 22,
-      "value": 0.52
+      "value": 0.75
     },
     {
       "month": 10,
       "day": 23,
-      "value": 0.46
+      "value": 0.719
     },
     {
       "month": 10,
       "day": 24,
-      "value": 0.4
+      "value": 0.688
     },
     {
       "month": 10,
       "day": 25,
-      "value": 0.34
+      "value": 0.656
     },
     {
       "month": 10,
       "day": 26,
-      "value": 0.28
+      "value": 0.625
     },
     {
       "month": 10,
       "day": 27,
-      "value": 0.22
+      "value": 0.594
     },
     {
       "month": 10,
       "day": 28,
-      "value": 0.16
+      "value": 0.562
     },
     {
       "month": 10,
       "day": 29,
-      "value": 0.1
+      "value": 0.531
     },
     {
       "month": 10,
       "day": 30,
-      "value": 0.04
+      "value": 0.5
     },
     {
       "month": 10,
       "day": 31,
-      "value": 0.0
+      "value": 0.469
     },
     {
       "month": 11,
       "day": 1,
-      "value": 0.0
+      "value": 0.438
     },
     {
       "month": 11,
       "day": 2,
-      "value": 0.0
+      "value": 0.406
     },
     {
       "month": 11,
       "day": 3,
-      "value": 0.0
+      "value": 0.375
     },
     {
       "month": 11,
       "day": 4,
-      "value": 0.0
+      "value": 0.344
     },
     {
       "month": 11,
       "day": 5,
-      "value": 0.0
+      "value": 0.312
     },
     {
       "month": 11,
       "day": 6,
-      "value": 0.0
+      "value": 0.281
     },
     {
       "month": 11,
       "day": 7,
-      "value": 0.0
+      "value": 0.25
     },
     {
       "month": 11,
       "day": 8,
-      "value": 0.0
+      "value": 0.219
     },
     {
       "month": 11,
       "day": 9,
-      "value": 0.0
+      "value": 0.188
     },
     {
       "month": 11,
       "day": 10,
-      "value": 0.0
+      "value": 0.156
     },
     {
       "month": 11,
       "day": 11,
-      "value": 0.0
+      "value": 0.125
     },
     {
       "month": 11,
       "day": 12,
-      "value": 0.0
+      "value": 0.094
     },
     {
       "month": 11,
       "day": 13,
-      "value": 0.0
+      "value": 0.062
     },
     {
       "month": 11,
       "day": 14,
-      "value": 0.0
+      "value": 0.031
     },
     {
       "month": 11,
