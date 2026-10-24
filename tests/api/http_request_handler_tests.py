@@ -37,7 +37,7 @@ def Test_SendFile_TestAnimalsPage_ExpectRendersNavInStandardOrder() -> None:
 
    nav_items = [
       '<a href="map.html">Map</a>',
-      '<a href="animals.html">Animals</a>',
+      '<a href="animals.html" aria-current="page">Animals</a>',
       '<a href="https://www.torontozoo.com/meettheguardians">Meet The Guardians</a>',
       '<a href="https://www.torontozoo.com/wildencounters">Wild Encounters</a>',
       '<a href="itinerary.html">Itinerary</a>'
