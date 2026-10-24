@@ -11,8 +11,19 @@ export class MapBootstrap {
 
       if (!MapPageBootstrap.hasRequiredMapPageElements(elements)) return;
 
-      await LoadInlineZooMapLoader.loadInlineZooMap();
-      await TransportationRouteControlsController.initTransportationRouteControls(elements.transportationRoutesEl);
+      const svgReady = LoadInlineZooMapLoader.loadInlineZooMap();
+      const transportationReady = TransportationRouteControlsController.initTransportationRouteControls(
+         elements.transportationRoutesEl,
+      );
+      const earliestVisitNoonReady = VisitDateResolver.resolveEarliestSelectableVisitDateNoon();
+
+      await Promise.all([
+         svgReady,
+         transportationReady,
+         earliestVisitNoonReady,
+      ]);
+
+      const earliestVisitNoon = await earliestVisitNoonReady;
 
       let explore = null;
       let search = null;
@@ -41,8 +52,6 @@ export class MapBootstrap {
          explore,
          updater,
       });
-
-      const earliestVisitNoon = await VisitDateResolver.resolveEarliestSelectableVisitDateNoon();
 
       MapPageBootstrap.initMapPageControls({
          elements,
