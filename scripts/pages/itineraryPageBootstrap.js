@@ -142,7 +142,12 @@ export class ItineraryPageBootstrap {
    }
 
    static async initItineraryPageContent(mountEl, openWizard, refreshPanel) {
-      await refreshPanel({ openBuilderWhenEmpty: true });
-      await ItineraryPageBootstrap.initEmbeddedItineraryMap();
+      const mapReady = ItineraryPageBootstrap.initEmbeddedItineraryMap();
+
+      try {
+         await refreshPanel({ openBuilderWhenEmpty: true });
+      } finally {
+         await mapReady;
+      }
    }
 }
