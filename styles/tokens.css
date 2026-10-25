@@ -91,8 +91,12 @@
    --zoo-map-aspect-width: 4096;
    --zoo-map-aspect-height: 2665;
    --map-frame-height: calc(100vh - var(--layout-top-bar-height) - var(--layout-nav-height));
-   /* 12px on a 691px map frame, the frame height at 100% on this window. */
+   /* 12px animal dot on a 691px map frame at 100%. */
    --marker-size: calc(var(--map-frame-height) * 12 / 691);
+   /* 1px of that dot. Marker rules multiply this by their pixel size. */
+   --marker-unit: calc(var(--marker-size) / 12);
+   /* 8px number inside a marker. */
+   --marker-number-size: calc(var(--marker-unit) * 8);
    /* 1px at 100% on this window, and the same share when zoomed. */
    --hover-tooltip-px: 0.1236vh;
    /* 262.5px on a 1512-wide window, and the same share of the window when zoomed. */
