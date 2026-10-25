@@ -83,28 +83,31 @@
    --font-weight-bold: 700;
    --font-weight-extrabold: 800;
 
-   /* ── Layout ── */
-   --layout-top-bar-height: 8vh;
-   /* 6vh button row. The extra 0.62vh is 5px of padding at 100% on this window. */
-   --layout-nav-height: calc(6vh + 0.62vh);
+   /* ── Layout ──
+      The 100% screen. It scales to fit the window, and scrolls once zoomed in. */
+   --layout-page-width: 1512px;
+   --layout-page-height: 809px;
+   --layout-fit: min(100vw / var(--layout-page-width), 100vh / var(--layout-page-height));
+   --layout-top-bar-height: calc(var(--layout-page-height) * 0.08);
+   /* 6% button row plus the 5px of padding from the 100% screen. */
+   --layout-nav-height: calc(var(--layout-page-height) * 0.06 + 5px);
    /* Matches ZooMapConstants and images/map/zoo-map.svg. */
    --zoo-map-aspect-width: 4096;
    --zoo-map-aspect-height: 2665;
-   --map-frame-height: calc(100vh - var(--layout-top-bar-height) - var(--layout-nav-height));
+   --map-frame-height: calc(var(--layout-page-height) - var(--layout-top-bar-height) - var(--layout-nav-height));
    /* 12px animal dot on a 691px map frame at 100%. */
    --marker-size: calc(var(--map-frame-height) * 12 / 691);
    /* 1px of that dot. Marker rules multiply this by their pixel size. */
    --marker-unit: calc(var(--marker-size) / 12);
    /* 8px number inside a marker. */
    --marker-number-size: calc(var(--marker-unit) * 8);
-   /* 1px at 100% on this window, and the same share when zoomed. */
-   --hover-tooltip-px: 0.1236vh;
-   /* 262.5px on a 1512-wide window, and the same share of the window when zoomed. */
-   --side-column-width: 17.36vw;
-   /* 405px on a 1920-wide window, and the same share of the window when zoomed. */
-   --map-menu-width: 21.12vw;
+   --hover-tooltip-px: 1px;
+   /* 262.5px across the 1512px page. */
+   --side-column-width: calc(var(--layout-page-width) * 0.1736);
+   /* 319.3px across the 1512px page. */
+   --map-menu-width: calc(var(--layout-page-width) * 0.2112);
    /* Marker anchor stays on the previous column width. */
-   --map-marker-panel-width: clamp(21.12vw, 405px, 32vw);
+   --map-marker-panel-width: 405px;
 
    /* ── Spacing ── */
    --space-1: 1.5px;
@@ -129,7 +132,7 @@
    --shadow-xl: 0 3px 7px #00000059;
 
    /* ── Explore controls (dropdown + search) ── */
-   --explore-control-font: 0.6em;
+   --explore-control-font: 9.6px;
    --explore-control-weight: var(--font-weight-bold);
    --explore-control-pad-y: 4.25px;
    --explore-control-pad-x: var(--space-3);

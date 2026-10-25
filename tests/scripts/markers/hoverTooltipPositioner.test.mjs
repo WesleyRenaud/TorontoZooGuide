@@ -22,6 +22,24 @@ function _installTooltipUnit(width) {
 }
 
 
+function _withPageZoom(zoomText, closestResult) {
+   const originalGetComputedStyle = globalThis.getComputedStyle;
+   globalThis.getComputedStyle = () => ({ zoom: zoomText });
+
+   return {
+      hoverTooltipEl: {
+         style: {},
+         closest() {
+            return closestResult;
+         },
+      },
+      restore() {
+         globalThis.getComputedStyle = originalGetComputedStyle;
+      },
+   };
+}
+
+
 test('Test_IsTooltipVisible_TestBlock_ExpectTrue', () => {
    const hoverTooltipEl = { style: { display: 'block' } };
 
@@ -116,4 +134,80 @@ test('Test_CalculateTooltipPosition_TestNearTop_ExpectFlippedBelow', () => {
    const position = HoverTooltipPositioner.calculateTooltipPosition(event, tooltipRect);
 
    assert.ok(position.y > clientY);
+});
+
+
+test('Test_PageZoom_TestNoStyleReader_ExpectOne', () => {
+   const originalGetComputedStyle = globalThis.getComputedStyle;
+   globalThis.getComputedStyle = undefined;
+   const hoverTooltipEl = {
+      closest() {
+         return {};
+      },
+   };
+
+   try {
+      const zoom = HoverTooltipPositioner.pageZoom(hoverTooltipEl);
+
+      assert.equal(zoom, 1);
+   } finally {
+      globalThis.getComputedStyle = originalGetComputedStyle;
+   }
+});
+
+
+test('Test_PageZoom_TestOutsidePage_ExpectOne', () => {
+   const installed = _withPageZoom('2', null);
+
+   try {
+      const zoom = HoverTooltipPositioner.pageZoom(installed.hoverTooltipEl);
+
+      assert.equal(zoom, 1);
+   } finally {
+      installed.restore();
+   }
+});
+
+
+test('Test_PageZoom_TestScaledPage_ExpectZoom', () => {
+   const zoomText = '2';
+   const installed = _withPageZoom(zoomText, {});
+
+   try {
+      const zoom = HoverTooltipPositioner.pageZoom(installed.hoverTooltipEl);
+
+      assert.equal(zoom, Number(zoomText));
+   } finally {
+      installed.restore();
+   }
+});
+
+
+test('Test_PageZoom_TestUnreadableZoom_ExpectOne', () => {
+   const installed = _withPageZoom('normal', {});
+
+   try {
+      const zoom = HoverTooltipPositioner.pageZoom(installed.hoverTooltipEl);
+
+      assert.equal(zoom, 1);
+   } finally {
+      installed.restore();
+   }
+});
+
+
+test('Test_ApplyTooltipPosition_TestScaledPage_ExpectDividedOffset', () => {
+   const x = 80;
+   const y = 40;
+   const zoomText = '2';
+   const installed = _withPageZoom(zoomText, {});
+
+   try {
+      HoverTooltipPositioner.applyTooltipPosition(installed.hoverTooltipEl, { x, y });
+
+      assert.equal(installed.hoverTooltipEl.style.left, `${x / Number(zoomText)}px`);
+      assert.equal(installed.hoverTooltipEl.style.top, `${y / Number(zoomText)}px`);
+   } finally {
+      installed.restore();
+   }
 });

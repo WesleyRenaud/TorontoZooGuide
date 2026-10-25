@@ -28,6 +28,7 @@ html, body {
 
 html.home-page,
 html.console-operations-page {
+   width: 100%;
    height: 100%;
    overflow: hidden;
    overscroll-behavior: none;
@@ -36,24 +37,41 @@ html.console-operations-page {
 html.home-page body,
 html.console-operations-page body {
    height: 100%;
-   min-height: 0;
-   overflow: hidden;
+   display: flex;
+   justify-content: center;
+   overflow: visible;
    overscroll-behavior: none;
 }
 
-.home-page, .console-operations-page {
+body > .home-page,
+body > .console-operations-page {
    position: relative;
    display: flex;
    flex-direction: column;
-   height: 100vh;
+   width: var(--layout-page-width);
+   height: var(--layout-page-height);
    min-height: 0;
    overflow: hidden;
+   zoom: var(--layout-fit);
 }
 
-html.home-page .home-page,
-html.console-operations-page .console-operations-page {
-   height: 100%;
-   min-height: 0;
+/* Below about 92% of the 1512×809 picture, the window is zoomed in and the picture scrolls. */
+@media (max-width: 1390px), (max-height: 743px) {
+   html.home-page,
+   html.console-operations-page {
+      overflow: auto;
+   }
+
+   html.home-page body,
+   html.console-operations-page body {
+      height: auto;
+      display: block;
+   }
+
+   body > .home-page,
+   body > .console-operations-page {
+      zoom: 1;
+   }
 }
 
 .home-page main, .console-operations-page main {
@@ -104,7 +122,7 @@ html.console-operations-page .console-operations-page {
    display: flex;
    justify-content: center;
    align-items: center;
-   gap: 1.48vh;
+   gap: calc(var(--layout-page-height) * 0.0148);
 
    color: var(--color-white);
 
@@ -114,7 +132,7 @@ html.console-operations-page .console-operations-page {
 }
 
 .top-bar-title {
-   font-size: 1.48vh;
+   font-size: calc(var(--layout-page-height) * 0.0148);
    font-weight: bold;
    letter-spacing: 0.02em;
    line-height: 1;
@@ -207,12 +225,34 @@ html.console-operations-page .console-operations-page {
 
 .side-panel-toggle .toggle-row {
    gap: 4.75px;
-   font-size: 0.6em;
+   font-size: 9.6px;
 }
 
-.side-panel-toggle .toggle-row input[type="checkbox"] {
+.side-panel-toggle .toggle-row input[type="checkbox"],
+.multi-select-dropdown input[type="checkbox"] {
+   appearance: none;
+   box-sizing: border-box;
+   flex: 0 0 auto;
+   margin: 3px 3px 3px 4px;
    width: 9.5px;
    height: 9.5px;
+   border: 1px solid #767676;
+   border-radius: 2px;
+   background: #fff center / 80% 80% no-repeat;
+   cursor: pointer;
+}
+
+.side-panel-toggle .toggle-row input[type="checkbox"]:checked,
+.multi-select-dropdown input[type="checkbox"]:checked {
+   background-color: var(--color-brand-primary);
+   border-color: var(--color-brand-primary);
+   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.1 5.2 L4.2 7.4 L8 3' fill='none' stroke='white' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.side-panel-toggle .toggle-row input[type="checkbox"]:focus-visible,
+.multi-select-dropdown input[type="checkbox"]:focus-visible {
+   outline: 2px solid var(--color-brand-primary);
+   outline-offset: 1px;
 }
 
 /* ============================================================
@@ -233,7 +273,7 @@ html.console-operations-page .console-operations-page {
 }
 
 .transportation-route-title {
-   font-size: 0.6em;
+   font-size: 9.6px;
    font-weight: 700;
    color: #14230af2;
 }
@@ -251,7 +291,7 @@ html.console-operations-page .console-operations-page {
    align-items: center;
    gap: 4.75px;
 
-   font-size: 0.6em;
+   font-size: 9.6px;
    font-weight: 600;
    color: #14230ae6;
    cursor: pointer;
@@ -260,10 +300,28 @@ html.console-operations-page .console-operations-page {
 }
 
 .transportation-route-option input[type="radio"] {
+   appearance: none;
+   box-sizing: border-box;
+   flex: 0 0 auto;
+   margin: 3px 3px 3px 4px;
    width: 9.5px;
    height: 9.5px;
-   accent-color: var(--color-brand-primary);
+   border: 1px solid #767676;
+   border-radius: 50%;
+   background: #fff;
    cursor: pointer;
+}
+
+.transportation-route-option input[type="radio"]:checked {
+   border-color: var(--color-brand-primary);
+   background:
+      radial-gradient(circle, var(--color-brand-primary) 0 42%, transparent 46%) center / 100% 100% no-repeat,
+      #fff;
+}
+
+.transportation-route-option input[type="radio"]:focus-visible {
+   outline: 2px solid var(--color-brand-primary);
+   outline-offset: 1px;
 }
 
 /* ============================================================
@@ -342,16 +400,9 @@ html.console-operations-page .console-operations-page {
    cursor: pointer;
 
    font-family: var(--font-family-base);
-   font-size: 0.51em;
+   font-size: 8.16px;
    font-weight: 700;
    color: #14230af2;
-}
-
-.multi-select-dropdown input[type="checkbox"] {
-   width: 9.5px;
-   height: 9.5px;
-   accent-color: var(--color-brand-primary);
-   cursor: pointer;
 }
 
 .filter-label {
@@ -371,7 +422,7 @@ html.console-operations-page .console-operations-page {
    padding: 1.75px 3.25px;
    border-radius: 249.75px;
 
-   font-size: 0.75em;
+   font-size: 12px;
    font-weight: 700;
 
    box-shadow: 0 0.5px 1.5px #00000026;
@@ -395,7 +446,7 @@ html.console-operations-page .console-operations-page {
    box-sizing: border-box;
 
    font-family: var(--font-family-base);
-   font-size: 0.6em;
+   font-size: 9.6px;
    font-weight: 700;
 
    padding: 4.25px 4.75px;
@@ -508,7 +559,7 @@ html.console-operations-page .console-operations-page {
    background-color: transparent;
    color: var(--color-brand-primary-muted);
    font-family: var(--font-family-base);
-   font-size: 0.65em;
+   font-size: 10.4px;
    font-weight: 700;
    line-height: 1.1;
    cursor: pointer;
@@ -604,7 +655,7 @@ html.console-operations-page .console-operations-page {
 
 .explore-update-count {
    font-family: var(--font-family-base);
-   font-size: 0.6em;
+   font-size: 9.6px;
    font-weight: 700;
    line-height: 1.1;
    color: var(--color-brand-primary-muted);
@@ -618,7 +669,7 @@ html.console-operations-page .console-operations-page {
    background-color: transparent;
    color: var(--color-brand-primary);
    font-family: var(--font-family-base);
-   font-size: 0.6em;
+   font-size: 9.6px;
    font-weight: 800;
    line-height: 1;
    cursor: pointer;
@@ -654,7 +705,7 @@ html.console-operations-page .console-operations-page {
 
 .explore-updates-empty {
    padding: 6px;
-   font-size: 0.625em;
+   font-size: 10px;
    font-weight: 700;
    color: #14230a9e;
 }
@@ -674,7 +725,7 @@ html.console-operations-page .console-operations-page {
    border-radius: 249.75px;
    background: var(--color-marker-teal);
    color: var(--color-white);
-   font-size: 0.5em;
+   font-size: 8px;
    font-weight: 800;
    line-height: 1.1;
 }
@@ -701,7 +752,7 @@ html.console-operations-page .console-operations-page {
 
 .explore-update-title {
    margin: 0 0 3px;
-   font-size: 0.7875em;
+   font-size: 12.6px;
    font-weight: 800;
    line-height: 1.12;
    color: var(--color-brand-link);
@@ -727,7 +778,7 @@ html.console-operations-page .console-operations-page {
 
 .explore-update-description {
    margin: 0;
-   font-size: 0.6125em;
+   font-size: 9.8px;
    font-weight: 600;
    line-height: 1.28;
    color: var(--color-brand-primary-muted);
@@ -802,6 +853,36 @@ html.console-operations-page .console-operations-page {
    transform: translateY(-0.75px);
 }
 
+.animal-search-results .animal-result {
+   border-radius: 2.75px;
+   padding: 4.25px;
+   gap: 4.25px;
+   box-shadow: 0 1.5px 3.75px #0000002e;
+}
+
+.animal-search-results .animal-result-left {
+   gap: 1.75px;
+}
+
+.animal-search-results .animal-result-species {
+   font-size: 9.6px;
+}
+
+.animal-search-results .animal-result-exhibit {
+   font-size: 6.72px;
+}
+
+.animal-search-results .animal-result-map-btn {
+   padding: 3.25px 5px;
+   border-radius: 2.75px;
+   font-size: 6.72px;
+   box-shadow: 0 1.5px 3.25px #00000038;
+}
+
+.animal-search-results .animal-result-map-btn:hover {
+   transform: translateY(-0.75px);
+}
+
 .animal-search-results .animal-result .itin-animal-content {
    flex: 1 1 auto;
    min-width: 0;
@@ -833,7 +914,7 @@ html.console-operations-page .console-operations-page {
 
 .animal-search-results .itin-animal-thumb.is-placeholder::before {
    content: "🐾";
-   font-size: 1.1rem;
+   font-size: 17.6px;
    opacity: 0.85;
 }
 
@@ -843,7 +924,7 @@ html.console-operations-page .console-operations-page {
 }
 
 .animal-result-empty {
-   font-size: 0.45em;
+   font-size: 7.2px;
    font-weight: 700;
    color: #14230abf;
    padding: 2.75px 1.25px;
@@ -953,7 +1034,7 @@ html.console-operations-page .console-operations-page {
 
 .home-page .map-controls {
    position: absolute;
-   top: 1vh;
+   top: calc(var(--layout-page-height) * 0.01);
    left: 50%;
    transform: translateX(-50%);
    background-color: #ffffffd9;
@@ -964,7 +1045,7 @@ html.console-operations-page .console-operations-page {
    align-items: center;
    z-index: 15;
    box-shadow: 0 1px 2.5px #0000004c;
-   font-size: 0.5em;
+   font-size: 8px;
 }
 
 .home-page .map-controls select,
@@ -989,8 +1070,8 @@ html.console-operations-page .console-operations-page {
 
 .itinerary-settings-gear {
    position: absolute;
-   top: 1.2vh;
-   right: 1.2vh;
+   top: calc(var(--layout-page-height) * 0.012);
+   right: calc(var(--layout-page-height) * 0.012);
    z-index: 16;
 
    width: 22px;
@@ -1091,7 +1172,7 @@ nav {
    display: flex;
    justify-content: center;
    align-items: center;
-   padding: 0.31vh 0;
+   padding: calc(var(--layout-page-height) * 0.0031) 0;
    flex-shrink: 0;
    box-sizing: border-box;
    position: relative;
@@ -1102,9 +1183,9 @@ nav ul {
    margin: 0;
    padding: 0;
    display: flex;
-   flex-wrap: wrap;
+   flex-wrap: nowrap;
    justify-content: center;
-   gap: 0.62vh;
+   gap: calc(var(--layout-page-height) * 0.0062);
    list-style-type: none;
    width: 100%;
    min-width: 0;
@@ -1114,16 +1195,14 @@ nav ul li a {
    display: flex;
    justify-content: center;
    align-items: center;
-   width: 22vh;
-   height: 6vh;
-   min-width: 45px;
-   min-height: 15px;
+   width: calc(var(--layout-page-height) * 0.22);
+   height: calc(var(--layout-page-height) * 0.06);
    background-color: var(--color-brand-accent);
    color: var(--color-white);
    font-weight: bold;
-   font-size: 1.48vh;
+   font-size: calc(var(--layout-page-height) * 0.0148);
    text-align: center;
-   border-radius: 0.62vh;
+   border-radius: calc(var(--layout-page-height) * 0.0062);
    text-decoration: none;
    transition: background 0.3s, transform 0.3s;
    flex-shrink: 0;
@@ -1225,15 +1304,15 @@ nav ul li a[aria-current="page"]:hover {
 }
 
 .marker.marker-has-limited-viewing {
-   box-shadow: 0 0 0 1.75px #ffdd00fa;
+   box-shadow: 0 0 0 calc(var(--marker-unit) * 1.75) #ffdd00fa;
 }
 
 .marker.marker-viewable-from-zoomobile {
-   box-shadow: 0 0 0 1.75px #74da00f0;
+   box-shadow: 0 0 0 calc(var(--marker-unit) * 1.75) #74da00f0;
 }
 
 .marker.marker-restroom.marker-has-limited-viewing {
-   box-shadow: 0 0 0 1.5px #ffdd00fa;
+   box-shadow: 0 0 0 calc(var(--marker-unit) * 1.5) #ffdd00fa;
 }
 
 /* ============================================================
