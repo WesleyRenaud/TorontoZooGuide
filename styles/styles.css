@@ -5328,13 +5328,13 @@ nav ul li a[aria-current="page"]:hover {
    border-radius: 8px;
    box-shadow: 0 5.5px 16px #00000024;
    overflow: hidden;
-   margin-top: 2vh;
+   margin-top: calc(var(--layout-page-height) * 0.02);
 }
 
 .console-operations-panel.active {
    display: flex;
    flex-direction: column;
-   max-height: calc(100vh - var(--layout-top-bar-height) - 14px);
+   max-height: calc(var(--layout-page-height) - var(--layout-top-bar-height) - 14px);
    margin-bottom: 14px;
 }
 
@@ -5873,13 +5873,20 @@ nav ul li a[aria-current="page"]:hover {
 }
 
 .console-overlap-dialog-card {
-   width: min(320px, calc(100vw - 6px));
+   width: 320px;
    min-width: 260px;
    overflow: hidden;
    border-radius: 4.5px;
    border: 0.75px solid #5e960047;
    background: #fcf8ecfc;
    box-shadow: 0 6.5px 22.5px #00000057;
+   zoom: var(--layout-fit);
+}
+
+@media (max-width: 1390px), (max-height: 743px) {
+   .console-overlap-dialog-card {
+      zoom: 1;
+   }
 }
 
 .console-overlap-dialog-header {
