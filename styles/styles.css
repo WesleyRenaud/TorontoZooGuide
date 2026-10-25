@@ -853,7 +853,8 @@ html.console-operations-page .console-operations-page {
    RIGHT DECORATION IMAGE
 ============================================================ */
 
-.home-page main img.side-image.right {
+.home-page main img.side-image.right,
+.console-operations-page main img.side-image.right {
    flex: 0 0 var(--side-column-width);
    width: var(--side-column-width);
    height: 100%;
@@ -6022,14 +6023,6 @@ nav ul li a[aria-current="page"]:hover {
 ============================================================ */
 
 @media (max-width: 1100px) {
-   html.console-operations-page,
-   body.console-operations-page,
-   .console-operations-page {
-      height: auto;
-      min-height: 100vh;
-      overflow: auto;
-   }
-
    .console-operations-workspace {
       padding: 8px;
    }
