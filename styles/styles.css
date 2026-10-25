@@ -63,7 +63,7 @@ html.home-page {
    display: flex;
    justify-content: center;
    align-items: center;
-   gap: 16px;
+   gap: 1.48vh;
 
    color: var(--color-white);
 
@@ -73,7 +73,7 @@ html.home-page {
 }
 
 .top-bar-title {
-   font-size: 1em;
+   font-size: 1.48vh;
    font-weight: bold;
    letter-spacing: 0.02em;
    line-height: 1;
