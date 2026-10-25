@@ -86,7 +86,7 @@
    /* ── Layout ── */
    --layout-top-bar-height: 8vh;
    --side-column-width: clamp(157.5px, 39vw, 262.5px);
-   --map-menu-width: clamp(245px, 60vw, 405px);
+   --map-menu-width: 21.12vw;
 
    /* ── Spacing ── */
    --space-1: 1.5px;
