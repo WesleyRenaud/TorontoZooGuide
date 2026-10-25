@@ -122,7 +122,7 @@ test('Test_ReferenceContainerSize_TestMeasuredFrame_ExpectViewportRemainder', ()
       MapStageController.referenceContainerSize(mapInner)
    ), {
       properties: {
-         '--map-menu-width': '405px',
+         '--map-marker-panel-width': '405px',
          '--map-frame-height': '924px',
       },
       probe: {
@@ -146,7 +146,7 @@ test('Test_ReferenceContainerSize_TestEmptyProbe_ExpectClientSize', () => {
       MapStageController.referenceContainerSize(mapInner)
    ), {
       properties: {
-         '--map-menu-width': '405px',
+         '--map-marker-panel-width': '405px',
          '--map-frame-height': '924px',
       },
    });

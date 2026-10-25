@@ -91,8 +91,10 @@
    --zoo-map-aspect-height: 2665;
    --map-frame-height: calc(100vh - var(--layout-top-bar-height) - var(--layout-nav-height));
    --side-column-width: clamp(157.5px, 39vw, 262.5px);
-   /* 405px on a normal window. The vw bounds keep zoom from stretching the column. */
-   --map-menu-width: clamp(21.12vw, 405px, 32vw);
+   /* 405px on a 1920-wide window, and the same share of the window when zoomed. */
+   --map-menu-width: 21.12vw;
+   /* Marker anchor stays on the previous column width. */
+   --map-marker-panel-width: clamp(21.12vw, 405px, 32vw);
 
    /* ── Spacing ── */
    --space-1: 1.5px;
