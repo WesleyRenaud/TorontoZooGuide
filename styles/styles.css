@@ -1167,7 +1167,7 @@ nav ul li a[aria-current="page"]:hover {
    justify-content: center;
    font-weight: bold;
    color: var(--color-white);
-   font-size: calc(var(--marker-size) * 8 / 12);
+   font-size: var(--marker-number-size);
 }
 
 .marker.hidden {
@@ -1180,16 +1180,16 @@ nav ul li a[aria-current="page"]:hover {
 }
 
 .marker.marker-attraction {
-   --attraction-marker-size: 8px;
+   --attraction-marker-size: calc(var(--marker-unit) * 8);
    width: var(--attraction-marker-size);
    height: var(--attraction-marker-size);
-   font-size: 8px;
+   font-size: var(--marker-number-size);
 }
 
 .marker.marker-zoomobile-station {
-   width: 8px;
-   height: 8px;
-   font-size: 8px;
+   width: calc(var(--marker-unit) * 8);
+   height: calc(var(--marker-unit) * 8);
+   font-size: var(--marker-number-size);
 }
 
 .marker.marker-attraction.marker-attraction-scale-2-5 {
@@ -1208,20 +1208,20 @@ nav ul li a[aria-current="page"]:hover {
 }
 
 .marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-guardians-talk, .marker.marker-drinking-fountain, .marker.marker-defibrillator, .marker.marker-emergency-intercom, .marker.marker-guest-service, .marker.marker-picnic-site, .marker.marker-event-site {
-   width: 6px;
-   height: 6px;
-   font-size: 8px;
+   width: calc(var(--marker-unit) * 6);
+   height: calc(var(--marker-unit) * 6);
+   font-size: var(--marker-number-size);
 }
 
 .marker.marker-guest-service.marker-guest-service-first-aid {
-   width: 8px;
-   height: 8px;
+   width: calc(var(--marker-unit) * 8);
+   height: calc(var(--marker-unit) * 8);
 }
 
 .marker.marker-zoomobile-route-marker {
-   width: 4px;
-   height: 4px;
-   font-size: 8px;
+   width: calc(var(--marker-unit) * 4);
+   height: calc(var(--marker-unit) * 4);
+   font-size: var(--marker-number-size);
 }
 
 .marker.marker-has-limited-viewing {
