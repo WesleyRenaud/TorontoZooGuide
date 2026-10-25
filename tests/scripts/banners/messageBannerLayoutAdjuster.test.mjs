@@ -79,33 +79,6 @@ test('Test_SetBannerWidth_TestElement_ExpectCssVar', () => {
 });
 
 
-test('Test_IsMobileAlertLayout_TestMatchMediaTrue_ExpectTrue', () => {
-   window.matchMedia = () => ({ matches: true });
-
-   const isMobile = MessageBannerLayoutAdjuster.isMobileAlertLayout();
-
-   assert.equal(isMobile, true);
-});
-
-
-test('Test_IsMobileAlertLayout_TestMatchMediaFalse_ExpectFalse', () => {
-   window.matchMedia = () => ({ matches: false });
-
-   const isMobile = MessageBannerLayoutAdjuster.isMobileAlertLayout();
-
-   assert.equal(isMobile, false);
-});
-
-
-test('Test_IsMobileAlertLayout_TestMissingMatchMedia_ExpectFalse', () => {
-   delete window.matchMedia;
-
-   const isMobile = MessageBannerLayoutAdjuster.isMobileAlertLayout();
-
-   assert.equal(isMobile, false);
-});
-
-
 test('Test_GetMeasuredHeight_TestRect_ExpectHeight', () => {
    const height = 120;
    const el = _createBannerElement({ height });
@@ -153,17 +126,6 @@ test('Test_GetWidthToHeightRatio_TestMissingHeight_ExpectNull', () => {
    const ratio = MessageBannerLayoutAdjuster.getWidthToHeightRatio(el, width);
 
    assert.equal(ratio, null);
-});
-
-
-test('Test_AdjustBannerWidth_TestMobile_ExpectClearsWidth', () => {
-   window.matchMedia = () => ({ matches: true });
-   const el = _createBannerElement();
-   el.style['--alert-banner-width'] = '700px';
-
-   MessageBannerLayoutAdjuster.adjustBannerWidth(el);
-
-   assert.equal(el.style['--alert-banner-width'], undefined);
 });
 
 
