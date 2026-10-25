@@ -5,6 +5,22 @@ export class HoverTooltipPositioner {
       cursorOffsetY: 22,
    });
 
+   static unitPx() {
+      const probe = document.createElement('div');
+      probe.style.position = 'absolute';
+      probe.style.visibility = 'hidden';
+      probe.style.pointerEvents = 'none';
+      probe.style.width = 'var(--hover-tooltip-px)';
+      document.documentElement.appendChild(probe);
+      const { width } = probe.getBoundingClientRect();
+      probe.remove();
+      return width;
+   }
+
+   static length(px) {
+      return HoverTooltipPositioner.unitPx() * px;
+   }
+
    static isTooltipVisible(hoverTooltipEl) {
       return Boolean(
          hoverTooltipEl
@@ -13,7 +29,9 @@ export class HoverTooltipPositioner {
    }
 
    static clampToViewport(value, size, viewportSize) {
-      const { viewportPadding } = HoverTooltipPositioner.HOVER_TOOLTIP_POSITION;
+      const viewportPadding = HoverTooltipPositioner.length(
+         HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.viewportPadding
+      );
 
       return Math.max(
          viewportPadding,
@@ -22,11 +40,15 @@ export class HoverTooltipPositioner {
    }
 
    static calculateTooltipPosition(event, tooltipRect) {
-      const {
-         cursorOffsetX,
-         cursorOffsetY,
-         viewportPadding,
-      } = HoverTooltipPositioner.HOVER_TOOLTIP_POSITION;
+      const cursorOffsetX = HoverTooltipPositioner.length(
+         HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.cursorOffsetX
+      );
+      const cursorOffsetY = HoverTooltipPositioner.length(
+         HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.cursorOffsetY
+      );
+      const viewportPadding = HoverTooltipPositioner.length(
+         HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.viewportPadding
+      );
 
       let x = event.clientX + cursorOffsetX;
       let y = event.clientY - tooltipRect.height - cursorOffsetY;

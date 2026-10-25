@@ -1091,7 +1091,7 @@ nav {
    display: flex;
    justify-content: center;
    align-items: center;
-   padding: 2.5px 0;
+   padding: 0.31vh 0;
    flex-shrink: 0;
    box-sizing: border-box;
    position: relative;
@@ -1104,7 +1104,7 @@ nav ul {
    display: flex;
    flex-wrap: wrap;
    justify-content: center;
-   gap: 5px;
+   gap: 0.62vh;
    list-style-type: none;
    width: 100%;
    min-width: 0;
@@ -1123,7 +1123,7 @@ nav ul li a {
    font-weight: bold;
    font-size: 1.48vh;
    text-align: center;
-   border-radius: 5px;
+   border-radius: 0.62vh;
    text-decoration: none;
    transition: background 0.3s, transform 0.3s;
    flex-shrink: 0;
@@ -1150,8 +1150,8 @@ nav ul li a[aria-current="page"]:hover {
 
 .marker {
    position: absolute;
-   width: 12px;
-   height: 12px;
+   width: var(--marker-size);
+   height: var(--marker-size);
    border-radius: 50%;
    transform: translate(-50%, -50%);
    pointer-events: auto;
@@ -1167,7 +1167,7 @@ nav ul li a[aria-current="page"]:hover {
    justify-content: center;
    font-weight: bold;
    color: var(--color-white);
-   font-size: 8px;
+   font-size: calc(var(--marker-size) * 8 / 12);
 }
 
 .marker.hidden {
@@ -1175,19 +1175,21 @@ nav ul li a[aria-current="page"]:hover {
 }
 
 .marker-wild-encounter {
-   width: 12px;
-   height: 12px;
+   width: var(--marker-size);
+   height: var(--marker-size);
 }
 
 .marker.marker-attraction {
    --attraction-marker-size: 8px;
    width: var(--attraction-marker-size);
    height: var(--attraction-marker-size);
+   font-size: 8px;
 }
 
 .marker.marker-zoomobile-station {
    width: 8px;
    height: 8px;
+   font-size: 8px;
 }
 
 .marker.marker-attraction.marker-attraction-scale-2-5 {
@@ -1208,6 +1210,7 @@ nav ul li a[aria-current="page"]:hover {
 .marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-guardians-talk, .marker.marker-drinking-fountain, .marker.marker-defibrillator, .marker.marker-emergency-intercom, .marker.marker-guest-service, .marker.marker-picnic-site, .marker.marker-event-site {
    width: 6px;
    height: 6px;
+   font-size: 8px;
 }
 
 .marker.marker-guest-service.marker-guest-service-first-aid {
@@ -1218,6 +1221,7 @@ nav ul li a[aria-current="page"]:hover {
 .marker.marker-zoomobile-route-marker {
    width: 4px;
    height: 4px;
+   font-size: 8px;
 }
 
 .marker.marker-has-limited-viewing {
@@ -1241,19 +1245,19 @@ nav ul li a[aria-current="page"]:hover {
    z-index: 99999;
    pointer-events: none;
 
-   padding: 4px 4.5px;
-   border-radius: 3.5px;
+   padding: calc(var(--hover-tooltip-px) * 4) calc(var(--hover-tooltip-px) * 4.5);
+   border-radius: calc(var(--hover-tooltip-px) * 3.5);
 
    background: #5e9600f7;
    color: var(--color-white);
 
    font-family: var(--font-family-base);
-   font-size: 0.75em;
+   font-size: calc(var(--hover-tooltip-px) * 12);
    font-weight: 800;
    line-height: 1.2;
 
-   box-shadow: 0 3px 7px #00000059;
-   border: 0.5px solid #ffffff59;
+   box-shadow: 0 calc(var(--hover-tooltip-px) * 3) calc(var(--hover-tooltip-px) * 7) #00000059;
+   border: calc(var(--hover-tooltip-px) * 0.5) solid #ffffff59;
 
    white-space: nowrap;
    overflow-wrap: anywhere;
@@ -1262,14 +1266,14 @@ nav ul li a[aria-current="page"]:hover {
 .hover-tooltip::after {
    content: "";
    position: absolute;
-   left: 4.5px;
-   bottom: -2.5px;
+   left: calc(var(--hover-tooltip-px) * 4.5);
+   bottom: calc(var(--hover-tooltip-px) * -2.5);
    width: 0;
    height: 0;
-   border-left: 2.5px solid transparent;
-   border-right: 2.5px solid transparent;
-   border-top: 2.5px solid #5e9600f7;
-   filter: drop-shadow(0 1.5px 2.5px #00000040);
+   border-left: calc(var(--hover-tooltip-px) * 2.5) solid transparent;
+   border-right: calc(var(--hover-tooltip-px) * 2.5) solid transparent;
+   border-top: calc(var(--hover-tooltip-px) * 2.5) solid #5e9600f7;
+   filter: drop-shadow(0 calc(var(--hover-tooltip-px) * 1.5) calc(var(--hover-tooltip-px) * 2.5) #00000040);
 }
 
 /* ============================================================

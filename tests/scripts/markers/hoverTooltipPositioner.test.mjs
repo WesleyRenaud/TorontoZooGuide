@@ -4,6 +4,24 @@ import test from 'node:test';
 import { HoverTooltipPositioner } from '../../../scripts/markers/hoverTooltipPositioner.js';
 
 
+function _installTooltipUnit(width) {
+   globalThis.document = {
+      documentElement: {
+         appendChild() {},
+      },
+      createElement() {
+         return {
+            style: {},
+            getBoundingClientRect() {
+               return { width };
+            },
+            remove() {},
+         };
+      },
+   };
+}
+
+
 test('Test_IsTooltipVisible_TestBlock_ExpectTrue', () => {
    const hoverTooltipEl = { style: { display: 'block' } };
 
@@ -32,6 +50,7 @@ test('Test_IsTooltipVisible_TestNull_ExpectFalse', () => {
 
 
 test('Test_ClampToViewport_TestBelowPadding_ExpectPadding', () => {
+   _installTooltipUnit(1);
    const value = -10;
    const size = 50;
    const viewportSize = 200;
@@ -43,6 +62,7 @@ test('Test_ClampToViewport_TestBelowPadding_ExpectPadding', () => {
 
 
 test('Test_ClampToViewport_TestPastEdge_ExpectInnerEdge', () => {
+   _installTooltipUnit(1);
    const value = 190;
    const size = 50;
    const viewportSize = 200;
@@ -56,7 +76,19 @@ test('Test_ClampToViewport_TestPastEdge_ExpectInnerEdge', () => {
 });
 
 
+test('Test_Length_TestMeasuredUnit_ExpectScaledOffset', () => {
+   _installTooltipUnit(1.236);
+
+   const length = HoverTooltipPositioner.length(
+      HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.cursorOffsetX
+   );
+
+   assert.equal(Math.round(length * 1000) / 1000, 22.248);
+});
+
+
 test('Test_CalculateAndApplyTooltipPosition_TestEvent_ExpectStyle', () => {
+   _installTooltipUnit(1);
    const width = 400;
    const height = 300;
    globalThis.window = { ...(globalThis.window || {}), innerWidth: width, innerHeight: height };
@@ -73,6 +105,7 @@ test('Test_CalculateAndApplyTooltipPosition_TestEvent_ExpectStyle', () => {
 
 
 test('Test_CalculateTooltipPosition_TestNearTop_ExpectFlippedBelow', () => {
+   _installTooltipUnit(1);
    const width = 400;
    const height = 300;
    globalThis.window = { ...(globalThis.window || {}), innerWidth: width, innerHeight: height };
