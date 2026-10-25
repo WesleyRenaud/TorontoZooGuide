@@ -4,7 +4,26 @@ import test from 'node:test';
 import { HoverFragment } from '../../../scripts/markers/hoverFragment.js';
 
 
+function _installTooltipUnit() {
+   globalThis.document = {
+      documentElement: {
+         appendChild() {},
+      },
+      createElement() {
+         return {
+            style: {},
+            getBoundingClientRect() {
+               return { width: 1 };
+            },
+            remove() {},
+         };
+      },
+   };
+}
+
+
 test('Test_CreateHoverTooltip_TestShow_ExpectVisible', () => {
+   _installTooltipUnit();
    globalThis.window = { ...(globalThis.window || {}), innerWidth: 500, innerHeight: 400 };
    const species = 'African Lion';
    const hoverTooltipEl = {
@@ -23,6 +42,7 @@ test('Test_CreateHoverTooltip_TestShow_ExpectVisible', () => {
 
 
 test('Test_CreateHoverTooltip_TestHide_ExpectHidden', () => {
+   _installTooltipUnit();
    globalThis.window = { ...(globalThis.window || {}), innerWidth: 500, innerHeight: 400 };
    const hoverTooltipEl = {
       style: { display: 'none' },
