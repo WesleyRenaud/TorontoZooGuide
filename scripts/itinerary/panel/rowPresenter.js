@@ -2,6 +2,7 @@ import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { DayPlannerScheduleController } from './dayPlannerScheduleController.js';
 import { RowPresentationHelper } from './rowPresentationHelper.js';
 import { ScheduledOccurrenceTimeModel } from '../scheduledOccurrenceTimeModel.js';
+import { StepRounder } from '../../shared/stepRounder.js';
 import { Strings } from '../../strings.js';
 
 export class RowPresenter {
@@ -38,7 +39,7 @@ export class RowPresenter {
          return '';
       }
 
-      const roundedMinutes = Math.round(startMinutes / 5) * 5;
+      const roundedMinutes = StepRounder.roundToStep(startMinutes, 5);
       return RowPresentationHelper.buildTimeFieldLine(
          Strings.format.approximate(
             DayPlannerScheduleController.formatMinutesAsClockTime(roundedMinutes)

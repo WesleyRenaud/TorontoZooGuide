@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { LikelihoodPresenter } from '../../../../scripts/likelihood/likelihoodPresenter.js';
 import { LikelihoodValues } from '../../../../scripts/likelihood/likelihoodValues.js';
 import { RowAlertsBuilder } from '../../../../scripts/itinerary/panel/rowAlertsBuilder.js';
 import { Strings } from '../../../../scripts/strings.js';
@@ -50,8 +51,8 @@ test('Test_BuildAnimalVisibilityChange_TestDecrease_ExpectDefaultTone', () => {
 
    assert.deepEqual(change, {
       line: Strings.itinerary.removedItems.projectedVisibilityChanged(
-         LikelihoodValues.likelihoodToPercent(animal.likelihoodBefore),
-         LikelihoodValues.likelihoodToPercent(animal.likelihoodAfter)
+         LikelihoodPresenter.formatDisplayedLikelihood(animal.likelihoodBefore),
+         LikelihoodPresenter.formatDisplayedLikelihood(animal.likelihoodAfter)
       ),
       tone: 'default',
    });
@@ -68,11 +69,32 @@ test('Test_BuildAnimalVisibilityChange_TestIncrease_ExpectPositiveTone', () => {
 
    assert.deepEqual(change, {
       line: Strings.itinerary.removedItems.projectedVisibilityChanged(
-         LikelihoodValues.likelihoodToPercent(animal.likelihoodBefore),
-         LikelihoodValues.likelihoodToPercent(animal.likelihoodAfter)
+         LikelihoodPresenter.formatDisplayedLikelihood(animal.likelihoodBefore),
+         LikelihoodPresenter.formatDisplayedLikelihood(animal.likelihoodAfter)
       ),
       tone: 'positive',
    });
+});
+
+
+test('Test_BuildAnimalVisibilityChange_TestMissingSide_ExpectEmpty', () => {
+   const animal = { likelihoodAfter: 80 };
+
+   const change = RowAlertsBuilder.buildAnimalVisibilityChange(animal);
+
+   assert.deepEqual(change, { line: '', tone: 'default' });
+});
+
+
+test('Test_BuildAnimalVisibilityChange_TestSameDisplayedLikelihood_ExpectEmpty', () => {
+   const animal = {
+      likelihoodBefore: LikelihoodPresenter.HIGH_OPEN_PERCENT + 1,
+      likelihoodAfter: 100,
+   };
+
+   const change = RowAlertsBuilder.buildAnimalVisibilityChange(animal);
+
+   assert.deepEqual(change, { line: '', tone: 'default' });
 });
 
 

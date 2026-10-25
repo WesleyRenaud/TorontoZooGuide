@@ -1,3 +1,4 @@
+import { LikelihoodPresenter } from '../../likelihood/likelihoodPresenter.js';
 import { LikelihoodValues } from '../../likelihood/likelihoodValues.js';
 import { Strings } from '../../strings.js';
 
@@ -22,15 +23,17 @@ export class RowAlertsBuilder {
 
    static buildAnimalVisibilityChange(animal) {
       const { before, after } = RowAlertsBuilder.getLikelihoodPair(animal);
+      const beforeLabel = LikelihoodPresenter.formatDisplayedLikelihood(before);
+      const afterLabel = LikelihoodPresenter.formatDisplayedLikelihood(after);
 
-      if (before == null || after == null || before === after) {
+      if (beforeLabel == null || afterLabel == null || beforeLabel === afterLabel) {
          return {
             line: '',
             tone: 'default',
          };
       }
 
-      const line = Strings.itinerary.removedItems.projectedVisibilityChanged(before, after);
+      const line = Strings.itinerary.removedItems.projectedVisibilityChanged(beforeLabel, afterLabel);
 
       if (after < before) {
          return {

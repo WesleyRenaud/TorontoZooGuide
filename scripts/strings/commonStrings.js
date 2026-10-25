@@ -113,6 +113,8 @@ export class CommonStrings {
    };
 
    static likelihood = {
+      aboveDisplayedMaximum: maximum => `> ${maximum}%`,
+      belowDisplayedMinimum: minimum => `< ${minimum}%`,
       high: 'High',
       low: 'Low',
       medium: 'Medium',

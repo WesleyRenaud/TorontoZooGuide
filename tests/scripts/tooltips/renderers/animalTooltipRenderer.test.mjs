@@ -122,7 +122,10 @@ test('Test_CreateCard_TestAnimal_ExpectCardFactoryPayload', () => {
       assert.equal(captured.payload.image.alt, species);
       assert.deepEqual(captured.payload.details, [
          exhibit,
-         Strings.tooltips.likelihoodDetail(likelihoodPhrase, likelihood),
+         Strings.tooltips.likelihoodDetail(
+            likelihoodPhrase,
+            LikelihoodPresenter.formatDisplayedLikelihood(likelihood)
+         ),
       ]);
       assert.equal(captured.payload.title.element.title.tagName, 'strong');
       assert.equal(captured.payload.title.element.title.dataset.index, index);
@@ -154,7 +157,10 @@ test('Test_CreateCard_TestTransportationOnlyAnimal_ExpectStandardDetails', () =>
 
       assert.deepEqual(captured.payload.details, [
          exhibit,
-         Strings.tooltips.likelihoodDetail(likelihoodPhrase, likelihood),
+         Strings.tooltips.likelihoodDetail(
+            likelihoodPhrase,
+            LikelihoodPresenter.formatDisplayedLikelihood(likelihood)
+         ),
       ]);
    } finally {
       _restoreCardFactory(originals);

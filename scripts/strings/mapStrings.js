@@ -98,7 +98,7 @@ export class MapStrings {
       guardiansTalkDescription: (
          'Join our knowledgeable Guardians as they share fascinating facts about our animal residents. Discover how they are cared for, learn about conservation efforts, and explore the important role enrichment plays in their well-being. You may also see the animals enjoying their meals, learn about their diets, and observe their natural behaviours in action. Follow the schedule below to learn more about your favourite Toronto Zoo animals!'
       ),
-      likelihoodDetail: (phrase, percent) => `Likelihood: ${phrase} (~${percent}%)`,
+      likelihoodDetail: (phrase, percentLabel) => `Likelihood: ${phrase} (${percentLabel})`,
       seasonalSchedule: value => `Seasonal Schedule: ${value}`,
       startTime: value => `Start Time: ${value}`,
       times: value => `Times: ${value}`,

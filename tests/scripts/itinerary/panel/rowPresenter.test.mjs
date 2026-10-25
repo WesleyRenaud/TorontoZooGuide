@@ -5,6 +5,7 @@ import { AssetKeyNormalizer } from '../../../../scripts/assets/assetKeyNormalize
 import { DayPlannerScheduleController } from '../../../../scripts/itinerary/panel/dayPlannerScheduleController.js';
 import { RowPresentationHelper } from '../../../../scripts/itinerary/panel/rowPresentationHelper.js';
 import { RowPresenter } from '../../../../scripts/itinerary/panel/rowPresenter.js';
+import { StepRounder } from '../../../../scripts/shared/stepRounder.js';
 import { ScheduledOccurrenceTimeModel } from '../../../../scripts/itinerary/scheduledOccurrenceTimeModel.js';
 import { Position } from '../../../../scripts/shared/enums/position.js';
 import { Strings } from '../../../../scripts/strings.js';
@@ -77,7 +78,7 @@ test('Test_BuildApproximateStartTimeFieldLine_TestStartTime_ExpectRounded', () =
    const originalParse = DayPlannerScheduleController.parseClockTimeMinutes;
    const originalFormat = DayPlannerScheduleController.formatMinutesAsClockTime;
    const startMinutes = 602;
-   const roundedMinutes = Math.round(startMinutes / 5) * 5;
+   const roundedMinutes = StepRounder.roundToStep(startMinutes, 5);
    DayPlannerScheduleController.parseClockTimeMinutes = (value) => (
       value ? startMinutes : Number.NaN
    );
