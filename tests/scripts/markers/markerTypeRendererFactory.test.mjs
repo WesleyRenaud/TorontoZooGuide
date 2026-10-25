@@ -130,7 +130,7 @@ test('Test_ApplyAttractionMarkerSize_TestUnknown_ExpectUnsized', () => {
 
    MarkerTypeRendererFactory.applyAttractionMarkerSize(markerEl, 'Unknown');
 
-   assert.equal(markerEl.style.width, undefined);
+   assert.equal(markerEl.className, '');
 });
 
 
@@ -140,8 +140,7 @@ test('Test_ApplyAttractionMarkerSize_TestSplashIsland_ExpectSized', () => {
 
    MarkerTypeRendererFactory.applyAttractionMarkerSize(markerEl, name);
 
-   assert.equal(markerEl.style.width, '80px');
-   assert.equal(markerEl.style.height, '80px');
+   assert.equal(markerEl.className, MarkerTypeRendererFactory.ATTRACTION_MARKER_SIZE_CLASSES[name]);
 });
 
 test('Test_ApplyOptionalSize_TestCallable_ExpectInvoked', () => {

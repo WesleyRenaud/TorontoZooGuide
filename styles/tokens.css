@@ -85,38 +85,38 @@
 
    /* ── Layout ── */
    --layout-top-bar-height: 8vh;
-   --side-column-width: clamp(630px, 39vw, 1050px);
-   --map-menu-width: clamp(980px, 60vw, 1620px);
+   --side-column-width: clamp(157.5px, 39vw, 262.5px);
+   --map-menu-width: clamp(245px, 60vw, 405px);
 
    /* ── Spacing ── */
-   --space-1: 6px;
-   --space-2: 13px;
-   --space-3: 19px;
-   --space-4: 28px;
-   --space-5: 32px;
-   --space-6: 64px;
+   --space-1: 1.5px;
+   --space-2: 3.25px;
+   --space-3: 4.75px;
+   --space-4: 7px;
+   --space-5: 8px;
+   --space-6: 16px;
 
    /* ── Radius ── */
-   --radius-sm: 8px;
-   --radius-md: 10px;
-   --radius-lg: 13px;
-   --radius-xl: 18px;
-   --radius-pill: 999px;
+   --radius-sm: 2px;
+   --radius-md: 2.5px;
+   --radius-lg: 3.25px;
+   --radius-xl: 4.5px;
+   --radius-pill: 249.75px;
    --radius-circle: 50%;
 
    /* ── Shadows ── */
-   --shadow-sm: 0 4px 10px #0000002e;
-   --shadow-md: 0 6px 14px #0000002e;
-   --shadow-lg: 0 8px 20px #00000047;
-   --shadow-xl: 0 12px 28px #00000059;
+   --shadow-sm: 0 1px 2.5px #0000002e;
+   --shadow-md: 0 1.5px 3.5px #0000002e;
+   --shadow-lg: 0 2px 5px #00000047;
+   --shadow-xl: 0 3px 7px #00000059;
 
    /* ── Explore controls (dropdown + search) ── */
-   --explore-control-font: 2.4em;
+   --explore-control-font: 0.6em;
    --explore-control-weight: var(--font-weight-bold);
-   --explore-control-pad-y: 17px;
+   --explore-control-pad-y: 4.25px;
    --explore-control-pad-x: var(--space-3);
    --explore-control-radius: var(--radius-lg);
-   --explore-control-border: 4px;
+   --explore-control-border: 1px;
    --explore-control-border-color: #5e960080;
    --explore-control-border-color-focus: #5e9600f2;
    --explore-control-bg: #ffffffeb;
@@ -128,13 +128,13 @@
     * Itinerary day planner timeline — keep in sync with
     * scripts/shared/constants.js (TIMELINE_SLOT_HEIGHT_PX, etc.).
     */
-   --itinerary-half-hour-slot-height: 730px;
-   --itinerary-pill-strip-top-offset: 80px;
-   --itinerary-scheduled-pill-min-height: 73px;
-   --itinerary-scheduled-pill-compact-min-height: 73px;
-   --itinerary-scheduled-pill-label-size: 2rem;
+   --itinerary-half-hour-slot-height: 182.5px;
+   --itinerary-pill-strip-top-offset: 20px;
+   --itinerary-scheduled-pill-min-height: 18.25px;
+   --itinerary-scheduled-pill-compact-min-height: 18.25px;
+   --itinerary-scheduled-pill-label-size: 0.5rem;
    --itinerary-timeline-spine-color: #5e960024;
-   --itinerary-timeline-time-column-width: 300px;
+   --itinerary-timeline-time-column-width: 75px;
    --itinerary-boundary-arrival-color: var(--color-brand-accent);
    --itinerary-boundary-departure-color: var(--color-danger);
 }
