@@ -63,7 +63,7 @@ export class ItineraryStrings {
             `The ${species} may be off display on your visit date. Do you still want to add it to your itinerary?`
          ),
          animalOffDisplayLowLikelihoodMessage: (species, threshold, likelihood) => (
-            `The ${species} has a viewing likelihood below ${threshold}% (${likelihood}%) for your visit date and may be off display. Do you still want to add it to your itinerary?`
+            `The ${species} has a viewing likelihood below ${threshold}% (${likelihood}) for your visit date and may be off display. Do you still want to add it to your itinerary?`
          ),
          addAsTransportationTitle: 'Add as Transportation?',
          addAsTransportationMessage: transportationName => (
@@ -359,7 +359,7 @@ export class ItineraryStrings {
          unavailableReason: reason => `Unavailable: ${reason}`,
          notAvailableOnDate: reason => `Not available on this date: ${reason}`,
          projectedVisibilityChanged: (before, after) => (
-            `Projected visibility changed from ${before}% to ${after}% on your new date.`
+            `Projected visibility changed from ${before} to ${after} on your new date.`
          ),
          arrivalAdjusted: (oldTime, newTime) => (
             `Arrival changed from ${oldTime} to ${newTime} because the new date has different admission hours.`

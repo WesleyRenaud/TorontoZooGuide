@@ -48,7 +48,7 @@ export class AnimalTooltipRenderer {
             AnimalSelectorModel.getAnimalSubtitle(a),
             Strings.tooltips.likelihoodDetail(
                LikelihoodPresenter.getLikelihoodPhrase(a.likelihood),
-               a.likelihood
+               LikelihoodPresenter.formatDisplayedLikelihood(a.likelihood)
             ),
          ],
       });

@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { DayPlannerBuilder } from '../../../../scripts/itinerary/panel/components/dayPlannerBuilder.js';
 import { RemovedItemsFragment } from '../../../../scripts/itinerary/panel/components/removedItemsFragment.js';
 import { ItineraryPanelRowsBuilder } from '../../../../scripts/itinerary/panel/itineraryPanelRowsBuilder.js';
+import { LikelihoodPresenter } from '../../../../scripts/likelihood/likelihoodPresenter.js';
 import { SectionConfigs } from '../../../../scripts/itinerary/panel/sectionConfigs.js';
 import { TransportationScheduleItemKey } from '../../../../scripts/itinerary/selectors/transportationSelector/transportationScheduleItemKey.js';
 import {
@@ -262,7 +263,10 @@ test('Test_BuildAnimalRows_TestDuplicateExhibits_ExpectDedupedWithAlerts', () =>
    assert.equal(textFor(rows[0], '.itin-panel-meta'), 'Africa Savanna');
    assert.equal(
       textFor(rows[0], '.itin-panel-alert'),
-      'Projected visibility changed from 90% to 60% on your new date.'
+      Strings.itinerary.removedItems.projectedVisibilityChanged(
+         LikelihoodPresenter.formatDisplayedLikelihood(90),
+         LikelihoodPresenter.formatDisplayedLikelihood(60)
+      )
    );
    assert.equal(textFor(rows[1], '.itin-panel-name'), 'African Lion');
    assert.equal(textFor(rows[1], '.itin-panel-meta'), 'Indo-Malaya Outdoor');

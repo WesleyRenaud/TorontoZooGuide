@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { LikelihoodPresenter } from '../../../../../scripts/likelihood/likelihoodPresenter.js';
 import { AnimalSelectorModel } from '../../../../../scripts/itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { AnimalSelectorStoredAnimalFactory } from '../../../../../scripts/itinerary/selectors/animalSelector/animalSelectorStoredAnimalFactory.js';
 import { AnimalDisplayFormatter } from '../../../../../scripts/animals/animalDisplayFormatter.js';
@@ -370,7 +371,7 @@ test('Test_BuildOffDisplayWarningMessage_TestMissingLikelihood_ExpectZeroPercent
       Strings.itinerary.confirmation.animalOffDisplayLowLikelihoodMessage(
          species,
          AnimalSelectorModel.OFF_DISPLAY_WARNING_THRESHOLD,
-         AnimalSelectorModel.getAnimalLikelihood(row)
+         LikelihoodPresenter.formatDisplayedLikelihood(AnimalSelectorModel.getAnimalLikelihood(row))
       )
    );
 });
@@ -388,7 +389,7 @@ test('Test_BuildOffDisplayWarningMessage_TestLowLikelihood_ExpectPercentCopy', (
       Strings.itinerary.confirmation.animalOffDisplayLowLikelihoodMessage(
          species,
          AnimalSelectorModel.OFF_DISPLAY_WARNING_THRESHOLD,
-         likelihood
+         LikelihoodPresenter.formatDisplayedLikelihood(likelihood)
       )
    );
 });

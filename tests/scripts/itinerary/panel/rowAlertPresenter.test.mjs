@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { LikelihoodValues } from '../../../../scripts/likelihood/likelihoodValues.js';
+import { LikelihoodPresenter } from '../../../../scripts/likelihood/likelihoodPresenter.js';
 import { RowAlertPresenter } from '../../../../scripts/itinerary/panel/rowAlertPresenter.js';
 import { Strings } from '../../../../scripts/strings.js';
 
@@ -29,8 +29,8 @@ test('Test_BuildAnimalAlert_TestVisibilityChange_ExpectVisibilityAlert', () => {
 
    assert.deepEqual(alert, {
       line: Strings.itinerary.removedItems.projectedVisibilityChanged(
-         LikelihoodValues.likelihoodToPercent(animal.likelihoodBefore),
-         LikelihoodValues.likelihoodToPercent(animal.likelihoodAfter)
+         LikelihoodPresenter.formatDisplayedLikelihood(animal.likelihoodBefore),
+         LikelihoodPresenter.formatDisplayedLikelihood(animal.likelihoodAfter)
       ),
       tone: 'positive',
    });

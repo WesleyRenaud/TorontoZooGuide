@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { ItineraryValidator } from '../../../scripts/itinerary/itineraryValidator.js';
 import { RowAlertPresenter } from '../../../scripts/itinerary/panel/rowAlertPresenter.js';
+import { LikelihoodPresenter } from '../../../scripts/likelihood/likelihoodPresenter.js';
 import { LikelihoodScale } from '../../../scripts/likelihood/likelihoodScale.js';
 import { LikelihoodValues } from '../../../scripts/likelihood/likelihoodValues.js';
 import { Strings } from '../../../scripts/strings.js';
@@ -92,8 +93,8 @@ test('Test_BuildAnimalAlert_TestOnePercentLikelihood_ExpectNotInflated', () => {
    assert.equal(
       alert.line,
       Strings.itinerary.removedItems.projectedVisibilityChanged(
-         LikelihoodValues.likelihoodToPercent(likelihoodBefore),
-         LikelihoodValues.likelihoodToPercent(likelihoodAfter)
+         LikelihoodPresenter.formatDisplayedLikelihood(likelihoodBefore),
+         LikelihoodPresenter.formatDisplayedLikelihood(likelihoodAfter)
       )
    );
 });

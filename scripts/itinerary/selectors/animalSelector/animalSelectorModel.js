@@ -3,6 +3,7 @@ import { AnimalDisplayFormatter } from '../../../animals/animalDisplayFormatter.
 import { AnimalSelectorStoredAnimalFactory } from './animalSelectorStoredAnimalFactory.js';
 import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
+import { LikelihoodPresenter } from '../../../likelihood/likelihoodPresenter.js';
 import { EnclosureType } from '../../../shared/enums/enclosureType.js';
 import { Strings } from '../../../strings.js';
 
@@ -129,7 +130,7 @@ export class AnimalSelectorModel {
       return Strings.itinerary.confirmation.animalOffDisplayLowLikelihoodMessage(
          species,
          AnimalSelectorModel.OFF_DISPLAY_WARNING_THRESHOLD,
-         likelihood
+         LikelihoodPresenter.formatDisplayedLikelihood(likelihood)
       );
    }
 }

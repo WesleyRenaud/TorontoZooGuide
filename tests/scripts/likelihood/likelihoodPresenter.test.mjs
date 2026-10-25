@@ -4,6 +4,7 @@ import test from 'node:test';
 import { LikelihoodPresenter } from '../../../scripts/likelihood/likelihoodPresenter.js';
 import { LikelihoodScale } from '../../../scripts/likelihood/likelihoodScale.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
+import { Strings } from '../../../scripts/strings.js';
 
 
 test('Test_GetLikelihoodPhrase_TestMaximum_ExpectVeryHigh', () => {
@@ -83,4 +84,61 @@ test('Test_GetLikelihoodPhrase_TestBelowLow_ExpectVeryLow', () => {
    const phrase = LikelihoodPresenter.getLikelihoodPhrase(likelihood);
 
    assert.equal(phrase, LikelihoodPresenter.LIKELIHOOD_PHRASES.at(Position.LAST).label);
+});
+
+
+test('Test_FormatDisplayedLikelihood_TestZero_ExpectZero', () => {
+   const label = LikelihoodPresenter.formatDisplayedLikelihood(LikelihoodScale.MIN_LIKELIHOOD);
+
+   assert.equal(label, Strings.format.approximate(`${LikelihoodScale.MIN_LIKELIHOOD}%`));
+});
+
+
+test('Test_FormatDisplayedLikelihood_TestBetweenZeroAndFive_ExpectBelowFive', () => {
+   const label = LikelihoodPresenter.formatDisplayedLikelihood(LikelihoodPresenter.LOW_OPEN_PERCENT - 1);
+
+   assert.equal(label, Strings.likelihood.belowDisplayedMinimum(LikelihoodPresenter.LOW_OPEN_PERCENT));
+});
+
+
+test('Test_FormatDisplayedLikelihood_TestLowBoundary_ExpectFive', () => {
+   const label = LikelihoodPresenter.formatDisplayedLikelihood(LikelihoodPresenter.LOW_OPEN_PERCENT);
+
+   assert.equal(label, Strings.format.approximate(`${LikelihoodPresenter.LOW_OPEN_PERCENT}%`));
+});
+
+
+test('Test_FormatDisplayedLikelihood_TestNearestFive_ExpectRounded', () => {
+   const belowStep = 7;
+   const aboveStep = 8;
+
+   assert.equal(
+      LikelihoodPresenter.formatDisplayedLikelihood(belowStep),
+      Strings.format.approximate(`${LikelihoodPresenter.DISPLAY_STEP}%`)
+   );
+   assert.equal(
+      LikelihoodPresenter.formatDisplayedLikelihood(aboveStep),
+      Strings.format.approximate(`${LikelihoodPresenter.DISPLAY_STEP * 2}%`)
+   );
+});
+
+
+test('Test_FormatDisplayedLikelihood_TestHighBoundary_ExpectNinetyFive', () => {
+   const label = LikelihoodPresenter.formatDisplayedLikelihood(LikelihoodPresenter.HIGH_OPEN_PERCENT);
+
+   assert.equal(label, Strings.format.approximate(`${LikelihoodPresenter.HIGH_OPEN_PERCENT}%`));
+});
+
+
+test('Test_FormatDisplayedLikelihood_TestAboveNinetyFive_ExpectAboveNinetyFive', () => {
+   const label = LikelihoodPresenter.formatDisplayedLikelihood(LikelihoodScale.MAX_LIKELIHOOD);
+
+   assert.equal(label, Strings.likelihood.aboveDisplayedMaximum(LikelihoodPresenter.HIGH_OPEN_PERCENT));
+});
+
+
+test('Test_FormatDisplayedLikelihood_TestNull_ExpectNull', () => {
+   const label = LikelihoodPresenter.formatDisplayedLikelihood(null);
+
+   assert.equal(label, null);
 });
