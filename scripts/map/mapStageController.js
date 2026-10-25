@@ -108,7 +108,7 @@ export class MapStageController {
       }
 
       const styles = getComputedStyle(document.documentElement);
-      const panel = styles.getPropertyValue('--map-menu-width').trim();
+      const panel = styles.getPropertyValue('--map-marker-panel-width').trim();
       const frame = styles.getPropertyValue('--map-frame-height').trim();
 
       if (!panel || !frame) {
