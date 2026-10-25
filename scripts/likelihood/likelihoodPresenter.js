@@ -17,31 +17,43 @@ export class LikelihoodPresenter {
       { minimum: 0, label: Strings.likelihood.veryLow },
    ]);
 
-   static getLikelihoodPhrase(likelihood) {
-      const value = LikelihoodScale.clampLikelihood(likelihood);
-
-      return LikelihoodPresenter.LIKELIHOOD_PHRASES.find((phrase) => (
-         value >= phrase.minimum
-      ))?.label || Strings.likelihood.veryLow;
-   }
-
-   static formatDisplayedLikelihood(value) {
+   static displayedLikelihood(value) {
       const percent = LikelihoodValues.likelihoodToPercent(value);
 
       if (percent == null) {
          return null;
       }
 
+      const rounded = StepRounder.roundToStep(percent, LikelihoodPresenter.DISPLAY_STEP);
+      const phrase = LikelihoodPresenter.LIKELIHOOD_PHRASES.find((entry) => (
+         rounded >= entry.minimum
+      ))?.label;
+
       if (percent > LikelihoodScale.MIN_LIKELIHOOD && percent < LikelihoodPresenter.LOW_OPEN_PERCENT) {
-         return Strings.likelihood.belowDisplayedMinimum(LikelihoodPresenter.LOW_OPEN_PERCENT);
+         return {
+            phrase,
+            text: Strings.likelihood.belowDisplayedMinimum(LikelihoodPresenter.LOW_OPEN_PERCENT),
+         };
       }
 
       if (percent > LikelihoodPresenter.HIGH_OPEN_PERCENT) {
-         return Strings.likelihood.aboveDisplayedMaximum(LikelihoodPresenter.HIGH_OPEN_PERCENT);
+         return {
+            phrase,
+            text: Strings.likelihood.aboveDisplayedMaximum(LikelihoodPresenter.HIGH_OPEN_PERCENT),
+         };
       }
 
-      const rounded = StepRounder.roundToStep(percent, LikelihoodPresenter.DISPLAY_STEP);
+      return {
+         phrase,
+         text: Strings.format.approximate(`${rounded}%`),
+      };
+   }
 
-      return Strings.format.approximate(`${rounded}%`);
+   static getLikelihoodPhrase(likelihood) {
+      return LikelihoodPresenter.displayedLikelihood(likelihood)?.phrase ?? null;
+   }
+
+   static formatDisplayedLikelihood(value) {
+      return LikelihoodPresenter.displayedLikelihood(value)?.text ?? null;
    }
 }

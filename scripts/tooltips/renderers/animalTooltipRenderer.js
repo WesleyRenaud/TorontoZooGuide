@@ -24,6 +24,8 @@ export class AnimalTooltipRenderer {
       const exhibit = AssetKeyNormalizer.normalize(a.exhibit);
       const species = AssetKeyNormalizer.normalize(a.species);
 
+      const displayed = LikelihoodPresenter.displayedLikelihood(a.likelihood);
+
       return CardFactory.createTooltipCard({
          index,
          image: {
@@ -46,10 +48,7 @@ export class AnimalTooltipRenderer {
          },
          details: [
             AnimalSelectorModel.getAnimalSubtitle(a),
-            Strings.tooltips.likelihoodDetail(
-               LikelihoodPresenter.getLikelihoodPhrase(a.likelihood),
-               LikelihoodPresenter.formatDisplayedLikelihood(a.likelihood)
-            ),
+            displayed && Strings.tooltips.likelihoodDetail(displayed.phrase, displayed.text),
          ],
       });
    }

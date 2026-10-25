@@ -29,7 +29,7 @@ test('Test_GetLikelihoodPhrase_TestVeryHighMinimum_ExpectVeryHigh', () => {
 test('Test_GetLikelihoodPhrase_TestBelowVeryHigh_ExpectHigh', () => {
    const veryHigh = LikelihoodPresenter.LIKELIHOOD_PHRASES.at(Position.FIRST);
    const high = LikelihoodPresenter.LIKELIHOOD_PHRASES.at(Position.SECOND);
-   const likelihood = veryHigh.minimum - 1;
+   const likelihood = veryHigh.minimum - LikelihoodPresenter.DISPLAY_STEP;
 
    const phrase = LikelihoodPresenter.getLikelihoodPhrase(likelihood);
 
@@ -79,11 +79,43 @@ test('Test_GetLikelihoodPhrase_TestLowMinimum_ExpectLow', () => {
 
 test('Test_GetLikelihoodPhrase_TestBelowLow_ExpectVeryLow', () => {
    const low = LikelihoodPresenter.LIKELIHOOD_PHRASES.at(Position.LAST - 1);
-   const likelihood = low.minimum - 1;
+   const likelihood = low.minimum - LikelihoodPresenter.DISPLAY_STEP;
 
    const phrase = LikelihoodPresenter.getLikelihoodPhrase(likelihood);
 
    assert.equal(phrase, LikelihoodPresenter.LIKELIHOOD_PHRASES.at(Position.LAST).label);
+});
+
+
+test('Test_GetLikelihoodPhrase_TestJustBelowHigh_ExpectHigh', () => {
+   const high = LikelihoodPresenter.LIKELIHOOD_PHRASES.at(Position.SECOND);
+   const likelihood = high.minimum - (LikelihoodPresenter.DISPLAY_STEP / 2);
+   const rounded = high.minimum;
+
+   const phrase = LikelihoodPresenter.getLikelihoodPhrase(likelihood);
+   const displayed = LikelihoodPresenter.formatDisplayedLikelihood(likelihood);
+
+   assert.equal(phrase, high.label);
+   assert.equal(displayed, Strings.format.approximate(`${rounded}%`));
+});
+
+
+test('Test_GetLikelihoodPhrase_TestRoundsBelowHigh_ExpectMedium', () => {
+   const high = LikelihoodPresenter.LIKELIHOOD_PHRASES.at(Position.SECOND);
+   const medium = LikelihoodPresenter.LIKELIHOOD_PHRASES.at(Position.THIRD);
+   const halfStep = LikelihoodPresenter.DISPLAY_STEP / 2;
+   const likelihood = high.minimum - halfStep - (halfStep / 2);
+
+   const phrase = LikelihoodPresenter.getLikelihoodPhrase(likelihood);
+
+   assert.equal(phrase, medium.label);
+});
+
+
+test('Test_GetLikelihoodPhrase_TestNull_ExpectNull', () => {
+   const phrase = LikelihoodPresenter.getLikelihoodPhrase(null);
+
+   assert.equal(phrase, null);
 });
 
 
