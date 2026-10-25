@@ -5945,20 +5945,6 @@ nav ul li a[aria-current="page"]:hover {
    color: #14230a8c;
 }
 
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-
-@media (max-width: 1100px) {
-   .console-operations-workspace {
-      padding: 8px;
-   }
-
-   .console-operations-panel {
-      width: 100%;
-   }
-}
-
 .console-operations-radio-group {
    display: flex;
    flex-direction: row;
