@@ -35,7 +35,7 @@ export class ExploreFragment {
          if (!updates.length && !events.length) {
             listEl.replaceChildren();
             ExploreUpdatesView.setExploreSectionVisibility(listEl, false);
-            ExploreUpdatesView.clearExploreNav(ExploreUpdatesView.getExploreHeaderEl(listEl));
+            ExploreUpdatesView.clearExploreNav(listEl);
             return;
          }
 
@@ -64,6 +64,7 @@ export class ExploreFragment {
          ExploreUpdatesView.renderExploreNav({
             listEl,
             itemCount: items.length,
+            activeIndex: currentIndex,
             activeTab,
             onStep: step,
          });
@@ -150,7 +151,7 @@ export class ExploreFragment {
          catch (err) {
             listEl.replaceChildren();
             ExploreUpdatesView.setExploreSectionVisibility(listEl, false);
-            ExploreUpdatesView.clearExploreNav(ExploreUpdatesView.getExploreHeaderEl(listEl));
+            ExploreUpdatesView.clearExploreNav(listEl);
          }
       }
 

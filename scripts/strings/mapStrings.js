@@ -62,6 +62,7 @@ export class MapStrings {
          `This animal is only visible via the ${transportationName}.`
       ),
       hideUpdates: 'Hide updates and events',
+      itemPosition: (current, total) => `${current} of ${total}`,
       nextEvent: 'Next event',
       nextUpdate: 'Next update',
       previousEvent: 'Previous event',

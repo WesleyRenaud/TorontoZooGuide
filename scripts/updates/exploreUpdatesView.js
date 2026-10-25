@@ -37,27 +37,33 @@ export class ExploreUpdatesView {
       sectionEl.hidden = !isVisible;
    }
 
-   static clearExploreNav(headerEl) {
-      headerEl?.querySelector('.explore-update-nav')?.remove();
+   static clearExploreNav(listEl) {
+      const sectionEl = ExploreUpdatesView.getExploreSectionEl(listEl);
+
+      sectionEl?.querySelector('.explore-update-nav')?.remove();
    }
 
    static renderExploreNav({
       listEl,
       itemCount,
+      activeIndex = 0,
       activeTab,
       onStep,
    } = {}) {
-      const headerEl = ExploreUpdatesView.getExploreHeaderEl(listEl);
+      const sectionEl = ExploreUpdatesView.getExploreSectionEl(listEl);
 
-      ExploreUpdatesView.clearExploreNav(headerEl);
+      ExploreUpdatesView.clearExploreNav(listEl);
 
-      if (!headerEl || itemCount <= 1) {
+      if (!sectionEl || itemCount <= 1) {
          return;
       }
 
       const navEl = document.createElement('div');
       navEl.className = 'explore-update-nav';
       const isEventsTab = activeTab === ExploreFragment.EXPLORE_TAB.EVENTS;
+      const countEl = document.createElement('span');
+      countEl.className = 'explore-update-count';
+      countEl.textContent = Strings.map.itemPosition(activeIndex + 1, itemCount);
 
       navEl.append(
          ExploreUpdatesChromeHelper.createArrowButton({
@@ -65,6 +71,7 @@ export class ExploreUpdatesView {
             symbol: Strings.common.previousSymbol,
             onClick: () => onStep(-1),
          }),
+         countEl,
          ExploreUpdatesChromeHelper.createArrowButton({
             label: isEventsTab ? Strings.map.nextEvent : Strings.map.nextUpdate,
             symbol: Strings.common.nextSymbol,
@@ -72,7 +79,7 @@ export class ExploreUpdatesView {
          })
       );
 
-      headerEl.appendChild(navEl);
+      sectionEl.appendChild(navEl);
    }
 
    static syncExploreCollapsedState({
@@ -112,10 +119,20 @@ export class ExploreUpdatesView {
 
       if (updatesTabEl) {
          updatesTabEl.disabled = updatesCount === 0;
+         const updatesCountEl = updatesTabEl.querySelector('.explore-updates-tab-count');
+
+         if (updatesCountEl) {
+            updatesCountEl.textContent = String(updatesCount);
+         }
       }
 
       if (eventsTabEl) {
          eventsTabEl.disabled = eventsCount === 0;
+         const eventsCountEl = eventsTabEl.querySelector('.explore-updates-tab-count');
+
+         if (eventsCountEl) {
+            eventsCountEl.textContent = String(eventsCount);
+         }
       }
    }
 }

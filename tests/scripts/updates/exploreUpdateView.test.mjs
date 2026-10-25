@@ -23,4 +23,5 @@ test('Test_CreateUpdateCard_TestUpdate_ExpectCard', () => {
    assert.match(card.textContent, new RegExp(title));
    assert.match(card.textContent, new RegExp(description));
    assert.match(card.textContent, new RegExp(type));
+   assert.equal(card.querySelector('.explore-update-description').textContent, description);
 });

@@ -21,9 +21,15 @@ function _buildExploreDom() {
 
    const updatesTab = document.createElement('button');
    updatesTab.id = 'exploreUpdatesTab';
+   const updatesCount = document.createElement('span');
+   updatesCount.className = 'explore-updates-tab-count';
+   updatesTab.appendChild(updatesCount);
 
    const eventsTab = document.createElement('button');
    eventsTab.id = 'exploreEventsTab';
+   const eventsCount = document.createElement('span');
+   eventsCount.className = 'explore-updates-tab-count';
+   eventsTab.appendChild(eventsCount);
 
    const listEl = document.createElement('div');
    listEl.className = 'explore-updates-list';
@@ -112,7 +118,7 @@ test('Test_SetExploreSectionVisibility_TestMissingSection_ExpectNoOp', () => {
 
 
 test('Test_RenderExploreNav_TestSingleItem_ExpectNoNav', () => {
-   const { header, listEl } = _buildExploreDom();
+   const { section, listEl } = _buildExploreDom();
 
    ExploreUpdatesView.renderExploreNav({
       listEl,
@@ -121,12 +127,12 @@ test('Test_RenderExploreNav_TestSingleItem_ExpectNoNav', () => {
       onStep: () => {},
    });
 
-   assert.equal(header.querySelector('.explore-update-nav'), null);
+   assert.equal(section.querySelector('.explore-update-nav'), null);
 });
 
 
 test('Test_RenderExploreNav_TestMultipleItems_ExpectNav', () => {
-   const { header, listEl } = _buildExploreDom();
+   const { section, listEl } = _buildExploreDom();
    const steps = [];
    const originalCreate = ExploreUpdatesChromeHelper.createArrowButton;
    ExploreUpdatesChromeHelper.createArrowButton = ({ onClick, label }) => {
@@ -140,15 +146,17 @@ test('Test_RenderExploreNav_TestMultipleItems_ExpectNav', () => {
       ExploreUpdatesView.renderExploreNav({
          listEl,
          itemCount: 3,
+         activeIndex: Position.FIRST,
          activeTab: ExploreFragment.EXPLORE_TAB.UPDATES,
          onStep: (delta) => steps.push(delta),
       });
-      const nav = header.querySelector('.explore-update-nav');
+      const nav = section.querySelector('.explore-update-nav');
       nav.children.at(Position.FIRST).click();
-      nav.children.at(Position.SECOND).click();
+      nav.children.at(Position.LAST).click();
 
       assert.ok(nav);
-      assert.equal(nav.children.length, 2);
+      assert.equal(nav.children.length, 3);
+      assert.equal(nav.querySelector('.explore-update-count').textContent, '1 of 3');
       assert.deepEqual(steps, [Position.LAST, Position.SECOND]);
    } finally {
       ExploreUpdatesChromeHelper.createArrowButton = originalCreate;
@@ -157,7 +165,7 @@ test('Test_RenderExploreNav_TestMultipleItems_ExpectNav', () => {
 
 
 test('Test_ClearExploreNav_TestExisting_ExpectRemoved', () => {
-   const { header, listEl } = _buildExploreDom();
+   const { section, listEl } = _buildExploreDom();
    const originalCreate = ExploreUpdatesChromeHelper.createArrowButton;
    ExploreUpdatesChromeHelper.createArrowButton = ({ onClick, label }) => {
       const button = document.createElement('button');
@@ -173,9 +181,9 @@ test('Test_ClearExploreNav_TestExisting_ExpectRemoved', () => {
          activeTab: ExploreFragment.EXPLORE_TAB.UPDATES,
          onStep: () => {},
       });
-      ExploreUpdatesView.clearExploreNav(header);
+      ExploreUpdatesView.clearExploreNav(listEl);
 
-      assert.equal(header.querySelector('.explore-update-nav'), null);
+      assert.equal(section.querySelector('.explore-update-nav'), null);
    } finally {
       ExploreUpdatesChromeHelper.createArrowButton = originalCreate;
    }
@@ -233,4 +241,6 @@ test('Test_SyncExploreTabs_TestActiveAndDisabled_ExpectState', () => {
    assert.equal(eventsTab.getAttribute('aria-selected'), 'true');
    assert.equal(updatesTab.disabled, true);
    assert.equal(eventsTab.disabled, false);
+   assert.equal(updatesTab.querySelector('.explore-updates-tab-count').textContent, '0');
+   assert.equal(eventsTab.querySelector('.explore-updates-tab-count').textContent, '2');
 });

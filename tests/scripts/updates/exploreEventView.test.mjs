@@ -22,6 +22,8 @@ test('Test_CreateEventCard_TestActive_ExpectVisibleCard', () => {
    assert.equal(card.hidden, false);
    assert.match(card.textContent, new RegExp(name));
    assert.match(card.textContent, new RegExp(description));
+   assert.equal(card.querySelector('.explore-event-date-range').tagName.toLowerCase(), 'span');
+   assert.equal(card.querySelector('.explore-update-description').textContent, description);
 });
 
 
