@@ -4,8 +4,6 @@ import { MarkerVisualHelper } from './markerVisualHelper.js';
 import { ItemType } from '../shared/enums/itemType.js';
 
 export class MarkerTypeRendererFactory {
-   static DEFAULT_ATTRACTION_MARKER_SIZE = 32;
-
    static LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
 
    static VIEWABLE_FROM_ZOOMOBILE_MARKER_CLASS = 'marker-viewable-from-zoomobile';
@@ -53,14 +51,14 @@ export class MarkerTypeRendererFactory {
       default: '#556B2F',
    });
 
-   static ATTRACTION_MARKER_SCALE_OVERRIDES = Object.freeze({
-      'Greenhouse': 2.5,
-      'Wildlife Health & Science Centre': 2.5,
-      'Splash Island': 2.5,
-      'Gorilla Climb Ropes Course': 1.35,
-      'TundraAir Ride': 2.0,
-      'Conservation Carousel': 2.5,
-      'Zoomobile': 2.0,
+   static ATTRACTION_MARKER_SIZE_CLASSES = Object.freeze({
+      'Greenhouse': 'marker-attraction-scale-2-5',
+      'Wildlife Health & Science Centre': 'marker-attraction-scale-2-5',
+      'Splash Island': 'marker-attraction-scale-2-5',
+      'Gorilla Climb Ropes Course': 'marker-attraction-scale-1-35',
+      'TundraAir Ride': 'marker-attraction-scale-2',
+      'Conservation Carousel': 'marker-attraction-scale-2-5',
+      'Zoomobile': 'marker-attraction-scale-2',
    });
 
    static shouldShowViewableFromZoomobileIndicator(animal) {
@@ -87,13 +85,11 @@ export class MarkerTypeRendererFactory {
    }
 
    static applyAttractionMarkerSize(markerEl, attractionName) {
-      const scale = MarkerTypeRendererFactory.ATTRACTION_MARKER_SCALE_OVERRIDES[attractionName];
+      const className = MarkerTypeRendererFactory.ATTRACTION_MARKER_SIZE_CLASSES[attractionName];
 
-      if (!scale) return;
+      if (!className) return;
 
-      const size = Math.round(MarkerTypeRendererFactory.DEFAULT_ATTRACTION_MARKER_SIZE * scale);
-      markerEl.style.width = `${size}px`;
-      markerEl.style.height = `${size}px`;
+      markerEl.classList.add(className);
    }
 
    static applyOptionalSize(markerEl, item, applySize) {
