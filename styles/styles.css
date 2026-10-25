@@ -1953,40 +1953,6 @@ nav ul li a[aria-current="page"]:hover {
    transform: translateY(-0.25px);
 }
 
-@media (max-width: 720px) {
-   .off-display-closed-banner {
-      top: auto;
-      bottom: 5px;
-      --alert-banner-transform: translateX(-50%);
-      width: min(130px, calc(100vw - 6px));
-      min-width: 0;
-      max-width: calc(100vw - 6px);
-      padding: 4.5px;
-      border-radius: 4.5px;
-      font-size: 6px;
-   }
-
-   .off-display-closed-icon {
-      top: 3.5px;
-      left: 4px;
-      width: 12px;
-   }
-
-   .off-display-closed-text {
-      margin-top: 14.5px;
-      padding: 4px;
-      border-radius: 3.5px;
-   }
-
-   .off-display-closed-close {
-      top: 3.5px;
-      right: 4px;
-      width: 14px;
-      height: 11px;
-      font-size: 7px;
-   }
-}
-
 @keyframes massiveFade {
    from {
       opacity: 0;

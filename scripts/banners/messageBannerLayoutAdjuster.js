@@ -11,8 +11,6 @@ export class MessageBannerLayoutAdjuster {
 
    static ALERT_VIEWPORT_GUTTER = 48;
 
-   static ALERT_MOBILE_MEDIA_QUERY = '(max-width: 720px)';
-
    static ALERT_WIDTH_SEARCH_STEPS = 8;
 
    static SNOWFLAKE_PATH = 'M12 22L12 2M20.66 17L3.34 7M20.66 7L3.34 17'
@@ -74,12 +72,6 @@ export class MessageBannerLayoutAdjuster {
       return svg;
    }
 
-   static isMobileAlertLayout() {
-      return typeof window !== 'undefined'
-         && typeof window.matchMedia === 'function'
-         && window.matchMedia(MessageBannerLayoutAdjuster.ALERT_MOBILE_MEDIA_QUERY).matches;
-   }
-
    static getDesktopWidthRange() {
       const viewportWidth = typeof window !== 'undefined' && window.innerWidth
          ? window.innerWidth
@@ -110,11 +102,6 @@ export class MessageBannerLayoutAdjuster {
    }
 
    static adjustBannerWidth(element) {
-      if (MessageBannerLayoutAdjuster.isMobileAlertLayout()) {
-         element.style.removeProperty('--alert-banner-width');
-         return;
-      }
-
       const { min, max } = MessageBannerLayoutAdjuster.getDesktopWidthRange();
 
       if (max <= 0) {
