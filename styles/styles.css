@@ -5,6 +5,7 @@
 ============================================================ */
 
 html, body {
+   margin: 0;
    font-family: var(--font-family-base);
 }
 
@@ -25,8 +26,19 @@ html, body {
    HOME PAGE LAYOUT (map.html)
 ============================================================ */
 
-html.home-page {
+html.home-page,
+html.console-operations-page {
+   height: 100%;
    overflow: hidden;
+   overscroll-behavior: none;
+}
+
+html.home-page body,
+html.console-operations-page body {
+   height: 100%;
+   min-height: 0;
+   overflow: hidden;
+   overscroll-behavior: none;
 }
 
 .home-page, .console-operations-page {
@@ -34,11 +46,19 @@ html.home-page {
    display: flex;
    flex-direction: column;
    height: 100vh;
+   min-height: 0;
    overflow: hidden;
+}
+
+html.home-page .home-page,
+html.console-operations-page .console-operations-page {
+   height: 100%;
+   min-height: 0;
 }
 
 .home-page main, .console-operations-page main {
    flex: 1 1 auto;
+   min-height: 0;
    display: flex;
    align-items: stretch;
    width: 100%;
@@ -46,6 +66,27 @@ html.home-page {
    box-sizing: border-box;
    padding-top: var(--layout-top-bar-height);
    gap: 0;
+}
+
+.home-page main.map-layout {
+   display: grid;
+   grid-template-columns: minmax(0, 1fr) minmax(0, calc(var(--map-frame-height) * var(--zoo-map-aspect-width) / var(--zoo-map-aspect-height)));
+   grid-template-rows: minmax(0, 1fr);
+}
+
+.home-page main.map-layout > .side-panel.left {
+   width: auto;
+   height: auto;
+   min-width: 0;
+   max-width: 100%;
+}
+
+.home-page main.map-layout > .map-container {
+   width: 100%;
+   height: 100%;
+   min-width: 0;
+   min-height: 0;
+   max-width: 100%;
 }
 
 /* ============================================================
@@ -1036,9 +1077,11 @@ html.home-page {
 
 nav {
    width: 100%;
+   height: var(--layout-nav-height);
    background-color: #77b8004c;
    display: flex;
    justify-content: center;
+   align-items: center;
    padding: 2.5px 0;
    flex-shrink: 0;
    box-sizing: border-box;

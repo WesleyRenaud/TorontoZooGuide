@@ -35,20 +35,20 @@ export class MapFactory {
       const stage = MapStageController.mount(mapInner, (rect) => {
          MapStageController.syncPan(panzoom, rect);
       });
-      const frame = MapStageController.frameFor(mapInner);
+      const fit = MapStageController.fit(mapInner);
       const panzoomOptions = {
          contain: AppConfig.DEFAULT_MAP_CONTAIN,
       };
 
-      if (frame) {
-         panzoomOptions.startX = frame.left;
-         panzoomOptions.startY = frame.top;
+      if (fit) {
+         panzoomOptions.startX = fit.left;
+         panzoomOptions.startY = fit.top;
       }
 
       panzoom = PanzoomAdapter.createPanzoom(stage, panzoomOptions);
 
-      if (frame) {
-         MapStageController.syncPan(panzoom, frame);
+      if (fit) {
+         MapStageController.syncPan(panzoom, fit);
       }
       const store = MapStore.createMapStore();
       const sources = MapDataSourceFactory.createDataSources(store);

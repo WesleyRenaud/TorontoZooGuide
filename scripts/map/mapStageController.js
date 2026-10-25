@@ -39,6 +39,40 @@ export class MapStageController {
       };
    }
 
+   static fit(mapInner) {
+      const rect = MapStageController.frameFor(mapInner);
+
+      if (!rect) {
+         return null;
+      }
+
+      const box = mapInner.getBoundingClientRect?.();
+      const containerWidth = box?.width > 0 ? box.width : mapInner.clientWidth;
+      const containerHeight = box?.height > 0 ? box.height : mapInner.clientHeight;
+      const fittedAxis = (overflow, coverStart, coverSize, containerSize) => {
+         if (overflow > MapStageController.COVER_SLACK_PX) {
+            return {
+               start: coverStart,
+               size: coverSize + MapStageController.COVER_SLACK_PX,
+            };
+         }
+
+         return {
+            start: 0,
+            size: containerSize,
+         };
+      };
+      const width = fittedAxis(rect.width - containerWidth, rect.left, rect.width, containerWidth);
+      const height = fittedAxis(rect.height - containerHeight, rect.top, rect.height, containerHeight);
+
+      return {
+         left: width.start,
+         top: height.start,
+         width: width.size,
+         height: height.size,
+      };
+   }
+
    static frameFor(mapInner) {
       return MapStageController.coverRect(
          mapInner?.clientWidth,
@@ -49,35 +83,100 @@ export class MapStageController {
    }
 
    static apply(stage, mapInner) {
-      const rect = MapStageController.frameFor(mapInner);
+      const fit = MapStageController.fit(mapInner);
 
-      if (!stage || !rect) {
+      if (!stage || !fit) {
+         return null;
+      }
+
+      stage.style.left = '0px';
+      stage.style.top = '0px';
+      stage.style.width = `${fit.width}px`;
+      stage.style.height = `${fit.height}px`;
+      MapStageController.placeMarkerLayer(stage, mapInner);
+      return fit;
+   }
+
+   static referenceContainerSize(mapInner) {
+      const fallback = {
+         width: mapInner?.clientWidth ?? 0,
+         height: mapInner?.clientHeight ?? 0,
+      };
+
+      if (typeof getComputedStyle !== 'function' || !document?.documentElement || !window?.innerWidth) {
+         return fallback;
+      }
+
+      const styles = getComputedStyle(document.documentElement);
+      const panel = styles.getPropertyValue('--map-menu-width').trim();
+      const frame = styles.getPropertyValue('--map-frame-height').trim();
+
+      if (!panel || !frame) {
+         return fallback;
+      }
+
+      const probe = document.createElement('div');
+      probe.style.position = 'absolute';
+      probe.style.visibility = 'hidden';
+      probe.style.pointerEvents = 'none';
+      probe.style.width = panel;
+      probe.style.height = frame;
+      document.documentElement.appendChild(probe);
+      const box = probe.getBoundingClientRect();
+      probe.remove();
+
+      if (!(box.width > 0) || !(box.height > 0)) {
+         return fallback;
+      }
+
+      return {
+         width: Math.max(0, window.innerWidth - box.width),
+         height: box.height,
+      };
+   }
+
+   static markerLayerFrame(containerWidth, containerHeight) {
+      const rect = MapStageController.coverRect(
+         containerWidth,
+         containerHeight,
+         ZooMapConstants.ZOO_MAP_WIDTH_PX,
+         ZooMapConstants.ZOO_MAP_HEIGHT_PX
+      );
+
+      if (!rect) {
          return null;
       }
 
       const stageWidth = rect.width + MapStageController.COVER_SLACK_PX;
       const stageHeight = rect.height + MapStageController.COVER_SLACK_PX;
 
-      stage.style.left = '0px';
-      stage.style.top = '0px';
-      stage.style.width = `${stageWidth}px`;
-      stage.style.height = `${stageHeight}px`;
-      MapStageController.placeMarkerLayer(stage, mapInner, rect, stageWidth, stageHeight);
-      return rect;
+      return {
+         left: (-rect.left / stageWidth) * 100,
+         top: (-rect.top / stageHeight) * 100,
+         width: (containerWidth / stageWidth) * 100,
+         height: (containerHeight / stageHeight) * 100,
+      };
    }
 
-   static placeMarkerLayer(stage, mapInner, rect, stageWidth, stageHeight) {
+   static placeMarkerLayer(stage, mapInner) {
       const layer = stage.querySelector?.(`#${MapStageController.MARKER_LAYER_ID}`);
 
       if (!layer || MapStageController.anchoredMarkerLayers.has(layer)) {
          return;
       }
 
+      const container = MapStageController.referenceContainerSize(mapInner);
+      const frame = MapStageController.markerLayerFrame(container.width, container.height);
+
+      if (!frame) {
+         return;
+      }
+
       MapStageController.anchoredMarkerLayers.add(layer);
-      layer.style.left = `${(-rect.left / stageWidth) * 100}%`;
-      layer.style.top = `${(-rect.top / stageHeight) * 100}%`;
-      layer.style.width = `${(mapInner.clientWidth / stageWidth) * 100}%`;
-      layer.style.height = `${(mapInner.clientHeight / stageHeight) * 100}%`;
+      layer.style.left = `${frame.left}%`;
+      layer.style.top = `${frame.top}%`;
+      layer.style.width = `${frame.width}%`;
+      layer.style.height = `${frame.height}%`;
    }
 
    static ensureMarkerLayer(stage) {
