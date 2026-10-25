@@ -5888,45 +5888,6 @@ nav ul li a[aria-current="page"]:hover {
    background: var(--color-brand-primary-dark);
 }
 
-@media (max-width: 640px) {
-   .console-overlap-dialog-overlay {
-      padding: 4px;
-   }
-
-   .console-overlap-dialog-card {
-      width: calc(100vw - 8px);
-      min-width: 0;
-   }
-
-   .console-overlap-dialog-header {
-      padding: 6.5px 7px;
-   }
-
-   .console-overlap-dialog-title {
-      font-size: 0.75rem;
-   }
-
-   .console-overlap-dialog-body {
-      padding: 8.5px 7.5px 6px 7.5px;
-   }
-
-   .console-overlap-dialog-message {
-      font-size: 0.475rem;
-   }
-
-   .console-overlap-dialog-actions {
-      grid-template-columns: 1fr;
-      padding: 0 7.5px 8.5px 7.5px;
-   }
-
-   .console-overlap-dialog-cancel,
-   .console-overlap-dialog-action {
-      font-size: 0.425rem;
-      min-height: 19.5px;
-      white-space: normal;
-   }
-}
-
 /* ============================================================
    AUTOCOMPLETE
 ============================================================ */
