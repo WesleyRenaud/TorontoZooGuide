@@ -23,7 +23,159 @@ function _stageBox(mapInner) {
    return mapInner;
 }
 
+
+function _withReferenceFrame(mapInner, run, { properties = {}, probe = null } = {}) {
+   const originalGetComputedStyle = globalThis.getComputedStyle;
+   const originalCreateElement = document.createElement.bind(document);
+
+   document.documentElement = originalCreateElement('html');
+   window.innerWidth = 1920;
+   globalThis.getComputedStyle = () => ({
+      getPropertyValue(property) {
+         return properties[property] ?? '';
+      },
+   });
+
+   if (probe) {
+      document.createElement = (tagName) => {
+         const node = originalCreateElement(tagName);
+
+         node.getBoundingClientRect = () => probe;
+         return node;
+      };
+   }
+
+   try {
+      return run();
+   } finally {
+      globalThis.getComputedStyle = originalGetComputedStyle;
+      document.createElement = originalCreateElement;
+      delete window.innerWidth;
+      delete document.documentElement;
+   }
+}
+
 installDomTestHooks();
+
+
+test('Test_Fit_TestMissingInner_ExpectNull', () => {
+   const fit = MapStageController.fit(null);
+
+   assert.equal(fit, null);
+});
+
+
+test('Test_Fit_TestWideContainer_ExpectSlackOnHeight', () => {
+   const fit = MapStageController.fit({
+      clientWidth: WIDE_CONTAINER_WIDTH,
+      clientHeight: WIDE_CONTAINER_HEIGHT,
+   });
+   const height = WIDE_CONTAINER_WIDTH / _contentAspect();
+
+   assert.equal(fit.left, Position.FIRST);
+   assert.equal(fit.width, WIDE_CONTAINER_WIDTH);
+   assert.equal(fit.top, (WIDE_CONTAINER_HEIGHT - height) / 2);
+   assert.equal(fit.height, height + MapStageController.COVER_SLACK_PX);
+});
+
+
+test('Test_Fit_TestFractionalFrame_ExpectBorderBox', () => {
+   const mapInner = {
+      clientWidth: 1420,
+      clientHeight: 924,
+      getBoundingClientRect: () => ({
+         width: 1419.84375,
+         height: 923.8046875,
+      }),
+   };
+   const fit = MapStageController.fit(mapInner);
+
+   assert.equal(fit.left, Position.FIRST);
+   assert.equal(fit.top, Position.FIRST);
+   assert.equal(fit.width, 1419.84375);
+   assert.equal(fit.height, 923.8046875);
+});
+
+
+test('Test_ReferenceContainerSize_TestMissingInner_ExpectZero', () => {
+   const size = MapStageController.referenceContainerSize(null);
+
+   assert.equal(size.width, Position.FIRST);
+   assert.equal(size.height, Position.FIRST);
+});
+
+
+test('Test_ReferenceContainerSize_TestMissingFrame_ExpectClientSize', () => {
+   const mapInner = { clientWidth: 640, clientHeight: 480 };
+   const size = _withReferenceFrame(mapInner, () => (
+      MapStageController.referenceContainerSize(mapInner)
+   ));
+
+   assert.equal(size.width, mapInner.clientWidth);
+   assert.equal(size.height, mapInner.clientHeight);
+});
+
+
+test('Test_ReferenceContainerSize_TestMeasuredFrame_ExpectViewportRemainder', () => {
+   const mapInner = { clientWidth: 100, clientHeight: 80 };
+   const size = _withReferenceFrame(mapInner, () => (
+      MapStageController.referenceContainerSize(mapInner)
+   ), {
+      properties: {
+         '--map-menu-width': '405px',
+         '--map-frame-height': '924px',
+      },
+      probe: {
+         width: 405,
+         height: 924,
+         top: 0,
+         left: 0,
+         right: 405,
+         bottom: 924,
+      },
+   });
+
+   assert.equal(size.width, 1515);
+   assert.equal(size.height, 924);
+});
+
+
+test('Test_ReferenceContainerSize_TestEmptyProbe_ExpectClientSize', () => {
+   const mapInner = { clientWidth: 640, clientHeight: 480 };
+   const size = _withReferenceFrame(mapInner, () => (
+      MapStageController.referenceContainerSize(mapInner)
+   ), {
+      properties: {
+         '--map-menu-width': '405px',
+         '--map-frame-height': '924px',
+      },
+   });
+
+   assert.equal(size.width, mapInner.clientWidth);
+   assert.equal(size.height, mapInner.clientHeight);
+});
+
+
+test('Test_MarkerLayerFrame_TestEmptyContainer_ExpectNull', () => {
+   const frame = MapStageController.markerLayerFrame(Position.FIRST, Position.FIRST);
+
+   assert.equal(frame, null);
+});
+
+
+test('Test_PlaceMarkerLayer_TestEmptyFrame_ExpectUnstyled', () => {
+   const stage = document.createElement('div');
+   const layer = document.createElement('div');
+
+   layer.id = MapStageController.MARKER_LAYER_ID;
+   stage.appendChild(layer);
+   MapStageController.placeMarkerLayer(stage, {
+      clientWidth: Position.FIRST,
+      clientHeight: Position.FIRST,
+   });
+
+   assert.equal(layer.style.left, undefined);
+});
 
 
 test('Test_CoverRect_TestWiderContainer_ExpectVerticalOverflow', () => {
@@ -135,7 +287,7 @@ test('Test_Mount_TestPrepend_ExpectCoverSizedStage', () => {
       assert.equal(stage.id, MapStageController.STAGE_ID);
       assert.equal(mapInner.children.at(Position.FIRST), stage);
       assert.equal(zooMapMount.parentElement, stage);
-      assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH + MapStageController.COVER_SLACK_PX}px`);
+      assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH}px`);
       assert.equal(stage.style.height, `${height + MapStageController.COVER_SLACK_PX}px`);
       assert.equal(stage.style.left, `${Position.FIRST}px`);
       assert.equal(stage.style.top, `${Position.FIRST}px`);
@@ -166,7 +318,7 @@ test('Test_Mount_TestExistingStage_ExpectReuse', () => {
       const width = NARROW_CONTAINER_HEIGHT * _contentAspect();
 
       assert.equal(secondStage, firstStage);
-      assert.equal(secondStage.style.height, `${NARROW_CONTAINER_HEIGHT + MapStageController.COVER_SLACK_PX}px`);
+      assert.equal(secondStage.style.height, `${NARROW_CONTAINER_HEIGHT}px`);
       assert.equal(secondStage.style.top, `${Position.FIRST}px`);
       assert.equal(secondStage.style.left, `${Position.FIRST}px`);
       assert.equal(secondStage.style.width, `${width + MapStageController.COVER_SLACK_PX}px`);
@@ -185,7 +337,7 @@ test('Test_Mount_TestWithoutPrepend_ExpectAppended', () => {
       const stage = MapStageController.mount(mapInner);
 
       assert.equal(mapInner.children.at(Position.LAST), stage);
-      assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH + MapStageController.COVER_SLACK_PX}px`);
+      assert.equal(stage.style.width, `${WIDE_CONTAINER_WIDTH}px`);
    } finally {
       globalThis.ResizeObserver = originalObserver;
    }
@@ -330,7 +482,7 @@ test('Test_Mount_TestOnFrame_ExpectRect', () => {
       const height = WIDE_CONTAINER_WIDTH / _contentAspect();
 
       assert.equal(frames.at(Position.FIRST).width, WIDE_CONTAINER_WIDTH);
-      assert.equal(frames.at(Position.FIRST).height, height);
+      assert.equal(frames.at(Position.FIRST).height, height + MapStageController.COVER_SLACK_PX);
       assert.equal(frames.at(Position.FIRST).top, (WIDE_CONTAINER_HEIGHT - height) / 2);
    } finally {
       globalThis.ResizeObserver = originalObserver;

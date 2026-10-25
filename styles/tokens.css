@@ -85,8 +85,14 @@
 
    /* ── Layout ── */
    --layout-top-bar-height: 8vh;
+   --layout-nav-height: calc(6vh + 5px);
+   /* Matches ZooMapConstants and images/map/zoo-map.svg. */
+   --zoo-map-aspect-width: 4096;
+   --zoo-map-aspect-height: 2665;
+   --map-frame-height: calc(100vh - var(--layout-top-bar-height) - var(--layout-nav-height));
    --side-column-width: clamp(157.5px, 39vw, 262.5px);
-   --map-menu-width: 21.12vw;
+   /* 405px on a normal window. The vw bounds keep zoom from stretching the column. */
+   --map-menu-width: clamp(21.12vw, 405px, 32vw);
 
    /* ── Spacing ── */
    --space-1: 1.5px;
