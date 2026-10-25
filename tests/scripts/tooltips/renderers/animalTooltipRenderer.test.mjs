@@ -25,7 +25,7 @@ function _stubCardFactory() {
       species: AnimalSelectorModel.getAnimalSpecies,
       enclosure: AnimalSelectorModel.getAnimalEnclosureName,
       subtitle: AnimalSelectorModel.getAnimalSubtitle,
-      phrase: LikelihoodPresenter.getLikelihoodPhrase,
+      phrase: LikelihoodPresenter.displayedLikelihood,
    };
    const captured = {};
 
@@ -47,7 +47,7 @@ function _restoreCardFactory(originals) {
    AnimalSelectorModel.getAnimalSpecies = originals.species;
    AnimalSelectorModel.getAnimalEnclosureName = originals.enclosure;
    AnimalSelectorModel.getAnimalSubtitle = originals.subtitle;
-   LikelihoodPresenter.getLikelihoodPhrase = originals.phrase;
+   LikelihoodPresenter.displayedLikelihood = originals.phrase;
 }
 
 
@@ -98,11 +98,15 @@ test('Test_CreateCard_TestAnimal_ExpectCardFactoryPayload', () => {
    const enclosure = 'Lion Enclosure';
    const likelihoodPhrase = 'High';
    const likelihood = 85;
+   const displayed = {
+      phrase: likelihoodPhrase,
+      text: Strings.format.approximate(`${likelihood}%`),
+   };
    const index = 3;
    AnimalSelectorModel.getAnimalSpecies = () => species;
    AnimalSelectorModel.getAnimalEnclosureName = () => enclosure;
    AnimalSelectorModel.getAnimalSubtitle = () => exhibit;
-   LikelihoodPresenter.getLikelihoodPhrase = () => likelihoodPhrase;
+   LikelihoodPresenter.displayedLikelihood = () => displayed;
 
    try {
       const card = AnimalTooltipRenderer.createCard({
@@ -122,10 +126,7 @@ test('Test_CreateCard_TestAnimal_ExpectCardFactoryPayload', () => {
       assert.equal(captured.payload.image.alt, species);
       assert.deepEqual(captured.payload.details, [
          exhibit,
-         Strings.tooltips.likelihoodDetail(
-            likelihoodPhrase,
-            LikelihoodPresenter.formatDisplayedLikelihood(likelihood)
-         ),
+         Strings.tooltips.likelihoodDetail(displayed.phrase, displayed.text),
       ]);
       assert.equal(captured.payload.title.element.title.tagName, 'strong');
       assert.equal(captured.payload.title.element.title.dataset.index, index);
@@ -141,10 +142,14 @@ test('Test_CreateCard_TestTransportationOnlyAnimal_ExpectStandardDetails', () =>
    const exhibit = africaSavanna;
    const likelihoodPhrase = 'High';
    const likelihood = 85;
+   const displayed = {
+      phrase: likelihoodPhrase,
+      text: Strings.format.approximate(`${likelihood}%`),
+   };
    AnimalSelectorModel.getAnimalSpecies = () => species;
    AnimalSelectorModel.getAnimalEnclosureName = () => 'Outdoor';
    AnimalSelectorModel.getAnimalSubtitle = () => exhibit;
-   LikelihoodPresenter.getLikelihoodPhrase = () => likelihoodPhrase;
+   LikelihoodPresenter.displayedLikelihood = () => displayed;
 
    try {
       AnimalTooltipRenderer.createCard({
@@ -157,10 +162,7 @@ test('Test_CreateCard_TestTransportationOnlyAnimal_ExpectStandardDetails', () =>
 
       assert.deepEqual(captured.payload.details, [
          exhibit,
-         Strings.tooltips.likelihoodDetail(
-            likelihoodPhrase,
-            LikelihoodPresenter.formatDisplayedLikelihood(likelihood)
-         ),
+         Strings.tooltips.likelihoodDetail(displayed.phrase, displayed.text),
       ]);
    } finally {
       _restoreCardFactory(originals);
