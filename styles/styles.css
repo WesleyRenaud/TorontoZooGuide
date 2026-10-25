@@ -6030,11 +6030,6 @@ nav ul li a[aria-current="page"]:hover {
    .console-operations-panel {
       width: 100%;
    }
-
-   .console-operations-page .flatpickr-calendar {
-      transform: scale(0.375);
-      transform-origin: top left;
-   }
 }
 
 .console-operations-radio-group {
