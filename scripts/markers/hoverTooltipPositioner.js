@@ -63,8 +63,23 @@ export class HoverTooltipPositioner {
       };
    }
 
+   static pageZoom(hoverTooltipEl) {
+      if (typeof getComputedStyle !== 'function' || typeof hoverTooltipEl?.closest !== 'function') {
+         return 1;
+      }
+
+      const zoomed = hoverTooltipEl.closest('.home-page, .console-operations-page');
+      if (!zoomed) {
+         return 1;
+      }
+
+      const zoom = Number.parseFloat(getComputedStyle(zoomed).zoom);
+      return Number.isFinite(zoom) && zoom > 0 ? zoom : 1;
+   }
+
    static applyTooltipPosition(hoverTooltipEl, { x, y }) {
-      hoverTooltipEl.style.left = `${x}px`;
-      hoverTooltipEl.style.top = `${y}px`;
+      const zoom = HoverTooltipPositioner.pageZoom(hoverTooltipEl);
+      hoverTooltipEl.style.left = `${x / zoom}px`;
+      hoverTooltipEl.style.top = `${y / zoom}px`;
    }
 }
