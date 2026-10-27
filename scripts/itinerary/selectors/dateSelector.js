@@ -5,6 +5,7 @@ import { DateSelectorView } from './dateSelectorView.js';
 import { ItineraryService } from '../itineraryService.js';
 import { ItineraryTimeView } from '../panel/components/itineraryTimeView.js';
 import { Strings } from '../../strings.js';
+import { VisitDateFormatter } from '../../visitDates/visitDateFormatter.js';
 import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 
 export class DateSelector {
@@ -42,7 +43,7 @@ export class DateSelector {
             return;
          }
 
-         elements.inputEl.value = DateSelectionModel.formatVisitDateLong(date);
+         elements.inputEl.value = VisitDateFormatter.formatLong(date);
       }
 
       function mountTimeFields() {

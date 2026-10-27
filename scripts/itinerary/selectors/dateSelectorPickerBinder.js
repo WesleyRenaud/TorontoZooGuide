@@ -1,5 +1,5 @@
-import { DateSelectionModel } from './dateSelectionModel.js';
 import { VisitDateAdapter } from '../../visitDates/visitDateAdapter.js';
+import { VisitDateFormatter } from '../../visitDates/visitDateFormatter.js';
 import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 
 export class DateSelectorPickerBinder {
@@ -21,7 +21,7 @@ export class DateSelectorPickerBinder {
 
       function applyPickerDate(date, instance) {
          setDate(date, { updateInput: true, persist: false });
-         instance.input.value = DateSelectionModel.formatVisitDateLong(date);
+         instance.input.value = VisitDateFormatter.formatLong(date);
       }
 
       function close() {

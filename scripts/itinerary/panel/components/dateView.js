@@ -1,12 +1,12 @@
 import { DraftStore } from '../../draftStore.js';
-import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
 import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 import { Strings } from '../../../strings.js';
+import { VisitDateFormatter } from '../../../visitDates/visitDateFormatter.js';
 
 export class DateView {
    static makeDateCard(itin = {}) {
       const date = itin.date || DraftStore.getStoredItineraryDate();
-      const prettyDate = ItineraryItemFormatter.formatISODateLong(date);
+      const prettyDate = VisitDateFormatter.formatLong(date);
 
       if (!prettyDate) return null;
 

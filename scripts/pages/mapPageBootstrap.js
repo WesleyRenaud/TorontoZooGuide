@@ -1,6 +1,8 @@
 import { FocusFromParser } from '../focus/focusFromParser.js';
+import { ItineraryService } from '../itinerary/itineraryService.js';
 import { DateContext } from '../map/dateContext.js';
 import { MapControlsBinder } from '../map/mapControlsBinder.js';
+import { MapTopBarVisitPresenter } from '../map/mapTopBarVisitPresenter.js';
 import { ExploreFilter } from '../search/exploreFilter.js';
 import { SearchController } from '../search/searchController.js';
 
@@ -22,6 +24,7 @@ export class MapPageBootstrap {
          exploreUpdatesListEl: document.getElementById('exploreUpdatesList'),
          tooltipEl: document.getElementById('tooltip'),
          hoverTooltipEl: document.getElementById('hoverTooltip'),
+         mapDateField: document.getElementById('mapDateField'),
       };
    }
 
@@ -136,6 +139,11 @@ export class MapPageBootstrap {
          onUpdate: (preset, dateStr) => {
             updater.updateMap(preset, dateStr, null);
             getSearch()?.refresh?.();
+            void MapTopBarVisitPresenter.refresh(elements.mapDateField, {
+               preset,
+               isoDate: dateStr,
+               getZooHours: ItineraryService.getZooHours,
+            });
          },
       });
    }

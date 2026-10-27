@@ -202,13 +202,18 @@
                <div class="map-controls">
                   <select id="mapPreset">
                      <option value="" disabled hidden>{{ map.mapPresetPlaceholder }}</option>
-                     <option value="summer">{{ map.mapPresets.summer }}</option>
-                     <option value="winter">{{ map.mapPresets.winter }}</option>
-                     <option value="specific-day" selected>{{ map.mapPresets.specificDay }}</option>
+                     <option value="{{ map.presetIds.summer }}">{{ map.mapPresets.summer }}</option>
+                     <option value="{{ map.presetIds.winter }}">{{ map.mapPresets.winter }}</option>
+                     <option value="{{ map.presetIds.specificDay }}" selected>{{ map.mapPresets.specificDay }}</option>
                   </select>
 
                   <!-- Date picker only relevant if "Specific Map" is selected -->
-                  <input type="text" id="mapDate" placeholder="{{ placeholders.date }}">
+                  <div class="map-date-field" id="mapDateField">
+                     <input type="text" id="mapDate" placeholder="{{ placeholders.date }}">
+                     <span class="map-date-readout" hidden aria-hidden="true">
+                        <span class="map-date-readout-when"></span>
+                     </span>
+                  </div>
                </div>
 
                <div id="mapInner">

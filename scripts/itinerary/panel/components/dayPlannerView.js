@@ -5,12 +5,12 @@ import { DayPlannerScheduledItems } from '../dayPlannerScheduledItems.js';
 import { DayPlannerTimelinePillAppender } from './dayPlannerTimelinePillAppender.js';
 import { DayPlannerTimelineRenderer } from '../dayPlannerTimelineRenderer.js';
 import { DayPlannerTimelineView } from './dayPlannerTimelineView.js';
-import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
 import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 import { ScheduledPillRenderBuilder } from './scheduledPillRenderBuilder.js';
 import { SectionConfigs } from '../sectionConfigs.js';
 import { TimelineLayoutConstants } from '../../../shared/timelineLayoutConstants.js';
 import { Strings } from '../../../strings.js';
+import { VisitDateFormatter } from '../../../visitDates/visitDateFormatter.js';
 
 export class DayPlannerView {
    static makeDayPlannerPreview(
@@ -39,7 +39,7 @@ export class DayPlannerView {
       const scheduleActions = ItineraryPanelHelper.el('div', 'itinerary-day-module-schedule-actions');
       const titleWrap = ItineraryPanelHelper.el('div');
       const title = ItineraryPanelHelper.el('h3', '', strings.title);
-      const dateLabel = ItineraryItemFormatter.formatISODateFull(itinerary.date);
+      const dateLabel = VisitDateFormatter.formatLong(itinerary.date, 'en-CA');
       const timeline = ItineraryPanelHelper.el('div', 'itinerary-day-timeline');
 
       section.setAttribute('aria-label', strings.aria);

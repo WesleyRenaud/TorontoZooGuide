@@ -19,51 +19,6 @@ import {
 installPanelRowsTestHooks();
 
 
-test('Test_FormatISODateLong_TestValidDate_ExpectLongDate', () => {
-   const iso = '2026-06-15';
-
-   const formatted = ItineraryItemFormatter.formatISODateLong(iso);
-
-   assert.match(formatted, /June 15, 2026/);
-});
-
-
-test('Test_FormatISODateLong_TestInvalidDate_ExpectEmpty', () => {
-   const iso = 'not-a-date';
-
-   const formatted = ItineraryItemFormatter.formatISODateLong(iso);
-
-   assert.equal(formatted, '');
-});
-
-
-test('Test_FormatISODateFull_TestValidDate_ExpectFullDate', () => {
-   const iso = '2026-06-20';
-
-   const formatted = ItineraryItemFormatter.formatISODateFull(iso);
-
-   assert.equal(
-      formatted,
-      new Intl.DateTimeFormat('en-CA', {
-         weekday: 'long',
-         month: 'long',
-         day: 'numeric',
-         year: 'numeric',
-      }).format(new Date(2026, 6 - 1, 20))
-   );
-});
-
-
-test('Test_FormatISODateFull_TestInvalidDate_ExpectFallbackInput', () => {
-   const iso = 'not-a-date';
-   const fallback = 'Fallback Date';
-
-   const formatted = ItineraryItemFormatter.formatISODateFull(iso, fallback);
-
-   assert.equal(formatted, iso);
-});
-
-
 test('Test_FormatClockTime_TestMorning_ExpectDisplayTime', () => {
    const clockTime = '09:30';
 

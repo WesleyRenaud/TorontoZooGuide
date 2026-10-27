@@ -1,3 +1,4 @@
+import { Strings } from '../strings.js';
 import { VisitDateAdapter } from '../visitDates/visitDateAdapter.js';
 import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
@@ -13,7 +14,7 @@ export class MapControlsBinder {
    }
 
    static isSpecificDayPreset(mapPreset) {
-      return mapPreset?.value === 'specific-day';
+      return mapPreset?.value === Strings.map.presetIds.specificDay;
    }
 
    static getCurrentDateStr(mapDateInput, fp) {
@@ -45,7 +46,7 @@ export class MapControlsBinder {
             return;
          }
 
-         onUpdate('specific-day', dateStr);
+         onUpdate(Strings.map.presetIds.specificDay, dateStr);
          return;
       }
 
@@ -128,7 +129,7 @@ export class MapControlsBinder {
          mapPreset,
          earliestSelectableNoon,
          onSpecificDayChange: (dateStr) => {
-            onUpdate('specific-day', dateStr);
+            onUpdate(Strings.map.presetIds.specificDay, dateStr);
          },
       });
 

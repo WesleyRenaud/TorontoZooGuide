@@ -10,7 +10,7 @@ import { ScheduledPillRenderBuilder } from '../../../../../scripts/itinerary/pan
 import { DayPlannerScheduleController } from '../../../../../scripts/itinerary/panel/dayPlannerScheduleController.js';
 import { DayPlannerScheduledItems } from '../../../../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
 import { DayPlannerTimelineRenderer } from '../../../../../scripts/itinerary/panel/dayPlannerTimelineRenderer.js';
-import { ItineraryItemFormatter } from '../../../../../scripts/itinerary/panel/itineraryItemFormatter.js';
+import { VisitDateFormatter } from '../../../../../scripts/visitDates/visitDateFormatter.js';
 import { ZooClockTimeHelper } from '../../../../../scripts/shared/zooClockTimeHelper.js';
 import { installDomTestHooks } from '../../../helpers/domTestSetup.mjs';
 
@@ -25,7 +25,7 @@ function _stubPreviewDeps({
    unscheduledSection = null,
 } = {}) {
    const originals = {
-      formatISODateFull: ItineraryItemFormatter.formatISODateFull,
+      formatLong: VisitDateFormatter.formatLong,
       makeDayPlannerControls: DayPlannerController.makeDayPlannerControls,
       parseClockTimeMinutes: DayPlannerScheduleController.parseClockTimeMinutes,
       resolveDayPlannerTimelineStartMinutes: DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes,
@@ -49,7 +49,7 @@ function _stubPreviewDeps({
       buildUnscheduledItinerary: DayPlannerScheduledItems.buildUnscheduledItinerary,
    };
 
-   ItineraryItemFormatter.formatISODateFull = () => 'June 15, 2026';
+   VisitDateFormatter.formatLong = () => 'June 15, 2026';
    DayPlannerController.makeDayPlannerControls = () => {
       const el = document.createElement('div');
       el.className = 'controls';
@@ -101,9 +101,7 @@ function _stubPreviewDeps({
    DayPlannerScheduledItems.buildUnscheduledItinerary = () => ({ animals: [] });
 
    return () => {
-      Object.assign(ItineraryItemFormatter, {
-         formatISODateFull: originals.formatISODateFull,
-      });
+      VisitDateFormatter.formatLong = originals.formatLong;
       DayPlannerController.makeDayPlannerControls = originals.makeDayPlannerControls;
       DayPlannerScheduleController.parseClockTimeMinutes = originals.parseClockTimeMinutes;
       DayPlannerScheduleController.resolveDayPlannerTimelineStartMinutes = originals.resolveDayPlannerTimelineStartMinutes;
@@ -207,9 +205,9 @@ test('Test_MakeDayPlannerPreview_TestNoItineraryDate_ExpectDoesNotUseHoursDate',
    const formatCalls = [];
    const restore = _stubPreviewDeps({ timelineSlotStarts: [] });
 
-   ItineraryItemFormatter.formatISODateFull = (iso, fallback) => {
-      formatCalls.push({ iso, fallback });
-      return iso ? `formatted:${iso}` : '';
+   VisitDateFormatter.formatLong = (value, locale) => {
+      formatCalls.push({ value, locale });
+      return value ? `formatted:${value}` : '';
    };
 
    try {
@@ -218,7 +216,7 @@ test('Test_MakeDayPlannerPreview_TestNoItineraryDate_ExpectDoesNotUseHoursDate',
          { date: '' }
       );
 
-      assert.deepEqual(formatCalls, [{ iso: '', fallback: undefined }]);
+      assert.deepEqual(formatCalls, [{ value: '', locale: 'en-CA' }]);
    } finally {
       restore();
    }
@@ -230,9 +228,9 @@ test('Test_MakeDayPlannerPreview_TestItineraryDate_ExpectFormatsItineraryDate', 
    const formatCalls = [];
    const restore = _stubPreviewDeps({ timelineSlotStarts: [] });
 
-   ItineraryItemFormatter.formatISODateFull = (iso, fallback) => {
-      formatCalls.push({ iso, fallback });
-      return `formatted:${iso}`;
+   VisitDateFormatter.formatLong = (value, locale) => {
+      formatCalls.push({ value, locale });
+      return `formatted:${value}`;
    };
 
    try {
@@ -241,7 +239,7 @@ test('Test_MakeDayPlannerPreview_TestItineraryDate_ExpectFormatsItineraryDate', 
          { date: itineraryDate }
       );
 
-      assert.deepEqual(formatCalls, [{ iso: itineraryDate, fallback: undefined }]);
+      assert.deepEqual(formatCalls, [{ value: itineraryDate, locale: 'en-CA' }]);
    } finally {
       restore();
    }

@@ -2,15 +2,6 @@ import { DraftStore } from '../draftStore.js';
 import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
 
 export class DateSelectionModel {
-   static formatVisitDateLong(date) {
-      return date.toLocaleDateString(undefined, {
-         weekday: 'long',
-         year: 'numeric',
-         month: 'long',
-         day: 'numeric',
-      });
-   }
-
    static readSavedItineraryVisitDate(
       getStoredDate = DraftStore.getStoredItineraryDate
    ) {

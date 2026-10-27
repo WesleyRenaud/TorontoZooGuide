@@ -8,6 +8,7 @@ import { ItineraryPathFragment } from '../../../scripts/map/itineraryPathFragmen
 import { ItineraryPathModel } from '../../../scripts/itinerary/itineraryPathModel.js';
 import { LayerRequest } from '../../../scripts/map/layerRequest.js';
 import { MapUpdater } from '../../../scripts/map/mapUpdater.js';
+import { Strings } from '../../../scripts/strings.js';
 import { SourceHelper } from '../../../scripts/map/sourceHelper.js';
 import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
@@ -187,7 +188,7 @@ test('Test_CreateMapUpdater_TestTransportationRouteNone_ExpectRouteLayersHidden'
 
    try {
       const updater = MapUpdater.createMapUpdater(deps);
-      await updater.updateMap('summer', null);
+      await updater.updateMap(Strings.map.presetIds.summer, null);
 
       assert.ok(routeHides.length >= 1);
       assert.deepEqual(deps.store.byType[ItemType.TRANSPORTATION_STATION], []);

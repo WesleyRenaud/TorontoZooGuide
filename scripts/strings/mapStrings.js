@@ -27,11 +27,17 @@ export class MapStrings {
          showMapLabels: 'Show region/pavilion text',
       },
       mapAria: 'Toronto Zoo Map',
+      visitDateAndHours: (dateLabel, hoursLabel) => `${dateLabel} \u00B7 ${hoursLabel}`,
       mapPresetPlaceholder: 'Select a map',
       mapPresets: {
          summer: 'Summer Map',
          winter: 'Winter Map',
          specificDay: 'Specific Map',
+      },
+      presetIds: {
+         summer: 'summer',
+         winter: 'winter',
+         specificDay: 'specific-day',
       },
       searchAnimals: 'Search animals',
       events: {
