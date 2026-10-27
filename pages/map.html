@@ -224,6 +224,14 @@
 
                <div id="tooltip" class="tooltip" style="display:none;"></div>
                <div id="hoverTooltip" class="hover-tooltip" style="display:none;"></div>
+
+               <aside class="map-pin-key" aria-label="{{ map.pinKey.label }}">
+                  <div class="map-pin-key-likelihood">
+                     <span class="map-pin-key-bar" aria-hidden="true"></span>
+                     <span>{{ map.pinKey.lessLikely }}</span>
+                     <span class="map-pin-key-more">{{ map.pinKey.moreLikely }}</span>
+                  </div>
+               </aside>
             </div>
          </main>
 

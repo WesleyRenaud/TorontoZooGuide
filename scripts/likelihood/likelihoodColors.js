@@ -32,4 +32,14 @@ export class LikelihoodColors {
 
       return LikelihoodColors.LIKELIHOOD_COLORS[index];
    }
+
+   static toGradient() {
+      const colors = LikelihoodColors.LIKELIHOOD_COLORS;
+      const lastIndex = colors.length - 1;
+      const stops = colors.map((color, index) => (
+         `${color} ${(index / lastIndex) * 100}%`
+      ));
+
+      return `linear-gradient(to right, ${stops.join(', ')})`;
+   }
 }

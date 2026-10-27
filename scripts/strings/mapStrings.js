@@ -39,6 +39,11 @@ export class MapStrings {
          winter: 'winter',
          specificDay: 'specific-day',
       },
+      pinKey: {
+         label: 'Pin colors',
+         lessLikely: 'Less likely',
+         moreLikely: 'More likely',
+      },
       searchAnimals: 'Search animals',
       events: {
          title: 'Events',

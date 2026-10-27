@@ -17,6 +17,21 @@ def Test_SendFile_TestExistingStaticPage_ExpectServesHtml() -> None:
    assert handler.wfile.getvalue().startswith( b'<!DOCTYPE html>' )
 
 
+def Test_SendFile_TestMapPage_ExpectRendersPinKey() -> None:
+   handler = FakeHandler( path='/map.html' )
+
+   server.HttpRequestHandler._send_file( handler, './pages/map.html', 'text/html' )
+
+   content = handler.wfile.getvalue().decode( 'utf-8' )
+
+   assert 'class="map-pin-key"' in content
+   assert 'Less likely' in content
+   assert 'More likely' in content
+   assert 'Number of animals on one pin' not in content
+   assert 'map-pin-key-count' not in content
+   assert '{{ map.pinKey.lessLikely }}' not in content
+
+
 def Test_SendFile_TestAnimalsPage_ExpectRendersSharedHtmlStrings() -> None:
    handler = FakeHandler( path='/animals.html' )
 

@@ -40,3 +40,20 @@ test('Test_LikelihoodToColor_TestAboveMaximum_ExpectLastColor', () => {
 
    assert.equal(color, LikelihoodColors.LIKELIHOOD_COLORS.at(Position.LAST));
 });
+
+
+test('Test_ToGradient_TestScale_ExpectEachColorInOrder', () => {
+   const colors = LikelihoodColors.LIKELIHOOD_COLORS;
+   const lastIndex = colors.length - 1;
+
+   const gradient = LikelihoodColors.toGradient();
+
+   assert.equal(gradient.startsWith('linear-gradient(to right, '), true);
+   assert.equal(gradient.includes(`${colors.at(Position.FIRST)} 0%`), true);
+   assert.equal(gradient.endsWith(`${colors.at(Position.LAST)} 100%)`), true);
+   assert.equal(
+      gradient.includes(`${colors[1]} ${(1 / lastIndex) * 100}%`),
+      true
+   );
+   assert.equal(gradient.split('#').length - 1, colors.length);
+});
