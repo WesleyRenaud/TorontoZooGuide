@@ -422,7 +422,7 @@ body > .console-operations-page {
    padding: 1.75px 3.25px;
    border-radius: 249.75px;
 
-   font-size: 12px;
+   font-size: calc(var(--explore-control-font) * 0.85);
    font-weight: 700;
 
    box-shadow: 0 0.5px 1.5px #00000026;
