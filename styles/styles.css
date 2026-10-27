@@ -1103,6 +1103,49 @@ body > .console-operations-page {
    display: none;
 }
 
+.home-page .map-pin-key {
+   position: absolute;
+   right: calc(var(--layout-page-height) * 0.012);
+   bottom: calc(var(--layout-page-height) * 0.012);
+   z-index: 15;
+   pointer-events: none;
+
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
+   padding: 6px 8px;
+
+   background: #ffffffd9;
+   border-radius: 3px;
+   box-shadow: 0 1px 2.5px #0000004c;
+
+   font-family: var(--font-family-base);
+   font-size: 8px;
+   color: var(--color-text-primary);
+}
+
+.home-page .map-pin-key-likelihood {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 3px 8px;
+}
+
+.home-page .map-pin-key-bar {
+   grid-column: 1 / -1;
+   height: 8px;
+   border-radius: 4px;
+}
+
+.home-page .map-pin-key-likelihood span {
+   font-size: 1.5em;
+   line-height: 1.15;
+   white-space: nowrap;
+}
+
+.home-page .map-pin-key-more {
+   text-align: right;
+}
+
 .itinerary-settings-gear {
    position: absolute;
    top: calc(var(--layout-page-height) * 0.012);
