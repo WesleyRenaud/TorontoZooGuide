@@ -9,15 +9,6 @@ import { makeNoonDate } from '../../helpers/visitDateMock.mjs';
 const floor = makeNoonDate(2026, 5, 15);
 
 
-test('Test_FormatVisitDateLong_TestDisplay_ExpectFormatted', () => {
-   const date = makeNoonDate(2026, 5, 15);
-
-   const formatted = DateSelectionModel.formatVisitDateLong(date);
-
-   assert.match(formatted, /June 15, 2026/);
-});
-
-
 test('Test_ReadSavedItineraryVisitDate_TestStoredIso_ExpectLocalNoon', () => {
    const isoDate = '2026-06-20';
 

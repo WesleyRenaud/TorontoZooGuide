@@ -255,6 +255,13 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          attributes[name] = value;
          node[name] = value;
       },
+      removeAttribute(name) {
+         delete attributes[name];
+         delete node[name];
+      },
+      hasAttribute(name) {
+         return Object.prototype.hasOwnProperty.call(attributes, name);
+      },
       getAttribute(name) {
          return attributes[name] ?? node[name] ?? null;
       },

@@ -33,45 +33,6 @@ export class ItineraryItemFormatter {
       return Math.round(parsed);
    }
 
-   static formatISODateLong(iso) {
-      if (!iso || typeof iso !== 'string') return '';
-
-      const date = new Date(`${iso}T12:00:00`);
-
-      if (!Number.isFinite(date.getTime())) return '';
-
-      return date.toLocaleDateString(undefined, {
-         weekday: 'long',
-         year: 'numeric',
-         month: 'long',
-         day: 'numeric',
-      });
-   }
-
-   static formatISODateFull(iso, fallback = '') {
-      if (!iso || typeof iso !== 'string') return fallback;
-
-      const trimmedIso = ValueNormalizer.asTrimmedString(iso);
-      const dateParts = trimmedIso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-
-      if (!dateParts) {
-         return trimmedIso || fallback;
-      }
-
-      const date = new Date(
-         Number(dateParts[1]),
-         Number(dateParts[2]) - 1,
-         Number(dateParts[3])
-      );
-
-      return new Intl.DateTimeFormat('en-CA', {
-         weekday: 'long',
-         month: 'long',
-         day: 'numeric',
-         year: 'numeric',
-      }).format(date);
-   }
-
    static formatClockTime(timeValue, fallback = '') {
       return ZooClockTimeHelper.formatClockTime(timeValue, fallback);
    }

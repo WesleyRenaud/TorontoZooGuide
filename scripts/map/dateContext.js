@@ -1,17 +1,18 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
 import { SearchContext } from '../search/searchContext.js';
+import { Strings } from '../strings.js';
 import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
 export class DateContext {
    static PRESET_DATE_CONTEXTS = {
-      summer: {
+      [Strings.map.presetIds.summer]: {
          date: '',
          month: 'JUL',
          day: 20,
          dayOfWeek: null,
          temp: null,
       },
-      winter: {
+      [Strings.map.presetIds.winter]: {
          date: '',
          month: 'JAN',
          day: 30,

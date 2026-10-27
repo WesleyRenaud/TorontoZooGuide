@@ -1,5 +1,5 @@
 import { ExploreEventCardHelper } from './exploreEventCardHelper.js';
-import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
+import { VisitDateFormatter } from '../visitDates/visitDateFormatter.js';
 
 export class ExploreEventView {
    static createEventCard(event, isActive = false) {
@@ -9,7 +9,7 @@ export class ExploreEventView {
 
       const dateRangeEl = document.createElement('span');
       dateRangeEl.className = 'explore-update-type explore-event-date-range';
-      dateRangeEl.textContent = VisitDateValidator.formatLocalDateRange(event.start_date, event.end_date);
+      dateRangeEl.textContent = VisitDateFormatter.formatRange(event.start_date, event.end_date);
 
       const metaEl = document.createElement('div');
       metaEl.className = 'explore-update-meta';

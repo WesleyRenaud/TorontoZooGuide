@@ -3,10 +3,11 @@ import test from 'node:test';
 
 import { DateContext } from '../../../scripts/map/dateContext.js';
 import { SearchContext } from '../../../scripts/search/searchContext.js';
+import { Strings } from '../../../scripts/strings.js';
 
 
 test('Test_BuildMapDateContext_TestSummerAnchor_ExpectPresetYear', async () => {
-   const preset = 'summer';
+   const preset = Strings.map.presetIds.summer;
    const year = 2028;
    const dateStr = `${year}-07-04`;
 
@@ -21,7 +22,7 @@ test('Test_BuildMapDateContext_TestSummerAnchor_ExpectPresetYear', async () => {
 
 
 test('Test_BuildMapDateContext_TestSummerAnchorAlt_ExpectYearFromIso', async () => {
-   const preset = 'summer';
+   const preset = Strings.map.presetIds.summer;
    const year = 2031;
    const dateStr = `${year}-12-15`;
 

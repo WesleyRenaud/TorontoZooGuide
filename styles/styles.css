@@ -1068,6 +1068,41 @@ body > .console-operations-page {
    box-sizing: border-box;
 }
 
+.home-page .map-date-field {
+   position: relative;
+   display: inline-flex;
+}
+
+.home-page .map-date-field.has-readout {
+   border: 0.25px solid var(--color-border-neutral);
+   border-radius: 2.5px;
+   background: var(--color-white);
+}
+
+.home-page .map-date-field.has-readout input#mapDate {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+   margin: 0;
+   opacity: 0;
+}
+
+.home-page .map-date-readout {
+   display: inline-block;
+   min-width: 16.7em; /* longest date and hours label */
+   padding: 2.5px 3.75px;
+   font-size: 1.5em;
+   line-height: 1.15;
+   pointer-events: none;
+   white-space: nowrap;
+   text-align: center;
+}
+
+.home-page .map-date-readout[hidden] {
+   display: none;
+}
+
 .itinerary-settings-gear {
    position: absolute;
    top: calc(var(--layout-page-height) * 0.012);
@@ -1147,10 +1182,15 @@ body > .console-operations-page {
    color: #14230a99;
 }
 
-/* Flatpickr sizing */
+/* Flatpickr sizing. The library's open animation sets transform, which
+   replaces this scale until the animation ends and the calendar snaps smaller. */
 .flatpickr-calendar {
    transform: scale(0.75);
    transform-origin: top left;
+}
+
+html .flatpickr-calendar.animate.open {
+   animation: none;
 }
 
 .flatpickr-calendar.open {

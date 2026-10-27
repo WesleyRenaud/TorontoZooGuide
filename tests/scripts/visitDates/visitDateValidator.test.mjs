@@ -172,64 +172,6 @@ test('Test_ResolveOptionalStartDate_TestNull_ExpectToday', () => {
 });
 
 
-test('Test_FormatLocalDateLong_TestValidIso_ExpectFriendlyText', () => {
-   const formatted = VisitDateValidator.formatLocalDateLong(iso);
-
-   assert.equal(formatted, 'June 15, 2026');
-});
-
-
-test('Test_FormatLocalDateLong_TestBlank_ExpectEmpty', () => {
-   const visitDate = '';
-
-   const formatted = VisitDateValidator.formatLocalDateLong(visitDate);
-
-   assert.equal(formatted, '');
-});
-
-
-test('Test_FormatLocalDateLong_TestInvalidIso_ExpectEmpty', () => {
-   const visitDate = 'bad-date';
-
-   const formatted = VisitDateValidator.formatLocalDateLong(visitDate);
-
-   assert.equal(formatted, '');
-});
-
-
-test('Test_FormatLocalDateRange_TestBothDates_ExpectJoined', () => {
-   const startDate = iso;
-   const endDate = '2026-06-30';
-
-   const formatted = VisitDateValidator.formatLocalDateRange(startDate, endDate);
-
-   assert.equal(
-      formatted,
-      `${VisitDateValidator.formatLocalDateLong(startDate)} - ${VisitDateValidator.formatLocalDateLong(endDate)}`
-   );
-});
-
-
-test('Test_FormatLocalDateRange_TestMissingEnd_ExpectStartOnly', () => {
-   const startDate = iso;
-   const endDate = null;
-
-   const formatted = VisitDateValidator.formatLocalDateRange(startDate, endDate);
-
-   assert.equal(formatted, VisitDateValidator.formatLocalDateLong(startDate));
-});
-
-
-test('Test_FormatLocalDateRange_TestBlankStart_ExpectEmpty', () => {
-   const startDate = '';
-   const endDate = '2026-06-30';
-
-   const formatted = VisitDateValidator.formatLocalDateRange(startDate, endDate);
-
-   assert.equal(formatted, '');
-});
-
-
 test('Test_NormalizeDate_TestSameDayEvening_ExpectTodayNoon', () => {
    const today = VisitDateValidator.getToday();
    const evening = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59);

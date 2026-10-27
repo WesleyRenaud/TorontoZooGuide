@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { MapControlsBinder } from '../../../scripts/map/mapControlsBinder.js';
+import { Strings } from '../../../scripts/strings.js';
 import { VisitDateAdapter } from '../../../scripts/visitDates/visitDateAdapter.js';
 import { VisitDateValidator } from '../../../scripts/visitDates/visitDateValidator.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
@@ -56,7 +57,7 @@ test('Test_CloseMapDatePicker_TestFpAndInput_ExpectCloseAndBlur', () => {
 
 
 test('Test_IsSpecificDayPreset_TestSpecificDay_ExpectTrue', () => {
-   const isSpecific = MapControlsBinder.isSpecificDayPreset({ value: 'specific-day' });
+   const isSpecific = MapControlsBinder.isSpecificDayPreset({ value: Strings.map.presetIds.specificDay });
 
    assert.equal(isSpecific, true);
 });
@@ -104,7 +105,7 @@ test('Test_GetCurrentDateStr_TestMissing_ExpectEmpty', () => {
 test('Test_SyncDateInputVisibility_TestSpecificDay_ExpectInline', () => {
    const mapDateInput = { style: { display: '' } };
 
-   MapControlsBinder.syncDateInputVisibility({ value: 'specific-day' }, mapDateInput);
+   MapControlsBinder.syncDateInputVisibility({ value: Strings.map.presetIds.specificDay }, mapDateInput);
 
    assert.equal(mapDateInput.style.display, 'inline-block');
 });
@@ -136,7 +137,7 @@ test('Test_UpdateMapForCurrentControls_TestSpecificDayEmpty_ExpectNoUpdate', () 
    const updates = [];
 
    MapControlsBinder.updateMapForCurrentControls({
-      mapPreset: { value: 'specific-day' },
+      mapPreset: { value: Strings.map.presetIds.specificDay },
       mapDateInput: { value: '' },
       fp: { input: { value: '' } },
       onUpdate: (...args) => updates.push(args),
@@ -148,7 +149,7 @@ test('Test_UpdateMapForCurrentControls_TestSpecificDayEmpty_ExpectNoUpdate', () 
 
 test('Test_UpdateMapForCurrentControls_TestSpecificDay_ExpectIso', () => {
    const updates = [];
-   const preset = 'specific-day';
+   const preset = Strings.map.presetIds.specificDay;
    const iso = '2026-06-15';
 
    MapControlsBinder.updateMapForCurrentControls({
@@ -218,7 +219,7 @@ test('Test_InitMapDatePicker_TestCallbacks_ExpectFlatpickrOptions', () => {
    try {
       const mapDateInput = { id: 'date' };
       const fp = MapControlsBinder.initMapDatePicker(mapDateInput, {
-         mapPreset: { value: 'specific-day' },
+         mapPreset: { value: Strings.map.presetIds.specificDay },
          onSpecificDayChange: (nextIso) => specificDayChanges.push(nextIso),
       });
       const instance = { close() { instance.closed = true; } };
@@ -387,7 +388,7 @@ test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
    };
 
    const mapPreset = document.createElement('select');
-   mapPreset.value = 'specific-day';
+   mapPreset.value = Strings.map.presetIds.specificDay;
    const mapDateInput = document.createElement('input');
    const includeOffDisplayCheckbox = document.createElement('input');
    includeOffDisplayCheckbox.type = 'checkbox';
@@ -420,7 +421,7 @@ test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
       assert.equal(api.flatpickr, fp);
       assert.equal(typeof api.refetch, 'function');
       assert.equal(syncs.length, Position.SECOND);
-      assert.deepEqual(updates.at(Position.FIRST), ['onUpdate', 'specific-day', iso]);
+      assert.deepEqual(updates.at(Position.FIRST), ['onUpdate', Strings.map.presetIds.specificDay, iso]);
       assert.ok(updates.some(([kind]) => kind === 'preset'));
       assert.deepEqual(opens, [true]);
       assert.equal(blurs.at(Position.LAST), mapDateInput);
