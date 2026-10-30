@@ -558,15 +558,6 @@
     "snap_distance_px": 31.471
   },
   {
-    "species": "Eastern Loggerhead Shrike",
-    "exhibit": "Americas Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 68.663,
-    "y": 49.679,
-    "walk_node_id": "v-0745",
-    "snap_distance_px": 31.471
-  },
-  {
     "species": "Eastern Lubber Grasshopper",
     "exhibit": "Americas Pavilion",
     "enclosure_type": "Indoor",
