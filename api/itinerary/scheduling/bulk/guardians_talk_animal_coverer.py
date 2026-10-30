@@ -9,6 +9,7 @@ from ...data_access.itinerary_default_duration_provider import ItineraryDefaultD
 from ...data_access.schedule_itinerary_item_provider import ScheduleItineraryItemProvider
 from ...data_access.unschedule_itinerary_item_provider import UnscheduleItineraryItemProvider
 from ....guardians.data_access.guardians_talk_animal_provider import GuardiansTalkAnimalProvider
+from ....guardians.domain.guardians_talk_identity import GuardiansTalkIdentity
 from ....models import AnimalDiff
 from ....models import GuardiansTalkDiff
 from .restored_talk_covered_animals import RestoredTalkCoveredAnimals
@@ -36,9 +37,13 @@ class GuardiansTalkAnimalCoverer():
       covered: dict[ ViewingSpotNameKey, CoveredAnimalTalk ] = {}
 
       for loop_pin in loop_pins:
-         talk_name = loop_pin.stop.item_key
+         talk_name, enclosure_name = GuardiansTalkIdentity.parse_item_key(
+            loop_pin.stop.item_key )
 
-         for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk_name ):
+         for link in GuardiansTalkAnimalProvider.fetch_animal_links(
+               conn,
+               talk_name,
+               enclosure_name=enclosure_name ):
             spot_key = link.viewing_spot_key()
             animal_row = animal_by_key.get( spot_key )
 
@@ -86,6 +91,7 @@ class GuardiansTalkAnimalCoverer():
          *,
          talk_name: str,
          animal_rows: list[ ItineraryAnimalRecord ],
+         enclosure_name: str | None = None,
       ) -> list[ ItineraryAnimalRecord ]:
       animal_by_key = {
          animal_row.viewing_spot_key(): animal_row
@@ -93,7 +99,10 @@ class GuardiansTalkAnimalCoverer():
       }
       uncovered: list[ ItineraryAnimalRecord ] = []
 
-      for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk_name ):
+      for link in GuardiansTalkAnimalProvider.fetch_animal_links(
+            conn,
+            talk_name,
+            enclosure_name=enclosure_name ):
          animal_row = animal_by_key.get( link.viewing_spot_key() )
 
          if animal_row is None or not animal_row.covered_by_talk:
@@ -118,6 +127,7 @@ class GuardiansTalkAnimalCoverer():
          talk_name: str,
          talk_block: TimeBlock,
          animal_rows: list[ ItineraryAnimalRecord ],
+         enclosure_name: str | None = None,
       ) -> RestoredTalkCoveredAnimals:
       animal_by_key = {
          animal_row.viewing_spot_key(): animal_row
@@ -126,7 +136,10 @@ class GuardiansTalkAnimalCoverer():
       restored: list[ ItineraryAnimalRecord ] = []
       replacement_end_seconds: int | None = None
 
-      for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk_name ):
+      for link in GuardiansTalkAnimalProvider.fetch_animal_links(
+            conn,
+            talk_name,
+            enclosure_name=enclosure_name ):
          animal_row = animal_by_key.get( link.viewing_spot_key() )
 
          if animal_row is None or not animal_row.covered_by_talk:
@@ -192,7 +205,11 @@ class GuardiansTalkAnimalCoverer():
          if talk_block is None:
             continue
 
-         for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk.name ):
+         for link in GuardiansTalkAnimalProvider.fetch_animal_links(
+               conn,
+               talk.name,
+               location=talk.location,
+               enclosure_name=talk.enclosure_name ):
             existing = animals_by_spot.get( link.viewing_spot_key() )
 
             if existing is None or not existing.covered_by_talk:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+from ....guardians.domain.guardians_talk_identity import GuardiansTalkIdentity
 from ....guardians.scheduling.guardians_talk_loop_schedule_pin_resolver import GuardiansTalkLoopSchedulePinResolver
 from ....models import Itinerary
 from ...routing.itinerary_schedule_window import ItineraryScheduleWindow
@@ -39,7 +40,10 @@ class BulkScheduleLoopPinAttacher():
          if guardians_talk.is_deleted:
             continue
 
-         fixed_time_stop = fixed_guardians_talk_stops.get( guardians_talk.name )
+         fixed_time_stop = fixed_guardians_talk_stops.get(
+            GuardiansTalkIdentity.item_key(
+               guardians_talk.name,
+               guardians_talk.enclosure_name ) )
 
          if fixed_time_stop is None:
             continue

@@ -84,7 +84,9 @@ CREATE TABLE ItineraryGuardiansTalk (
    TALK_NAME            TEXT NOT NULL PRIMARY KEY,
    START_TIME           TEXT,
    END_TIME             TEXT,
-   IS_DELETED           INTEGER NOT NULL DEFAULT 0
+   IS_DELETED           INTEGER NOT NULL DEFAULT 0,
+   LOCATION             TEXT NOT NULL,
+   ENCLOSURE_NAME       TEXT
 );
 
 CREATE TABLE ItineraryWildEncounter (
@@ -205,11 +207,13 @@ def Test_FetchSavedItinerary_TestSavedRows_ExpectPersistedContent(
    itinerary_provider_conn.execute(
       """   INSERT INTO ItineraryGuardiansTalk (
                TALK_NAME,
+               LOCATION,
+               ENCLOSURE_NAME,
                START_TIME,
                END_TIME,
                IS_DELETED
             )
-            VALUES ( ?, ?, ?, ? );
+            VALUES ( ?, '', NULL, ?, ?, ? );
       """,
       ( talk_name, talk_start_time, talk_end_time, 0 ) )
    itinerary_provider_conn.execute(

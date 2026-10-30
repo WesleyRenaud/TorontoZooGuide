@@ -15,13 +15,15 @@ class MapLocationWalkNode:
    y: float
    walk_node_id: str
    snap_distance_px: float
+   enclosure_name: str = ''
 
 
    def location_key( self ) -> MapLocationKey:
       return MapLocationKey(
          kind=self.kind,
          name=self.name,
-         location=self.location )
+         location=self.location,
+         enclosure_name=self.enclosure_name )
 
 
    def sort_key( self ) -> tuple[ str, str, str ]:
@@ -37,7 +39,8 @@ class MapLocationWalkNode:
          x=float( row[ 'x' ] ),
          y=float( row[ 'y' ] ),
          walk_node_id=str( row[ 'walk_node_id' ] ),
-         snap_distance_px=float( row[ 'snap_distance_px' ] ) )
+         snap_distance_px=float( row[ 'snap_distance_px' ] ),
+         enclosure_name=str( row.get( 'enclosure_name', '' ) ) )
 
 
    def to_json( self ) -> dict[ str, object ]:
@@ -45,6 +48,7 @@ class MapLocationWalkNode:
          'kind': self.kind.value,
          'name': self.name,
          'location': self.location,
+         'enclosure_name': self.enclosure_name,
          'x': self.x,
          'y': self.y,
          'walk_node_id': self.walk_node_id,

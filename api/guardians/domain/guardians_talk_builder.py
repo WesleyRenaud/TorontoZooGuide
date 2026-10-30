@@ -13,7 +13,8 @@ class GuardiansTalkBuilder():
          location=record.location,
          x_coord=record.x_coord,
          y_coord=record.y_coord,
-         maximum_duration=record.maximum_duration )
+         maximum_duration=record.maximum_duration,
+         enclosure_name=record.enclosure_name )
 
 
    @classmethod
@@ -36,9 +37,10 @@ class GuardiansTalkBuilder():
          talks.append( cls._record_to_model( record ) )
 
       talks.sort(
-         key=lambda t: (
-            ( t.name or '' ).lower(),
-            ( t.location or '' ).lower()
+         key=lambda talk: (
+            talk.name.lower(),
+            talk.location.lower(),
+            ( talk.enclosure_name or '' ).lower(),
          )
       )
 

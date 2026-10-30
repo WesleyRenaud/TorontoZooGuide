@@ -15,7 +15,8 @@
     "x": 50.952,
     "y": 48.839,
     "walk_node_id": "v-0650",
-    "snap_distance_px": 9.355
+    "snap_distance_px": 9.355,
+    "enclosure_name": "Outdoor"
   },
   {
     "kind": "guardians_talk",
@@ -24,7 +25,8 @@
     "x": 47.678,
     "y": 66.931,
     "walk_node_id": "v-0281",
-    "snap_distance_px": 8.753
+    "snap_distance_px": 8.753,
+    "enclosure_name": "Outdoor"
   },
   {
     "kind": "guardians_talk",
@@ -51,7 +53,8 @@
     "x": 82.038,
     "y": 84.526,
     "walk_node_id": "v-0988",
-    "snap_distance_px": 23.595
+    "snap_distance_px": 23.595,
+    "enclosure_name": "Shelter Habitat"
   },
   {
     "kind": "guardians_talk",
@@ -61,6 +64,15 @@
     "y": 34.806,
     "walk_node_id": "v-0860",
     "snap_distance_px": 12.116
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Blue And Yellow Macaw",
+    "location": "Americas Pavilion",
+    "x": 69.400,
+    "y": 49.090,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 10.687
   },
   {
     "kind": "guardians_talk",
@@ -114,7 +126,18 @@
     "x": 41.329,
     "y": 53.734,
     "walk_node_id": "v-0359",
-    "snap_distance_px": 7.25
+    "snap_distance_px": 7.25,
+    "enclosure_name": "White Rhino Viewing"
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Greater One-Horned Rhinoceros",
+    "location": "Indo-Malaya Outdoor",
+    "x": 52.990,
+    "y": 83.419,
+    "walk_node_id": "v-0080",
+    "snap_distance_px": 40.85,
+    "enclosure_name": "Indoor"
   },
   {
     "kind": "guardians_talk",
@@ -156,10 +179,21 @@
     "kind": "guardians_talk",
     "name": "Masai Giraffe",
     "location": "Africa Savanna",
+    "x": 41.513,
+    "y": 70.820,
+    "walk_node_id": "v-0299",
+    "snap_distance_px": 16.758,
+    "enclosure_name": "Giraffe House"
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Masai Giraffe",
+    "location": "Africa Savanna",
     "x": 40.308,
     "y": 69.286,
     "walk_node_id": "v-0303",
-    "snap_distance_px": 20.945
+    "snap_distance_px": 20.945,
+    "enclosure_name": "Outdoor"
   },
   {
     "kind": "guardians_talk",
@@ -168,7 +202,8 @@
     "x": 68.239,
     "y": 50.929,
     "walk_node_id": "v-0745",
-    "snap_distance_px": 61.781
+    "snap_distance_px": 61.781,
+    "enclosure_name": "Indoor"
   },
   {
     "kind": "guardians_talk",
@@ -186,7 +221,8 @@
     "x": 69.437,
     "y": 47.675,
     "walk_node_id": "v-0735",
-    "snap_distance_px": 14.054
+    "snap_distance_px": 14.054,
+    "enclosure_name": "Indoor"
   },
   {
     "kind": "guardians_talk",
@@ -267,7 +303,17 @@
     "x": 43.961,
     "y": 78.314,
     "walk_node_id": "v-0138",
-    "snap_distance_px": 10.826
+    "snap_distance_px": 10.826,
+    "enclosure_name": "Outdoor"
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Turtle World",
+    "location": "Indo-Malaya Pavilion",
+    "x": 46.743,
+    "y": 77.059,
+    "walk_node_id": "v-0126",
+    "snap_distance_px": 29.256
   },
   {
     "kind": "guardians_talk",
@@ -285,7 +331,8 @@
     "x": 47.812,
     "y": 61.419,
     "walk_node_id": "v-0248",
-    "snap_distance_px": 14.348
+    "snap_distance_px": 14.348,
+    "enclosure_name": "Indoor"
   },
   {
     "kind": "guardians_talk",
@@ -303,7 +350,8 @@
     "x": 21.006,
     "y": 19.386,
     "walk_node_id": "v-0547",
-    "snap_distance_px": 21.322
+    "snap_distance_px": 21.322,
+    "enclosure_name": "Female Herd"
   },
   {
     "kind": "guardians_talk",

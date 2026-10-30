@@ -32,12 +32,14 @@ CREATE TABLE MeetTheGuardiansTalk (
    X_COORD          FLOAT   NOT NULL,
    Y_COORD          FLOAT   NOT NULL,
    MAXIMUM_DURATION INTEGER NOT NULL,
-   PRIMARY KEY ( NAME, LOCATION )
+   ENCLOSURE_NAME   TEXT,
+   PRIMARY KEY ( NAME, LOCATION, ENCLOSURE_NAME )
 );
 
 CREATE TABLE GuardiansTalkSchedule (
    TALK_NAME           TEXT NOT NULL,
    LOCATION            TEXT NOT NULL,
+   ENCLOSURE_NAME      TEXT,
    SCHEDULE_START_DATE DATE NOT NULL,
    SCHEDULE_END_DATE   DATE,
    MONDAY              BOOL NOT NULL DEFAULT 0,
@@ -49,15 +51,16 @@ CREATE TABLE GuardiansTalkSchedule (
    SUNDAY              BOOL NOT NULL DEFAULT 0,
    TALK_TIME           TEXT NOT NULL,
    SCHEDULE_MESSAGE    TEXT,
-   PRIMARY KEY ( TALK_NAME, LOCATION, TALK_TIME, SCHEDULE_START_DATE )
+   PRIMARY KEY ( TALK_NAME, LOCATION, ENCLOSURE_NAME, TALK_TIME, SCHEDULE_START_DATE )
 );
 
 CREATE TABLE GuardiansTalkCancellation (
    TALK_NAME         TEXT NOT NULL,
    LOCATION          TEXT NOT NULL,
+   ENCLOSURE_NAME    TEXT,
    CANCELLATION_DATE DATE NOT NULL,
    TALK_TIME         TEXT NOT NULL,
-   PRIMARY KEY ( TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME )
+   PRIMARY KEY ( TALK_NAME, LOCATION, ENCLOSURE_NAME, CANCELLATION_DATE, TALK_TIME )
 );
 """
 
@@ -69,8 +72,8 @@ def schedule_provider_conn() -> sqlite3.Connection:
    conn.executescript( SCHEDULE_PROVIDER_SCHEMA )
    conn.execute(
       """   INSERT INTO MeetTheGuardiansTalk (
-               NAME, LOCATION, X_COORD, Y_COORD, MAXIMUM_DURATION
-            ) VALUES ( ?, ?, ?, ?, ? );
+               NAME, LOCATION, ENCLOSURE_NAME, X_COORD, Y_COORD, MAXIMUM_DURATION
+            ) VALUES ( ?, ?, NULL, ?, ?, ? );
       """,
       ( TALK_NAME, LOCATION, X_COORD, Y_COORD, MAXIMUM_DURATION ),
    )
@@ -93,7 +96,8 @@ def _schedule_input(
       friday: bool = True,
       saturday: bool = False,
       sunday: bool = False,
-      message: str = MESSAGE ) -> GuardiansTalkScheduleInput:
+      message: str = MESSAGE,
+      enclosure_name: str | None = None ) -> GuardiansTalkScheduleInput:
    return GuardiansTalkScheduleInput(
       talk_name=TALK_NAME,
       location=LOCATION,
@@ -107,7 +111,8 @@ def _schedule_input(
       friday=friday,
       saturday=saturday,
       sunday=sunday,
-      message=message )
+      message=message,
+      enclosure_name=enclosure_name )
 
 
 def _schedule_record(
@@ -151,6 +156,7 @@ def _insert_schedule_row(
       """   INSERT INTO GuardiansTalkSchedule (
                TALK_NAME,
                LOCATION,
+               ENCLOSURE_NAME,
                SCHEDULE_START_DATE,
                SCHEDULE_END_DATE,
                MONDAY,
@@ -162,7 +168,7 @@ def _insert_schedule_row(
                SUNDAY,
                TALK_TIME,
                SCHEDULE_MESSAGE
-            ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
+            ) VALUES ( ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
       """,
       (
          TALK_NAME,
@@ -236,7 +242,8 @@ def Test_FetchScheduleRecordsForTalk_TestMatchingTalk_ExpectOrderedRecords(
    records = GuardiansTalkScheduleProvider.fetch_schedule_records_for_talk(
       schedule_provider_conn,
       TALK_NAME,
-      LOCATION )
+      LOCATION,
+      enclosure_name=None )
 
    assert [ record.talk_time for record in records ] == [
       TALK_TIME,
@@ -252,12 +259,14 @@ def Test_FetchScheduleRecordsForOccurrences_TestMatchingTalk_ExpectSameAsForTalk
    for_talk = GuardiansTalkScheduleProvider.fetch_schedule_records_for_talk(
       schedule_provider_conn,
       TALK_NAME,
-      LOCATION )
+      LOCATION,
+      enclosure_name=None )
    for_occurrences = (
       GuardiansTalkScheduleProvider.fetch_schedule_records_for_occurrences(
          schedule_provider_conn,
          TALK_NAME,
-         LOCATION )
+         LOCATION,
+         enclosure_name=None )
    )
 
    assert for_occurrences == for_talk
@@ -277,7 +286,8 @@ def Test_FetchScheduleRecordsCoveringDate_TestDateInsideRange_ExpectRecord(
       talk_name=TALK_NAME,
       location=LOCATION,
       talk_time=TALK_TIME,
-      occurrence_date=VISIT_DATE )
+      occurrence_date=VISIT_DATE,
+      enclosure_name=None )
 
    assert len( records ) == 1
    assert records[ Position.FIRST ].schedule_start_date == START_DATE
@@ -296,7 +306,8 @@ def Test_FetchScheduleRecordsCoveringDate_TestOpenEndedSchedule_ExpectRecord(
       talk_name=TALK_NAME,
       location=LOCATION,
       talk_time=TALK_TIME,
-      occurrence_date='2026-12-01' )
+      occurrence_date='2026-12-01',
+      enclosure_name=None )
 
    assert len( records ) == 1
    assert records[ Position.FIRST ].schedule_end_date is None
@@ -334,6 +345,23 @@ def Test_FetchDayScheduleRecordsFromSchedule_TestEndsOnVisitDate_ExpectEmpty(
    assert records == []
 
 
+def Test_FetchDayScheduleRecordsFromSchedule_TestEndBeforeStart_ExpectEmpty(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   _insert_schedule_row(
+      schedule_provider_conn,
+      start_date='2026-11-02',
+      end_date=VISIT_DATE )
+   schedule_provider_conn.commit()
+
+   records = (
+      GuardiansTalkScheduleProvider.fetch_day_schedule_records_from_schedule(
+         schedule_provider_conn,
+         '2026-11-02' )
+   )
+
+   assert records == []
+
+
 def Test_FetchScheduleRecordsCoveringDate_TestEndsOnOccurrenceDate_ExpectEmpty(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row(
@@ -346,7 +374,8 @@ def Test_FetchScheduleRecordsCoveringDate_TestEndsOnOccurrenceDate_ExpectEmpty(
       talk_name=TALK_NAME,
       location=LOCATION,
       talk_time=TALK_TIME,
-      occurrence_date=VISIT_DATE )
+      occurrence_date=VISIT_DATE,
+      enclosure_name=None )
 
    assert records == []
 
@@ -356,8 +385,8 @@ def Test_FetchDayScheduleRecordsFromSchedule_TestWithCancellation_ExpectEmpty(
    _insert_schedule_row( schedule_provider_conn )
    schedule_provider_conn.execute(
       """   INSERT INTO GuardiansTalkCancellation (
-               TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME
-            ) VALUES ( ?, ?, ?, ? );
+               TALK_NAME, LOCATION, ENCLOSURE_NAME, CANCELLATION_DATE, TALK_TIME
+            ) VALUES ( ?, ?, NULL, ?, ? );
       """,
       ( TALK_NAME, LOCATION, VISIT_DATE, TALK_TIME ),
    )
@@ -380,20 +409,34 @@ def Test_FetchScheduleTimes_TestCoveringDate_ExpectDistinctOrderedTimes(
    _insert_schedule_row(
       schedule_provider_conn,
       talk_time=TALK_TIME )
-   _insert_schedule_row(
-      schedule_provider_conn,
-      start_date='2026-07-01',
-      end_date='2026-07-31',
-      talk_time='4:00 PM' )
    schedule_provider_conn.commit()
 
-   times = GuardiansTalkScheduleProvider.fetch_schedule_times(
+   schedule_times = GuardiansTalkScheduleProvider.fetch_schedule_times(
       schedule_provider_conn,
       TALK_NAME,
       LOCATION,
-      VISIT_DATE )
+      VISIT_DATE,
+      enclosure_name=None )
 
-   assert times == [ TALK_TIME, SECOND_TALK_TIME ]
+   assert schedule_times == [ TALK_TIME, SECOND_TALK_TIME ]
+
+
+def Test_FetchScheduleTimes_TestNotStarted_ExpectTime(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   _insert_schedule_row(
+      schedule_provider_conn,
+      start_date='2026-11-02',
+      end_date=None )
+   schedule_provider_conn.commit()
+
+   schedule_times = GuardiansTalkScheduleProvider.fetch_schedule_times(
+      schedule_provider_conn,
+      TALK_NAME,
+      LOCATION,
+      VISIT_DATE,
+      enclosure_name=None )
+
+   assert schedule_times == [ TALK_TIME ]
 
 
 def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectEmpty(
@@ -404,13 +447,14 @@ def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectEmpty(
       talk_time=TALK_TIME )
    schedule_provider_conn.commit()
 
-   times = GuardiansTalkScheduleProvider.fetch_schedule_times(
+   schedule_times = GuardiansTalkScheduleProvider.fetch_schedule_times(
       schedule_provider_conn,
       TALK_NAME,
       LOCATION,
-      VISIT_DATE )
+      VISIT_DATE,
+      enclosure_name=None )
 
-   assert times == []
+   assert schedule_times == []
 
 
 def Test_ScheduleOverlapsExistingSchedule_TestOverlappingDates_ExpectTrue(
@@ -600,7 +644,7 @@ def Test_InsertOrUpdateSchedule_TestSameStartDate_ExpectUpdatesRow(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    GuardiansTalkScheduleProvider.insert_or_update_schedule(
       schedule_provider_conn,
-      _schedule_input() )
+      _schedule_input( enclosure_name='Outdoor' ) )
    schedule_provider_conn.commit()
 
    GuardiansTalkScheduleProvider.insert_or_update_schedule(
@@ -609,7 +653,8 @@ def Test_InsertOrUpdateSchedule_TestSameStartDate_ExpectUpdatesRow(
          end_date='2026-07-15',
          saturday=True,
          sunday=True,
-         message='Updated talk hours.' ) )
+         message='Updated talk hours.',
+         enclosure_name='Outdoor' ) )
    schedule_provider_conn.commit()
 
    row = _fetch_schedule_row( schedule_provider_conn, start_date=START_DATE )
@@ -652,6 +697,32 @@ def Test_SaveScheduleEnd_TestCoveringSchedule_ExpectUpdatesEndDate(
 
    assert row is not None
    assert row[ 'SCHEDULE_END_DATE' ] == '2026-06-20'
+
+
+def Test_SaveScheduleEnd_TestEndBeforeStart_ExpectStoresEndDate(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   start_date = '2026-11-02'
+
+   _insert_schedule_row(
+      schedule_provider_conn,
+      start_date=start_date,
+      end_date=None )
+   schedule_provider_conn.commit()
+
+   result = GuardiansTalkScheduleProvider.save_schedule_end(
+      schedule_provider_conn,
+      GuardiansTalkScheduleEndInput(
+         talk_name=TALK_NAME,
+         location=LOCATION,
+         schedule_end_date=VISIT_DATE,
+         talk_time=TALK_TIME ) )
+
+   assert result is True
+
+   row = _fetch_schedule_row( schedule_provider_conn, start_date=start_date )
+
+   assert row is not None
+   assert row[ 'SCHEDULE_END_DATE' ] == VISIT_DATE
 
 
 def Test_SaveScheduleEnd_TestNoMatchingSchedule_ExpectReturnsFalse(

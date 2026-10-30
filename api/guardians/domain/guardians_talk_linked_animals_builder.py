@@ -17,7 +17,11 @@ class GuardiansTalkLinkedAnimalsBuilder():
             GuardiansTalkLinkedAnimal(
                species=link.species,
                exhibit=link.exhibit )
-            for link in GuardiansTalkAnimalProvider.fetch_animal_links( conn, talk.name )
+            for link in GuardiansTalkAnimalProvider.fetch_animal_links(
+               conn,
+               talk.name,
+               location=talk.location,
+               enclosure_name=talk.enclosure_name )
          ] if talk.name else []
 
       return talks

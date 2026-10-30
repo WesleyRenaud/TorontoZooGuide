@@ -99,7 +99,13 @@ test('Test_NormalizeGuardiansTalkListForSave_TestTalks_ExpectNamedOnly', () => {
 
    const normalized = ItineraryDraftSaveNormalizer.normalizeGuardiansTalkListForSave(talks);
 
-   assert.deepEqual(normalized, [{ name, start_time: startTime, end_time: endTime }]);
+   assert.deepEqual(normalized, [{
+      name,
+      location: '',
+      enclosure_name: '',
+      start_time: startTime,
+      end_time: endTime,
+   }]);
 });
 
 

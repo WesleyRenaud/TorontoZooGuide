@@ -188,7 +188,7 @@ test('Test_ResultsView_TestResultsViewRenderSearchResultsShowsThumbnailsForNamed
    const expectedImageSrcs = [
       SearchResultPresenter.buildSearchDetailImageSrc('restaurants', pastry),
       SearchResultPresenter.buildSearchDetailImageSrc('gift-shops', zootique),
-      SearchResultPresenter.buildSearchDetailImageSrc('guardians-talks', talkName),
+      `../images/details/guardians-talks/${AssetKeyNormalizer.normalize(location)}/${AssetKeyNormalizer.normalize(talkName)}.png`,
       SearchResultPresenter.buildSearchDetailImageSrc('pavilions', pavilion),
       SearchResultPresenter.buildSearchDetailImageSrc('transportation-stations', station),
    ];

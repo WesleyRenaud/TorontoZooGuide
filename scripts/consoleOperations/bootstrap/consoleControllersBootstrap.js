@@ -13,11 +13,13 @@ export class ConsoleControllersBootstrap {
             GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
                locationEl: guardiansTalks.schedule.locationEl,
                talkNameEl: guardiansTalks.schedule.talkNameEl,
+               enclosureEl: guardiansTalks.schedule.enclosureEl,
             }),
          endGuardiansTalkScheduleLocationFilterController:
             GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
                locationEl: guardiansTalks.endSchedule.locationEl,
                talkNameEl: guardiansTalks.endSchedule.talkNameEl,
+               enclosureEl: guardiansTalks.endSchedule.enclosureEl,
                loadLocations: ConsoleOperationsClient.getGuardiansTalkScheduleLocationOptions,
                loadTalks: ConsoleOperationsClient.getGuardiansTalkScheduleOptions,
             }),
@@ -25,16 +27,19 @@ export class ConsoleControllersBootstrap {
             GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
                locationEl: guardiansTalks.addOccurrence.locationEl,
                talkNameEl: guardiansTalks.addOccurrence.talkNameEl,
+               enclosureEl: guardiansTalks.addOccurrence.enclosureEl,
             }),
          cancelGuardiansTalkOccurrenceLocationFilterController:
             GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
                locationEl: guardiansTalks.cancelOccurrence.locationEl,
                talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
+               enclosureEl: guardiansTalks.cancelOccurrence.enclosureEl,
             }),
          cancelGuardiansTalkOccurrenceFilterController:
             GuardiansTalkOccurrenceFilter.createGuardiansTalkOccurrenceFilterController({
                locationEl: guardiansTalks.cancelOccurrence.locationEl,
                talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
+               enclosureEl: guardiansTalks.cancelOccurrence.enclosureEl,
                dateEl: guardiansTalks.cancelOccurrence.dateEl,
                timesEl: guardiansTalks.cancelOccurrence.timesEl,
             }),
@@ -42,6 +47,7 @@ export class ConsoleControllersBootstrap {
             GuardiansTalkScheduleTimesFilter.createGuardiansTalkScheduleTimesFilterController({
                locationEl: guardiansTalks.endSchedule.locationEl,
                talkNameEl: guardiansTalks.endSchedule.talkNameEl,
+               enclosureEl: guardiansTalks.endSchedule.enclosureEl,
                timesEl: guardiansTalks.endSchedule.timesEl,
             }),
          wildEncounterOccurrenceFilterController:

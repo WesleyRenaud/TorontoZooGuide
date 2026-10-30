@@ -7,3 +7,4 @@ class GuardiansTalkScheduleEndInput:
    location: str
    schedule_end_date: str
    talk_time: str
+   enclosure_name: str | None = None

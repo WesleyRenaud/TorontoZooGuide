@@ -22,6 +22,7 @@ class GuardiansTalkDayScheduleBuilder():
                record.talk_time,
                record.maximum_duration ),
             is_available=True,
-            unavailable_message=None )
+            unavailable_message=None,
+            enclosure_name=record.enclosure_name )
          for record in records
       ]

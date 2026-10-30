@@ -31,11 +31,14 @@ export class GuardiansTalkSelector {
          emptyText: Strings.itinerary.emptyText.guardiansTalks,
 
          getName: GuardiansTalkSelectorModel.getGuardiansTalkName,
+         getTitle: GuardiansTalkSelectorModel.getGuardiansTalkDisplayName,
+         getImageSrc: GuardiansTalkSelectorModel.buildGuardiansTalkImageSrc,
          getId: GuardiansTalkSelectorModel.getGuardiansTalkId,
          getPrimaryValue: GuardiansTalkSelectorModel.getGuardiansTalkLocation,
          getTimeOfDay: GuardiansTalkSelectorModel.getGuardiansTalkScheduleStart,
          emptyStoredFields: {
             location: '',
+            enclosure_name: '',
             start_time: '',
             end_time: '',
          },

@@ -3,7 +3,6 @@ import test from 'node:test';
 
 import { ScheduleTimeConflictButtonStore } from '../../../../scripts/itinerary/panel/scheduleTimeConflictButtonStore.js';
 import { ScheduleTimeConflictContentBuilder } from '../../../../scripts/itinerary/panel/scheduleTimeConflictContentBuilder.js';
-import { ScheduleTimeConflictView } from '../../../../scripts/itinerary/panel/scheduleTimeConflictView.js';
 import { RowPresenter } from '../../../../scripts/itinerary/panel/rowPresenter.js';
 import { ScheduledOccurrenceSorter } from '../../../../scripts/itinerary/scheduledOccurrenceSorter.js';
 import { ResultRenderer } from '../../../../scripts/itinerary/selectors/base/resultRenderer.js';
@@ -187,7 +186,6 @@ test('Test_CreateScheduleConflictSubtitle_TestWildEncounter_ExpectMeetingSpot', 
 
 test('Test_CreateWildEncounterConflictRowAndSection_TestIssues_ExpectRows', () => {
    const originalSort = ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime;
-   const originalImage = ScheduleTimeConflictView.buildConflictItemImageSrc;
    const originalContent = ResultRenderer.createSelectorRowContent;
    const originalText = ResultRenderer.createSelectorTextColumn;
    const originalCreateSelection = ScheduleConflictChecker.createConflictSelection;
@@ -195,7 +193,6 @@ test('Test_CreateWildEncounterConflictRowAndSection_TestIssues_ExpectRows', () =
    const originalHandle = ScheduleTimeConflictContentBuilder.handleConflictItemButtonClick;
    const clicks = [];
    ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = (items) => items;
-   ScheduleTimeConflictView.buildConflictItemImageSrc = () => 'img.png';
    ResultRenderer.createSelectorTextColumn = ({ title }) => {
       const el = document.createElement('div');
       el.textContent = title;
@@ -229,7 +226,6 @@ test('Test_CreateWildEncounterConflictRowAndSection_TestIssues_ExpectRows', () =
       assert.equal(clicks.length, Position.SECOND);
    } finally {
       ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime = originalSort;
-      ScheduleTimeConflictView.buildConflictItemImageSrc = originalImage;
       ResultRenderer.createSelectorRowContent = originalContent;
       ResultRenderer.createSelectorTextColumn = originalText;
       ScheduleConflictChecker.createConflictSelection = originalCreateSelection;

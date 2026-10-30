@@ -77,7 +77,8 @@ class ItineraryItemRemover():
       if isinstance( schedule_item_key, GuardiansTalkScheduleItemKey ):
          RemoveItineraryItemProvider.delete_itinerary_guardians_talk(
             cur,
-            talk_name=schedule_item_key.name )
+            talk_name=schedule_item_key.name,
+            enclosure_name=schedule_item_key.enclosure_name )
          return
 
       if isinstance( schedule_item_key, WildEncounterScheduleItemKey ):

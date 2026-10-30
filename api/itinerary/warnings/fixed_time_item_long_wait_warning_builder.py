@@ -251,11 +251,15 @@ class FixedTimeItemLongWaitWarningBuilder():
          maximum_duration=detail.maximum_duration,
          start_time=new_talk.start_time,
          end_time=new_talk.end_time,
-         is_deleted=new_talk.is_deleted )
+         is_deleted=new_talk.is_deleted,
+         enclosure_name=new_talk.enclosure_name )
       talks = [
          talk
          for talk in itinerary.guardians_talks
-         if talk.name != new_talk.name
+         if not (
+            talk.name == new_talk.name
+            and talk.enclosure_name == new_talk.enclosure_name
+         )
       ]
       talks.append( proposed_talk )
 

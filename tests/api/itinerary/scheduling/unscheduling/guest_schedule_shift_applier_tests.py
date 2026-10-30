@@ -113,7 +113,9 @@ CREATE TABLE ItineraryGuardiansTalk (
    TALK_NAME            TEXT        NOT NULL PRIMARY KEY,
    START_TIME           TEXT,
    END_TIME             TEXT,
-   IS_DELETED           INTEGER     NOT NULL DEFAULT 0
+   IS_DELETED           INTEGER     NOT NULL DEFAULT 0,
+   LOCATION             TEXT NOT NULL,
+   ENCLOSURE_NAME       TEXT
 );
 
 CREATE TABLE ItineraryWildEncounter (
@@ -327,11 +329,13 @@ def _insert_adjacent_talk_unschedule_fixture(
    conn.execute(
       """   INSERT INTO ItineraryGuardiansTalk (
                TALK_NAME,
+               LOCATION,
+               ENCLOSURE_NAME,
                START_TIME,
                END_TIME,
                IS_DELETED
             )
-            VALUES ( ?, ?, ?, 0 );
+            VALUES ( ?, '', NULL, ?, ?, 0 );
       """,
       ( ZEBRA_TALK, '12:00 PM', '12:30 PM' ) )
 
@@ -339,11 +343,13 @@ def _insert_adjacent_talk_unschedule_fixture(
       conn.execute(
          """   INSERT INTO ItineraryGuardiansTalk (
                   TALK_NAME,
+                  LOCATION,
+                  ENCLOSURE_NAME,
                   START_TIME,
                   END_TIME,
                   IS_DELETED
                )
-               VALUES ( ?, ?, ?, 0 );
+               VALUES ( ?, '', NULL, ?, ?, 0 );
          """,
          ( CAMEL_TALK, '12:30 PM', '1:00 PM' ) )
 
@@ -825,11 +831,13 @@ def Test_ShiftItemsAfterUnschedule_TestOverlapWithTalk_ExpectNoShift(
    shift_applier_conn.execute(
       """   INSERT INTO ItineraryGuardiansTalk (
                TALK_NAME,
+               LOCATION,
+               ENCLOSURE_NAME,
                START_TIME,
                END_TIME,
                IS_DELETED
             )
-            VALUES ( ?, ?, ?, 0 );
+            VALUES ( ?, '', NULL, ?, ?, 0 );
       """,
       ( CAMEL_TALK, '12:00 PM', '12:30 PM' ) )
    shift_applier_conn.commit()

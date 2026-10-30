@@ -150,6 +150,8 @@ class SaveItineraryProvider():
             start_time=talk.start_time,
             end_time=talk.end_time,
             is_deleted=talk.is_deleted,
+            location=talk.location,
+            enclosure_name=talk.enclosure_name,
          )
 
 

@@ -11,16 +11,21 @@ class ItineraryGuardiansTalksBuilder():
          cls,
          guardians_talks: list[ GuardiansTalk ],
          saved_guardians_talks: list[ ItineraryGuardiansTalkRecord ] ) -> list[ GuardiansTalk ]:
-      guardians_talk_by_name = {
-         saved_talk.name_key(): saved_talk
+      saved_talk_by_key = {
+         (
+            saved_talk.name_key(),
+            saved_talk.enclosure_name,
+            saved_talk.location,
+         ): saved_talk
          for saved_talk in saved_guardians_talks
       }
 
       for guardians_talk in guardians_talks:
-         saved_talk = guardians_talk_by_name.get(
-            ItineraryNameKeyBuilder.build( guardians_talk.name ) )
+         saved_talk = cls._saved_talk_for(
+            saved_talk_by_key,
+            guardians_talk )
 
-         if saved_talk == None:
+         if saved_talk is None:
             continue
 
          guardians_talk.start_time = saved_talk.start_time
@@ -29,9 +34,24 @@ class ItineraryGuardiansTalksBuilder():
 
       guardians_talks.sort(
          key=lambda talk: (
-            ( talk.name or '' ).lower(),
-            talk.start_time or ''
+            talk.name.lower(),
+            talk.start_time or '',
          )
       )
 
       return guardians_talks
+
+
+   @classmethod
+   def _saved_talk_for(
+         cls,
+         saved_by_key: dict[ tuple[ str, str, str ], ItineraryGuardiansTalkRecord ],
+         guardians_talk: GuardiansTalk ) -> ItineraryGuardiansTalkRecord | None:
+      name_key = ItineraryNameKeyBuilder.build( guardians_talk.name )
+      saved_talk = saved_by_key.get(
+         ( name_key, guardians_talk.enclosure_name, guardians_talk.location ) )
+
+      if saved_talk is not None:
+         return saved_talk
+
+      return saved_by_key.get( ( name_key, guardians_talk.enclosure_name, '' ) )

@@ -49,6 +49,13 @@
     "enclosure_name": null
   },
   {
+    "talk_name": "Blue And Yellow Macaw",
+    "location": "Americas Pavilion",
+    "species": "Blue And Yellow Macaw",
+    "exhibit": "Americas Pavilion",
+    "enclosure_name": null
+  },
+  {
     "talk_name": "Capybara",
     "location": "Americas Outdoor Mayan Temple Ruins",
     "species": "Capybara",
@@ -91,6 +98,13 @@
     "enclosure_name": "White Rhino Viewing"
   },
   {
+    "talk_name": "Greater One-Horned Rhinoceros",
+    "location": "Indo-Malaya Outdoor",
+    "species": "Greater One-Horned Rhinoceros",
+    "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_name": "Indoor"
+  },
+  {
     "talk_name": "Grevy's Zebra",
     "location": "Africa Savanna",
     "species": "Grevy's Zebra",
@@ -110,6 +124,13 @@
     "species": "Komodo Dragon",
     "exhibit": "Australasia Pavilion",
     "enclosure_name": null
+  },
+  {
+    "talk_name": "Masai Giraffe",
+    "location": "Africa Savanna",
+    "species": "Masai Giraffe",
+    "exhibit": "Africa Savanna",
+    "enclosure_name": "Giraffe House"
   },
   {
     "talk_name": "Masai Giraffe",
@@ -215,6 +236,20 @@
     "species": "Sumatran Orangutan",
     "exhibit": "Indo-Malaya Pavilion",
     "enclosure_name": "Outdoor"
+  },
+  {
+    "talk_name": "Turtle World",
+    "location": "Indo-Malaya Pavilion",
+    "species": "Asian Brown Tortoise",
+    "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_name": null
+  },
+  {
+    "talk_name": "Turtle World",
+    "location": "Indo-Malaya Pavilion",
+    "species": "Burmese Star Tortoise",
+    "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_name": null
   },
   {
     "talk_name": "Western Grey Kangaroo",

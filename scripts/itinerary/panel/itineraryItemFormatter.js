@@ -140,6 +140,8 @@ export class ItineraryItemFormatter {
 
       return {
          name: ValueNormalizer.asTrimmedString(source.name),
+         location: ValueNormalizer.asTrimmedString(source.location),
+         enclosure_name: ValueNormalizer.asTrimmedString(source.enclosure_name),
          start_time: ValueNormalizer.asNullableString(source.start_time),
          end_time: ValueNormalizer.asNullableString(source.end_time),
       };

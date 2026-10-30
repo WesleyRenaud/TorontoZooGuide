@@ -18,6 +18,8 @@ def Test_MapRecord_TestRow_ExpectGuardiansTalkRecord() -> None:
       'START_TIME': start_time,
       'END_TIME': end_time,
       'IS_DELETED': is_deleted,
+      'LOCATION': '',
+      'ENCLOSURE_NAME': None,
    }
 
    record = ItineraryGuardiansTalkMapper.map_record( row )
@@ -40,6 +42,8 @@ def Test_MapRecords_TestRows_ExpectMappedRecords() -> None:
       'START_TIME': start_time,
       'END_TIME': end_time,
       'IS_DELETED': is_deleted,
+      'LOCATION': '',
+      'ENCLOSURE_NAME': None,
    }
    rows = [ row ]
 

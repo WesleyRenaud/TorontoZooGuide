@@ -23,6 +23,13 @@ export class GuardiansTalkScheduleView {
                inputId: 'guardiansTalkScheduleTalkName',
                emptyOptionLabel: Strings.placeholders.talk,
             }),
+            ConsoleSelectFieldBuilder.createSelectField({
+               label: Strings.labels.enclosure,
+               inputId: 'guardiansTalkScheduleEnclosureName',
+               emptyOptionLabel: Strings.placeholders.enclosure,
+               disabled: true,
+               invisible: true,
+            }),
             ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'guardiansTalkScheduleStartDate',
                endDateId: 'guardiansTalkScheduleEndDate',

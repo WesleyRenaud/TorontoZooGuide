@@ -3,6 +3,7 @@ import { AnimalSelectorModel } from '../itinerary/selectors/animalSelector/anima
 import { AttractionSelectorModel } from '../itinerary/selectors/attractionSelector/attractionSelectorModel.js';
 import { ResultRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { StoredSelectionNormalizer } from '../itinerary/selectors/base/storedSelectionNormalizer.js';
+import { GuardiansTalkSelectorModel } from '../itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { SpeciesFragment } from '../overlays/speciesFragment.js';
 import { SearchResultPresenter } from './searchResultPresenter.js';
 import { ItemType } from '../shared/enums/itemType.js';
@@ -40,9 +41,12 @@ export class SearchResultRowBuilder {
             getInfoLink: () => null,
             onTitleClick: SearchResultRowBuilder.openWildEncounterLink,
          }),
-         [ItemType.GUARDIANS_TALK]: SearchResultPresenter.createSearchImageRowRenderer({
-            presentation: SearchResultPresenter.SEARCH_RESULT_PRESENTATIONS.guardiansTalk,
-            imageDirectory: 'guardians-talks',
+         [ItemType.GUARDIANS_TALK]: ResultRenderer.createDefaultSelectorRowLeftRenderer({
+            getTitle: GuardiansTalkSelectorModel.getGuardiansTalkDisplayName,
+            getTitleSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
+            getSubtitle: GuardiansTalkSelectorModel.getGuardiansTalkSubtitle,
+            getImageSrc: GuardiansTalkSelectorModel.buildGuardiansTalkImageSrc,
+            getInfoLink: () => null,
             onTitleClick: GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal,
             shouldEnableTitleClick: (row) => Boolean(GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal(row)),
          }),

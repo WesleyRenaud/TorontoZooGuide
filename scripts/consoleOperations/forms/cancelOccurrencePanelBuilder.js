@@ -14,6 +14,9 @@ export class CancelOccurrencePanelBuilder {
       talkLabel,
       talkInputId,
       talkEmptyOptionLabel,
+      enclosureLabel,
+      enclosureInputId,
+      enclosureEmptyOptionLabel,
       entityLabel,
       entityInputId,
       entityEmptyOptionLabel,
@@ -41,6 +44,16 @@ export class CancelOccurrencePanelBuilder {
                emptyOptionLabel: talkEmptyOptionLabel,
             }),
          );
+
+         if (enclosureInputId) {
+            bodyChildren.push(ConsoleSelectFieldBuilder.createSelectField({
+               label: enclosureLabel,
+               inputId: enclosureInputId,
+               emptyOptionLabel: enclosureEmptyOptionLabel,
+               disabled: true,
+               invisible: true,
+            }));
+         }
       }
       else {
          bodyChildren.push(

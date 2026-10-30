@@ -105,7 +105,8 @@ class VisitWindowOverflowTimeExpander():
       if kept_item.item_type == ItinerarySaveIssueItemType.GUARDIANS_TALK:
          return ScheduleItemTravelTimeCalculator.walk_node_id_for_guardians_talk(
             kept_item.name,
-            location=kept_item.location )
+            location=kept_item.location,
+            enclosure_name=kept_item.enclosure_name )
 
       if kept_item.item_type == ItinerarySaveIssueItemType.WILD_ENCOUNTER:
          return ScheduleItemTravelTimeCalculator.walk_node_id_for_wild_encounter(

@@ -58,7 +58,8 @@ class ItineraryItemScheduleChangeCommitter():
                   conn,
                   talk_name=schedule_item_key.name,
                   talk_block=removed_block,
-                  animal_rows=saved_itinerary.animal_rows )
+                  animal_rows=saved_itinerary.animal_rows,
+                  enclosure_name=schedule_item_key.enclosure_name )
             elif (
                   isinstance( schedule_item_key, AttractionScheduleItemKey )
                   and removed_block is not None ):

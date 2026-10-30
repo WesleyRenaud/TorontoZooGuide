@@ -103,12 +103,14 @@ class UnscheduleItineraryItemProvider():
          cls,
          cur: Types.Cursor,
          *,
-         talk_name: str ) -> None:
+         talk_name: str,
+         enclosure_name: str ) -> None:
       cur.execute(
          """   DELETE FROM ItineraryGuardiansTalk
-               WHERE TALK_NAME = ?;
+               WHERE TALK_NAME = ?
+                  AND ENCLOSURE_NAME IS ?;
             """,
-         ( talk_name, ),
+         ( talk_name, enclosure_name ),
       )
 
 

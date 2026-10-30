@@ -254,6 +254,7 @@ export class ConsoleOperationRefsCollector {
             fieldSuffixes: {
                locationEl: 'Location',
                talkNameEl: 'TalkName',
+               enclosureEl: 'EnclosureName',
                scheduleRowsEl: 'ScheduleRows',
                addScheduleRowEl: 'AddScheduleRow',
                messageEl: 'Message',
@@ -264,6 +265,7 @@ export class ConsoleOperationRefsCollector {
             fieldSuffixes: {
                locationEl: 'Location',
                talkNameEl: 'TalkName',
+               enclosureEl: 'EnclosureName',
                timesEl: 'Times',
                endDateEl: 'EndDate',
             },
@@ -273,6 +275,7 @@ export class ConsoleOperationRefsCollector {
             fieldSuffixes: {
                locationEl: 'Location',
                talkNameEl: 'TalkName',
+               enclosureEl: 'EnclosureName',
                dateEl: 'Date',
                timeEl: 'Time',
             },
@@ -282,6 +285,7 @@ export class ConsoleOperationRefsCollector {
             fieldSuffixes: {
                locationEl: 'Location',
                talkNameEl: 'TalkName',
+               enclosureEl: 'EnclosureName',
                dateEl: 'Date',
                timesEl: 'Times',
             },

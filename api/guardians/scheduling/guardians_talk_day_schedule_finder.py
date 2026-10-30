@@ -13,7 +13,8 @@ class GuardiansTalkDayScheduleFinder():
          day_schedule: list[ GuardiansTalk ],
          talk_name: str,
          *,
-         start_time: Types.ScheduleTimeKey ) -> GuardiansTalk | None:
+         start_time: Types.ScheduleTimeKey,
+         enclosure_name: str ) -> GuardiansTalk | None:
       talk_filter = GuardiansTalkNameFilter( name=talk_name )
 
       if talk_filter.should_return_empty():
@@ -27,6 +28,9 @@ class GuardiansTalkDayScheduleFinder():
 
       for row in day_schedule:
          if not talk_filter.allows_talk_name( row.name ):
+            continue
+
+         if row.enclosure_name != enclosure_name:
             continue
 
          row_start_time = DateValues.normalize_schedule_time(

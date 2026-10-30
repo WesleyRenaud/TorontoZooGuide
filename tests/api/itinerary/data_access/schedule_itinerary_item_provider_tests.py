@@ -43,7 +43,9 @@ CREATE TABLE ItineraryGuardiansTalk (
    TALK_NAME            TEXT        NOT NULL PRIMARY KEY,
    START_TIME           TEXT,
    END_TIME             TEXT,
-   IS_DELETED           INTEGER     NOT NULL DEFAULT 0
+   IS_DELETED           INTEGER     NOT NULL DEFAULT 0,
+   LOCATION             TEXT NOT NULL,
+   ENCLOSURE_NAME       TEXT
 );
 
 CREATE TABLE ItineraryWildEncounter (
@@ -244,7 +246,8 @@ def Test_InsertItineraryGuardiansTalk_TestTalk_ExpectInserted(
       cur,
       talk_name=talk_name,
       start_time=start_time,
-      end_time=end_time )
+      end_time=end_time,
+      enclosure_name=None )
    schedule_item_conn.commit()
    cur.close()
    row = schedule_item_conn.execute(

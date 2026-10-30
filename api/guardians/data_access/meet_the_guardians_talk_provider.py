@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..domain.guardians_talk_option import GuardiansTalkOption
 from .meet_the_guardians_talk_mapper import MeetTheGuardiansTalkMapper
 from .meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
 from ...shared.enums.position import Position
@@ -47,19 +48,21 @@ class MeetTheGuardiansTalkProvider():
    def fetch_guardians_talk_names_at_location(
          cls,
          conn: Types.Connection,
-         location: str ) -> list[ str ]:
+         location: str ) -> list[ GuardiansTalkOption ]:
       cur = conn.cursor()
 
       try:
          data = cur.execute(
             """  SELECT
-                     t.NAME
+                     t.NAME,
+                     t.ENCLOSURE_NAME
                  FROM MeetTheGuardiansTalk t
-                 WHERE t.LOCATION = ?;
+                 WHERE t.LOCATION = ?
+                 ORDER BY t.NAME, t.ENCLOSURE_NAME;
             """,
             ( location, ) )
 
-         return [ row[ Position.FIRST ] for row in data.fetchall() ]
+         return GuardiansTalkOption.from_rows( data.fetchall() )
 
       finally:
          cur.close()
@@ -78,7 +81,8 @@ class MeetTheGuardiansTalkProvider():
                      LOCATION,
                      X_COORD,
                      Y_COORD,
-                     MAXIMUM_DURATION
+                     MAXIMUM_DURATION,
+                     ENCLOSURE_NAME
                   FROM MeetTheGuardiansTalk;
             """ )
 

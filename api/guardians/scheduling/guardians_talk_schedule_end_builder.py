@@ -12,7 +12,9 @@ class GuardiansTalkScheduleEndBuilder():
          talk: str,
          location: str,
          schedule_end_date: Types.DateInput,
-         talk_time: str ) -> GuardiansTalkScheduleEndInput:
+         talk_time: str,
+         *,
+         enclosure_name: str ) -> GuardiansTalkScheduleEndInput:
       if not schedule_end_date:
          schedule_end_date = DateValues.today_date_key()
 
@@ -20,4 +22,5 @@ class GuardiansTalkScheduleEndBuilder():
          talk_name=talk,
          location=location,
          schedule_end_date=schedule_end_date,
-         talk_time=talk_time )
+         talk_time=talk_time,
+         enclosure_name=enclosure_name )

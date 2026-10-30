@@ -27,7 +27,7 @@ export class ScheduleItemModuleView {
 
       if (moduleType === ScheduleItemKind.GUARDIANS_TALK.itemType) {
          return ResultRenderer.createDefaultSelectorRowLeftRenderer({
-            getTitle: GuardiansTalkSelectorModel.getGuardiansTalkName,
+            getTitle: GuardiansTalkSelectorModel.getGuardiansTalkDisplayName,
             getTitleSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
             getSubtitle: GuardiansTalkSelectorModel.getGuardiansTalkSubtitle,
             getImageSrc: GuardiansTalkSelectorModel.buildGuardiansTalkImageSrc,

@@ -13,7 +13,8 @@ class GuardiansTalkDayScheduleMapper():
          x_coord=row[ 'X_COORD' ],
          y_coord=row[ 'Y_COORD' ],
          maximum_duration=row[ 'MAXIMUM_DURATION' ],
-         talk_time=row[ 'TALK_TIME' ] )
+         talk_time=row[ 'TALK_TIME' ],
+         enclosure_name=row[ 'ENCLOSURE_NAME' ] )
 
 
    @classmethod

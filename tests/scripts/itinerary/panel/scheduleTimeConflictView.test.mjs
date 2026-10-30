@@ -36,8 +36,8 @@ const guardiansTalk = {
 installDomTestHooks();
 
 
-test('Test_BuildConflictItemImageSrc_TestWildEncounter_ExpectPath', () => {
-   const src = ScheduleTimeConflictView.buildConflictItemImageSrc(firstEncounter);
+test('Test_BuildWildEncounterConflictImageSrc_TestName_ExpectPath', () => {
+   const src = ScheduleTimeConflictView.buildWildEncounterConflictImageSrc(firstEncounter);
 
    assert.equal(
       src,
@@ -46,20 +46,20 @@ test('Test_BuildConflictItemImageSrc_TestWildEncounter_ExpectPath', () => {
 });
 
 
-test('Test_BuildConflictItemImageSrc_TestGuardiansTalk_ExpectPath', () => {
-   const src = ScheduleTimeConflictView.buildConflictItemImageSrc(guardiansTalk);
+test('Test_BuildGuardiansTalkConflictImageSrc_TestLocation_ExpectPath', () => {
+   const src = ScheduleTimeConflictView.buildGuardiansTalkConflictImageSrc(guardiansTalk);
 
    assert.equal(
       src,
-      `images/details/guardians-talks/${AssetKeyNormalizer.normalize(guardiansTalk.name)}.png`
+      `images/details/guardians-talks/${AssetKeyNormalizer.normalize(guardiansTalk.location)}/${AssetKeyNormalizer.normalize(guardiansTalk.name)}.png`
    );
 });
 
 
-test('Test_BuildConflictItemImageSrc_TestBlankName_ExpectNull', () => {
+test('Test_BuildWildEncounterConflictImageSrc_TestBlankName_ExpectNull', () => {
    const item = { name: '' };
 
-   const src = ScheduleTimeConflictView.buildConflictItemImageSrc(item);
+   const src = ScheduleTimeConflictView.buildWildEncounterConflictImageSrc(item);
 
    assert.equal(src, null);
 });

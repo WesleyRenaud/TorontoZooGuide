@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { AssetKeyNormalizer } from '../../../../../scripts/assets/assetKeyNormalizer.js';
 import { ScheduledOccurrencePresenter } from '../../../../../scripts/itinerary/scheduledOccurrencePresenter.js';
 import { ScheduledOccurrenceTimeModel } from '../../../../../scripts/itinerary/scheduledOccurrenceTimeModel.js';
 import { GuardiansTalkScheduleItemKey } from '../../../../../scripts/itinerary/selectors/guardiansTalkSelector/guardiansTalkScheduleItemKey.js';
@@ -126,9 +127,6 @@ test('Test_BuildGuardiansTalkImageSrc_TestName_ExpectDetailPath', () => {
 
    assert.equal(
       imageSrc,
-      ScheduledOccurrencePresenter.buildOccurrenceDetailImageSrc(
-         'guardians-talks',
-         talkRow.name
-      )
+      `../images/details/guardians-talks/${AssetKeyNormalizer.normalize(talkRow.location)}/${AssetKeyNormalizer.normalize(talkRow.name)}.png`
    );
 });

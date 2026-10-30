@@ -205,7 +205,7 @@ def stub_itinerary_stop_dependencies( monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       MapLocationWalkNodeLookup,
       'for_map_location',
-      lambda kind, name, *, location='': (
+      lambda kind, name, *, location='', enclosure_name=None: (
          ENCOUNTER_MAP_LOCATION
          if kind == MapLocationKind.WILD_ENCOUNTER_MEETING_SPOT
          else None ) )
@@ -277,7 +277,7 @@ def Test_Resolve_TestCoveredKangarooWithWalkThru_ExpectAttractionStopOnly(
    monkeypatch.setattr(
       MapLocationWalkNodeLookup,
       'for_map_location',
-      lambda kind, name, *, location='': (
+      lambda kind, name, *, location='', enclosure_name=None: (
          WALK_THRU_MAP_LOCATION
          if kind == MapLocationKind.ATTRACTION and name == SCHEDULED_WALK_THRU.name
          else (
@@ -337,7 +337,8 @@ def Test_Resolve_TestGuardiansTalk_ExpectTalkStop(
          kind: MapLocationKind,
          name: str,
          *,
-         location: str = '' ) -> MapLocationWalkNode | None:
+         location: str = '',
+         enclosure_name: str | None = None ) -> MapLocationWalkNode | None:
       if kind == MapLocationKind.GUARDIANS_TALK and name == SCHEDULED_TALK.name:
          return TALK_MAP_LOCATION
       return None

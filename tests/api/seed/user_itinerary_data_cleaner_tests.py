@@ -63,7 +63,9 @@ CREATE TABLE ItineraryGuardiansTalk (
    TALK_NAME            TEXT NOT NULL PRIMARY KEY,
    START_TIME           TEXT,
    END_TIME             TEXT,
-   IS_DELETED           INTEGER NOT NULL DEFAULT 0
+   IS_DELETED           INTEGER NOT NULL DEFAULT 0,
+   LOCATION             TEXT NOT NULL,
+   ENCLOSURE_NAME       TEXT
 );
 
 CREATE TABLE ItineraryWildEncounter (
@@ -124,8 +126,8 @@ def itinerary_cleaner_conn( tmp_path: Path ) -> sqlite3.Connection:
       VALUES ( 'African Lion', 'Africa Savanna' );
       INSERT INTO ItineraryAttraction ( ATTRACTION )
       VALUES ( 'Conservation Carousel' );
-      INSERT INTO ItineraryGuardiansTalk ( TALK_NAME )
-      VALUES ( 'African Lion' );
+      INSERT INTO ItineraryGuardiansTalk ( TALK_NAME, LOCATION, ENCLOSURE_NAME )
+      VALUES ( 'African Lion', '', NULL );
       INSERT INTO ItineraryWildEncounter ( WILD_ENCOUNTER )
       VALUES ( 'African Rainforest' );
       INSERT INTO ItineraryEvent ( EVENT_TYPE )

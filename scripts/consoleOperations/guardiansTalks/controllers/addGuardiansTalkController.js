@@ -8,6 +8,7 @@ export class AddGuardiansTalkController {
    static createAddGuardiansTalkOccurrenceController({
       talkNameEl,
       locationEl,
+      enclosureEl,
       dateEl,
       timeEl,
       talkLocationFilterController = null,
@@ -30,6 +31,7 @@ export class AddGuardiansTalkController {
                location: ControllerHelper.getFieldValue(locationEl),
                date: ControllerHelper.getFieldValue(dateEl),
                times: time ? [time] : [],
+               enclosure_name: ControllerHelper.getFieldValue(enclosureEl),
             };
          },
          validateForm: ({ talk, location, date, times }) => {

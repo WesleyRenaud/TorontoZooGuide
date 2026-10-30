@@ -46,7 +46,7 @@ def stub_guardians_talk_animal_links( monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       GuardiansTalkAnimalProvider,
       'fetch_linked_animals',
-      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ LION_LINK ] if talk_name == LION_TALK else [] )
 
 
 def Test_TalksWithoutMatchingAnimal_TestDeletedTalk_ExpectOnlyActiveMissingTalk(
@@ -154,7 +154,7 @@ def Test_TalksWithoutMatchingAnimal_TestLinkedAnimalMatch_ExpectEmpty(
    monkeypatch.setattr(
       GuardiansTalkAnimalProvider,
       'fetch_linked_animals',
-      lambda conn, talk_name: [ LION_SPECIES_EXHIBIT ] if talk_name == LION_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ LION_SPECIES_EXHIBIT ] if talk_name == LION_TALK else [] )
    animal = AnimalDiff(
       species=LION_SPECIES_EXHIBIT.species,
       exhibit=LION_SPECIES_EXHIBIT.exhibit,
@@ -214,7 +214,7 @@ def Test_IsRequiredForTalk_TestMissingLinkedAnimal_ExpectTrue(
    monkeypatch.setattr(
       GuardiansTalkAnimalProvider,
       'fetch_linked_animals',
-      lambda conn, talk_name: [] )
+      lambda conn, talk_name, **_kwargs: [] )
    talk = GuardiansTalkDiff(
       name=ZEBRA_TALK,
       is_deleted=False,

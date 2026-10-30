@@ -16,13 +16,18 @@ class ScheduledOccurrenceBuilder():
          talk: GuardiansTalk | None,
          *,
          start_time_override: Types.ScheduleTimeKey = None,
-         end_time_override: Types.ScheduleTimeKey = None ) -> GuardiansTalkDiff:
+         end_time_override: Types.ScheduleTimeKey = None,
+         enclosure_name: str ) -> GuardiansTalkDiff:
+      resolved_enclosure_name = (
+         talk.enclosure_name if talk is not None else enclosure_name )
+
       if talk is None:
          return GuardiansTalkDiff(
             name=name,
             is_deleted=True,
             start_time=start_time_override,
-            end_time=end_time_override )
+            end_time=end_time_override,
+            enclosure_name=resolved_enclosure_name )
 
       scheduled_end_time = DateValues.add_minutes_to_time(
          talk.start_time,
@@ -33,7 +38,8 @@ class ScheduledOccurrenceBuilder():
          is_deleted=False,
          start_time=start_time_override or talk.start_time,
          end_time=end_time_override or scheduled_end_time,
-         location=talk.location )
+         location=talk.location,
+         enclosure_name=resolved_enclosure_name )
 
 
    @classmethod

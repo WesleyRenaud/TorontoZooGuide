@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.guardians.data_access.guardians_talk_schedule_name_provider import GuardiansTalkScheduleNameProvider
+from api.guardians.domain.guardians_talk_option import GuardiansTalkOption
 
 
 TODAY = '2026-09-16'
@@ -17,6 +18,7 @@ GUARDIANS_TALK_SCHEDULE_SCHEMA = """
 CREATE TABLE GuardiansTalkSchedule (
    TALK_NAME           TEXT NOT NULL,
    LOCATION            TEXT NOT NULL,
+   ENCLOSURE_NAME      TEXT,
    SCHEDULE_START_DATE TEXT NOT NULL,
    SCHEDULE_END_DATE   TEXT,
    TALK_TIME           TEXT NOT NULL,
@@ -43,20 +45,23 @@ def _insert_schedule(
       location: str,
       start_date: str,
       end_date: str | None,
-      talk_time: str = '11:00 AM' ) -> None:
+      talk_time: str = '11:00 AM',
+      enclosure_name: str | None = None ) -> None:
    conn.execute(
       """   INSERT INTO GuardiansTalkSchedule (
                TALK_NAME,
                LOCATION,
+               ENCLOSURE_NAME,
                SCHEDULE_START_DATE,
                SCHEDULE_END_DATE,
                TALK_TIME
             )
-            VALUES ( ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ? );
       """,
       (
          talk_name,
          location,
+         enclosure_name,
          start_date,
          end_date,
          talk_time,
@@ -101,7 +106,44 @@ def Test_FetchScheduledTalkNames_TestCurrentAndFuture_ExpectDistinctSortedTalks(
       TODAY,
       AFRICA )
 
-   assert scheduled_talk_names == [ LION, TIGER ]
+   assert scheduled_talk_names == [
+      GuardiansTalkOption( name=LION ),
+      GuardiansTalkOption( name=TIGER ),
+   ]
+
+
+def Test_FetchScheduledTalkNames_TestSameTalkName_ExpectEnclosureNames(
+      guardians_talk_schedule_name_conn: sqlite3.Connection ) -> None:
+   talk_name = 'Masai Giraffe'
+   giraffe_house = 'Giraffe House'
+   outdoor = 'Outdoor'
+
+   _insert_schedule(
+      guardians_talk_schedule_name_conn,
+      talk_name=talk_name,
+      location=AFRICA,
+      start_date='2026-09-01',
+      end_date='2026-09-30',
+      enclosure_name=outdoor )
+   _insert_schedule(
+      guardians_talk_schedule_name_conn,
+      talk_name=talk_name,
+      location=AFRICA,
+      start_date='2026-09-01',
+      end_date='2026-09-30',
+      talk_time='2:00 PM',
+      enclosure_name=giraffe_house )
+
+   scheduled_talk_names = GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
+      guardians_talk_schedule_name_conn,
+      TODAY,
+      AFRICA )
+
+   assert scheduled_talk_names == [
+      GuardiansTalkOption(
+         name=talk_name,
+         enclosure_names=[ giraffe_house, outdoor ] ),
+   ]
 
 
 def Test_FetchScheduledTalkNames_TestExpired_ExpectExcluded(

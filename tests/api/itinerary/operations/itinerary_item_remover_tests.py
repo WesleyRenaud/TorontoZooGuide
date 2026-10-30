@@ -446,7 +446,7 @@ def Test_Apply_TestGuardiansTalkKey_ExpectDeleteTalkCalled(
    monkeypatch.setattr(
       RemoveItineraryItemProvider,
       'delete_itinerary_guardians_talk',
-      lambda cur, *, talk_name: calls.append( talk_name ) )
+      lambda cur, *, talk_name, enclosure_name=None: calls.append( talk_name ) )
    cur = remover_conn.cursor()
 
    result = ItineraryItemRemover.apply( cur, key )

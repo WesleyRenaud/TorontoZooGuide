@@ -315,7 +315,7 @@ def Test_Commit_TestUnscheduleGuardiansTalk_ExpectCoveredAnimalsRestored(
    monkeypatch.setattr(
       GuardiansTalkAnimalCoverer,
       'restore_after_removed',
-      lambda cur, conn, *, talk_name, talk_block, animal_rows: restored )
+      lambda cur, conn, *, talk_name, talk_block, animal_rows, enclosure_name=None: restored )
    monkeypatch.setattr(
       GuestScheduleShiftApplier,
       'apply_for_unschedule',

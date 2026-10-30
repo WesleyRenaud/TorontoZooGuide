@@ -33,12 +33,14 @@ def _saved_guardians_talk(
       talk_name: str,
       start_time: str | None = None,
       end_time: str | None = None,
-      is_deleted: bool = False ) -> ItineraryGuardiansTalkRecord:
+      is_deleted: bool = False,
+      location: str = '' ) -> ItineraryGuardiansTalkRecord:
    return ItineraryGuardiansTalkRecord(
       talk_name=talk_name,
       start_time=start_time,
       end_time=end_time,
-      is_deleted=is_deleted )
+      is_deleted=is_deleted,
+      location=location )
 
 
 def Test_Build_TestMatchingSaved_ExpectTimesAndDeletedCopied() -> None:
@@ -56,6 +58,23 @@ def Test_Build_TestMatchingSaved_ExpectTimesAndDeletedCopied() -> None:
    assert result[ Position.FIRST ].start_time == SAVED_START
    assert result[ Position.FIRST ].end_time == SAVED_END
    assert result[ Position.FIRST ].is_deleted is True
+
+
+def Test_Build_TestMatchingLocation_ExpectTimesCopied() -> None:
+   talk = _guardians_talk( LION_TALK )
+   saved = [
+      _saved_guardians_talk(
+         talk_name=LION_TALK,
+         start_time=SAVED_START,
+         end_time=SAVED_END,
+         location=talk.location ),
+   ]
+
+   result = ItineraryGuardiansTalksBuilder.build( [ talk ], saved )
+
+   assert result[ Position.FIRST ].start_time == SAVED_START
+   assert result[ Position.FIRST ].end_time == SAVED_END
+   assert result[ Position.FIRST ].location == talk.location
 
 
 def Test_Build_TestNoMatch_ExpectUnchanged() -> None:

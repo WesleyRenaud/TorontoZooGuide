@@ -106,6 +106,7 @@ export class ConsoleStrings {
       speciesSearch: 'Search for a species',
       startDate: 'Select a start date',
       talk: 'Select a talk',
+      enclosure: 'Select an enclosure',
       time: 'Select a time',
       type: 'Select a type',
       update: 'Select an update',

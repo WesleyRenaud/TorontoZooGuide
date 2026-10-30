@@ -20,3 +20,4 @@ class GuardiansTalkScheduleInput:
    saturday: bool
    sunday: bool
    message: str
+   enclosure_name: str | None = None

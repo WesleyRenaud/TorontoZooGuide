@@ -29,7 +29,8 @@ def Test_Build_TestProvidedEndDate_ExpectMappedScheduleEndInput() -> None:
       talk=TALK_NAME,
       location=TALK_LOCATION,
       schedule_end_date=SCHEDULE_END_DATE,
-      talk_time=TALK_TIME )
+      talk_time=TALK_TIME,
+      enclosure_name=None )
 
    assert schedule_end_input.talk_name == TALK_NAME
    assert schedule_end_input.location == TALK_LOCATION
@@ -46,6 +47,7 @@ def Test_Build_TestMissingEndDate_ExpectTodayDefault(
       talk=TALK_NAME,
       location=TALK_LOCATION,
       schedule_end_date=None,
-      talk_time=TALK_TIME )
+      talk_time=TALK_TIME,
+      enclosure_name=None )
 
    assert schedule_end_input.schedule_end_date == FROZEN_TODAY.isoformat()

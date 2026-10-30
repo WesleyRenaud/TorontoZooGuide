@@ -16,12 +16,14 @@ class GuardiansTalkItineraryValidator():
          talk: GuardiansTalk | None,
          *,
          start_time_override: Types.ScheduleTimeKey = None,
-         end_time_override: Types.ScheduleTimeKey = None ) -> GuardiansTalkDiff:
+         end_time_override: Types.ScheduleTimeKey = None,
+         enclosure_name: str ) -> GuardiansTalkDiff:
       return ScheduledOccurrenceBuilder.guardians_talk(
          name,
          talk,
          start_time_override=start_time_override,
-         end_time_override=end_time_override )
+         end_time_override=end_time_override,
+         enclosure_name=enclosure_name )
 
 
    @classmethod
@@ -35,7 +37,8 @@ class GuardiansTalkItineraryValidator():
          talk = GuardiansTalkDayScheduleFinder.find_on_day_schedule(
             day_schedule,
             talk_input.name,
-            start_time=talk_input.start_time )
+            start_time=talk_input.start_time,
+            enclosure_name=talk_input.enclosure_name )
          name = talk.name if talk is not None else talk_input.name
 
          diffs.append(
@@ -43,7 +46,8 @@ class GuardiansTalkItineraryValidator():
                name,
                talk,
                start_time_override=talk_input.start_time,
-               end_time_override=talk_input.end_time )
+               end_time_override=talk_input.end_time,
+               enclosure_name=talk_input.enclosure_name )
          )
 
       return diffs

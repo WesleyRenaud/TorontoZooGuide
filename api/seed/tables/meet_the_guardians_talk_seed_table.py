@@ -8,6 +8,7 @@ from ...types import Types
 RECORD_FIELDS = [
    'name',
    'location',
+   'enclosure_name',
    'x_coord',
    'y_coord',
    'maximum_duration',
@@ -16,6 +17,7 @@ RECORD_FIELDS = [
 DB_COLUMNS = [
    'NAME',
    'LOCATION',
+   'ENCLOSURE_NAME',
    'X_COORD',
    'Y_COORD',
    'MAXIMUM_DURATION',

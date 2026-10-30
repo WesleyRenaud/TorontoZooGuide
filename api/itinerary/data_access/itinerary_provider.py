@@ -179,7 +179,9 @@ class ItineraryProvider():
                   TALK_NAME,
                   START_TIME,
                   END_TIME,
-                  IS_DELETED
+                  IS_DELETED,
+                  LOCATION,
+                  ENCLOSURE_NAME
                FROM ItineraryGuardiansTalk;
          """ ).fetchall()
 

@@ -722,13 +722,16 @@ test('Test_NormalizeGuardiansTalkForSave_TestWhitespace_ExpectTrimmed', () => {
       name: `  ${name}  `,
       start_time: ` ${startTime} `,
       end_time: ` ${endTime} `,
-      location: 'ignored',
+      location: '  Africa Savanna  ',
+      enclosure_name: '  Outdoor  ',
    };
 
    const saved = ItineraryItemFormatter.normalizeGuardiansTalkForSave(talk);
 
    assert.deepEqual(saved, {
       name,
+      location: 'Africa Savanna',
+      enclosure_name: 'Outdoor',
       start_time: startTime,
       end_time: endTime,
    });

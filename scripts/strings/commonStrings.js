@@ -101,6 +101,7 @@ export class CommonStrings {
       scheduleStartDate: 'Schedule start date',
       startDate: 'Start date',
       talkName: 'Talk name',
+      enclosure: 'Enclosure',
       talkTimeEveryDay: 'Talk time for every day',
       talkTime: 'Talk time',
       time: 'Time',

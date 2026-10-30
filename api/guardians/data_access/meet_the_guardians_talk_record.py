@@ -12,3 +12,4 @@ class MeetTheGuardiansTalkRecord:
    x_coord: Types.Coordinate
    y_coord: Types.Coordinate
    maximum_duration: int | None
+   enclosure_name: str | None = None

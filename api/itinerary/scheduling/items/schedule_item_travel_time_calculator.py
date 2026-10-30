@@ -118,11 +118,13 @@ class ScheduleItemTravelTimeCalculator():
          cls,
          talk_name: str,
          *,
-         location: str = '' ) -> str | None:
+         location: str = '',
+         enclosure_name: str | None ) -> str | None:
       return cls._walk_node_id_for_map_location(
          MapLocationKind.GUARDIANS_TALK,
          talk_name,
-         location=location )
+         location=location,
+         enclosure_name=enclosure_name )
 
 
    @classmethod
@@ -140,11 +142,13 @@ class ScheduleItemTravelTimeCalculator():
          kind: MapLocationKind,
          name: str,
          *,
-         location: str = '' ) -> str | None:
+         location: str = '',
+         enclosure_name: str | None = '' ) -> str | None:
       walk_node = MapLocationWalkNodeLookup.for_map_location(
          kind,
          name,
-         location=location )
+         location=location,
+         enclosure_name=enclosure_name )
 
       if walk_node is None:
          return None
@@ -243,7 +247,8 @@ class ScheduleItemTravelTimeCalculator():
             end_time=talk.end_time,
             walk_node_id=cls.walk_node_id_for_guardians_talk(
                talk.name,
-               location=talk.location or '' ) )
+               location=talk.location,
+               enclosure_name=talk.enclosure_name ) )
 
       for encounter in itinerary.wild_encounters:
          if encounter.is_deleted:

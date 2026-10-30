@@ -27,6 +27,11 @@ class MapLocationWalkNodeLookup():
          kind: MapLocationKind,
          name: str,
          *,
-         location: str = '' ) -> MapLocationWalkNode | None:
+         location: str = '',
+         enclosure_name: str | None = '' ) -> MapLocationWalkNode | None:
       return cls.by_key().get(
-         MapLocationKey.for_kind( kind, name, location=location ) )
+         MapLocationKey.for_kind(
+            kind,
+            name,
+            location=location,
+            enclosure_name=enclosure_name ) )

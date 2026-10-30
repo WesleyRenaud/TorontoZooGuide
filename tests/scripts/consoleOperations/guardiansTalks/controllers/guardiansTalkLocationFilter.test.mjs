@@ -213,3 +213,63 @@ test('Test_CreateGuardiansTalkLocationFilterController_TestNonSelectAndErrors_Ex
       ConsoleDropdownPopulator.populateGuardiansTalkDropdown = originalPopulateTalks;
    }
 });
+
+
+test('Test_CreateGuardiansTalkLocationFilterController_TestDuplicateTalkNames_ExpectEnclosureChoices', async () => {
+   const locationEl = document.createElement('select');
+   const talkNameEl = document.createElement('select');
+   const enclosureEl = document.createElement('select');
+   const enclosureFieldEl = document.createElement('div');
+
+   enclosureFieldEl.className = 'console-operations-field';
+   enclosureFieldEl.appendChild(enclosureEl);
+   locationEl.value = 'Africa Savanna';
+
+   const controller = GuardiansTalkLocationFilter.createGuardiansTalkLocationFilterController({
+      locationEl,
+      talkNameEl,
+      enclosureEl,
+      loadTalks: async () => ({
+         guardians_talks: [
+            { name: 'Masai Giraffe', enclosure_names: ['Giraffe House', 'Outdoor'] },
+            { name: 'Greater One-Horned Rhinoceros', enclosure_names: ['Indoor'] },
+            { name: 'African Lion', enclosure_names: [] },
+         ],
+      }),
+   });
+
+   await controller.refresh();
+
+   assert.deepEqual(
+      talkNameEl.children.slice(1).map(option => option.value),
+      ['African Lion', 'Greater One-Horned Rhinoceros', 'Masai Giraffe']
+   );
+   assert.equal(enclosureEl.disabled, true);
+   assert.equal(enclosureFieldEl.classList.contains('is-invisible'), true);
+
+   talkNameEl.value = 'Masai Giraffe';
+   talkNameEl.dispatchEvent({ type: 'change' });
+
+   assert.equal(enclosureEl.disabled, false);
+   assert.equal(enclosureFieldEl.classList.contains('is-invisible'), false);
+   assert.equal(enclosureEl.value, '');
+   assert.deepEqual(
+      enclosureEl.children.slice(1).map(option => option.value),
+      ['Giraffe House', 'Outdoor']
+   );
+   assert.equal(enclosureEl.value, '');
+
+   talkNameEl.value = 'Greater One-Horned Rhinoceros';
+   talkNameEl.dispatchEvent({ type: 'change' });
+
+   assert.equal(enclosureEl.disabled, true);
+   assert.equal(enclosureEl.value, 'Indoor');
+   assert.equal(enclosureFieldEl.classList.contains('is-invisible'), true);
+
+   talkNameEl.value = 'African Lion';
+   talkNameEl.dispatchEvent({ type: 'change' });
+
+   assert.equal(enclosureEl.disabled, true);
+   assert.equal(enclosureEl.value, '');
+   assert.equal(enclosureFieldEl.classList.contains('is-invisible'), true);
+});

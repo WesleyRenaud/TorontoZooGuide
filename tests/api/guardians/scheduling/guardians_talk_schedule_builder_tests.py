@@ -25,7 +25,8 @@ def Test_Build_TestCustomMessage_ExpectMappedScheduleInput() -> None:
       friday=True,
       saturday=False,
       sunday=False,
-      message=CUSTOM_MESSAGE )
+      message=CUSTOM_MESSAGE,
+      enclosure_name=None )
 
    assert schedule_input.talk_name == TALK_NAME
    assert schedule_input.location == TALK_LOCATION
@@ -51,7 +52,8 @@ def Test_Build_TestMissingMessage_ExpectDefaultNotScheduledMessage() -> None:
       friday=False,
       saturday=False,
       sunday=False,
-      message='' )
+      message='',
+      enclosure_name=None )
 
    assert schedule_input.end_date is None
    assert TALK_NAME in schedule_input.message

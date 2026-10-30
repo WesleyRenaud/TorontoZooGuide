@@ -19,7 +19,9 @@ class GuardiansTalkOccurrenceProvider():
          talk_name: str,
          location: str,
          occurrence_date: Types.DateKey,
-         talk_time: str ) -> bool:
+         talk_time: str,
+         *,
+         enclosure_name: str ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -28,6 +30,7 @@ class GuardiansTalkOccurrenceProvider():
                   FROM GuardiansTalkOccurrence
                   WHERE TALK_NAME = ?
                      AND LOCATION = ?
+                     AND ENCLOSURE_NAME IS ?
                      AND OCCURRENCE_DATE = ?
                      AND TALK_TIME = ?
                   LIMIT 1;
@@ -35,6 +38,7 @@ class GuardiansTalkOccurrenceProvider():
             (
                talk_name,
                location,
+               enclosure_name,
                occurrence_date,
                talk_time,
             ) ).fetchone()
@@ -52,13 +56,16 @@ class GuardiansTalkOccurrenceProvider():
          talk_name: str,
          location: str,
          occurrence_date: Types.DateKey,
-         talk_time: str ) -> bool:
+         talk_time: str,
+         *,
+         enclosure_name: str ) -> bool:
       if cls.occurrence_record_exists(
             conn,
             talk_name,
             location,
             occurrence_date,
-            talk_time ):
+            talk_time,
+            enclosure_name=enclosure_name ):
          return True
 
       parsed_date = DateValues.parse_date_value( occurrence_date )
@@ -71,7 +78,8 @@ class GuardiansTalkOccurrenceProvider():
             talk_name=talk_name,
             location=location,
             talk_time=talk_time,
-            occurrence_date=occurrence_date ):
+            occurrence_date=occurrence_date,
+            enclosure_name=enclosure_name ):
          if GuardiansTalkWeekdayTimeResolver.includes_weekday(
                schedule_record,
                parsed_date.weekday() ):
@@ -92,16 +100,18 @@ class GuardiansTalkOccurrenceProvider():
             """   INSERT INTO GuardiansTalkOccurrence (
                      TALK_NAME,
                      LOCATION,
+                     ENCLOSURE_NAME,
                      OCCURRENCE_DATE,
                      TALK_TIME
                   )
-                  VALUES (?, ?, ?, ?)
-                  ON CONFLICT(TALK_NAME, LOCATION, OCCURRENCE_DATE, TALK_TIME)
+                  VALUES (?, ?, ?, ?, ?)
+                  ON CONFLICT(TALK_NAME, LOCATION, ENCLOSURE_NAME, OCCURRENCE_DATE, TALK_TIME)
                   DO NOTHING;
             """,
             (
                occurrence.talk_name,
                occurrence.location,
+               occurrence.enclosure_name,
                occurrence.occurrence_date,
                occurrence.talk_time,
             ) )
@@ -121,7 +131,8 @@ class GuardiansTalkOccurrenceProvider():
          location: str,
          *,
          start_date: Types.DateKey,
-         end_date: Types.DateKey ) -> list[ GuardiansTalkOccurrenceRecord ]:
+         end_date: Types.DateKey,
+         enclosure_name: str ) -> list[ GuardiansTalkOccurrenceRecord ]:
       cur = conn.cursor()
 
       try:
@@ -132,6 +143,7 @@ class GuardiansTalkOccurrenceProvider():
                   FROM GuardiansTalkOccurrence
                   WHERE TALK_NAME = ?
                      AND LOCATION = ?
+                     AND ENCLOSURE_NAME IS ?
                      AND OCCURRENCE_DATE >= ?
                      AND OCCURRENCE_DATE <= ?
                   ORDER BY OCCURRENCE_DATE, TALK_TIME;
@@ -139,6 +151,7 @@ class GuardiansTalkOccurrenceProvider():
             (
                talk_name,
                location,
+               enclosure_name,
                start_date,
                end_date,
             ) )
@@ -164,21 +177,24 @@ class GuardiansTalkOccurrenceProvider():
                      t.X_COORD,
                      t.Y_COORD,
                      t.MAXIMUM_DURATION,
-                     o.TALK_TIME
+                     o.TALK_TIME,
+                     t.ENCLOSURE_NAME
                   FROM MeetTheGuardiansTalk t
                   JOIN GuardiansTalkOccurrence o
                      ON t.NAME = o.TALK_NAME
                      AND t.LOCATION = o.LOCATION
+                     AND t.ENCLOSURE_NAME IS o.ENCLOSURE_NAME
                   WHERE o.OCCURRENCE_DATE = ?
                      AND NOT EXISTS (
                         SELECT 1
                         FROM GuardiansTalkCancellation c
                         WHERE c.TALK_NAME = o.TALK_NAME
                            AND c.LOCATION = o.LOCATION
+                           AND c.ENCLOSURE_NAME IS o.ENCLOSURE_NAME
                            AND c.CANCELLATION_DATE = o.OCCURRENCE_DATE
                            AND c.TALK_TIME = o.TALK_TIME
                      )
-                  ORDER BY o.TALK_TIME, t.NAME, t.LOCATION;
+                  ORDER BY o.TALK_TIME, t.NAME, t.LOCATION, t.ENCLOSURE_NAME;
             """,
             ( target_date, ) )
 

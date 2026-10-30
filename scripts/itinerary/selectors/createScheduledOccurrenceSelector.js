@@ -46,6 +46,12 @@ export class CreateScheduledOccurrenceSelector {
    subtitle,
    emptyText,
    getName = ScheduledOccurrenceSelectorFactory.getOccurrenceName,
+   getTitle = getName,
+   getImageName = getName,
+   getImageSrc = (row) => ScheduledOccurrencePresenter.buildOccurrenceDetailImageSrc(
+      imageDirectory,
+      getImageName(row)
+   ),
    getId = getName,
    getPrimaryValue,
    getTimeOfDay = (row) => ValueNormalizer.asTrimmedString(row?.start_time),
@@ -70,8 +76,9 @@ export class CreateScheduledOccurrenceSelector {
          getId,
          getLink,
          getName,
+         getImageName,
          getTimeOfDay,
-         buildImageSrc,
+         buildImageSrc: () => getImageSrc(row),
          buildSelectionFields,
       });
 
@@ -98,12 +105,12 @@ export class CreateScheduledOccurrenceSelector {
             getTimeOfDay),
 
          getId,
-         getTitle: (row) => getName(row) || defaultTitle,
+         getTitle: (row) => getTitle(row) || defaultTitle,
          getSubtitle: (row) => ScheduledOccurrencePresenter.buildOccurrenceSubtitle({
             primaryValue: getPrimaryValue(row),
             timeRange: ScheduledOccurrenceTimeModel.buildScheduledOccurrenceTimeRange(row),
          }),
-         getImageSrc: (row) => buildImageSrc(getName(row)),
+         getImageSrc,
          getInfoLink: () => null,
          onTitleClick: typeof getLink === 'function'
             ? (row) => {

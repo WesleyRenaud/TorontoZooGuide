@@ -194,18 +194,24 @@ class ScheduleItineraryItemProvider():
          talk_name: str,
          start_time: Types.ScheduleTimeKey,
          end_time: Types.ScheduleTimeKey,
-         is_deleted: bool = False ) -> bool:
+         enclosure_name: str,
+         is_deleted: bool = False,
+         location: str = '' ) -> bool:
       cur.execute(
          """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
                      TALK_NAME,
+                     LOCATION,
+                     ENCLOSURE_NAME,
                      START_TIME,
                      END_TIME,
                      IS_DELETED
                   )
-                  VALUES ( ?, ?, ?, ? );
+                  VALUES ( ?, ?, ?, ?, ?, ? );
             """,
             (
                talk_name,
+               location,
+               enclosure_name,
                DateValues.normalize_itinerary_schedule_time( start_time ),
                DateValues.normalize_itinerary_schedule_time( end_time ),
                is_deleted,
