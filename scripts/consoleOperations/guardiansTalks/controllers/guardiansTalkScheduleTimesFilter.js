@@ -6,11 +6,13 @@ export class GuardiansTalkScheduleTimesFilter {
    static createGuardiansTalkScheduleTimesFilterController({
       talkNameEl,
       locationEl,
+      enclosureEl,
       timesEl,
-      loadScheduleTimes = async ({ talk, location }) => {
+      loadScheduleTimes = async ({ talk, location, enclosure_name }) => {
          const result = await ConsoleOperationsClient.getGuardiansTalkScheduleTimes({
             talk,
             location,
+            enclosure_name,
          });
 
          return result?.times ?? [];
@@ -22,7 +24,10 @@ export class GuardiansTalkScheduleTimesFilter {
       }
 
       function hasSelection() {
-         return Boolean(ControllerHelper.getFieldValue(talkNameEl) && ControllerHelper.getFieldValue(locationEl));
+         return Boolean(
+            ControllerHelper.getFieldValue(talkNameEl)
+            && ControllerHelper.getFieldValue(locationEl)
+         );
       }
 
       function renderTimesList(times = []) {
@@ -47,6 +52,7 @@ export class GuardiansTalkScheduleTimesFilter {
                ? await loadScheduleTimes?.({
                   talk: ControllerHelper.getFieldValue(talkNameEl),
                   location: ControllerHelper.getFieldValue(locationEl),
+                  enclosure_name: ControllerHelper.getFieldValue(enclosureEl),
                }) ?? []
                : [];
 

@@ -31,7 +31,7 @@ test('Test_CreateGuardiansTalkOccurrenceFilterController_TestSelectionValues_Exp
       });
       const selection = captured.getSelectionValues();
 
-      assert.deepEqual(selection, { talk, location });
+      assert.deepEqual(selection, { talk, location, enclosure_name: '' });
    } finally {
       OccurrenceFilterController.createOccurrenceFilterController = originalCreate;
       ScheduleTimesCheckboxField.resolveScheduleTimesListEl = originalResolve;

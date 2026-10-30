@@ -92,7 +92,9 @@ export class ScheduleTimeConflictContentBuilder {
    } = {}) {
       const row = ItineraryPanelHelper.el('div', 'animal-result itin-save-issue-conflict-row');
       const content = ResultRenderer.createSelectorRowContent({
-         imageSrc: ScheduleTimeConflictView.buildConflictItemImageSrc(item),
+         imageSrc: ScheduleConflictChecker.isGuardiansTalkConflictItem(item)
+            ? ScheduleTimeConflictView.buildGuardiansTalkConflictImageSrc(item)
+            : ScheduleTimeConflictView.buildWildEncounterConflictImageSrc(item),
          imageAlt: Strings.itinerary.itemImage(item.name),
          textColumnEl: ResultRenderer.createSelectorTextColumn({
             title: item.name,

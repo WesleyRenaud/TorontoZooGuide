@@ -8,17 +8,17 @@ from ...types import Types
 RECORD_FIELDS = [
    'talk_name',
    'location',
+   'enclosure_name',
    'species',
    'exhibit',
-   'enclosure_name',
 ]
 
 DB_COLUMNS = [
    'TALK_NAME',
    'LOCATION',
+   'ENCLOSURE_NAME',
    'SPECIES',
    'EXHIBIT',
-   'ENCLOSURE_NAME',
 ]
 
 DATA_FILE = 'guardians_talk_animal.json'

@@ -32,7 +32,9 @@ class GuardiansTalkWithoutAnimalWarningBuilder():
                animal_keys,
                linked_animals=GuardiansTalkAnimalProvider.fetch_linked_animals(
                   conn,
-                  talk.name ) ):
+                  talk.name,
+                  location=talk.location,
+                  enclosure_name=talk.enclosure_name ) ):
             continue
 
          missing_talks.append( talk )
@@ -103,7 +105,9 @@ class GuardiansTalkWithoutAnimalWarningBuilder():
          species_exhibit_pairs,
          linked_animals=GuardiansTalkAnimalProvider.fetch_linked_animals(
             conn,
-            talk.name ) )
+            talk.name,
+            location=talk.location,
+            enclosure_name=talk.enclosure_name ) )
 
 
    @classmethod

@@ -35,13 +35,14 @@ test('Test_CreateAddGuardiansTalkOccurrencePanel_TestWiring_ExpectShellOptions',
       assert.deepEqual(result, { panel: true });
       assert.equal(captured.panelId, 'addGuardiansTalkOccurrencePanel');
       assert.equal(captured.title, Strings.panelTitles.addGuardiansTalkOccurrence);
-      assert.equal(captured.bodyChildren.length, 6);
+      assert.equal(captured.bodyChildren.length, 7);
       assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'addGuardiansTalkOccurrenceLocation');
       assert.equal(captured.bodyChildren.at(Position.SECOND).inputId, 'addGuardiansTalkOccurrenceTalkName');
-      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'addGuardiansTalkOccurrenceDate');
-      assert.equal(captured.bodyChildren.at(Position.FOURTH).inputId, 'addGuardiansTalkOccurrenceTime');
-      assert.equal(captured.bodyChildren[4].submitId, 'submitAddGuardiansTalkOccurrence');
-      assert.equal(captured.bodyChildren[5].statusId, 'addGuardiansTalkOccurrenceStatus');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'addGuardiansTalkOccurrenceEnclosureName');
+      assert.equal(captured.bodyChildren[3].inputId, 'addGuardiansTalkOccurrenceDate');
+      assert.equal(captured.bodyChildren[4].inputId, 'addGuardiansTalkOccurrenceTime');
+      assert.equal(captured.bodyChildren[5].submitId, 'submitAddGuardiansTalkOccurrence');
+      assert.equal(captured.bodyChildren[6].statusId, 'addGuardiansTalkOccurrenceStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
       ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;

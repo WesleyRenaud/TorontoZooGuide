@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..coordinators.guardians_coordinator import GuardiansCoordinator
+from ..domain.guardians_talk_identity import GuardiansTalkIdentity
 from ...json_request_handler import JsonRequestHandler
 from ..scheduling.guardians_talk_map_schedule_collapser import GuardiansTalkMapScheduleCollapser
 from ...shared.api_error_response_applier import ApiErrorResponseApplier
@@ -52,7 +53,7 @@ class GuardiansController():
          location=location )
 
       handler._write_json( {
-         'guardians_talks': guardians_talks,
+         'guardians_talks': [ talk.to_dict() for talk in guardians_talks ],
       } )
 
 
@@ -66,7 +67,7 @@ class GuardiansController():
          location=location )
 
       handler._write_json( {
-         'guardians_talks': guardians_talks,
+         'guardians_talks': [ talk.to_dict() for talk in guardians_talks ],
       } )
 
 
@@ -85,10 +86,12 @@ class GuardiansController():
 
       talk = data.get( 'talk' )
       location = data.get( 'location' )
+      enclosure_name = GuardiansTalkIdentity.enclosure_name( data.get( 'enclosure_name' ) )
 
       occurrences = GuardiansCoordinator.get_guardians_talk_occurrences(
          talk=talk,
-         location=location )
+         location=location,
+         enclosure_name=enclosure_name )
 
       handler._write_json( {
          'occurrences': [ occurrence.to_dict() for occurrence in occurrences ],
@@ -129,6 +132,7 @@ class GuardiansController():
 
       talk = data.get( 'talk' )
       location = data.get( 'location' )
+      enclosure_name = GuardiansTalkIdentity.enclosure_name( data.get( 'enclosure_name' ) )
       schedule_start_date = data.get( 'startDate' )
       schedule_end_date = data.get( 'endDate' )
       schedule_rows = data.get( 'scheduleRows' )
@@ -140,7 +144,8 @@ class GuardiansController():
          start_date=schedule_start_date,
          end_date=schedule_end_date,
          message=message,
-         schedule_rows=schedule_rows )
+         schedule_rows=schedule_rows,
+         enclosure_name=enclosure_name )
 
       response = GuardiansController._guardians_talk_schedule_response(
          success=success,
@@ -163,6 +168,7 @@ class GuardiansController():
 
       talk = data.get( 'talk' )
       location = data.get( 'location' )
+      enclosure_name = GuardiansTalkIdentity.enclosure_name( data.get( 'enclosure_name' ) )
       schedule_start_date = data.get( 'startDate' )
       schedule_end_date = data.get( 'endDate' )
       schedule_rows = data.get( 'scheduleRows' )
@@ -174,7 +180,8 @@ class GuardiansController():
          start_date=schedule_start_date,
          end_date=schedule_end_date,
          message=message,
-         schedule_rows=schedule_rows )
+         schedule_rows=schedule_rows,
+         enclosure_name=enclosure_name )
 
       handler._write_json(
          GuardiansController._guardians_talk_schedule_response(
@@ -193,6 +200,7 @@ class GuardiansController():
 
       talk = data.get( 'talk' )
       location = data.get( 'location' )
+      enclosure_name = GuardiansTalkIdentity.enclosure_name( data.get( 'enclosure_name' ) )
       schedule_start_date = data.get( 'startDate' )
       schedule_end_date = data.get( 'endDate' )
       schedule_rows = data.get( 'scheduleRows' )
@@ -204,7 +212,8 @@ class GuardiansController():
          start_date=schedule_start_date,
          end_date=schedule_end_date,
          message=message,
-         schedule_rows=schedule_rows )
+         schedule_rows=schedule_rows,
+         enclosure_name=enclosure_name )
 
       handler._write_json(
          GuardiansController._guardians_talk_schedule_response(
@@ -223,9 +232,11 @@ class GuardiansController():
 
       talk = data.get( 'talk' )
       location = data.get( 'location' )
+      enclosure_name = GuardiansTalkIdentity.enclosure_name( data.get( 'enclosure_name' ) )
       schedule_times = GuardiansCoordinator.get_guardians_talk_schedule_times(
          talk=talk,
-         location=location )
+         location=location,
+         enclosure_name=enclosure_name )
 
       handler._write_json( {
          'talk': talk,
@@ -240,6 +251,7 @@ class GuardiansController():
 
       talk = data.get( 'talk' )
       location = data.get( 'location' )
+      enclosure_name = GuardiansTalkIdentity.enclosure_name( data.get( 'enclosure_name' ) )
       schedule_end_date = data.get( 'endDate' )
       talk_times = data.get( 'times' )
 
@@ -247,7 +259,8 @@ class GuardiansController():
          talk=talk,
          location=location,
          schedule_end_date=schedule_end_date,
-         talk_times=talk_times )
+         talk_times=talk_times,
+         enclosure_name=enclosure_name )
 
       response = {
          'success': success,
@@ -269,6 +282,7 @@ class GuardiansController():
 
       talk = data.get( 'talk' )
       location = data.get( 'location' )
+      enclosure_name = GuardiansTalkIdentity.enclosure_name( data.get( 'enclosure_name' ) )
       date = data.get( 'date' )
       talk_times = data.get( 'times' )
 
@@ -276,7 +290,8 @@ class GuardiansController():
          talk=talk,
          location=location,
          date=date,
-         talk_times=talk_times )
+         talk_times=talk_times,
+         enclosure_name=enclosure_name )
 
       response = {
          'success': success,
@@ -298,13 +313,15 @@ class GuardiansController():
 
       talk = data.get( 'talk' )
       location = data.get( 'location' )
+      enclosure_name = GuardiansTalkIdentity.enclosure_name( data.get( 'enclosure_name' ) )
       date = data.get( 'date' )
       talk_times = data.get( 'times' )
       success, failure = GuardiansCoordinator.add_guardians_talk_occurrence(
          talk=talk,
          location=location,
          date=date,
-         talk_times=talk_times )
+         talk_times=talk_times,
+         enclosure_name=enclosure_name )
 
       response = {
          'success': success,

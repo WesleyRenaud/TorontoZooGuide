@@ -25,7 +25,9 @@ class GuardiansTalkLoopSchedulePinResolver():
 
       linked_animals = GuardiansTalkAnimalProvider.fetch_animal_links(
          conn,
-         guardians_talk.name )
+         guardians_talk.name,
+         location=guardians_talk.location,
+         enclosure_name=guardians_talk.enclosure_name )
       loops_by_id = MasterRouteProvider.loops_by_id()
 
       for loop_id, master_route_loop in loops_by_id.items():

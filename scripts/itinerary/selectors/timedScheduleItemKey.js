@@ -5,18 +5,31 @@ import { Position } from '../../shared/enums/position.js';
 export class TimedScheduleItemKey {
    static NAME_FIELDS = ['name'];
 
-   constructor(name = '', startTime = '', endTime = '') {
+   constructor(name = '', startTime = '', endTime = '', enclosureName = '') {
       this.name = ValueNormalizer.asTrimmedString(name);
       this.startTime = ValueNormalizer.asTrimmedString(startTime);
       this.endTime = ValueNormalizer.asTrimmedString(endTime);
+      this.enclosureName = ValueNormalizer.asTrimmedString(enclosureName);
       Object.freeze(this);
    }
 
    static fromWire(wire) {
-      const parts = ValueNormalizer.asTrimmedString(wire).split(
-         ScheduleItemKeySeparator.VALUE,
-         3
-      );
+      let parts = ValueNormalizer.asTrimmedString(wire).split(ScheduleItemKeySeparator.VALUE);
+      let enclosureName = '';
+
+      if (parts.length >= 4) {
+         const endPart = parts[Position.THIRD];
+         enclosureName = ValueNormalizer.asTrimmedString(parts[Position.FOURTH]);
+
+         if (endPart !== '' && !ValueNormalizer.asTrimmedString(endPart)) {
+            return null;
+         }
+
+         parts = ValueNormalizer.asTrimmedString(endPart)
+            ? parts.slice(0, 3)
+            : parts.slice(0, 2);
+      }
+
       const name = ValueNormalizer.asTrimmedString(parts[Position.FIRST]);
 
       if (!name || parts.length < 2) {
@@ -36,10 +49,10 @@ export class TimedScheduleItemKey {
             return null;
          }
 
-         return new this(name, startTime, endTime);
+         return new this(name, startTime, endTime, enclosureName);
       }
 
-      return new this(name, startTime);
+      return new this(name, startTime, '', enclosureName);
    }
 
    static fromRow(row) {
@@ -53,10 +66,21 @@ export class TimedScheduleItemKey {
          return null;
       }
 
-      return new this(name, startTime, endTime);
+      return new this(
+         name,
+         startTime,
+         endTime,
+         ValueNormalizer.asTrimmedString(row?.enclosure_name)
+      );
    }
 
    toWire() {
+      if (this.enclosureName) {
+         return [this.name, this.startTime, this.endTime, this.enclosureName].join(
+            ScheduleItemKeySeparator.VALUE
+         );
+      }
+
       const parts = [this.name, this.startTime];
 
       if (this.endTime) {
@@ -70,6 +94,7 @@ export class TimedScheduleItemKey {
       return other?.constructor === this.constructor
          && this.name === other.name
          && this.startTime === other.startTime
-         && this.endTime === other.endTime;
+         && this.endTime === other.endTime
+         && this.enclosureName === other.enclosureName;
    }
 }

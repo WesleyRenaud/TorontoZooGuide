@@ -19,9 +19,10 @@ CANCELLATION_PROVIDER_SCHEMA = """
 CREATE TABLE GuardiansTalkCancellation (
    TALK_NAME         TEXT NOT NULL,
    LOCATION          TEXT NOT NULL,
+   ENCLOSURE_NAME    TEXT,
    CANCELLATION_DATE DATE NOT NULL,
    TALK_TIME         TEXT NOT NULL,
-   PRIMARY KEY ( TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME )
+   PRIMARY KEY ( TALK_NAME, LOCATION, ENCLOSURE_NAME, CANCELLATION_DATE, TALK_TIME )
 );
 """
 
@@ -40,12 +41,14 @@ def cancellation_provider_conn() -> sqlite3.Connection:
 def _cancellation_input(
       *,
       cancellation_date: str = CANCELLATION_DATE,
-      talk_time: str = TALK_TIME ) -> GuardiansTalkCancellationInput:
+      talk_time: str = TALK_TIME,
+      enclosure_name: str | None = None ) -> GuardiansTalkCancellationInput:
    return GuardiansTalkCancellationInput(
       talk_name=TALK_NAME,
       location=LOCATION,
       cancellation_date=cancellation_date,
-      talk_time=talk_time )
+      talk_time=talk_time,
+      enclosure_name=enclosure_name )
 
 
 def _insert_cancellation(
@@ -57,8 +60,8 @@ def _insert_cancellation(
       location: str = LOCATION ) -> None:
    conn.execute(
       """   INSERT INTO GuardiansTalkCancellation (
-               TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME
-            ) VALUES ( ?, ?, ?, ? );
+               TALK_NAME, LOCATION, ENCLOSURE_NAME, CANCELLATION_DATE, TALK_TIME
+            ) VALUES ( ?, ?, NULL, ?, ? );
       """,
       ( talk_name, location, cancellation_date, talk_time ),
    )
@@ -69,7 +72,8 @@ def Test_FetchCancellationRecords_TestEmpty_ExpectEmptyList(
    cancellation_records = GuardiansTalkCancellationProvider.fetch_cancellation_records(
       cancellation_provider_conn,
       TALK_NAME,
-      LOCATION )
+      LOCATION,
+      enclosure_name=None )
 
    assert cancellation_records == []
 
@@ -90,7 +94,8 @@ def Test_FetchCancellationRecords_TestMatchingTalk_ExpectMappedRecords(
    records = GuardiansTalkCancellationProvider.fetch_cancellation_records(
       cancellation_provider_conn,
       TALK_NAME,
-      LOCATION )
+      LOCATION,
+      enclosure_name=None )
 
    assert [
       ( record.cancellation_date, record.talk_time )
@@ -108,7 +113,8 @@ def Test_FetchOccurrenceIsCancelled_TestMissing_ExpectFalse(
       TALK_NAME,
       LOCATION,
       CANCELLATION_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert occurrence_is_cancelled is False
 
@@ -123,7 +129,8 @@ def Test_FetchOccurrenceIsCancelled_TestMatching_ExpectTrue(
       TALK_NAME,
       LOCATION,
       CANCELLATION_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert occurrence_is_cancelled is True
 
@@ -138,7 +145,8 @@ def Test_FetchOccurrenceIsCancelled_TestDifferentTime_ExpectFalse(
       TALK_NAME,
       LOCATION,
       CANCELLATION_DATE,
-      SECOND_TALK_TIME )
+      SECOND_TALK_TIME,
+      enclosure_name=None )
 
    assert occurrence_is_cancelled is False
 
@@ -156,7 +164,8 @@ def Test_SaveCancellation_TestNewRow_ExpectTrueAndPersisted(
       TALK_NAME,
       LOCATION,
       CANCELLATION_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert occurrence_is_cancelled is True
 
@@ -165,10 +174,10 @@ def Test_SaveCancellation_TestDuplicate_ExpectFalse(
       cancellation_provider_conn: sqlite3.Connection ) -> None:
    GuardiansTalkCancellationProvider.save_cancellation(
       cancellation_provider_conn,
-      _cancellation_input() )
+      _cancellation_input( enclosure_name='Outdoor' ) )
 
    result = GuardiansTalkCancellationProvider.save_cancellation(
       cancellation_provider_conn,
-      _cancellation_input() )
+      _cancellation_input( enclosure_name='Outdoor' ) )
 
    assert result is False

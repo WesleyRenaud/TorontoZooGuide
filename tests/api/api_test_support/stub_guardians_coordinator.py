@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from api.guardians.domain.guardians_talk_option import GuardiansTalkOption
 from api.models.guardians_talk import GuardiansTalk
 from api.models.scheduled_occurrence import ScheduledOccurrence
 from api.shared.api_operation_failure import ApiOperationFailure
@@ -19,7 +20,7 @@ class StubGuardiansCoordinator():
          guardians_talks: list[ GuardiansTalk ],
          guardians_talk_locations: list[ str ],
          guardians_talk_names: list[ str ],
-         guardians_talk_names_at_location: list[ str ],
+         guardians_talk_names_at_location: list[ GuardiansTalkOption ],
          guardians_talk_occurrences: list[ ScheduledOccurrence ],
          guardians_talk_schedule_times: list[ str ] ) -> None:
       self.guardians_talks = guardians_talks
@@ -69,7 +70,7 @@ class StubGuardiansCoordinator():
    def get_guardians_talk_names_at_location(
          self,
          *,
-         location: str ) -> list[ str ]:
+         location: str ) -> list[ GuardiansTalkOption ]:
       self.calls.append(
          (
             'get_guardians_talk_names_at_location',
@@ -82,7 +83,7 @@ class StubGuardiansCoordinator():
    def get_guardians_talk_schedule_options(
          self,
          *,
-         location: str ) -> list[ str ]:
+         location: str ) -> list[ GuardiansTalkOption ]:
       self.calls.append(
          (
             'get_guardians_talk_schedule_options',
@@ -101,13 +102,15 @@ class StubGuardiansCoordinator():
          self,
          *,
          talk: str,
-         location: str ) -> list[ ScheduledOccurrence ]:
+         location: str,
+         enclosure_name: str ) -> list[ ScheduledOccurrence ]:
       self.calls.append(
          (
             'get_guardians_talk_occurrences',
             {
                'talk': talk,
                'location': location,
+               'enclosure_name': enclosure_name,
             }
          )
       )
@@ -133,13 +136,15 @@ class StubGuardiansCoordinator():
          self,
          *,
          talk: str,
-         location: str ) -> list[ str ]:
+         location: str,
+         enclosure_name: str ) -> list[ str ]:
       self.calls.append(
          (
             'get_guardians_talk_schedule_times',
             {
                'talk': talk,
                'location': location,
+               'enclosure_name': enclosure_name,
             }
          )
       )

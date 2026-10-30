@@ -124,21 +124,24 @@ export class ItineraryPanelRowsBuilder {
       guardiansTalks = [],
       { onRemoveItem = null } = {}
    ) {
-      return RowBuilder.buildNamedRows(guardiansTalks, {
+      return RowBuilder.buildRows(guardiansTalks, {
          normalizeItem: ItineraryItemFormatter.normalizeTalk,
          prepareItems: ScheduledOccurrenceSorter.sortScheduledOccurrencesByStartTime,
-         defaultName: Strings.entityLabels.guardiansTalk,
-         imageDirectory: 'guardians-talks',
-         getName: GuardiansTalkSelectorModel.getGuardiansTalkName,
-         getImageName: GuardiansTalkSelectorModel.getGuardiansTalkName,
-         getNameSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
-         getMetaLines: (talk) => [
-            RowPresenter.buildFieldLine(Strings.labels.location, talk.location),
-            RowPresenter.buildScheduledTimeFieldLine(talk),
-         ],
-         getAlertLine: RowAlertPresenter.buildGuardiansRemovalReasonLine,
-         getLink: (talk) => talk.link,
-         extendRowProps: (talk) => ({
+         buildRowProps: (talk) => ({
+            name: GuardiansTalkSelectorModel.getGuardiansTalkDisplayName(talk)
+               || Strings.entityLabels.guardiansTalk,
+            nameSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix(talk),
+            imageSrc: RowPresenter.buildImageSrc(
+               'guardians-talks',
+               talk.location,
+               GuardiansTalkSelectorModel.getGuardiansTalkName(talk)
+            ),
+            metaLines: RowPresenter.buildMetaLines([
+               RowPresenter.buildFieldLine(Strings.labels.location, talk.location),
+               RowPresenter.buildScheduledTimeFieldLine(talk),
+            ]),
+            alertLine: RowAlertPresenter.buildGuardiansRemovalReasonLine(talk),
+            ...RowPresenter.buildLinkRowProps(talk.link),
             ...(
                GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal(talk)
                   ? {

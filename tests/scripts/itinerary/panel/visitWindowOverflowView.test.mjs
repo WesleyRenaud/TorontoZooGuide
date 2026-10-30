@@ -12,6 +12,7 @@ import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
 const talkItem = {
    name: 'African Lion',
+   location: 'Africa Savanna',
    item_type: ItinerarySaveIssueItemType.GUARDIANS_TALK,
    start_time: '10:00 AM',
    end_time: '10:30 AM',
@@ -26,7 +27,7 @@ test('Test_BuildItemImageSrc_TestTalk_ExpectPath', () => {
 
    assert.equal(
       src,
-      `images/details/guardians-talks/${AssetKeyNormalizer.normalize(talkItem.name)}.png`
+      `images/details/guardians-talks/${AssetKeyNormalizer.normalize(talkItem.location)}/${AssetKeyNormalizer.normalize(talkItem.name)}.png`
    );
 });
 
@@ -115,6 +116,10 @@ test('Test_ImageDirectoryForItem_TestAttraction_ExpectAttractions', () => {
    const directory = VisitWindowOverflowView.imageDirectoryForItem(item);
 
    assert.equal(directory, 'attractions');
+   assert.equal(
+      VisitWindowOverflowView.buildItemImageSrc({ ...item, name: 'Carousel' }),
+      'images/details/attractions/carousel.png'
+   );
 });
 
 

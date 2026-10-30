@@ -11,6 +11,7 @@ export class GuardiansTalkTooltipRenderer {
 
    static createCard(t, index) {
       const name = t.name || Strings.entityLabels.guardiansTalk;
+      const location = AssetKeyNormalizer.normalize(t.location);
       const normalizedName = AssetKeyNormalizer.normalize(name);
       const times = MapOccurrenceTimesFormatter.format(t);
       const linkedAnimal = GuardiansTalkLinkedAnimalOpener.getGuardiansTalkLinkedAnimal(t);
@@ -30,7 +31,7 @@ export class GuardiansTalkTooltipRenderer {
       return CardFactory.createTooltipCard({
          index,
          image: {
-            src: `images/details/guardians-talks/${normalizedName}.png`,
+            src: `images/details/guardians-talks/${location}/${normalizedName}.png`,
             alt: t.name || name,
             fallbackSrc: 'images/icons/guardians-talk/guardians-talk.png',
          },

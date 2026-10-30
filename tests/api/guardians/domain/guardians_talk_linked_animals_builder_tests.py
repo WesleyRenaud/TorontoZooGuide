@@ -62,7 +62,8 @@ def Test_Attach_TestLinkedTalks_ExpectMappedLinkedAnimals(
 
    def fetch_animal_links(
          _conn: Types.Connection,
-         talk_name: str ) -> list[ GuardiansTalkAnimalRecord ]:
+         talk_name: str,
+         **_kwargs: object ) -> list[ GuardiansTalkAnimalRecord ]:
       return links_by_talk.get( talk_name, [] )
 
    monkeypatch.setattr(

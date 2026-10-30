@@ -14,7 +14,8 @@ def Test_Build_TestOccurrencePayload_ExpectMappedOccurrenceInput() -> None:
       talk=TALK_NAME,
       location=TALK_LOCATION,
       date=OCCURRENCE_DATE,
-      time=TALK_TIME )
+      time=TALK_TIME,
+      enclosure_name=None )
 
    assert occurrence_input.talk_name == TALK_NAME
    assert occurrence_input.location == TALK_LOCATION

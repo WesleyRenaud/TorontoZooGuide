@@ -11,9 +11,12 @@ class GuardiansTalkCancellationBuilder():
          talk: str,
          location: str,
          date: Types.DateKey,
-         time: str ) -> GuardiansTalkCancellationInput:
+         time: str,
+         *,
+         enclosure_name: str ) -> GuardiansTalkCancellationInput:
       return GuardiansTalkCancellationInput(
          talk_name=talk,
          location=location,
          cancellation_date=date,
-         talk_time=time )
+         talk_time=time,
+         enclosure_name=enclosure_name )

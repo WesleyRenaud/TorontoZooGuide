@@ -39,12 +39,14 @@ class GuardiansTalkDayScheduleProvider():
          key=lambda day_record: (
             day_record.name,
             day_record.location,
+            day_record.enclosure_name,
             day_record.talk_time,
          ),
          sort_key=lambda day_record: (
             day_record.talk_time or '',
             day_record.name,
             day_record.location,
+            day_record.enclosure_name,
          ) )
 
 
@@ -58,4 +60,5 @@ class GuardiansTalkDayScheduleProvider():
          x_coord=schedule_record.x_coord,
          y_coord=schedule_record.y_coord,
          maximum_duration=schedule_record.maximum_duration,
-         talk_time=schedule_record.talk_time )
+         talk_time=schedule_record.talk_time,
+         enclosure_name=schedule_record.enclosure_name )

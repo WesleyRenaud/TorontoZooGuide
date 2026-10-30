@@ -32,6 +32,7 @@ test('Test_CreateAddGuardiansTalkOccurrenceController_TestShowAndSubmitSuccess_E
          location: 'Africa',
          date: '2026-07-01',
          times: ['11:00 AM'],
+         enclosure_name: '',
       });
       return {
          success: true,
@@ -127,8 +128,11 @@ test('Test_CreateAddGuardiansTalkOccurrenceController_TestValidationAndFailures_
       const cancelButtonEl = document.createElement('button');
       const talkNameEl = document.createElement('select');
       const locationEl = document.createElement('select');
+      const enclosureFieldEl = document.createElement('div');
+      const enclosureEl = document.createElement('select');
       const dateEl = document.createElement('input');
       const timeEl = document.createElement('input');
+      enclosureFieldEl.appendChild(enclosureEl);
 
       const controller = AddGuardiansTalkController.createAddGuardiansTalkOccurrenceController({
          showButtonEl,
@@ -138,6 +142,7 @@ test('Test_CreateAddGuardiansTalkOccurrenceController_TestValidationAndFailures_
          statusEl: {},
          talkNameEl,
          locationEl,
+         enclosureEl,
          dateEl,
          timeEl,
          activatePanel: () => {},

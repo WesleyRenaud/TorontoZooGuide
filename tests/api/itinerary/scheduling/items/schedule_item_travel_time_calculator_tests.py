@@ -192,7 +192,8 @@ def stub_schedule_item_travel_time_calculator(
          kind: MapLocationKind,
          name: str,
          *,
-         location: str = '' ) -> MapLocationWalkNode | None:
+         location: str = '',
+         enclosure_name: str | None = None ) -> MapLocationWalkNode | None:
       if kind == MapLocationKind.ATTRACTION and name == CAROUSEL:
          return CAROUSEL_WALK_NODE
 
@@ -330,7 +331,8 @@ def Test_WalkNodeIdForGuardiansTalk_TestKnownTalk_ExpectResolvedNode(
       stub_schedule_item_travel_time_calculator: None ) -> None:
    result = ScheduleItemTravelTimeCalculator.walk_node_id_for_guardians_talk(
       ZEBRA_TALK,
-      location='Africa Savanna' )
+      location='Africa Savanna',
+      enclosure_name=None )
 
    assert result == TALK_NODE_ID
 
@@ -338,7 +340,8 @@ def Test_WalkNodeIdForGuardiansTalk_TestKnownTalk_ExpectResolvedNode(
 def Test_WalkNodeIdForGuardiansTalk_TestUnknownTalk_ExpectNone(
       stub_schedule_item_travel_time_calculator: None ) -> None:
    result = ScheduleItemTravelTimeCalculator.walk_node_id_for_guardians_talk(
-      'Unknown Talk' )
+      'Unknown Talk',
+      enclosure_name=None )
 
    assert result is None
 
@@ -441,6 +444,7 @@ def Test_EntranceTravelSecondsFromLatestItem_TestSeedAfricanPenguinTalk_ExpectNo
       GuardiansTalk(
          name='African Penguin',
          location='Africa Savanna',
+         enclosure_name='Outdoor',
          x_coord=0.0,
          y_coord=0.0,
          start_time='12:00 PM',
@@ -702,7 +706,7 @@ def Test_WalkNodeIdForLatestScheduledItem_TestEarlierTransportSkipped_ExpectLate
    monkeypatch.setattr(
       MapLocationWalkNodeLookup,
       'for_map_location',
-      lambda kind, name, *, location='': (
+      lambda kind, name, *, location='', enclosure_name=None: (
          MapLocationWalkNode(
             kind=MapLocationKind.ATTRACTION,
             name=CAROUSEL,
@@ -743,7 +747,7 @@ def Test_ScheduledStopsWithWalkNodes_TestTransportDeletedTalkEncounterAndMissing
    monkeypatch.setattr(
       MapLocationWalkNodeLookup,
       'for_map_location',
-      lambda kind, name, *, location='': None )
+      lambda kind, name, *, location='', enclosure_name=None: None )
 
    itinerary = ItineraryBuilder.build(
       date='2026-06-20',

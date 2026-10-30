@@ -13,5 +13,5 @@ class GuardiansTalkMapScheduleCollapser():
          guardians_talks: list[ GuardiansTalk ] ) -> list[ dict[ str, Any ] ]:
       return MapScheduleOccurrenceCollapser.collapse(
          guardians_talks,
-         group_key=lambda talk: ( talk.name, talk.location ),
+         group_key=lambda talk: ( talk.name, talk.location, talk.enclosure_name ),
          get_start_time=lambda talk: talk.start_time )

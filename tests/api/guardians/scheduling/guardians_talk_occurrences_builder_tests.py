@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import replace
 from datetime import date
 
 from api_test_support.frozen_datetime import patch_database_today
@@ -72,6 +73,24 @@ def Test_Build_TestNoScheduleRecords_ExpectEmpty(
       schedule_records=[],
       cancellation_records=[],
       days_ahead=7 )
+
+   assert occurrences == []
+
+
+def Test_Build_TestEndBeforeStart_ExpectEmpty(
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( FROZEN_TODAY )
+   start_date = date( 2026, 11, 2 )
+   schedule_record = replace(
+      _all_weekdays_schedule_record(),
+      schedule_start_date=start_date.isoformat(),
+      schedule_end_date=FROZEN_TODAY.isoformat() )
+
+   occurrences = GuardiansTalkOccurrencesBuilder.build(
+      schedule_records=[ schedule_record ],
+      cancellation_records=[],
+      days_ahead=( start_date - FROZEN_TODAY ).days )
 
    assert occurrences == []
 

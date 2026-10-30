@@ -17,10 +17,21 @@ class TimedNameScheduleItemKey:
    name: str
    start_time: Types.ScheduleTimeKey
    end_time: Types.ScheduleTimeKey = None
+   enclosure_name: str | None = None
 
    @classmethod
    def from_wire( cls, wire: str ) -> Self | None:
-      parts = wire.split( ScheduleItemKeySeparator.VALUE, 2 )
+      parts = wire.split( ScheduleItemKeySeparator.VALUE, 3 )
+      enclosure_name = None
+
+      if len( parts ) == 4:
+         enclosure_name = parts[ Position.FOURTH ].strip() or None
+         end_time = parts[ Position.THIRD ]
+         parts = parts[ :2 ]
+
+         if end_time.strip():
+            parts.append( end_time )
+
       name = parts[ Position.FIRST ].strip()
 
       if not name or len( parts ) < 2:
@@ -39,7 +50,11 @@ class TimedNameScheduleItemKey:
          if not end_time:
             return None
 
-      return cls( name=name, start_time=start_time, end_time=end_time )
+      return cls(
+         name=name,
+         start_time=start_time,
+         end_time=end_time,
+         enclosure_name=enclosure_name )
 
 
    def __post_init__( self ) -> None:
@@ -89,6 +104,7 @@ class TimedNameScheduleItemKey:
          name = getattr( row, row_attribute )
          start_time = row.start_time
          end_time = row.end_time
+         enclosure_name = getattr( row, 'enclosure_name', None )
       else:
          source = row if isinstance( row, dict ) else {}
          name = next(
@@ -100,6 +116,7 @@ class TimedNameScheduleItemKey:
             '' )
          start_time = source.get( 'start_time' )
          end_time = source.get( 'end_time' )
+         enclosure_name = source.get( 'enclosure_name' )
 
       normalized_start_time = DateValues.normalize_schedule_time(
          start_time )
@@ -118,7 +135,8 @@ class TimedNameScheduleItemKey:
       return cls(
          name=str( name ).strip(),
          start_time=normalized_start_time,
-         end_time=normalized_end_time )
+         end_time=normalized_end_time,
+         enclosure_name=( enclosure_name or '' ).strip() or None )
 
 
    def __eq__( self, other: Any ) -> bool:
@@ -127,11 +145,12 @@ class TimedNameScheduleItemKey:
 
       return (
          self.name == other.name
-         and self.start_time == other.start_time )
+         and self.start_time == other.start_time
+         and self.enclosure_name == other.enclosure_name )
 
 
    def __hash__( self ) -> int:
-      return hash( ( self.name, self.start_time ) )
+      return hash( ( self.name, self.start_time, self.enclosure_name ) )
 
 
    def to_wire( self ) -> str:
@@ -139,5 +158,10 @@ class TimedNameScheduleItemKey:
 
       if self.end_time:
          parts.append( str( self.end_time ).strip() )
+      elif self.enclosure_name:
+         parts.append( '' )
+
+      if self.enclosure_name:
+         parts.append( self.enclosure_name )
 
       return ScheduleItemKeySeparator.VALUE.join( parts )

@@ -37,6 +37,7 @@ test('Test_CreateItineraryGuardiansTalkSelectorController_TestWiring_ExpectFacto
       assert.equal(captured.defaultTitle, Strings.itinerary.selectors.talkFallback);
       assert.equal(captured.heading, Strings.site.nav.meetTheGuardians);
       assert.equal(captured.getName, GuardiansTalkSelectorModel.getGuardiansTalkName);
+      assert.equal(captured.getImageSrc, GuardiansTalkSelectorModel.buildGuardiansTalkImageSrc);
       assert.equal(captured.getId, GuardiansTalkSelectorModel.getGuardiansTalkId);
       assert.equal(captured.getPrimaryValue, GuardiansTalkSelectorModel.getGuardiansTalkLocation);
       assert.equal(captured.getTimeOfDay, GuardiansTalkSelectorModel.getGuardiansTalkScheduleStart);
@@ -44,6 +45,7 @@ test('Test_CreateItineraryGuardiansTalkSelectorController_TestWiring_ExpectFacto
       assert.equal(captured.buildSelectionFields, GuardiansTalkSelectorModel.buildGuardiansTalkSelectionFields);
       assert.deepEqual(captured.emptyStoredFields, {
          location: '',
+         enclosure_name: '',
          start_time: '',
          end_time: '',
       });

@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.guardians.data_access.meet_the_guardians_talk_provider import MeetTheGuardiansTalkProvider
+from api.guardians.domain.guardians_talk_option import GuardiansTalkOption
 
 
 MEET_THE_GUARDIANS_TALK_PROVIDER_SCHEMA = """
@@ -14,7 +15,8 @@ CREATE TABLE MeetTheGuardiansTalk (
    X_COORD            REAL NOT NULL,
    Y_COORD            REAL NOT NULL,
    MAXIMUM_DURATION   INTEGER,
-   PRIMARY KEY ( NAME, LOCATION )
+   ENCLOSURE_NAME     TEXT,
+   PRIMARY KEY ( NAME, LOCATION, ENCLOSURE_NAME )
 );
 """
 
@@ -43,18 +45,20 @@ def _insert_talk(
       location: str | None,
       x_coord: float,
       y_coord: float,
-      maximum_duration: int | None ) -> None:
+      maximum_duration: int | None,
+      enclosure_name: str | None = None ) -> None:
    conn.execute(
       """   INSERT INTO MeetTheGuardiansTalk (
                NAME,
                LOCATION,
+               ENCLOSURE_NAME,
                X_COORD,
                Y_COORD,
                MAXIMUM_DURATION
             )
-            VALUES ( ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ? );
       """,
-      ( name, location, x_coord, y_coord, maximum_duration ),
+      ( name, location, enclosure_name, x_coord, y_coord, maximum_duration ),
    )
 
 
@@ -166,7 +170,45 @@ def Test_FetchGuardiansTalkNamesAtLocation_TestMatchingLocation_ExpectNames(
       meet_the_guardians_talk_provider_conn,
       SAVANNA )
 
-   assert set( names ) == { PENGUIN_TALK, LION_TALK }
+   assert names == [
+      GuardiansTalkOption( name=LION_TALK ),
+      GuardiansTalkOption( name=PENGUIN_TALK ),
+   ]
+
+
+def Test_FetchGuardiansTalkNamesAtLocation_TestSameTalkName_ExpectEnclosureNames(
+      meet_the_guardians_talk_provider_conn: sqlite3.Connection ) -> None:
+   talk_name = 'Masai Giraffe'
+   giraffe_house = 'Giraffe House'
+   outdoor = 'Outdoor'
+
+   _insert_talk(
+      meet_the_guardians_talk_provider_conn,
+      name=talk_name,
+      location=SAVANNA,
+      x_coord=1.0,
+      y_coord=2.0,
+      maximum_duration=30,
+      enclosure_name=outdoor )
+   _insert_talk(
+      meet_the_guardians_talk_provider_conn,
+      name=talk_name,
+      location=SAVANNA,
+      x_coord=3.0,
+      y_coord=4.0,
+      maximum_duration=30,
+      enclosure_name=giraffe_house )
+   meet_the_guardians_talk_provider_conn.commit()
+
+   names = MeetTheGuardiansTalkProvider.fetch_guardians_talk_names_at_location(
+      meet_the_guardians_talk_provider_conn,
+      SAVANNA )
+
+   assert names == [
+      GuardiansTalkOption(
+         name=talk_name,
+         enclosure_names=[ giraffe_house, outdoor ] ),
+   ]
 
 
 def Test_FetchGuardiansTalkNamesAtLocation_TestUnknownLocation_ExpectEmptyList(

@@ -30,12 +30,14 @@ CREATE TABLE MeetTheGuardiansTalk (
    X_COORD          FLOAT   NOT NULL,
    Y_COORD          FLOAT   NOT NULL,
    MAXIMUM_DURATION INTEGER NOT NULL,
-   PRIMARY KEY ( NAME, LOCATION )
+   ENCLOSURE_NAME   TEXT,
+   PRIMARY KEY ( NAME, LOCATION, ENCLOSURE_NAME )
 );
 
 CREATE TABLE GuardiansTalkSchedule (
    TALK_NAME           TEXT NOT NULL,
    LOCATION            TEXT NOT NULL,
+   ENCLOSURE_NAME      TEXT,
    SCHEDULE_START_DATE DATE NOT NULL,
    SCHEDULE_END_DATE   DATE,
    MONDAY              BOOL NOT NULL DEFAULT 0,
@@ -47,23 +49,25 @@ CREATE TABLE GuardiansTalkSchedule (
    SUNDAY              BOOL NOT NULL DEFAULT 0,
    TALK_TIME           TEXT NOT NULL,
    SCHEDULE_MESSAGE    TEXT,
-   PRIMARY KEY ( TALK_NAME, LOCATION, TALK_TIME, SCHEDULE_START_DATE )
+   PRIMARY KEY ( TALK_NAME, LOCATION, ENCLOSURE_NAME, TALK_TIME, SCHEDULE_START_DATE )
 );
 
 CREATE TABLE GuardiansTalkOccurrence (
    TALK_NAME        TEXT NOT NULL,
    LOCATION         TEXT NOT NULL,
+   ENCLOSURE_NAME   TEXT,
    OCCURRENCE_DATE  DATE NOT NULL,
    TALK_TIME        TEXT NOT NULL,
-   PRIMARY KEY ( TALK_NAME, LOCATION, OCCURRENCE_DATE, TALK_TIME )
+   PRIMARY KEY ( TALK_NAME, LOCATION, ENCLOSURE_NAME, OCCURRENCE_DATE, TALK_TIME )
 );
 
 CREATE TABLE GuardiansTalkCancellation (
    TALK_NAME         TEXT NOT NULL,
    LOCATION          TEXT NOT NULL,
+   ENCLOSURE_NAME    TEXT,
    CANCELLATION_DATE DATE NOT NULL,
    TALK_TIME         TEXT NOT NULL,
-   PRIMARY KEY ( TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME )
+   PRIMARY KEY ( TALK_NAME, LOCATION, ENCLOSURE_NAME, CANCELLATION_DATE, TALK_TIME )
 );
 """
 
@@ -75,8 +79,8 @@ def occurrence_provider_conn() -> sqlite3.Connection:
    conn.executescript( OCCURRENCE_PROVIDER_SCHEMA )
    conn.execute(
       """   INSERT INTO MeetTheGuardiansTalk (
-               NAME, LOCATION, X_COORD, Y_COORD, MAXIMUM_DURATION
-            ) VALUES ( ?, ?, ?, ?, ? );
+               NAME, LOCATION, ENCLOSURE_NAME, X_COORD, Y_COORD, MAXIMUM_DURATION
+            ) VALUES ( ?, ?, NULL, ?, ?, ? );
       """,
       ( TALK_NAME, LOCATION, X_COORD, Y_COORD, MAXIMUM_DURATION ),
    )
@@ -90,12 +94,14 @@ def occurrence_provider_conn() -> sqlite3.Connection:
 def _occurrence_input(
       *,
       occurrence_date: str = OCCURRENCE_DATE,
-      talk_time: str = TALK_TIME ) -> GuardiansTalkOccurrenceInput:
+      talk_time: str = TALK_TIME,
+      enclosure_name: str | None = None ) -> GuardiansTalkOccurrenceInput:
    return GuardiansTalkOccurrenceInput(
       talk_name=TALK_NAME,
       location=LOCATION,
       occurrence_date=occurrence_date,
-      talk_time=talk_time )
+      talk_time=talk_time,
+      enclosure_name=enclosure_name )
 
 
 def _insert_occurrence(
@@ -105,8 +111,8 @@ def _insert_occurrence(
       talk_time: str = TALK_TIME ) -> None:
    conn.execute(
       """   INSERT INTO GuardiansTalkOccurrence (
-               TALK_NAME, LOCATION, OCCURRENCE_DATE, TALK_TIME
-            ) VALUES ( ?, ?, ?, ? );
+               TALK_NAME, LOCATION, ENCLOSURE_NAME, OCCURRENCE_DATE, TALK_TIME
+            ) VALUES ( ?, ?, NULL, ?, ? );
       """,
       ( TALK_NAME, LOCATION, occurrence_date, talk_time ),
    )
@@ -129,6 +135,7 @@ def _insert_schedule(
       """   INSERT INTO GuardiansTalkSchedule (
                TALK_NAME,
                LOCATION,
+               ENCLOSURE_NAME,
                SCHEDULE_START_DATE,
                SCHEDULE_END_DATE,
                MONDAY,
@@ -140,7 +147,7 @@ def _insert_schedule(
                SUNDAY,
                TALK_TIME,
                SCHEDULE_MESSAGE
-            ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
+            ) VALUES ( ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
       """,
       (
          TALK_NAME,
@@ -167,7 +174,8 @@ def Test_OccurrenceRecordExists_TestMissing_ExpectFalse(
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is False
 
@@ -182,7 +190,8 @@ def Test_OccurrenceRecordExists_TestPersisted_ExpectTrue(
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is True
 
@@ -197,7 +206,8 @@ def Test_OccurrenceExists_TestExplicitRecord_ExpectTrue(
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is True
 
@@ -209,7 +219,8 @@ def Test_OccurrenceExists_TestNoneDate_ExpectFalse(
       TALK_NAME,
       LOCATION,
       None,  # type: ignore[arg-type]
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is False
 
@@ -224,7 +235,8 @@ def Test_OccurrenceExists_TestScheduleOutsideDateRange_ExpectFalse(
       TALK_NAME,
       LOCATION,
       '2026-07-15',
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is False
 
@@ -239,7 +251,8 @@ def Test_OccurrenceExists_TestScheduleCoversWeekday_ExpectTrue(
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is True
 
@@ -254,7 +267,8 @@ def Test_OccurrenceExists_TestScheduleExcludesWeekday_ExpectFalse(
       TALK_NAME,
       LOCATION,
       WEEKEND_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is False
 
@@ -266,7 +280,8 @@ def Test_OccurrenceExists_TestNoMatchingSchedule_ExpectFalse(
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is False
 
@@ -284,7 +299,8 @@ def Test_SaveOccurrence_TestNewRow_ExpectTrueAndPersisted(
       TALK_NAME,
       LOCATION,
       OCCURRENCE_DATE,
-      TALK_TIME )
+      TALK_TIME,
+      enclosure_name=None )
 
    assert result is True
 
@@ -293,11 +309,11 @@ def Test_SaveOccurrence_TestDuplicate_ExpectFalse(
       occurrence_provider_conn: sqlite3.Connection ) -> None:
    GuardiansTalkOccurrenceProvider.save_occurrence(
       occurrence_provider_conn,
-      _occurrence_input() )
+      _occurrence_input( enclosure_name='Outdoor' ) )
 
    result = GuardiansTalkOccurrenceProvider.save_occurrence(
       occurrence_provider_conn,
-      _occurrence_input() )
+      _occurrence_input( enclosure_name='Outdoor' ) )
 
    assert result is False
 
@@ -309,7 +325,8 @@ def Test_FetchOccurrenceRecords_TestEmptyRange_ExpectEmptyList(
       TALK_NAME,
       LOCATION,
       start_date=START_DATE,
-      end_date=END_DATE )
+      end_date=END_DATE,
+      enclosure_name=None )
 
    assert occurrence_records == []
 
@@ -339,7 +356,8 @@ def Test_FetchOccurrenceRecords_TestDateRange_ExpectOrderedMatchingRows(
       TALK_NAME,
       LOCATION,
       start_date='2026-06-10',
-      end_date='2026-06-20' )
+      end_date='2026-06-20',
+      enclosure_name=None )
 
    assert [
       ( record.occurrence_date, record.talk_time )
@@ -384,8 +402,8 @@ def Test_FetchDayScheduleRecordsFromOccurrences_TestCancelled_ExpectExcluded(
    _insert_occurrence( occurrence_provider_conn )
    occurrence_provider_conn.execute(
       """   INSERT INTO GuardiansTalkCancellation (
-               TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME
-            ) VALUES ( ?, ?, ?, ? );
+               TALK_NAME, LOCATION, ENCLOSURE_NAME, CANCELLATION_DATE, TALK_TIME
+            ) VALUES ( ?, ?, NULL, ?, ? );
       """,
       ( TALK_NAME, LOCATION, OCCURRENCE_DATE, TALK_TIME ),
    )

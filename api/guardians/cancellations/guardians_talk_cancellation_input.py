@@ -9,3 +9,4 @@ class GuardiansTalkCancellationInput:
    location: str
    cancellation_date: str
    talk_time: str
+   enclosure_name: str | None = None

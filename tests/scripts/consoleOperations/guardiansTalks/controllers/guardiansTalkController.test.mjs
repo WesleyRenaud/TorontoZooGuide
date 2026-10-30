@@ -88,6 +88,7 @@ test('Test_CreateGuardiansTalkScheduleController_TestWiring_ExpectFormCallbacks'
       assert.deepEqual(captured.getSelectionValues(), {
          talk: 'Keeper Talk',
          location: 'Africa',
+         enclosure_name: '',
       });
       assert.equal(
          captured.validateSelection({ talk: '', location: '' }),

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
-from .guardians_talk_animal_mapper import GuardiansTalkAnimalMapper
 from .guardians_talk_animal_record import GuardiansTalkAnimalRecord
 from .guardians_talk_animal_record_mapper import GuardiansTalkAnimalRecordMapper
 from ...types import Types
@@ -12,30 +11,28 @@ class GuardiansTalkAnimalProvider():
    def fetch_linked_animals(
          cls,
          conn: Types.Connection,
-         talk_name: str ) -> list[ SpeciesExhibitKey ]:
-      cur = conn.cursor()
-
-      try:
-         data = cur.execute(
-            """   SELECT
-                     SPECIES,
-                     EXHIBIT
-                  FROM GuardiansTalkAnimal
-                  WHERE TALK_NAME = ?;
-            """,
-            ( talk_name, ) )
-
-         return GuardiansTalkAnimalMapper.map_linked_animals( data.fetchall() )
-
-      finally:
-         cur.close()
+         talk_name: str,
+         *,
+         location: str | None = None,
+         enclosure_name: str | None = None ) -> list[ SpeciesExhibitKey ]:
+      return [
+         link.species_exhibit_key()
+         for link in cls.fetch_animal_links(
+            conn,
+            talk_name,
+            location=location,
+            enclosure_name=enclosure_name )
+      ]
 
 
    @classmethod
    def fetch_animal_links(
          cls,
          conn: Types.Connection,
-         talk_name: str ) -> list[ GuardiansTalkAnimalRecord ]:
+         talk_name: str,
+         *,
+         location: str | None = None,
+         enclosure_name: str | None = None ) -> list[ GuardiansTalkAnimalRecord ]:
       cur = conn.cursor()
 
       try:
@@ -47,9 +44,17 @@ class GuardiansTalkAnimalProvider():
                      EXHIBIT,
                      ENCLOSURE_NAME
                   FROM GuardiansTalkAnimal
-                  WHERE TALK_NAME = ?;
+                  WHERE TALK_NAME = ?
+                  AND ( ? IS NULL OR LOCATION = ? )
+                  AND ( ? IS NULL OR ENCLOSURE_NAME IS ? );
             """,
-            ( talk_name, ) )
+            (
+               talk_name,
+               location,
+               location,
+               enclosure_name,
+               enclosure_name,
+            ) )
 
          return GuardiansTalkAnimalRecordMapper.map_records( data.fetchall() )
 

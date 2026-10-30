@@ -21,10 +21,13 @@ export class VisitWindowOverflowView {
 
 
    static buildItemImageSrc(item) {
-      return RowPresenter.buildImageSrc(
-         VisitWindowOverflowView.imageDirectoryForItem(item),
-         item.name
-      );
+      const directory = VisitWindowOverflowView.imageDirectoryForItem(item);
+
+      if (item.item_type === ItinerarySaveIssueItemType.GUARDIANS_TALK) {
+         return RowPresenter.buildImageSrc(directory, item.location, item.name);
+      }
+
+      return RowPresenter.buildImageSrc(directory, item.name);
    }
 
 

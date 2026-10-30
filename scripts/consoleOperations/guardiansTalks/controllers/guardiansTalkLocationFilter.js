@@ -2,6 +2,7 @@ import { ConsoleOperationsClient } from '../../../api/consoleOperationsClient.js
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
 import { ControllerHelper } from '../../helpers/controllerHelper.js';
 import { GuardiansTalkDropdownResetHelper } from '../helpers/guardiansTalkDropdownResetHelper.js';
+import { GuardiansTalkEnclosureDropdown } from '../helpers/guardiansTalkEnclosureDropdown.js';
 import { ConsoleDropdownPopulator } from '../../options/consoleDropdownPopulator.js';
 import { Strings } from '../../../strings.js';
 
@@ -9,9 +10,11 @@ export class GuardiansTalkLocationFilter {
    static createGuardiansTalkLocationFilterController({
       locationEl,
       talkNameEl,
+      enclosureEl,
       loadLocations = ConsoleOperationsClient.getGuardiansTalkLocations,
       loadTalks = ConsoleOperationsClient.getGuardiansTalkNamesAtLocation,
    } = {}) {
+      let talksAtLocation = [];
 
       function getLocationName(location) {
          return typeof location === 'string'
@@ -32,8 +35,20 @@ export class GuardiansTalkLocationFilter {
          );
       }
 
+      function refreshEnclosureOptions() {
+         const talkName = ControllerHelper.getFieldValue(talkNameEl);
+         const talk = talksAtLocation.find(item => item.name === talkName);
+
+         GuardiansTalkEnclosureDropdown.populate(
+            enclosureEl,
+            talk ? talk.enclosure_names : []
+         );
+      }
+
       function clearTalkDropdown() {
+         talksAtLocation = [];
          GuardiansTalkDropdownResetHelper.resetTalkDropdown({ talkNameEl });
+         GuardiansTalkEnclosureDropdown.reset(enclosureEl);
       }
 
       async function refreshLocations() {
@@ -64,15 +79,24 @@ export class GuardiansTalkLocationFilter {
                location
             });
 
-            const guardiansTalks = result?.guardians_talks ?? [];
+            talksAtLocation = result?.guardians_talks ?? [];
 
             if (talkNameEl?.tagName === 'SELECT') {
-               ConsoleDropdownPopulator.populateGuardiansTalkDropdown(talkNameEl, guardiansTalks);
+               ConsoleDropdownPopulator.populateGuardiansTalkDropdown(
+                  talkNameEl,
+                  talksAtLocation
+               );
             }
+
+            refreshEnclosureOptions();
          }
          catch(err) {
          }
       }
+
+      talkNameEl?.addEventListener('change', () => {
+         refreshEnclosureOptions();
+      });
 
       locationEl?.addEventListener('change', () => {
          if (talkNameEl) {

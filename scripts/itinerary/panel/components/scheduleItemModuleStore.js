@@ -60,7 +60,7 @@ export class ScheduleItemModuleStore {
       }
 
       if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
-         return GuardiansTalkSelectorModel.getGuardiansTalkName(row) || '';
+         return GuardiansTalkSelectorModel.getGuardiansTalkDisplayName(row) || '';
       }
 
       if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {

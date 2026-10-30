@@ -1,3 +1,4 @@
+import { GuardiansTalkSelectorModel } from '../itinerary/selectors/guardiansTalkSelector/guardiansTalkSelectorModel.js';
 import { Strings } from '../strings.js';
 
 export class MarkerHoverTextFormatter {
@@ -17,7 +18,7 @@ export class MarkerHoverTextFormatter {
 
    static formatGuardiansTalkHoverText(itemsAtPoint) {
       return MarkerHoverTextFormatter.formatCountedHoverText(itemsAtPoint, (item) => {
-         const name = item?.name || '';
+         const name = GuardiansTalkSelectorModel.getGuardiansTalkDisplayName(item);
          return name
             ? Strings.map.hover.guardiansTalkWithName(name)
             : Strings.entityLabels.guardiansTalk;

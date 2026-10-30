@@ -22,7 +22,9 @@ class GuardiansTalkScheduleBuilder():
          friday: bool,
          saturday: bool,
          sunday: bool,
-         message: str ) -> GuardiansTalkScheduleInput:
+         message: str,
+         *,
+         enclosure_name: str ) -> GuardiansTalkScheduleInput:
       date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
@@ -46,4 +48,5 @@ class GuardiansTalkScheduleBuilder():
          friday=friday,
          saturday=saturday,
          sunday=sunday,
-         message=message )
+         message=message,
+         enclosure_name=enclosure_name )

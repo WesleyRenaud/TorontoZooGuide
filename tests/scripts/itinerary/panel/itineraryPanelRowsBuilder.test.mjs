@@ -253,7 +253,11 @@ test('Test_BuildGuardiansRows_TestLinkedAnimal_ExpectOnNameClick', () => {
          [{ name: talkName, location: 'Eurasia Wilds', link: '/t' }],
          { onRemoveItem: () => {} }
       );
-      const props = captured.config.extendRowProps({ name: talkName });
+      const props = captured.config.buildRowProps({
+         name: talkName,
+         location: 'Eurasia Wilds',
+         link: '/t',
+      });
 
       assert.equal(typeof props.onNameClick, 'function');
       props.onNameClick();

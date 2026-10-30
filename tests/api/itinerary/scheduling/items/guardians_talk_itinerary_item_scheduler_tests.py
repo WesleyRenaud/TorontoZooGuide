@@ -336,7 +336,7 @@ def Test_GuardiansTalkDiffForSavedItineraryDay_TestCoordinatorLookup_ExpectDiff(
       get_guardians_talk_on_day_schedule )
    monkeypatch.setattr(
       'api.itinerary.scheduling.items.guardians_talk_itinerary_item_scheduler.ScheduledOccurrenceBuilder.guardians_talk',
-      lambda name, talk: GuardiansTalkDiff(
+      lambda name, talk, enclosure_name=None: GuardiansTalkDiff(
          name=name,
          is_deleted=False,
          start_time=talk[ 'start_time' ],

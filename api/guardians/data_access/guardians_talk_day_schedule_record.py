@@ -13,3 +13,4 @@ class GuardiansTalkDayScheduleRecord:
    y_coord: Types.Coordinate
    maximum_duration: int | None
    talk_time: Types.ScheduleTimeKey
+   enclosure_name: str | None = None

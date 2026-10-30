@@ -248,7 +248,7 @@ def Test_ValidateForSave_TestDateChangeDeletedTalkUncoversCaribou_ExpectEnclosur
       lambda conn: saved )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ CARIBOU_TALK_LINK ] )
+      lambda conn, talk_name, **_kwargs: [ CARIBOU_TALK_LINK ] )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
       lambda conn, species, exhibit, enclosure_name: DurationValues.minutes_to_seconds(

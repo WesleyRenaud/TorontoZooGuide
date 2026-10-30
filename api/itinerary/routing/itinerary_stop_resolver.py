@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..animal_schedule_item_key import AnimalScheduleItemKey
+from ...guardians.domain.guardians_talk_identity import GuardiansTalkIdentity
 from .itinerary_stop import ENTRANCE_ITEM_KEY
 from .itinerary_stop import ItineraryStop
 from ...models import Itinerary
@@ -100,12 +101,15 @@ class ItineraryStopResolver():
          map_location = MapLocationWalkNodeLookup.for_map_location(
             MapLocationKind.GUARDIANS_TALK,
             guardians_talk.name,
-            location=guardians_talk.location )
+            location=guardians_talk.location,
+            enclosure_name=guardians_talk.enclosure_name )
 
          stops.append(
             cls._stop_from_map_location(
                schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
-               item_key=guardians_talk.name,
+               item_key=GuardiansTalkIdentity.item_key(
+                  guardians_talk.name,
+                  guardians_talk.enclosure_name ),
                map_location=map_location,
                x_coord=guardians_talk.x_coord,
                y_coord=guardians_talk.y_coord,

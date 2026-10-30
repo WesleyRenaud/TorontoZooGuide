@@ -60,7 +60,9 @@ CREATE TABLE ItineraryGuardiansTalk (
    TALK_NAME            TEXT NOT NULL PRIMARY KEY,
    START_TIME           TEXT,
    END_TIME             TEXT,
-   IS_DELETED           INTEGER NOT NULL DEFAULT 0
+   IS_DELETED           INTEGER NOT NULL DEFAULT 0,
+   LOCATION             TEXT NOT NULL,
+   ENCLOSURE_NAME       TEXT
 );
 
 CREATE TABLE ItineraryWildEncounter (
@@ -242,11 +244,13 @@ def Test_AcceptItinerary_TestZeroLikelihoodAndDeletedItems_ExpectDeclinedRemoved
    accept_itinerary_conn.executemany(
       """   INSERT INTO ItineraryGuardiansTalk (
                TALK_NAME,
+               LOCATION,
+               ENCLOSURE_NAME,
                START_TIME,
                END_TIME,
                IS_DELETED
             )
-            VALUES ( ?, ?, ?, ? );
+            VALUES ( ?, '', NULL, ?, ?, ? );
       """,
       [
          (

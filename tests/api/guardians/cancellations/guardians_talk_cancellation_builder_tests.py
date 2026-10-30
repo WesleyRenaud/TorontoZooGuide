@@ -14,7 +14,8 @@ def Test_Build_TestTalkCancellation_ExpectMapsFields() -> None:
       talk=TALK_NAME,
       location=TALK_LOCATION,
       date=CANCELLATION_DATE,
-      time=TALK_TIME )
+      time=TALK_TIME,
+      enclosure_name=None )
 
    assert cancellation.talk_name == TALK_NAME
    assert cancellation.location == TALK_LOCATION

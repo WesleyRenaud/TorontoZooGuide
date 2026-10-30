@@ -22,3 +22,4 @@ class GuardiansTalkScheduleRecord:
    saturday: bool
    sunday: bool
    talk_time: Types.ScheduleTimeKey
+   enclosure_name: str | None = None

@@ -18,6 +18,7 @@ class ItinerarySaveIssueItem:
    item_type: str
    meeting_spot: str = ''
    location: str = ''
+   enclosure_name: str | None = None
    link: str = ''
    overflow_end: ItineraryVisitWindowOverflowEnd | None = None
 
@@ -51,7 +52,8 @@ class ItinerarySaveIssueItem:
          start_time=guardians_talk.start_time,
          end_time=guardians_talk.end_time,
          item_type=ItinerarySaveIssueItemType.GUARDIANS_TALK,
-         location=guardians_talk.location or '',
+         location=guardians_talk.location,
+         enclosure_name=guardians_talk.enclosure_name,
          overflow_end=overflow_end )
 
 
@@ -78,6 +80,7 @@ class ItinerarySaveIssueItem:
          'item_type': self.item_type,
          'meeting_spot': self.meeting_spot,
          'location': self.location,
+         'enclosure_name': self.enclosure_name,
          'link': self.link,
          'overflow_end': (
             self.overflow_end.value if self.overflow_end is not None else None

@@ -109,7 +109,9 @@ CREATE TABLE ItineraryGuardiansTalk (
    TALK_NAME            TEXT        NOT NULL PRIMARY KEY,
    START_TIME           TEXT,
    END_TIME             TEXT,
-   IS_DELETED           INTEGER     NOT NULL DEFAULT 0
+   IS_DELETED           INTEGER     NOT NULL DEFAULT 0,
+   LOCATION             TEXT NOT NULL,
+   ENCLOSURE_NAME       TEXT
 );
 
 CREATE TABLE ItineraryWildEncounter (

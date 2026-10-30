@@ -131,6 +131,10 @@ test('Test_CreateScheduledOccurrenceSelectorController_TestConfig_ExpectFactoryA
          `${region}|${startTime}`
       );
       assert.equal(captured.getImageSrc({ name: talkName }), `${imageDirectory}/${talkName}.jpg`);
+      assert.equal(
+         captured.migrateSelected([talkName]).at(Position.FIRST).imageSrc,
+         `${imageDirectory}/${talkName}.jpg`
+      );
       assert.equal(captured.getInfoLink(), null);
       assert.deepEqual(captured.makeSelection({ name: talkName }), { selected: talkName });
       captured.onTitleClick({ link: href });
@@ -171,6 +175,42 @@ test('Test_CreateScheduledOccurrenceSelectorController_TestNoLink_ExpectNullTitl
       });
 
       assert.equal(captured.onTitleClick, null);
+   } finally {
+      SelectorControllerFactory.createItinerarySelectorController = originalCreate;
+   }
+});
+
+
+test('Test_CreateScheduledOccurrenceSelectorController_TestRowImageSrc_ExpectUsesRow', () => {
+   const originalCreate = SelectorControllerFactory.createItinerarySelectorController;
+   let captured;
+   const row = {
+      name: 'Northern Bald Eagle',
+      location: 'Tundra Trek',
+   };
+   const imageSrc = '../images/details/guardians-talks/tundra-trek/northern-bald-eagle.png';
+   SelectorControllerFactory.createItinerarySelectorController = (options) => {
+      captured = options;
+      return {};
+   };
+
+   try {
+      CreateScheduledOccurrenceSelector.createScheduledOccurrenceSelectorController({
+         storageKey: 'talks',
+         responseKey: 'guardiansTalks',
+         searchFlag: 'includeGuardiansTalks',
+         imageDirectory: 'guardians-talks',
+         defaultTitle: 'Talk',
+         heading: 'Choose',
+         subtitle: 'Sub',
+         emptyText: 'Empty',
+         getPrimaryValue: (item) => item.location,
+         getImageSrc: () => imageSrc,
+         buildSelectionFields: () => ({}),
+      });
+
+      assert.equal(captured.getImageSrc(row), imageSrc);
+      assert.equal(captured.makeSelection(row).imageSrc, imageSrc);
    } finally {
       SelectorControllerFactory.createItinerarySelectorController = originalCreate;
    }

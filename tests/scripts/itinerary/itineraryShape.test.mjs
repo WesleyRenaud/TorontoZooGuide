@@ -299,6 +299,8 @@ test('Test_ToSetItineraryPayload_TestCanonicalShapes_ExpectSaveApiShape', () => 
    assert.deepEqual(payload.transportations, []);
    assert.deepEqual(payload.guardiansTalks, [{
       name: africanLion,
+      location: '',
+      enclosure_name: '',
       start_time: null,
       end_time: null,
    }]);
@@ -496,6 +498,8 @@ test('Test_ToSetItineraryPayload_TestScheduleTimes_ExpectPreserved', () => {
    assert.deepEqual(payload.transportations, []);
    assert.deepEqual(payload.guardiansTalks, [{
       name: talkName,
+      location: '',
+      enclosure_name: '',
       start_time: talkStart,
       end_time: talkEnd,
    }]);

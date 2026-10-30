@@ -11,9 +11,12 @@ class GuardiansTalkOccurrenceBuilder():
          talk: str,
          location: str,
          date: Types.DateKey,
-         time: str ) -> GuardiansTalkOccurrenceInput:
+         time: str,
+         *,
+         enclosure_name: str ) -> GuardiansTalkOccurrenceInput:
       return GuardiansTalkOccurrenceInput(
          talk_name=talk,
          location=location,
          occurrence_date=date,
-         talk_time=time )
+         talk_time=time,
+         enclosure_name=enclosure_name )

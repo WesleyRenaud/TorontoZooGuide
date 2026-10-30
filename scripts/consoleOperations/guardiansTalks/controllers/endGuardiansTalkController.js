@@ -9,6 +9,7 @@ export class EndGuardiansTalkController {
    static createEndGuardiansTalkScheduleController({
       talkNameEl,
       locationEl,
+      enclosureEl,
       timesEl,
       endDateEl,
       talkLocationFilterController = null,
@@ -44,12 +45,13 @@ export class EndGuardiansTalkController {
          await scheduleTimesFilterController?.refresh?.();
       }
 
-      async function submitEndSchedule({ talk, location, times, endDate }) {
+      async function submitEndSchedule({ talk, location, times, endDate, enclosure_name }) {
          return ConsoleOperationsClient.endGuardiansTalkSchedule({
             talk,
             location,
             times,
             endDate: endDate || null,
+            enclosure_name,
          });
       }
 
@@ -68,6 +70,7 @@ export class EndGuardiansTalkController {
             talk: ControllerHelper.getFieldValue(talkNameEl),
             location: ControllerHelper.getFieldValue(locationEl),
             times: getSelectedTimes(),
+            enclosure_name: ControllerHelper.getFieldValue(enclosureEl),
          }),
          validateSelection,
          prepareForm,

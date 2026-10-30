@@ -12,7 +12,9 @@ class GuardiansTalkCancellationProvider():
          cls,
          conn: Types.Connection,
          talk_name: str,
-         location: str ) -> list[ GuardiansTalkCancellationRecord ]:
+         location: str,
+         *,
+         enclosure_name: str ) -> list[ GuardiansTalkCancellationRecord ]:
       cur = conn.cursor()
 
       try:
@@ -22,11 +24,13 @@ class GuardiansTalkCancellationProvider():
                      TALK_TIME
                   FROM GuardiansTalkCancellation
                   WHERE TALK_NAME = ?
-                  AND LOCATION = ?;
+                  AND LOCATION = ?
+                  AND ENCLOSURE_NAME IS ?;
             """,
             (
                talk_name,
                location,
+               enclosure_name,
             ) )
 
          return GuardiansTalkCancellationMapper.map_records( data.fetchall() )
@@ -42,7 +46,9 @@ class GuardiansTalkCancellationProvider():
          talk_name: str,
          location: str,
          cancellation_date: Types.DateKey,
-         talk_time: str ) -> bool:
+         talk_time: str,
+         *,
+         enclosure_name: str ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -51,12 +57,14 @@ class GuardiansTalkCancellationProvider():
                      FROM GuardiansTalkCancellation
                      WHERE TALK_NAME = ?
                      AND LOCATION = ?
+                     AND ENCLOSURE_NAME IS ?
                      AND CANCELLATION_DATE = ?
                      AND TALK_TIME = ?;
                """,
             (
                talk_name,
                location,
+               enclosure_name,
                cancellation_date,
                talk_time,
             ) )
@@ -79,16 +87,18 @@ class GuardiansTalkCancellationProvider():
             """   INSERT INTO GuardiansTalkCancellation (
                      TALK_NAME,
                      LOCATION,
+                     ENCLOSURE_NAME,
                      CANCELLATION_DATE,
                      TALK_TIME
                   )
-                  VALUES (?, ?, ?, ?)
-                  ON CONFLICT(TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME)
+                  VALUES (?, ?, ?, ?, ?)
+                  ON CONFLICT(TALK_NAME, LOCATION, ENCLOSURE_NAME, CANCELLATION_DATE, TALK_TIME)
                   DO NOTHING;
             """,
             (
                cancellation.talk_name,
                cancellation.location,
+               cancellation.enclosure_name,
                cancellation.cancellation_date,
                cancellation.talk_time,
             ) )

@@ -10,6 +10,7 @@ import pytest
 from api import database_connection_provider as connection
 from api.guardians.controllers.guardians_controller import GuardiansController
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from api.guardians.domain.guardians_talk_option import GuardiansTalkOption
 import api.http_request_handler as server
 from api.models.guardians_talk import GuardiansTalk
 from api.models.scheduled_occurrence import ScheduledOccurrence
@@ -99,7 +100,7 @@ def stub_guardians_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubGuardia
       ],
       guardians_talk_locations=[ TALK_LOCATION ],
       guardians_talk_names=[ TALK_NAME ],
-      guardians_talk_names_at_location=[ TALK_NAME ],
+      guardians_talk_names_at_location=[ GuardiansTalkOption( name=TALK_NAME ) ],
       guardians_talk_occurrences=[ _sample_occurrence() ],
       guardians_talk_schedule_times=[ '10:00 AM', '11:00 AM' ] )
 
@@ -210,7 +211,9 @@ def Test_GetGuardiansTalkNamesAtLocation_TestHttpRequest_ExpectMapsLocation(
       'get_guardians_talk_names_at_location',
       { 'location': TALK_LOCATION },
    )
-   assert result[ 'guardians_talks' ] == [ TALK_NAME ]
+   assert result[ 'guardians_talks' ] == [
+      { 'name': TALK_NAME, 'enclosure_names': [] },
+   ]
 
 
 def Test_GetGuardiansTalkScheduleOptions_TestHttpRequest_ExpectMapsLocation(
@@ -228,7 +231,9 @@ def Test_GetGuardiansTalkScheduleOptions_TestHttpRequest_ExpectMapsLocation(
       'get_guardians_talk_schedule_options',
       { 'location': TALK_LOCATION },
    )
-   assert result[ 'guardians_talks' ] == [ TALK_NAME ]
+   assert result[ 'guardians_talks' ] == [
+      { 'name': TALK_NAME, 'enclosure_names': [] },
+   ]
 
 
 def Test_GetGuardiansTalkScheduleLocationOptions_TestDirectCall_ExpectWritesLocationsFromCoordinator(
@@ -294,6 +299,7 @@ def Test_SetGuardiansTalkSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
       {
          'talk': TALK_NAME,
          'location': TALK_LOCATION,
+         'enclosure_name': None,
          'start_date': SCHEDULE_START_DATE,
          'end_date': SCHEDULE_END_DATE,
          'schedule_rows': GUARDIANS_TALK_SCHEDULE_ROWS,
@@ -350,6 +356,7 @@ def Test_GuardiansTalkScheduleOverlapResolution_TestHttpRequest_ExpectMapsPayloa
       {
          'talk': TALK_NAME,
          'location': TALK_LOCATION,
+         'enclosure_name': None,
          'start_date': SCHEDULE_START_DATE,
          'end_date': SCHEDULE_END_DATE,
          'schedule_rows': GUARDIANS_TALK_SCHEDULE_ROWS,
@@ -401,6 +408,7 @@ def Test_EndGuardiansTalkSchedule_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
       {
          'talk': TALK_NAME,
          'location': TALK_LOCATION,
+         'enclosure_name': None,
          'schedule_end_date': SCHEDULE_END_DATE,
          'talk_times': [ '10:00' ],
       }
@@ -451,6 +459,7 @@ def Test_CancelGuardiansTalkOccurrence_TestHttpRequest_ExpectMapsPayloadAndSucce
       {
          'talk': TALK_NAME,
          'location': TALK_LOCATION,
+         'enclosure_name': None,
          'date': OCCURRENCE_DATE,
          'talk_times': [ '10:00 AM' ],
       }
@@ -502,6 +511,7 @@ def Test_AddGuardiansTalkOccurrence_TestHttpRequest_ExpectMapsPayloadAndSuccessR
       {
          'talk': TALK_NAME,
          'location': TALK_LOCATION,
+         'enclosure_name': None,
          'date': ADD_OCCURRENCE_DATE,
          'talk_times': [ '3:00 PM' ],
       }

@@ -11,12 +11,14 @@ class GuardiansTalkDiff:
          is_deleted: bool,
          start_time: Types.ScheduleTimeKey = None,
          end_time: Types.ScheduleTimeKey = None,
-         location: str | None = None ) -> None:
+         location: str = '',
+         enclosure_name: str | None = None ) -> None:
       self.name = name
       self.is_deleted = is_deleted
       self.start_time = start_time
       self.end_time = end_time
       self.location = location
+      self.enclosure_name = enclosure_name
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -26,4 +28,5 @@ class GuardiansTalkDiff:
          'start_time': self.start_time,
          'end_time': self.end_time,
          'location': self.location,
+         'enclosure_name': self.enclosure_name,
       }

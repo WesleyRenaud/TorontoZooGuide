@@ -6,6 +6,7 @@ import pytest
 
 from api.animals.search.viewing_spot_key_builder import ViewingSpotKeyBuilder
 from api.guardians.data_access.guardians_talk_animal_record import GuardiansTalkAnimalRecord
+from api.guardians.domain.guardians_talk_identity import GuardiansTalkIdentity
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
@@ -115,10 +116,10 @@ CREATE TABLE ItineraryAnimal (
 """
 
 
-def _talk_stop( *, name: str ) -> ItineraryStop:
+def _talk_stop( *, name: str, enclosure_name: str | None = None ) -> ItineraryStop:
    return ItineraryStop(
       schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
-      item_key=name,
+      item_key=GuardiansTalkIdentity.item_key( name, enclosure_name ),
       walk_node_ids=( 'v-0001', ),
       is_fixed_time=True,
       start_time='11:00 AM',
@@ -130,7 +131,7 @@ def _penguin_loop_pin() -> LoopSchedulePin:
    return LoopSchedulePin(
       loop_id='africa_savanna_canadian_domain',
       viewing_spot_index=1,
-      stop=_talk_stop( name=PENGUIN_TALK ),
+      stop=_talk_stop( name=PENGUIN_TALK, enclosure_name='Outdoor' ),
       start_seconds=DateValues.time_value_in_seconds( '11:00 AM' ),
       end_seconds=DateValues.time_value_in_seconds( '11:30 AM' ),
    )
@@ -152,7 +153,7 @@ def _otter_loop_pin() -> LoopSchedulePin:
       viewing_spot_index=11,
       stop=ItineraryStop(
          schedule_item_kind=ScheduleItemKind.GUARDIANS_TALK,
-         item_key=OTTER_TALK,
+         item_key=GuardiansTalkIdentity.item_key( OTTER_TALK, 'Indoor' ),
          walk_node_ids=( 'v-0001', ),
          is_fixed_time=True,
          start_time='2:00 PM',
@@ -312,7 +313,7 @@ def Test_UncoverForUnavailableTalks_TestDeletedCaribouTalkCoveredAnimal_ExpectTh
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ CARIBOU_LINK ] if talk_name == CARIBOU_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ CARIBOU_LINK ] if talk_name == CARIBOU_TALK else [] )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
       lambda conn, species, exhibit, enclosure_name: 3 * 60 )
@@ -345,7 +346,7 @@ def Test_UncoverForUnavailableTalks_TestDeletedTalkWithoutEnclosureDuration_Expe
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ CARIBOU_LINK ] if talk_name == CARIBOU_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ CARIBOU_LINK ] if talk_name == CARIBOU_TALK else [] )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
       lambda conn, species, exhibit, enclosure_name: None )
@@ -541,7 +542,7 @@ def Test_ApplyAndRestore_TestAfricanLion_ExpectEightMinuteWindow(
    viewing_minutes = 8
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ LION_LINK ] if talk_name == LION_TALK else [] )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
       lambda conn, species, exhibit, enclosure_name: viewing_minutes * 60 )
@@ -610,7 +611,7 @@ def Test_KeysToCover_TestLinkWithoutMatchingAnimalRow_ExpectEmpty(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ LION_LINK ] if talk_name == LION_TALK else [] )
 
    covered = GuardiansTalkAnimalCoverer.keys_to_cover(
       lion_coverer_conn,
@@ -642,7 +643,7 @@ def Test_UncoverForTalk_TestCoveredAnimal_ExpectScheduleCleared(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ LION_LINK ] if talk_name == LION_TALK else [] )
    covered = GuardiansTalkAnimalCoverer.keys_to_cover(
       lion_coverer_conn,
       [ _lion_loop_pin() ],
@@ -686,7 +687,7 @@ def Test_UncoverForTalk_TestNotCoveredAnimal_ExpectEmpty(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ LION_LINK ] if talk_name == LION_TALK else [] )
 
    cur = lion_coverer_conn.cursor()
    uncovered = GuardiansTalkAnimalCoverer.uncover_for_talk(
@@ -705,7 +706,7 @@ def Test_RestoreAfterRemoved_TestMissingDuration_ExpectScheduleCleared(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ LION_LINK ] if talk_name == LION_TALK else [] )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.ItineraryDefaultDurationProvider.fetch_enclosure_viewing_default_duration_seconds',
       lambda conn, species, exhibit, enclosure_name: None )
@@ -757,7 +758,7 @@ def Test_UncoverForUnavailableTalks_TestActiveTalk_ExpectNoChange(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ CARIBOU_LINK ] )
+      lambda conn, talk_name, **_kwargs: [ CARIBOU_LINK ] )
 
    animals = [
       AnimalDiff(
@@ -793,7 +794,7 @@ def Test_UncoverForUnavailableTalks_TestDeletedTalkInvalidTimes_ExpectNoChange(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ CARIBOU_LINK ] )
+      lambda conn, talk_name, **_kwargs: [ CARIBOU_LINK ] )
 
    animals = [
       AnimalDiff(
@@ -828,7 +829,7 @@ def Test_UncoverForUnavailableTalks_TestDeletedTalkUnlinkedAnimal_ExpectNoChange
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ CARIBOU_LINK ] )
+      lambda conn, talk_name, **_kwargs: [ CARIBOU_LINK ] )
 
    animals = [
       AnimalDiff(
@@ -856,7 +857,7 @@ def Test_RestoreAfterRemoved_TestUncoveredLinkedAnimal_ExpectSkipped(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.guardians_talk_animal_coverer.GuardiansTalkAnimalProvider.fetch_animal_links',
-      lambda conn, talk_name: [ LION_LINK ] if talk_name == LION_TALK else [] )
+      lambda conn, talk_name, **_kwargs: [ LION_LINK ] if talk_name == LION_TALK else [] )
 
    cur = lion_coverer_conn.cursor()
    restored = GuardiansTalkAnimalCoverer.restore_after_removed(

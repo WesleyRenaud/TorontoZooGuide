@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ...guardians.domain.guardians_talk_identity import GuardiansTalkIdentity
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from .itinerary_save_input import ItinerarySaveInput
@@ -38,6 +39,9 @@ class ItinerarySaveInputMapper():
                   item[ 'start_time' ] ),
                end_time=DateValues.normalize_itinerary_schedule_time(
                   item[ 'end_time' ] ),
+               location=ValueConversion.as_trimmed_string( item.get( 'location' ) ),
+               enclosure_name=GuardiansTalkIdentity.enclosure_name(
+                  item.get( 'enclosure_name' ) ),
             )
          )
 

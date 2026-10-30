@@ -1,0 +1,243 @@
+ALTER TABLE MeetTheGuardiansTalk ADD COLUMN ENCLOSURE_NAME TEXT;
+
+DROP TABLE IF EXISTS MeetTheGuardiansTalkMigration;
+
+CREATE TABLE MeetTheGuardiansTalkMigration
+(  NAME             VARCHAR(64) NOT NULL,
+   LOCATION         VARCHAR(64) NOT NULL,
+   ENCLOSURE_NAME   VARCHAR(64),
+   X_COORD          FLOAT       NOT NULL,
+   Y_COORD          FLOAT       NOT NULL,
+   MAXIMUM_DURATION INTEGER     NOT NULL,
+   FOREIGN KEY (LOCATION)  REFERENCES Exhibit(NAME),
+   PRIMARY KEY (NAME, LOCATION, ENCLOSURE_NAME) );
+
+INSERT INTO MeetTheGuardiansTalkMigration (
+   NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   X_COORD,
+   Y_COORD,
+   MAXIMUM_DURATION
+)
+SELECT
+   NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   X_COORD,
+   Y_COORD,
+   MAXIMUM_DURATION
+FROM MeetTheGuardiansTalk;
+
+DROP TABLE MeetTheGuardiansTalk;
+
+ALTER TABLE MeetTheGuardiansTalkMigration RENAME TO MeetTheGuardiansTalk;
+
+ALTER TABLE GuardiansTalkSchedule ADD COLUMN ENCLOSURE_NAME TEXT;
+
+DROP TABLE IF EXISTS GuardiansTalkScheduleMigration;
+
+CREATE TABLE GuardiansTalkScheduleMigration
+(  TALK_NAME              VARCHAR(64) NOT NULL,
+   LOCATION               VARCHAR(64) NOT NULL,
+   ENCLOSURE_NAME         VARCHAR(64),
+   SCHEDULE_START_DATE    DATE        NOT NULL,
+   SCHEDULE_END_DATE      DATE,
+   MONDAY                 BOOL        NOT NULL DEFAULT 0,
+   TUESDAY                BOOL        NOT NULL DEFAULT 0,
+   WEDNESDAY              BOOL        NOT NULL DEFAULT 0,
+   THURSDAY               BOOL        NOT NULL DEFAULT 0,
+   FRIDAY                 BOOL        NOT NULL DEFAULT 0,
+   SATURDAY               BOOL        NOT NULL DEFAULT 0,
+   SUNDAY                 BOOL        NOT NULL DEFAULT 0,
+   TALK_TIME              TEXT        NOT NULL,
+   SCHEDULE_MESSAGE       TEXT,
+   PRIMARY KEY (TALK_NAME, LOCATION, ENCLOSURE_NAME, TALK_TIME, SCHEDULE_START_DATE),
+   FOREIGN KEY (TALK_NAME, LOCATION, ENCLOSURE_NAME)
+      REFERENCES MeetTheGuardiansTalk(NAME, LOCATION, ENCLOSURE_NAME) );
+
+INSERT INTO GuardiansTalkScheduleMigration (
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   SCHEDULE_START_DATE,
+   SCHEDULE_END_DATE,
+   MONDAY,
+   TUESDAY,
+   WEDNESDAY,
+   THURSDAY,
+   FRIDAY,
+   SATURDAY,
+   SUNDAY,
+   TALK_TIME,
+   SCHEDULE_MESSAGE
+)
+SELECT
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   SCHEDULE_START_DATE,
+   SCHEDULE_END_DATE,
+   MONDAY,
+   TUESDAY,
+   WEDNESDAY,
+   THURSDAY,
+   FRIDAY,
+   SATURDAY,
+   SUNDAY,
+   TALK_TIME,
+   SCHEDULE_MESSAGE
+FROM GuardiansTalkSchedule;
+
+DROP TABLE GuardiansTalkSchedule;
+
+ALTER TABLE GuardiansTalkScheduleMigration RENAME TO GuardiansTalkSchedule;
+
+ALTER TABLE GuardiansTalkOccurrence ADD COLUMN ENCLOSURE_NAME TEXT;
+
+DROP TABLE IF EXISTS GuardiansTalkOccurrenceMigration;
+
+CREATE TABLE GuardiansTalkOccurrenceMigration
+(  TALK_NAME             VARCHAR(64) NOT NULL,
+   LOCATION              VARCHAR(64) NOT NULL,
+   ENCLOSURE_NAME        VARCHAR(64),
+   OCCURRENCE_DATE       DATE        NOT NULL,
+   TALK_TIME             TEXT        NOT NULL,
+   PRIMARY KEY (TALK_NAME, LOCATION, ENCLOSURE_NAME, OCCURRENCE_DATE, TALK_TIME),
+   FOREIGN KEY (TALK_NAME, LOCATION, ENCLOSURE_NAME)
+      REFERENCES MeetTheGuardiansTalk(NAME, LOCATION, ENCLOSURE_NAME) );
+
+INSERT INTO GuardiansTalkOccurrenceMigration (
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   OCCURRENCE_DATE,
+   TALK_TIME
+)
+SELECT
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   OCCURRENCE_DATE,
+   TALK_TIME
+FROM GuardiansTalkOccurrence;
+
+DROP TABLE GuardiansTalkOccurrence;
+
+ALTER TABLE GuardiansTalkOccurrenceMigration RENAME TO GuardiansTalkOccurrence;
+
+ALTER TABLE GuardiansTalkCancellation ADD COLUMN ENCLOSURE_NAME TEXT;
+
+DROP TABLE IF EXISTS GuardiansTalkCancellationMigration;
+
+CREATE TABLE GuardiansTalkCancellationMigration
+(  TALK_NAME             VARCHAR(64) NOT NULL,
+   LOCATION              VARCHAR(64) NOT NULL,
+   ENCLOSURE_NAME        VARCHAR(64),
+   CANCELLATION_DATE     DATE        NOT NULL,
+   TALK_TIME             TEXT        NOT NULL,
+   PRIMARY KEY (TALK_NAME, LOCATION, ENCLOSURE_NAME, CANCELLATION_DATE, TALK_TIME),
+   FOREIGN KEY (TALK_NAME, LOCATION, ENCLOSURE_NAME)
+      REFERENCES MeetTheGuardiansTalk(NAME, LOCATION, ENCLOSURE_NAME) );
+
+INSERT INTO GuardiansTalkCancellationMigration (
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   CANCELLATION_DATE,
+   TALK_TIME
+)
+SELECT
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   CANCELLATION_DATE,
+   TALK_TIME
+FROM GuardiansTalkCancellation;
+
+DROP TABLE GuardiansTalkCancellation;
+
+ALTER TABLE GuardiansTalkCancellationMigration RENAME TO GuardiansTalkCancellation;
+
+DROP TABLE IF EXISTS GuardiansTalkAnimalMigration;
+
+CREATE TABLE GuardiansTalkAnimalMigration
+(  TALK_NAME             VARCHAR(64) NOT NULL,
+   LOCATION              VARCHAR(64) NOT NULL,
+   ENCLOSURE_NAME        VARCHAR(64),
+   SPECIES               VARCHAR(64) NOT NULL,
+   EXHIBIT               VARCHAR(64) NOT NULL,
+   PRIMARY KEY (TALK_NAME, LOCATION, ENCLOSURE_NAME, SPECIES, EXHIBIT),
+   FOREIGN KEY (TALK_NAME, LOCATION, ENCLOSURE_NAME)
+      REFERENCES MeetTheGuardiansTalk(NAME, LOCATION, ENCLOSURE_NAME),
+   FOREIGN KEY (SPECIES, EXHIBIT) REFERENCES Enclosure(SPECIES, EXHIBIT),
+   FOREIGN KEY (SPECIES, EXHIBIT, ENCLOSURE_NAME)
+      REFERENCES EnclosureViewing(SPECIES, EXHIBIT, NAME) );
+
+INSERT INTO GuardiansTalkAnimalMigration (
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   SPECIES,
+   EXHIBIT
+)
+SELECT
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   SPECIES,
+   EXHIBIT
+FROM GuardiansTalkAnimal;
+
+DROP TABLE GuardiansTalkAnimal;
+
+ALTER TABLE GuardiansTalkAnimalMigration RENAME TO GuardiansTalkAnimal;
+
+ALTER TABLE ItineraryGuardiansTalk ADD COLUMN LOCATION TEXT;
+
+ALTER TABLE ItineraryGuardiansTalk ADD COLUMN ENCLOSURE_NAME TEXT;
+
+UPDATE ItineraryGuardiansTalk
+SET LOCATION = (
+   SELECT t.LOCATION
+   FROM MeetTheGuardiansTalk t
+   WHERE t.NAME = ItineraryGuardiansTalk.TALK_NAME
+      AND t.ENCLOSURE_NAME IS ItineraryGuardiansTalk.ENCLOSURE_NAME
+   ORDER BY t.LOCATION
+   LIMIT 1
+)
+WHERE LOCATION IS NULL;
+
+DROP TABLE IF EXISTS ItineraryGuardiansTalkMigration;
+
+CREATE TABLE ItineraryGuardiansTalkMigration
+(  TALK_NAME            VARCHAR(64) NOT NULL,
+   LOCATION             VARCHAR(64) NOT NULL,
+   ENCLOSURE_NAME       VARCHAR(64),
+   START_TIME           TEXT        NOT NULL,
+   END_TIME             TEXT        NOT NULL,
+   IS_DELETED           BOOL        NOT NULL DEFAULT 0,
+   PRIMARY KEY ( TALK_NAME, LOCATION, ENCLOSURE_NAME ),
+   FOREIGN KEY ( TALK_NAME, LOCATION, ENCLOSURE_NAME )
+      REFERENCES MeetTheGuardiansTalk(NAME, LOCATION, ENCLOSURE_NAME) );
+
+INSERT INTO ItineraryGuardiansTalkMigration (
+   TALK_NAME,
+   LOCATION,
+   ENCLOSURE_NAME,
+   START_TIME,
+   END_TIME,
+   IS_DELETED
+)
+SELECT
+   TALK_NAME,
+   IFNULL( LOCATION, '' ),
+   ENCLOSURE_NAME,
+   START_TIME,
+   END_TIME,
+   IS_DELETED
+FROM ItineraryGuardiansTalk;
+
+DROP TABLE ItineraryGuardiansTalk;
+
+ALTER TABLE ItineraryGuardiansTalkMigration RENAME TO ItineraryGuardiansTalk;

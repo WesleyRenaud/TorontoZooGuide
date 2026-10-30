@@ -8,6 +8,7 @@ export class CancelGuardiansTalkController {
    static createCancelGuardiansTalkOccurrenceController({
       talkNameEl,
       locationEl,
+      enclosureEl,
       dateEl,
       timesEl,
       talkLocationFilterController = null,
@@ -45,12 +46,13 @@ export class CancelGuardiansTalkController {
          }
       }
 
-      async function submitOccurrenceCancellation({ talk, location, date, times }) {
+      async function submitOccurrenceCancellation({ talk, location, date, times, enclosure_name }) {
          return ConsoleOperationsClient.cancelGuardiansTalkOccurrence({
             talk,
             location,
             date,
             times,
+            enclosure_name,
          });
       }
 
@@ -69,6 +71,7 @@ export class CancelGuardiansTalkController {
          getSelectionValues: () => ({
             talk: ControllerHelper.getFieldValue(talkNameEl),
             location: ControllerHelper.getFieldValue(locationEl),
+            enclosure_name: ControllerHelper.getFieldValue(enclosureEl),
          }),
          validateSelection,
          prepareForm,

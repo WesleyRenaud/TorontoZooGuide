@@ -49,7 +49,7 @@ export class SearchResultPresenter {
          getSubtitle: WildEncounterSelectorModel.getWildEncounterSubtitle,
       },
       guardiansTalk: {
-         getTitle: GuardiansTalkSelectorModel.getGuardiansTalkName,
+         getTitle: GuardiansTalkSelectorModel.getGuardiansTalkDisplayName,
          getTitleSuffix: GuardiansTalkSelectorModel.getGuardiansTalkTitleSuffix,
          getImageName: GuardiansTalkSelectorModel.getGuardiansTalkName,
          getSubtitle: GuardiansTalkSelectorModel.getGuardiansTalkSubtitle,

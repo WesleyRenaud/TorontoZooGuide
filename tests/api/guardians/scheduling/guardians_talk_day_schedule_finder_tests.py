@@ -12,14 +12,16 @@ def _talk(
       *,
       name: str = 'African Lion',
       start_time: str = TALK_TIME,
-      is_available: bool = True ) -> GuardiansTalk:
+      is_available: bool = True,
+      enclosure_name: str | None = None ) -> GuardiansTalk:
    return GuardiansTalk(
       name=name,
       location='Africa Savanna',
       x_coord=STATION_COORD,
       y_coord=STATION_COORD,
       start_time=start_time,
-      is_available=is_available )
+      is_available=is_available,
+      enclosure_name=enclosure_name )
 
 
 def Test_FindOnDaySchedule_TestInvalidStartTime_ExpectNone() -> None:
@@ -28,7 +30,8 @@ def Test_FindOnDaySchedule_TestInvalidStartTime_ExpectNone() -> None:
    match = GuardiansTalkDayScheduleFinder.find_on_day_schedule(
       day_schedule,
       'African Lion',
-      start_time='not-a-time' )
+      start_time='not-a-time',
+      enclosure_name=None )
 
    assert match is None
 
@@ -39,7 +42,8 @@ def Test_FindOnDaySchedule_TestMatchingTalk_ExpectTalk() -> None:
    match = GuardiansTalkDayScheduleFinder.find_on_day_schedule(
       day_schedule,
       'african lion',
-      start_time=TALK_TIME )
+      start_time=TALK_TIME,
+      enclosure_name=None )
 
    assert match is not None
    assert match.name == 'African Lion'
@@ -52,7 +56,8 @@ def Test_FindOnDaySchedule_TestBlankTalkName_ExpectNone() -> None:
    match = GuardiansTalkDayScheduleFinder.find_on_day_schedule(
       day_schedule,
       '   ',
-      start_time=TALK_TIME )
+      start_time=TALK_TIME,
+      enclosure_name=None )
 
    assert match is None
 
@@ -63,7 +68,21 @@ def Test_FindOnDaySchedule_TestWrongStartTime_ExpectNone() -> None:
    match = GuardiansTalkDayScheduleFinder.find_on_day_schedule(
       day_schedule,
       'African Lion',
-      start_time='11:00 AM' )
+      start_time='11:00 AM',
+      enclosure_name=None )
+
+   assert match is None
+
+
+def Test_FindOnDaySchedule_TestDifferentEnclosure_ExpectNone() -> None:
+   enclosure_name = 'Outdoor'
+   day_schedule = [ _talk( enclosure_name=enclosure_name ) ]
+
+   match = GuardiansTalkDayScheduleFinder.find_on_day_schedule(
+      day_schedule,
+      'African Lion',
+      start_time=TALK_TIME,
+      enclosure_name='Giraffe House' )
 
    assert match is None
 
@@ -78,7 +97,8 @@ def Test_FindOnDaySchedule_TestUnavailableTalk_ExpectUnavailableMatch() -> None:
    match = GuardiansTalkDayScheduleFinder.find_on_day_schedule(
       day_schedule,
       'African Lion',
-      start_time=TALK_TIME )
+      start_time=TALK_TIME,
+      enclosure_name=None )
 
    assert match is not None
    assert match.is_available is False

@@ -12,6 +12,8 @@ class ItineraryGuardiansTalkRecord:
    start_time: Types.ScheduleTimeKey
    end_time: Types.ScheduleTimeKey
    is_deleted: bool
+   location: str = ''
+   enclosure_name: str | None = None
 
 
    def name_key( self ) -> str:

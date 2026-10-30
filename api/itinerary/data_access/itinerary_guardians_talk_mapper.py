@@ -12,7 +12,9 @@ class ItineraryGuardiansTalkMapper():
          talk_name=row[ 'TALK_NAME' ],
          start_time=row[ 'START_TIME' ],
          end_time=row[ 'END_TIME' ],
-         is_deleted=ValueConversion.as_boolean( row[ 'IS_DELETED' ] ) )
+         is_deleted=ValueConversion.as_boolean( row[ 'IS_DELETED' ] ),
+         location=row[ 'LOCATION' ],
+         enclosure_name=row[ 'ENCLOSURE_NAME' ] )
 
 
    @classmethod

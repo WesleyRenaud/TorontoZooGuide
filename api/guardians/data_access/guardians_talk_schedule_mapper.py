@@ -22,7 +22,8 @@ class GuardiansTalkScheduleMapper():
          friday=row[ 'FRIDAY' ],
          saturday=row[ 'SATURDAY' ],
          sunday=row[ 'SUNDAY' ],
-         talk_time=row[ 'TALK_TIME' ] )
+         talk_time=row[ 'TALK_TIME' ],
+         enclosure_name=row[ 'ENCLOSURE_NAME' ] )
 
 
    @classmethod

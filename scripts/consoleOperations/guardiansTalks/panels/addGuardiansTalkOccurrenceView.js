@@ -21,6 +21,13 @@ export class AddGuardiansTalkOccurrenceView {
                inputId: 'addGuardiansTalkOccurrenceTalkName',
                emptyOptionLabel: Strings.placeholders.talk,
             }),
+            ConsoleSelectFieldBuilder.createSelectField({
+               label: Strings.labels.enclosure,
+               inputId: 'addGuardiansTalkOccurrenceEnclosureName',
+               emptyOptionLabel: Strings.placeholders.enclosure,
+               disabled: true,
+               invisible: true,
+            }),
             ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.date,
                inputId: 'addGuardiansTalkOccurrenceDate',

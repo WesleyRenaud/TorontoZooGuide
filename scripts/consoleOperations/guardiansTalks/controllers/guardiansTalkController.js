@@ -8,6 +8,7 @@ export class GuardiansTalkController {
    static createGuardiansTalkScheduleController({
       talkNameEl,
       locationEl,
+      enclosureEl,
       startDateEl,
       endDateEl,
       scheduleRowsEl,
@@ -26,6 +27,7 @@ export class GuardiansTalkController {
          getSelectionValues: () => ({
             talk: ControllerHelper.getFieldValue(talkNameEl),
             location: ControllerHelper.getFieldValue(locationEl),
+            enclosure_name: ControllerHelper.getFieldValue(enclosureEl),
          }),
          validateSelection: ({ talk, location }) => {
             if (!location) {

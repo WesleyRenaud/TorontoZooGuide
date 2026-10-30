@@ -36,7 +36,7 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestShowAndSubmitSucces
    ControllerHelper.resetFormFields = () => {};
    ScheduleTimesCheckboxField.getSelectedScheduleTimes = () => times;
    ConsoleOperationsClient.cancelGuardiansTalkOccurrence = async (payload) => {
-      assert.deepEqual(payload, { talk, location, date, times });
+      assert.deepEqual(payload, { talk, location, date, times, enclosure_name: '' });
       return { success: true, talk, location, date, times };
    };
 
@@ -162,7 +162,10 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestValidationAndFailur
       const cancelButtonEl = document.createElement('button');
       const talkNameEl = document.createElement('select');
       const locationEl = document.createElement('select');
+      const enclosureFieldEl = document.createElement('div');
+      const enclosureEl = document.createElement('select');
       const dateEl = document.createElement('input');
+      enclosureFieldEl.appendChild(enclosureEl);
 
       const controller = CancelGuardiansTalkController.createCancelGuardiansTalkOccurrenceController({
          showButtonEl,
@@ -172,6 +175,7 @@ test('Test_CreateCancelGuardiansTalkOccurrenceController_TestValidationAndFailur
          statusEl: {},
          talkNameEl,
          locationEl,
+         enclosureEl,
          dateEl,
          timesEl: {},
          activatePanel: () => {},

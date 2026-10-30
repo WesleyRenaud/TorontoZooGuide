@@ -618,7 +618,7 @@ test('Test_BuildGuardiansAndWildRows_TestScheduleMetadata_ExpectRendered', () =>
    );
    assert.equal(
       imageSrcFor(talkRow),
-      'images/details/guardians-talks/amur-tiger.png'
+      'images/details/guardians-talks/eurasia-wilds/amur-tiger.png'
    );
    assert.equal(textFor(talkRow, '.itin-panel-meta'), 'Location: Eurasia Wilds');
    assert.equal(

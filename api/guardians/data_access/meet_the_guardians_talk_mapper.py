@@ -12,7 +12,8 @@ class MeetTheGuardiansTalkMapper():
          location=row[ 'LOCATION' ],
          x_coord=row[ 'X_COORD' ],
          y_coord=row[ 'Y_COORD' ],
-         maximum_duration=row[ 'MAXIMUM_DURATION' ] )
+         maximum_duration=row[ 'MAXIMUM_DURATION' ],
+         enclosure_name=row[ 'ENCLOSURE_NAME' ] )
 
 
    @classmethod

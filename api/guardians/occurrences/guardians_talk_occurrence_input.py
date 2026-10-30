@@ -9,3 +9,4 @@ class GuardiansTalkOccurrenceInput:
    location: str
    occurrence_date: str
    talk_time: str
+   enclosure_name: str | None = None

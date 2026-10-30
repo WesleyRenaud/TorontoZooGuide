@@ -32,6 +32,7 @@ test('Test_CreateGuardiansTalkSchedulePanel_TestDefault_ExpectPanel', () => {
    assert.ok(panelEl.textContent.includes(Strings.panelTitles.guardiansTalkSchedule));
    assert.ok(_findById(panelEl, 'guardiansTalkScheduleLocation'));
    assert.ok(_findById(panelEl, 'guardiansTalkScheduleTalkName'));
+   assert.ok(_findById(panelEl, 'guardiansTalkScheduleEnclosureName'));
    assert.ok(_findById(panelEl, 'guardiansTalkScheduleStartDate'));
    assert.ok(_findById(panelEl, 'guardiansTalkScheduleEndDate'));
    assert.ok(_findById(panelEl, 'guardiansTalkScheduleScheduleRows'));

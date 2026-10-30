@@ -48,6 +48,46 @@ test('Test_FromWire_TestEmptyStart_ExpectNull', () => {
 });
 
 
+test('Test_FromWire_TestEnclosure_ExpectKey', () => {
+   const name = 'Masai Giraffe';
+   const startTime = '11:30';
+   const endTime = '12:00';
+   const enclosureName = 'Giraffe House';
+   const wire = [name, startTime, endTime, enclosureName].join(ScheduleItemKeySeparator.VALUE);
+
+   const key = GuardiansTalkScheduleItemKey.fromWire(wire);
+
+   assert.deepEqual(
+      key,
+      new GuardiansTalkScheduleItemKey(name, startTime, endTime, enclosureName)
+   );
+});
+
+
+test('Test_FromWire_TestBlankEnclosure_ExpectTimedKey', () => {
+   const name = 'Masai Giraffe';
+   const startTime = '11:30';
+   const endTime = '12:00';
+   const wire = [name, startTime, endTime, '   '].join(ScheduleItemKeySeparator.VALUE);
+
+   const key = GuardiansTalkScheduleItemKey.fromWire(wire);
+
+   assert.deepEqual(key, new GuardiansTalkScheduleItemKey(name, startTime, endTime));
+});
+
+
+test('Test_FromWire_TestBlankEndWithEnclosure_ExpectNull', () => {
+   const name = 'Masai Giraffe';
+   const startTime = '11:30';
+   const enclosureName = 'Outdoor';
+   const wire = [name, startTime, '   ', enclosureName].join(ScheduleItemKeySeparator.VALUE);
+
+   const key = GuardiansTalkScheduleItemKey.fromWire(wire);
+
+   assert.equal(key, null);
+});
+
+
 test('Test_FromWire_TestEmptyEnd_ExpectNull', () => {
    const name = 'Amur Tiger';
    const startTime = '11:30';
@@ -89,6 +129,27 @@ test('Test_FromRow_TestTalkNameAlias_ExpectKey', () => {
 });
 
 
+test('Test_FromRow_TestEnclosure_ExpectKey', () => {
+   const name = 'Masai Giraffe';
+   const startTime = '11:30';
+   const endTime = '12:00';
+   const enclosureName = 'Outdoor';
+   const row = {
+      name,
+      start_time: startTime,
+      end_time: endTime,
+      enclosure_name: enclosureName,
+   };
+
+   const key = GuardiansTalkScheduleItemKey.fromRow(row);
+
+   assert.deepEqual(
+      key,
+      new GuardiansTalkScheduleItemKey(name, startTime, endTime, enclosureName)
+   );
+});
+
+
 test('Test_FromRow_TestMissingStart_ExpectNull', () => {
    const name = 'Amur Tiger';
    const row = { name };
@@ -96,6 +157,22 @@ test('Test_FromRow_TestMissingStart_ExpectNull', () => {
    const key = GuardiansTalkScheduleItemKey.fromRow(row);
 
    assert.equal(key, null);
+});
+
+
+test('Test_ToWire_TestEnclosure_ExpectJoined', () => {
+   const name = 'Masai Giraffe';
+   const startTime = '11:30';
+   const endTime = '12:00';
+   const enclosureName = 'Outdoor';
+   const key = new GuardiansTalkScheduleItemKey(name, startTime, endTime, enclosureName);
+
+   const wire = key.toWire();
+
+   assert.equal(
+      wire,
+      [name, startTime, endTime, enclosureName].join(ScheduleItemKeySeparator.VALUE)
+   );
 });
 
 

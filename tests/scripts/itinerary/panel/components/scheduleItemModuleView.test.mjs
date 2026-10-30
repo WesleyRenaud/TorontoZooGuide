@@ -52,7 +52,7 @@ test('Test_BuildSearchRowRenderer_TestGuardiansTalk_ExpectTalkTitle', () => {
          ScheduleItemKind.GUARDIANS_TALK.itemType
       );
 
-      assert.equal(renderer().getTitle, GuardiansTalkSelectorModel.getGuardiansTalkName);
+      assert.equal(renderer().getTitle, GuardiansTalkSelectorModel.getGuardiansTalkDisplayName);
    } finally {
       ResultRenderer.createDefaultSelectorRowLeftRenderer = originalCreate;
    }

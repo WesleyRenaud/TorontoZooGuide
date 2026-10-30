@@ -46,11 +46,13 @@ class GuardiansTalkItineraryItemScheduler():
          day=saved_itinerary.day(),
          year=saved_itinerary.year(),
          talk_name=guardians_talk_key.name,
-         start_time=guardians_talk_key.start_time )
+         start_time=guardians_talk_key.start_time,
+         enclosure_name=guardians_talk_key.enclosure_name )
 
       return ScheduledOccurrenceBuilder.guardians_talk(
          guardians_talk_key.name,
-         talk )
+         talk,
+         enclosure_name=guardians_talk_key.enclosure_name )
 
 
    @classmethod
@@ -70,6 +72,8 @@ class GuardiansTalkItineraryItemScheduler():
             start_time=guardians_talk_diff.start_time,
             end_time=guardians_talk_diff.end_time,
             is_deleted=guardians_talk_diff.is_deleted,
+            location=guardians_talk_diff.location,
+            enclosure_name=guardians_talk_key.enclosure_name,
          )
 
          if not scheduled:

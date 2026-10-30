@@ -1,4 +1,6 @@
+import { AnimalDisplayFormatter } from '../../../animals/animalDisplayFormatter.js';
 import { ValueNormalizer } from '../../../api/valueNormalizer.js';
+import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
 import { GuardiansTalkScheduleItemKey } from './guardiansTalkScheduleItemKey.js';
 import { ScheduledOccurrencePresenter } from '../../scheduledOccurrencePresenter.js';
 import { ScheduledOccurrenceTimeModel } from '../../scheduledOccurrenceTimeModel.js';
@@ -9,6 +11,17 @@ export class GuardiansTalkSelectorModel {
       return typeof row?.name === 'string'
          ? row.name
          : '';
+   }
+
+   static getGuardiansTalkEnclosureName(row) {
+      return ValueNormalizer.asTrimmedString(row?.enclosure_name);
+   }
+
+   static getGuardiansTalkDisplayName(row) {
+      return AnimalDisplayFormatter.formatSpeciesEnclosureLine(
+         GuardiansTalkSelectorModel.getGuardiansTalkName(row),
+         GuardiansTalkSelectorModel.getGuardiansTalkEnclosureName(row)
+      );
    }
 
    static getGuardiansTalkKey(row) {
@@ -63,15 +76,20 @@ export class GuardiansTalkSelectorModel {
    }
 
    static buildGuardiansTalkImageSrc(row) {
-      return ScheduledOccurrencePresenter.buildOccurrenceDetailImageSrc(
-         'guardians-talks',
+      const locationFile = AssetKeyNormalizer.normalize(
+         GuardiansTalkSelectorModel.getGuardiansTalkLocation(row)
+      );
+      const nameFile = AssetKeyNormalizer.normalize(
          GuardiansTalkSelectorModel.getGuardiansTalkName(row)
       );
+
+      return `../images/details/guardians-talks/${locationFile}/${nameFile}.png`;
    }
 
    static readGuardiansTalkStoredFields(item) {
       return {
          location: ValueNormalizer.asTrimmedString(item?.location),
+         enclosure_name: GuardiansTalkSelectorModel.getGuardiansTalkEnclosureName(item),
          start_time: ValueNormalizer.asTrimmedString(item?.start_time),
          end_time: ValueNormalizer.asTrimmedString(item?.end_time),
       };
@@ -80,6 +98,7 @@ export class GuardiansTalkSelectorModel {
    static buildGuardiansTalkSelectionFields(row) {
       return {
          location: GuardiansTalkSelectorModel.getGuardiansTalkLocation(row),
+         enclosure_name: GuardiansTalkSelectorModel.getGuardiansTalkEnclosureName(row),
          start_time: GuardiansTalkSelectorModel.getGuardiansTalkScheduleStart(row),
          end_time: ValueNormalizer.asTrimmedString(row?.end_time),
       };

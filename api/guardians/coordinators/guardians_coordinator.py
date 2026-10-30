@@ -13,6 +13,7 @@ from ..data_access.guardians_talk_schedule_provider import GuardiansTalkSchedule
 from ..data_access.meet_the_guardians_talk_provider import MeetTheGuardiansTalkProvider
 from ..domain.guardians_talk_builder import GuardiansTalkBuilder
 from ..domain.guardians_talk_linked_animals_builder import GuardiansTalkLinkedAnimalsBuilder
+from ..domain.guardians_talk_option import GuardiansTalkOption
 from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ..itinerary.itinerary_guardians_talks_builder import ItineraryGuardiansTalksBuilder
 from ...models import GuardiansTalk
@@ -46,6 +47,7 @@ class GuardiansCoordinator():
          end_date: Types.DateInput,
          message: str,
          *,
+         enclosure_name: str,
          schedule_rows: list[ dict[ str, object ] ] | None = None ) -> list[ GuardiansTalkScheduleInput ]:
       resolved_schedule_rows = GuardiansTalkScheduleRowInput.parse_rows( schedule_rows )
 
@@ -63,7 +65,8 @@ class GuardiansCoordinator():
             friday=schedule_row.friday,
             saturday=schedule_row.saturday,
             sunday=schedule_row.sunday,
-            message=message )
+            message=message,
+            enclosure_name=enclosure_name )
          for schedule_row in resolved_schedule_rows
       ]
 
@@ -97,14 +100,14 @@ class GuardiansCoordinator():
 
 
    @classmethod
-   def get_guardians_talk_names_at_location( cls, location: str ) -> list[ str ]:
+   def get_guardians_talk_names_at_location( cls, location: str ) -> list[ GuardiansTalkOption ]:
       return MeetTheGuardiansTalkProvider.fetch_guardians_talk_names_at_location(
          RequestConnectionProvider.get(),
          location=location )
 
 
    @classmethod
-   def get_guardians_talk_schedule_options( cls, location: str ) -> list[ str ]:
+   def get_guardians_talk_schedule_options( cls, location: str ) -> list[ GuardiansTalkOption ]:
       return GuardiansTalkScheduleNameProvider.fetch_scheduled_talk_names(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key(),
@@ -123,21 +126,26 @@ class GuardiansCoordinator():
          cls,
          talk: str,
          location: str,
-         days_ahead: int = Constants.SCHEDULED_OCCURRENCE_DAYS_AHEAD ) -> list[ ScheduledOccurrence ]:
+         days_ahead: int = Constants.SCHEDULED_OCCURRENCE_DAYS_AHEAD,
+         *,
+         enclosure_name: str ) -> list[ ScheduledOccurrence ]:
       conn = RequestConnectionProvider.get()
       schedule_records = GuardiansTalkScheduleProvider.fetch_schedule_records_for_occurrences(
          conn,
          talk_name=talk,
-         location=location )
+         location=location,
+         enclosure_name=enclosure_name )
       cancellation_records = GuardiansTalkCancellationProvider.fetch_cancellation_records(
          conn,
          talk_name=talk,
-         location=location )
+         location=location,
+         enclosure_name=enclosure_name )
       today = DateValues.parse_date_value( DateValues.today_date_key() )
       occurrence_records = GuardiansTalkOccurrenceProvider.fetch_occurrence_records(
          conn,
          talk_name=talk,
          location=location,
+         enclosure_name=enclosure_name,
          start_date=today.isoformat(),
          end_date=( today + timedelta( days=days_ahead ) ).isoformat() )
 
@@ -168,6 +176,7 @@ class GuardiansCoordinator():
          end_date: Types.DateInput,
          message: str = '',
          *,
+         enclosure_name: str,
          schedule_rows: list[ dict[ str, object ] ] | None = None ) -> bool:
       schedules = cls._build_guardians_talk_schedules(
          talk,
@@ -175,7 +184,8 @@ class GuardiansCoordinator():
          start_date,
          end_date,
          message,
-         schedule_rows=schedule_rows )
+         schedule_rows=schedule_rows,
+         enclosure_name=enclosure_name )
 
       return cls._save_guardians_talk_schedules(
          schedules,
@@ -191,6 +201,7 @@ class GuardiansCoordinator():
          end_date: Types.DateInput,
          message: str = '',
          *,
+         enclosure_name: str,
          schedule_rows: list[ dict[ str, object ] ] | None = None ) -> bool:
       schedules = cls._build_guardians_talk_schedules(
          talk,
@@ -198,7 +209,8 @@ class GuardiansCoordinator():
          start_date,
          end_date,
          message,
-         schedule_rows=schedule_rows )
+         schedule_rows=schedule_rows,
+         enclosure_name=enclosure_name )
 
       return cls._save_guardians_talk_schedules(
          schedules,
@@ -214,6 +226,7 @@ class GuardiansCoordinator():
          end_date: Types.DateInput,
          message: str = '',
          *,
+         enclosure_name: str,
          schedule_rows: list[ dict[ str, object ] ] | None = None ) -> bool:
       schedules = cls._build_guardians_talk_schedules(
          talk,
@@ -221,7 +234,8 @@ class GuardiansCoordinator():
          start_date,
          end_date,
          message,
-         schedule_rows=schedule_rows )
+         schedule_rows=schedule_rows,
+         enclosure_name=enclosure_name )
 
       return cls._save_guardians_talk_schedules(
          schedules,
@@ -232,12 +246,15 @@ class GuardiansCoordinator():
    def get_guardians_talk_schedule_times(
          cls,
          talk: str,
-         location: str ) -> list[ str ]:
+         location: str,
+         *,
+         enclosure_name: str ) -> list[ str ]:
       schedule_times = GuardiansTalkScheduleProvider.fetch_schedule_times(
          RequestConnectionProvider.get(),
          talk_name=talk,
          location=location,
-         target_date=DateValues.today_date_key() )
+         target_date=DateValues.today_date_key(),
+         enclosure_name=enclosure_name )
 
       return sorted(
          schedule_times,
@@ -250,14 +267,17 @@ class GuardiansCoordinator():
          talk: str,
          location: str,
          schedule_end_date: Types.DateInput,
-         talk_times: list[ str ] ) -> bool:
+         talk_times: list[ str ],
+         *,
+         enclosure_name: str ) -> bool:
       for talk_time in DateValues.normalize_unique_schedule_times(
             talk_times ):
          schedule_end = GuardiansTalkScheduleEndBuilder.build(
             talk=talk,
             location=location,
             schedule_end_date=schedule_end_date,
-            talk_time=talk_time )
+            talk_time=talk_time,
+            enclosure_name=enclosure_name )
 
          if not GuardiansTalkScheduleProvider.save_schedule_end(
                RequestConnectionProvider.get(),
@@ -273,14 +293,17 @@ class GuardiansCoordinator():
          talk: str,
          location: str,
          date: Types.DateKey,
-         talk_times: list[ str ] ) -> bool:
+         talk_times: list[ str ],
+         *,
+         enclosure_name: str ) -> bool:
       for talk_time in DateValues.normalize_unique_schedule_times(
             talk_times ):
          cancellation = GuardiansTalkCancellationBuilder.build(
             talk=talk,
             location=location,
             date=date,
-            time=talk_time )
+            time=talk_time,
+            enclosure_name=enclosure_name )
 
          if not GuardiansTalkCancellationProvider.save_cancellation(
                RequestConnectionProvider.get(),
@@ -296,7 +319,9 @@ class GuardiansCoordinator():
          talk: str,
          location: str,
          date: Types.DateKey,
-         talk_times: list[ str ] ) -> tuple[ bool, ApiOperationFailure | None ]:
+         talk_times: list[ str ],
+         *,
+         enclosure_name: str ) -> tuple[ bool, ApiOperationFailure | None ]:
       conn = RequestConnectionProvider.get()
 
       for talk_time in DateValues.normalize_unique_schedule_times(
@@ -305,14 +330,16 @@ class GuardiansCoordinator():
             talk=talk,
             location=location,
             date=date,
-            time=talk_time )
+            time=talk_time,
+            enclosure_name=enclosure_name )
 
          if GuardiansTalkOccurrenceProvider.occurrence_exists(
                conn,
                occurrence.talk_name,
                occurrence.location,
                occurrence.occurrence_date,
-               occurrence.talk_time ):
+               occurrence.talk_time,
+               enclosure_name=occurrence.enclosure_name ):
             return (
                False,
                ApiOperationFailure(
@@ -404,6 +431,7 @@ class GuardiansCoordinator():
          year: Types.VisitYear,
          *,
          start_time: str,
+         enclosure_name: str,
          day_schedule: list[ GuardiansTalk ] | None = None ) -> GuardiansTalk | None:
       rows = (
          day_schedule
@@ -417,7 +445,8 @@ class GuardiansCoordinator():
       return GuardiansTalkDayScheduleFinder.find_on_day_schedule(
          rows,
          talk_name,
-         start_time=start_time )
+         start_time=start_time,
+         enclosure_name=enclosure_name )
 
 
    @classmethod

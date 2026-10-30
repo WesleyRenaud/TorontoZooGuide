@@ -57,6 +57,38 @@ def Test_FromWire_TestEmptyTime_ExpectNone() -> None:
    assert key is None
 
 
+def Test_FromWire_TestEnclosure_ExpectEnclosureKept() -> None:
+   start_time = '10:00'
+   end_time = '10:30'
+   enclosure_name = 'Giraffe House'
+   wire = ScheduleItemKeySeparator.VALUE.join(
+      [ GORILLA_TALK, start_time, end_time, enclosure_name ] )
+   normalized_start = DateValues.normalize_schedule_time( start_time )
+   normalized_end = DateValues.normalize_schedule_time( end_time )
+
+   key = GuardiansTalkScheduleItemKey.from_wire( wire )
+
+   assert key == GuardiansTalkScheduleItemKey(
+      name=GORILLA_TALK,
+      start_time=normalized_start,
+      end_time=normalized_end,
+      enclosure_name=enclosure_name )
+   assert key.to_wire() == ScheduleItemKeySeparator.VALUE.join(
+      [ GORILLA_TALK, normalized_start, normalized_end, enclosure_name ] )
+
+
+def Test_FromWire_TestInvalidEnclosureEndTime_ExpectNone() -> None:
+   start_time = '10:00'
+   end_time = 'bad'
+   enclosure_name = 'Outdoor'
+   wire = ScheduleItemKeySeparator.VALUE.join(
+      [ GORILLA_TALK, start_time, end_time, enclosure_name ] )
+
+   key = GuardiansTalkScheduleItemKey.from_wire( wire )
+
+   assert key is None
+
+
 def Test_FromWire_TestInvalidEndTime_ExpectNone() -> None:
    start_time = '10:00'
    end_time = 'bad'
@@ -147,21 +179,30 @@ def Test_PostInit_TestInvalidEndTime_ExpectValueError() -> None:
          end_time=end_time )
 
 
-def Test_FromRow_TestDictSource_ExpectScheduleItemKey() -> None:
-   start_time = '10:00'
-   end_time = '10:30'
-   row = {
-      'talk_name': GORILLA_TALK,
-      'start_time': start_time,
-      'end_time': end_time,
-   }
+def Test_FromRow_TestEnclosure_ExpectEnclosureKept() -> None:
+   enclosure_name = 'Outdoor'
+   record = ItineraryGuardiansTalkRecord(
+      talk_name=GORILLA_TALK,
+      start_time='10:00',
+      end_time='10:30',
+      is_deleted=False,
+      enclosure_name=enclosure_name )
 
-   key = GuardiansTalkScheduleItemKey.from_row( row )
+   key = GuardiansTalkScheduleItemKey.from_row( record )
 
-   assert key == GuardiansTalkScheduleItemKey(
-      name=GORILLA_TALK,
-      start_time=DateValues.normalize_schedule_time( start_time ),
-      end_time=DateValues.normalize_schedule_time( end_time ) )
+   assert key.enclosure_name == record.enclosure_name
+
+
+def Test_FromRow_TestRowWithoutEnclosure_ExpectEmptyEnclosure() -> None:
+   record = ItineraryGuardiansTalkRecord(
+      talk_name=GORILLA_TALK,
+      start_time='10:00',
+      end_time='10:30',
+      is_deleted=False )
+
+   key = GuardiansTalkScheduleItemKey.from_row( record )
+
+   assert key.enclosure_name == record.enclosure_name
 
 
 def Test_FromRow_TestInvalidProvidedEndTime_ExpectNone() -> None:
@@ -195,6 +236,20 @@ def Test_Equality_TestNonKey_ExpectNotImplemented() -> None:
    result = key.__eq__( other )
 
    assert result is NotImplemented
+
+
+def Test_ToWire_TestEnclosureWithoutEndTime_ExpectBlankEndSlot() -> None:
+   start_time = '10:00 AM'
+   enclosure_name = 'Outdoor'
+   key = GuardiansTalkScheduleItemKey(
+      name=GORILLA_TALK,
+      start_time=start_time,
+      enclosure_name=enclosure_name )
+
+   wire = key.to_wire()
+
+   assert wire == ScheduleItemKeySeparator.VALUE.join(
+      [ key.name, key.start_time, '', key.enclosure_name ] )
 
 
 def Test_ToWire_TestWithEndTime_ExpectEndIncluded() -> None:

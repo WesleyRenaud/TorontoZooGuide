@@ -57,7 +57,8 @@ class ItineraryItemUnscheduler():
       if isinstance( schedule_item_key, GuardiansTalkScheduleItemKey ):
          UnscheduleItineraryItemProvider.clear_itinerary_guardians_talk_schedule(
             cur,
-            talk_name=schedule_item_key.name )
+            talk_name=schedule_item_key.name,
+            enclosure_name=schedule_item_key.enclosure_name )
          return
 
       if isinstance( schedule_item_key, WildEncounterScheduleItemKey ):

@@ -19,9 +19,11 @@ class GuardiansTalk:
          is_available: bool = True,
          unavailable_message: str | None = None,
          is_deleted: bool = False,
-         linked_animals: list[ GuardiansTalkLinkedAnimal ] | None = None ) -> None:
+         linked_animals: list[ GuardiansTalkLinkedAnimal ] | None = None,
+         enclosure_name: str | None = None ) -> None:
       self.name = name
       self.location = location
+      self.enclosure_name = enclosure_name
       self.x_coord = x_coord
       self.y_coord = y_coord
       self.start_time = start_time
@@ -41,6 +43,7 @@ class GuardiansTalk:
       return {
          'name': self.name,
          'location': self.location,
+         'enclosure_name': self.enclosure_name,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'start_time': self.start_time,

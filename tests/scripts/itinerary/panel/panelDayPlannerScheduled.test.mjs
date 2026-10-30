@@ -124,7 +124,7 @@ test('Test_Scheduled_TestScheduledGuardiansTalkRendersAsTimelineEventCard_Expect
    assert.match(allTextFor(tigerEvent), /Location: Eurasia Wilds/);
    assert.match(
       imageSrcFor(tigerEvent),
-      /images\/details\/guardians-talks\/amur-tiger\.png$/
+      /images\/details\/guardians-talks\/eurasia-wilds\/amur-tiger\.png$/
    );
    assert.equal(tigerEvent.querySelector('.itinerary-day-scheduled-pill--with-menu'), null);
    assert.equal(menuItems.length, 1);

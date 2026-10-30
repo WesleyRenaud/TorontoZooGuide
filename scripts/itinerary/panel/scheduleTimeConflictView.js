@@ -1,24 +1,16 @@
-import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
 import { ItineraryPanelHelper } from './itineraryPanelHelper.js';
+import { RowPresenter } from './rowPresenter.js';
 import { ScheduleTimeConflictContentBuilder } from './scheduleTimeConflictContentBuilder.js';
 import { ItineraryErrorType } from '../../shared/enums/itineraryErrorType.js';
-import { ScheduleConflictChecker } from '../wizard/scheduleConflictChecker.js';
 import { WildEncounterConflictResolver } from '../wizard/wildEncounterConflictResolver.js';
 
 export class ScheduleTimeConflictView {
-   static buildConflictItemImageSrc(item) {
-      const file = AssetKeyNormalizer.normalize(item?.name || '');
+   static buildGuardiansTalkConflictImageSrc(item) {
+      return RowPresenter.buildImageSrc('guardians-talks', item.location, item.name);
+   }
 
-      if (!file) {
-         return null;
-      }
-
-      const directory = ScheduleConflictChecker.isGuardiansTalkConflictItem(item)
-         ? 'guardians-talks'
-         : 'wild-encounters';
-
-      return `images/details/${directory}/${file}.png`;
-
+   static buildWildEncounterConflictImageSrc(item) {
+      return RowPresenter.buildImageSrc('wild-encounters', item.name);
    }
 
    static createSaveIssuesContent(issues) {

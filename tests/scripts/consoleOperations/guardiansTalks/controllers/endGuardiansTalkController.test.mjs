@@ -38,6 +38,9 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestWiring_ExpectFormCallbac
    talkNameEl.value = 'Tiger Talk';
    const locationEl = document.createElement('select');
    locationEl.value = 'Eurasia';
+   const enclosureFieldEl = document.createElement('div');
+   const enclosureEl = document.createElement('select');
+   enclosureFieldEl.appendChild(enclosureEl);
    const talkLocationFilterController = {
       refreshLocations: async () => { filterCalls.push('refreshLocations'); },
       clear: () => { filterCalls.push('clearTalk'); },
@@ -51,6 +54,7 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestWiring_ExpectFormCallbac
       const result = EndGuardiansTalkController.createEndGuardiansTalkScheduleController({
          talkNameEl,
          locationEl,
+         enclosureEl,
          timesEl: {},
          endDateEl: {},
          talkLocationFilterController,
@@ -63,6 +67,7 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestWiring_ExpectFormCallbac
          talk: 'Tiger Talk',
          location: 'Eurasia',
          times: ['11:00 AM'],
+         enclosure_name: '',
       });
       assert.equal(
          captured.validateSelection({ talk: '', location: '', times: [] }),
@@ -94,12 +99,14 @@ test('Test_CreateEndGuardiansTalkScheduleController_TestWiring_ExpectFormCallbac
             location: 'Eurasia',
             times: ['11:00 AM'],
             endDate: '',
+            enclosure_name: '',
          }),
          {
             talk: 'Tiger',
             location: 'Eurasia',
             times: ['11:00 AM'],
             endDate: null,
+            enclosure_name: '',
          }
       );
 

@@ -35,14 +35,15 @@ test('Test_CreateCancelGuardiansTalkOccurrencePanel_TestWiring_ExpectShellOption
       assert.deepEqual(result, { panel: true });
       assert.equal(captured.panelId, 'cancelGuardiansTalkOccurrencePanel');
       assert.equal(captured.title, Strings.panelTitles.cancelGuardiansTalkOccurrence);
-      assert.equal(captured.bodyChildren.length, 6);
+      assert.equal(captured.bodyChildren.length, 7);
       assert.equal(captured.bodyChildren.at(Position.FIRST).inputId, 'cancelGuardiansTalkOccurrenceLocation');
       assert.equal(captured.bodyChildren.at(Position.SECOND).inputId, 'cancelGuardiansTalkOccurrenceTalkName');
-      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'cancelGuardiansTalkOccurrenceDate');
-      assert.equal(captured.bodyChildren.at(Position.FOURTH).inputId, 'cancelGuardiansTalkOccurrenceTimes');
-      assert.equal(captured.bodyChildren.at(Position.FOURTH).helpText, Strings.help.cancelOccurrenceTimes);
-      assert.equal(captured.bodyChildren[4].submitId, 'submitCancelGuardiansTalkOccurrence');
-      assert.equal(captured.bodyChildren[5].statusId, 'cancelGuardiansTalkOccurrenceStatus');
+      assert.equal(captured.bodyChildren.at(Position.THIRD).inputId, 'cancelGuardiansTalkOccurrenceEnclosureName');
+      assert.equal(captured.bodyChildren[3].inputId, 'cancelGuardiansTalkOccurrenceDate');
+      assert.equal(captured.bodyChildren[4].inputId, 'cancelGuardiansTalkOccurrenceTimes');
+      assert.equal(captured.bodyChildren[4].helpText, Strings.help.cancelOccurrenceTimes);
+      assert.equal(captured.bodyChildren[5].submitId, 'submitCancelGuardiansTalkOccurrence');
+      assert.equal(captured.bodyChildren[6].statusId, 'cancelGuardiansTalkOccurrenceStatus');
    } finally {
       ConsolePanelShellBuilder.createPanelShell = originals.createPanelShell;
       ConsoleSelectFieldBuilder.createSelectField = originals.createSelectField;

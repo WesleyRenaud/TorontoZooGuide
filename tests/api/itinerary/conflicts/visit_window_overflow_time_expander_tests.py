@@ -24,7 +24,7 @@ def stub_overflow_travel( monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       ScheduleItemTravelTimeCalculator,
       'walk_node_id_for_guardians_talk',
-      lambda name, location='': 'n-talk' )
+      lambda name, location='', enclosure_name=None: 'n-talk' )
    monkeypatch.setattr(
       ScheduleItemTravelTimeCalculator,
       'walk_node_id_for_wild_encounter',

@@ -145,7 +145,7 @@ def stub_guardians_talk_loop_schedule_pin_resolver(
    monkeypatch.setattr(
       GuardiansTalkAnimalProvider,
       'fetch_animal_links',
-      lambda conn, talk_name: ANIMAL_LINKS_BY_TALK.get( talk_name, [] ) )
+      lambda conn, talk_name, **_kwargs: ANIMAL_LINKS_BY_TALK.get( talk_name, [] ) )
 
 
 def Test_Resolve_TestUnmappedTalk_ExpectNone(
