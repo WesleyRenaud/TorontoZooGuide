@@ -53,6 +53,7 @@ include = [
 [tool.tzg_python_unit_tests]
 include = [
    "tests/api/**/*.py",
+   "tests/tools/**/*.py",
 ]
 exclude = [
    "tests/api/api_test_support/**",
@@ -62,5 +63,5 @@ exclude = [
 python_files = [ "*_tests.py", "test_*.py" ]
 python_functions = [ "Test_*", "test_*" ]
 pythonpath = [ "tests/api" ]
-testpaths = [ "tests/api" ]
+testpaths = [ "tests/api", "tests/tools" ]
 addopts = [ "--import-mode=importlib" ]
