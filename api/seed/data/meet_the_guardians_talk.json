@@ -318,5 +318,13 @@
     "y_coord": 49.090,
     "maximum_duration": 30,
     "enclosure_name": null
+  },
+  {
+    "name": "West Caucasian Tur",
+    "location": "Eurasia Wilds",
+    "x_coord": 83.709,
+    "y_coord": 72.090,
+    "maximum_duration": 30,
+    "enclosure_name": null
   }
 ]

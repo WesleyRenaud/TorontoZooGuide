@@ -370,5 +370,14 @@
     "y": 17.617,
     "walk_node_id": "v-0597",
     "snap_distance_px": 22.326
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "West Caucasian Tur",
+    "location": "Eurasia Wilds",
+    "x": 83.709,
+    "y": 72.090,
+    "walk_node_id": "v-0962",
+    "snap_distance_px": 22.94
   }
 ]
