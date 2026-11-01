@@ -160,5 +160,11 @@
     "meeting_spot": "Wild Encounter - Discovery Zone Meeting Spot",
     "link": "https://www.torontozoo.com/tickets/wesulcatta",
     "maximum_duration": 30
+  },
+  {
+    "name": "Down Under In Australasia",
+    "meeting_spot": "Wild Encounter - Eurasia Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/weaustralasia",
+    "maximum_duration": 60
   }
 ]
