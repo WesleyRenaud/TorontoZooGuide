@@ -7,10 +7,11 @@
       "clean": "node tools/cleanBuildArtifacts.js",
       "coverage": "node tools/coverageSummary.js",
       "coverage:js": "node tools/coverage/runJsCoverage.js",
-      "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/api -n auto --cov=api --cov-report=term:skip-covered --cov-precision=2",
+      "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/api tests/tools -n auto --cov=api --cov-report=term:skip-covered --cov-precision=2",
       "clear:itinerary": "python3 -m api.seed.user_itinerary_data_cleaner",
       "clear:itinerary-config": "python3 -m api.seed.user_itinerary_config_cleaner",
       "backdate:itinerary": "python3 -m api.seed.user_itinerary_date_backdater",
+      "check": "python3 tools/wildEncounterScheduleCheck.py",
       "lint": "node tools/lint/mapSvgIntegrity.js && npm run lint:js && npm run lint:py",
       "lint:js": "node tools/lint/jsFilenameStyle.js && node tools/lint/jsImportStyle.js && node tools/lint/jsOneClassPerFile.js && node tools/lint/jsClassOnlyFile.js && node tools/lint/jsUnitTestStyle.js && eslint scripts && echo 'All checks passed!'",
       "lint:py": "python3 tools/checkSharedEnums.py && python3 tools/lint/pythonImportStyle.py && python3 tools/lint/pythonHouseStyle.py && python3 tools/lint/pythonOneClassPerFile.py && python3 tools/lint/pythonNamespaceStyle.py && python3 tools/lint/pythonUnitTestStyle.py && python3 tools/lint/jsonSeedStyle.py && ruff check .",
@@ -20,8 +21,8 @@
       "seed:schema": "python3 -m api.seed.schema_applier",
       "seed:data": "python3 -m api.seed.seed_data_applier",
       "test:js": "node --test \"tests/scripts/**/*.test.mjs\"",
-      "test:api": "python3 -m pytest tests/api -n auto",
-      "test:py": "python3 -m pytest tests/api -n auto",
+      "test:api": "python3 -m pytest tests/api tests/tools -n auto",
+      "test:py": "python3 -m pytest tests/api tests/tools -n auto",
       "start": "python3 -m api"
    },
    "devDependencies": {
