@@ -6,7 +6,7 @@ from importlib.util import module_from_spec
 from importlib.util import spec_from_file_location
 from pathlib import Path
 import sqlite3
-from types import ModuleType
+import types
 
 import pytest
 
@@ -52,7 +52,7 @@ CREATE TABLE WildEncounterSchedule (
 """
 
 
-def _load_checker() -> ModuleType:
+def _load_checker() -> types.ModuleType:
    path = Path( __file__ ).resolve().parents[ 2 ] / 'tools' / 'wildEncounterScheduleCheck.py'
    spec = spec_from_file_location( 'wild_encounter_schedule_check', path )
 
