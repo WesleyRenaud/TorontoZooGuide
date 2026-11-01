@@ -566,10 +566,12 @@ def check_schedules( database: Path, today: date ) -> int:
    print_category( 'Different days or times', different_slots )
    print_category( 'Windows which do not align', windows )
 
-   if only_in_app or only_on_website or different_slots or windows:
-      return 1
-
-   return 0
+   return (
+      len( only_in_app )
+      + len( only_on_website )
+      + len( different_slots )
+      + len( windows )
+   )
 
 
 def main() -> int:
@@ -580,10 +582,15 @@ def main() -> int:
       return 2
 
    try:
-      return check_schedules( args.database, date.today() )
+      issues = check_schedules( args.database, date.today() )
    except RuntimeError as error:
       print( error, file=sys.stderr )
       return 2
+
+   if issues:
+      return 1
+
+   return 0
 
 
 if __name__ == '__main__':
