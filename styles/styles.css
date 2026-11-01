@@ -971,6 +971,11 @@ body > .console-operations-page {
 
 #mapStage {
    position: absolute;
+   -webkit-user-drag: none;
+}
+
+#mapStage * {
+   -webkit-user-drag: none;
 }
 
 #markerLayer {

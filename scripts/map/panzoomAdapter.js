@@ -6,7 +6,21 @@ export class PanzoomAdapter {
       maxScale: 10,
    });
 
+   static suppressAuxiliaryPointer(event) {
+      if (event.button === 0) {
+         return;
+      }
+
+      event.stopImmediatePropagation();
+   }
+
+   static suppressMapDrag(event) {
+      event.preventDefault();
+   }
+
    static createPanzoom(mapInner, { contain, startX = 0, startY = 0 }) {
+      mapInner.addEventListener('pointerdown', PanzoomAdapter.suppressAuxiliaryPointer);
+      mapInner.addEventListener('dragstart', PanzoomAdapter.suppressMapDrag);
       const panzoom = globalThis.Panzoom(mapInner, {
          ...PanzoomAdapter.PANZOOM_SCALE_RANGE,
          contain,
