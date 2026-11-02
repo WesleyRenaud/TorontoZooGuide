@@ -243,6 +243,102 @@ def Test_SetAttractionClosed_TestHttpRequest_ExpectCouldNotSetClosedApiError(
    assert result.get( 'apiErrorParams' ) == { 'name': ATTRACTION_NAME }
 
 
+def Test_GetClosedForSeasonAttractionNames_TestDirectCall_ExpectWritesNames(
+      stub_attraction_coordinator: StubAttractionCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   AttractionController.get_closed_for_season_attraction_names( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'attractions': [ ATTRACTION_NAME, OTHER_ATTRACTION_NAME ],
+   }
+   assert stub_attraction_coordinator.calls == [
+      ( 'get_closed_for_season_attraction_names', {} ),
+   ]
+
+
+def Test_SetAttractionClosedForSeason_TestHttpRequest_ExpectMapsPayload(
+      stub_attraction_coordinator: StubAttractionCoordinator ) -> None:
+   handler = make_handler(
+      '/set-attraction-closed-for-season',
+      {
+         'attraction': ATTRACTION_NAME,
+         'startDate': CLOSURE_START_DATE,
+         'endDate': None,
+         'message': '',
+      }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert stub_attraction_coordinator.calls == [
+      (
+         'set_attraction_as_closed_for_season',
+         {
+            'attraction': ATTRACTION_NAME,
+            'start_date': CLOSURE_START_DATE,
+            'end_date': None,
+            'message': '',
+         }
+      )
+   ]
+
+
+def Test_SetAttractionClosedForSeason_TestHttpRequest_ExpectCouldNotSetClosedApiError(
+      stub_attraction_coordinator: StubAttractionCoordinator ) -> None:
+   StubAttractionCoordinator.default_success = False
+   handler = make_handler(
+      '/set-attraction-closed-for-season',
+      { 'attraction': ATTRACTION_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is False
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
+
+
+def Test_SetAttractionOpenForSeason_TestHttpRequest_ExpectMapsAttraction(
+      stub_attraction_coordinator: StubAttractionCoordinator ) -> None:
+   handler = make_handler(
+      '/set-attraction-open-for-season',
+      { 'attraction': ATTRACTION_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is True
+   assert result[ 'attraction' ] == ATTRACTION_NAME
+   assert stub_attraction_coordinator.calls == [
+      (
+         'set_attraction_as_open_for_season',
+         { 'attraction': ATTRACTION_NAME },
+      )
+   ]
+
+
+def Test_SetAttractionOpenForSeason_TestHttpRequest_ExpectCouldNotSetOpenApiError(
+      stub_attraction_coordinator: StubAttractionCoordinator ) -> None:
+   StubAttractionCoordinator.default_success = False
+   handler = make_handler(
+      '/set-attraction-open-for-season',
+      { 'attraction': ATTRACTION_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is False
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPEN.value
+
+
 def Test_SetAttractionClosureOverride_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
       stub_attraction_coordinator: StubAttractionCoordinator ) -> None:
    handler = make_handler(

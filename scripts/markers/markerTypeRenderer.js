@@ -13,6 +13,7 @@ export class MarkerTypeRenderer {
          markerEl,
          attraction?.name
       ),
+      seasonClosureField: 'is_closed_for_season',
    });
 
    static MARKER_TYPE_RENDERERS = {

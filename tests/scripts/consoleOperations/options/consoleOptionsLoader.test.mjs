@@ -85,6 +85,21 @@ test('Test_LoadGiftShops_TestDelegation_ExpectCachedLoaderArgs', async () => {
 });
 
 
+test('Test_LoadClosedForSeasonAttractions_TestClientResult_ExpectAttractions', async () => {
+   const attractions = ['Conservation Carousel'];
+   const originalGet = ConsoleOperationsClient.getClosedForSeasonAttractionNames;
+   ConsoleOperationsClient.getClosedForSeasonAttractionNames = async () => ({ attractions });
+
+   try {
+      const loaded = await ConsoleOptionsLoader.loadClosedForSeasonAttractions();
+
+      assert.deepEqual(loaded, attractions);
+   } finally {
+      ConsoleOperationsClient.getClosedForSeasonAttractionNames = originalGet;
+   }
+});
+
+
 test('Test_LoadAttractions_TestDelegation_ExpectCachedLoaderArgs', async () => {
    await _withCachedLoader(async ({ cached, getCaptured }) => {
       const options = await ConsoleOptionsLoader.loadAttractions();

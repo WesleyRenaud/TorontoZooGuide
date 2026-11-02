@@ -114,6 +114,11 @@ export class ConsoleOptionsLoader {
       });
    }
 
+   static async loadClosedForSeasonAttractions() {
+      const result = await ConsoleOperationsClient.getClosedForSeasonAttractionNames();
+      return result.attractions;
+   }
+
    static async loadAttractions() {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'attractions',

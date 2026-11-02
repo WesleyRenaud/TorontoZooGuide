@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from ...app_string_provider import AppStringProvider
+from ..data_access.attraction_closure_record import AttractionClosureRecord
 from ..data_access.attraction_record import AttractionRecord
 from ..data_access.attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from ..data_access.attraction_schedule_record import AttractionScheduleRecord
@@ -13,6 +14,7 @@ from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningSched
 from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
 from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
+from ..status.attraction_season_closure_builder import AttractionSeasonClosureBuilder
 from ...types import Types
 
 
@@ -118,8 +120,9 @@ class AttractionBuilder():
          attraction_record: AttractionRecord,
          schedule_records: list[ AttractionScheduleRecord ],
          schedule_override_records: list[ AttractionScheduleOverrideRecord ],
-         target_date: date ) -> tuple[ int, str | None ]:
-      return OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
+         target_date: date,
+         closure_record: AttractionClosureRecord | None = None ) -> tuple[ int, str | None, bool ]:
+      likelihood, closed_message = OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
          name=attraction_record.name,
          schedule_records=[
             record for record in schedule_records
@@ -141,6 +144,13 @@ class AttractionBuilder():
             'guestStatus.attractions.likelyNotOperating',
             attractionName=name ) )
 
+      if closure_record != None and AttractionSeasonClosureBuilder.is_active_on_date(
+            closure_record,
+            target_date ):
+         return 0, closure_record.closed_message, True
+
+      return likelihood, closed_message, False
+
 
    @classmethod
    def build_attraction(
@@ -148,12 +158,14 @@ class AttractionBuilder():
          attraction_record: AttractionRecord,
          schedule_records: list[ AttractionScheduleRecord ],
          schedule_override_records: list[ AttractionScheduleOverrideRecord ],
-         context: OpeningScheduleVisitContext ) -> Attraction:
-      likelihood, closed_message = cls.get_likelihood_and_message_for_date(
+         context: OpeningScheduleVisitContext,
+         closure_record: AttractionClosureRecord | None = None ) -> Attraction:
+      likelihood, closed_message, is_closed_for_season = cls.get_likelihood_and_message_for_date(
          attraction_record=attraction_record,
          schedule_records=schedule_records,
          schedule_override_records=schedule_override_records,
-         target_date=context.target_date )
+         target_date=context.target_date,
+         closure_record=closure_record )
       if context.is_weekend_or_holiday:
          open_time = attraction_record.weekend_holiday_start_time
          close_time = attraction_record.weekend_holiday_end_time
@@ -174,7 +186,8 @@ class AttractionBuilder():
          likelihood=likelihood,
          open_time=open_time,
          close_time=close_time,
-         is_also_transportation=attraction_record.is_also_transportation )
+         is_also_transportation=attraction_record.is_also_transportation,
+         is_closed_for_season=is_closed_for_season )
 
 
    @classmethod
@@ -184,10 +197,15 @@ class AttractionBuilder():
          schedule_records: list[ AttractionScheduleRecord ],
          schedule_override_records: list[ AttractionScheduleOverrideRecord ],
          context: OpeningScheduleVisitContext,
-         include_closed_attractions: bool = False ) -> list[ Attraction ]:
+         include_closed_attractions: bool = False,
+         closure_records: list[ AttractionClosureRecord ] | None = None ) -> list[ Attraction ]:
       schedule_records_by_name = cls.group_schedule_records_by_name( schedule_records )
       override_records_by_name = cls.group_schedule_override_records_by_name(
          schedule_override_records )
+      closures_by_name = {
+         record.attraction: record
+         for record in ( closure_records or [] )
+      }
       attractions: list[ Attraction ] = []
       for attraction_record in attraction_records:
          attraction = cls.build_attraction(
@@ -196,7 +214,8 @@ class AttractionBuilder():
             schedule_override_records=override_records_by_name.get(
                attraction_record.name,
                [] ),
-            context=context )
+            context=context,
+            closure_record=closures_by_name.get( attraction_record.name ) )
          if attraction.is_closed and not include_closed_attractions:
             continue
          attractions.append( attraction )

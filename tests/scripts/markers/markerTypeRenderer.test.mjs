@@ -108,3 +108,60 @@ test('Test_AttractionMarkerRenderer_TestIconAndSize_ExpectCallbacks', () => {
 
    assert.doesNotThrow(render);
 });
+
+
+test('Test_AttractionMarkerRenderer_TestClosedForSeason_ExpectWinterBlueIcon', () => {
+   const markerEl = {
+      style: {},
+      classList: { add() {}, remove() {} },
+      textContent: '',
+   };
+
+   MarkerTypeRenderer.attractionMarkerRenderer(markerEl, [{
+      name: 'Conservation Carousel',
+      likelihood: 0,
+      is_closed_for_season: true,
+   }]);
+
+   assert.match(
+      markerEl.style.backgroundImage,
+      /conservation-carousel-off-display\.png/
+   );
+});
+
+
+test('Test_AttractionMarkerRenderer_TestTemporarilyClosed_ExpectClosedColourIcon', () => {
+   const markerEl = {
+      style: {},
+      classList: { add() {}, remove() {} },
+      textContent: '',
+   };
+
+   MarkerTypeRenderer.attractionMarkerRenderer(markerEl, [{
+      name: 'Conservation Carousel',
+      likelihood: 0,
+      is_closed_for_season: false,
+   }]);
+
+   assert.match(
+      markerEl.style.backgroundImage,
+      /conservation-carousel-7a0000\.png/
+   );
+});
+
+
+test('Test_AttractionMarkerRenderer_TestClosedForSeasonCount_ExpectWinterBlue', () => {
+   const markerEl = {
+      style: {},
+      classList: { add() {}, remove() {} },
+      textContent: '',
+   };
+
+   MarkerTypeRenderer.attractionMarkerRenderer(markerEl, [
+      { name: 'Conservation Carousel', likelihood: 0, is_closed_for_season: true },
+      { name: 'Greenhouse', likelihood: 0, is_closed_for_season: true },
+   ]);
+
+   assert.equal(markerEl.style.backgroundColor, '#9fd3f0');
+   assert.equal(markerEl.textContent, '2');
+});

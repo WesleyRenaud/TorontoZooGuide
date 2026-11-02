@@ -67,6 +67,74 @@ test('Test_CreateAttractionClosedController_TestSubmitClosedStatus_ExpectPayload
 });
 
 
+test('Test_CreateAttractionClosedForSeasonController_TestSubmit_ExpectSeasonPayload', async (t) => {
+   const attraction = 'Carousel';
+   const startDate = '2026-11-02';
+   const original = EntityClosedFormController.createEntityClosedFormController;
+   const originalSet = ConsoleOperationsClient.setAttractionClosedForSeason;
+   let captured;
+   EntityClosedFormController.createEntityClosedFormController = (options) => {
+      captured = options;
+      return { created: true };
+   };
+   ConsoleOperationsClient.setAttractionClosedForSeason = async (payload) => payload;
+   t.after(() => {
+      EntityClosedFormController.createEntityClosedFormController = original;
+      ConsoleOperationsClient.setAttractionClosedForSeason = originalSet;
+   });
+
+   AttractionController.createAttractionClosedForSeasonController({ attractionEl: { id: 'a' } });
+   const payload = await captured.submitClosedStatus({
+      entity: attraction,
+      startDate,
+      endDate: '',
+      message: '',
+   });
+
+   assert.deepEqual(payload, {
+      attraction,
+      startDate,
+      endDate: null,
+      message: '',
+   });
+   assert.equal(
+      captured.successMessage({ attraction }),
+      Strings.status.closedForSeason(attraction),
+   );
+   assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadAttractions);
+});
+
+
+test('Test_CreateAttractionOpenForSeasonController_TestSubmit_ExpectSeasonList', async (t) => {
+   const attraction = 'Carousel';
+   const { EntityOpenFormController } = await import(
+      '../../../../../scripts/consoleOperations/forms/entityOpenFormController.js'
+   );
+   const original = EntityOpenFormController.createEntityOpenFormController;
+   const originalSet = ConsoleOperationsClient.setAttractionOpenForSeason;
+   let captured;
+   EntityOpenFormController.createEntityOpenFormController = (options) => {
+      captured = options;
+      return { created: true };
+   };
+   ConsoleOperationsClient.setAttractionOpenForSeason = async (payload) => payload;
+   t.after(() => {
+      EntityOpenFormController.createEntityOpenFormController = original;
+      ConsoleOperationsClient.setAttractionOpenForSeason = originalSet;
+   });
+
+   AttractionController.createAttractionOpenForSeasonController({ attractionEl: { id: 'a' } });
+   const payload = await captured.submitOpenStatus({ entity: attraction });
+
+   assert.deepEqual(payload, { attraction });
+   assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadClosedForSeasonAttractions);
+   assert.equal(
+      captured.successMessage({ attraction }),
+      Strings.status.openForSeason(attraction),
+   );
+});
+
+
 test('Test_CreateAttractionClosedController_TestSuccessMessage_ExpectCatalogMessage', () => {
    const attraction = 'Carousel';
    const capture = _captureClosedForm();

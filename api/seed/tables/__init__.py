@@ -12,6 +12,7 @@ from .attraction_hours_schedule_seed_table import AttractionHoursScheduleSeedTab
 from .attraction_opening_schedule_seed_table import AttractionOpeningScheduleSeedTable
 from .attraction_schedule_override_seed_table import AttractionScheduleOverrideSeedTable
 from .attraction_seed_table import AttractionSeedTable
+from .attraction_status_seed_table import AttractionStatusSeedTable
 from .defibrillator_seed_table import DefibrillatorSeedTable
 from .drinking_fountain_day_seasonal_availability_multiplier_seed_table import DrinkingFountainDaySeasonalAvailabilityMultiplierSeedTable
 from .drinking_fountain_seed_table import DrinkingFountainSeedTable
@@ -137,6 +138,7 @@ runtime_tables = [
    GiftShopScheduleOverrideSeedTable,
    AppSettingSeedTable,
    AttractionOpeningScheduleSeedTable,
+   AttractionStatusSeedTable,
    AttractionHoursScheduleSeedTable,
    AttractionScheduleOverrideSeedTable,
    TransportationRouteScheduleSeedTable,

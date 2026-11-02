@@ -213,6 +213,18 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/set-attraction-closed', payload);
    }
 
+   static getClosedForSeasonAttractionNames() {
+      return ApiClient.postJson('/get-closed-for-season-attraction-names', {});
+   }
+
+   static setAttractionClosedForSeason(payload) {
+      return ApiClient.postJson('/set-attraction-closed-for-season', payload);
+   }
+
+   static setAttractionOpenForSeason(payload) {
+      return ApiClient.postJson('/set-attraction-open-for-season', payload);
+   }
+
    static setAttractionClosureOverride(payload) {
       return ApiClient.postJson('/set-attraction-closure-override', payload);
    }

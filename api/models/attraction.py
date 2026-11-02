@@ -26,7 +26,8 @@ class Attraction:
          open_time: Types.ScheduleTimeKey = None,
          close_time: Types.ScheduleTimeKey = None,
          is_also_transportation: bool = False,
-         route_duration_minutes: int | None = None ) -> None:
+         route_duration_minutes: int | None = None,
+         is_closed_for_season: bool = False ) -> None:
       self.name = name
       self.free_with_admission = free_with_admission
       self.description = description
@@ -46,6 +47,7 @@ class Attraction:
       self.close_time = close_time
       self.is_also_transportation = is_also_transportation
       self.route_duration_minutes = route_duration_minutes
+      self.is_closed_for_season = is_closed_for_season
 
 
    def name_key( self ) -> str:
@@ -74,4 +76,5 @@ class Attraction:
          'is_also_transportation': ValueConversion.as_boolean(
             self.is_also_transportation ),
          'route_duration_minutes': self.route_duration_minutes,
+         'is_closed_for_season': ValueConversion.as_boolean( self.is_closed_for_season ),
       }
