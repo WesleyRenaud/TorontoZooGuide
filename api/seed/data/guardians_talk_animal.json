@@ -292,5 +292,12 @@
     "species": "Raccoon",
     "exhibit": "Canadian Domain",
     "enclosure_name": null
+  },
+  {
+    "talk_name": "West Caucasian Tur",
+    "location": "Eurasia Wilds",
+    "species": "West Caucasian Tur",
+    "exhibit": "Eurasia Wilds",
+    "enclosure_name": null
   }
 ]
