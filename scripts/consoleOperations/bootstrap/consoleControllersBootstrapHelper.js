@@ -150,6 +150,14 @@ export class ConsoleControllersBootstrapHelper {
       getRefs: refs => refs.attractions.closed,
    },
    {
+      createController: AttractionController.createAttractionClosedForSeasonController,
+      getRefs: refs => refs.attractions.closedForSeason,
+   },
+   {
+      createController: AttractionController.createAttractionOpenForSeasonController,
+      getRefs: refs => refs.attractions.openForSeason,
+   },
+   {
       createController: AttractionClosureController.createAttractionClosureOverrideController,
       getRefs: refs => refs.attractions.closureOverride,
    },

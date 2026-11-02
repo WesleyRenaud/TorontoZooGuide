@@ -6,9 +6,11 @@ import { RemoveViewingAlertView } from '../animals/panels/removeViewingAlertView
 import { RemoveVisibilityScheduleView } from '../animals/panels/removeVisibilityScheduleView.js';
 import { ViewingAlertView } from '../animals/panels/viewingAlertView.js';
 import { VisibilityScheduleView } from '../animals/panels/visibilityScheduleView.js';
+import { AttractionClosedForSeasonView } from '../attractions/panels/attractionClosedForSeasonView.js';
 import { AttractionClosedView } from '../attractions/panels/attractionClosedView.js';
 import { AttractionClosureOverrideView } from '../attractions/panels/attractionClosureOverrideView.js';
 import { AttractionHoursScheduleView } from '../attractions/panels/attractionHoursScheduleView.js';
+import { AttractionOpenForSeasonView } from '../attractions/panels/attractionOpenForSeasonView.js';
 import { AttractionOpeningScheduleView } from '../attractions/panels/attractionOpeningScheduleView.js';
 import { DrinkingFountainsClosedView } from '../drinkingFountains/panels/drinkingFountainsClosedView.js';
 import { DrinkingFountainsOpenView } from '../drinkingFountains/panels/drinkingFountainsOpenView.js';
@@ -77,6 +79,8 @@ export class ConsoleOperationPanelsBootstrapHelper {
    ],
    attractions: [
       AttractionClosedView.createAttractionClosedPanel,
+      AttractionClosedForSeasonView.createAttractionClosedForSeasonPanel,
+      AttractionOpenForSeasonView.createAttractionOpenForSeasonPanel,
       AttractionClosureOverrideView.createAttractionClosureOverridePanel,
       AttractionOpeningScheduleView.createAttractionOpeningSchedulePanel,
       AttractionHoursScheduleView.createAttractionHoursSchedulePanel,

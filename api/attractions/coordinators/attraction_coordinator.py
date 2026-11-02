@@ -5,6 +5,7 @@ from datetime import date
 from ..data_access.attraction_hours_schedule_provider import AttractionHoursScheduleProvider
 from ..data_access.attraction_provider import AttractionProvider
 from ..data_access.attraction_schedule_provider import AttractionScheduleProvider
+from ..data_access.attraction_status_provider import AttractionStatusProvider
 from ..domain.attraction_builder import AttractionBuilder
 from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..itinerary.itinerary_attractions_builder import ItineraryAttractionsBuilder
@@ -17,7 +18,9 @@ from ..scheduling.attraction_hours_schedule_time_bounds_builder import Attractio
 from ..scheduling.attraction_schedule_conflict_resolver import AttractionScheduleConflictResolver
 from ..search.attractions_matching_query_builder import AttractionsMatchingQueryBuilder
 from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.calendar_dates import DateValues
 from ..status.attraction_hours_schedule_status_builder import AttractionHoursScheduleStatusBuilder
+from ..status.attraction_season_closure_builder import AttractionSeasonClosureBuilder
 from ..status.attraction_status_builder import AttractionStatusBuilder
 from ...types import Types
 
@@ -61,7 +64,9 @@ class AttractionCoordinator():
          schedule_override_records=AttractionProvider.fetch_attraction_schedule_override_records(
             RequestConnectionProvider.get() ),
          context=context,
-         include_closed_attractions=include_closed_attractions )
+         include_closed_attractions=include_closed_attractions,
+         closure_records=AttractionStatusProvider.fetch_closure_records(
+            RequestConnectionProvider.get() ) )
 
 
    @classmethod
@@ -120,13 +125,16 @@ class AttractionCoordinator():
       if attraction_record == None:
          return None
 
-      likelihood, _ = AttractionBuilder.get_likelihood_and_message_for_date(
+      likelihood, _, _ = AttractionBuilder.get_likelihood_and_message_for_date(
          attraction_record=attraction_record,
          schedule_records=AttractionProvider.fetch_attraction_schedule_records(
             RequestConnectionProvider.get() ),
          schedule_override_records=AttractionProvider.fetch_attraction_schedule_override_records(
             RequestConnectionProvider.get() ),
-         target_date=visit_date )
+         target_date=visit_date,
+         closure_record=AttractionStatusProvider.fetch_closure_record(
+            RequestConnectionProvider.get(),
+            attraction=attraction_name ) )
 
       return likelihood
 
@@ -139,6 +147,41 @@ class AttractionCoordinator():
          end_date: Types.DateInput,
          message: str ) -> bool:
       return _mutations.set_as_closed( attraction, start_date, end_date, message )
+
+
+   @classmethod
+   def get_closed_for_season_attraction_names( cls ) -> list[ str ]:
+      return AttractionStatusProvider.fetch_closed_for_season_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
+
+
+   @classmethod
+   def set_attraction_as_closed_for_season(
+         cls,
+         attraction: str,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
+         message: str ) -> bool:
+      status = AttractionSeasonClosureBuilder.build(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      return AttractionStatusProvider.save_closed_for_season(
+         RequestConnectionProvider.get(),
+         attraction=status.attraction,
+         start_date=status.start_date,
+         end_date=status.end_date,
+         message=status.message )
+
+
+   @classmethod
+   def set_attraction_as_open_for_season( cls, attraction: str ) -> bool:
+      return AttractionStatusProvider.delete_closed_for_season(
+         RequestConnectionProvider.get(),
+         attraction=attraction )
 
 
    @classmethod

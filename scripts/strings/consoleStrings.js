@@ -125,6 +125,7 @@ export class ConsoleStrings {
       eventLocationExample: 'Example: Front Courtyard',
       eventNameExample: 'Example: Conservation Carousel Ride Night',
       offDisplayReason: 'Enter the reason this animal is off display',
+      attractionClosedForSeasonReason: 'Enter the reason this attraction is closed for the season',
       offDisplayForSeasonReason: 'Enter the reason this animal is off display for the season',
       optionalScheduleMessage: scheduleName => (
          `Enter an optional message for this ${scheduleName} schedule`
@@ -141,6 +142,8 @@ export class ConsoleStrings {
    static panelTitles = {
       addGuardiansTalkOccurrence: 'Add Meet the Guardians talk occurrence',
       attractionClosed: 'Set attraction as closed',
+      attractionClosedForSeason: 'Set attraction as closed for the season',
+      attractionOpenForSeason: 'Set attraction as open for the season',
       attractionClosureOverride: 'Create attraction closure override',
       attractionHoursSchedule: 'Set attraction hours',
       attractionOpeningSchedule: 'Set attraction opening schedule',

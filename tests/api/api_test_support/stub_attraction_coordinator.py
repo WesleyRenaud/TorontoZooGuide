@@ -62,6 +62,21 @@ class StubAttractionCoordinator():
       return StubAttractionCoordinator.default_success
 
 
+   def get_closed_for_season_attraction_names( self ) -> list[ str ]:
+      self.calls.append( ( 'get_closed_for_season_attraction_names', {} ) )
+      return list( self.attraction_names )
+
+
+   def set_attraction_as_closed_for_season( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'set_attraction_as_closed_for_season', kwargs ) )
+      return StubAttractionCoordinator.default_success
+
+
+   def set_attraction_as_open_for_season( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'set_attraction_as_open_for_season', kwargs ) )
+      return StubAttractionCoordinator.default_success
+
+
    def set_attraction_closure_override( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'set_attraction_closure_override', kwargs ) )
       return StubAttractionCoordinator.default_success

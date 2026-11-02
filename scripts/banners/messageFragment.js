@@ -88,12 +88,13 @@ export class MessageFragment {
       return { sync, hide };
    }
 
-   static createSingleMessageBanner(getMessage) {
+   static createSingleMessageBanner(getMessage, isOffDisplayForSeason = () => false) {
       return MessageFragment.createMessageBanner({
          getMessages: item => {
             const message = getMessage(item);
             return message ? [message] : [];
          },
+         isOffDisplayForSeason,
       });
    }
 }

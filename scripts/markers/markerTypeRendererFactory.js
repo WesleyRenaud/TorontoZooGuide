@@ -110,6 +110,7 @@ export class MarkerTypeRendererFactory {
       getIconUrl,
       applySize = null,
       getLikelihood = item => item?.likelihood,
+      seasonClosureField = null,
    } = {}) {
       return (markerEl, items) => {
          const item = items[0];
@@ -118,7 +119,11 @@ export class MarkerTypeRendererFactory {
          MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[type]);
          MarkerTypeRendererFactory.applyOptionalSize(markerEl, item, applySize);
 
-         const { colour, iconToken } = MarkerVisualHelper.getLikelihoodVisual(getLikelihood(item));
+         const { colour, iconToken } = MarkerTypeRendererFactory.getLikelihoodVisualForItem(
+            item,
+            getLikelihood,
+            seasonClosureField
+         );
 
          if (count > 1) {
             MarkerVisualHelper.applyCountMarker(markerEl, count, colour);
@@ -127,6 +132,14 @@ export class MarkerTypeRendererFactory {
 
          MarkerVisualHelper.applyBackgroundImage(markerEl, getIconUrl(item, iconToken));
       };
+   }
+
+   static getLikelihoodVisualForItem(item, getLikelihood, seasonClosureField) {
+      if (seasonClosureField && item?.[seasonClosureField]) {
+         return MarkerTypeRendererFactory.OFF_DISPLAY_FOR_SEASON_VISUAL;
+      }
+
+      return MarkerVisualHelper.getLikelihoodVisual(getLikelihood(item));
    }
 
    static getAnimalVisual(animal) {

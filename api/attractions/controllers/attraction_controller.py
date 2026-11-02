@@ -63,6 +63,63 @@ class AttractionController():
 
 
    @staticmethod
+   def get_closed_for_season_attraction_names( handler: JsonRequestHandler ) -> None:
+      attractions = AttractionCoordinator.get_closed_for_season_attraction_names()
+
+      handler._write_json( {
+         'attractions': attractions,
+      } )
+
+
+   @staticmethod
+   def set_attraction_closed_for_season( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      attraction = data.get( 'attraction' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+      message = data.get( 'message' )
+
+      success = AttractionCoordinator.set_attraction_as_closed_for_season(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      response = {
+         'success': success,
+         'attraction': attraction,
+         'startDate': start_date,
+         'endDate': end_date,
+         'message': message,
+      }
+
+      if not success:
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=attraction )
+
+      handler._write_json( response )
+
+
+   @staticmethod
+   def set_attraction_open_for_season( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      attraction = data.get( 'attraction' )
+
+      success = AttractionCoordinator.set_attraction_as_open_for_season( attraction=attraction )
+
+      response = {
+         'success': success,
+         'attraction': attraction,
+      }
+
+      if not success:
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_OPEN, name=attraction )
+
+      handler._write_json( response )
+
+
+   @staticmethod
    def set_attraction_closure_override( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

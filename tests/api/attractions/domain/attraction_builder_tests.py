@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from api.attractions.data_access.attraction_closure_record import AttractionClosureRecord
 from api.attractions.data_access.attraction_record import AttractionRecord
 from api.attractions.data_access.attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
@@ -248,6 +249,50 @@ def Test_BuildAttraction_TestClosureOverrideOutsideRange_ExpectOpenFromSchedule(
 
    assert attraction.is_closed is False
    assert attraction.closed_message is None
+
+
+def Test_BuildAttraction_TestActiveSeasonClosure_ExpectClosedForSeason() -> None:
+   closure_record = AttractionClosureRecord(
+      attraction=ATTRACTION_NAME,
+      closed_start='2026-06-01',
+      closed_end=None,
+      closed_message='The Conservation Carousel is closed for the season.',
+      is_closed_for_season=True )
+
+   attraction = AttractionBuilder.build_attraction(
+      attraction_record=_attraction_record(),
+      schedule_records=[ _schedule_record() ],
+      schedule_override_records=[],
+      context=_visit_context(
+         target_date=WEEKDAY_VISIT_DATE,
+         is_weekend_or_holiday=False ),
+      closure_record=closure_record )
+
+   assert attraction.is_closed is True
+   assert attraction.likelihood == 0
+   assert attraction.is_closed_for_season is True
+   assert attraction.closed_message == closure_record.closed_message
+
+
+def Test_BuildAttraction_TestExpiredSeasonClosure_ExpectOpen() -> None:
+   closure_record = AttractionClosureRecord(
+      attraction=ATTRACTION_NAME,
+      closed_start='2026-05-01',
+      closed_end='2026-05-31',
+      closed_message='The Conservation Carousel is closed for the season.',
+      is_closed_for_season=True )
+
+   attraction = AttractionBuilder.build_attraction(
+      attraction_record=_attraction_record(),
+      schedule_records=[ _schedule_record() ],
+      schedule_override_records=[],
+      context=_visit_context(
+         target_date=WEEKDAY_VISIT_DATE,
+         is_weekend_or_holiday=False ),
+      closure_record=closure_record )
+
+   assert attraction.is_closed is False
+   assert attraction.is_closed_for_season is False
 
 
 def Test_ResolveContext_TestVisitDay_ExpectVisitContext() -> None:

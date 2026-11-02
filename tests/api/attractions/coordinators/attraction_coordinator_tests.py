@@ -6,8 +6,11 @@ import pytest
 
 from api.attractions.coordinators import attraction_coordinator as attraction_coordinator_module
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from api.attractions.data_access.attraction_closure_record import AttractionClosureRecord
 from api.attractions.data_access.attraction_hours_schedule_provider import AttractionHoursScheduleProvider
 from api.attractions.data_access.attraction_provider import AttractionProvider
+from api.attractions.data_access.attraction_record import AttractionRecord
+from api.attractions.data_access.attraction_status_provider import AttractionStatusProvider
 from api.attractions.domain.attraction_builder import AttractionBuilder
 from api.attractions.scheduling.attraction_hours_schedule import AttractionHoursSchedule
 from api.attractions.scheduling.attraction_hours_schedule_conflict_resolver import AttractionHoursScheduleConflictResolver
@@ -108,6 +111,10 @@ def Test_GetAttractions_TestProvidersAndBuilder_ExpectAttractions(
       AttractionProvider,
       'fetch_attraction_schedule_override_records',
       lambda _conn: override_records )
+   monkeypatch.setattr(
+      AttractionStatusProvider,
+      'fetch_closure_records',
+      lambda _conn: [] )
 
    def build_attractions( **kwargs: object ) -> list[ Attraction ]:
       captured.update( kwargs )
@@ -126,6 +133,7 @@ def Test_GetAttractions_TestProvidersAndBuilder_ExpectAttractions(
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'schedule_override_records' ] is override_records
    assert captured[ 'include_closed_attractions' ] is True
+   assert captured[ 'closure_records' ] == []
 
 
 def Test_GetAttractionsMatchingQuery_TestBuilder_ExpectMatches(
@@ -186,10 +194,14 @@ def Test_GetAttractionLikelihoodForVisitDate_TestPresentRecord_ExpectLikelihood(
       AttractionProvider,
       'fetch_attraction_schedule_override_records',
       lambda _conn: override_records )
+   monkeypatch.setattr(
+      AttractionStatusProvider,
+      'fetch_closure_record',
+      lambda _conn, *, attraction: None )
 
-   def get_likelihood_and_message( **kwargs: object ) -> tuple[ int, str | None ]:
+   def get_likelihood_and_message( **kwargs: object ) -> tuple[ int, str | None, bool ]:
       captured.update( kwargs )
-      return 80, None
+      return 80, None, False
 
    monkeypatch.setattr(
       AttractionBuilder,
@@ -205,6 +217,7 @@ def Test_GetAttractionLikelihoodForVisitDate_TestPresentRecord_ExpectLikelihood(
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'schedule_override_records' ] is override_records
    assert captured[ 'target_date' ] == VISIT_DATE
+   assert captured[ 'closure_record' ] is None
 
 
 def Test_SetAttractionAsClosed_TestMutations_ExpectDelegated(
@@ -231,6 +244,107 @@ def Test_SetAttractionAsClosed_TestMutations_ExpectDelegated(
 
    assert result is True
    assert captured[ 'args' ] == ( ATTRACTION_NAME, START_DATE, END_DATE, MESSAGE )
+
+
+def Test_GetAttractionLikelihoodForVisitDate_TestActiveSeasonClosure_ExpectZero(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      AttractionProvider,
+      'fetch_attraction_record_for_calendar_day',
+      lambda *_args, **_kwargs: AttractionRecord(
+         name=ATTRACTION_NAME,
+         free_with_admission=True,
+         description='',
+         info_link='',
+         hyperlink_text='',
+         x_coord=0,
+         y_coord=0,
+         region='',
+         weekday_multiplier=1,
+         weekend_holiday_multiplier=1 ) )
+   monkeypatch.setattr(
+      AttractionProvider,
+      'fetch_attraction_schedule_records',
+      lambda _conn: [] )
+   monkeypatch.setattr(
+      AttractionProvider,
+      'fetch_attraction_schedule_override_records',
+      lambda _conn: [] )
+   monkeypatch.setattr(
+      AttractionStatusProvider,
+      'fetch_closure_record',
+      lambda _conn, *, attraction: AttractionClosureRecord(
+         attraction=attraction,
+         closed_start=START_DATE,
+         closed_end=None,
+         closed_message='The Conservation Carousel is closed for the season.',
+         is_closed_for_season=True ) )
+
+   attraction_likelihood_for_visit_date = AttractionCoordinator.get_attraction_likelihood_for_visit_date(
+      VISIT_DATE,
+      ATTRACTION_NAME )
+
+   assert attraction_likelihood_for_visit_date == 0
+
+
+def Test_SetAttractionAsClosedForSeason_TestProvider_ExpectSavedStatus(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def save_closed_for_season( _conn: str, **kwargs: object ) -> bool:
+      captured.update( kwargs )
+      return True
+
+   monkeypatch.setattr(
+      AttractionStatusProvider,
+      'save_closed_for_season',
+      save_closed_for_season )
+
+   result = AttractionCoordinator.set_attraction_as_closed_for_season(
+      ATTRACTION_NAME,
+      None,
+      None,
+      '' )
+
+   assert result is True
+   assert captured[ 'attraction' ] == ATTRACTION_NAME
+   assert captured[ 'message' ] == 'The Conservation Carousel is closed for the season.'
+   assert captured[ 'end_date' ] is None
+
+
+def Test_SetAttractionAsOpenForSeason_TestProvider_ExpectDeleted(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   def delete_closed_for_season( _conn: str, *, attraction: str ) -> bool:
+      captured[ 'attraction' ] = attraction
+      return True
+
+   monkeypatch.setattr(
+      AttractionStatusProvider,
+      'delete_closed_for_season',
+      delete_closed_for_season )
+
+   result = AttractionCoordinator.set_attraction_as_open_for_season( ATTRACTION_NAME )
+
+   assert result is True
+   assert captured[ 'attraction' ] == ATTRACTION_NAME
+
+
+def Test_GetClosedForSeasonAttractionNames_TestProvider_ExpectNames(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      AttractionStatusProvider,
+      'fetch_closed_for_season_names',
+      lambda _conn, *, today: [ ATTRACTION_NAME ] )
+
+   names = AttractionCoordinator.get_closed_for_season_attraction_names()
+
+   assert names == [ ATTRACTION_NAME ]
 
 
 def Test_SetAttractionClosureOverride_TestMutations_ExpectDelegated(

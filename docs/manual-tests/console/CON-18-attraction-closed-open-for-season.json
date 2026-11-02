@@ -1,0 +1,48 @@
+{
+  "id": "CON-18",
+  "title": "Attraction closed/open for the season",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open closed-for-season op",
+      "do": "Select **Set attraction as closed for the season**.",
+      "expect": "The form opens with **Attraction**, **Start date**, **Last day** and **Reason**. There is no viewing scope."
+    },
+    {
+      "number": 2,
+      "name": "Submit with blank reason",
+      "do": "Select **Conservation Carousel**. Leave **Start date**, **Last day** and **Reason** blank. Click **Save**.",
+      "expect": "Success that **Conservation Carousel** was set as closed for the season."
+    },
+    {
+      "number": 3,
+      "name": "Map without include",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Attractions**. Leave **Include closed attractions** unchecked.",
+      "expect": "**Conservation Carousel** is absent."
+    },
+    {
+      "number": 4,
+      "name": "Season message",
+      "do": "Enable **Include closed attractions** and click **Conservation Carousel**.",
+      "expect": "**Conservation Carousel** appears with a light winter-blue background. The popup is blue with a snowflake, the same as an animal off display for the season, and reads **The Conservation Carousel is closed for the season.**"
+    },
+    {
+      "number": 5,
+      "name": "Open-for-season lists season only",
+      "do": "In Console, open **Set attraction as open for the season** and expand **Attraction**.",
+      "expect": "**Conservation Carousel** is listed. The form has no start date or last day. An attraction that is only temporarily closed is not listed."
+    },
+    {
+      "number": 6,
+      "name": "Submit open for season",
+      "do": "Select **Conservation Carousel** and click **Save**.",
+      "expect": "Success that **Conservation Carousel** was set as open for the season."
+    },
+    {
+      "number": 7,
+      "name": "Map restored",
+      "do": "Return to **Map** on **Specific Map** today with **Attractions** enabled and **Include closed attractions** unchecked.",
+      "expect": "**Conservation Carousel** shows as a normal open attraction again."
+    }
+  ]
+}

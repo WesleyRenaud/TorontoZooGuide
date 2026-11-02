@@ -609,6 +609,38 @@ test('Test_TrimAttractionOpeningScheduleOverlaps_TestPayload_ExpectPosted', asyn
 });
 
 
+test('Test_GetClosedForSeasonAttractionNames_TestPayload_ExpectPosted', async () => {
+   const url = '/get-closed-for-season-attraction-names';
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.getClosedForSeasonAttractionNames();
+
+   assert.deepEqual(result, { ok: true, url, payload: {} });
+});
+
+
+test('Test_SetAttractionClosedForSeason_TestPayload_ExpectPosted', async () => {
+   const url = '/set-attraction-closed-for-season';
+   const payload = { method: 'setAttractionClosedForSeason' };
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.setAttractionClosedForSeason(payload);
+
+   assert.deepEqual(result, { ok: true, url, payload });
+});
+
+
+test('Test_SetAttractionOpenForSeason_TestPayload_ExpectPosted', async () => {
+   const url = '/set-attraction-open-for-season';
+   const payload = { method: 'setAttractionOpenForSeason' };
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.setAttractionOpenForSeason(payload);
+
+   assert.deepEqual(result, { ok: true, url, payload });
+});
+
+
 test('Test_SetAttractionClosed_TestPayload_ExpectPosted', async () => {
    const url = '/set-attraction-closed';
    const payload = { method: 'setAttractionClosed' };

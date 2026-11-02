@@ -194,6 +194,20 @@ export class ConsoleOperationRefsCollector {
                messageEl: 'Message',
             },
          },
+         closedForSeason: {
+            operationName: 'attractionClosedForSeason',
+            includeDateRange: true,
+            fieldSuffixes: {
+               attractionEl: 'Attraction',
+               messageEl: 'Message',
+            },
+         },
+         openForSeason: {
+            operationName: 'attractionOpenForSeason',
+            fieldSuffixes: {
+               attractionEl: 'Attraction',
+            },
+         },
          closureOverride: {
             operationName: 'attractionClosureOverride',
             includeDateRange: true,
