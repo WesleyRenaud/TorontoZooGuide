@@ -28,19 +28,25 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       print( 'animals' )
       return 1
 
+   def check_attractions( checked_database: Path, today: date ) -> int:
+      print( 'attractions' )
+      return 4
+
    result = run_checks(
       database,
       TODAY,
       check_encounters,
       check_talks,
       check_animals,
+      check_attractions,
    )
    output = capsys.readouterr().out
 
    assert result == 1
    assert output.index( 'encounters\n' ) < output.index( 'talks\n' )
    assert output.index( 'talks\n' ) < output.index( 'animals\n' )
-   assert output.endswith( '2 for encounters, 0 for talks, 1 for animals\n' )
+   assert output.index( 'animals\n' ) < output.index( 'attractions\n' )
+   assert output.endswith( '2 for encounters, 0 for talks, 1 for animals, 4 for attractions\n' )
 
 
 def Test_RunChecks_TestNoIssues_ExpectSuccess(
@@ -57,14 +63,18 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
    def check_animals( checked_database: Path, today: date ) -> int:
       return 0
 
+   def check_attractions( checked_database: Path, today: date ) -> int:
+      return 0
+
    result = run_checks(
       database,
       TODAY,
       check_encounters,
       check_talks,
       check_animals,
+      check_attractions,
    )
    output = capsys.readouterr().out
 
    assert result == 0
-   assert output == '0 for encounters, 0 for talks, 0 for animals\n'
+   assert output == '0 for encounters, 0 for talks, 0 for animals, 0 for attractions\n'
