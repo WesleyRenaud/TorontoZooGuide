@@ -40,6 +40,10 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       print( 'gift shops' )
       return 5
 
+   def check_drinking_fountains( checked_database: Path, today: date ) -> int:
+      print( 'drinking fountains' )
+      return 6
+
    result = run_checks(
       database,
       TODAY,
@@ -49,6 +53,7 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_attractions,
       check_restaurants,
       check_gift_shops,
+      check_drinking_fountains,
    )
    output = capsys.readouterr().out
 
@@ -58,9 +63,10 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
    assert output.index( 'animals\n' ) < output.index( 'attractions\n' )
    assert output.index( 'attractions\n' ) < output.index( 'restaurants\n' )
    assert output.index( 'restaurants\n' ) < output.index( 'gift shops\n' )
+   assert output.index( 'gift shops\n' ) < output.index( 'drinking fountains\n' )
    assert output.endswith(
       '2 for encounters, 0 for talks, 1 for animals, 4 for attractions, '
-      '3 for restaurants, 5 for gift shops\n'
+      '3 for restaurants, 5 for gift shops, 6 for drinking fountains\n'
    )
 
 
@@ -87,6 +93,9 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
    def check_gift_shops( checked_database: Path, today: date ) -> int:
       return 0
 
+   def check_drinking_fountains( checked_database: Path, today: date ) -> int:
+      return 0
+
    result = run_checks(
       database,
       TODAY,
@@ -96,11 +105,12 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
       check_attractions,
       check_restaurants,
       check_gift_shops,
+      check_drinking_fountains,
    )
    output = capsys.readouterr().out
 
    assert result == 0
    assert output == (
       '0 for encounters, 0 for talks, 0 for animals, 0 for attractions, '
-      '0 for restaurants, 0 for gift shops\n'
+      '0 for restaurants, 0 for gift shops, 0 for drinking fountains\n'
    )
