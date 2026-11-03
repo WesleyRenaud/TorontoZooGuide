@@ -42,6 +42,7 @@ test('Test_CreateSingleMessageBanner_TestMessage_ExpectShown', () => {
 
    assert.equal(el.className, 'off-display-closed-banner');
    assert.equal(el.style.display, 'flex');
+   assert.equal(el.style.getPropertyValue('--alert-banner-width'), '');
    assert.match(el.textContent, new RegExp(message));
 });
 

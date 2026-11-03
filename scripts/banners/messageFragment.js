@@ -82,7 +82,6 @@ export class MessageFragment {
          renderSeason(banner, isOffDisplayForSeason(item));
          renderMessages(messages);
          banner.style.display = 'flex';
-         MessageBannerLayoutAdjuster.adjustBannerWidth(banner);
       }
 
       return { sync, hide };

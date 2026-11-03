@@ -1988,9 +1988,10 @@ nav ul li a[aria-current="page"]:hover {
    transform: var(--alert-banner-transform);
    z-index: 9999;
 
-   display: block;
+   display: flex;
+   flex-direction: column;
 
-   width: var(--alert-banner-width, min(400px, calc(100vw - 12px)));
+   width: fit-content;
    min-width: min(140px, calc(100vw - 12px));
    max-width: calc(100vw - 12px);
    padding: 0.42em 0.55em 0.55em;
@@ -2077,6 +2078,7 @@ nav ul li a[aria-current="page"]:hover {
 .off-display-closed-text {
    display: flex;
    flex-direction: column;
+   align-self: stretch;
    gap: 0.28em;
    min-width: 0;
 
