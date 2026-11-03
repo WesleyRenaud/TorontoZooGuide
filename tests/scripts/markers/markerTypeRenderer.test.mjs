@@ -165,3 +165,37 @@ test('Test_AttractionMarkerRenderer_TestClosedForSeasonCount_ExpectWinterBlue', 
    assert.equal(markerEl.style.backgroundColor, '#9fd3f0');
    assert.equal(markerEl.textContent, '2');
 });
+
+
+test('Test_RestaurantMarkerRenderer_TestClosedForSeason_ExpectWinterBlueIcon', () => {
+   const markerEl = {
+      style: {},
+      classList: { add() {}, remove() {} },
+      textContent: '',
+   };
+
+   MarkerTypeRenderer.MARKER_TYPE_RENDERERS[ItemType.RESTAURANT](markerEl, [{
+      name: 'Africa Restaurant',
+      likelihood: 0,
+      is_closed_for_season: true,
+   }]);
+
+   assert.match(markerEl.style.backgroundImage, /restaurant-off-display\.png/);
+});
+
+
+test('Test_RestaurantMarkerRenderer_TestTemporarilyClosed_ExpectClosedColourIcon', () => {
+   const markerEl = {
+      style: {},
+      classList: { add() {}, remove() {} },
+      textContent: '',
+   };
+
+   MarkerTypeRenderer.MARKER_TYPE_RENDERERS[ItemType.RESTAURANT](markerEl, [{
+      name: 'Africa Restaurant',
+      likelihood: 0,
+      is_closed_for_season: false,
+   }]);
+
+   assert.match(markerEl.style.backgroundImage, /restaurant-7a0000\.png/);
+});

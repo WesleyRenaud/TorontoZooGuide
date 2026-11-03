@@ -110,6 +110,14 @@ export class ConsoleControllersBootstrapHelper {
       getRefs: refs => refs.restaurants.closed,
    },
    {
+      createController: RestaurantController.createRestaurantClosedForSeasonController,
+      getRefs: refs => refs.restaurants.closedForSeason,
+   },
+   {
+      createController: RestaurantController.createRestaurantOpenForSeasonController,
+      getRefs: refs => refs.restaurants.openForSeason,
+   },
+   {
       createController: RestaurantClosureController.createRestaurantClosureOverrideController,
       getRefs: refs => refs.restaurants.closureOverride,
    },

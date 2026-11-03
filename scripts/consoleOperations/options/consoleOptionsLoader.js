@@ -88,6 +88,11 @@ export class ConsoleOptionsLoader {
       });
    }
 
+   static async loadClosedForSeasonRestaurants() {
+      const result = await ConsoleOperationsClient.getClosedForSeasonRestaurantNames();
+      return result.restaurants;
+   }
+
    static async loadRestrooms() {
       return ConsoleOptionsLoaderHelper.loadCachedOptions({
          cacheKey: 'restrooms',

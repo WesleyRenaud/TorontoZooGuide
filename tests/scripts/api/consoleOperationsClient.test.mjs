@@ -422,6 +422,38 @@ test('Test_SetRestaurantClosed_TestPayload_ExpectPosted', async () => {
 });
 
 
+test('Test_GetClosedForSeasonRestaurantNames_TestPayload_ExpectPosted', async () => {
+   const url = '/get-closed-for-season-restaurant-names';
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.getClosedForSeasonRestaurantNames();
+
+   assert.deepEqual(result, { ok: true, url, payload: {} });
+});
+
+
+test('Test_SetRestaurantClosedForSeason_TestPayload_ExpectPosted', async () => {
+   const url = '/set-restaurant-closed-for-season';
+   const payload = { method: 'setRestaurantClosedForSeason' };
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.setRestaurantClosedForSeason(payload);
+
+   assert.deepEqual(result, { ok: true, url, payload });
+});
+
+
+test('Test_SetRestaurantOpenForSeason_TestPayload_ExpectPosted', async () => {
+   const url = '/set-restaurant-open-for-season';
+   const payload = { method: 'setRestaurantOpenForSeason' };
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.setRestaurantOpenForSeason(payload);
+
+   assert.deepEqual(result, { ok: true, url, payload });
+});
+
+
 test('Test_SetRestaurantClosureOverride_TestPayload_ExpectPosted', async () => {
    const url = '/set-restaurant-closure-override';
    const payload = { method: 'setRestaurantClosureOverride' };

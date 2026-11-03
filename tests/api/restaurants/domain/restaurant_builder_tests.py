@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from api.restaurants.data_access.restaurant_closure_record import RestaurantClosureRecord
 from api.restaurants.data_access.restaurant_record import RestaurantRecord
 from api.restaurants.data_access.restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
@@ -81,6 +82,19 @@ def _override_record( **overrides: object ) -> RestaurantScheduleOverrideRecord:
    values.update( overrides )
 
    return RestaurantScheduleOverrideRecord( **values )
+
+
+def _open_schedule( restaurant: str = RESTAURANT_NAME ) -> RestaurantScheduleRecord:
+   return _schedule_record(
+      restaurant=restaurant,
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      schedule_message=None )
 
 
 def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() -> None:
@@ -224,3 +238,73 @@ def Test_GetActiveScheduleOverrideStatus_TestClosedOverride_ExpectClosed() -> No
 
    assert status == ScheduleStatus.CLOSED
    assert message == CLOSURE_OVERRIDE_MESSAGE
+
+
+def Test_BuildRestaurant_TestActiveSeasonClosure_ExpectClosedForSeason() -> None:
+   closure_record = RestaurantClosureRecord(
+      restaurant=RESTAURANT_NAME,
+      closed_start='2026-06-01',
+      closed_end=None,
+      closed_message='The Africa Restaurant is closed for the season.',
+      is_closed_for_season=True )
+
+   restaurant = RestaurantBuilder.build_restaurant(
+      restaurant_record=_restaurant_record(),
+      schedule_records=[ _open_schedule() ],
+      schedule_override_records=[],
+      context=_visit_context(),
+      closure_record=closure_record )
+
+   assert restaurant.is_closed is True
+   assert restaurant.likelihood == 0
+   assert restaurant.is_closed_for_season is True
+   assert restaurant.closed_message == closure_record.closed_message
+
+
+def Test_BuildRestaurant_TestExpiredSeasonClosure_ExpectOpen() -> None:
+   closure_record = RestaurantClosureRecord(
+      restaurant=RESTAURANT_NAME,
+      closed_start='2026-06-01',
+      closed_end='2026-06-01',
+      closed_message='The Africa Restaurant is closed for the season.',
+      is_closed_for_season=True )
+
+   restaurant = RestaurantBuilder.build_restaurant(
+      restaurant_record=_restaurant_record(),
+      schedule_records=[ _open_schedule() ],
+      schedule_override_records=[],
+      context=_visit_context(),
+      closure_record=closure_record )
+
+   assert restaurant.is_closed is False
+   assert restaurant.likelihood == 100
+   assert restaurant.is_closed_for_season is False
+   assert restaurant.closed_message is None
+
+
+def Test_BuildRestaurants_TestSeasonClosure_ExpectMatchedByName() -> None:
+   closure_record = RestaurantClosureRecord(
+      restaurant=RESTAURANT_NAME,
+      closed_start='2026-06-01',
+      closed_end=None,
+      closed_message='The Africa Restaurant is closed for the season.',
+      is_closed_for_season=True )
+
+   restaurants = RestaurantBuilder.build_restaurants(
+      restaurant_records=[
+         _restaurant_record(),
+         _restaurant_record( name=OTHER_RESTAURANT_NAME ),
+      ],
+      schedule_records=[
+         _open_schedule(),
+         _open_schedule( OTHER_RESTAURANT_NAME ),
+      ],
+      schedule_override_records=[],
+      context=_visit_context(),
+      include_closed_restaurants=True,
+      closure_records=[ closure_record ] )
+
+   by_name = { restaurant.name: restaurant for restaurant in restaurants }
+
+   assert by_name[ RESTAURANT_NAME ].is_closed_for_season is True
+   assert by_name[ OTHER_RESTAURANT_NAME ].is_closed_for_season is False

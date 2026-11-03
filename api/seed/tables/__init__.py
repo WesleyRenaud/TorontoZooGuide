@@ -58,6 +58,7 @@ from .restaurant_day_seasonal_availability_multiplier_seed_table import Restaura
 from .restaurant_opening_schedule_seed_table import RestaurantOpeningScheduleSeedTable
 from .restaurant_schedule_override_seed_table import RestaurantScheduleOverrideSeedTable
 from .restaurant_seed_table import RestaurantSeedTable
+from .restaurant_status_seed_table import RestaurantStatusSeedTable
 from .restroom_alert_seed_table import RestroomAlertSeedTable
 from .restroom_seed_table import RestroomSeedTable
 from .restroom_status_seed_table import RestroomStatusSeedTable
@@ -134,6 +135,7 @@ runtime_tables = [
    ZooUpdateSeedTable,
    RestaurantOpeningScheduleSeedTable,
    RestaurantScheduleOverrideSeedTable,
+   RestaurantStatusSeedTable,
    GiftShopOpeningScheduleSeedTable,
    GiftShopScheduleOverrideSeedTable,
    AppSettingSeedTable,

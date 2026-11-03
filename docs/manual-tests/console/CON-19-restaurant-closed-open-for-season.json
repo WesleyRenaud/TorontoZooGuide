@@ -1,0 +1,48 @@
+{
+  "id": "CON-19",
+  "title": "Restaurant closed/open for the season",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open closed-for-season op",
+      "do": "Select **Set restaurant as closed for the season**.",
+      "expect": "The form opens with **Restaurant**, **Start date**, **Last day** and **Reason**."
+    },
+    {
+      "number": 2,
+      "name": "Submit with blank reason",
+      "do": "Select **Africa Restaurant**. Leave **Start date**, **Last day** and **Reason** blank. Click **Save**.",
+      "expect": "Success that **Africa Restaurant** was set as closed for the season."
+    },
+    {
+      "number": 3,
+      "name": "Map without include",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Restaurants**. Leave **Include closed restaurants** unchecked.",
+      "expect": "**Africa Restaurant** is absent."
+    },
+    {
+      "number": 4,
+      "name": "Season message",
+      "do": "Enable **Include closed restaurants** and click **Africa Restaurant**.",
+      "expect": "**Africa Restaurant** appears with a light winter-blue background. The popup is blue with a snowflake, the same as an animal off display for the season, and reads **The Africa Restaurant is closed for the season.**"
+    },
+    {
+      "number": 5,
+      "name": "Open-for-season lists season only",
+      "do": "In Console, open **Set restaurant as open for the season** and expand **Restaurant**.",
+      "expect": "**Africa Restaurant** is listed. The form has no start date or last day. A restaurant that is only temporarily closed is not listed."
+    },
+    {
+      "number": 6,
+      "name": "Submit open for season",
+      "do": "Select **Africa Restaurant** and click **Save**.",
+      "expect": "Success that **Africa Restaurant** was set as open for the season."
+    },
+    {
+      "number": 7,
+      "name": "Map restored",
+      "do": "Return to **Map** on **Specific Map** today with **Restaurants** enabled and **Include closed restaurants** unchecked.",
+      "expect": "**Africa Restaurant** shows as a normal open restaurant again."
+    }
+  ]
+}

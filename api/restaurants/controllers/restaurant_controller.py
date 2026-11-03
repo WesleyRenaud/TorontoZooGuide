@@ -63,6 +63,63 @@ class RestaurantController():
 
 
    @staticmethod
+   def get_closed_for_season_restaurant_names( handler: JsonRequestHandler ) -> None:
+      restaurants = RestaurantCoordinator.get_closed_for_season_restaurant_names()
+
+      handler._write_json( {
+         'restaurants': restaurants,
+      } )
+
+
+   @staticmethod
+   def set_restaurant_closed_for_season( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      restaurant = data.get( 'restaurant' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+      message = data.get( 'message' )
+
+      success = RestaurantCoordinator.set_restaurant_as_closed_for_season(
+         restaurant=restaurant,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      response = {
+         'success': success,
+         'restaurant': restaurant,
+         'startDate': start_date,
+         'endDate': end_date,
+         'message': message,
+      }
+
+      if not success:
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=restaurant )
+
+      handler._write_json( response )
+
+
+   @staticmethod
+   def set_restaurant_open_for_season( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      restaurant = data.get( 'restaurant' )
+
+      success = RestaurantCoordinator.set_restaurant_as_open_for_season( restaurant=restaurant )
+
+      response = {
+         'success': success,
+         'restaurant': restaurant,
+      }
+
+      if not success:
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_OPEN, name=restaurant )
+
+      handler._write_json( response )
+
+
+   @staticmethod
    def set_restaurant_closure_override( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

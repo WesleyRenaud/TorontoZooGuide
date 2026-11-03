@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..data_access.restaurant_closure_record import RestaurantClosureRecord
 from ..data_access.restaurant_record import RestaurantRecord
 from ..data_access.restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from ..data_access.restaurant_schedule_record import RestaurantScheduleRecord
@@ -11,6 +12,7 @@ from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningSched
 from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
 from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
+from ..status.restaurant_season_closure_builder import RestaurantSeasonClosureBuilder
 from ...types import Types
 
 
@@ -99,7 +101,8 @@ class RestaurantBuilder():
          restaurant_record: RestaurantRecord,
          schedule_records: list[ RestaurantScheduleRecord ],
          schedule_override_records: list[ RestaurantScheduleOverrideRecord ],
-         context: OpeningScheduleVisitContext ) -> Restaurant:
+         context: OpeningScheduleVisitContext,
+         closure_record: RestaurantClosureRecord | None = None ) -> Restaurant:
 
       likelihood, closed_message = OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
          name=restaurant_record.name,
@@ -110,6 +113,14 @@ class RestaurantBuilder():
          seasonal_multiplier=cls.get_day_seasonal_availability_multiplier(
             restaurant_record=restaurant_record,
             context=context ) )
+      is_closed_for_season = False
+
+      if closure_record != None and RestaurantSeasonClosureBuilder.is_active_on_date(
+            closure_record,
+            context.target_date ):
+         likelihood = 0
+         closed_message = closure_record.closed_message
+         is_closed_for_season = True
 
       return Restaurant(
          name=restaurant_record.name,
@@ -121,7 +132,8 @@ class RestaurantBuilder():
          y_coord=restaurant_record.y_coord,
          is_closed=likelihood <= 0,
          closed_message=closed_message,
-         likelihood=likelihood )
+         likelihood=likelihood,
+         is_closed_for_season=is_closed_for_season )
 
 
    @classmethod
@@ -132,12 +144,17 @@ class RestaurantBuilder():
          schedule_override_records: list[ RestaurantScheduleOverrideRecord ],
          context: OpeningScheduleVisitContext,
          include_closed_restaurants: bool,
-         restaurants_to_include: list[ str ] | None = None ) -> list[ Restaurant ]:
+         restaurants_to_include: list[ str ] | None = None,
+         closure_records: list[ RestaurantClosureRecord ] | None = None ) -> list[ Restaurant ]:
 
       restaurants_to_include = restaurants_to_include or []
       schedule_records_by_name = cls.group_schedule_records_by_name( schedule_records )
       schedule_override_records_by_name = cls.group_schedule_override_records_by_name(
          schedule_override_records )
+      closures_by_name = {
+         record.restaurant: record
+         for record in ( closure_records or [] )
+      }
       restaurants: list[ Restaurant ] = []
 
       for restaurant_record in restaurant_records:
@@ -147,7 +164,8 @@ class RestaurantBuilder():
             schedule_override_records=schedule_override_records_by_name.get(
                restaurant_record.name,
                [] ),
-            context=context )
+            context=context,
+            closure_record=closures_by_name.get( restaurant_record.name ) )
 
          if (
                include_closed_restaurants

@@ -81,3 +81,71 @@ test('Test_CreateRestaurantClosedController_TestSuccessMessage_ExpectCatalogMess
       capture.restore();
    }
 });
+
+
+test('Test_CreateRestaurantClosedForSeasonController_TestSubmit_ExpectSeasonPayload', async (t) => {
+   const restaurant = 'Africa Restaurant';
+   const startDate = '2026-11-02';
+   const original = EntityClosedFormController.createEntityClosedFormController;
+   const originalSet = ConsoleOperationsClient.setRestaurantClosedForSeason;
+   let captured;
+   EntityClosedFormController.createEntityClosedFormController = (options) => {
+      captured = options;
+      return { created: true };
+   };
+   ConsoleOperationsClient.setRestaurantClosedForSeason = async (payload) => payload;
+   t.after(() => {
+      EntityClosedFormController.createEntityClosedFormController = original;
+      ConsoleOperationsClient.setRestaurantClosedForSeason = originalSet;
+   });
+
+   RestaurantController.createRestaurantClosedForSeasonController({ restaurantEl: { id: 'r' } });
+   const payload = await captured.submitClosedStatus({
+      entity: restaurant,
+      startDate,
+      endDate: '',
+      message: '',
+   });
+
+   assert.deepEqual(payload, {
+      restaurant,
+      startDate,
+      endDate: null,
+      message: '',
+   });
+   assert.equal(
+      captured.successMessage({ restaurant }),
+      Strings.status.closedForSeason(restaurant),
+   );
+   assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadRestaurants);
+});
+
+
+test('Test_CreateRestaurantOpenForSeasonController_TestSubmit_ExpectSeasonList', async (t) => {
+   const restaurant = 'Africa Restaurant';
+   const { EntityOpenFormController } = await import(
+      '../../../../../scripts/consoleOperations/forms/entityOpenFormController.js'
+   );
+   const original = EntityOpenFormController.createEntityOpenFormController;
+   const originalSet = ConsoleOperationsClient.setRestaurantOpenForSeason;
+   let captured;
+   EntityOpenFormController.createEntityOpenFormController = (options) => {
+      captured = options;
+      return { created: true };
+   };
+   ConsoleOperationsClient.setRestaurantOpenForSeason = async (payload) => payload;
+   t.after(() => {
+      EntityOpenFormController.createEntityOpenFormController = original;
+      ConsoleOperationsClient.setRestaurantOpenForSeason = originalSet;
+   });
+
+   RestaurantController.createRestaurantOpenForSeasonController({ restaurantEl: { id: 'r' } });
+   const payload = await captured.submitOpenStatus({ entity: restaurant });
+
+   assert.deepEqual(payload, { restaurant });
+   assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadClosedForSeasonRestaurants);
+   assert.equal(
+      captured.successMessage({ restaurant }),
+      Strings.status.openForSeason(restaurant),
+   );
+});

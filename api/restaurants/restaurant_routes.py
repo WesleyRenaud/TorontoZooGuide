@@ -9,6 +9,9 @@ class RestaurantRoutes():
    '/get-restaurants': RestaurantController.get_restaurants,
    '/get-restaurant-names': RestaurantController.get_restaurant_names,
    '/set-restaurant-closed': RestaurantController.set_restaurant_closed,
+   '/get-closed-for-season-restaurant-names': RestaurantController.get_closed_for_season_restaurant_names,
+   '/set-restaurant-closed-for-season': RestaurantController.set_restaurant_closed_for_season,
+   '/set-restaurant-open-for-season': RestaurantController.set_restaurant_open_for_season,
    '/set-restaurant-closure-override': RestaurantController.set_restaurant_closure_override,
    '/set-restaurant-opening-schedule': RestaurantController.set_restaurant_opening_schedule,
    '/replace-restaurant-opening-schedule-overlaps': (

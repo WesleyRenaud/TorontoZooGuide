@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from ..data_access.restaurant_provider import RestaurantProvider
 from ..data_access.restaurant_schedule_provider import RestaurantScheduleProvider
+from ..data_access.restaurant_status_provider import RestaurantStatusProvider
 from ..domain.restaurant_builder import RestaurantBuilder
 from ...models import Restaurant
 from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.restaurant_schedule_conflict_resolver import RestaurantScheduleConflictResolver
 from ..search.restaurants_matching_query_builder import RestaurantsMatchingQueryBuilder
 from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.calendar_dates import DateValues
+from ..status.restaurant_season_closure_builder import RestaurantSeasonClosureBuilder
 from ..status.restaurant_status_builder import RestaurantStatusBuilder
 from ...types import Types
 
@@ -53,7 +56,9 @@ class RestaurantCoordinator():
             RequestConnectionProvider.get() ),
          context=context,
          include_closed_restaurants=include_closed_restaurants,
-         restaurants_to_include=restaurants_to_include )
+         restaurants_to_include=restaurants_to_include,
+         closure_records=RestaurantStatusProvider.fetch_closure_records(
+            RequestConnectionProvider.get() ) )
 
 
    @classmethod
@@ -74,6 +79,41 @@ class RestaurantCoordinator():
       return RestaurantsMatchingQueryBuilder.build(
          restaurants,
          query )
+
+
+   @classmethod
+   def get_closed_for_season_restaurant_names( cls ) -> list[ str ]:
+      return RestaurantStatusProvider.fetch_closed_for_season_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
+
+
+   @classmethod
+   def set_restaurant_as_closed_for_season(
+         cls,
+         restaurant: str,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
+         message: str ) -> bool:
+      status = RestaurantSeasonClosureBuilder.build(
+         restaurant=restaurant,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      return RestaurantStatusProvider.save_closed_for_season(
+         RequestConnectionProvider.get(),
+         restaurant=status.restaurant,
+         start_date=status.start_date,
+         end_date=status.end_date,
+         message=status.message )
+
+
+   @classmethod
+   def set_restaurant_as_open_for_season( cls, restaurant: str ) -> bool:
+      return RestaurantStatusProvider.delete_closed_for_season(
+         RequestConnectionProvider.get(),
+         restaurant=restaurant )
 
 
    @classmethod
