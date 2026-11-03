@@ -9,6 +9,7 @@ import sys
 from tools.guardiansTalkScheduleCheck import check_schedules as check_talks
 from tools.seasonalAttractionClosureCheck import check_schedules as check_attractions
 from tools.seasonalOffDisplayCheck import check_schedules as check_animals
+from tools.seasonalRestaurantClosureCheck import check_schedules as check_restaurants
 from tools.wildEncounterScheduleCheck import check_schedules as check_encounters
 
 
@@ -19,7 +20,8 @@ def parse_args() -> argparse.Namespace:
    parser = argparse.ArgumentParser(
       description=(
          'Compare wild encounters, guardians talks, seasonal off-display animals, '
-         'and attractions closed for the season with the Toronto Zoo website.'
+         'attractions closed for the season, and restaurants closed for the season '
+         'with the Toronto Zoo website.'
       )
    )
    parser.add_argument(
@@ -37,19 +39,27 @@ def run_checks(
       encounter_check: Callable[ [ Path, date ], int ],
       talk_check: Callable[ [ Path, date ], int ],
       animal_check: Callable[ [ Path, date ], int ],
-      attraction_check: Callable[ [ Path, date ], int ] ) -> int:
+      attraction_check: Callable[ [ Path, date ], int ],
+      restaurant_check: Callable[ [ Path, date ], int ] ) -> int:
    encounter_issues = encounter_check( database, today )
    talk_issues = talk_check( database, today )
    animal_issues = animal_check( database, today )
    attraction_issues = attraction_check( database, today )
+   restaurant_issues = restaurant_check( database, today )
    print(
       f'{ encounter_issues } for encounters, '
       f'{ talk_issues } for talks, '
       f'{ animal_issues } for animals, '
-      f'{ attraction_issues } for attractions'
+      f'{ attraction_issues } for attractions, '
+      f'{ restaurant_issues } for restaurants'
    )
 
-   if encounter_issues or talk_issues or animal_issues or attraction_issues:
+   if (
+         encounter_issues
+         or talk_issues
+         or animal_issues
+         or attraction_issues
+         or restaurant_issues ):
       return 1
 
    return 0
@@ -70,6 +80,7 @@ def main() -> int:
          check_talks,
          check_animals,
          check_attractions,
+         check_restaurants,
       )
    except RuntimeError as error:
       print( error, file=sys.stderr )
