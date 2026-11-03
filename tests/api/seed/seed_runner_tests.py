@@ -5,7 +5,37 @@ import sqlite3
 
 import pytest
 
+from api.seed.schema_creator import SchemaCreator
 from api.seed.seed_runner import SeedRunner
+
+
+def Test_CreateSchema_TestExistingClosureStatuses_ExpectPreserved() -> None:
+   connection = sqlite3.connect( ':memory:' )
+
+   try:
+      cursor = connection.cursor()
+      SchemaCreator.create( cursor )
+      cursor.execute(
+         'INSERT INTO RestaurantStatus ( RESTAURANT, IS_CLOSED, CLOSED_FOR_SEASON ) '
+         'VALUES ( ?, 1, 1 )',
+         ( 'Tundra Tacos', ),
+      )
+      cursor.execute(
+         'INSERT INTO GiftShopStatus ( GIFT_SHOP, IS_CLOSED, CLOSED_FOR_SEASON ) '
+         'VALUES ( ?, 1, 1 )',
+         ( 'Test Gift Shop', ),
+      )
+
+      SchemaCreator.create( cursor )
+
+      assert cursor.execute(
+         'SELECT RESTAURANT, IS_CLOSED, CLOSED_FOR_SEASON FROM RestaurantStatus'
+      ).fetchall() == [ ( 'Tundra Tacos', 1, 1 ) ]
+      assert cursor.execute(
+         'SELECT GIFT_SHOP, IS_CLOSED, CLOSED_FOR_SEASON FROM GiftShopStatus'
+      ).fetchall() == [ ( 'Test Gift Shop', 1, 1 ) ]
+   finally:
+      connection.close()
 
 def Test_ApplySchema_TestMonkeypatchedConnect_ExpectSchemaMigrateCommit(
       monkeypatch: pytest.MonkeyPatch,

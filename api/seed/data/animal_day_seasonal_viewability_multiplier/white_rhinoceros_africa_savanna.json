@@ -1,6 +1,6 @@
 {
-  "species": "Marabou Stork",
-  "exhibit": "Kids Zoo",
+  "species": "White Rhinoceros",
+  "exhibit": "Africa Savanna",
   "days": [
     {
       "month": 1,
@@ -445,287 +445,287 @@
     {
       "month": 3,
       "day": 29,
-      "value": 0.0
+      "value": 0.036
     },
     {
       "month": 3,
       "day": 30,
-      "value": 0.0
+      "value": 0.071
     },
     {
       "month": 3,
       "day": 31,
-      "value": 0.0
+      "value": 0.107
     },
     {
       "month": 4,
       "day": 1,
-      "value": 0.0
+      "value": 0.143
     },
     {
       "month": 4,
       "day": 2,
-      "value": 0.0
+      "value": 0.179
     },
     {
       "month": 4,
       "day": 3,
-      "value": 0.0
+      "value": 0.214
     },
     {
       "month": 4,
       "day": 4,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 5,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 6,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 7,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 8,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 9,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 10,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 11,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 12,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 13,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 14,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 15,
-      "value": 0.0
-    },
-    {
-      "month": 4,
-      "day": 16,
-      "value": 0.025
-    },
-    {
-      "month": 4,
-      "day": 17,
-      "value": 0.05
-    },
-    {
-      "month": 4,
-      "day": 18,
-      "value": 0.075
-    },
-    {
-      "month": 4,
-      "day": 19,
-      "value": 0.1
-    },
-    {
-      "month": 4,
-      "day": 20,
-      "value": 0.125
-    },
-    {
-      "month": 4,
-      "day": 21,
-      "value": 0.15
-    },
-    {
-      "month": 4,
-      "day": 22,
-      "value": 0.175
-    },
-    {
-      "month": 4,
-      "day": 23,
-      "value": 0.2
-    },
-    {
-      "month": 4,
-      "day": 24,
-      "value": 0.225
-    },
-    {
-      "month": 4,
-      "day": 25,
       "value": 0.25
     },
     {
       "month": 4,
-      "day": 26,
-      "value": 0.275
-    },
-    {
-      "month": 4,
-      "day": 27,
-      "value": 0.3
-    },
-    {
-      "month": 4,
-      "day": 28,
-      "value": 0.325
-    },
-    {
-      "month": 4,
-      "day": 29,
-      "value": 0.35
-    },
-    {
-      "month": 4,
-      "day": 30,
-      "value": 0.375
-    },
-    {
-      "month": 5,
-      "day": 1,
-      "value": 0.4
-    },
-    {
-      "month": 5,
-      "day": 2,
-      "value": 0.425
-    },
-    {
-      "month": 5,
-      "day": 3,
-      "value": 0.45
-    },
-    {
-      "month": 5,
-      "day": 4,
-      "value": 0.475
-    },
-    {
-      "month": 5,
       "day": 5,
+      "value": 0.286
+    },
+    {
+      "month": 4,
+      "day": 6,
+      "value": 0.321
+    },
+    {
+      "month": 4,
+      "day": 7,
+      "value": 0.357
+    },
+    {
+      "month": 4,
+      "day": 8,
+      "value": 0.393
+    },
+    {
+      "month": 4,
+      "day": 9,
+      "value": 0.429
+    },
+    {
+      "month": 4,
+      "day": 10,
+      "value": 0.464
+    },
+    {
+      "month": 4,
+      "day": 11,
       "value": 0.5
     },
     {
-      "month": 5,
-      "day": 6,
-      "value": 0.525
-    },
-    {
-      "month": 5,
-      "day": 7,
-      "value": 0.55
-    },
-    {
-      "month": 5,
-      "day": 8,
-      "value": 0.575
-    },
-    {
-      "month": 5,
-      "day": 9,
-      "value": 0.6
-    },
-    {
-      "month": 5,
-      "day": 10,
-      "value": 0.625
-    },
-    {
-      "month": 5,
-      "day": 11,
-      "value": 0.65
-    },
-    {
-      "month": 5,
+      "month": 4,
       "day": 12,
-      "value": 0.675
+      "value": 0.536
     },
     {
-      "month": 5,
+      "month": 4,
       "day": 13,
-      "value": 0.7
+      "value": 0.571
     },
     {
-      "month": 5,
+      "month": 4,
       "day": 14,
-      "value": 0.725
+      "value": 0.607
     },
     {
-      "month": 5,
+      "month": 4,
       "day": 15,
+      "value": 0.643
+    },
+    {
+      "month": 4,
+      "day": 16,
+      "value": 0.679
+    },
+    {
+      "month": 4,
+      "day": 17,
+      "value": 0.714
+    },
+    {
+      "month": 4,
+      "day": 18,
       "value": 0.75
     },
     {
+      "month": 4,
+      "day": 19,
+      "value": 0.786
+    },
+    {
+      "month": 4,
+      "day": 20,
+      "value": 0.821
+    },
+    {
+      "month": 4,
+      "day": 21,
+      "value": 0.857
+    },
+    {
+      "month": 4,
+      "day": 22,
+      "value": 0.893
+    },
+    {
+      "month": 4,
+      "day": 23,
+      "value": 0.929
+    },
+    {
+      "month": 4,
+      "day": 24,
+      "value": 0.964
+    },
+    {
+      "month": 4,
+      "day": 25,
+      "value": 1.0
+    },
+    {
+      "month": 4,
+      "day": 26,
+      "value": 1.0
+    },
+    {
+      "month": 4,
+      "day": 27,
+      "value": 1.0
+    },
+    {
+      "month": 4,
+      "day": 28,
+      "value": 1.0
+    },
+    {
+      "month": 4,
+      "day": 29,
+      "value": 1.0
+    },
+    {
+      "month": 4,
+      "day": 30,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 1,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 2,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 3,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 4,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 5,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 6,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 7,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 8,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 9,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 10,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 11,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 12,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 13,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 14,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 15,
+      "value": 1.0
+    },
+    {
       "month": 5,
       "day": 16,
-      "value": 0.775
+      "value": 1.0
     },
     {
       "month": 5,
       "day": 17,
-      "value": 0.8
+      "value": 1.0
     },
     {
       "month": 5,
       "day": 18,
-      "value": 0.825
+      "value": 1.0
     },
     {
       "month": 5,
       "day": 19,
-      "value": 0.85
+      "value": 1.0
     },
     {
       "month": 5,
       "day": 20,
-      "value": 0.875
+      "value": 1.0
     },
     {
       "month": 5,
       "day": 21,
-      "value": 0.9
+      "value": 1.0
     },
     {
       "month": 5,
       "day": 22,
-      "value": 0.925
+      "value": 1.0
     },
     {
       "month": 5,
       "day": 23,
-      "value": 0.95
+      "value": 1.0
     },
     {
       "month": 5,
       "day": 24,
-      "value": 0.975
+      "value": 1.0
     },
     {
       "month": 5,
@@ -1445,157 +1445,157 @@
     {
       "month": 10,
       "day": 15,
-      "value": 0.955
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 16,
-      "value": 0.909
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 17,
-      "value": 0.864
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 18,
-      "value": 0.818
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 19,
-      "value": 0.773
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 20,
-      "value": 0.727
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 21,
-      "value": 0.682
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 22,
-      "value": 0.636
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 23,
-      "value": 0.591
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 24,
-      "value": 0.545
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 25,
-      "value": 0.5
+      "value": 1.0
     },
     {
       "month": 10,
       "day": 26,
-      "value": 0.455
+      "value": 0.952
     },
     {
       "month": 10,
       "day": 27,
-      "value": 0.409
+      "value": 0.905
     },
     {
       "month": 10,
       "day": 28,
-      "value": 0.364
+      "value": 0.857
     },
     {
       "month": 10,
       "day": 29,
-      "value": 0.318
+      "value": 0.81
     },
     {
       "month": 10,
       "day": 30,
-      "value": 0.273
+      "value": 0.762
     },
     {
       "month": 10,
       "day": 31,
-      "value": 0.227
+      "value": 0.714
     },
     {
       "month": 11,
       "day": 1,
-      "value": 0.182
+      "value": 0.667
     },
     {
       "month": 11,
       "day": 2,
-      "value": 0.136
+      "value": 0.619
     },
     {
       "month": 11,
       "day": 3,
-      "value": 0.091
+      "value": 0.571
     },
     {
       "month": 11,
       "day": 4,
-      "value": 0.045
+      "value": 0.524
     },
     {
       "month": 11,
       "day": 5,
-      "value": 0.0
+      "value": 0.476
     },
     {
       "month": 11,
       "day": 6,
-      "value": 0.0
+      "value": 0.429
     },
     {
       "month": 11,
       "day": 7,
-      "value": 0.0
+      "value": 0.381
     },
     {
       "month": 11,
       "day": 8,
-      "value": 0.0
+      "value": 0.333
     },
     {
       "month": 11,
       "day": 9,
-      "value": 0.0
+      "value": 0.286
     },
     {
       "month": 11,
       "day": 10,
-      "value": 0.0
+      "value": 0.238
     },
     {
       "month": 11,
       "day": 11,
-      "value": 0.0
+      "value": 0.19
     },
     {
       "month": 11,
       "day": 12,
-      "value": 0.0
+      "value": 0.143
     },
     {
       "month": 11,
       "day": 13,
-      "value": 0.0
+      "value": 0.095
     },
     {
       "month": 11,
       "day": 14,
-      "value": 0.0
+      "value": 0.048
     },
     {
       "month": 11,

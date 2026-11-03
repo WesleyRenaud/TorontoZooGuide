@@ -18,7 +18,7 @@ AMERICAS = 'Americas Outdoor Mayan Temple Ruins'
 AFRICAN_LION = 'African Lion'
 SPOTTED_HYENA = 'Spotted Hyena'
 CAPYBARA = 'Capybara'
-SOUTHERN_WHITE_RHINOCEROS = 'Southern White Rhinoceros'
+WHITE_RHINOCEROS = 'White Rhinoceros'
 RIVER_HIPPOPOTAMUS = 'River Hippopotamus'
 AFRICAN_PENGUIN = 'African Penguin'
 OUTDOOR_ENCLOSURE = 'Outdoor'
@@ -234,7 +234,7 @@ def Test_ApplyOnDateChange_TestFrontendRebuiltAnimals_ExpectContinuingExhibitFla
       exhibit=OCTOBER_31_LION.exhibit,
       new_likelihood=OCTOBER_31_LION.likelihood )
    rhino = _animal_diff(
-      species=SOUTHERN_WHITE_RHINOCEROS,
+      species=WHITE_RHINOCEROS,
       exhibit=AFRICA_SAVANNA,
       new_likelihood=OCTOBER_31_LION.likelihood )
    hippo = _animal_diff(

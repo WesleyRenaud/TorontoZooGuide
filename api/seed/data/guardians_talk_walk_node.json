@@ -280,15 +280,6 @@
   },
   {
     "kind": "guardians_talk",
-    "name": "Southern White Rhinoceros",
-    "location": "Africa Savanna",
-    "x": 41.144,
-    "y": 51.717,
-    "walk_node_id": "v-0363",
-    "snap_distance_px": 6.599
-  },
-  {
-    "kind": "guardians_talk",
     "name": "Spotted Hyena",
     "location": "Africa Savanna",
     "x": 54.873,
@@ -333,6 +324,15 @@
     "walk_node_id": "v-0248",
     "snap_distance_px": 14.348,
     "enclosure_name": "Indoor"
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "White Rhinoceros",
+    "location": "Africa Savanna",
+    "x": 41.144,
+    "y": 51.717,
+    "walk_node_id": "v-0363",
+    "snap_distance_px": 6.599
   },
   {
     "kind": "guardians_talk",

@@ -217,13 +217,6 @@
     "enclosure_name": null
   },
   {
-    "talk_name": "Southern White Rhinoceros",
-    "location": "Africa Savanna",
-    "species": "Southern White Rhinoceros",
-    "exhibit": "Africa Savanna",
-    "enclosure_name": null
-  },
-  {
     "talk_name": "Spotted Hyena",
     "location": "Africa Savanna",
     "species": "Spotted Hyena",
@@ -264,6 +257,13 @@
     "species": "Western Lowland Gorilla",
     "exhibit": "African Rainforest Pavilion",
     "enclosure_name": "Indoor"
+  },
+  {
+    "talk_name": "White Rhinoceros",
+    "location": "Africa Savanna",
+    "species": "White Rhinoceros",
+    "exhibit": "Africa Savanna",
+    "enclosure_name": null
   },
   {
     "talk_name": "White-Handed Gibbon",

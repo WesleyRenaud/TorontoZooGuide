@@ -162,7 +162,7 @@
         {
           "kind": "animal",
           "key": [
-            "Live Coral Reefs",
+            "Live Reef Corals",
             "Australasia Pavilion",
             null
           ]
@@ -1256,7 +1256,7 @@
         {
           "kind": "animal",
           "key": [
-            "Southern White Rhinoceros",
+            "White Rhinoceros",
             "Africa Savanna",
             null
           ]
@@ -1691,14 +1691,6 @@
         {
           "kind": "animal",
           "key": [
-            "Asian Brown Tortoise",
-            "Indo-Malaya Pavilion",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
             "Bighead Carp",
             "Indo-Malaya Pavilion",
             null
@@ -1771,7 +1763,7 @@
         {
           "kind": "animal",
           "key": [
-            "Edward's Pheasant",
+            "Edwards's Pheasant",
             "Indo-Malaya Pavilion",
             null
           ]
@@ -1923,7 +1915,7 @@
         {
           "kind": "animal",
           "key": [
-            "Tri-Coloured Shark",
+            "Tri-Colour Shark",
             "Indo-Malaya Pavilion",
             null
           ]
@@ -2125,14 +2117,6 @@
           "kind": "animal",
           "key": [
             "Harris's Hawk",
-            "Kids Zoo",
-            null
-          ]
-        },
-        {
-          "kind": "animal",
-          "key": [
-            "Marabou Stork",
             "Kids Zoo",
             null
           ]

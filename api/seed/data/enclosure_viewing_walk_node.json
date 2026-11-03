@@ -117,15 +117,6 @@
     "snap_distance_px": 44.19
   },
   {
-    "species": "Asian Brown Tortoise",
-    "exhibit": "Indo-Malaya Pavilion",
-    "enclosure_type": "Indoor",
-    "x": 46.391,
-    "y": 75.269,
-    "walk_node_id": "v-0127",
-    "snap_distance_px": 23.318
-  },
-  {
     "species": "Asian Giant Millipede",
     "exhibit": "Malayan Woods Pavilion",
     "enclosure_type": "Indoor",
@@ -576,7 +567,7 @@
     "snap_distance_px": 3.75
   },
   {
-    "species": "Edward's Pheasant",
+    "species": "Edwards's Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
     "enclosure_type": "Indoor",
     "x": 46.391,
@@ -1026,7 +1017,7 @@
     "snap_distance_px": 3.75
   },
   {
-    "species": "Live Coral Reefs",
+    "species": "Live Reef Corals",
     "exhibit": "Australasia Pavilion",
     "enclosure_type": "Indoor",
     "x": 72.869,
@@ -1159,15 +1150,6 @@
     "y": 62.754,
     "walk_node_id": "v-0263",
     "snap_distance_px": 28.006
-  },
-  {
-    "species": "Marabou Stork",
-    "exhibit": "Kids Zoo",
-    "enclosure_type": "Outdoor",
-    "x": 66.827,
-    "y": 80.627,
-    "walk_node_id": "v-1184",
-    "snap_distance_px": 9.013
   },
   {
     "species": "Masai Giraffe",
@@ -1791,15 +1773,6 @@
     "snap_distance_px": 24.677
   },
   {
-    "species": "Southern White Rhinoceros",
-    "exhibit": "Africa Savanna",
-    "enclosure_type": "Outdoor",
-    "x": 41.57,
-    "y": 50.29,
-    "walk_node_id": "v-0363",
-    "snap_distance_px": 41.706
-  },
-  {
     "species": "Spider Tortoise",
     "exhibit": "African Rainforest Pavilion",
     "enclosure_type": "Indoor",
@@ -1971,7 +1944,7 @@
     "snap_distance_px": 23.318
   },
   {
-    "species": "Tri-Coloured Shark",
+    "species": "Tri-Colour Shark",
     "exhibit": "Indo-Malaya Pavilion",
     "enclosure_type": "Indoor",
     "x": 46.391,
@@ -2122,6 +2095,15 @@
     "y": 59.856,
     "walk_node_id": "v-0229",
     "snap_distance_px": 35.41
+  },
+  {
+    "species": "White Rhinoceros",
+    "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
+    "x": 41.57,
+    "y": 50.29,
+    "walk_node_id": "v-0363",
+    "snap_distance_px": 41.706
   },
   {
     "species": "White's Tree Frog",

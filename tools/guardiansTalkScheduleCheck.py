@@ -31,7 +31,6 @@ MONTHS = {
 }
 NAME_ALIASES = {
    'blue and yellow macaw': 'Blue And Yellow Macaw',
-   'white rhinoceros': 'Southern White Rhinoceros',
 }
 LOCATION_ALIASES = {
    'african rainforest': [ 'African Rainforest Pavilion' ],
