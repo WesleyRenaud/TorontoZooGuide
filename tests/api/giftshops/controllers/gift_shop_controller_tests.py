@@ -321,3 +321,99 @@ def Test_TrimGiftShopOpeningScheduleOverlaps_TestHttpRequest_ExpectCouldNotTrimA
    result = response_json( handler )
 
    assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_TRIM_OPENING_SCHEDULE_OVERLAPS.value
+
+
+def Test_GetClosedForSeasonGiftShopNames_TestDirectCall_ExpectWritesNames(
+      stub_gift_shop_coordinator: StubGiftShopCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   GiftShopController.get_closed_for_season_gift_shop_names( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'gift_shops': [ GIFT_SHOP_NAME, OTHER_GIFT_SHOP_NAME ],
+   }
+   assert stub_gift_shop_coordinator.calls == [
+      ( 'get_closed_for_season_gift_shop_names', {} ),
+   ]
+
+
+def Test_SetGiftShopClosedForSeason_TestHttpRequest_ExpectMapsPayload(
+      stub_gift_shop_coordinator: StubGiftShopCoordinator ) -> None:
+   handler = make_handler(
+      '/set-gift-shop-closed-for-season',
+      {
+         'giftShop': GIFT_SHOP_NAME,
+         'startDate': CLOSURE_START_DATE,
+         'endDate': None,
+         'message': '',
+      }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert stub_gift_shop_coordinator.calls == [
+      (
+         'set_gift_shop_as_closed_for_season',
+         {
+            'gift_shop': GIFT_SHOP_NAME,
+            'start_date': CLOSURE_START_DATE,
+            'end_date': None,
+            'message': '',
+         }
+      )
+   ]
+
+
+def Test_SetGiftShopClosedForSeason_TestHttpRequest_ExpectCouldNotSetClosedApiError(
+      stub_gift_shop_coordinator: StubGiftShopCoordinator ) -> None:
+   StubGiftShopCoordinator.default_success = False
+   handler = make_handler(
+      '/set-gift-shop-closed-for-season',
+      { 'giftShop': GIFT_SHOP_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is False
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
+
+
+def Test_SetGiftShopOpenForSeason_TestHttpRequest_ExpectMapsGiftShop(
+      stub_gift_shop_coordinator: StubGiftShopCoordinator ) -> None:
+   handler = make_handler(
+      '/set-gift-shop-open-for-season',
+      { 'giftShop': GIFT_SHOP_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is True
+   assert result[ 'gift_shop' ] == GIFT_SHOP_NAME
+   assert stub_gift_shop_coordinator.calls == [
+      (
+         'set_gift_shop_as_open_for_season',
+         { 'gift_shop': GIFT_SHOP_NAME },
+      )
+   ]
+
+
+def Test_SetGiftShopOpenForSeason_TestHttpRequest_ExpectCouldNotSetOpenApiError(
+      stub_gift_shop_coordinator: StubGiftShopCoordinator ) -> None:
+   StubGiftShopCoordinator.default_success = False
+   handler = make_handler(
+      '/set-gift-shop-open-for-season',
+      { 'giftShop': GIFT_SHOP_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is False
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPEN.value

@@ -199,3 +199,37 @@ test('Test_RestaurantMarkerRenderer_TestTemporarilyClosed_ExpectClosedColourIcon
 
    assert.match(markerEl.style.backgroundImage, /restaurant-7a0000\.png/);
 });
+
+
+test('Test_GiftShopMarkerRenderer_TestClosedForSeason_ExpectOffDisplayIcon', () => {
+   const markerEl = {
+      style: {},
+      classList: { add() {}, remove() {} },
+      textContent: '',
+   };
+
+   MarkerTypeRenderer.MARKER_TYPE_RENDERERS[ItemType.GIFT_SHOP](markerEl, [{
+      name: 'Zootique',
+      likelihood: 0,
+      is_closed_for_season: true,
+   }]);
+
+   assert.match(markerEl.style.backgroundImage, /gift-shop-off-display\.png/);
+});
+
+
+test('Test_GiftShopMarkerRenderer_TestTemporarilyClosed_ExpectClosedColourIcon', () => {
+   const markerEl = {
+      style: {},
+      classList: { add() {}, remove() {} },
+      textContent: '',
+   };
+
+   MarkerTypeRenderer.MARKER_TYPE_RENDERERS[ItemType.GIFT_SHOP](markerEl, [{
+      name: 'Zootique',
+      likelihood: 0,
+      is_closed_for_season: false,
+   }]);
+
+   assert.match(markerEl.style.backgroundImage, /gift-shop-7a0000\.png/);
+});

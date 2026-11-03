@@ -182,6 +182,20 @@ export class ConsoleOperationRefsCollector {
                messageEl: 'Message',
             },
          },
+         closedForSeason: {
+            operationName: 'giftShopClosedForSeason',
+            includeDateRange: true,
+            fieldSuffixes: {
+               giftShopEl: 'GiftShop',
+               messageEl: 'Message',
+            },
+         },
+         openForSeason: {
+            operationName: 'giftShopOpenForSeason',
+            fieldSuffixes: {
+               giftShopEl: 'GiftShop',
+            },
+         },
          closureOverride: {
             operationName: 'giftShopClosureOverride',
             includeDateRange: true,

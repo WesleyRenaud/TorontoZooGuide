@@ -205,6 +205,18 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/set-gift-shop-closed', payload);
    }
 
+   static getClosedForSeasonGiftShopNames() {
+      return ApiClient.postJson('/get-closed-for-season-gift-shop-names', {});
+   }
+
+   static setGiftShopClosedForSeason(payload) {
+      return ApiClient.postJson('/set-gift-shop-closed-for-season', payload);
+   }
+
+   static setGiftShopOpenForSeason(payload) {
+      return ApiClient.postJson('/set-gift-shop-open-for-season', payload);
+   }
+
    static setGiftShopClosureOverride(payload) {
       return ApiClient.postJson('/set-gift-shop-closure-override', payload);
    }

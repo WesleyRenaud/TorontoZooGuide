@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..data_access.gift_shop_closure_record import GiftShopClosureRecord
 from ..data_access.gift_shop_record import GiftShopRecord
 from ..data_access.gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from ..data_access.gift_shop_schedule_record import GiftShopScheduleRecord
@@ -11,6 +12,7 @@ from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningSched
 from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
 from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
+from ..status.gift_shop_season_closure_builder import GiftShopSeasonClosureBuilder
 from ...types import Types
 
 
@@ -99,7 +101,8 @@ class GiftShopBuilder():
          gift_shop_record: GiftShopRecord,
          schedule_records: list[ GiftShopScheduleRecord ],
          schedule_override_records: list[ GiftShopScheduleOverrideRecord ],
-         context: OpeningScheduleVisitContext ) -> GiftShop:
+         context: OpeningScheduleVisitContext,
+         closure_record: GiftShopClosureRecord | None = None ) -> GiftShop:
 
       likelihood, closed_message = OpeningScheduleStatusResolver.resolve_amenity_likelihood_and_message(
          name=gift_shop_record.name,
@@ -110,6 +113,14 @@ class GiftShopBuilder():
          seasonal_multiplier=cls.get_day_seasonal_availability_multiplier(
             gift_shop_record=gift_shop_record,
             context=context ) )
+      is_closed_for_season = False
+
+      if closure_record != None and GiftShopSeasonClosureBuilder.is_active_on_date(
+            closure_record,
+            context.target_date ):
+         likelihood = 0
+         closed_message = closure_record.closed_message
+         is_closed_for_season = True
 
       return GiftShop(
          name=gift_shop_record.name,
@@ -119,7 +130,8 @@ class GiftShopBuilder():
          y_coord=gift_shop_record.y_coord,
          is_closed=likelihood <= 0,
          closed_message=closed_message,
-         likelihood=likelihood )
+         likelihood=likelihood,
+         is_closed_for_season=is_closed_for_season )
 
 
    @classmethod
@@ -130,12 +142,17 @@ class GiftShopBuilder():
          schedule_override_records: list[ GiftShopScheduleOverrideRecord ],
          context: OpeningScheduleVisitContext,
          include_closed_gift_shops: bool,
-         gift_shops_to_include: list[ str ] | None = None ) -> list[ GiftShop ]:
+         gift_shops_to_include: list[ str ] | None = None,
+         closure_records: list[ GiftShopClosureRecord ] | None = None ) -> list[ GiftShop ]:
 
       gift_shops_to_include = gift_shops_to_include or []
       schedule_records_by_name = cls.group_schedule_records_by_name( schedule_records )
       schedule_override_records_by_name = cls.group_schedule_override_records_by_name(
          schedule_override_records )
+      closures_by_name = {
+         record.gift_shop: record
+         for record in ( closure_records or [] )
+      }
       gift_shops: list[ GiftShop ] = []
 
       for gift_shop_record in gift_shop_records:
@@ -145,7 +162,8 @@ class GiftShopBuilder():
             schedule_override_records=schedule_override_records_by_name.get(
                gift_shop_record.name,
                [] ),
-            context=context )
+            context=context,
+            closure_record=closures_by_name.get( gift_shop_record.name ) )
 
          if (
                include_closed_gift_shops

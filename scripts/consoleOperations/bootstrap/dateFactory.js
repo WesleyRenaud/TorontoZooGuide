@@ -19,6 +19,7 @@ export class DateFactory {
          ['restrooms', 'open'],
          ['restrooms', 'alert'],
          ['giftShops', 'closed'],
+         ['giftShops', 'closedForSeason'],
          ['giftShops', 'closureOverride'],
          ['giftShops', 'openingSchedule'],
          ['attractions', 'closed'],

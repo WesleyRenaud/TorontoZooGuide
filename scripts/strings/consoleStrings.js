@@ -127,6 +127,7 @@ export class ConsoleStrings {
       offDisplayReason: 'Enter the reason this animal is off display',
       attractionClosedForSeasonReason: 'Enter the reason this attraction is closed for the season',
       restaurantClosedForSeasonReason: 'Enter the reason this restaurant is closed for the season',
+      giftShopClosedForSeasonReason: 'Enter the reason this gift shop is closed for the season',
       offDisplayForSeasonReason: 'Enter the reason this animal is off display for the season',
       optionalScheduleMessage: scheduleName => (
          `Enter an optional message for this ${scheduleName} schedule`
@@ -163,6 +164,8 @@ export class ConsoleStrings {
       exhibitOpen: 'Set exhibit as open',
       exhibitOpenForSeason: 'Set exhibit as open for the season',
       giftShopClosed: 'Set gift shop as closed',
+      giftShopClosedForSeason: 'Set gift shop as closed for the season',
+      giftShopOpenForSeason: 'Set gift shop as open for the season',
       giftShopClosureOverride: 'Create gift shop closure override',
       giftShopOpeningSchedule: 'Set gift shop opening schedule',
       guardiansTalkSchedule: 'Set Meet the Guardians talk schedule',

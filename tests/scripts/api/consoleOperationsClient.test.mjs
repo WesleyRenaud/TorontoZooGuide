@@ -597,6 +597,38 @@ test('Test_SetGiftShopClosed_TestPayload_ExpectPosted', async () => {
 });
 
 
+test('Test_GetClosedForSeasonGiftShopNames_TestPayload_ExpectPosted', async () => {
+   const url = '/get-closed-for-season-gift-shop-names';
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.getClosedForSeasonGiftShopNames();
+
+   assert.deepEqual(result, { ok: true, url, payload: {} });
+});
+
+
+test('Test_SetGiftShopClosedForSeason_TestPayload_ExpectPosted', async () => {
+   const url = '/set-gift-shop-closed-for-season';
+   const payload = { method: 'setGiftShopClosedForSeason' };
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.setGiftShopClosedForSeason(payload);
+
+   assert.deepEqual(result, { ok: true, url, payload });
+});
+
+
+test('Test_SetGiftShopOpenForSeason_TestPayload_ExpectPosted', async () => {
+   const url = '/set-gift-shop-open-for-season';
+   const payload = { method: 'setGiftShopOpenForSeason' };
+   _echoPostJson();
+
+   const result = await ConsoleOperationsClient.setGiftShopOpenForSeason(payload);
+
+   assert.deepEqual(result, { ok: true, url, payload });
+});
+
+
 test('Test_SetGiftShopClosureOverride_TestPayload_ExpectPosted', async () => {
    const url = '/set-gift-shop-closure-override';
    const payload = { method: 'setGiftShopClosureOverride' };

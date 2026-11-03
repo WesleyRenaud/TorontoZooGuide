@@ -7,9 +7,12 @@ import pytest
 from api.giftshops.coordinators import gift_shop_coordinator as gift_shop_coordinator_module
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
+from api.giftshops.data_access.gift_shop_status_provider import GiftShopStatusProvider
 from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
 from api.giftshops.search.gift_shops_matching_query_builder import GiftShopsMatchingQueryBuilder
+from api.giftshops.status.gift_shop_season_closure_builder import GiftShopSeasonClosureBuilder
 from api.models.gift_shop import GiftShop
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -70,6 +73,10 @@ def Test_GetGiftShops_TestProvidersAndBuilder_ExpectGiftShops(
       GiftShopProvider,
       'fetch_gift_shop_schedule_override_records',
       lambda _conn: override_records )
+   monkeypatch.setattr(
+      GiftShopStatusProvider,
+      'fetch_closure_records',
+      lambda _conn: [] )
 
    def build_gift_shops( **kwargs: object ) -> list[ GiftShop ]:
       captured.update( kwargs )
@@ -88,6 +95,7 @@ def Test_GetGiftShops_TestProvidersAndBuilder_ExpectGiftShops(
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'schedule_override_records' ] is override_records
    assert captured[ 'include_closed_gift_shops' ] is True
+   assert captured[ 'closure_records' ] == []
 
 
 def Test_GetGiftShopsMatchingQuery_TestBuilder_ExpectMatches(
@@ -254,5 +262,75 @@ def Test_TrimGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       False,
       False,
       MESSAGE )
+
+   assert result is True
+
+
+def Test_GetClosedForSeasonGiftShopNames_TestProvider_ExpectNames(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr( DateValues, 'today_date_key', lambda: '2026-11-02' )
+   monkeypatch.setattr(
+      GiftShopStatusProvider,
+      'fetch_closed_for_season_names',
+      lambda _conn, *, today: [ GIFT_SHOP_NAME ] if today == '2026-11-02' else [] )
+
+   names = GiftShopCoordinator.get_closed_for_season_gift_shop_names()
+
+   assert names == [ GIFT_SHOP_NAME ]
+
+
+def Test_SetGiftShopAsClosedForSeason_TestBuilderAndProvider_ExpectSaved(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   class _Status:
+      gift_shop = GIFT_SHOP_NAME
+      start_date = START_DATE
+      end_date = END_DATE
+      message = MESSAGE
+
+   def build( **kwargs: object ) -> _Status:
+      captured[ 'built' ] = kwargs
+      return _Status()
+
+   def save( _conn: str, **kwargs: object ) -> bool:
+      captured[ 'saved' ] = kwargs
+      return True
+
+   monkeypatch.setattr( GiftShopSeasonClosureBuilder, 'build', build )
+   monkeypatch.setattr( GiftShopStatusProvider, 'save_closed_for_season', save )
+
+   result = GiftShopCoordinator.set_gift_shop_as_closed_for_season(
+      gift_shop=GIFT_SHOP_NAME,
+      start_date=None,
+      end_date=None,
+      message='' )
+
+   assert result is True
+   assert captured[ 'built' ] == {
+      'gift_shop': GIFT_SHOP_NAME,
+      'start_date': None,
+      'end_date': None,
+      'message': '',
+   }
+   assert captured[ 'saved' ] == {
+      'gift_shop': GIFT_SHOP_NAME,
+      'start_date': START_DATE,
+      'end_date': END_DATE,
+      'message': MESSAGE,
+   }
+
+
+def Test_SetGiftShopAsOpenForSeason_TestProvider_ExpectDeleted(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      GiftShopStatusProvider,
+      'delete_closed_for_season',
+      lambda _conn, *, gift_shop: gift_shop == GIFT_SHOP_NAME )
+
+   result = GiftShopCoordinator.set_gift_shop_as_open_for_season( GIFT_SHOP_NAME )
 
    assert result is True
