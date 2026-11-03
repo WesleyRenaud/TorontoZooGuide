@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from api.giftshops.data_access.gift_shop_closure_record import GiftShopClosureRecord
 from api.giftshops.data_access.gift_shop_record import GiftShopRecord
 from api.giftshops.data_access.gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord
@@ -12,6 +13,7 @@ from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContex
 
 
 GIFT_SHOP_NAME = 'Zootique'
+OTHER_GIFT_SHOP_NAME = 'Courtyard Kiosk'
 CUSTOM_CLOSED_MESSAGE = 'Closed for testing.'
 CLOSURE_OVERRIDE_MESSAGE = 'Closed this weekend.'
 VISIT_DATE = date( 2026, 6, 15 )
@@ -78,6 +80,19 @@ def _override_record( **overrides: object ) -> GiftShopScheduleOverrideRecord:
    values.update( overrides )
 
    return GiftShopScheduleOverrideRecord( **values )
+
+
+def _open_schedule( gift_shop: str = GIFT_SHOP_NAME ) -> GiftShopScheduleRecord:
+   return _schedule_record(
+      gift_shop=gift_shop,
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      schedule_message=None )
 
 
 def Test_CalculateLikelihood_TestSeasonalMultiplier_ExpectClampedAndRounded() -> None:
@@ -210,3 +225,73 @@ def Test_GetActiveScheduleOverrideStatus_TestClosedOverride_ExpectClosed() -> No
 
    assert status == ScheduleStatus.CLOSED
    assert message == CLOSURE_OVERRIDE_MESSAGE
+
+
+def Test_BuildGiftShop_TestActiveSeasonClosure_ExpectClosedForSeason() -> None:
+   closure_record = GiftShopClosureRecord(
+      gift_shop=GIFT_SHOP_NAME,
+      closed_start='2026-06-01',
+      closed_end=None,
+      closed_message='The Zootique is closed for the season.',
+      is_closed_for_season=True )
+
+   gift_shop = GiftShopBuilder.build_gift_shop(
+      gift_shop_record=_gift_shop_record(),
+      schedule_records=[ _open_schedule() ],
+      schedule_override_records=[],
+      context=_visit_context(),
+      closure_record=closure_record )
+
+   assert gift_shop.is_closed is True
+   assert gift_shop.likelihood == 0
+   assert gift_shop.is_closed_for_season is True
+   assert gift_shop.closed_message == closure_record.closed_message
+
+
+def Test_BuildGiftShop_TestExpiredSeasonClosure_ExpectOpen() -> None:
+   closure_record = GiftShopClosureRecord(
+      gift_shop=GIFT_SHOP_NAME,
+      closed_start='2026-06-01',
+      closed_end='2026-06-01',
+      closed_message='The Zootique is closed for the season.',
+      is_closed_for_season=True )
+
+   gift_shop = GiftShopBuilder.build_gift_shop(
+      gift_shop_record=_gift_shop_record(),
+      schedule_records=[ _open_schedule() ],
+      schedule_override_records=[],
+      context=_visit_context(),
+      closure_record=closure_record )
+
+   assert gift_shop.is_closed is False
+   assert gift_shop.likelihood == 100
+   assert gift_shop.is_closed_for_season is False
+   assert gift_shop.closed_message is None
+
+
+def Test_BuildGiftShops_TestSeasonClosure_ExpectMatchedByName() -> None:
+   closure_record = GiftShopClosureRecord(
+      gift_shop=GIFT_SHOP_NAME,
+      closed_start='2026-06-01',
+      closed_end=None,
+      closed_message='The Zootique is closed for the season.',
+      is_closed_for_season=True )
+
+   gift_shops = GiftShopBuilder.build_gift_shops(
+      gift_shop_records=[
+         _gift_shop_record(),
+         _gift_shop_record( name=OTHER_GIFT_SHOP_NAME ),
+      ],
+      schedule_records=[
+         _open_schedule(),
+         _open_schedule( OTHER_GIFT_SHOP_NAME ),
+      ],
+      schedule_override_records=[],
+      context=_visit_context(),
+      include_closed_gift_shops=True,
+      closure_records=[ closure_record ] )
+
+   by_name = { gift_shop.name: gift_shop for gift_shop in gift_shops }
+
+   assert by_name[ GIFT_SHOP_NAME ].is_closed_for_season is True
+   assert by_name[ OTHER_GIFT_SHOP_NAME ].is_closed_for_season is False

@@ -114,6 +114,20 @@ test('Test_LoadClosedForSeasonRestaurants_TestClientResult_ExpectRestaurants', a
 });
 
 
+test('Test_LoadClosedForSeasonGiftShops_TestClientResult_ExpectGiftShops', async (t) => {
+   const giftShops = ['Zootique'];
+   const originalGet = ConsoleOperationsClient.getClosedForSeasonGiftShopNames;
+   ConsoleOperationsClient.getClosedForSeasonGiftShopNames = async () => ({ gift_shops: giftShops });
+   t.after(() => {
+      ConsoleOperationsClient.getClosedForSeasonGiftShopNames = originalGet;
+   });
+
+   const loaded = await ConsoleOptionsLoader.loadClosedForSeasonGiftShops();
+
+   assert.deepEqual(loaded, giftShops);
+});
+
+
 test('Test_LoadAttractions_TestDelegation_ExpectCachedLoaderArgs', async () => {
    await _withCachedLoader(async ({ cached, getCaptured }) => {
       const options = await ConsoleOptionsLoader.loadAttractions();

@@ -59,6 +59,21 @@ class StubGiftShopCoordinator():
       return StubGiftShopCoordinator.default_success
 
 
+   def get_closed_for_season_gift_shop_names( self ) -> list[ str ]:
+      self.calls.append( ( 'get_closed_for_season_gift_shop_names', {} ) )
+      return list( self.gift_shop_names )
+
+
+   def set_gift_shop_as_closed_for_season( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'set_gift_shop_as_closed_for_season', kwargs ) )
+      return StubGiftShopCoordinator.default_success
+
+
+   def set_gift_shop_as_open_for_season( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'set_gift_shop_as_open_for_season', kwargs ) )
+      return StubGiftShopCoordinator.default_success
+
+
    def set_gift_shop_closure_override( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'set_gift_shop_closure_override', kwargs ) )
       return StubGiftShopCoordinator.default_success

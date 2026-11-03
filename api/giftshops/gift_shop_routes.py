@@ -9,6 +9,9 @@ class GiftShopRoutes():
    '/get-gift-shops': GiftShopController.get_gift_shops,
    '/get-gift-shop-names': GiftShopController.get_gift_shop_names,
    '/set-gift-shop-closed': GiftShopController.set_gift_shop_closed,
+   '/get-closed-for-season-gift-shop-names': GiftShopController.get_closed_for_season_gift_shop_names,
+   '/set-gift-shop-closed-for-season': GiftShopController.set_gift_shop_closed_for_season,
+   '/set-gift-shop-open-for-season': GiftShopController.set_gift_shop_open_for_season,
    '/set-gift-shop-closure-override': GiftShopController.set_gift_shop_closure_override,
    '/set-gift-shop-opening-schedule': GiftShopController.set_gift_shop_opening_schedule,
    '/replace-gift-shop-opening-schedule-overlaps': (

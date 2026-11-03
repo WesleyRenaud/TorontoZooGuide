@@ -1,0 +1,48 @@
+{
+  "id": "CON-20",
+  "title": "Gift shop closed/open for the season",
+  "steps": [
+    {
+      "number": 1,
+      "name": "Open closed-for-season op",
+      "do": "Select **Set gift shop as closed for the season**.",
+      "expect": "The form opens with **Gift Shop**, **Start date**, **Last day** and **Reason**."
+    },
+    {
+      "number": 2,
+      "name": "Submit with blank reason",
+      "do": "Select **Zootique**. Leave **Start date**, **Last day** and **Reason** blank. Click **Save**.",
+      "expect": "Success that **Zootique** was set as closed for the season."
+    },
+    {
+      "number": 3,
+      "name": "Map without include",
+      "do": "From the bottom nav, open **Map**. On **Specific Map**, set the date to today. In **Filter:**, enable **Gift Shops**. Leave **Include closed gift shops** unchecked.",
+      "expect": "**Zootique** is absent."
+    },
+    {
+      "number": 4,
+      "name": "Season message",
+      "do": "Enable **Include closed gift shops** and click **Zootique**.",
+      "expect": "**Zootique** appears with a light winter-blue background. The popup is blue with a snowflake, the same as an animal off display for the season, and reads **The Zootique is closed for the season.**"
+    },
+    {
+      "number": 5,
+      "name": "Open-for-season lists season only",
+      "do": "In Console, open **Set gift shop as open for the season** and expand **Gift Shop**.",
+      "expect": "**Zootique** is listed. The form has no start date or last day. A gift shop that is only temporarily closed is not listed."
+    },
+    {
+      "number": 6,
+      "name": "Submit open for season",
+      "do": "Select **Zootique** and click **Save**.",
+      "expect": "Success that **Zootique** was set as open for the season."
+    },
+    {
+      "number": 7,
+      "name": "Map restored",
+      "do": "Return to **Map** on **Specific Map** today with **Gift Shops** enabled and **Include closed gift shops** unchecked.",
+      "expect": "**Zootique** shows as a normal open gift shop again."
+    }
+  ]
+}

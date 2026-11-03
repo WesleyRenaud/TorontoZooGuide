@@ -79,3 +79,71 @@ test('Test_CreateGiftShopClosedController_TestSuccessMessage_ExpectCatalogMessag
       capture.restore();
    }
 });
+
+
+test('Test_CreateGiftShopClosedForSeasonController_TestSubmit_ExpectSeasonPayload', async (t) => {
+   const giftShop = 'Zootique';
+   const startDate = '2026-11-02';
+   const original = EntityClosedFormController.createEntityClosedFormController;
+   const originalSet = ConsoleOperationsClient.setGiftShopClosedForSeason;
+   let captured;
+   EntityClosedFormController.createEntityClosedFormController = (options) => {
+      captured = options;
+      return { created: true };
+   };
+   ConsoleOperationsClient.setGiftShopClosedForSeason = async (payload) => payload;
+   t.after(() => {
+      EntityClosedFormController.createEntityClosedFormController = original;
+      ConsoleOperationsClient.setGiftShopClosedForSeason = originalSet;
+   });
+
+   GiftShopController.createGiftShopClosedForSeasonController({ giftShopEl: { id: 'g' } });
+   const payload = await captured.submitClosedStatus({
+      entity: giftShop,
+      startDate,
+      endDate: '',
+      message: '',
+   });
+
+   assert.deepEqual(payload, {
+      giftShop,
+      startDate,
+      endDate: null,
+      message: '',
+   });
+   assert.equal(
+      captured.successMessage({ gift_shop: giftShop }),
+      Strings.status.closedForSeason(giftShop),
+   );
+   assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadGiftShops);
+});
+
+
+test('Test_CreateGiftShopOpenForSeasonController_TestSubmit_ExpectSeasonList', async (t) => {
+   const giftShop = 'Zootique';
+   const { EntityOpenFormController } = await import(
+      '../../../../../scripts/consoleOperations/forms/entityOpenFormController.js'
+   );
+   const original = EntityOpenFormController.createEntityOpenFormController;
+   const originalSet = ConsoleOperationsClient.setGiftShopOpenForSeason;
+   let captured;
+   EntityOpenFormController.createEntityOpenFormController = (options) => {
+      captured = options;
+      return { created: true };
+   };
+   ConsoleOperationsClient.setGiftShopOpenForSeason = async (payload) => payload;
+   t.after(() => {
+      EntityOpenFormController.createEntityOpenFormController = original;
+      ConsoleOperationsClient.setGiftShopOpenForSeason = originalSet;
+   });
+
+   GiftShopController.createGiftShopOpenForSeasonController({ giftShopEl: { id: 'g' } });
+   const payload = await captured.submitOpenStatus({ entity: giftShop });
+
+   assert.deepEqual(payload, { giftShop });
+   assert.equal(captured.loadOptions, ConsoleOptionsLoader.loadClosedForSeasonGiftShops);
+   assert.equal(
+      captured.successMessage({ gift_shop: giftShop }),
+      Strings.status.openForSeason(giftShop),
+   );
+});

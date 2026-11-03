@@ -146,6 +146,14 @@ export class ConsoleControllersBootstrapHelper {
       getRefs: refs => refs.giftShops.closed,
    },
    {
+      createController: GiftShopController.createGiftShopClosedForSeasonController,
+      getRefs: refs => refs.giftShops.closedForSeason,
+   },
+   {
+      createController: GiftShopController.createGiftShopOpenForSeasonController,
+      getRefs: refs => refs.giftShops.openForSeason,
+   },
+   {
       createController: GiftShopClosureController.createGiftShopClosureOverrideController,
       getRefs: refs => refs.giftShops.closureOverride,
    },

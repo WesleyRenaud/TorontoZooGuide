@@ -19,8 +19,10 @@ import { ExhibitClosedForSeasonView } from '../exhibits/panels/exhibitClosedForS
 import { ExhibitClosedView } from '../exhibits/panels/exhibitClosedView.js';
 import { ExhibitOpenForSeasonView } from '../exhibits/panels/exhibitOpenForSeasonView.js';
 import { ExhibitOpenView } from '../exhibits/panels/exhibitOpenView.js';
+import { GiftShopClosedForSeasonView } from '../giftShops/panels/giftShopClosedForSeasonView.js';
 import { GiftShopClosedView } from '../giftShops/panels/giftShopClosedView.js';
 import { GiftShopClosureOverrideView } from '../giftShops/panels/giftShopClosureOverrideView.js';
+import { GiftShopOpenForSeasonView } from '../giftShops/panels/giftShopOpenForSeasonView.js';
 import { GiftShopOpeningScheduleView } from '../giftShops/panels/giftShopOpeningScheduleView.js';
 import { AddGuardiansTalkOccurrenceView } from '../guardiansTalks/panels/addGuardiansTalkOccurrenceView.js';
 import { CancelGuardiansTalkOccurrenceView } from '../guardiansTalks/panels/cancelGuardiansTalkOccurrenceView.js';
@@ -78,6 +80,8 @@ export class ConsoleOperationPanelsBootstrapHelper {
    ],
    giftShops: [
       GiftShopClosedView.createGiftShopClosedPanel,
+      GiftShopClosedForSeasonView.createGiftShopClosedForSeasonPanel,
+      GiftShopOpenForSeasonView.createGiftShopOpenForSeasonPanel,
       GiftShopClosureOverrideView.createGiftShopClosureOverridePanel,
       GiftShopOpeningScheduleView.createGiftShopOpeningSchedulePanel,
    ],

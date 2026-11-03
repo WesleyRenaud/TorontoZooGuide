@@ -63,6 +63,63 @@ class GiftShopController():
 
 
    @staticmethod
+   def get_closed_for_season_gift_shop_names( handler: JsonRequestHandler ) -> None:
+      gift_shops = GiftShopCoordinator.get_closed_for_season_gift_shop_names()
+
+      handler._write_json( {
+         'gift_shops': gift_shops,
+      } )
+
+
+   @staticmethod
+   def set_gift_shop_closed_for_season( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      gift_shop = data.get( 'giftShop' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+      message = data.get( 'message' )
+
+      success = GiftShopCoordinator.set_gift_shop_as_closed_for_season(
+         gift_shop=gift_shop,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      response = {
+         'success': success,
+         'gift_shop': gift_shop,
+         'startDate': start_date,
+         'endDate': end_date,
+         'message': message,
+      }
+
+      if not success:
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_CLOSED, name=gift_shop )
+
+      handler._write_json( response )
+
+
+   @staticmethod
+   def set_gift_shop_open_for_season( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      gift_shop = data.get( 'giftShop' )
+
+      success = GiftShopCoordinator.set_gift_shop_as_open_for_season( gift_shop=gift_shop )
+
+      response = {
+         'success': success,
+         'gift_shop': gift_shop,
+      }
+
+      if not success:
+         ApiErrorResponseApplier.apply_error( response, ApiErrorType.COULD_NOT_SET_OPEN, name=gift_shop )
+
+      handler._write_json( response )
+
+
+   @staticmethod
    def set_gift_shop_closure_override( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

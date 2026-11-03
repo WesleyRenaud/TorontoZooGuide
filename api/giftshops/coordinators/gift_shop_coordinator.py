@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from ..data_access.gift_shop_provider import GiftShopProvider
 from ..data_access.gift_shop_schedule_provider import GiftShopScheduleProvider
+from ..data_access.gift_shop_status_provider import GiftShopStatusProvider
 from ..domain.gift_shop_builder import GiftShopBuilder
 from ...models import GiftShop
 from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.gift_shop_schedule_conflict_resolver import GiftShopScheduleConflictResolver
 from ..search.gift_shops_matching_query_builder import GiftShopsMatchingQueryBuilder
 from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.calendar_dates import DateValues
+from ..status.gift_shop_season_closure_builder import GiftShopSeasonClosureBuilder
 from ..status.gift_shop_status_builder import GiftShopStatusBuilder
 from ...types import Types
 
@@ -53,7 +56,9 @@ class GiftShopCoordinator():
             RequestConnectionProvider.get() ),
          context=context,
          include_closed_gift_shops=include_closed_gift_shops,
-         gift_shops_to_include=gift_shops_to_include )
+         gift_shops_to_include=gift_shops_to_include,
+         closure_records=GiftShopStatusProvider.fetch_closure_records(
+            RequestConnectionProvider.get() ) )
 
 
    @classmethod
@@ -73,6 +78,41 @@ class GiftShopCoordinator():
       return GiftShopsMatchingQueryBuilder.build(
          gift_shops,
          query )
+
+
+   @classmethod
+   def get_closed_for_season_gift_shop_names( cls ) -> list[ str ]:
+      return GiftShopStatusProvider.fetch_closed_for_season_names(
+         RequestConnectionProvider.get(),
+         today=DateValues.today_date_key() )
+
+
+   @classmethod
+   def set_gift_shop_as_closed_for_season(
+         cls,
+         gift_shop: str,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput,
+         message: str ) -> bool:
+      status = GiftShopSeasonClosureBuilder.build(
+         gift_shop=gift_shop,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      return GiftShopStatusProvider.save_closed_for_season(
+         RequestConnectionProvider.get(),
+         gift_shop=status.gift_shop,
+         start_date=status.start_date,
+         end_date=status.end_date,
+         message=status.message )
+
+
+   @classmethod
+   def set_gift_shop_as_open_for_season( cls, gift_shop: str ) -> bool:
+      return GiftShopStatusProvider.delete_closed_for_season(
+         RequestConnectionProvider.get(),
+         gift_shop=gift_shop )
 
 
    @classmethod

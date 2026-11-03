@@ -119,6 +119,11 @@ export class ConsoleOptionsLoader {
       });
    }
 
+   static async loadClosedForSeasonGiftShops() {
+      const result = await ConsoleOperationsClient.getClosedForSeasonGiftShopNames();
+      return result.gift_shops;
+   }
+
    static async loadClosedForSeasonAttractions() {
       const result = await ConsoleOperationsClient.getClosedForSeasonAttractionNames();
       return result.attractions;

@@ -28,6 +28,7 @@ from .gift_shop_day_seasonal_availability_multiplier_seed_table import GiftShopD
 from .gift_shop_opening_schedule_seed_table import GiftShopOpeningScheduleSeedTable
 from .gift_shop_schedule_override_seed_table import GiftShopScheduleOverrideSeedTable
 from .gift_shop_seed_table import GiftShopSeedTable
+from .gift_shop_status_seed_table import GiftShopStatusSeedTable
 from .guardians_talk_animal_seed_table import GuardiansTalkAnimalSeedTable
 from .guardians_talk_cancellation_seed_table import GuardiansTalkCancellationSeedTable
 from .guardians_talk_occurrence_seed_table import GuardiansTalkOccurrenceSeedTable
@@ -138,6 +139,7 @@ runtime_tables = [
    RestaurantStatusSeedTable,
    GiftShopOpeningScheduleSeedTable,
    GiftShopScheduleOverrideSeedTable,
+   GiftShopStatusSeedTable,
    AppSettingSeedTable,
    AttractionOpeningScheduleSeedTable,
    AttractionStatusSeedTable,

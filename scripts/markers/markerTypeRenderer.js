@@ -30,6 +30,7 @@ export class MarkerTypeRenderer {
       [ItemType.GIFT_SHOP]: MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({
          type: ItemType.GIFT_SHOP,
          getIconUrl: (_, iconToken) => IconUrlProvider.getGiftShopIconUrl(iconToken),
+         seasonClosureField: 'is_closed_for_season',
       }),
       [ItemType.ATTRACTION]: MarkerTypeRenderer.attractionMarkerRenderer,
       [ItemType.TRANSPORTATION]: MarkerTypeRenderer.attractionMarkerRenderer,
