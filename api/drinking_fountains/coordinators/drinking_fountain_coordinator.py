@@ -28,12 +28,14 @@ class DrinkingFountainCoordinator():
       if status_record and DrinkingFountainStatusBuilder.applies_to_date( status_record, target_date ):
          is_closed, closed_message, likelihood = DrinkingFountainStatusBuilder.build_status(
             status_record )
+         is_closed_for_season = is_closed
       else:
          seasonal_likelihood = DrinkingFountainStatusProvider.fetch_drinking_fountain_seasonal_likelihood(
             RequestConnectionProvider.get(),
             target_date )
          is_closed, closed_message, likelihood = DrinkingFountainStatusBuilder.build_seasonal_status(
             seasonal_likelihood )
+         is_closed_for_season = False
 
       fountain_records = DrinkingFountainProvider.fetch_drinking_fountain_records(
          RequestConnectionProvider.get() )
@@ -42,7 +44,8 @@ class DrinkingFountainCoordinator():
          fountain_records,
          is_closed,
          closed_message,
-         likelihood )
+         likelihood,
+         is_closed_for_season )
 
 
    @classmethod
@@ -62,14 +65,6 @@ class DrinkingFountainCoordinator():
 
 
    @classmethod
-   def set_drinking_fountains_as_open(
-         cls,
-         start_date: Types.DateInput | None = None,
-         end_date: Types.DateInput | None = None ) -> bool:
-      status = DrinkingFountainStatusBuilder.build_open_status(
-         start_date=start_date,
-         end_date=end_date )
-
-      return DrinkingFountainStatusProvider.save_drinking_fountain_open_status(
-         RequestConnectionProvider.get(),
-         status=status )
+   def set_drinking_fountains_as_open( cls ) -> bool:
+      return DrinkingFountainStatusProvider.delete_drinking_fountain_status(
+         RequestConnectionProvider.get() )

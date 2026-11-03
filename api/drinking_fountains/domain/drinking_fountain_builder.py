@@ -11,13 +11,15 @@ class DrinkingFountainBuilder():
          record: DrinkingFountainRecord,
          is_closed: bool,
          closed_message: str | None,
-         likelihood: float ) -> DrinkingFountain:
+         likelihood: float,
+         is_closed_for_season: bool = False ) -> DrinkingFountain:
       return DrinkingFountain(
          x_coord=record.x_coord,
          y_coord=record.y_coord,
          is_closed=is_closed,
          closed_message=closed_message if is_closed else None,
-         likelihood=likelihood )
+         likelihood=likelihood,
+         is_closed_for_season=is_closed_for_season )
 
 
    @classmethod
@@ -26,12 +28,14 @@ class DrinkingFountainBuilder():
          fountain_records: list[ DrinkingFountainRecord ],
          is_closed: bool,
          closed_message: str | None,
-         likelihood: float ) -> list[ DrinkingFountain ]:
+         likelihood: float,
+         is_closed_for_season: bool = False ) -> list[ DrinkingFountain ]:
       return [
          cls.record_to_model(
             record,
             is_closed,
             closed_message,
-            likelihood )
+            likelihood,
+            is_closed_for_season )
          for record in fountain_records
       ]

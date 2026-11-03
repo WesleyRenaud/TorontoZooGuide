@@ -378,10 +378,6 @@ export class ConsoleOperationRefsCollector {
          },
          open: {
             operationName: 'drinkingFountainsOpen',
-            fieldSuffixes: {
-               startDateEl: 'StartDate',
-               endDateEl: 'EndDate',
-            },
          },
       },
       events: {

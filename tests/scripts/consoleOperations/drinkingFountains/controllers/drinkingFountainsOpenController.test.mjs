@@ -56,7 +56,7 @@ test('Test_CreateDrinkingFountainsOpenController_TestShowAndSubmitSuccess_Expect
 });
 
 
-test('Test_CreateDrinkingFountainsOpenController_TestValidationAndFailures_ExpectErrorStatus', async () => {
+test('Test_CreateDrinkingFountainsOpenController_TestFailures_ExpectErrorStatus', async () => {
    const statuses = [];
    const originalSet = ConsoleOperationsClient.setDrinkingFountainsOpen;
    const originalStatus = ConsoleStatusPresenter.setStatus;
@@ -80,12 +80,6 @@ test('Test_CreateDrinkingFountainsOpenController_TestValidationAndFailures_Expec
          activatePanel: () => {},
       });
 
-      ControllerHelper.validateOptionalDateRange = () => 'bad range';
-      await submitButtonEl.listeners.click();
-      assert.ok(statuses.some((entry) => entry[1] === 'bad range' && entry[2] === 'is-error'));
-
-      statuses.length = 0;
-      ControllerHelper.validateOptionalDateRange = () => null;
       ConsoleOperationsClient.setDrinkingFountainsOpen = async () => ({ success: false });
       await submitButtonEl.listeners.click();
       assert.ok(statuses.some((entry) => entry[1] === 'mutation failed'));

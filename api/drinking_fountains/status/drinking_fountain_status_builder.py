@@ -5,34 +5,27 @@ from datetime import date
 from ...app_string_provider import AppStringProvider
 from ..data_access.drinking_fountain_status_record import DrinkingFountainStatusRecord
 from .drinking_fountain_closed_status import DrinkingFountainClosedStatus
-from .drinking_fountain_open_status import DrinkingFountainOpenStatus
 from ...shared.calendar_dates import DateValues
 from ...types import Types
 
 
 class DrinkingFountainStatusBuilder():
    @classmethod
-   def build_open_status(
-         cls,
-         start_date: Types.DateInput,
-         end_date: Types.DateInput ) -> DrinkingFountainOpenStatus:
-      return DrinkingFountainOpenStatus(
-         start_date=start_date,
-         end_date=end_date )
-
-
-   @classmethod
    def build_closed_status(
          cls,
          start_date: Types.DateInput,
          end_date: Types.DateInput,
          message: str ) -> DrinkingFountainClosedStatus:
+      date_range = DateValues.resolve_open_ended_date_range(
+         start_date=start_date,
+         end_date=end_date )
+
       if not message:
          message = AppStringProvider.format( 'guestStatus.drinkingFountains.closedForSeason' )
 
       return DrinkingFountainClosedStatus(
-         start_date=start_date,
-         end_date=end_date,
+         start_date=date_range.start_date,
+         end_date=date_range.end_date,
          message=message )
 
 

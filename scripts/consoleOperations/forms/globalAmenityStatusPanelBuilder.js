@@ -11,20 +11,25 @@ export class GlobalAmenityStatusPanelBuilder {
       title,
       idPrefix,
       endHelpText,
+      includeDateRange = true,
       includeMessage = false,
       messageLabel,
       messagePlaceholder,
       submitId,
       statusId,
    } = {}) {
-      const bodyChildren = [
-         ConsoleDateRangeFieldsBuilder.createDateRangeFields({
-            startDateId: `${idPrefix}StartDate`,
-            startHelpText: Strings.help.startImmediately,
-            endDateId: `${idPrefix}EndDate`,
-            endHelpText,
-         }),
-      ];
+      const bodyChildren = [];
+
+      if (includeDateRange) {
+         bodyChildren.push(
+            ConsoleDateRangeFieldsBuilder.createDateRangeFields({
+               startDateId: `${idPrefix}StartDate`,
+               startHelpText: Strings.help.startImmediately,
+               endDateId: `${idPrefix}EndDate`,
+               endHelpText,
+            }),
+         );
+      }
 
       if (includeMessage) {
          bodyChildren.push(

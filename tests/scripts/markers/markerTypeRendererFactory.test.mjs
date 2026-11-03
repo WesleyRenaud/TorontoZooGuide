@@ -438,6 +438,13 @@ test('Test_RenderDrinkingFountainMarker_TestLikelihoodPaths_ExpectVisuals', () =
       calls.length = 0;
       MarkerTypeRendererFactory.renderDrinkingFountainMarker(markerEl, [{ likelihood: 0.8 }]);
       assert.ok(calls.some((entry) => entry[Position.FIRST] === 'bg' && entry[2] === 'df-80'));
+
+      calls.length = 0;
+      MarkerTypeRendererFactory.renderDrinkingFountainMarker(markerEl, [{
+         likelihood: 0,
+         is_closed_for_season: true,
+      }]);
+      assert.ok(calls.some((entry) => entry[Position.FIRST] === 'bg' && entry[2] === 'df-off-display'));
    } finally {
       MarkerVisualHelper.applyMarkerClass = originalClass;
       MarkerVisualHelper.applyCountMarker = originalCount;

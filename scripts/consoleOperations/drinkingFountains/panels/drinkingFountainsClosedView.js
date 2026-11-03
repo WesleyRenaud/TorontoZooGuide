@@ -7,10 +7,10 @@ export class DrinkingFountainsClosedView {
          panelId: 'drinkingFountainsClosedPanel',
          title: Strings.panelTitles.drinkingFountainsClosed,
          idPrefix: 'drinkingFountainsClosed',
-         endHelpText: Strings.help.continueUntilReopened('drinking fountains'),
+         endHelpText: Strings.help.keepClosedUntilManuallyReopened('drinking fountains'),
          includeMessage: true,
-         messageLabel: Strings.labels.closedMessage,
-         messagePlaceholder: Strings.textareas.drinkingFountainsClosedMessage,
+         messageLabel: Strings.labels.reason,
+         messagePlaceholder: Strings.textareas.drinkingFountainsClosedForSeasonReason,
          submitId: 'submitDrinkingFountainsClosed',
          statusId: 'drinkingFountainsClosedStatus',
       });

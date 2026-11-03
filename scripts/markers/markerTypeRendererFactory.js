@@ -219,7 +219,9 @@ export class MarkerTypeRendererFactory {
       const likelihood = Number.isFinite(Number(drinkingFountain?.likelihood))
          ? Number(drinkingFountain.likelihood) * 100
          : (drinkingFountain?.is_closed ? 0 : 100);
-      const { colour, iconToken } = MarkerVisualHelper.getLikelihoodVisual(likelihood);
+      const { colour, iconToken } = drinkingFountain?.is_closed_for_season
+         ? MarkerTypeRendererFactory.OFF_DISPLAY_FOR_SEASON_VISUAL
+         : MarkerVisualHelper.getLikelihoodVisual(likelihood);
 
       MarkerVisualHelper.applyMarkerClass(markerEl, MarkerTypeRendererFactory.MARKER_CLASS_BY_TYPE[ItemType.DRINKING_FOUNTAIN]);
 

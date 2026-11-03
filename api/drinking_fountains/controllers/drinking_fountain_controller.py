@@ -51,19 +51,12 @@ class DrinkingFountainController():
 
    @staticmethod
    def set_drinking_fountains_open( handler: JsonRequestHandler ) -> None:
-      data = handler._read_json_body()
+      handler._read_json_body()
 
-      start_date = data.get( 'startDate' )
-      end_date = data.get( 'endDate' )
-
-      success = DrinkingFountainCoordinator.set_drinking_fountains_as_open(
-         start_date=start_date,
-         end_date=end_date )
+      success = DrinkingFountainCoordinator.set_drinking_fountains_as_open()
 
       response = {
          'success': success,
-         'startDate': start_date,
-         'endDate': end_date,
       }
 
       if not success:
