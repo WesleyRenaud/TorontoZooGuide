@@ -323,3 +323,99 @@ def Test_TrimRestaurantOpeningScheduleOverlaps_TestHttpRequest_ExpectCouldNotTri
    result = response_json( handler )
 
    assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_TRIM_OPENING_SCHEDULE_OVERLAPS.value
+
+
+def Test_GetClosedForSeasonRestaurantNames_TestDirectCall_ExpectWritesNames(
+      stub_restaurant_coordinator: StubRestaurantCoordinator ) -> None:
+   handler = JsonHandlerTestDouble()
+
+   RestaurantController.get_closed_for_season_restaurant_names( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert handler.json_response() == {
+      'restaurants': [ RESTAURANT_NAME, OTHER_RESTAURANT_NAME ],
+   }
+   assert stub_restaurant_coordinator.calls == [
+      ( 'get_closed_for_season_restaurant_names', {} ),
+   ]
+
+
+def Test_SetRestaurantClosedForSeason_TestHttpRequest_ExpectMapsPayload(
+      stub_restaurant_coordinator: StubRestaurantCoordinator ) -> None:
+   handler = make_handler(
+      '/set-restaurant-closed-for-season',
+      {
+         'restaurant': RESTAURANT_NAME,
+         'startDate': CLOSURE_START_DATE,
+         'endDate': None,
+         'message': '',
+      }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert stub_restaurant_coordinator.calls == [
+      (
+         'set_restaurant_as_closed_for_season',
+         {
+            'restaurant': RESTAURANT_NAME,
+            'start_date': CLOSURE_START_DATE,
+            'end_date': None,
+            'message': '',
+         }
+      )
+   ]
+
+
+def Test_SetRestaurantClosedForSeason_TestHttpRequest_ExpectCouldNotSetClosedApiError(
+      stub_restaurant_coordinator: StubRestaurantCoordinator ) -> None:
+   StubRestaurantCoordinator.default_success = False
+   handler = make_handler(
+      '/set-restaurant-closed-for-season',
+      { 'restaurant': RESTAURANT_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is False
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_CLOSED.value
+
+
+def Test_SetRestaurantOpenForSeason_TestHttpRequest_ExpectMapsRestaurant(
+      stub_restaurant_coordinator: StubRestaurantCoordinator ) -> None:
+   handler = make_handler(
+      '/set-restaurant-open-for-season',
+      { 'restaurant': RESTAURANT_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is True
+   assert result[ 'restaurant' ] == RESTAURANT_NAME
+   assert stub_restaurant_coordinator.calls == [
+      (
+         'set_restaurant_as_open_for_season',
+         { 'restaurant': RESTAURANT_NAME },
+      )
+   ]
+
+
+def Test_SetRestaurantOpenForSeason_TestHttpRequest_ExpectCouldNotSetOpenApiError(
+      stub_restaurant_coordinator: StubRestaurantCoordinator ) -> None:
+   StubRestaurantCoordinator.default_success = False
+   handler = make_handler(
+      '/set-restaurant-open-for-season',
+      { 'restaurant': RESTAURANT_NAME }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is False
+   assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_SET_OPEN.value

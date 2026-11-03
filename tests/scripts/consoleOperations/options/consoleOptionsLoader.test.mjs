@@ -100,6 +100,20 @@ test('Test_LoadClosedForSeasonAttractions_TestClientResult_ExpectAttractions', a
 });
 
 
+test('Test_LoadClosedForSeasonRestaurants_TestClientResult_ExpectRestaurants', async (t) => {
+   const restaurants = ['Africa Restaurant'];
+   const originalGet = ConsoleOperationsClient.getClosedForSeasonRestaurantNames;
+   ConsoleOperationsClient.getClosedForSeasonRestaurantNames = async () => ({ restaurants });
+   t.after(() => {
+      ConsoleOperationsClient.getClosedForSeasonRestaurantNames = originalGet;
+   });
+
+   const loaded = await ConsoleOptionsLoader.loadClosedForSeasonRestaurants();
+
+   assert.deepEqual(loaded, restaurants);
+});
+
+
 test('Test_LoadAttractions_TestDelegation_ExpectCachedLoaderArgs', async () => {
    await _withCachedLoader(async ({ cached, getCaptured }) => {
       const options = await ConsoleOptionsLoader.loadAttractions();

@@ -59,6 +59,21 @@ class StubRestaurantCoordinator():
       return StubRestaurantCoordinator.default_success
 
 
+   def get_closed_for_season_restaurant_names( self ) -> list[ str ]:
+      self.calls.append( ( 'get_closed_for_season_restaurant_names', {} ) )
+      return list( self.restaurant_names )
+
+
+   def set_restaurant_as_closed_for_season( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'set_restaurant_as_closed_for_season', kwargs ) )
+      return StubRestaurantCoordinator.default_success
+
+
+   def set_restaurant_as_open_for_season( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'set_restaurant_as_open_for_season', kwargs ) )
+      return StubRestaurantCoordinator.default_success
+
+
    def set_restaurant_closure_override( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'set_restaurant_closure_override', kwargs ) )
       return StubRestaurantCoordinator.default_success

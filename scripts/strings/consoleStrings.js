@@ -126,6 +126,7 @@ export class ConsoleStrings {
       eventNameExample: 'Example: Conservation Carousel Ride Night',
       offDisplayReason: 'Enter the reason this animal is off display',
       attractionClosedForSeasonReason: 'Enter the reason this attraction is closed for the season',
+      restaurantClosedForSeasonReason: 'Enter the reason this restaurant is closed for the season',
       offDisplayForSeasonReason: 'Enter the reason this animal is off display for the season',
       optionalScheduleMessage: scheduleName => (
          `Enter an optional message for this ${scheduleName} schedule`
@@ -173,6 +174,8 @@ export class ConsoleStrings {
       removeViewingAlert: 'Remove animal viewing alert',
       removeVisibilitySchedule: 'Remove visibility schedule',
       restaurantClosed: 'Set restaurant as closed',
+      restaurantClosedForSeason: 'Set restaurant as closed for the season',
+      restaurantOpenForSeason: 'Set restaurant as open for the season',
       restaurantClosureOverride: 'Create restaurant closure override',
       restaurantOpeningSchedule: 'Set restaurant opening schedule',
       restroomAlert: 'Set restroom alert',

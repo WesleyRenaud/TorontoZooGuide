@@ -141,6 +141,18 @@ export class ConsoleOperationsClient {
       return ApiClient.postJson('/set-restaurant-closed', payload);
    }
 
+   static getClosedForSeasonRestaurantNames() {
+      return ApiClient.postJson('/get-closed-for-season-restaurant-names', {});
+   }
+
+   static setRestaurantClosedForSeason(payload) {
+      return ApiClient.postJson('/set-restaurant-closed-for-season', payload);
+   }
+
+   static setRestaurantOpenForSeason(payload) {
+      return ApiClient.postJson('/set-restaurant-open-for-season', payload);
+   }
+
    static setRestaurantClosureOverride(payload) {
       return ApiClient.postJson('/set-restaurant-closure-override', payload);
    }

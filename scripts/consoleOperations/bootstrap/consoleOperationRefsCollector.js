@@ -111,6 +111,20 @@ export class ConsoleOperationRefsCollector {
                messageEl: 'Message',
             },
          },
+         closedForSeason: {
+            operationName: 'restaurantClosedForSeason',
+            includeDateRange: true,
+            fieldSuffixes: {
+               restaurantEl: 'Restaurant',
+               messageEl: 'Message',
+            },
+         },
+         openForSeason: {
+            operationName: 'restaurantOpenForSeason',
+            fieldSuffixes: {
+               restaurantEl: 'Restaurant',
+            },
+         },
          closureOverride: {
             operationName: 'restaurantClosureOverride',
             includeDateRange: true,

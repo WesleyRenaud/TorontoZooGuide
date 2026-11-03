@@ -24,6 +24,7 @@ export class MarkerTypeRenderer {
       [ItemType.RESTAURANT]: MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({
          type: ItemType.RESTAURANT,
          getIconUrl: (_, iconToken) => IconUrlProvider.getRestaurantIconUrl(iconToken),
+         seasonClosureField: 'is_closed_for_season',
       }),
       [ItemType.RESTROOM]: MarkerTypeRendererFactory.renderRestroomMarker,
       [ItemType.GIFT_SHOP]: MarkerTypeRendererFactory.createLikelihoodIconMarkerRenderer({

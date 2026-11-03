@@ -16,7 +16,8 @@ class Restaurant:
          y_coord: float | None = None,
          is_closed: bool | None = None,
          closed_message: str | None = None,
-         likelihood: int | None = None ) -> None:
+         likelihood: int | None = None,
+         is_closed_for_season: bool = False ) -> None:
       self.name = name
       self.location = location
       self.sub_location = sub_location
@@ -27,6 +28,7 @@ class Restaurant:
       self.is_closed = is_closed
       self.closed_message = closed_message
       self.likelihood = likelihood
+      self.is_closed_for_season = is_closed_for_season
 
 
    def name_key( self ) -> str:
@@ -44,5 +46,6 @@ class Restaurant:
          'y_coord': self.y_coord,
          'is_closed': ValueConversion.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
-         'likelihood': self.likelihood
+         'likelihood': self.likelihood,
+         'is_closed_for_season': ValueConversion.as_boolean( self.is_closed_for_season ),
       }

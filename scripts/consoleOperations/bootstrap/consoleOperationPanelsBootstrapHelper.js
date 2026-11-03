@@ -26,8 +26,10 @@ import { AddGuardiansTalkOccurrenceView } from '../guardiansTalks/panels/addGuar
 import { CancelGuardiansTalkOccurrenceView } from '../guardiansTalks/panels/cancelGuardiansTalkOccurrenceView.js';
 import { EndGuardiansTalkScheduleView } from '../guardiansTalks/panels/endGuardiansTalkScheduleView.js';
 import { GuardiansTalkScheduleView } from '../guardiansTalks/panels/guardiansTalkScheduleView.js';
+import { RestaurantClosedForSeasonView } from '../restaurants/panels/restaurantClosedForSeasonView.js';
 import { RestaurantClosedView } from '../restaurants/panels/restaurantClosedView.js';
 import { RestaurantClosureOverrideView } from '../restaurants/panels/restaurantClosureOverrideView.js';
+import { RestaurantOpenForSeasonView } from '../restaurants/panels/restaurantOpenForSeasonView.js';
 import { RestaurantOpeningScheduleView } from '../restaurants/panels/restaurantOpeningScheduleView.js';
 import { RemoveRestroomAlertView } from '../restrooms/panels/removeRestroomAlertView.js';
 import { RestroomAlertView } from '../restrooms/panels/restroomAlertView.js';
@@ -63,6 +65,8 @@ export class ConsoleOperationPanelsBootstrapHelper {
    ],
    restaurants: [
       RestaurantClosedView.createRestaurantClosedPanel,
+      RestaurantClosedForSeasonView.createRestaurantClosedForSeasonPanel,
+      RestaurantOpenForSeasonView.createRestaurantOpenForSeasonPanel,
       RestaurantClosureOverrideView.createRestaurantClosureOverridePanel,
       RestaurantOpeningScheduleView.createRestaurantOpeningSchedulePanel,
    ],

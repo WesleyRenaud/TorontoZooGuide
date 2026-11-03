@@ -8,8 +8,11 @@ from api.models.restaurant import Restaurant
 from api.restaurants.coordinators import restaurant_coordinator as restaurant_coordinator_module
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restaurants.data_access.restaurant_provider import RestaurantProvider
+from api.restaurants.data_access.restaurant_status_provider import RestaurantStatusProvider
 from api.restaurants.domain.restaurant_builder import RestaurantBuilder
 from api.restaurants.search.restaurants_matching_query_builder import RestaurantsMatchingQueryBuilder
+from api.restaurants.status.restaurant_season_closure_builder import RestaurantSeasonClosureBuilder
+from api.shared.calendar_dates import DateValues
 from api.shared.enums.position import Position
 from api.types import Types
 
@@ -69,6 +72,10 @@ def Test_GetRestaurants_TestProvidersAndBuilder_ExpectRestaurants(
       RestaurantProvider,
       'fetch_restaurant_schedule_override_records',
       lambda _conn: override_records )
+   monkeypatch.setattr(
+      RestaurantStatusProvider,
+      'fetch_closure_records',
+      lambda _conn: [] )
 
    def build_restaurants( **kwargs: object ) -> list[ Restaurant ]:
       captured.update( kwargs )
@@ -87,6 +94,7 @@ def Test_GetRestaurants_TestProvidersAndBuilder_ExpectRestaurants(
    assert captured[ 'schedule_records' ] is schedule_records
    assert captured[ 'schedule_override_records' ] is override_records
    assert captured[ 'include_closed_restaurants' ] is True
+   assert captured[ 'closure_records' ] == []
 
 def Test_GetRestaurantsMatchingQuery_TestBuilder_ExpectMatches(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -245,5 +253,72 @@ def Test_TrimRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       False,
       False,
       MESSAGE )
+
+   assert result is True
+
+def Test_GetClosedForSeasonRestaurantNames_TestProvider_ExpectNames(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr( DateValues, 'today_date_key', lambda: '2026-11-02' )
+   monkeypatch.setattr(
+      RestaurantStatusProvider,
+      'fetch_closed_for_season_names',
+      lambda _conn, *, today: [ RESTAURANT_NAME ] if today == '2026-11-02' else [] )
+
+   names = RestaurantCoordinator.get_closed_for_season_restaurant_names()
+
+   assert names == [ RESTAURANT_NAME ]
+
+def Test_SetRestaurantAsClosedForSeason_TestBuilderAndProvider_ExpectSaved(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   class _Status:
+      restaurant = RESTAURANT_NAME
+      start_date = START_DATE
+      end_date = END_DATE
+      message = MESSAGE
+
+   def build( **kwargs: object ) -> _Status:
+      captured[ 'built' ] = kwargs
+      return _Status()
+
+   def save( _conn: str, **kwargs: object ) -> bool:
+      captured[ 'saved' ] = kwargs
+      return True
+
+   monkeypatch.setattr( RestaurantSeasonClosureBuilder, 'build', build )
+   monkeypatch.setattr( RestaurantStatusProvider, 'save_closed_for_season', save )
+
+   result = RestaurantCoordinator.set_restaurant_as_closed_for_season(
+      restaurant=RESTAURANT_NAME,
+      start_date=None,
+      end_date=None,
+      message='' )
+
+   assert result is True
+   assert captured[ 'built' ] == {
+      'restaurant': RESTAURANT_NAME,
+      'start_date': None,
+      'end_date': None,
+      'message': '',
+   }
+   assert captured[ 'saved' ] == {
+      'restaurant': RESTAURANT_NAME,
+      'start_date': START_DATE,
+      'end_date': END_DATE,
+      'message': MESSAGE,
+   }
+
+def Test_SetRestaurantAsOpenForSeason_TestProvider_ExpectDeleted(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      RestaurantStatusProvider,
+      'delete_closed_for_season',
+      lambda _conn, *, restaurant: restaurant == RESTAURANT_NAME )
+
+   result = RestaurantCoordinator.set_restaurant_as_open_for_season( RESTAURANT_NAME )
 
    assert result is True
