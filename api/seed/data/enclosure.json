@@ -119,7 +119,7 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Live Coral Reefs",
+    "species": "Live Reef Corals",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
@@ -966,13 +966,6 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Southern White Rhinoceros",
-    "exhibit": "Africa Savanna",
-    "seasonal_viewing_summary": "May-Oct",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Spotted Hyena",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
@@ -990,6 +983,13 @@
     "species": "Watusi Cattle",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "include_all_viewing_spots": null
+  },
+  {
+    "species": "White Rhinoceros",
+    "exhibit": "Africa Savanna",
+    "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": null,
     "include_all_viewing_spots": null
   },
@@ -1225,13 +1225,6 @@
     "include_all_viewing_spots": true
   },
   {
-    "species": "Asian Brown Tortoise",
-    "exhibit": "Indo-Malaya Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "include_all_viewing_spots": null
-  },
-  {
     "species": "Bighead Carp",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -1295,7 +1288,7 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Edward's Pheasant",
+    "species": "Edwards's Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
@@ -1428,7 +1421,7 @@
     "include_all_viewing_spots": null
   },
   {
-    "species": "Tri-Coloured Shark",
+    "species": "Tri-Colour Shark",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
@@ -1572,13 +1565,6 @@
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Apr-Nov",
     "seasonal_viewing_information": "The Harris's hawk is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Harris's hawk is a somewhat hardy species, and should be viewable if the Kids Zoo is open.",
-    "include_all_viewing_spots": null
-  },
-  {
-    "species": "Marabou Stork",
-    "exhibit": "Kids Zoo",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": "The marabou stork is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.",
     "include_all_viewing_spots": null
   },
   {

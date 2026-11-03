@@ -187,7 +187,7 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Live Coral Reefs",
+    "species": "Live Reef Corals",
     "exhibit": "Australasia Pavilion",
     "name": null,
     "enclosure_type": "Indoor",
@@ -1785,17 +1785,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Southern White Rhinoceros",
-    "exhibit": "Africa Savanna",
-    "name": null,
-    "enclosure_type": "Outdoor",
-    "seasonally_off_display_message": "The white rhinos are most likely inside and off-display on this day due to cold weather.",
-    "x_coord": 41.57,
-    "y_coord": 50.29,
-    "default_itinerary_duration_minutes": 10,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Spotted Hyena",
     "exhibit": "Africa Savanna",
     "name": null,
@@ -1826,6 +1815,17 @@
     "x_coord": 55.34,
     "y_coord": 45.331,
     "default_itinerary_duration_minutes": 3,
+    "is_zoomobile_only": false
+  },
+  {
+    "species": "White Rhinoceros",
+    "exhibit": "Africa Savanna",
+    "name": null,
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": "The white rhinos are most likely inside and off-display on this day due to cold weather.",
+    "x_coord": 41.57,
+    "y_coord": 50.29,
+    "default_itinerary_duration_minutes": 10,
     "is_zoomobile_only": false
   },
   {
@@ -2159,17 +2159,6 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Asian Brown Tortoise",
-    "exhibit": "Indo-Malaya Pavilion",
-    "name": null,
-    "enclosure_type": "Indoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 46.391,
-    "y_coord": 75.269,
-    "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
     "species": "Bighead Carp",
     "exhibit": "Indo-Malaya Pavilion",
     "name": null,
@@ -2269,7 +2258,7 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Edward's Pheasant",
+    "species": "Edwards's Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
     "name": null,
     "enclosure_type": "Indoor",
@@ -2478,7 +2467,7 @@
     "is_zoomobile_only": false
   },
   {
-    "species": "Tri-Coloured Shark",
+    "species": "Tri-Colour Shark",
     "exhibit": "Indo-Malaya Pavilion",
     "name": null,
     "enclosure_type": "Indoor",
@@ -2728,17 +2717,6 @@
     "x_coord": 66.827,
     "y_coord": 80.627,
     "default_itinerary_duration_minutes": 1,
-    "is_zoomobile_only": false
-  },
-  {
-    "species": "Marabou Stork",
-    "exhibit": "Kids Zoo",
-    "name": null,
-    "enclosure_type": "Outdoor",
-    "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
-    "x_coord": 66.827,
-    "y_coord": 80.627,
-    "default_itinerary_duration_minutes": 2,
     "is_zoomobile_only": false
   },
   {
