@@ -239,7 +239,7 @@ def Test_CheckSchedules_TestEndedStatus_ExpectNotClosed(
    assert 'Closed for the season in the app and not on the website: 0' in output
 
 
-def Test_CheckSchedules_TestRampUp_ExpectNoComparison(
+def Test_CheckSchedules_TestRampUpAppOnly_ExpectAppExtra(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -249,17 +249,32 @@ def Test_CheckSchedules_TestRampUp_ExpectNoComparison(
       ( 1, RAMP_UP.isoformat(), None ),
       [ ( RAMP_UP, 0.5, 1.0 ) ],
    )
+   _install_page( monkeypatch, _page( [ 'Ticket warning.' ] ) )
 
-   def fetch_text( url: str ) -> str:
-      raise RuntimeError( 'The alerts page should not be fetched.' )
+   result, output = _check( database, RAMP_UP, capsys )
 
-   monkeypatch.setattr( CHECKER, 'fetch_text', fetch_text )
+   assert result == 1
+   assert 'ramping up' in output
+   assert 'Closed for the season in the app and not on the website: 1' in output
+   assert '  Drinking fountains' in output
+   assert 'on the website and not in the app' not in output
+
+
+def Test_CheckSchedules_TestRampUpWebsiteOnly_ExpectIgnored(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database( database, None, [ ( RAMP_UP, 0.5, 1.0 ) ] )
+   _install_page( monkeypatch, _page( [ PAST_SEASON_MESSAGE ] ) )
 
    result, output = _check( database, RAMP_UP, capsys )
 
    assert result == 0
-   assert 'not ramping down' in output
+   assert 'ramping up' in output
+   assert 'Closed for the season in the app and not on the website: 0' in output
    assert 'Drinking fountains' not in output
+   assert 'on the website and not in the app' not in output
 
 
 def Test_CheckSchedules_TestMissingNotices_ExpectError(

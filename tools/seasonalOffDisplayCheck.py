@@ -21,7 +21,8 @@ def parse_args() -> argparse.Namespace:
    parser = argparse.ArgumentParser(
       description=(
          'Compare animals off display for the season with the Toronto Zoo website '
-         'while the seasonal curves are ramping down.'
+         'while the seasonal curves are ramping down, and report app flags the '
+         'website has cleared while the curves are ramping up.'
       )
    )
    parser.add_argument(
@@ -213,9 +214,9 @@ def app_off_season_animals(
    }
 
 
-def is_ramping_down(
+def curve_changes(
       curves: dict[ tuple[ str, str ], dict[ tuple[ int, int ], float ] ],
-      today: date ) -> bool:
+      today: date ) -> tuple[ bool, bool ]:
    yesterday = today - timedelta( days=1 )
    decreased = False
    increased = False
@@ -232,7 +233,21 @@ def is_ramping_down(
       elif today_value > yesterday_value:
          increased = True
 
+   return decreased, increased
+
+
+def is_ramping_down(
+      curves: dict[ tuple[ str, str ], dict[ tuple[ int, int ], float ] ],
+      today: date ) -> bool:
+   decreased, increased = curve_changes( curves, today )
    return decreased and not increased
+
+
+def is_ramping_up(
+      curves: dict[ tuple[ str, str ], dict[ tuple[ int, int ], float ] ],
+      today: date ) -> bool:
+   decreased, increased = curve_changes( curves, today )
+   return increased and not decreased
 
 
 def print_category( title: str, animals: list[ str ] ) -> None:
@@ -271,7 +286,10 @@ def check_schedules( database: Path, today: date ) -> int:
    if not curves:
       raise RuntimeError( 'The database has no seasonal viewability curves.' )
 
-   if not is_ramping_down( curves, today ):
+   ramping_down = is_ramping_down( curves, today )
+   ramping_up = is_ramping_up( curves, today )
+
+   if not ramping_down and not ramping_up:
       print(
          f'Seasonal off-display check for { today.isoformat() }. '
          'The seasonal curves are not ramping down, so off-display flags were not compared.'
@@ -284,6 +302,18 @@ def check_schedules( database: Path, today: date ) -> int:
       for _section, name in listings
    }
    app_animals = app_off_season_animals( statuses, today )
+   extra = sorted( app_animals - website_animals, key=str.casefold )
+
+   if ramping_up:
+      print( f'Seasonal off-display check for { today.isoformat() }.' )
+      print(
+         'The seasonal curves are ramping up, so off-display flags still set '
+         'in the app were compared with the website.'
+      )
+      print()
+      print_category( 'Off for the season in the app and not on the website', extra )
+      return len( extra )
+
    closed_exhibits = closed_for_season_exhibits( exhibit_closures, today )
    missed = missed_website_animals(
       listings,
@@ -292,7 +322,6 @@ def check_schedules( database: Path, today: date ) -> int:
       app_animals,
       closed_exhibits,
    )
-   extra = sorted( app_animals - website_animals, key=str.casefold )
 
    print( f'Seasonal off-display check for { today.isoformat() }.' )
    print()

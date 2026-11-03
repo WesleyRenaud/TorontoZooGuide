@@ -440,28 +440,33 @@ def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
    assert 'Closed for the season in the app and not on the website: 0' in output
 
 
-def Test_CheckSchedules_TestRampUp_ExpectNoComparison(
+def Test_CheckSchedules_TestRampUpAppOnly_ExpectAppExtra(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
    database = tmp_path / 'animals.db'
    _write_database(
       database,
-      [ ( SPLASH, 'https://www.torontozoo.com/tz/splash' ) ],
+      [
+         ( SPLASH, 'https://www.torontozoo.com/tz/splash' ),
+         ( KANGAROO, 'https://www.torontozoo.com/tz/kangaroo' ),
+      ],
       [ ( SPLASH, RAMP_UP.isoformat(), None ) ],
       [ ( RAMP_UP, 0.5, 1.0 ) ],
    )
    _install_page(
       monkeypatch,
-      _page( [ ( '/tz/splash', CLIMB, 'Closed for the Season' ) ] ),
+      _page( [ ( '/tz/kangaroo', KANGAROO, 'Closed for the Season' ) ] ),
    )
 
    result, output = _check( database, RAMP_UP, capsys )
 
-   assert result == 0
-   assert SPLASH not in output
-   assert CLIMB not in output
-   assert 'not ramping down' in output
+   assert result == 1
+   assert f'  { SPLASH }' in output
+   assert KANGAROO not in output
+   assert 'ramping up' in output
+   assert 'Closed for the season in the app and not on the website: 1' in output
+   assert 'on the website and not in the app' not in output
 
 
 def Test_CheckSchedules_TestSteadyCurves_ExpectNoComparison(
