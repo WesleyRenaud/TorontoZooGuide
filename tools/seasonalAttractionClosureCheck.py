@@ -13,6 +13,7 @@ from tools.seasonalOffDisplayCheck import closed_for_season_exhibits
 from tools.seasonalOffDisplayCheck import covers_today
 from tools.seasonalOffDisplayCheck import fetch_text
 from tools.seasonalOffDisplayCheck import is_ramping_down
+from tools.seasonalOffDisplayCheck import is_ramping_up
 from tools.seasonalOffDisplayCheck import resolve_name
 
 
@@ -28,7 +29,8 @@ def parse_args() -> argparse.Namespace:
    parser = argparse.ArgumentParser(
       description=(
          'Compare attractions closed for the season with the Toronto Zoo website '
-         'while the seasonal curves are ramping down.'
+         'while the seasonal curves are ramping down, and report app flags the '
+         'website has cleared while the curves are ramping up.'
       )
    )
    parser.add_argument(
@@ -302,7 +304,10 @@ def check_schedules( database: Path, today: date ) -> int:
    if not curves:
       raise RuntimeError( 'The database has no seasonal viewability curves.' )
 
-   if not is_ramping_down( curves, today ):
+   ramping_down = is_ramping_down( curves, today )
+   ramping_up = is_ramping_up( curves, today )
+
+   if not ramping_down and not ramping_up:
       print(
          f'Seasonal attraction closure check for { today.isoformat() }. '
          'The seasonal curves are not ramping down, so closed-for-season flags '
@@ -312,6 +317,21 @@ def check_schedules( database: Path, today: date ) -> int:
 
    listings = parse_website_attractions( fetch_text( WEBSITE_ATTRACTIONS_URL ), today )
    app_attractions = app_closed_for_season_attractions( statuses, today )
+   extra = sorted(
+      app_attractions - website_catalog_names( listings, catalog, links ),
+      key=str.casefold,
+   )
+
+   if ramping_up:
+      print( f'Seasonal attraction closure check for { today.isoformat() }.' )
+      print(
+         'The seasonal curves are ramping up, so closed-for-season flags still set '
+         'in the app were compared with the website.'
+      )
+      print()
+      print_category( 'Closed for the season in the app and not on the website', extra )
+      return len( extra )
+
    closed_exhibits = closed_for_season_exhibits( exhibit_closures, today )
    missed = missed_website_attractions(
       listings,
@@ -320,10 +340,6 @@ def check_schedules( database: Path, today: date ) -> int:
       exhibits,
       app_attractions,
       closed_exhibits,
-   )
-   extra = sorted(
-      app_attractions - website_catalog_names( listings, catalog, links ),
-      key=str.casefold,
    )
 
    print( f'Seasonal attraction closure check for { today.isoformat() }.' )

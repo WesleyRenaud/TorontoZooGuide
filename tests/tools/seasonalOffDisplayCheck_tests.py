@@ -303,14 +303,14 @@ def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
    assert 'Off for the season in the app and not on the website: 0' in output
 
 
-def Test_CheckSchedules_TestRampUp_ExpectNoComparison(
+def Test_CheckSchedules_TestRampUpAppOnly_ExpectAppExtra(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
    database = tmp_path / 'animals.db'
    _write_database(
       database,
-      [ STORK ],
+      [ STORK, TORTOISE ],
       [ ( STORK, RAMP_UP.isoformat(), None ) ],
       [ ( RAMP_UP, 0.5, 1.0 ) ],
    )
@@ -318,10 +318,12 @@ def Test_CheckSchedules_TestRampUp_ExpectNoComparison(
 
    result, output = _check( database, RAMP_UP, capsys )
 
-   assert result == 0
-   assert STORK not in output
+   assert result == 1
+   assert f'  { STORK }' in output
    assert TORTOISE not in output
-   assert 'not ramping down' in output
+   assert 'ramping up' in output
+   assert 'Off for the season in the app and not on the website: 1' in output
+   assert 'on the website and not in the app' not in output
 
 
 def Test_CheckSchedules_TestSteadyCurves_ExpectNoComparison(

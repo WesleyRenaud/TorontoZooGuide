@@ -12,6 +12,7 @@ from tools.seasonalOffDisplayCheck import clean_html
 from tools.seasonalOffDisplayCheck import covers_today
 from tools.seasonalOffDisplayCheck import fetch_text
 from tools.seasonalOffDisplayCheck import is_ramping_down
+from tools.seasonalOffDisplayCheck import is_ramping_up
 
 
 ROOT = Path( __file__ ).resolve().parents[ 1 ]
@@ -23,7 +24,8 @@ def parse_args() -> argparse.Namespace:
    parser = argparse.ArgumentParser(
       description=(
          'Compare drinking fountains closed for the season with the Toronto Zoo '
-         'alerts page while the seasonal curves are ramping down.'
+         'alerts page while the seasonal curves are ramping down, and report an '
+         'app flag the website has cleared while the curves are ramping up.'
       )
    )
    parser.add_argument(
@@ -151,7 +153,10 @@ def check_schedules( database: Path, today: date ) -> int:
    if not curves:
       raise RuntimeError( 'The database has no seasonal viewability curves.' )
 
-   if not is_ramping_down( curves, today ):
+   ramping_down = is_ramping_down( curves, today )
+   ramping_up = is_ramping_up( curves, today )
+
+   if not ramping_down and not ramping_up:
       print(
          f'Seasonal drinking fountain closure check for { today.isoformat() }. '
          'The seasonal curves are not ramping down, so closed-for-season flags '
@@ -161,8 +166,19 @@ def check_schedules( database: Path, today: date ) -> int:
 
    website_closed = fountains_closed_on_website( fetch_text( WEBSITE_ALERTS_URL ), today )
    app_closed = app_fountains_closed( status, today )
-   missed = [ FOUNTAIN_NAME ] if website_closed and not app_closed else []
    extra = [ FOUNTAIN_NAME ] if app_closed and not website_closed else []
+
+   if ramping_up:
+      print( f'Seasonal drinking fountain closure check for { today.isoformat() }.' )
+      print(
+         'The seasonal curves are ramping up, so closed-for-season flags still set '
+         'in the app were compared with the website.'
+      )
+      print()
+      print_category( 'Closed for the season in the app and not on the website', extra )
+      return len( extra )
+
+   missed = [ FOUNTAIN_NAME ] if website_closed and not app_closed else []
 
    print( f'Seasonal drinking fountain closure check for { today.isoformat() }.' )
    print()
