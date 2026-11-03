@@ -4,21 +4,21 @@
   "steps": [
     {
       "number": 1,
-      "name": "Close fountains",
-      "do": "Open **Close drinking fountains** for a window covering today and enter a closed message.",
-      "expect": "Success closed."
+      "name": "Close fountains for the season",
+      "do": "Open **Close drinking fountains for the season**. Leave **Start date**, **Last day**, and **Reason** blank, then save.",
+      "expect": "Success that the drinking fountains were set as closed for the season."
     },
     {
       "number": 2,
       "name": "Map markers/banners",
-      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Drinking Fountains**.",
-      "expect": "Drinking fountain markers show closed treatment; click one and the closed message appears."
+      "do": "On **Map**, set **Specific Map** to today. In **Filter:**, enable **Drinking Fountains** and click a fountain.",
+      "expect": "The marker is light winter blue. The popup is blue with a snowflake and reads **The drinking fountains are closed for the season.**"
     },
     {
       "number": 3,
-      "name": "Open fountains",
-      "do": "**Open drinking fountains**.",
-      "expect": "Success open."
+      "name": "Open fountains for the season",
+      "do": "Open **Open drinking fountains for the season** and save. The form has no dates.",
+      "expect": "Success that the drinking fountains were set as open for the season."
     },
     {
       "number": 4,

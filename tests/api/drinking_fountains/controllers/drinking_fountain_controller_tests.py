@@ -131,13 +131,7 @@ def Test_SetDrinkingFountainsOpen_TestHttpRequest_ExpectMapsPayloadAndSuccessRes
    result = response_json( handler )
 
    assert stub_drinking_fountain_coordinator.calls == [
-      (
-         'set_drinking_fountains_as_open',
-         {
-            'start_date': '2026-07-01',
-            'end_date': None,
-         }
-      )
+      ( 'set_drinking_fountains_as_open', {} )
    ]
    assert result[ 'success' ] is True
 

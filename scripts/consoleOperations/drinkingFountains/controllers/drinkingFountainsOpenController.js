@@ -8,8 +8,6 @@ export class DrinkingFountainsOpenController {
       panelEl,
       submitButtonEl,
       statusEl,
-      startDateEl,
-      endDateEl,
       activatePanel,
    } = {}) {
       return GlobalAmenityStatusFormController.createGlobalAmenityStatusFormController({
@@ -17,13 +15,9 @@ export class DrinkingFountainsOpenController {
          panelEl,
          submitButtonEl,
          statusEl,
-         startDateEl,
-         endDateEl,
+         includeDateRange: false,
          activatePanel,
-         submitStatus: ({ startDate, endDate }) => ConsoleOperationsClient.setDrinkingFountainsOpen({
-            startDate: startDate || null,
-            endDate: endDate || null,
-         }),
+         submitStatus: () => ConsoleOperationsClient.setDrinkingFountainsOpen({}),
          successMessage: Strings.status.drinkingFountainsOpen,
       });
    }

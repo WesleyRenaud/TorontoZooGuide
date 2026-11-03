@@ -30,6 +30,7 @@ test('Test_CreateDrinkingFountainsClosedPanel_TestDefault_ExpectPanel', () => {
    assert.equal(panelEl.id, 'drinkingFountainsClosedPanel');
    assert.equal(panelEl.className, 'console-operations-panel');
    assert.ok(panelEl.textContent.includes(Strings.panelTitles.drinkingFountainsClosed));
+   assert.ok(panelEl.textContent.includes(Strings.labels.reason));
    assert.ok(_findById(panelEl, 'drinkingFountainsClosedStartDate'));
    assert.ok(_findById(panelEl, 'drinkingFountainsClosedEndDate'));
    assert.ok(_findById(panelEl, 'drinkingFountainsClosedMessage'));

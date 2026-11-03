@@ -7,7 +7,6 @@ import pytest
 
 from api.drinking_fountains.data_access.drinking_fountain_status_provider import DrinkingFountainStatusProvider
 from api.drinking_fountains.status.drinking_fountain_closed_status import DrinkingFountainClosedStatus
-from api.drinking_fountains.status.drinking_fountain_open_status import DrinkingFountainOpenStatus
 
 
 START_DATE = '2026-06-01'
@@ -80,7 +79,7 @@ def Test_SaveClosedStatus_TestClosedStatus_ExpectPersistsAndFetches(
    assert record.closed_message == CLOSED_MESSAGE
 
 
-def Test_SaveOpenStatus_TestReplacesClosedStatus_ExpectOpenRow(
+def Test_DeleteStatus_TestClosedStatus_ExpectRemoved(
       drinking_fountain_status_conn: sqlite3.Connection ) -> None:
    DrinkingFountainStatusProvider.save_drinking_fountain_closed_status(
       drinking_fountain_status_conn,
@@ -89,20 +88,20 @@ def Test_SaveOpenStatus_TestReplacesClosedStatus_ExpectOpenRow(
          end_date=END_DATE,
          message=CLOSED_MESSAGE ) )
 
-   result = DrinkingFountainStatusProvider.save_drinking_fountain_open_status(
-      drinking_fountain_status_conn,
-      DrinkingFountainOpenStatus(
-         start_date=START_DATE,
-         end_date=END_DATE ) )
-
-   assert result is True
-
-   record = DrinkingFountainStatusProvider.fetch_drinking_fountain_status_record(
+   result = DrinkingFountainStatusProvider.delete_drinking_fountain_status(
       drinking_fountain_status_conn )
 
-   assert record is not None
-   assert record.is_closed == 0
-   assert record.closed_message is None
+   assert result is True
+   assert DrinkingFountainStatusProvider.fetch_drinking_fountain_status_record(
+      drinking_fountain_status_conn ) == None
+
+
+def Test_DeleteStatus_TestEmptyTable_ExpectFalse(
+      drinking_fountain_status_conn: sqlite3.Connection ) -> None:
+   result = DrinkingFountainStatusProvider.delete_drinking_fountain_status(
+      drinking_fountain_status_conn )
+
+   assert result is False
 
 
 def Test_FetchSeasonalLikelihood_TestKnownDate_ExpectStoredLikelihood(

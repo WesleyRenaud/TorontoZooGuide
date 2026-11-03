@@ -30,8 +30,8 @@ test('Test_CreateDrinkingFountainsOpenPanel_TestDefault_ExpectPanel', () => {
    assert.equal(panelEl.id, 'drinkingFountainsOpenPanel');
    assert.equal(panelEl.className, 'console-operations-panel');
    assert.ok(panelEl.textContent.includes(Strings.panelTitles.drinkingFountainsOpen));
-   assert.ok(_findById(panelEl, 'drinkingFountainsOpenStartDate'));
-   assert.ok(_findById(panelEl, 'drinkingFountainsOpenEndDate'));
+   assert.equal(_findById(panelEl, 'drinkingFountainsOpenStartDate'), null);
+   assert.equal(_findById(panelEl, 'drinkingFountainsOpenEndDate'), null);
    assert.ok(_findById(panelEl, 'submitDrinkingFountainsOpen'));
    assert.ok(_findById(panelEl, 'drinkingFountainsOpenStatus'));
 });

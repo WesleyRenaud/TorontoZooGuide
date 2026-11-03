@@ -13,3 +13,4 @@ def Test_ToDict_TestClosedFountain_ExpectFrontendShape() -> None:
    assert result[ 'is_closed' ] is fountain.is_closed
    assert result[ 'closed_message' ] == fountain.closed_message
    assert result[ 'likelihood' ] == fountain.likelihood
+   assert result[ 'is_closed_for_season' ] is False

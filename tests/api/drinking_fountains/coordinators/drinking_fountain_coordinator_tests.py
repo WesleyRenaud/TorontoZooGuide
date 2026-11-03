@@ -11,7 +11,6 @@ from api.drinking_fountains.data_access.drinking_fountain_status_provider import
 from api.drinking_fountains.data_access.drinking_fountain_status_record import DrinkingFountainStatusRecord
 from api.drinking_fountains.domain.drinking_fountain_builder import DrinkingFountainBuilder
 from api.drinking_fountains.status.drinking_fountain_closed_status import DrinkingFountainClosedStatus
-from api.drinking_fountains.status.drinking_fountain_open_status import DrinkingFountainOpenStatus
 from api.drinking_fountains.status.drinking_fountain_status_builder import DrinkingFountainStatusBuilder
 from api.models.drinking_fountain import DrinkingFountain
 from api.shared.calendar_dates import CalendarDates
@@ -42,9 +41,6 @@ CLOSED_STATUS = DrinkingFountainClosedStatus(
    start_date=START_DATE,
    end_date=END_DATE,
    message=MESSAGE )
-OPEN_STATUS = DrinkingFountainOpenStatus(
-   start_date=START_DATE,
-   end_date=END_DATE )
 
 
 @dataclass
@@ -83,11 +79,13 @@ def Test_GetDrinkingFountains_TestStatusApplies_ExpectStatusBuilt(
          records: list[ StubRecord ],
          is_closed: bool,
          closed_message: str | None,
-         likelihood: float ) -> list[ DrinkingFountain ]:
+         likelihood: float,
+         is_closed_for_season: bool = False ) -> list[ DrinkingFountain ]:
       captured[ 'records' ] = records
       captured[ 'is_closed' ] = is_closed
       captured[ 'closed_message' ] = closed_message
       captured[ 'likelihood' ] = likelihood
+      captured[ 'is_closed_for_season' ] = is_closed_for_season
       return [ FOUNTAIN ]
 
    monkeypatch.setattr(
@@ -105,6 +103,7 @@ def Test_GetDrinkingFountains_TestStatusApplies_ExpectStatusBuilt(
    assert captured[ 'is_closed' ] is True
    assert captured[ 'closed_message' ] == MESSAGE
    assert captured[ 'likelihood' ] == STATUS_LIKELIHOOD
+   assert captured[ 'is_closed_for_season' ] is True
 
 
 def Test_GetDrinkingFountains_TestStatusMissing_ExpectSeasonalFallback(
@@ -138,11 +137,13 @@ def Test_GetDrinkingFountains_TestStatusMissing_ExpectSeasonalFallback(
          records: list[ StubRecord ],
          is_closed: bool,
          closed_message: str | None,
-         likelihood: float ) -> list[ DrinkingFountain ]:
+         likelihood: float,
+         is_closed_for_season: bool = False ) -> list[ DrinkingFountain ]:
       captured[ 'records' ] = records
       captured[ 'is_closed' ] = is_closed
       captured[ 'closed_message' ] = closed_message
       captured[ 'likelihood' ] = likelihood
+      captured[ 'is_closed_for_season' ] = is_closed_for_season
       return [ FOUNTAIN ]
 
    monkeypatch.setattr(
@@ -160,6 +161,7 @@ def Test_GetDrinkingFountains_TestStatusMissing_ExpectSeasonalFallback(
    assert captured[ 'is_closed' ] is False
    assert captured[ 'closed_message' ] is None
    assert captured[ 'likelihood' ] == SEASONAL_LIKELIHOOD
+   assert captured[ 'is_closed_for_season' ] is False
 
 
 def Test_SetDrinkingFountainsAsClosed_TestBuilderAndProvider_ExpectDelegated(
@@ -185,23 +187,17 @@ def Test_SetDrinkingFountainsAsClosed_TestBuilderAndProvider_ExpectDelegated(
    assert saved == [ CLOSED_STATUS ]
 
 
-def Test_SetDrinkingFountainsAsOpen_TestBuilderAndProvider_ExpectDelegated(
+def Test_SetDrinkingFountainsAsOpen_TestProvider_ExpectDeleted(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   saved: list[ DrinkingFountainOpenStatus ] = []
+   deleted: list[ bool ] = []
 
-   monkeypatch.setattr(
-      DrinkingFountainStatusBuilder,
-      'build_open_status',
-      lambda **_kwargs: OPEN_STATUS )
    monkeypatch.setattr(
       DrinkingFountainStatusProvider,
-      'save_drinking_fountain_open_status',
-      lambda _conn, *, status: saved.append( status ) or True )
+      'delete_drinking_fountain_status',
+      lambda _conn: deleted.append( True ) or True )
 
-   saved_open = DrinkingFountainCoordinator.set_drinking_fountains_as_open(
-      start_date=START_DATE,
-      end_date=END_DATE )
+   saved_open = DrinkingFountainCoordinator.set_drinking_fountains_as_open()
 
    assert saved_open is True
-   assert saved == [ OPEN_STATUS ]
+   assert deleted == [ True ]

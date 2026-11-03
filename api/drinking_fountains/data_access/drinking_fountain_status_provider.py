@@ -5,7 +5,6 @@ from datetime import date
 from .drinking_fountain_status_mapper import DrinkingFountainStatusMapper
 from .drinking_fountain_status_record import DrinkingFountainStatusRecord
 from ..status.drinking_fountain_closed_status import DrinkingFountainClosedStatus
-from ..status.drinking_fountain_open_status import DrinkingFountainOpenStatus
 from ...types import Types
 
 
@@ -99,28 +98,11 @@ class DrinkingFountainStatusProvider():
 
 
    @classmethod
-   def save_drinking_fountain_open_status(
-         cls,
-         conn: Types.Connection,
-         status: DrinkingFountainOpenStatus ) -> bool:
+   def delete_drinking_fountain_status( cls, conn: Types.Connection ) -> bool:
       cur = conn.cursor()
 
       try:
          cur.execute( 'DELETE FROM DrinkingFountainStatus;' )
-
-         cur.execute(
-            """   INSERT INTO DrinkingFountainStatus (
-                     IS_CLOSED,
-                     START_DATE,
-                     END_DATE,
-                     CLOSED_MESSAGE
-                  )
-                  VALUES (0, ?, ?, NULL);
-            """,
-            (
-               status.start_date,
-               status.end_date,
-            ) )
 
          conn.commit()
          return cur.rowcount > 0

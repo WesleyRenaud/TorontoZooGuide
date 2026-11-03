@@ -31,7 +31,6 @@ export class DateFactory {
          ['guardiansTalks', 'schedule'],
          ['wildEncounters', 'schedule'],
          ['drinkingFountains', 'closed'],
-         ['drinkingFountains', 'open'],
          ['events', 'create'],
          ['updates', 'create'],
       ],

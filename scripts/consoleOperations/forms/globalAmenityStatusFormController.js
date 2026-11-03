@@ -12,18 +12,27 @@ export class GlobalAmenityStatusFormController {
       startDateEl,
       endDateEl,
       messageEl = null,
+      includeDateRange = true,
       activatePanel,
       submitStatus,
       successMessage,
       requireMessage = false,
    } = {}) {
-      const formFieldEls = [startDateEl, endDateEl, messageEl];
+      const formFieldEls = includeDateRange
+         ? [startDateEl, endDateEl, messageEl]
+         : [messageEl];
 
       function resetForm() {
          ControllerHelper.resetFormFields(formFieldEls);
       }
 
       function getFormValues() {
+         if (!includeDateRange) {
+            return {
+               message: ControllerHelper.getFieldValue(messageEl),
+            };
+         }
+
          return {
             startDate: ControllerHelper.getFieldValue(startDateEl),
             endDate: ControllerHelper.getFieldValue(endDateEl),
@@ -34,6 +43,10 @@ export class GlobalAmenityStatusFormController {
       function validateForm({ startDate, endDate, message }) {
          if (requireMessage && !message) {
             return Strings.validation.entityRequired(Strings.labels.message);
+         }
+
+         if (!includeDateRange) {
+            return null;
          }
 
          return ControllerHelper.validateOptionalDateRange(startDate, endDate);

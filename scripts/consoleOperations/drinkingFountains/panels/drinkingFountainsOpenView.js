@@ -7,7 +7,7 @@ export class DrinkingFountainsOpenView {
          panelId: 'drinkingFountainsOpenPanel',
          title: Strings.panelTitles.drinkingFountainsOpen,
          idPrefix: 'drinkingFountainsOpen',
-         endHelpText: Strings.help.keepExplicitlyOpenUntilChanged('drinking fountains', 'they are'),
+         includeDateRange: false,
          submitId: 'submitDrinkingFountainsOpen',
          statusId: 'drinkingFountainsOpenStatus',
       });

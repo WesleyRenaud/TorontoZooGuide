@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from datetime import datetime
 
 from api.app_string_provider import AppStringProvider
 from api.drinking_fountains.data_access.drinking_fountain_record import DrinkingFountainRecord
@@ -70,13 +71,14 @@ def Test_BuildStatus_TestClosedRecord_ExpectZeroLikelihood() -> None:
    assert likelihood == 0.0
 
 
-def Test_BuildOpenStatus_TestDateRange_ExpectMappedStatus() -> None:
-   status = DrinkingFountainStatusBuilder.build_open_status(
-      start_date=START_DATE,
-      end_date=END_DATE )
+def Test_BuildClosedStatus_TestBlankStart_ExpectToday() -> None:
+   status = DrinkingFountainStatusBuilder.build_closed_status(
+      start_date=None,
+      end_date=None,
+      message='' )
 
-   assert status.start_date == START_DATE
-   assert status.end_date == END_DATE
+   assert status.start_date == datetime.now().date().isoformat()
+   assert status.end_date == None
 
 
 def Test_BuildSeasonalStatus_TestLikelihood_ExpectClosedWhenZero() -> None:
