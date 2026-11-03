@@ -8,6 +8,7 @@ import sys
 
 from tools.guardiansTalkScheduleCheck import check_schedules as check_talks
 from tools.seasonalAttractionClosureCheck import check_schedules as check_attractions
+from tools.seasonalDrinkingFountainClosureCheck import check_schedules as check_drinking_fountains
 from tools.seasonalGiftShopClosureCheck import check_schedules as check_gift_shops
 from tools.seasonalOffDisplayCheck import check_schedules as check_animals
 from tools.seasonalRestaurantClosureCheck import check_schedules as check_restaurants
@@ -22,7 +23,8 @@ def parse_args() -> argparse.Namespace:
       description=(
          'Compare wild encounters, guardians talks, seasonal off-display animals, '
          'attractions closed for the season, restaurants closed for the season, '
-         'and gift shops closed for the season with the Toronto Zoo website.'
+         'gift shops closed for the season, and drinking fountains closed for '
+         'the season with the Toronto Zoo website.'
       )
    )
    parser.add_argument(
@@ -42,20 +44,23 @@ def run_checks(
       animal_check: Callable[ [ Path, date ], int ],
       attraction_check: Callable[ [ Path, date ], int ],
       restaurant_check: Callable[ [ Path, date ], int ],
-      gift_shop_check: Callable[ [ Path, date ], int ] ) -> int:
+      gift_shop_check: Callable[ [ Path, date ], int ],
+      drinking_fountain_check: Callable[ [ Path, date ], int ] ) -> int:
    encounter_issues = encounter_check( database, today )
    talk_issues = talk_check( database, today )
    animal_issues = animal_check( database, today )
    attraction_issues = attraction_check( database, today )
    restaurant_issues = restaurant_check( database, today )
    gift_shop_issues = gift_shop_check( database, today )
+   drinking_fountain_issues = drinking_fountain_check( database, today )
    print(
       f'{ encounter_issues } for encounters, '
       f'{ talk_issues } for talks, '
       f'{ animal_issues } for animals, '
       f'{ attraction_issues } for attractions, '
       f'{ restaurant_issues } for restaurants, '
-      f'{ gift_shop_issues } for gift shops'
+      f'{ gift_shop_issues } for gift shops, '
+      f'{ drinking_fountain_issues } for drinking fountains'
    )
 
    if (
@@ -64,7 +69,8 @@ def run_checks(
          or animal_issues
          or attraction_issues
          or restaurant_issues
-         or gift_shop_issues ):
+         or gift_shop_issues
+         or drinking_fountain_issues ):
       return 1
 
    return 0
@@ -87,6 +93,7 @@ def main() -> int:
          check_attractions,
          check_restaurants,
          check_gift_shops,
+         check_drinking_fountains,
       )
    except RuntimeError as error:
       print( error, file=sys.stderr )
