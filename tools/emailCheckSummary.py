@@ -13,6 +13,8 @@ import subprocess
 import sys
 import tempfile
 
+from tools.exhibitRegionColors import exhibit_colors
+
 
 SMTP_HOST = 'smtp.gmail.com'
 SMTP_PORT = 587
@@ -39,6 +41,7 @@ SECTION_NAMES = {
    'Wild encounter schedule': 'Encounters',
    'Guardians talk schedule': 'Guardians Talks',
    'Seasonal off-display': 'Animals off display',
+   'Animals': 'Animals',
    'Seasonal attraction closure': 'Attractions closed for the season',
    'Seasonal restaurant closure': 'Restaurants closed for the season',
    'Seasonal gift shop closure': 'Gift shops closed for the season',
@@ -338,10 +341,33 @@ def detail_text( detail: str ) -> str:
    )
 
 
+def exhibit_pill( exhibit: str ) -> str:
+   colors = exhibit_colors( exhibit )
+   safe = text( exhibit )
+
+   if colors == None:
+      return safe
+
+   background, foreground = colors
+   return (
+      f'<span style="background:{ background };color:{ foreground };'
+      f'border-radius:999px;padding:2px 8px;">{ safe }</span>'
+   )
+
+
+def item_label( title: str ) -> str:
+   species, separator, exhibit = title.rpartition( ' · ' )
+
+   if separator == '':
+      return text( title )
+
+   return f'{ text( species ) }{ separator }{ exhibit_pill( exhibit ) }'
+
+
 def detail_rows( item: DetailItem ) -> str:
    rows = [
       cell(
-         text( item.title ),
+         item_label( item.title ),
          (
             f'padding:4px 20px 2px 32px;font-family:{ FONT };font-size:16px;'
             f'line-height:22px;font-weight:700;color:{ TEXT };'
@@ -412,10 +438,45 @@ def section_card( section: Section ) -> str:
    )
 
 
+def combined_animals( sections: list[ Section ] ) -> Section | None:
+   listed = next(
+      ( section for section in sections if section.kind == 'Animal list' ),
+      None,
+   )
+   seasonal = next(
+      ( section for section in sections if section.kind == 'Seasonal off-display' ),
+      None,
+   )
+   sources = [ section for section in ( listed, seasonal ) if section is not None ]
+
+   if not sources:
+      return None
+
+   categories = [
+      category
+      for section in sources
+      for category in section.categories
+   ]
+
+   if not any( category.count > 0 for category in categories ):
+      return None
+
+   return Section( 'Animals', sources[ 0 ].day, '', categories )
+
+
 def notable_sections( report: Report ) -> list[ Section ]:
    notable = []
+   animals = combined_animals( report.sections )
+   animals_placed = False
 
    for section in report.sections:
+      if section.kind in ( 'Seasonal off-display', 'Animal list' ):
+         if animals is not None and not animals_placed:
+            notable.append( animals )
+            animals_placed = True
+
+         continue
+
       has_issue = any( category.count > 0 for category in section.categories )
 
       if has_issue:

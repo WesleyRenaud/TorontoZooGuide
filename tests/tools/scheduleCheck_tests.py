@@ -5,10 +5,33 @@ from pathlib import Path
 
 import pytest
 
+from tools.scheduleCheck import check_animals
 from tools.scheduleCheck import run_checks
 
 
 TODAY = date( 2026, 11, 2 )
+
+
+def Test_CheckAnimals_TestOffDisplayAndCatalog_ExpectOneCount(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   calls = []
+
+   def check_off_display( database: Path, today: date ) -> int:
+      calls.append( 'off display' )
+      return 1
+
+   def check_animal_catalog( database: Path, today: date ) -> int:
+      calls.append( 'catalog' )
+      return 7
+
+   monkeypatch.setattr( 'tools.scheduleCheck.check_off_display', check_off_display )
+   monkeypatch.setattr( 'tools.scheduleCheck.check_animal_catalog', check_animal_catalog )
+
+   result = check_animals( tmp_path / 'animals.db', TODAY )
+
+   assert result == 8
+   assert calls == [ 'off display', 'catalog' ]
 
 
 def Test_RunChecks_TestIssueCounts_ExpectSummary(
@@ -26,7 +49,7 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
 
    def check_animals( checked_database: Path, today: date ) -> int:
       print( 'animals' )
-      return 1
+      return 8
 
    def check_attractions( checked_database: Path, today: date ) -> int:
       print( 'attractions' )
@@ -43,10 +66,6 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
    def check_drinking_fountains( checked_database: Path, today: date ) -> int:
       print( 'drinking fountains' )
       return 6
-
-   def check_animal_list( checked_database: Path, today: date ) -> int:
-      print( 'animal list' )
-      return 7
 
    def check_attraction_list( checked_database: Path, today: date ) -> int:
       print( 'attraction list' )
@@ -74,7 +93,6 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_restaurants,
       check_gift_shops,
       check_drinking_fountains,
-      check_animal_list,
       check_attraction_list,
       check_restaurant_list,
       check_gift_shop_list,
@@ -89,15 +107,14 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
    assert output.index( 'attractions\n' ) < output.index( 'restaurants\n' )
    assert output.index( 'restaurants\n' ) < output.index( 'gift shops\n' )
    assert output.index( 'gift shops\n' ) < output.index( 'drinking fountains\n' )
-   assert output.index( 'drinking fountains\n' ) < output.index( 'animal list\n' )
-   assert output.index( 'animal list\n' ) < output.index( 'attraction list\n' )
+   assert output.index( 'drinking fountains\n' ) < output.index( 'attraction list\n' )
    assert output.index( 'attraction list\n' ) < output.index( 'restaurant list\n' )
    assert output.index( 'restaurant list\n' ) < output.index( 'gift shop list\n' )
    assert output.index( 'gift shop list\n' ) < output.index( 'zoo hours\n' )
    assert output.endswith(
-      '2 for encounters, 0 for Guardians Talks, 1 for animals, 4 for attractions, '
+      '2 for encounters, 0 for Guardians Talks, 8 for animals, 4 for attractions, '
       '3 for restaurants, 5 for gift shops, 6 for drinking fountains, '
-      '7 for the animal list, 8 for the attraction list, 9 for the restaurant list, '
+      '8 for the attraction list, 9 for the restaurant list, '
       '10 for the gift shop list, 11 for zoo hours\n'
       '\n'
       '66 errors\n'
@@ -130,9 +147,6 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
    def check_drinking_fountains( checked_database: Path, today: date ) -> int:
       return 0
 
-   def check_animal_list( checked_database: Path, today: date ) -> int:
-      return 0
-
    def check_attraction_list( checked_database: Path, today: date ) -> int:
       return 0
 
@@ -155,7 +169,6 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
       check_restaurants,
       check_gift_shops,
       check_drinking_fountains,
-      check_animal_list,
       check_attraction_list,
       check_restaurant_list,
       check_gift_shop_list,
@@ -167,7 +180,7 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
    assert output == (
       '0 for encounters, 0 for Guardians Talks, 0 for animals, 0 for attractions, '
       '0 for restaurants, 0 for gift shops, 0 for drinking fountains, '
-      '0 for the animal list, 0 for the attraction list, 0 for the restaurant list, '
+      '0 for the attraction list, 0 for the restaurant list, '
       '0 for the gift shop list, 0 for zoo hours\n'
       '\n'
       '0 errors\n'
@@ -200,9 +213,6 @@ def Test_RunChecks_TestOneIssue_ExpectSingularError(
    def check_drinking_fountains( checked_database: Path, today: date ) -> int:
       return 0
 
-   def check_animal_list( checked_database: Path, today: date ) -> int:
-      return 0
-
    def check_attraction_list( checked_database: Path, today: date ) -> int:
       return 0
 
@@ -225,7 +235,6 @@ def Test_RunChecks_TestOneIssue_ExpectSingularError(
       check_restaurants,
       check_gift_shops,
       check_drinking_fountains,
-      check_animal_list,
       check_attraction_list,
       check_restaurant_list,
       check_gift_shop_list,

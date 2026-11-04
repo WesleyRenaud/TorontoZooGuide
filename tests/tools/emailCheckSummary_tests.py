@@ -7,6 +7,7 @@ import sys
 import pytest
 
 import tools.emailCheckSummary as email_check_summary
+import tools.exhibitRegionColors as exhibit_region_colors
 
 
 class FakeSmtp():
@@ -94,7 +95,7 @@ On the website and not in the app: 1
 
 In the app and not on the website: 0
 
-0 for encounters, 0 for Guardians Talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the animal list, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 1 for zoo hours
+0 for encounters, 0 for Guardians Talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 1 for zoo hours
 
 1 error
 """
@@ -112,6 +113,41 @@ def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
    assert report.sections[ 2 ].categories[ 0 ].count == 1
    assert report.sections[ 2 ].categories[ 0 ].items[ 0 ].title.startswith( '2027-01-01' )
    assert report.sections[ 2 ].categories[ 0 ].items[ 0 ].details == [ 'Website: daily' ]
+
+
+def Test_RenderHtml_TestAnimalCatalogAndOffDisplay_ExpectOneSection() -> None:
+   body = """Seasonal off-display check for 2026-11-04.
+
+Off for the season on the website and not in the app: 1
+  Polar Bear
+
+Off for the season in the app and not on the website: 0
+
+Animal list check for 2026-11-04.
+
+On the website and not in the app: 1
+  Capybara · Americas Pavilion
+
+In the app and not on the website: 0
+
+0 for encounters, 0 for Guardians Talks, 2 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 0 for zoo hours
+
+2 errors
+"""
+   html = email_check_summary.render_html( body, 1 )
+
+   assert html.count( '>Animals<' ) == 2
+   assert 'Animal list' not in html
+   assert 'Animals off display' not in html
+   assert 'On the website and not in the app' in html
+   assert 'Capybara' in html
+   assert 'Americas Pavilion' in html
+   background, foreground = exhibit_region_colors.exhibit_colors( 'Americas Pavilion' )
+   assert background in html
+   assert foreground in html
+   assert 'Off for the season on the website and not in the app' in html
+   assert 'Polar Bear' in html
+   assert html.index( 'Capybara' ) < html.index( 'Polar Bear' )
 
 
 def Test_RenderHtml_TestIssues_ExpectStyledDetails() -> None:
@@ -135,7 +171,7 @@ On the website and not in the app: 0
 
 In the app and not on the website: 0
 
-0 for encounters, 0 for Guardians Talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the animal list, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 0 for zoo hours
+0 for encounters, 0 for Guardians Talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 0 for zoo hours
 
 0 errors
 """

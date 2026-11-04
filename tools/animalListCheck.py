@@ -143,12 +143,18 @@ def load_species( database: Path ) -> list[ tuple[ str, str ] ]:
 
 
 def add_listing(
-      listings: dict[ tuple[ str, str ], list[ str ] ],
+      listings: dict[ tuple[ str, str ], tuple[ str, list[ str ] ] ],
       exhibit: str,
       name: str,
       use_website_aliases: bool ) -> None:
    key = ( exhibit.casefold(), comparison_key( name, use_website_aliases ) )
-   names = listings.setdefault( key, [] )
+   stored = listings.get( key )
+
+   if stored == None:
+      listings[ key ] = ( exhibit, [ name ] )
+      return
+
+   names = stored[ 1 ]
 
    if name not in names:
       names.append( name )
@@ -159,15 +165,15 @@ def listing_label( names: list[ str ] ) -> str:
 
 
 def missing_labels(
-      source: dict[ tuple[ str, str ], list[ str ] ],
-      other: dict[ tuple[ str, str ], list[ str ] ] ) -> list[ str ]:
+      source: dict[ tuple[ str, str ], tuple[ str, list[ str ] ] ],
+      other: dict[ tuple[ str, str ], tuple[ str, list[ str ] ] ] ) -> list[ str ]:
    labels = []
 
-   for key, names in source.items():
+   for key, ( exhibit, names ) in source.items():
       if key in other:
          continue
 
-      labels.append( f'{ listing_label( names ) } [{ key[ 0 ] }]' )
+      labels.append( f'{ listing_label( names ) } · { exhibit }' )
 
    return sorted( labels, key=str.casefold )
 
@@ -182,8 +188,8 @@ def print_category( title: str, animals: list[ str ] ) -> None:
 
 
 def check_lists( database: Path, today: date ) -> int:
-   app_listings: dict[ tuple[ str, str ], list[ str ] ] = {}
-   website_listings: dict[ tuple[ str, str ], list[ str ] ] = {}
+   app_listings: dict[ tuple[ str, str ], tuple[ str, list[ str ] ] ] = {}
+   website_listings: dict[ tuple[ str, str ], tuple[ str, list[ str ] ] ] = {}
 
    for exhibit, species in load_species( database ):
       add_listing( app_listings, exhibit, species, False )

@@ -92,9 +92,8 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
 
    assert result == 1
    assert 'On the website and not in the app: 1' in output
-   assert '  Tiger' in output
+   assert '  Tiger · Africa Savanna' in output
    assert 'In the app and not on the website: 0' in output
-   assert 'Africa' not in output
 
 
 def Test_CheckLists_TestAppOnly_ExpectAppMiss(
@@ -203,8 +202,8 @@ def Test_CheckLists_TestDifferentSpellingsOnTwoExhibits_ExpectTwoListings(
 
    assert result == 2
    assert 'On the website and not in the app: 2' in output
-   assert f'  { LAU } [africa savanna]' in output
-   assert '  Lau banded iguana [australasia pavilion]' in output
+   assert f'  { LAU } · Africa Savanna' in output
+   assert '  Lau banded iguana · Australasia Pavilion' in output
    assert 'In the app and not on the website: 0' in output
 
 
@@ -253,7 +252,7 @@ def Test_CheckLists_TestZebraInCanada_ExpectAllowed(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert "  Grevy's Zebra [canadian domain]" not in output
+   assert "  Grevy's Zebra · Canadian Domain" not in output
    assert 'On the website and not in the app: 0' in output
    assert 'In the app and not on the website: 0' in output
 
@@ -278,8 +277,8 @@ def Test_CheckLists_TestAllowedPairAndOtherExhibit_ExpectOnlyOtherExhibitFlagged
    result, output = _check( tmp_path / 'animals.db', TODAY, capsys )
 
    assert result == 1
-   assert f'  { species } [other exhibit]' in output
-   assert f'  { species } [{ exhibit.casefold() }]' not in output
+   assert f'  { species } · Other Exhibit' in output
+   assert f'  { species } · { exhibit }' not in output
 
 
 def Test_CheckLists_TestAllowedPairMissingFromApp_ExpectWebsiteMiss(
@@ -297,7 +296,7 @@ def Test_CheckLists_TestAllowedPairMissingFromApp_ExpectWebsiteMiss(
 
    assert result == 1
    assert 'On the website and not in the app: 1' in output
-   assert "  Grevy's Zebra [canadian domain]" in output
+   assert "  Grevy's Zebra · Canadian Domain" in output
 
 
 def Test_ParseWebsiteAnimals_TestHeadingWithBreak_ExpectExhibitName() -> None:
