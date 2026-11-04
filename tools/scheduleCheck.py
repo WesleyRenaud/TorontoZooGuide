@@ -17,6 +17,7 @@ from tools.seasonalGiftShopClosureCheck import check_schedules as check_gift_sho
 from tools.seasonalOffDisplayCheck import check_schedules as check_animals
 from tools.seasonalRestaurantClosureCheck import check_schedules as check_restaurants
 from tools.wildEncounterScheduleCheck import check_schedules as check_encounters
+from tools.zooHoursCheck import check_lists as check_zoo_hours
 
 
 ROOT = Path( __file__ ).resolve().parents[ 1 ]
@@ -28,8 +29,8 @@ def parse_args() -> argparse.Namespace:
          'Compare wild encounters, guardians talks, seasonal off-display animals, '
          'attractions closed for the season, restaurants closed for the season, '
          'gift shops closed for the season, drinking fountains closed for the '
-         'season, and listed animals, attractions, restaurants, and gift shops '
-         'with the Toronto Zoo website.'
+         'season, listed animals, attractions, restaurants, and gift shops, and '
+         'zoo hours with the Toronto Zoo website.'
       )
    )
    parser.add_argument(
@@ -54,7 +55,8 @@ def run_checks(
       animal_list_check: Callable[ [ Path, date ], int ],
       attraction_list_check: Callable[ [ Path, date ], int ],
       restaurant_list_check: Callable[ [ Path, date ], int ],
-      gift_shop_list_check: Callable[ [ Path, date ], int ] ) -> int:
+      gift_shop_list_check: Callable[ [ Path, date ], int ],
+      zoo_hours_check: Callable[ [ Path, date ], int ] ) -> int:
    encounter_issues = encounter_check( database, today )
    talk_issues = talk_check( database, today )
    animal_issues = animal_check( database, today )
@@ -66,6 +68,7 @@ def run_checks(
    attraction_list_issues = attraction_list_check( database, today )
    restaurant_list_issues = restaurant_list_check( database, today )
    gift_shop_list_issues = gift_shop_list_check( database, today )
+   zoo_hours_issues = zoo_hours_check( database, today )
    issues = (
       encounter_issues
       + talk_issues
@@ -78,6 +81,7 @@ def run_checks(
       + attraction_list_issues
       + restaurant_list_issues
       + gift_shop_list_issues
+      + zoo_hours_issues
    )
    print(
       f'{ encounter_issues } for encounters, '
@@ -90,7 +94,8 @@ def run_checks(
       f'{ animal_list_issues } for the animal list, '
       f'{ attraction_list_issues } for the attraction list, '
       f'{ restaurant_list_issues } for the restaurant list, '
-      f'{ gift_shop_list_issues } for the gift shop list'
+      f'{ gift_shop_list_issues } for the gift shop list, '
+      f'{ zoo_hours_issues } for zoo hours'
    )
    print()
    print( f'{ issues } error' if issues == 1 else f'{ issues } errors' )
@@ -123,6 +128,7 @@ def main() -> int:
          check_attraction_list,
          check_restaurant_list,
          check_gift_shop_list,
+         check_zoo_hours,
       )
    except RuntimeError as error:
       print( error, file=sys.stderr )

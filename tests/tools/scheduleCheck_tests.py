@@ -60,6 +60,10 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       print( 'gift shop list' )
       return 10
 
+   def check_zoo_hours( checked_database: Path, today: date ) -> int:
+      print( 'zoo hours' )
+      return 11
+
    result = run_checks(
       database,
       TODAY,
@@ -74,6 +78,7 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_attraction_list,
       check_restaurant_list,
       check_gift_shop_list,
+      check_zoo_hours,
    )
    output = capsys.readouterr().out
 
@@ -88,13 +93,14 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
    assert output.index( 'animal list\n' ) < output.index( 'attraction list\n' )
    assert output.index( 'attraction list\n' ) < output.index( 'restaurant list\n' )
    assert output.index( 'restaurant list\n' ) < output.index( 'gift shop list\n' )
+   assert output.index( 'gift shop list\n' ) < output.index( 'zoo hours\n' )
    assert output.endswith(
       '2 for encounters, 0 for talks, 1 for animals, 4 for attractions, '
       '3 for restaurants, 5 for gift shops, 6 for drinking fountains, '
       '7 for the animal list, 8 for the attraction list, 9 for the restaurant list, '
-      '10 for the gift shop list\n'
+      '10 for the gift shop list, 11 for zoo hours\n'
       '\n'
-      '55 errors\n'
+      '66 errors\n'
    )
 
 
@@ -136,6 +142,9 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
    def check_gift_shop_list( checked_database: Path, today: date ) -> int:
       return 0
 
+   def check_zoo_hours( checked_database: Path, today: date ) -> int:
+      return 0
+
    result = run_checks(
       database,
       TODAY,
@@ -150,6 +159,7 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
       check_attraction_list,
       check_restaurant_list,
       check_gift_shop_list,
+      check_zoo_hours,
    )
    output = capsys.readouterr().out
 
@@ -158,7 +168,7 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
       '0 for encounters, 0 for talks, 0 for animals, 0 for attractions, '
       '0 for restaurants, 0 for gift shops, 0 for drinking fountains, '
       '0 for the animal list, 0 for the attraction list, 0 for the restaurant list, '
-      '0 for the gift shop list\n'
+      '0 for the gift shop list, 0 for zoo hours\n'
       '\n'
       '0 errors\n'
    )
@@ -202,6 +212,9 @@ def Test_RunChecks_TestOneIssue_ExpectSingularError(
    def check_gift_shop_list( checked_database: Path, today: date ) -> int:
       return 0
 
+   def check_zoo_hours( checked_database: Path, today: date ) -> int:
+      return 0
+
    result = run_checks(
       database,
       TODAY,
@@ -216,6 +229,7 @@ def Test_RunChecks_TestOneIssue_ExpectSingularError(
       check_attraction_list,
       check_restaurant_list,
       check_gift_shop_list,
+      check_zoo_hours,
    )
    output = capsys.readouterr().out
 
