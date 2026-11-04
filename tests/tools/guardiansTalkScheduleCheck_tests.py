@@ -196,7 +196,7 @@ def _email( output: str, issues: int ) -> str:
       f'{ output }\n'
       f'0 for encounters, { issues } for Guardians Talks, 0 for animals, '
       '0 for attractions, 0 for restaurants, 0 for gift shops, '
-      '0 for drinking fountains, 0 for the animal list, '
+      '0 for drinking fountains, '
       '0 for the attraction list, 0 for the restaurant list, '
       '0 for the gift shop list, 0 for zoo hours\n\n'
       f'{ label }\n'
