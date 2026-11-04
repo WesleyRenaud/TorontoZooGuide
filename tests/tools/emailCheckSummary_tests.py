@@ -94,7 +94,7 @@ On the website and not in the app: 1
 
 In the app and not on the website: 0
 
-0 for encounters, 0 for talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the animal list, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 1 for zoo hours
+0 for encounters, 0 for Guardians Talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the animal list, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 1 for zoo hours
 
 1 error
 """
@@ -135,7 +135,7 @@ On the website and not in the app: 0
 
 In the app and not on the website: 0
 
-0 for encounters, 0 for talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the animal list, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 0 for zoo hours
+0 for encounters, 0 for Guardians Talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the animal list, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 0 for zoo hours
 
 0 errors
 """

@@ -95,7 +95,7 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
    assert output.index( 'restaurant list\n' ) < output.index( 'gift shop list\n' )
    assert output.index( 'gift shop list\n' ) < output.index( 'zoo hours\n' )
    assert output.endswith(
-      '2 for encounters, 0 for talks, 1 for animals, 4 for attractions, '
+      '2 for encounters, 0 for Guardians Talks, 1 for animals, 4 for attractions, '
       '3 for restaurants, 5 for gift shops, 6 for drinking fountains, '
       '7 for the animal list, 8 for the attraction list, 9 for the restaurant list, '
       '10 for the gift shop list, 11 for zoo hours\n'
@@ -165,7 +165,7 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
 
    assert result == 0
    assert output == (
-      '0 for encounters, 0 for talks, 0 for animals, 0 for attractions, '
+      '0 for encounters, 0 for Guardians Talks, 0 for animals, 0 for attractions, '
       '0 for restaurants, 0 for gift shops, 0 for drinking fountains, '
       '0 for the animal list, 0 for the attraction list, 0 for the restaurant list, '
       '0 for the gift shop list, 0 for zoo hours\n'

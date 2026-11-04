@@ -10,6 +10,8 @@ import types
 
 import pytest
 
+import tools.emailCheckSummary as email_summary
+
 
 TALK = 'Snow Leopard'
 LOCATION = 'Eurasia Wilds'
@@ -188,6 +190,20 @@ def _check( database: Path, capsys: pytest.CaptureFixture[ str ] ) -> tuple[ int
    return result, capsys.readouterr().out
 
 
+def _email( output: str, issues: int ) -> str:
+   label = '1 error' if issues == 1 else f'{ issues } errors'
+   body = (
+      f'{ output }\n'
+      f'0 for encounters, { issues } for Guardians Talks, 0 for animals, '
+      '0 for attractions, 0 for restaurants, 0 for gift shops, '
+      '0 for drinking fountains, 0 for the animal list, '
+      '0 for the attraction list, 0 for the restaurant list, '
+      '0 for the gift shop list, 0 for zoo hours\n\n'
+      f'{ label }\n'
+   )
+   return email_summary.render_html( body, 1 if issues else 0 )
+
+
 def Test_ParseHeading_TestJanuaryAfterDecember_ExpectNextYear() -> None:
    today = date( 2026, 12, 28 )
 
@@ -357,6 +373,11 @@ def Test_CheckSchedules_TestAppOnlyInsideWindow_ExpectAppViolation(
    assert f'  { TALK }, { LOCATION }' in output
    assert 'Scheduled in the app and not on the website: 1' in output
    assert 'Scheduled on the website and not in the app: 0' in output
+   html = _email( output, result )
+   assert 'Guardians Talks' in html
+   assert f'{ TALK }, { LOCATION }' in html
+   assert 'Scheduled in the app and not on the website' in html
+   assert 'Website dates compared' not in html
 
 
 def Test_CheckSchedules_TestWebsiteOnly_ExpectWebsiteViolation(
@@ -376,6 +397,11 @@ def Test_CheckSchedules_TestWebsiteOnly_ExpectWebsiteViolation(
    assert '  West Caucasian tur, Eurasia' in output
    assert f'  { TALK }, { LOCATION }' not in output
    assert 'Scheduled on the website and not in the app: 1' in output
+   html = _email( output, result )
+   assert 'West Caucasian tur, Eurasia' in html
+   assert 'Scheduled on the website and not in the app' in html
+   assert f'{ TALK }, { LOCATION }' not in html
+   assert 'Website dates compared' not in html
 
 
 def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
@@ -407,6 +433,13 @@ def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
    assert 'Windows which do not align: 0' in output
    assert CHECKER.normalize_clock( WEBSITE_CLOCK ) in output
    assert OTHER_CLOCK in output
+   html = _email( output, result )
+   assert 'Different days or times' in html
+   assert 'Website' in html
+   assert '1:00 PM Thu' in html
+   assert 'App' in html
+   assert '11:00 AM Thu' in html
+   assert 'Website dates compared' not in html
 
 
 def Test_CheckSchedules_TestWebsiteWindowLonger_ExpectWindowViolation(
@@ -441,6 +474,11 @@ def Test_CheckSchedules_TestWebsiteWindowLonger_ExpectWindowViolation(
    assert 'Different days or times: 0' in output
    assert f'Website dates not in the app: { NEXT_THURSDAY.isoformat() }' in output
    assert 'App dates not on the website' not in output
+   html = _email( output, result )
+   assert 'Website dates not in the app' in html
+   assert NEXT_THURSDAY.isoformat() in html
+   assert 'App dates not on the website' not in html
+   assert 'Website dates compared' not in html
 
 
 def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
@@ -474,6 +512,11 @@ def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
    assert f'App dates not on the website: { NEXT_THURSDAY.isoformat() }' in output
    assert AFTER_WINDOW.isoformat() not in output
    assert 'Website dates not in the app' not in output
+   html = _email( output, result )
+   assert 'App dates not on the website' in html
+   assert NEXT_THURSDAY.isoformat() in html
+   assert 'Website dates not in the app' not in html
+   assert 'Website dates compared' not in html
 
 
 def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
@@ -504,3 +547,9 @@ def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
    assert AFTER_WINDOW.isoformat() not in output
    assert 'Scheduled in the app and not on the website: 0' in output
    assert 'Windows which do not align: 0' in output
+   html = _email( output, result )
+   assert 'All clear' in html
+   assert 'The website and the app match.' in html
+   assert 'Guardians Talks' in html
+   assert f'{ TALK }, { LOCATION }' not in html
+   assert 'Website dates compared' not in html
