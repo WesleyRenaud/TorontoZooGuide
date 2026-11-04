@@ -36,7 +36,7 @@ DANGER_TEXT = '#8b1a1a'
 DANGER_SOFT = '#fde8e4'
 SECTION_NAMES = {
    'Wild encounter schedule': 'Encounters',
-   'Guardians talk schedule': 'Guardians talks',
+   'Guardians talk schedule': 'Guardians Talks',
    'Seasonal off-display': 'Animals off display',
    'Seasonal attraction closure': 'Attractions closed for the season',
    'Seasonal restaurant closure': 'Restaurants closed for the season',

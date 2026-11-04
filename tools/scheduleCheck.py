@@ -85,7 +85,7 @@ def run_checks(
    )
    print(
       f'{ encounter_issues } for encounters, '
-      f'{ talk_issues } for talks, '
+      f'{ talk_issues } for Guardians Talks, '
       f'{ animal_issues } for animals, '
       f'{ attraction_issues } for attractions, '
       f'{ restaurant_issues } for restaurants, '
