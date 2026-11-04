@@ -10,6 +10,8 @@ import types
 
 import pytest
 
+import tools.emailCheckSummary as email_summary
+
 
 GIRAFFE = 'Giraffe'
 GIRAFFE_LINK = 'https://example.test/giraffe'
@@ -167,6 +169,20 @@ def _install_web(
    monkeypatch.setattr( CHECKER, 'post_json', post_json )
 
 
+def _email( output: str, issues: int ) -> str:
+   label = '1 error' if issues == 1 else f'{ issues } errors'
+   body = (
+      f'{ output }\n'
+      f'{ issues } for encounters, 0 for talks, 0 for animals, '
+      '0 for attractions, 0 for restaurants, 0 for gift shops, '
+      '0 for drinking fountains, 0 for the animal list, '
+      '0 for the attraction list, 0 for the restaurant list, '
+      '0 for the gift shop list, 0 for zoo hours\n\n'
+      f'{ label }\n'
+   )
+   return email_summary.render_html( body, 1 if issues else 0 )
+
+
 def _giraffe_database( path: Path, encounter_time: str ) -> None:
    _write_database(
       path,
@@ -223,6 +239,11 @@ def Test_CheckSchedules_TestAppOnlyEncounter_ExpectAppViolation(
    assert 'Scheduled on the website and not in the app: 0' in output
    assert 'Different days or times: 0' in output
    assert 'Windows which do not align: 0' in output
+   html = _email( output, result )
+   assert 'Kangaroo' in html
+   assert 'Scheduled in the app and not on the website' in html
+   assert 'Booking dates compared' not in html
+   assert GIRAFFE not in html
 
 
 def Test_CheckSchedules_TestWebsiteOnlyEncounter_ExpectWebsiteViolation(
@@ -261,6 +282,10 @@ def Test_CheckSchedules_TestWebsiteOnlyEncounter_ExpectWebsiteViolation(
    assert f'  { SNOW_LEOPARD_WEBSITE }' not in output
    assert 'Scheduled in the app and not on the website: 0' in output
    assert 'Windows which do not align: 0' in output
+   html = _email( output, result )
+   assert SNOW_LEOPARD in html
+   assert 'Scheduled on the website and not in the app' in html
+   assert 'Booking dates compared' not in html
 
 
 def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
@@ -283,6 +308,13 @@ def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
    assert CHECKER.normalize_clock( OTHER_CLOCK ) in output
    assert CHECKER.normalize_clock( CLOCK ) in output
    assert 'Windows which do not align: 0' in output
+   html = _email( output, result )
+   assert 'Different days or times' in html
+   assert 'Website' in html
+   assert '2:00 PM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in html
+   assert 'App' in html
+   assert '11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in html
+   assert 'Booking dates compared' not in html
 
 
 def Test_CheckSchedules_TestBookableWindowLonger_ExpectWindowViolation(
@@ -309,6 +341,10 @@ def Test_CheckSchedules_TestBookableWindowLonger_ExpectWindowViolation(
    assert CHECKER.format_date_span( extra_start, extra_end ) in output
    assert 'App dates not bookable' not in output
    assert 'Different days or times: 0' in output
+   html = _email( output, result )
+   assert 'Bookable dates not in the app' in html
+   assert '2026-11-05 through 2026-11-06' in html
+   assert 'Booking dates compared' not in html
 
 
 def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
@@ -335,6 +371,11 @@ def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
    assert CHECKER.format_date_span( missing_start, missing_end ) in output
    assert 'Bookable dates not in the app' not in output
    assert 'Different days or times: 0' in output
+   html = _email( output, result )
+   assert 'App dates not bookable' in html
+   assert '2026-11-03 through 2026-11-04' in html
+   assert 'Bookable dates not in the app' not in html
+   assert 'Booking dates compared' not in html
 
 
 def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
@@ -356,3 +397,8 @@ def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
    assert 'Scheduled on the website and not in the app: 0' in output
    assert 'Different days or times: 0' in output
    assert 'Windows which do not align: 0' in output
+   html = _email( output, result )
+   assert 'All clear' in html
+   assert 'The website and the app match.' in html
+   assert GIRAFFE not in html
+   assert 'Booking dates compared' not in html
