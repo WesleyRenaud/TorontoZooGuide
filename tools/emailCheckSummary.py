@@ -28,11 +28,12 @@ FONT = "'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif"
 GREEN = '#5e9600'
 GREEN_DARK = '#4b7c00'
 GREEN_MUTED = '#53841c'
+GREEN_HIGHLIGHT = '#77b800'
+LEAF_EDGE = '#d5d8ce'
 TEXT = '#141d0a'
 PANEL = '#e2e8d4'
 WHITE = '#ffffff'
 DANGER = '#c2412d'
-DANGER_TEXT = '#8b1a1a'
 DANGER_SOFT = '#fde8e4'
 SECTION_NAMES = {
    'Wild encounter schedule': 'Encounters',
@@ -259,34 +260,40 @@ def cell( content: str, style: str, attributes: str = '' ) -> str:
    return f'<td style="{ style }"{ extra }>{ content }</td>'
 
 
-def status_copy( exit_code: int, errors: str | None ) -> tuple[ str, str, str, str ]:
+def status_copy( exit_code: int, errors: str | None ) -> tuple[ str, str, str ]:
    if exit_code == 2 or errors is None:
-      return DANGER, WHITE, 'Could not finish', 'The check did not finish.'
+      return DANGER, 'Could not finish', 'The check did not finish.'
 
    if errors == '0 errors':
-      return GREEN, WHITE, 'All clear', 'The website and the app match.'
+      return GREEN, 'All clear', 'The website and the app match.'
 
-   return DANGER, WHITE, errors, 'These checks differ from the website.'
+   return DANGER, errors, 'These checks differ from the website.'
 
 
 def count_cell( label: str, count: int ) -> str:
-   number_color = GREEN_DARK if count == 0 else DANGER_TEXT
-   background = WHITE if count == 0 else DANGER_SOFT
+   clear = count == 0
+   number_color = GREEN if clear else DANGER
+   background = WHITE if clear else DANGER_SOFT
+   edge = LEAF_EDGE if clear else DANGER
+   label_color = TEXT
    label_cell = cell(
       text( label ),
-      f"padding:12px 14px;font-family:{ FONT };font-size:14px;line-height:20px;color:{ TEXT };",
+      (
+         f'padding:14px 8px 14px 16px;font-family:{ FONT };font-size:13px;'
+         f'line-height:18px;font-weight:500;color:{ label_color };'
+      ),
    )
    number_cell = cell(
       text( str( count ) ),
       (
-         f'padding:12px 14px;font-family:{ FONT };font-size:18px;line-height:20px;'
-         f'font-weight:700;color:{ number_color };text-align:right;'
+         f'padding:10px 16px 10px 8px;font-family:{ FONT };font-size:26px;'
+         f'line-height:30px;font-weight:700;color:{ number_color };text-align:right;'
       ),
       'align="right"',
    )
    inner = (
       f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
-      f'style="background:{ background };border-radius:10px;">'
+      f'style="background:{ background };border:1px solid { edge };border-radius:10px;">'
       f'<tr>{ label_cell }{ number_cell }</tr></table>'
    )
    return cell( inner, 'padding:6px;vertical-align:top;', 'width="50%"' )
@@ -319,13 +326,25 @@ def count_grid( counts: list[ tuple[ str, int ] ] ) -> str:
    )
 
 
+def detail_text( detail: str ) -> str:
+   label, separator, value = detail.partition( ': ' )
+
+   if not separator:
+      return text( detail )
+
+   return (
+      f'<span style="font-weight:600;color:{ GREEN };">{ text( label ) }</span>'
+      f'{ separator }{ text( value ) }'
+   )
+
+
 def detail_rows( item: DetailItem ) -> str:
    rows = [
       cell(
          text( item.title ),
          (
-            f'padding:8px 20px 2px 32px;font-family:{ FONT };font-size:14px;'
-            f'line-height:20px;color:{ TEXT };'
+            f'padding:4px 20px 2px 32px;font-family:{ FONT };font-size:16px;'
+            f'line-height:22px;font-weight:700;color:{ TEXT };'
          ),
       )
    ]
@@ -333,9 +352,9 @@ def detail_rows( item: DetailItem ) -> str:
    for detail in item.details:
       rows.append(
          cell(
-            text( detail ),
+            detail_text( detail ),
             (
-               f'padding:0 20px 2px 44px;font-family:{ FONT };font-size:13px;'
+               f'padding:1px 20px 1px 44px;font-family:{ FONT };font-size:13px;'
                f'line-height:18px;color:{ GREEN_MUTED };'
             ),
          )
@@ -345,19 +364,19 @@ def detail_rows( item: DetailItem ) -> str:
 
 
 def category_block( category: Category ) -> str:
-   number_color = GREEN_DARK if category.count == 0 else DANGER
+   number_color = GREEN if category.count == 0 else DANGER
    title_cell = cell(
       text( category.title ),
       (
-         f'padding:10px 8px 10px 20px;font-family:{ FONT };font-size:14px;'
-         f'line-height:20px;color:{ TEXT };'
+         f'padding:12px 8px 2px 20px;font-family:{ FONT };font-size:14px;'
+         f'line-height:20px;font-weight:500;color:{ GREEN_DARK };'
       ),
    )
    count_badge = cell(
       text( str( category.count ) ),
       (
-         f'padding:10px 20px 10px 8px;font-family:{ FONT };font-size:16px;'
-         f'line-height:20px;font-weight:700;color:{ number_color };text-align:right;'
+         f'padding:10px 20px 2px 8px;font-family:{ FONT };font-size:18px;'
+         f'line-height:22px;font-weight:700;color:{ number_color };text-align:right;'
       ),
       'align="right"',
    )
@@ -367,13 +386,11 @@ def category_block( category: Category ) -> str:
 
 
 def section_card( section: Section ) -> str:
-   has_issue = any( category.count > 0 for category in section.categories )
-   accent = DANGER if has_issue else GREEN
    title = cell(
       text( section_name( section.kind ) ),
       (
-         f'padding:18px 20px 6px;font-family:{ FONT };font-size:18px;'
-         f'line-height:24px;font-weight:700;color:{ TEXT };'
+         f'padding:12px 20px;font-family:{ FONT };font-size:18px;'
+         f'line-height:24px;font-weight:700;color:{ WHITE };background:{ GREEN_MUTED };'
       ),
    )
    rows = [ f'<tr>{ title }</tr>' ]
@@ -389,7 +406,7 @@ def section_card( section: Section ) -> str:
    return (
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
       f'style="margin-top:16px;background:{ WHITE };border-radius:12px;'
-      f'border-left:6px solid { accent };">'
+      f'border:1px solid { LEAF_EDGE };">'
       + ''.join( rows )
       + '</table>'
    )
@@ -411,13 +428,13 @@ def message_card( message: str ) -> str:
    return (
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
       f'style="margin-top:16px;background:{ WHITE };border-radius:12px;'
-      f'border-left:6px solid { DANGER };">'
+      f'border:1px solid { LEAF_EDGE };border-left:6px solid { GREEN };">'
       '<tr>'
       + cell(
          text( message ),
          (
             f'padding:18px 20px;font-family:{ FONT };font-size:15px;'
-            f'line-height:22px;color:{ TEXT };'
+            f'line-height:22px;font-weight:400;color:{ TEXT };'
          ),
       )
       + '</tr></table>'
@@ -427,7 +444,7 @@ def message_card( message: str ) -> str:
 def render_html( body: str, exit_code: int ) -> str:
    report = parse_report( body )
    day = report.sections[ 0 ].day if report.sections else ''
-   background, foreground, headline, summary = status_copy( exit_code, report.errors )
+   headline_color, headline, summary = status_copy( exit_code, report.errors )
    date_line = ''
 
    if day:
@@ -436,8 +453,8 @@ def render_html( body: str, exit_code: int ) -> str:
          + cell(
             text( format_day( day ) ),
             (
-               f'padding:0 24px 24px;font-family:{ FONT };font-size:16px;'
-               f'line-height:22px;color:{ WHITE };'
+               f'padding:4px 24px 22px;font-family:{ FONT };font-size:14px;'
+               f'line-height:20px;font-weight:400;color:{ WHITE };'
             ),
          )
          + '</tr>'
@@ -450,21 +467,22 @@ def render_html( body: str, exit_code: int ) -> str:
 
    status = (
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
-      f'style="background:{ background };border-radius:0 0 12px 12px;">'
+      f'style="background:{ WHITE };border-top:4px solid { GREEN_HIGHLIGHT };'
+      f'border-radius:0 0 12px 12px;">'
       '<tr>'
       + cell(
          text( headline ),
          (
-            f'padding:22px 24px 4px;font-family:{ FONT };font-size:28px;'
-            f'line-height:34px;font-weight:700;color:{ foreground };'
+            f'padding:20px 24px 2px;font-family:{ FONT };font-size:30px;'
+            f'line-height:36px;font-weight:700;color:{ headline_color };'
          ),
       )
       + '</tr><tr>'
       + cell(
          text( summary ),
          (
-            f'padding:0 24px 22px;font-family:{ FONT };font-size:16px;'
-            f'line-height:22px;color:{ foreground };'
+            f'padding:0 24px 20px;font-family:{ FONT };font-size:15px;'
+            f'line-height:22px;font-weight:400;color:{ TEXT };'
          ),
       )
       + '</tr></table>'
@@ -476,8 +494,8 @@ def render_html( body: str, exit_code: int ) -> str:
       + cell(
          'Toronto Zoo Guide',
          (
-            f'padding:28px 24px 4px;font-family:{ FONT };font-size:14px;'
-            f'line-height:18px;font-weight:700;letter-spacing:0.08em;'
+            f'padding:26px 24px 0;font-family:{ FONT };font-size:12px;'
+            f'line-height:16px;font-weight:600;letter-spacing:0.14em;'
             f'text-transform:uppercase;color:{ WHITE };'
          ),
       )
@@ -485,8 +503,8 @@ def render_html( body: str, exit_code: int ) -> str:
       + cell(
          'Daily website check',
          (
-            f'padding:{ "0 24px 4px" if day else "0 24px 24px" };font-family:{ FONT };'
-            f'font-size:22px;line-height:28px;font-weight:700;color:{ WHITE };'
+            f'padding:{ "6px 24px 2px" if day else "6px 24px 24px" };font-family:{ FONT };'
+            f'font-size:26px;line-height:32px;font-weight:700;color:{ WHITE };'
          ),
       )
       + '</tr>'
