@@ -79,6 +79,80 @@ def _run_main(
    return email_check_summary.main()
 
 
+CLEAR_REPORT = """Wild encounter schedule check for 2026-11-04. Booking dates compared from 2026-11-05 through 2027-12-09.
+
+Scheduled in the app and not on the website: 0
+
+Scheduled on the website and not in the app: 0
+
+Seasonal off-display check for 2026-11-04. The seasonal curves are not ramping down, so off-display flags were not compared.
+Zoo hours check for 2026-11-04.
+
+On the website and not in the app: 1
+  2027-01-01 to 2027-03-12 (71 days): open 09:30, last admission 15:30, close 16:30
+    Website: daily
+
+In the app and not on the website: 0
+
+0 for encounters, 0 for talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the animal list, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 1 for zoo hours
+
+1 error
+"""
+
+
+def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
+   report = email_check_summary.parse_report( CLEAR_REPORT )
+
+   assert report.errors == '1 error'
+   assert report.counts[ 0 ] == ( 'Encounters', 0 )
+   assert report.counts[ -1 ] == ( 'Zoo hours', 1 )
+   assert report.sections[ 0 ].kind == 'Wild encounter schedule'
+   assert report.sections[ 0 ].note.startswith( 'Booking dates compared' )
+   assert report.sections[ 1 ].note.startswith( 'The seasonal curves' )
+   assert report.sections[ 2 ].categories[ 0 ].count == 1
+   assert report.sections[ 2 ].categories[ 0 ].items[ 0 ].title.startswith( '2027-01-01' )
+   assert report.sections[ 2 ].categories[ 0 ].items[ 0 ].details == [ 'Website: daily' ]
+
+
+def Test_RenderHtml_TestIssues_ExpectStyledDetails() -> None:
+   html = email_check_summary.render_html( CLEAR_REPORT, 1 )
+
+   assert 'All clear' not in html
+   assert '1 error' in html
+   assert 'Wednesday, November 4, 2026' in html
+   assert 'Zoo hours' in html
+   assert '2027-01-01 to 2027-03-12' in html
+   assert 'The seasonal curves are not ramping down' not in html
+   assert 'Booking dates compared' not in html
+   assert email_check_summary.GREEN in html
+   assert email_check_summary.DANGER in html
+
+
+def Test_RenderHtml_TestClear_ExpectAllClear() -> None:
+   body = """Zoo hours check for 2026-11-04.
+
+On the website and not in the app: 0
+
+In the app and not on the website: 0
+
+0 for encounters, 0 for talks, 0 for animals, 0 for attractions, 0 for restaurants, 0 for gift shops, 0 for drinking fountains, 0 for the animal list, 0 for the attraction list, 0 for the restaurant list, 0 for the gift shop list, 0 for zoo hours
+
+0 errors
+"""
+   html = email_check_summary.render_html( body, 0 )
+
+   assert 'All clear' in html
+   assert 'The website and the app match.' in html
+   assert '2027-01-01' not in html
+
+
+def Test_RenderHtml_TestFailure_ExpectMessage() -> None:
+   html = email_check_summary.render_html( 'Could not fetch the page.', 2 )
+
+   assert 'Could not finish' in html
+   assert 'Could not fetch the page.' in html
+
+
 def Test_SubjectFor_TestZeroErrors_ExpectSummarySubject() -> None:
    subject = email_check_summary.subject_for( 'detail\n\n0 errors\n', 0 )
 
@@ -116,7 +190,10 @@ def Test_SendSummary_TestMessage_ExpectLoginAndSend(
    assert message[ 'Subject' ] == 'Toronto Zoo check: 2 errors'
    assert message[ 'From' ] == email_check_summary.EMAIL_ADDRESS
    assert message[ 'To' ] == email_check_summary.EMAIL_ADDRESS
-   assert '2 errors' in message.get_content()
+   html = message.get_body( preferencelist=( 'html', ) ).get_content()
+   assert '2 errors' in html
+   assert '#5e9600' in html
+   assert 'Toronto Zoo Guide' in html
 
 
 def Test_Main_TestMissingPassword_ExpectExitCode2(
@@ -155,6 +232,75 @@ def Test_Main_TestSmtpFailure_ExpectExitCode2(
    captured = capsys.readouterr()
    assert result == 2
    assert 'login failed' in captured.err
+
+
+def Test_Main_TestPreview_ExpectOpenedHtml(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   html_path = tmp_path / 'email.html'
+   opened: list[ Path ] = []
+   monkeypatch.setattr(
+      email_check_summary,
+      'run_check',
+      lambda: ( 'Zoo hours check for 2026-11-04.\n\n0 errors\n', 0 ),
+   )
+   monkeypatch.setattr(
+      email_check_summary,
+      'open_preview',
+      lambda path: opened.append( path ),
+   )
+   monkeypatch.setattr(
+      sys,
+      'argv',
+      [ 'emailCheckSummary', '--preview', '--html', str( html_path ) ],
+   )
+
+   result = email_check_summary.main()
+
+   captured = capsys.readouterr()
+   assert result == 0
+   assert opened == [ html_path ]
+   assert 'All clear' in html_path.read_text()
+   assert str( html_path ) in captured.out
+
+
+def Test_Main_TestPreviewFile_ExpectSkippedCheck(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   output = _output_file( tmp_path, 'Could not fetch the page.' )
+   html_path = tmp_path / 'email.html'
+   opened: list[ Path ] = []
+
+   def fail_if_called() -> tuple[ str, int ]:
+      raise AssertionError( 'preview used the saved output' )
+
+   monkeypatch.setattr( email_check_summary, 'run_check', fail_if_called )
+   monkeypatch.setattr(
+      email_check_summary,
+      'open_preview',
+      lambda path: opened.append( path ),
+   )
+   monkeypatch.setattr(
+      sys,
+      'argv',
+      [
+         'emailCheckSummary',
+         '--preview',
+         '--output',
+         str( output ),
+         '--exit-code',
+         '2',
+         '--html',
+         str( html_path ),
+      ],
+   )
+
+   result = email_check_summary.main()
+
+   assert result == 0
+   assert opened == [ html_path ]
+   assert 'Could not fetch the page.' in html_path.read_text()
 
 
 def Test_Main_TestSentSummary_ExpectExitCode0(
