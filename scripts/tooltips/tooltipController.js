@@ -111,11 +111,11 @@ export class TooltipController {
       }
 
       function addMarkerHoverHandlers(markerEl, hover) {
-         markerEl.addEventListener('mouseenter', (event) => {
-            hover.show(markerEl.dataset.hover || '', event);
+         markerEl.addEventListener('mouseenter', () => {
+            hover.show(markerEl.dataset.hover || '', markerEl);
          });
-         markerEl.addEventListener('mousemove', (event) => {
-            hover.move(event);
+         markerEl.addEventListener('mousemove', () => {
+            hover.move();
          });
          markerEl.addEventListener('mouseleave', () => {
             hover.hide();
