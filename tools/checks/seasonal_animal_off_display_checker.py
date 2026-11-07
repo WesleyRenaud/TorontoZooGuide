@@ -78,34 +78,43 @@ class SeasonalAnimalOffDisplayChecker():
 
 
    @classmethod
+   def same_animal( cls, website_name: str, app_name: str ) -> bool:
+      return WebsitePage.normalize_name( website_name ) == WebsitePage.normalize_name( app_name )
+
+
+   @classmethod
+   def off_in_app(
+         cls,
+         name: str,
+         animals: list[ SeasonalOffDisplayAnimal ],
+         today: date ) -> bool:
+      return any(
+         cls.same_animal( name, animal.name ) and animal.off_for_season_on( today )
+         for animal in animals
+      )
+
+
+   @classmethod
+   def listed_on_website( cls, name: str, listings: list[ WebsiteOffDisplayAnimal ] ) -> bool:
+      return any( cls.same_animal( listing.name, name ) for listing in listings )
+
+
+   @classmethod
    def website_only(
          cls,
          listings: list[ WebsiteOffDisplayAnimal ],
          animals: list[ SeasonalOffDisplayAnimal ],
          exhibits: list[ SeasonalExhibit ],
          today: date ) -> list[ str ]:
-      off_display = {
-         animal.name
-         for animal in animals
-         if animal.off_for_season_on( today )
-      }
-      listed = {
-         SeasonalOffDisplayAnimal.species_name( listing.name, animals )
+      names = {
+         listing.name
          for listing in listings
-         if not cls.covered_by_exhibit( listing.section, exhibits, today )
+         if (
+            not cls.covered_by_exhibit( listing.section, exhibits, today )
+            and not cls.off_in_app( listing.name, animals, today )
+         )
       }
-      return sorted( listed - off_display, key=str.casefold )
-
-
-   @classmethod
-   def website_animal_names(
-         cls,
-         listings: list[ WebsiteOffDisplayAnimal ],
-         animals: list[ SeasonalOffDisplayAnimal ] ) -> set[ str ]:
-      return {
-         SeasonalOffDisplayAnimal.species_name( listing.name, animals )
-         for listing in listings
-      }
+      return sorted( names, key=str.casefold )
 
 
    @classmethod
@@ -114,16 +123,12 @@ class SeasonalAnimalOffDisplayChecker():
          listings: list[ WebsiteOffDisplayAnimal ],
          animals: list[ SeasonalOffDisplayAnimal ],
          today: date ) -> list[ str ]:
-      names = cls.website_animal_names( listings, animals )
-
-      return sorted(
-         {
-            animal.name
-            for animal in animals
-            if animal.off_for_season_on( today ) and animal.name not in names
-         },
-         key=str.casefold,
-      )
+      names = {
+         animal.name
+         for animal in animals
+         if animal.off_for_season_on( today ) and not cls.listed_on_website( animal.name, listings )
+      }
+      return sorted( names, key=str.casefold )
 
 
    @classmethod
@@ -186,10 +191,7 @@ class SeasonalAnimalOffDisplayChecker():
 
       if not args.database.exists():
          print(
-            AppStringProvider.format(
-               'checks.couldNotFindDatabase',
-               database=args.database,
-            ),
+            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH

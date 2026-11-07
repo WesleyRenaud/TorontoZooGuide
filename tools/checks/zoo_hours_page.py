@@ -19,13 +19,16 @@ class ZooHoursPage():
       for index, name in enumerate( calendar.day_name )
    }
    TIME_RANGE_RE = re.compile(
-      r'(\d{1,2})(?::(\d{2}))?\s*(am|pm)\s*[-–—]\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)',
+      r'(?P<open_hour>\d{1,2})(?::(?P<open_minute>\d{2}))?\s*(?P<open_meridiem>am|pm)'
+      r'\s*[-–—]\s*'
+      r'(?P<close_hour>\d{1,2})(?::(?P<close_minute>\d{2}))?\s*(?P<close_meridiem>am|pm)',
       re.IGNORECASE,
    )
    LAST_ADMISSION_RE = re.compile(
-      r'(?i)last admission\s+(?:(\d+)\s+hours?\s+before\s+clos(?:e|ing)|'
-      r'(\d{1,2})(?::(\d{2}))?\s*(am|pm))'
+      r'(?i)last admission\s+(?:(?P<hours_before>\d+)\s+hours?\s+before\s+clos(?:e|ing)|'
+      r'(?P<hour>\d{1,2})(?::(?P<minute>\d{2}))?\s*(?P<meridiem>am|pm))'
    )
+   PARAGRAPH_RE = re.compile( r'(?is)<p\b[^>]*>(?P<body>.*?)</p>' )
 
 
    @classmethod
@@ -64,12 +67,12 @@ class ZooHoursPage():
       if marker < 0:
          raise RuntimeError( AppStringProvider.format( 'checks.planPageNoHoursList' ) )
 
-      paragraph = re.search( r'(?is)<p\b[^>]*>(.*?)</p>', page_html[ marker: ] )
+      paragraph = cls.PARAGRAPH_RE.search( page_html[ marker: ] )
 
       if paragraph == None:
          raise RuntimeError( AppStringProvider.format( 'checks.planPageNoHoursList' ) )
 
-      text = re.sub( r'(?is)<br\s*/?>', '\n', paragraph.group( 1 ) )
+      text = re.sub( r'(?is)<br\s*/?>', '\n', paragraph.group( 'body' ) )
       text = re.sub( r'<[^>]+>', '', text )
       text = unescape( text ).replace( '\xa0', ' ' )
       lines = []
@@ -137,10 +140,14 @@ class ZooHoursPage():
       if match == None:
          return None
 
-      if match.group( 1 ) != None:
-         return cls.subtract_hours( close, int( match.group( 1 ) ) )
+      if match.group( 'hours_before' ) != None:
+         return cls.subtract_hours( close, int( match.group( 'hours_before' ) ) )
 
-      return cls.parse_clock( match.group( 2 ), match.group( 3 ), match.group( 4 ) )
+      return cls.parse_clock(
+         match.group( 'hour' ),
+         match.group( 'minute' ),
+         match.group( 'meridiem' ),
+      )
 
 
    @classmethod
@@ -223,8 +230,16 @@ class ZooHoursPage():
       if match == None:
          raise RuntimeError( AppStringProvider.format( 'checks.planPageNoDailyHours' ) )
 
-      open_time = cls.parse_clock( match.group( 1 ), match.group( 2 ), match.group( 3 ) )
-      close_time = cls.parse_clock( match.group( 4 ), match.group( 5 ), match.group( 6 ) )
+      open_time = cls.parse_clock(
+         match.group( 'open_hour' ),
+         match.group( 'open_minute' ),
+         match.group( 'open_meridiem' ),
+      )
+      close_time = cls.parse_clock(
+         match.group( 'close_hour' ),
+         match.group( 'close_minute' ),
+         match.group( 'close_meridiem' ),
+      )
       admission = None
 
       for admission_line in admission_lines:

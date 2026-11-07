@@ -51,7 +51,7 @@ class SeasonalRestaurantClosureChecker():
          restaurant
          for restaurant in restaurants
          if (
-            restaurant.name.casefold() == listing.title.casefold()
+            WebsitePage.normalize_name( restaurant.name ) == WebsitePage.normalize_name( listing.title )
             or (
                path != ''
                and WebsitePage.normalize_path( unquote( restaurant.menu_link ) ) == path
@@ -159,10 +159,7 @@ class SeasonalRestaurantClosureChecker():
 
       if not args.database.exists():
          print(
-            AppStringProvider.format(
-               'checks.couldNotFindDatabase',
-               database=args.database,
-            ),
+            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH

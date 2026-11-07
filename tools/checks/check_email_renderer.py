@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import calendar
 from datetime import date
 from html import escape
 
@@ -57,7 +58,10 @@ class CheckEmailRenderer():
    @classmethod
    def format_day( cls, day: str ) -> str:
       parsed = date.fromisoformat( day )
-      return f'{ parsed.strftime( "%A" ) }, { parsed.strftime( "%B" ) } { parsed.day }, { parsed.year }'
+      return (
+         f'{ calendar.day_name[ parsed.weekday() ] }, '
+         f'{ calendar.month_name[ parsed.month ] } { parsed.day }, { parsed.year }'
+      )
 
 
    @classmethod

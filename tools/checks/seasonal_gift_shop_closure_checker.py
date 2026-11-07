@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 from datetime import date
 from pathlib import Path
-import re
 import sys
 
 from api.app_string_provider import AppStringProvider
@@ -11,19 +10,15 @@ from api.database_connection_provider import DatabaseConnectionProvider
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.giftshops.domain.seasonal_gift_shop import SeasonalGiftShop
 from api.request_connection_provider import RequestConnectionProvider
-from .attraction_card import AttractionCard
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .gift_shop_card import GiftShopCard
+from .gift_shop_listing import GiftShopListing
 from .website_page import WebsitePage
 
 
 class SeasonalGiftShopClosureChecker():
-   TITLE_OPENING_RE = re.compile( r'(?is)<strong>' )
-   TITLE_CLOSING_RE = re.compile( r'(?is)</strong>' )
-
-
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse(
@@ -32,36 +27,10 @@ class SeasonalGiftShopClosureChecker():
 
 
    @classmethod
-   def visible_page_html( cls, page_html: str ) -> str:
-      return re.sub( r'(?is)<!--.*?-->', '', page_html )
-
-
-   @classmethod
-   def title( cls, body: str ) -> str:
-      opening = cls.TITLE_OPENING_RE.search( body )
-      closing = cls.TITLE_CLOSING_RE.search( body, opening.end() )
-      return WebsitePage.clean_html( body[ opening.end():closing.start() ] )
-
-
-   @classmethod
-   def cards( cls, page_html: str ) -> list[ GiftShopCard ]:
-      page_html = cls.visible_page_html( page_html )
-      cards = []
-
-      for card in AttractionCard.from_openings( page_html ):
-         cards.append( GiftShopCard(
-            title=cls.title( card.body ),
-            status=WebsitePage.opening_status( card.body ),
-         ) )
-
-      return cards
-
-
-   @classmethod
    def parse_website_gift_shops( cls, page_html: str, today: date ) -> list[ str ]:
       return [
          card.title
-         for card in cls.cards( page_html )
+         for card in GiftShopCard.find( page_html )
          if WebsitePage.is_closed_for_season_status( card.status, today )
       ]
 
@@ -71,12 +40,12 @@ class SeasonalGiftShopClosureChecker():
          cls,
          title: str,
          gift_shops: list[ SeasonalGiftShop ] ) -> list[ SeasonalGiftShop ]:
-      folded = title.casefold()
+      website = GiftShopListing( name=title )
 
       return [
          gift_shop
          for gift_shop in gift_shops
-         if gift_shop.name.casefold() == folded
+         if GiftShopListing( name=gift_shop.name ) == website
       ]
 
 
@@ -179,10 +148,7 @@ class SeasonalGiftShopClosureChecker():
 
       if not args.database.exists():
          print(
-            AppStringProvider.format(
-               'checks.couldNotFindDatabase',
-               database=args.database,
-            ),
+            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH

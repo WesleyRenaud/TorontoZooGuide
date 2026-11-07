@@ -12,8 +12,8 @@ from api.request_connection_provider import RequestConnectionProvider
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
+from .gift_shop_card import GiftShopCard
 from .gift_shop_listing import GiftShopListing
-from .seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from .website_page import WebsitePage
 
 
@@ -27,7 +27,7 @@ class GiftShopListChecker():
    def parse_website_gift_shops( cls, page_html: str ) -> list[ str ]:
       gift_shops = []
 
-      for card in SeasonalGiftShopClosureChecker.cards( page_html ):
+      for card in GiftShopCard.find( page_html ):
          if card.title in gift_shops:
             continue
 
@@ -107,10 +107,7 @@ class GiftShopListChecker():
 
       if not args.database.exists():
          print(
-            AppStringProvider.format(
-               'checks.couldNotFindDatabase',
-               database=args.database,
-            ),
+            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH

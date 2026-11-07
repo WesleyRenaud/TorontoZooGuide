@@ -127,21 +127,24 @@ class EmailCheckSummary():
    @classmethod
    def send( cls, args: argparse.Namespace ) -> int:
       if args.output is None or args.exit_code is None:
-         print( 'Pass --output and --exit-code, or use --preview.', file=sys.stderr )
+         print(
+            AppStringProvider.format( 'checks.email.outputAndExitCode' ),
+            file=sys.stderr,
+         )
          return CheckExitCode.COULD_NOT_FINISH
 
       password = os.environ.get( cls.PASSWORD_VARIABLE, '' )
 
       if password == '':
          print(
-            AppStringProvider.format( 'checks.email.password', variable=cls.PASSWORD_VARIABLE ),
+            AppStringProvider.format( 'checks.email.password' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH
 
       if not args.output.exists():
          print(
-            AppStringProvider.format( 'checks.email.couldNotFindOutput', output=args.output ),
+            AppStringProvider.format( 'checks.email.couldNotFindOutput' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH

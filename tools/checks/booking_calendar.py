@@ -55,10 +55,7 @@ class BookingCalendar():
 
       if result.returncode != 0:
          detail = result.stderr.decode( errors='replace' ).strip()
-         raise RuntimeError( detail or AppStringProvider.format(
-            'checks.curlExited',
-            returncode=result.returncode,
-         ) )
+         raise RuntimeError( detail or AppStringProvider.format( 'checks.curlExited' ) )
 
       return result.stdout.decode()
 

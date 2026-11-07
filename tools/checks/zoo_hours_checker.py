@@ -84,17 +84,11 @@ class ZooHoursChecker():
       parts = []
 
       if hours.early_admission_time != None:
-         parts.append( AppStringProvider.format(
-            'checks.earlyAdmission',
-            time=hours.early_admission_time,
-         ) )
+         parts.append( CheckReport.text( 'checks.earlyAdmission' ) + hours.early_admission_time )
 
-      parts.append( AppStringProvider.format( 'checks.openTime', time=hours.open_time ) )
-      parts.append( AppStringProvider.format(
-         'checks.lastAdmission',
-         time=hours.last_admission_time,
-      ) )
-      parts.append( AppStringProvider.format( 'checks.closeTime', time=hours.close_time ) )
+      parts.append( CheckReport.text( 'checks.openTime' ) + hours.open_time )
+      parts.append( CheckReport.text( 'checks.lastAdmission' ) + hours.last_admission_time )
+      parts.append( CheckReport.text( 'checks.closeTime' ) + hours.close_time )
       return AppStringProvider.values()[ 'format.listJoin' ].join( parts )
 
 
@@ -103,18 +97,17 @@ class ZooHoursChecker():
       formatted = cls.format_hours( hours )
 
       if span.start == span.end:
-         return AppStringProvider.format(
-            'checks.hoursDay',
-            day=span.start.isoformat(),
-            hours=formatted,
-         )
+         return span.start.isoformat() + CheckReport.text( 'checks.labelValue' ) + formatted
 
-      return AppStringProvider.format(
-         'checks.hoursSpan',
-         start=span.start.isoformat(),
-         end=span.end.isoformat(),
-         days=( span.end - span.start ).days + 1,
-         hours=formatted,
+      days = ( span.end - span.start ).days + 1
+      return (
+         span.start.isoformat()
+         + CheckReport.text( 'checks.hoursTo' )
+         + span.end.isoformat()
+         + CheckReport.text( 'checks.hoursDayCountStart' )
+         + str( days )
+         + CheckReport.text( 'checks.hoursDayCountEnd' )
+         + formatted
       )
 
 
@@ -188,10 +181,7 @@ class ZooHoursChecker():
 
       if not args.database.exists():
          print(
-            AppStringProvider.format(
-               'checks.couldNotFindDatabase',
-               database=args.database,
-            ),
+            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH
