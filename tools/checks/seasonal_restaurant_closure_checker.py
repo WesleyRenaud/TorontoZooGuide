@@ -52,7 +52,10 @@ class SeasonalRestaurantClosureChecker():
          for restaurant in restaurants
          if (
             restaurant.name.casefold() == listing.title.casefold()
-            or WebsitePage.normalize_path( unquote( restaurant.menu_link ) ) == path
+            or (
+               path != ''
+               and WebsitePage.normalize_path( unquote( restaurant.menu_link ) ) == path
+            )
          )
       ]
 

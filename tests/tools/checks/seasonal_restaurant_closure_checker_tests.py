@@ -160,6 +160,32 @@ def Test_CheckSchedules_TestCardWithoutLink_ExpectMatched(
    assert 'Closed for the season in the app and not on the website: 0' in output
 
 
+def Test_CheckSchedules_TestBlankLink_ExpectNameMatchOnly(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   pretzel = 'Americas Pretzel Bar'
+   _write_database(
+      database,
+      [
+         ( TACOS, None ),
+         ( pretzel, None ),
+      ],
+      [ ( TACOS, TODAY.isoformat(), None ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '', TACOS, 'Closed for the Season' ) ] ),
+   )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 0
+   assert pretzel not in output
+   assert TACOS not in output
+
+
 def Test_CheckSchedules_TestUnknownWebsiteCard_ExpectIgnored(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],

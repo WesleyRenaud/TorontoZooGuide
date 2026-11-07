@@ -157,7 +157,7 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
    assert 'Closed for the season in the app and not on the website: 0' in output
 
 
-def Test_CheckSchedules_TestUnmatchedWebsiteTitle_ExpectWebsiteMiss(
+def Test_CheckSchedules_TestAllowedWebsiteOnlyAttraction_ExpectNoIssues(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -175,8 +175,31 @@ def Test_CheckSchedules_TestUnmatchedWebsiteTitle_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
+   assert result == 0
+   assert 'Kids Zoo' not in output
+   assert 'Closed for the season on the website and not in the app: 0' in output
+
+
+def Test_CheckSchedules_TestUnmatchedWebsiteTitle_ExpectWebsiteMiss(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [],
+      [],
+      [ ( TODAY, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/tz/carousel', 'Carousel', 'Closed for the Season' ) ] ),
+   )
+
+   result, output = _check( database, TODAY, capsys )
+
    assert result == 1
-   assert '  Kids Zoo' in output
+   assert '  Carousel' in output
    assert 'Closed for the season on the website and not in the app: 1' in output
 
 

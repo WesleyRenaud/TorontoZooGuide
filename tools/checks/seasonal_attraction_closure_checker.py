@@ -11,6 +11,7 @@ from api.attractions.domain.seasonal_attraction import SeasonalAttraction
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
 from .attraction_list_checker import AttractionListChecker
+from .attraction_listing import AttractionListing
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
@@ -40,15 +41,12 @@ class SeasonalAttractionClosureChecker():
          cls,
          listing: WebsiteAttraction,
          attractions: list[ SeasonalAttraction ] ) -> list[ SeasonalAttraction ]:
-      path = WebsitePage.normalize_path( listing.href )
+      website = AttractionListing( name=listing.title, link=listing.href )
 
       return [
          attraction
          for attraction in attractions
-         if (
-            attraction.name.casefold() == listing.title.casefold()
-            or WebsitePage.normalize_path( attraction.info_link ) == path
-         )
+         if AttractionListing( name=attraction.name, link=attraction.info_link ).matches( website )
       ]
 
 
@@ -78,7 +76,10 @@ class SeasonalAttractionClosureChecker():
          {
             listing.title
             for listing in listings
-            if not cls.matched_attractions( listing, attractions )
+            if (
+               not AttractionListing( name=listing.title ).is_website_only()
+               and not cls.matched_attractions( listing, attractions )
+            )
          },
          key=str.casefold,
       )

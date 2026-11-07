@@ -17,7 +17,7 @@ class SeasonalRestaurant:
 
 
    def closed_for_season_on( self, today: date ) -> bool:
-      if not self.is_closed or not self.closed_for_season or self.start == None:
+      if not self.is_closed or not self.closed_for_season:
          return False
 
       return DateValues.is_date_in_range( today, self.start, self.end )

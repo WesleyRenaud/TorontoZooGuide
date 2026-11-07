@@ -23,7 +23,6 @@ class SeasonalRestaurantBuilder():
       return {
          record.restaurant: record
          for record in closure_records
-         if record.closed_start != None
       }
 
 

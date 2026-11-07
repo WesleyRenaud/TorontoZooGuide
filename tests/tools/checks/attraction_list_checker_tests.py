@@ -7,6 +7,7 @@ import sqlite3
 import pytest
 
 from tools.checks.attraction_list_checker import AttractionListChecker as attraction_list_checker
+from tools.checks.attraction_listing import AttractionListing
 from tools.checks.website_page import WebsitePage
 
 
@@ -139,7 +140,7 @@ def Test_CheckLists_TestNormalizedNames_ExpectMatched(
    assert 'In the app and not on the website: 0' in output
 
 
-def Test_CheckLists_TestDifferentTitleSameLink_ExpectBothSides(
+def Test_CheckLists_TestSharedLink_ExpectMatched(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -162,10 +163,12 @@ def Test_CheckLists_TestDifferentTitleSameLink_ExpectBothSides(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 3
-   assert f'  { FRONT_GATES }' in output
-   assert f'  { TUNDRA }' in output
-   assert '  Face Painting, Body Art, and Henna!' in output
+   assert result == 0
+   assert FRONT_GATES not in output
+   assert TUNDRA not in output
+   assert 'Face Painting, Body Art, and Henna!' not in output
+   assert 'On the website and not in the app: 0' in output
+   assert 'In the app and not on the website: 0' in output
 
 
 def Test_CheckLists_TestDifferentLinkSameName_ExpectMatched(
@@ -212,7 +215,7 @@ def Test_CheckLists_TestBothSides_ExpectIssueCount(
 
 @pytest.mark.parametrize(
    'name',
-   sorted( attraction_list_checker.ALLOWED_WEBSITE_ONLY_ATTRACTIONS ),
+   sorted( AttractionListing.WEBSITE_ONLY_NAMES ),
 )
 def Test_CheckLists_TestAllowedWebsiteAttraction_ExpectIgnored(
       tmp_path: Path,

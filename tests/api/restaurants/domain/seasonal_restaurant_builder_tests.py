@@ -61,6 +61,14 @@ def Test_Build_TestClosures_ExpectRestaurantNameStatusAndDates() -> None:
          closed_for_season=False,
       ),
       SeasonalRestaurant(
+         name='Missing Start',
+         menu_link='',
+         is_closed=True,
+         start=None,
+         end=None,
+         closed_for_season=True,
+      ),
+      SeasonalRestaurant(
          name='Tundra Tacos',
          menu_link='',
          is_closed=True,
@@ -83,3 +91,16 @@ def Test_ClosedForSeasonOn_TestOpenEndedRange_ExpectOnlyCoveredDate() -> None:
 
    assert restaurant.closed_for_season_on( date( 2026, 11, 2 ) )
    assert not restaurant.closed_for_season_on( date( 2026, 11, 1 ) )
+
+
+def Test_ClosedForSeasonOn_TestMissingStart_ExpectClosed() -> None:
+   restaurant = SeasonalRestaurant(
+      name=AFRICA,
+      menu_link=MENU_LINK,
+      is_closed=True,
+      start=None,
+      end=None,
+      closed_for_season=True,
+   )
+
+   assert restaurant.closed_for_season_on( date( 2026, 11, 2 ) )

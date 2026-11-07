@@ -20,13 +20,6 @@ from .website_page import WebsitePage
 
 
 class AttractionListChecker():
-   ALLOWED_WEBSITE_ONLY_ATTRACTIONS = {
-      'Kids Zoo',
-      "Nature's Night Shift",
-      'Serengeti Bush Camp',
-   }
-
-
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse(
@@ -71,46 +64,42 @@ class AttractionListChecker():
 
 
    @classmethod
-   def add_listing( cls, listings: set[ AttractionListing ], name: str ) -> None:
-      listings.add( AttractionListing( name=name ) )
+   def app_listings( cls, attractions: list[ AttractionInfoLink ] ) -> list[ AttractionListing ]:
+      return [
+         AttractionListing( name=attraction.name, link=attraction.info_link )
+         for attraction in attractions
+      ]
 
 
    @classmethod
-   def missing_labels(
-         cls,
-         source: set[ AttractionListing ],
-         other: set[ AttractionListing ] ) -> list[ str ]:
-      labels = [
-         listing.name
-         for listing in source
-         if listing not in other
+   def website_listings( cls, attractions: list[ WebsiteAttraction ] ) -> list[ AttractionListing ]:
+      return [
+         AttractionListing( name=attraction.title, link=attraction.href )
+         for attraction in attractions
+         if not AttractionListing( name=attraction.title ).is_website_only()
       ]
 
-      return sorted( labels, key=str.casefold )
+
+   @classmethod
+   def missing_names(
+         cls,
+         source: list[ AttractionListing ],
+         other: list[ AttractionListing ] ) -> list[ str ]:
+      names = {
+         listing.name
+         for listing in source
+         if not any( listing.matches( candidate ) for candidate in other )
+      }
+
+      return sorted( names, key=str.casefold )
 
 
    @classmethod
    def check_lists( cls, database: Path, today: date ) -> int:
-      app_listings: set[ AttractionListing ] = set()
-      website_listings: set[ AttractionListing ] = set()
-
-      for attraction in cls.load_attractions( database ):
-         cls.add_listing( app_listings, attraction.name )
-
-      for attraction in cls.fetch_website_attractions():
-         cls.add_listing( website_listings, attraction.title )
-
-      allowed_listings = {
-         AttractionListing( name=name )
-         for name in cls.ALLOWED_WEBSITE_ONLY_ATTRACTIONS
-      }
-      unapproved_website_listings = {
-         listing
-         for listing in website_listings
-         if listing not in allowed_listings
-      }
-      website_only = cls.missing_labels( unapproved_website_listings, app_listings )
-      app_only = cls.missing_labels( app_listings, website_listings )
+      app_listings = cls.app_listings( cls.load_attractions( database ) )
+      website_listings = cls.website_listings( cls.fetch_website_attractions() )
+      website_only = cls.missing_names( website_listings, app_listings )
+      app_only = cls.missing_names( app_listings, website_listings )
 
       CheckReport.report_differences(
          CheckReport.heading( 'attractionList', today ),
