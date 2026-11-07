@@ -1,8 +1,7 @@
 export class HoverTooltipPositioner {
    static HOVER_TOOLTIP_POSITION = Object.freeze({
       viewportPadding: 14,
-      cursorOffsetX: 18,
-      cursorOffsetY: 22,
+      arrowSize: 2.5,
    });
 
    static unitPx() {
@@ -28,10 +27,12 @@ export class HoverTooltipPositioner {
       );
    }
 
-   static clampToViewport(value, size, viewportSize) {
-      const viewportPadding = HoverTooltipPositioner.length(
-         HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.viewportPadding
-      );
+   static clampToViewport(value, size, viewportSize, padding = null) {
+      const viewportPadding = padding == null
+         ? HoverTooltipPositioner.length(
+            HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.viewportPadding
+         )
+         : padding;
 
       return Math.max(
          viewportPadding,
@@ -39,27 +40,37 @@ export class HoverTooltipPositioner {
       );
    }
 
-   static calculateTooltipPosition(event, tooltipRect) {
-      const cursorOffsetX = HoverTooltipPositioner.length(
-         HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.cursorOffsetX
-      );
-      const cursorOffsetY = HoverTooltipPositioner.length(
-         HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.cursorOffsetY
-      );
-      const viewportPadding = HoverTooltipPositioner.length(
+   static calculateTooltipPosition(markerRect, tooltipRect, zoom = 1) {
+      const scale = Number.isFinite(zoom) && zoom > 0 ? zoom : 1;
+      const arrowSize = HoverTooltipPositioner.length(
+         HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.arrowSize
+      ) * scale;
+      const padding = HoverTooltipPositioner.length(
          HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.viewportPadding
-      );
+      ) * scale;
+      const width = tooltipRect.width * scale;
+      const height = tooltipRect.height * scale;
+      const anchorX = (markerRect.left + markerRect.width / 2) * scale;
+      const anchorTop = markerRect.top * scale;
+      const anchorBottom = markerRect.bottom * scale;
 
-      let x = event.clientX + cursorOffsetX;
-      let y = event.clientY - tooltipRect.height - cursorOffsetY;
+      let x = anchorX - width / 2;
+      let y = anchorTop - height - arrowSize;
+      let below = false;
 
-      if (y < viewportPadding) {
-         y = event.clientY + cursorOffsetY;
+      if (y < padding) {
+         below = true;
+         y = anchorBottom + arrowSize;
       }
 
+      x = HoverTooltipPositioner.clampToViewport(x, width, window.innerWidth, padding);
+      y = HoverTooltipPositioner.clampToViewport(y, height, window.innerHeight, padding);
+
       return {
-         x: HoverTooltipPositioner.clampToViewport(x, tooltipRect.width, window.innerWidth),
-         y: HoverTooltipPositioner.clampToViewport(y, tooltipRect.height, window.innerHeight),
+         x,
+         y,
+         below,
+         arrowLeft: (anchorX - x) / scale - arrowSize / scale,
       };
    }
 
@@ -77,9 +88,14 @@ export class HoverTooltipPositioner {
       return Number.isFinite(zoom) && zoom > 0 ? zoom : 1;
    }
 
-   static applyTooltipPosition(hoverTooltipEl, { x, y }) {
+   static applyTooltipPosition(hoverTooltipEl, { x, y, below = false, arrowLeft }) {
       const zoom = HoverTooltipPositioner.pageZoom(hoverTooltipEl);
       hoverTooltipEl.style.left = `${x / zoom}px`;
       hoverTooltipEl.style.top = `${y / zoom}px`;
+      hoverTooltipEl.classList?.toggle('hover-tooltip-below', below);
+
+      if (Number.isFinite(arrowLeft)) {
+         hoverTooltipEl.style.setProperty?.('--hover-tooltip-arrow-left', `${arrowLeft}px`);
+      }
    }
 }
