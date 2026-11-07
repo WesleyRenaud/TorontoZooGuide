@@ -11,6 +11,7 @@ RECORD_FIELDS = [
    'seasonal_viewing_summary',
    'seasonal_viewing_information',
    'include_all_viewing_spots',
+   'off_display_for_season_until_month',
 ]
 
 DB_COLUMNS = [
@@ -19,6 +20,7 @@ DB_COLUMNS = [
    'SEASONAL_VIEWING_SUMMARY',
    'SEASONAL_VIEWING_INFORMATION',
    'INCLUDE_ALL_VIEWING_SPOTS',
+   'OFF_DISPLAY_FOR_SEASON_UNTIL_MONTH',
 ]
 
 DATA_FILE = 'enclosure.json'

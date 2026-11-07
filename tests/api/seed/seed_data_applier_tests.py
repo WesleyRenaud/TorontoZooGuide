@@ -26,6 +26,7 @@ def Test_Main_TestAppliesSeedData_ExpectDelegatesToSeedRunner(
    assert calls == [ DB_PATH ]
    assert 'Database seed data applied successfully.' in capsys.readouterr().out
 
+
 def Test_ModuleMain_TestAppliesSeedData_ExpectDelegatesToSeedRunner(
       monkeypatch: pytest.MonkeyPatch,
       capsys: pytest.CaptureFixture[ str ] ) -> None:

@@ -53,6 +53,7 @@ def Test_GetZooHours_TestPresentRecord_ExpectBuilt(
 
    assert zoo_hours is ZOO_HOURS
 
+
 def Test_GetZooHours_TestMissingRecord_ExpectNone(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:

@@ -7,6 +7,7 @@ import sqlite3
 
 import pytest
 
+from tools.checks.check_report import CheckReport
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker as CHECKER
 from tools.checks.website_page import WebsitePage
 
@@ -157,8 +158,8 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
    assert result == 1
    assert f'  { KIOSK }' in output
    assert ZOOTIQUE not in output
-   assert 'Closed for the season on the website and not in the app: 1' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestCardWithoutLink_ExpectMatched(
@@ -185,8 +186,8 @@ def Test_CheckSchedules_TestCardWithoutLink_ExpectMatched(
    assert result == 0
    assert KIOSK not in output
    assert 'Discovery Zone' not in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestCommentedClosedCard_ExpectIgnored(
@@ -219,8 +220,8 @@ def Test_CheckSchedules_TestCommentedClosedCard_ExpectIgnored(
 
    assert result == 0
    assert KIOSK not in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestUnknownWebsiteCard_ExpectIgnored(
@@ -243,7 +244,7 @@ def Test_CheckSchedules_TestUnknownWebsiteCard_ExpectIgnored(
 
    assert result == 0
    assert 'Discovery Zone' not in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
@@ -274,7 +275,7 @@ def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
    assert result == 2
    assert f'  { KIOSK }' in output
    assert f'  { OUTPOST }' in output
-   assert 'Closed for the season in the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
 
 
 def Test_CheckSchedules_TestOpenThroughPastDate_ExpectWebsiteSeason(
@@ -299,8 +300,8 @@ def Test_CheckSchedules_TestOpenThroughPastDate_ExpectWebsiteSeason(
 
    assert result == 0
    assert KIOSK not in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
@@ -326,8 +327,8 @@ def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
 
    assert result == 1
    assert f'  { KIOSK }' in output
-   assert 'Closed for the season in the app and not on the website: 1' in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
@@ -349,8 +350,8 @@ def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestDifferentGiftShopsClosed_ExpectBoth(
@@ -374,8 +375,8 @@ def Test_CheckSchedules_TestDifferentGiftShopsClosed_ExpectBoth(
    assert result == 2
    assert f'  { KIOSK }' in output
    assert f'  { ZOOTIQUE }' in output
-   assert 'Closed for the season on the website and not in the app: 1' in output
-   assert 'Closed for the season in the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
 
 
 def Test_CheckSchedules_TestClosedOnSteadyDate_ExpectNoIssues(
@@ -398,5 +399,5 @@ def Test_CheckSchedules_TestClosedOnSteadyDate_ExpectNoIssues(
 
    assert result == 0
    assert KIOSK not in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output

@@ -60,6 +60,34 @@ class CheckReportParser():
 
 
    @classmethod
+   def format_fixed_count( cls, count: int ) -> str:
+      suffix = 'checks.errorFixed' if count == 1 else 'checks.errorsFixed'
+      return f'{ count }{ AppStringProvider.format( suffix ) }'
+
+
+   @classmethod
+   def fixed_count( cls, line: str ) -> int | None:
+      values = AppStringProvider.values()
+      stripped = line.strip()
+      one_fixed = f'1{ values[ "checks.errorFixed" ] }'
+
+      if stripped == one_fixed:
+         return 1
+
+      suffix = values[ 'checks.errorsFixed' ]
+
+      if not stripped.endswith( suffix ):
+         return None
+
+      number = stripped.removesuffix( suffix )
+
+      if not number.isdigit():
+         return None
+
+      return int( number )
+
+
+   @classmethod
    def subject_for( cls, body: str, exit_code: int ) -> str:
       if exit_code == CheckExitCode.CLEAR or exit_code == CheckExitCode.DIFFERENCES:
          error_count = cls.summary_line( body )
@@ -87,10 +115,31 @@ class CheckReportParser():
 
 
    @classmethod
-   def format_counts( cls, counts: list[ int ] ) -> str:
+   def format_counts(
+         cls,
+         encounters: int = 0,
+         talks: int = 0,
+         animals: int = 0,
+         attractions: int = 0,
+         restaurants: int = 0,
+         gift_shops: int = 0,
+         drinking_fountains: int = 0,
+         attraction_list: int = 0,
+         zoo_hours: int = 0 ) -> str:
+      counts = (
+         encounters,
+         talks,
+         animals,
+         attractions,
+         restaurants,
+         gift_shops,
+         drinking_fountains,
+         attraction_list,
+         zoo_hours,
+      )
       pieces = [
          f'{ count }{ AppStringProvider.format( "checks.countItem" ) }{ label }'
-         for count, label in zip( counts, cls.count_labels() )
+         for count, label in zip( counts, cls.count_labels(), strict=True )
       ]
       return AppStringProvider.values()[ 'format.listJoin' ].join( pieces )
 
@@ -124,12 +173,15 @@ class CheckReportParser():
          cls.read_line( draft, raw_line )
 
       draft.finish_section()
-      return Report( draft.sections, draft.counts, error_count )
+      return Report( draft.sections, draft.counts, error_count, draft.fixed_count )
 
 
    @classmethod
    def read_line( cls, draft: ReportDraft, raw_line: str ) -> None:
       stripped = raw_line.strip()
+
+      if cls.read_fixed_count( draft, stripped ):
+         return
 
       if cls.read_counts( draft, stripped ):
          return
@@ -138,6 +190,17 @@ class CheckReportParser():
          return
 
       cls.read_section_line( draft, raw_line, stripped )
+
+
+   @classmethod
+   def read_fixed_count( cls, draft: ReportDraft, stripped: str ) -> bool:
+      fixed_count = cls.fixed_count( stripped )
+
+      if fixed_count is None:
+         return False
+
+      draft.fixed_count = fixed_count
+      return True
 
 
    @classmethod

@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
+import { DetailImageBuilder } from '../assets/detailImageBuilder.js';
 import { Strings } from '../strings.js';
 
 export class AnimalDetailViewBuilder {
@@ -35,16 +35,18 @@ export class AnimalDetailViewBuilder {
    }
 
    static buildAnimalImage(animal) {
-      const exhibitFile = AssetKeyNormalizer.normalize(ValueNormalizer.asTrimmedString(animal?.exhibit));
-      const species = ValueNormalizer.asTrimmedString(animal?.species);
-      const speciesFile = AssetKeyNormalizer.normalize(species);
+      const species = ValueNormalizer.asTrimmedString(animal.species);
+      const src = DetailImageBuilder.buildDetailImageSrcFromParts(
+         ['animals', animal.exhibit, species],
+         { basePath: `../${DetailImageBuilder.BASE_PATH}` },
+      );
 
-      if (!exhibitFile || !speciesFile) {
+      if (!src) {
          return null;
       }
 
       const image = document.createElement('img');
-      image.src = `../images/details/animals/${exhibitFile}/${speciesFile}.png`;
+      image.src = src;
       image.className = 'new-animal-image';
       image.alt = species;
 

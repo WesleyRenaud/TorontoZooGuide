@@ -7,6 +7,7 @@ import sqlite3
 
 import pytest
 
+from tools.checks.check_report import CheckReport
 from tools.checks.seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker as CHECKER
 from tools.checks.website_page import WebsitePage
 
@@ -128,9 +129,9 @@ def Test_CheckSchedules_TestWebsiteMessage_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'Closed for the season on the website and not in the app: 1' in output
-   assert 'Drinking fountains' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
+   assert CheckReport.text( 'checks.countNames.drinkingFountains' ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestLegacyNotice_ExpectWebsiteMiss(
@@ -144,7 +145,7 @@ def Test_CheckSchedules_TestLegacyNotice_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'Closed for the season on the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
 
 
 def Test_CheckSchedules_TestMaintenanceMessage_ExpectIgnored(
@@ -161,8 +162,8 @@ def Test_CheckSchedules_TestMaintenanceMessage_ExpectIgnored(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestAppClosed_ExpectAppExtra(
@@ -180,9 +181,9 @@ def Test_CheckSchedules_TestAppClosed_ExpectAppExtra(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 1' in output
-   assert 'Drinking fountains' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
+   assert CheckReport.text( 'checks.countNames.drinkingFountains' ) in output
 
 
 def Test_CheckSchedules_TestBothClosed_ExpectNoIssues(
@@ -200,8 +201,8 @@ def Test_CheckSchedules_TestBothClosed_ExpectNoIssues(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestEndedStatus_ExpectNotClosed(
@@ -219,7 +220,7 @@ def Test_CheckSchedules_TestEndedStatus_ExpectNotClosed(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestRampUpAppOnly_ExpectAppExtra(
@@ -237,9 +238,9 @@ def Test_CheckSchedules_TestRampUpAppOnly_ExpectAppExtra(
    result, output = _check( database, RAMP_UP, capsys )
 
    assert result == 1
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 1' in output
-   assert '  Drinking fountains' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
+   assert CheckReport.text( 'checks.categoryItem' ) + CheckReport.text( 'checks.countNames.drinkingFountains' ) in output
 
 
 def Test_CheckSchedules_TestWebsiteClosedWithoutAppStatus_ExpectWebsiteMiss(
@@ -253,8 +254,8 @@ def Test_CheckSchedules_TestWebsiteClosedWithoutAppStatus_ExpectWebsiteMiss(
    result, output = _check( database, RAMP_UP, capsys )
 
    assert result == 1
-   assert 'Closed for the season on the website and not in the app: 1' in output
-   assert '  Drinking fountains' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
+   assert CheckReport.text( 'checks.categoryItem' ) + CheckReport.text( 'checks.countNames.drinkingFountains' ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 

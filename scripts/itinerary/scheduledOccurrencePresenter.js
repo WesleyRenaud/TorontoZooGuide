@@ -9,7 +9,7 @@ export class ScheduledOccurrencePresenter {
       }
 
       return DetailImageBuilder.buildDetailImageSrc(imageDirectory, name, {
-         basePath: '../images/details',
+         basePath: `../${DetailImageBuilder.BASE_PATH}`,
       });
    }
 

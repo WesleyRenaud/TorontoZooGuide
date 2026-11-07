@@ -61,6 +61,7 @@ def Test_FetchMeetingSpotLoopPinsByName_TestEmpty_ExpectEmptyDict(
 
    assert meeting_spot_loop_pins_by_name == {}
 
+
 def Test_FetchMeetingSpotLoopPinsByName_TestPinnedAndUnpinned_ExpectPinnedOnly(
       meeting_spot_loop_pin_conn: sqlite3.Connection ) -> None:
    _insert_meeting_spot(

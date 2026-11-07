@@ -1,6 +1,6 @@
 import { SpeciesLinkTitleBuilder } from '../../animals/speciesLinkTitleBuilder.js';
 import { ValueNormalizer } from '../../api/valueNormalizer.js';
-import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
+import { DetailImageBuilder } from '../../assets/detailImageBuilder.js';
 import { CardFactory } from './cardFactory.js';
 import { AnimalSelectorModel } from '../../itinerary/selectors/animalSelector/animalSelectorModel.js';
 import { LikelihoodPresenter } from '../../likelihood/likelihoodPresenter.js';
@@ -21,15 +21,16 @@ export class AnimalTooltipRenderer {
    }
 
    static createCard(a, index) {
-      const exhibit = AssetKeyNormalizer.normalize(a.exhibit);
-      const species = AssetKeyNormalizer.normalize(a.species);
-
       const displayed = LikelihoodPresenter.displayedLikelihood(a.likelihood);
 
       return CardFactory.createTooltipCard({
          index,
          image: {
-            src: `images/details/animals/${exhibit}/${species}.png`,
+            src: DetailImageBuilder.buildDetailImageSrcFromParts([
+               'animals',
+               a.exhibit,
+               a.species,
+            ]),
             alt: a.species,
          },
          title: {

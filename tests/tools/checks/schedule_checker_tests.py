@@ -6,10 +6,12 @@ from pathlib import Path
 import pytest
 
 from tools.checks.animal_list_checker import AnimalListChecker
+from tools.checks.check_report_parser import CheckReportParser
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
+from tools.checks.off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker
+from tools.checks.off_for_season_on_website_not_in_app_checker import OffForSeasonOnWebsiteNotInAppChecker
 from tools.checks.restaurant_list_checker import RestaurantListChecker
 from tools.checks.schedule_checker import ScheduleChecker
-from tools.checks.seasonal_animal_off_display_checker import SeasonalAnimalOffDisplayChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
 
@@ -17,26 +19,35 @@ from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantC
 TODAY = date( 2026, 11, 2 )
 
 
-def Test_CheckAnimals_TestOffDisplayAndCatalog_ExpectOneCount(
+def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    calls = []
 
-   def check_off_display( database: Path, today: date ) -> int:
-      calls.append( 'off display' )
-      return 1
+   def check_website( database: Path, today: date ) -> list[ str ]:
+      calls.append( 'website off for season' )
+      return [ 'website' ]
+
+   def check_app( database: Path, today: date ) -> list[ str ]:
+      calls.append( 'app off for season' )
+      return [ 'app', 'app' ]
 
    def check_animal_catalog( database: Path, today: date ) -> int:
       calls.append( 'catalog' )
       return 7
 
-   monkeypatch.setattr( SeasonalAnimalOffDisplayChecker, 'check_schedules', check_off_display )
+   monkeypatch.setattr(
+      OffForSeasonOnWebsiteNotInAppChecker,
+      'category_lines',
+      check_website,
+   )
+   monkeypatch.setattr( OffForSeasonInAppNotOnWebsiteChecker, 'category_lines', check_app )
    monkeypatch.setattr( AnimalListChecker, 'check_lists', check_animal_catalog )
 
    result = ScheduleChecker.check_animals( tmp_path / 'animals.db', TODAY )
 
-   assert result == 8
-   assert calls == [ 'off display', 'catalog' ]
+   assert result == 10
+   assert calls == [ 'website off for season', 'app off for season', 'catalog' ]
 
 
 def Test_CheckRestaurants_TestClosureAndCatalog_ExpectOneCount(
@@ -149,11 +160,22 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
    assert output.index( 'drinking fountains\n' ) < output.index( 'attraction list\n' )
    assert output.index( 'attraction list\n' ) < output.index( 'zoo hours\n' )
    assert output.endswith(
-      '2 for Encounters, 0 for Guardians Talks, 8 for Animals, 4 for Attractions, '
-      '3 for Restaurants, 5 for Gift shops, 6 for Drinking fountains, '
-      '8 for Attraction list, 11 for Zoo hours\n'
+      CheckReportParser.format_fixed_count( 0 ) + '\n'
       '\n'
-      '47 errors\n'
+      + CheckReportParser.format_counts(
+         encounters=2,
+         animals=8,
+         attractions=4,
+         restaurants=3,
+         gift_shops=5,
+         drinking_fountains=6,
+         attraction_list=8,
+         zoo_hours=11,
+      )
+      + '\n'
+      '\n'
+      + CheckReportParser.format_error_count( 47 )
+      + '\n'
    )
 
 
@@ -206,11 +228,13 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
 
    assert result == 0
    assert output == (
-      '0 for Encounters, 0 for Guardians Talks, 0 for Animals, 0 for Attractions, '
-      '0 for Restaurants, 0 for Gift shops, 0 for Drinking fountains, '
-      '0 for Attraction list, 0 for Zoo hours\n'
+      CheckReportParser.format_fixed_count( 0 ) + '\n'
       '\n'
-      '0 errors\n'
+      + CheckReportParser.format_counts()
+      + '\n'
+      '\n'
+      + CheckReportParser.format_error_count( 0 )
+      + '\n'
    )
 
 
@@ -262,4 +286,4 @@ def Test_RunChecks_TestOneIssue_ExpectSingularError(
    output = capsys.readouterr().out
 
    assert result == 1
-   assert output.endswith( '\n1 error\n' )
+   assert output.endswith( '\n' + CheckReportParser.format_error_count( 1 ) + '\n' )

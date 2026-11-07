@@ -78,6 +78,18 @@ class CalendarDates:
 
 
    @staticmethod
+   def next_month_end( month: int, today: date ) -> date:
+      year = today.year
+      end = date( year, month, calendar.monthrange( year, month )[ 1 ] )
+
+      if end < today:
+         year += 1
+         end = date( year, month, calendar.monthrange( year, month )[ 1 ] )
+
+      return end
+
+
+   @staticmethod
    def get_month_abbreviation( month: Types.MonthInput ) -> str:
       if isinstance( month, int ):
          if month < 1 or month > 12:

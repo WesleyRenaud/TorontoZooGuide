@@ -11,3 +11,4 @@ class Report:
    sections: list[ Section ]
    counts: list[ Count ]
    error_count: int | None
+   fixed_count: int

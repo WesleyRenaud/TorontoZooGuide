@@ -8,18 +8,43 @@ from .schedule_check import ScheduleCheck
 
 
 class CheckReport():
+   fixed_count = 0
+
+
+   @classmethod
+   def reset_fixed_count( cls ) -> None:
+      cls.fixed_count = 0
+
+
+   @classmethod
+   def note_fixed( cls, count: int ) -> None:
+      cls.fixed_count += count
+
+
    @classmethod
    def text( cls, key: str ) -> str:
       return AppStringProvider.format( key )
 
 
    @classmethod
+   def label( cls, key: str ) -> str:
+      value = cls.text( key )
+      separator = cls.text( 'checks.labelValue' )
+      return value.removesuffix( separator )
+
+
+   @classmethod
+   def category_line( cls, key: str, count: int ) -> str:
+      return f'{ cls.text( key ) }{ cls.text( "checks.labelValue" ) }{ count }'
+
+
+   @classmethod
    def print_category(
          cls,
-         title: str,
+         key: str,
          items: list[ str ],
          indent: bool = True ) -> None:
-      print( f'{ title }{ cls.text( "checks.labelValue" ) }{ len( items ) }' )
+      print( cls.category_line( key, len( items ) ) )
 
       for item in items:
          if indent:
@@ -38,8 +63,8 @@ class CheckReport():
          app_only: list[ str ] ) -> None:
       print( heading )
       print()
-      cls.print_category( AppStringProvider.format( 'checks.websiteOnly' ), website_only )
-      cls.print_category( AppStringProvider.format( 'checks.appOnly' ), app_only )
+      cls.print_category( 'checks.websiteOnly', website_only )
+      cls.print_category( 'checks.appOnly', app_only )
 
 
    @classmethod
@@ -58,26 +83,10 @@ class CheckReport():
          schedule: ScheduleCheck ) -> None:
       print( f'{ cls.heading( check, day ) } { schedule.note }' )
       print()
-      cls.print_category(
-         AppStringProvider.format( 'checks.scheduledInAppOnly' ),
-         schedule.only_in_app,
-         indent=False,
-      )
-      cls.print_category(
-         AppStringProvider.format( 'checks.scheduledOnWebsiteOnly' ),
-         schedule.only_on_website,
-         indent=False,
-      )
-      cls.print_category(
-         AppStringProvider.format( 'checks.differentDaysOrTimes' ),
-         schedule.different_slots,
-         indent=False,
-      )
-      cls.print_category(
-         AppStringProvider.format( 'checks.windowsDoNotAlign' ),
-         schedule.windows,
-         indent=False,
-      )
+      cls.print_category( 'checks.scheduledInAppOnly', schedule.only_in_app, indent=False )
+      cls.print_category( 'checks.scheduledOnWebsiteOnly', schedule.only_on_website, indent=False )
+      cls.print_category( 'checks.differentDaysOrTimes', schedule.different_slots, indent=False )
+      cls.print_category( 'checks.windowsDoNotAlign', schedule.windows, indent=False )
 
 
    @classmethod

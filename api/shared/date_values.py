@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import calendar
 from datetime import date, datetime, time, timedelta
 from typing import Any
 
+from ..app_string_provider import AppStringProvider
 from .enums.position import Position
 from ..models.date_range import DateRange
 from ..types import Types
@@ -268,7 +270,25 @@ class DateValues:
       if parsed_date == None:
          return None
 
-      return f'{ parsed_date.strftime( "%B" ) } { parsed_date.day }, { parsed_date.year }'
+      return AppStringProvider.format(
+         'format.pair',
+         first=f'{ parsed_date.strftime( "%B" ) } { parsed_date.day }',
+         second=parsed_date.year,
+      )
+
+
+   @staticmethod
+   def format_display_weekday( value: Types.DateInput ) -> str | None:
+      parsed_date = DateValues.parse_date_value( value )
+
+      if parsed_date == None:
+         return None
+
+      return AppStringProvider.format(
+         'format.pair',
+         first=calendar.day_name[ parsed_date.weekday() ],
+         second=DateValues.format_display_date_value( parsed_date ),
+      )
 
 
    @staticmethod

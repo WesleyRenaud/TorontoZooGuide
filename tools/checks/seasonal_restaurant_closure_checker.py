@@ -139,8 +139,8 @@ class SeasonalRestaurantClosureChecker():
          app_only: list[ str ] ) -> None:
       print( CheckReport.heading( 'seasonalRestaurant', today ) )
       print()
-      CheckReport.print_category( AppStringProvider.format( 'checks.closedForSeasonWebsiteOnly' ), website_only )
-      CheckReport.print_category( AppStringProvider.format( 'checks.closedForSeasonAppOnly' ), app_only )
+      CheckReport.print_category( 'checks.closedForSeasonWebsiteOnly', website_only )
+      CheckReport.print_category( 'checks.closedForSeasonAppOnly', app_only )
 
 
    @classmethod

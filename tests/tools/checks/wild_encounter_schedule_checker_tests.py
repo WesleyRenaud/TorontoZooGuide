@@ -160,18 +160,8 @@ def _install_web(
 
 
 def _email( output: str, issues: int ) -> str:
-   label = '1 error' if issues == 1 else f'{ issues } errors'
-   counts = CheckReportParser.format_counts( [
-      issues,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-   ] )
+   label = CheckReportParser.format_error_count( issues )
+   counts = CheckReportParser.format_counts( encounters=issues )
    body = (
       f'{ output }\n'
       f'{ counts }\n\n'
@@ -230,16 +220,16 @@ def Test_CheckSchedules_TestAppOnlyEncounter_ExpectAppViolation(
 
    output = capsys.readouterr().out
    assert result == 1
-   assert 'Scheduled in the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.scheduledInAppOnly', 1 ) in output
    assert f'  { KANGAROO }' in output
    assert GIRAFFE not in output
-   assert 'Scheduled on the website and not in the app: 0' in output
-   assert 'Different days or times: 0' in output
-   assert 'Windows which do not align: 0' in output
+   assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 0 ) in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
    html = _email( output, result )
    assert 'Kangaroo' in html
-   assert 'Scheduled in the app and not on the website' in html
-   assert 'Booking dates compared' not in html
+   assert CheckReport.text( 'checks.scheduledInAppOnly' ) in html
+   assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
    assert GIRAFFE not in html
 
 
@@ -274,15 +264,15 @@ def Test_CheckSchedules_TestWebsiteOnlyEncounter_ExpectWebsiteViolation(
 
    output = capsys.readouterr().out
    assert result == 1
-   assert 'Scheduled on the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 1 ) in output
    assert f'  { SNOW_LEOPARD }' in output
    assert f'  { SNOW_LEOPARD_WEBSITE }' not in output
-   assert 'Scheduled in the app and not on the website: 0' in output
-   assert 'Windows which do not align: 0' in output
+   assert CheckReport.category_line( 'checks.scheduledInAppOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
    html = _email( output, result )
    assert SNOW_LEOPARD in html
-   assert 'Scheduled on the website and not in the app' in html
-   assert 'Booking dates compared' not in html
+   assert CheckReport.text( 'checks.scheduledOnWebsiteOnly' ) in html
+   assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
 
 
 def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
@@ -300,18 +290,18 @@ def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
 
    output = capsys.readouterr().out
    assert result == 1
-   assert 'Different days or times: 1' in output
+   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 1 ) in output
    assert f'  { GIRAFFE }' in output
    assert EncounterScheduleTable.normalize_clock( OTHER_CLOCK ) in output
    assert EncounterScheduleTable.normalize_clock( CLOCK ) in output
-   assert 'Windows which do not align: 0' in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
    html = _email( output, result )
-   assert 'Different days or times' in html
+   assert CheckReport.text( 'checks.differentDaysOrTimes' ) in html
    assert 'Website' in html
    assert '2:00 PM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in html
    assert 'App' in html
    assert '11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in html
-   assert 'Booking dates compared' not in html
+   assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
 
 
 def Test_CheckSchedules_TestBookableWindowLonger_ExpectWindowViolation(
@@ -332,16 +322,16 @@ def Test_CheckSchedules_TestBookableWindowLonger_ExpectWindowViolation(
 
    output = capsys.readouterr().out
    assert result == 1
-   assert 'Windows which do not align: 1' in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert f'  { GIRAFFE }' in output
-   assert 'Bookable dates not in the app: ' in output
+   assert CheckReport.text( 'checks.bookableDatesNotInApp' ) in output
    assert CheckReport.format_date_span( extra_start, extra_end ) in output
-   assert 'App dates not bookable' not in output
-   assert 'Different days or times: 0' in output
+   assert CheckReport.text( 'checks.appDatesNotBookable' ) not in output
+   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 0 ) in output
    html = _email( output, result )
-   assert 'Bookable dates not in the app' in html
+   assert CheckReport.label( 'checks.bookableDatesNotInApp' ) in html
    assert '2026-11-05 through 2026-11-06' in html
-   assert 'Booking dates compared' not in html
+   assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
 
 
 def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
@@ -362,17 +352,17 @@ def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
 
    output = capsys.readouterr().out
    assert result == 1
-   assert 'Windows which do not align: 1' in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert f'  { GIRAFFE }' in output
-   assert 'App dates not bookable: ' in output
+   assert CheckReport.text( 'checks.appDatesNotBookable' ) in output
    assert CheckReport.format_date_span( missing_start, missing_end ) in output
-   assert 'Bookable dates not in the app' not in output
-   assert 'Different days or times: 0' in output
+   assert CheckReport.text( 'checks.bookableDatesNotInApp' ) not in output
+   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 0 ) in output
    html = _email( output, result )
-   assert 'App dates not bookable' in html
+   assert CheckReport.label( 'checks.appDatesNotBookable' ) in html
    assert '2026-11-03 through 2026-11-04' in html
-   assert 'Bookable dates not in the app' not in html
-   assert 'Booking dates compared' not in html
+   assert CheckReport.text( 'checks.bookableDatesNotInApp' ) not in html
+   assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
 
 
 def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
@@ -390,12 +380,12 @@ def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
 
    output = capsys.readouterr().out
    assert result == 0
-   assert 'Scheduled in the app and not on the website: 0' in output
-   assert 'Scheduled on the website and not in the app: 0' in output
-   assert 'Different days or times: 0' in output
-   assert 'Windows which do not align: 0' in output
+   assert CheckReport.category_line( 'checks.scheduledInAppOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 0 ) in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
    html = _email( output, result )
-   assert 'All clear' in html
-   assert 'The website and the app match.' in html
+   assert CheckReport.text( 'checks.status.noneDetected' ) in html
+   assert CheckReport.text( 'checks.status.websiteMatches' ) in html
    assert GIRAFFE not in html
-   assert 'Booking dates compared' not in html
+   assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html

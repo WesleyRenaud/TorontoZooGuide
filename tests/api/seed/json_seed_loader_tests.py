@@ -27,10 +27,12 @@ def Test_SeedDataPath_TestFilename_ExpectUnderSeedDataDir() -> None:
 
    assert result == SEED_DATA_DIR / 'animals.json'
 
+
 def Test_SeedDataDir_TestDirname_ExpectUnderSeedDataDir() -> None:
    result = JsonSeedLoader.seed_data_dir( 'curves' )
 
    assert result == SEED_DATA_DIR / 'curves'
+
 
 def Test_LoadJsonRecords_TestValidRecords_ExpectFieldRows(
       tmp_path: Path ) -> None:
@@ -51,6 +53,7 @@ def Test_LoadJsonRecords_TestValidRecords_ExpectFieldRows(
       [ 'Giraffe', 'Africa' ],
    ]
 
+
 def Test_LoadJsonRecords_TestMissingField_ExpectValueError(
       tmp_path: Path ) -> None:
    path = tmp_path / 'records.json'
@@ -61,6 +64,7 @@ def Test_LoadJsonRecords_TestMissingField_ExpectValueError(
    with pytest.raises( ValueError, match="Missing 'exhibit'" ):
       JsonSeedLoader.load_json_records( path, fields=[ 'name', 'exhibit' ] )
 
+
 def Test_LoadJsonRecords_TestNonArray_ExpectValueError(
       tmp_path: Path ) -> None:
    path = tmp_path / 'records.json'
@@ -69,6 +73,7 @@ def Test_LoadJsonRecords_TestNonArray_ExpectValueError(
    with pytest.raises( ValueError, match='Expected a JSON array' ):
       JsonSeedLoader.load_json_records( path, fields=[ 'name' ] )
 
+
 def Test_LoadJsonRecords_TestNonObjectRecord_ExpectValueError(
       tmp_path: Path ) -> None:
    path = tmp_path / 'records.json'
@@ -76,6 +81,7 @@ def Test_LoadJsonRecords_TestNonObjectRecord_ExpectValueError(
 
    with pytest.raises( ValueError, match='to be an object' ):
       JsonSeedLoader.load_json_records( path, fields=[ 'name' ] )
+
 
 def Test_LoadJsonRows_TestValidRows_ExpectCopiedLists(
       tmp_path: Path ) -> None:
@@ -91,6 +97,7 @@ def Test_LoadJsonRows_TestValidRows_ExpectCopiedLists(
       [ 'Giraffe', 'Africa' ],
    ]
 
+
 def Test_LoadJsonRows_TestNonArray_ExpectValueError(
       tmp_path: Path ) -> None:
    path = tmp_path / 'rows.json'
@@ -98,6 +105,7 @@ def Test_LoadJsonRows_TestNonArray_ExpectValueError(
 
    with pytest.raises( ValueError, match='Expected a JSON array' ):
       JsonSeedLoader.load_json_rows( path )
+
 
 def Test_LoadDayCurveFile_TestValidPayload_ExpectEntityPlusDayRows(
       tmp_path: Path ) -> None:
@@ -123,6 +131,7 @@ def Test_LoadDayCurveFile_TestValidPayload_ExpectEntityPlusDayRows(
       [ 'Lion', 'Africa', 2, 0.8 ],
    ]
 
+
 def Test_LoadDayCurveFile_TestNonObjectPayload_ExpectValueError(
       tmp_path: Path ) -> None:
    path = tmp_path / 'curve.json'
@@ -130,6 +139,7 @@ def Test_LoadDayCurveFile_TestNonObjectPayload_ExpectValueError(
 
    with pytest.raises( ValueError, match='Expected a JSON object' ):
       JsonSeedLoader.load_day_curve_file( path, day_fields=[ 'day' ] )
+
 
 def Test_LoadDayCurveFile_TestMissingEntityField_ExpectValueError(
       tmp_path: Path ) -> None:
@@ -144,6 +154,7 @@ def Test_LoadDayCurveFile_TestMissingEntityField_ExpectValueError(
          entity_fields=[ 'species' ],
          day_fields=[ 'day' ] )
 
+
 def Test_LoadDayCurveFile_TestMissingDays_ExpectValueError(
       tmp_path: Path ) -> None:
    path = tmp_path / 'curve.json'
@@ -154,6 +165,7 @@ def Test_LoadDayCurveFile_TestMissingDays_ExpectValueError(
          path,
          entity_fields=[ 'species' ],
          day_fields=[ 'day' ] )
+
 
 def Test_LoadDayCurveFile_TestNonObjectDay_ExpectValueError(
       tmp_path: Path ) -> None:
@@ -171,6 +183,7 @@ def Test_LoadDayCurveFile_TestNonObjectDay_ExpectValueError(
          entity_fields=[ 'species' ],
          day_fields=[ 'day' ] )
 
+
 def Test_LoadDayCurveFile_TestMissingDayField_ExpectValueError(
       tmp_path: Path ) -> None:
    path = tmp_path / 'curve.json'
@@ -186,6 +199,7 @@ def Test_LoadDayCurveFile_TestMissingDayField_ExpectValueError(
          path,
          entity_fields=[ 'species' ],
          day_fields=[ 'day', 'value' ] )
+
 
 def Test_LoadDayCurveDirectory_TestMultipleFiles_ExpectSortedCombinedRows(
       tmp_path: Path ) -> None:
@@ -214,6 +228,7 @@ def Test_LoadDayCurveDirectory_TestMultipleFiles_ExpectSortedCombinedRows(
       [ 'B', 2, 2 ],
    ]
 
+
 def Test_InsertRows_TestEmptyRows_ExpectNoExecutemany() -> None:
    stub, cursor = _cursor()
 
@@ -225,6 +240,7 @@ def Test_InsertRows_TestEmptyRows_ExpectNoExecutemany() -> None:
 
    assert stub.executemany_calls == []
 
+
 def Test_InsertRows_TestMismatchedRowLength_ExpectValueError() -> None:
    _stub, cursor = _cursor()
 
@@ -234,6 +250,7 @@ def Test_InsertRows_TestMismatchedRowLength_ExpectValueError() -> None:
          table='Animal',
          columns=[ 'SPECIES', 'EXHIBIT' ],
          rows=[ [ 'Lion' ] ] )
+
 
 def Test_InsertRows_TestValidRows_ExpectExecutemany() -> None:
    stub, cursor = _cursor()
@@ -249,6 +266,7 @@ def Test_InsertRows_TestValidRows_ExpectExecutemany() -> None:
    assert 'INSERT INTO Animal' in sql
    assert rows == [ [ 'Lion', 'Africa' ] ]
 
+
 def Test_InsertJsonRows_TestPath_ExpectInserted(
       tmp_path: Path ) -> None:
    path = tmp_path / 'rows.json'
@@ -262,6 +280,7 @@ def Test_InsertJsonRows_TestPath_ExpectInserted(
       path=path )
 
    assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 'Africa' ] ]
+
 
 def Test_InsertJsonRecords_TestPath_ExpectInserted(
       tmp_path: Path ) -> None:
@@ -279,6 +298,7 @@ def Test_InsertJsonRecords_TestPath_ExpectInserted(
       path=path )
 
    assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 'Africa' ] ]
+
 
 def Test_InsertDayCurveFile_TestPath_ExpectInserted(
       tmp_path: Path ) -> None:
@@ -300,6 +320,7 @@ def Test_InsertDayCurveFile_TestPath_ExpectInserted(
       day_fields=[ 'day', 'value' ] )
 
    assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 1, 0.5 ] ]
+
 
 def Test_InsertDayCurveDirectory_TestDirectory_ExpectInserted(
       tmp_path: Path ) -> None:

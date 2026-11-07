@@ -44,12 +44,14 @@ def Test_RouteIndex_TestDuplicateStopKeys_ExpectFirstOccurrenceIndexes() -> None
    assert indexes[ CAROUSEL.master_route_key() ] == 2
    assert len( indexes ) == 3
 
+
 def Test_LoopIndex_TestDuplicateAcrossLoops_ExpectFirstLoopIndex() -> None:
    indexes = MasterRouteStopKeyIndexBuilder.loop_index( MASTER_ROUTE )
 
    assert indexes[ LION.master_route_key() ] == 0
    assert indexes[ GIRAFFE.master_route_key() ] == 0
    assert indexes[ CAROUSEL.master_route_key() ] == 1
+
 
 def Test_LoopId_TestDuplicateAcrossLoops_ExpectFirstLoopId() -> None:
    indexes = MasterRouteStopKeyIndexBuilder.loop_id( MASTER_ROUTE )

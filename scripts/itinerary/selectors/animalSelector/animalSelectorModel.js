@@ -1,7 +1,7 @@
 import { AnimalIdentity } from '../../animalIdentity.js';
 import { AnimalDisplayFormatter } from '../../../animals/animalDisplayFormatter.js';
 import { AnimalSelectorStoredAnimalFactory } from './animalSelectorStoredAnimalFactory.js';
-import { AssetKeyNormalizer } from '../../../assets/assetKeyNormalizer.js';
+import { DetailImageBuilder } from '../../../assets/detailImageBuilder.js';
 import { StoredSelectionNormalizer } from '../base/storedSelectionNormalizer.js';
 import { LikelihoodPresenter } from '../../../likelihood/likelihoodPresenter.js';
 import { EnclosureType } from '../../../shared/enums/enclosureType.js';
@@ -83,18 +83,14 @@ export class AnimalSelectorModel {
    }
 
    static buildAnimalImageSrc(row) {
-      const exhibitFile = AssetKeyNormalizer.normalize(
-         AnimalSelectorModel.getAnimalExhibit(row)
+      return DetailImageBuilder.buildDetailImageSrcFromParts(
+         [
+            'animals',
+            AnimalSelectorModel.getAnimalExhibit(row),
+            AnimalSelectorModel.getAnimalSpecies(row),
+         ],
+         { basePath: `../${DetailImageBuilder.BASE_PATH}` },
       );
-      const speciesFile = AssetKeyNormalizer.normalize(
-         AnimalSelectorModel.getAnimalSpecies(row)
-      );
-
-      if (!exhibitFile || !speciesFile) {
-         return null;
-      }
-
-      return `../images/details/animals/${exhibitFile}/${speciesFile}.png`;
    }
 
    static migrateStoredAnimals(items) {

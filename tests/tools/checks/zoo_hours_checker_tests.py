@@ -7,6 +7,7 @@ import sqlite3
 import pytest
 
 from api.models import ZooHours
+from tools.checks.check_report import CheckReport
 from tools.checks.website_page import WebsitePage
 from tools.checks.zoo_hours_checker import ZooHoursChecker as zoo_hours_checker
 from tools.checks.zoo_hours_page import ZooHoursPage
@@ -123,8 +124,8 @@ def Test_CheckLists_TestMatchingHours_ExpectNoIssues(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'On the website and not in the app: 0' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
    assert '2026-11-02' not in output
 
 
@@ -139,9 +140,9 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'On the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
    assert '  2026-11-04 to 2026-11-06 (3 days): open 09:30, last admission 15:30, close 16:30' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
 
 def Test_CheckLists_TestAppOnly_ExpectAppMiss(
@@ -161,9 +162,9 @@ def Test_CheckLists_TestAppOnly_ExpectAppMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert '  2026-11-04: open 09:30, last admission 17:00, close 18:00' in output
-   assert 'On the website and not in the app: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
 
 
 def Test_CheckLists_TestDifferentHours_ExpectBothSides(
@@ -177,9 +178,9 @@ def Test_CheckLists_TestDifferentHours_ExpectBothSides(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 2
-   assert 'On the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
    assert '  2026-11-03: open 09:30, last admission 15:30, close 16:30' in output
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert '  2026-11-03: early admission 09:00, open 09:30, last admission 15:30, close 16:30' in output
 
 

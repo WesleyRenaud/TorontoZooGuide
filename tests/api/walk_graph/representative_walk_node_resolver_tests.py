@@ -44,6 +44,7 @@ def Test_Resolve_TestEmptyCandidates_ExpectNone() -> None:
 
    assert result is None
 
+
 def Test_Resolve_TestSingleCandidate_ExpectThatId() -> None:
    result = RepresentativeWalkNodeResolver.resolve(
       TEST_GRAPH,
@@ -52,6 +53,7 @@ def Test_Resolve_TestSingleCandidate_ExpectThatId() -> None:
 
    assert result == FAR_NODE_ID
 
+
 def Test_Resolve_TestMultipleCandidates_ExpectClosest() -> None:
    result = RepresentativeWalkNodeResolver.resolve(
       TEST_GRAPH,
@@ -59,6 +61,7 @@ def Test_Resolve_TestMultipleCandidates_ExpectClosest() -> None:
       [ FAR_NODE_ID, NEAR_NODE_ID ] )
 
    assert result == NEAR_NODE_ID
+
 
 def Test_Resolve_TestUnreachableCandidates_ExpectSkipped() -> None:
    result = RepresentativeWalkNodeResolver.resolve(

@@ -125,6 +125,25 @@ def Test_resolve_month_day(
 
 
 @pytest.mark.parametrize(
+   'month, today, expected',
+   [
+      ( 4, date( 2026, 11, 7 ), date( 2027, 4, 30 ) ),
+      ( 4, date( 2026, 3, 1 ), date( 2026, 4, 30 ) ),
+      ( 4, date( 2026, 4, 30 ), date( 2026, 4, 30 ) ),
+      ( 2, date( 2024, 1, 15 ), date( 2024, 2, 29 ) ),
+      ( 2, date( 2023, 1, 15 ), date( 2023, 2, 28 ) ),
+      ( 2, date( 2024, 3, 1 ), date( 2025, 2, 28 ) ),
+      ( 3, date( 2026, 11, 7 ), date( 2027, 3, 31 ) ),
+   ]
+)
+def Test_NextMonthEnd_TestMonthAndToday_ExpectLastDay(
+      month: int,
+      today: date,
+      expected: date ) -> None:
+   assert CalendarDates.next_month_end( month, today ) == expected
+
+
+@pytest.mark.parametrize(
    'value, expected',
    [
       ( 1, 'Jan' ),

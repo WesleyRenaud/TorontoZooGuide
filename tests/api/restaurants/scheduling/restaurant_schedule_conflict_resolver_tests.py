@@ -79,6 +79,7 @@ def Test_SaveReplacingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       ( schedule, RestaurantScheduleProvider.fetch_opening_schedule_conflicts ),
    ]
 
+
 def Test_SaveTrimmingOverlaps_TestSchedule_ExpectProviderBackedSaver(
       monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -107,6 +108,7 @@ def Test_SaveTrimmingOverlaps_TestSchedule_ExpectProviderBackedSaver(
 
    assert result is True
    assert saver_calls == [ schedule ]
+
 
 def Test_TrimConflict_TestConflictAndSchedule_ExpectTrimmerDelegation(
       monkeypatch: pytest.MonkeyPatch,

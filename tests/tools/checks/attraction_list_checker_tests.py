@@ -8,6 +8,7 @@ import pytest
 
 from tools.checks.attraction_list_checker import AttractionListChecker as attraction_list_checker
 from tools.checks.attraction_listing import AttractionListing
+from tools.checks.check_report import CheckReport
 from tools.checks.website_page import WebsitePage
 
 
@@ -83,9 +84,9 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'On the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
    assert '  Stingray Bay' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
    assert 'Conservation Carousel' not in output
 
 
@@ -106,9 +107,9 @@ def Test_CheckLists_TestAppOnly_ExpectAppMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert f'  { CLIMB }' in output
-   assert 'On the website and not in the app: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
 
 
 def Test_CheckLists_TestNormalizedNames_ExpectMatched(
@@ -136,8 +137,8 @@ def Test_CheckLists_TestNormalizedNames_ExpectMatched(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'On the website and not in the app: 0' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
 
 def Test_CheckLists_TestSharedLink_ExpectMatched(
@@ -167,8 +168,8 @@ def Test_CheckLists_TestSharedLink_ExpectMatched(
    assert FRONT_GATES not in output
    assert TUNDRA not in output
    assert 'Face Painting, Body Art, and Henna!' not in output
-   assert 'On the website and not in the app: 0' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
 
 def Test_CheckLists_TestDifferentLinkSameName_ExpectMatched(
@@ -238,7 +239,7 @@ def Test_CheckLists_TestAllowedWebsiteAttraction_ExpectIgnored(
    assert result == 1
    assert f'  { name }' not in output
    assert '  Stingray Bay' in output
-   assert 'On the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
 
 
 def Test_CheckLists_TestAllowedAttractionMissingFromWebsite_ExpectAppMiss(
@@ -259,4 +260,4 @@ def Test_CheckLists_TestAllowedAttractionMissingFromWebsite_ExpectAppMiss(
 
    assert result == 1
    assert '  Kids Zoo' in output
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output

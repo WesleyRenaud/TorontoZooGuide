@@ -31,6 +31,7 @@ def Test_EnsureMigrationTable_TestFreshDatabase_ExpectSchemaMigrationTable(
 
    assert 'SchemaMigration' in tables
 
+
 def Test_RunOnCursor_TestAlreadyApplied_ExpectSkipped(
       migration_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch,
@@ -58,6 +59,7 @@ def Test_RunOnCursor_TestAlreadyApplied_ExpectSkipped(
    }
    assert 'ShouldNotExist' not in tables
 
+
 def Test_RunOnCursor_TestSkipBefore_ExpectRecordedWithoutExecuting(
       migration_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch,
@@ -84,6 +86,7 @@ def Test_RunOnCursor_TestSkipBefore_ExpectRecordedWithoutExecuting(
    assert '001_skip_me.sql' in applied
    assert 'ShouldNotExist' not in tables
 
+
 def Test_ExecuteMigrationStatement_TestUnexpectedError_ExpectReraise(
       migration_conn: sqlite3.Connection ) -> None:
    cursor = migration_conn.cursor()
@@ -92,6 +95,7 @@ def Test_ExecuteMigrationStatement_TestUnexpectedError_ExpectReraise(
       MigrationRunner._execute_migration_statement(
          cursor,
          'THIS IS NOT VALID SQL' )
+
 
 def Test_Run_TestConnectCommitClose_ExpectApplied(
       monkeypatch: pytest.MonkeyPatch,
@@ -123,6 +127,7 @@ def Test_Run_TestConnectCommitClose_ExpectApplied(
 
    assert 'Widget' in tables
    assert '001_create_widget.sql' in applied
+
 
 def Test_ModuleMain_TestRunInvoked_ExpectMigrationRunnerCalled(
       monkeypatch: pytest.MonkeyPatch,

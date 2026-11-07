@@ -85,6 +85,7 @@ def Test_SaveCurrentTransportationRouteSchedule_TestInsert_ExpectPersisted(
    assert row[ 'SCHEDULE_START_DATE' ] == '2026-05-01'
    assert row[ 'SCHEDULE_END_DATE' ] == '2026-09-30'
 
+
 def Test_SaveCurrentTransportationRouteSchedule_TestReplace_ExpectUpdatedRoute(
       transportation_route_schedule_provider_conn: sqlite3.Connection ) -> None:
    transportation_route_schedule_provider_conn.execute(

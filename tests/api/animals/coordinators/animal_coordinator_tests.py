@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 import sqlite3
-from typing import cast
+from typing import Any, cast
 
 import pytest
 
@@ -26,9 +26,11 @@ from api.animals.data_access.animal_viewing_scope_provider import AnimalViewingS
 from api.animals.data_access.animal_visibility_schedule_exhibit_name_provider import AnimalVisibilityScheduleExhibitNameProvider
 from api.animals.data_access.animal_visibility_schedule_provider import AnimalVisibilityScheduleProvider
 from api.animals.data_access.animal_visibility_schedule_species_name_provider import AnimalVisibilityScheduleSpeciesNameProvider
+from api.animals.data_access.enclosure_off_display_month_provider import EnclosureOffDisplayMonthProvider
 from api.animals.domain.animal_viewability_builder import AnimalViewabilityBuilder
 from api.animals.domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
 from api.animals.domain.animal_viewing_scope import AnimalViewingScope
+from api.animals.domain.enclosure_off_display_month import EnclosureOffDisplayMonth
 from api.animals.domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from api.animals.domain.seasonal_off_display_animal import SeasonalOffDisplayAnimal
 from api.animals.domain.seasonal_off_display_animal_builder import SeasonalOffDisplayAnimalBuilder
@@ -1108,6 +1110,7 @@ def Test_ApplyAttractionCovered_TestMissingAnimalOrAttraction_ExpectSkipped() ->
    assert itinerary.animals[ Position.FIRST ].covered_by_talk is False
    assert itinerary.animals[ Position.FIRST ].start_time == ANIMAL_START
 
+
 def Test_GetAnimalSpeciesNames_TestProviderNames_ExpectReturned(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -1596,6 +1599,7 @@ def Test_GetAnimalInformation_TestProviderAnimal_ExpectReturned(
 
    assert animal_information is ANIMAL
 
+
 def Test_GetAnimalViewingScopes_TestProviderScopes_ExpectReturned(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -1654,6 +1658,7 @@ def Test_GetOffDisplayViewingScopeOptions_TestProviderScopes_ExpectReturned(
       'exhibit': EXHIBIT,
       'for_season_only': True,
    }
+
 
 def Test_GetAnimalsViewableOnDay_TestProvidersAndBuilder_ExpectAnimals(
       stub_request_connection: None,
@@ -1724,6 +1729,7 @@ def Test_GetAnimalsViewableOnDay_TestProvidersAndBuilder_ExpectAnimals(
    assert captured[ 'include_off_display_animals' ] is True
    assert captured[ 'threshold' ] == 5
 
+
 def Test_GetAnimalsMatchingQuery_TestBuilder_ExpectMatches(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    animals = [ ANIMAL ]
@@ -1744,6 +1750,7 @@ def Test_GetAnimalsMatchingQuery_TestBuilder_ExpectMatches(
       year=VISIT_YEAR )
 
    assert animals_matching_query == animals
+
 
 def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
       stub_request_connection: None,
@@ -1812,6 +1819,82 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
       MESSAGE,
       True )
 
+
+def Test_GetEnclosureOffDisplayMonths_TestProvider_ExpectDelegated(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   months = [
+      EnclosureOffDisplayMonth(
+         species=SPECIES,
+         exhibit=EXHIBIT,
+         until_month=4 ),
+   ]
+
+   monkeypatch.setattr(
+      EnclosureOffDisplayMonthProvider,
+      'fetch_off_display_months',
+      lambda _conn: months )
+
+   assert AnimalCoordinator.get_enclosure_off_display_months() == months
+
+
+def Test_SetOffDisplayForSeasonUntil_TestAprilAfterSeason_ExpectNextApril(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   today = date( 2026, 11, 7 )
+   scopes = [ AnimalViewingScope.from_enclosure_name( None ) ]
+   captured: dict[ str, Any ] = {}
+
+   monkeypatch.setattr(
+      EnclosureOffDisplayMonthProvider,
+      'fetch_until_month',
+      lambda _conn, species, exhibit: 4 )
+   monkeypatch.setattr(
+      AnimalViewingScopeProvider,
+      'fetch_animal_viewing_scopes',
+      lambda _conn, species, exhibit: scopes )
+
+   def set_animal_as_off_display( **kwargs: Any ) -> bool:
+      captured[ 'args' ] = kwargs
+      return True
+
+   monkeypatch.setattr(
+      AnimalCoordinator,
+      'set_animal_as_off_display',
+      set_animal_as_off_display )
+
+   result = AnimalCoordinator.set_off_display_for_season_until(
+      SPECIES,
+      EXHIBIT,
+      today )
+
+   assert result is True
+   assert captured[ 'args' ] == {
+      'species': SPECIES,
+      'exhibit': EXHIBIT,
+      'start_date': today,
+      'end_date': date( 2027, 4, 30 ),
+      'message': '',
+      'viewing_scopes': scopes,
+      'is_off_display_for_season': True,
+   }
+
+
+def Test_SetOffDisplayForSeasonUntil_TestMissingMonth_ExpectRaises(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      EnclosureOffDisplayMonthProvider,
+      'fetch_until_month',
+      lambda _conn, species, exhibit: None )
+
+   with pytest.raises( TypeError ):
+      AnimalCoordinator.set_off_display_for_season_until(
+         SPECIES,
+         EXHIBIT,
+         date( 2026, 11, 7 ) )
+
+
 def Test_SetAnimalAsOnDisplay_TestProvider_ExpectDelegated(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -1841,6 +1924,7 @@ def Test_SetAnimalAsOnDisplay_TestProvider_ExpectDelegated(
       SPECIES,
       EXHIBIT,
       [ AnimalViewingScope.from_enclosure_name( 'Female Herd' ) ] )
+
 
 def Test_SetAnimalLimitedViewingSchedule_TestBuilderAndProvider_ExpectDelegated(
       stub_request_connection: None,
@@ -1904,6 +1988,7 @@ def Test_SetAnimalLimitedViewingSchedule_TestBuilderAndProvider_ExpectDelegated(
       DAILY_END,
       MESSAGE )
 
+
 def Test_RemoveAnimalVisibilitySchedule_TestProvider_ExpectDelegated(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -1915,6 +2000,7 @@ def Test_RemoveAnimalVisibilitySchedule_TestProvider_ExpectDelegated(
    result = AnimalCoordinator.remove_animal_visibility_schedule( SPECIES, EXHIBIT )
 
    assert result is True
+
 
 def Test_SetAnimalViewingAlert_TestBuilderAndProvider_ExpectDelegated(
       stub_request_connection: None,
@@ -1968,6 +2054,7 @@ def Test_SetAnimalViewingAlert_TestBuilderAndProvider_ExpectDelegated(
       END_DATE,
       MESSAGE )
 
+
 def Test_RemoveAnimalViewingAlert_TestProvider_ExpectDelegated(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -1980,6 +2067,7 @@ def Test_RemoveAnimalViewingAlert_TestProvider_ExpectDelegated(
 
    assert result is True
 
+
 def Test_GetAnimalsForSavedItinerary_TestEmptySavedAnimals_ExpectEmpty() -> None:
    animals_for_saved_itinerary = AnimalCoordinator.get_animals_for_saved_itinerary(
       day=VISIT_DAY,
@@ -1989,6 +2077,7 @@ def Test_GetAnimalsForSavedItinerary_TestEmptySavedAnimals_ExpectEmpty() -> None
    )
 
    assert animals_for_saved_itinerary == []
+
 
 def Test_GetAnimalsForSavedItinerary_TestSavedAnimals_ExpectBuilderFilteredAnimals(
       monkeypatch: pytest.MonkeyPatch ) -> None:

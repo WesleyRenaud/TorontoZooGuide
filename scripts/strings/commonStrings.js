@@ -1,4 +1,6 @@
 export class CommonStrings {
+   static #middleDotJoin = ' · ';
+
    static actions = {
       addEncounterScheduleRow: 'Add another',
       removeAlert: 'Remove alert',
@@ -10,6 +12,8 @@ export class CommonStrings {
       subtitleSeparator: '  \u2022  ',
       emptySubtitle: '-',
       listJoin: ', ',
+      middleDotJoin: CommonStrings.#middleDotJoin,
+      middleDotPair: `{first}${CommonStrings.#middleDotJoin}{second}`,
       pair: '{first}, {second}',
       dateRangeThrough: '{start} through {end}',
       pipeJoin: ' | ',

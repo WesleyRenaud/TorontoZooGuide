@@ -654,6 +654,7 @@ HARD_PIN_LOOP_ID = 'africa_savanna_talk'
 HARD_PIN_READY_SECONDS = DateValues.time_value_in_seconds( '11:00 AM' )
 HARD_PIN_DRAIN_CURSOR_SECONDS = DateValues.time_value_in_seconds( '11:30 AM' )
 
+
 def Test_Schedule_TestPrepareUnitsReturnsNone_ExpectAnimalsReturned(
       monkeypatch: pytest.MonkeyPatch ) -> None:
 

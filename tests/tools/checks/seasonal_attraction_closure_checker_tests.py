@@ -7,6 +7,7 @@ import sqlite3
 
 import pytest
 
+from tools.checks.check_report import CheckReport
 from tools.checks.seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker as CHECKER
 from tools.checks.website_page import WebsitePage
 
@@ -153,8 +154,8 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
    assert result == 1
    assert f'  { SPLASH }' in output
    assert KANGAROO not in output
-   assert 'Closed for the season on the website and not in the app: 1' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestAllowedWebsiteOnlyAttraction_ExpectNoIssues(
@@ -177,7 +178,7 @@ def Test_CheckSchedules_TestAllowedWebsiteOnlyAttraction_ExpectNoIssues(
 
    assert result == 0
    assert 'Kids Zoo' not in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestUnmatchedWebsiteTitle_ExpectWebsiteMiss(
@@ -200,7 +201,7 @@ def Test_CheckSchedules_TestUnmatchedWebsiteTitle_ExpectWebsiteMiss(
 
    assert result == 1
    assert '  Carousel' in output
-   assert 'Closed for the season on the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
 
 
 def Test_CheckSchedules_TestSharedLink_ExpectBothLocationsCovered(
@@ -268,7 +269,7 @@ def Test_CheckSchedules_TestSharedLinkOneLocation_ExpectWebsiteMiss(
    assert result == 1
    assert f'  { TUNDRA }' in output
    assert FRONT_GATES not in output
-   assert 'Closed for the season on the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
 
 
 def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
@@ -304,7 +305,7 @@ def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
    assert f'  { SPLASH }' in output
    assert f'  { KANGAROO }' in output
    assert CLIMB not in output
-   assert 'Closed for the season in the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
 
 
 def Test_CheckSchedules_TestOpenThroughPastDate_ExpectWebsiteSeason(
@@ -329,8 +330,8 @@ def Test_CheckSchedules_TestOpenThroughPastDate_ExpectWebsiteSeason(
 
    assert result == 0
    assert KANGAROO not in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
@@ -356,8 +357,8 @@ def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
 
    assert result == 1
    assert f'  { KANGAROO }' in output
-   assert 'Closed for the season in the app and not on the website: 1' in output
-   assert 'Closed for the season on the website and not in the app: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
@@ -379,8 +380,8 @@ def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'Closed for the season on the website and not in the app: 0' in output
-   assert 'Closed for the season in the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
 def Test_CheckSchedules_TestDifferentAttractionsClosed_ExpectBoth(
@@ -407,5 +408,5 @@ def Test_CheckSchedules_TestDifferentAttractionsClosed_ExpectBoth(
    assert result == 2
    assert f'  { SPLASH }' in output
    assert f'  { KANGAROO }' in output
-   assert 'Closed for the season on the website and not in the app: 1' in output
-   assert 'Closed for the season in the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
