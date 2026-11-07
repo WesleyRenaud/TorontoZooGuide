@@ -1,3 +1,4 @@
+import { CheckStrings } from './strings/checkStrings.js';
 import { CommonStrings } from './strings/commonStrings.js';
 import { ConsoleStrings } from './strings/consoleStrings.js';
 import { GuestStatusStrings } from './strings/guestStatusStrings.js';
@@ -8,6 +9,8 @@ import { PageStrings } from './strings/pageStrings.js';
 export class Strings {
    static actions = CommonStrings.actions;
    static apiErrors = ConsoleStrings.apiErrors;
+   static checks = CheckStrings.checks;
+   static reports = CheckStrings.reports;
    static common = CommonStrings.common;
    static confirm = ConsoleStrings.confirm;
    static site = PageStrings.site;

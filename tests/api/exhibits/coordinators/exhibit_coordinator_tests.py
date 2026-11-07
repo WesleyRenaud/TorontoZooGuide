@@ -7,10 +7,13 @@ import pytest
 
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.exhibits.data_access.closed_exhibit_name_provider import ClosedExhibitNameProvider
+from api.exhibits.data_access.exhibit_closure_record import ExhibitClosureRecord
 from api.exhibits.data_access.exhibit_provider import ExhibitProvider
 from api.exhibits.data_access.exhibit_status_provider import ExhibitStatusProvider
 from api.exhibits.domain.region_options_builder import RegionOptionsBuilder
 from api.exhibits.domain.regions_with_exhibits_builder import RegionsWithExhibitsBuilder
+from api.exhibits.domain.seasonal_exhibit import SeasonalExhibit
+from api.exhibits.domain.seasonal_exhibit_builder import SeasonalExhibitBuilder
 from api.exhibits.status.exhibit_closed_status import ExhibitClosedStatus
 from api.exhibits.status.exhibit_status_builder import ExhibitStatusBuilder
 from api.models.date_range import DateRange
@@ -126,6 +129,59 @@ def Test_GetNamesOfAnimalsInExhibit_TestProviderNames_ExpectReturned(
    names_of_animals_in_exhibit = ExhibitCoordinator.get_names_of_animals_in_exhibit( EXHIBIT_NAME )
 
    assert names_of_animals_in_exhibit == [ ANIMAL_NAME ]
+
+
+def Test_GetClosureRecords_TestProvider_ExpectRecords(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   closure_record = ExhibitClosureRecord(
+      exhibit=EXHIBIT_NAME,
+      closed_start=START_DATE,
+      closed_end=END_DATE,
+      is_closed_for_season=True )
+
+   monkeypatch.setattr(
+      ExhibitStatusProvider,
+      'fetch_closure_records',
+      lambda _conn: [ closure_record ] )
+
+   records = ExhibitCoordinator.get_closure_records()
+
+   assert records == [ closure_record ]
+
+
+def Test_GetSeasonalExhibits_TestClosures_ExpectBuiltExhibits(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   exhibits = [ EXHIBIT_NAME ]
+   closure_records = [ ExhibitClosureRecord(
+      exhibit=EXHIBIT_NAME,
+      closed_start=START_DATE,
+      closed_end=None,
+      is_closed_for_season=True,
+   ) ]
+   built = [ SeasonalExhibit(
+      name=EXHIBIT_NAME,
+      is_closed=True,
+      start=date( 2026, 6, 1 ),
+      end=None,
+      closed_for_season=True,
+   ) ]
+   captured: dict[ str, object ] = {}
+
+   monkeypatch.setattr( ExhibitCoordinator, 'get_exhibits', lambda: exhibits )
+   monkeypatch.setattr( ExhibitCoordinator, 'get_closure_records', lambda: closure_records )
+
+   def build( **kwargs: object ) -> list[ SeasonalExhibit ]:
+      captured.update( kwargs )
+      return built
+
+   monkeypatch.setattr( SeasonalExhibitBuilder, 'build', build )
+
+   result = ExhibitCoordinator.get_seasonal_exhibits()
+
+   assert result is built
+   assert captured[ 'exhibits' ] is exhibits
+   assert captured[ 'closure_records' ] is closure_records
 
 
 def Test_GetClosedExhibitsForVisitDate_TestProviderAndBuilder_ExpectNames(

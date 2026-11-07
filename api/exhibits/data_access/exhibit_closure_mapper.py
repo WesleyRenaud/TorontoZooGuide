@@ -10,7 +10,8 @@ class ExhibitClosureMapper():
       return ExhibitClosureRecord(
          exhibit=row[ 'EXHIBIT' ],
          closed_start=row[ 'CLOSED_START' ],
-         closed_end=row[ 'CLOSED_END' ] )
+         closed_end=row[ 'CLOSED_END' ],
+         is_closed_for_season=bool( row[ 'CLOSED_FOR_SEASON' ] ) )
 
 
    @classmethod

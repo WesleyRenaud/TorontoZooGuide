@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import date
 from datetime import timedelta
 from typing import Any
 
@@ -17,13 +18,13 @@ class ScheduledOccurrenceBuilder():
          schedule_records: list[ Any ],
          *,
          days_ahead: int,
+         start_date: date,
          get_time: Callable[ [ Any ], str | None ],
          get_weekday_flags: Callable[ [ Any ], tuple[ bool, bool, bool, bool, bool, bool, bool ] ],
          is_cancelled: Callable[ [ str, str ], bool ],
          extra_occurrences: list[ ScheduledOccurrence ] | None = None ) -> list[ ScheduledOccurrence ]:
-      today = DateValues.parse_date_value( DateValues.today_date_key() )
-      schedule_start_date = today
-      schedule_end_date = today + timedelta( days=days_ahead )
+      schedule_start_date = start_date
+      schedule_end_date = start_date + timedelta( days=days_ahead )
       occurrences: list[ ScheduledOccurrence ] = []
 
       for schedule_record in schedule_records:

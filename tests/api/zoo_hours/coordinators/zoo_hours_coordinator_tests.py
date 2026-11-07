@@ -71,3 +71,22 @@ def Test_GetZooHours_TestMissingRecord_ExpectNone(
       year=VISIT_YEAR )
 
    assert zoo_hours is None
+
+
+def Test_GetZooHoursOnOrAfter_TestRecords_ExpectBuiltHours(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = object()
+
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'fetch_zoo_hours_records_between',
+      lambda _conn, start_date, end_date=None: [ record ] if start_date == DATE_KEY and end_date is None else [] )
+   monkeypatch.setattr(
+      ZooHoursBuilder,
+      'build',
+      lambda item: ZOO_HOURS if item is record else None )
+
+   hours = ZooHoursCoordinator.get_zoo_hours_on_or_after( VISIT_DATE )
+
+   assert hours == [ ZOO_HOURS ]

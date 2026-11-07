@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import calendar
 from datetime import date, timedelta
 from typing import Any
 
@@ -12,21 +13,26 @@ class CalendarDates:
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
    )
-   MONTH_FULL_NAME_TO_INDEX = {
-      'january': 1,
-      'february': 2,
-      'march': 3,
-      'april': 4,
-      'may': 5,
-      'june': 6,
-      'july': 7,
-      'august': 8,
-      'september': 9,
-      'october': 10,
-      'november': 11,
-      'december': 12,
-   }
    DAYS_IN_MONTH = ( 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 )
+
+
+   @staticmethod
+   def convert_weekday( weekday: int, sunday_first: bool ) -> int:
+      offset = 1 if sunday_first else -1
+      return ( weekday + offset ) % 7
+
+
+   @staticmethod
+   def format_weekdays( weekdays: set[ int ] ) -> str:
+      ordered = sorted(
+         weekdays,
+         key=lambda weekday: CalendarDates.convert_weekday( weekday, sunday_first=True ),
+      )
+
+      return ', '.join(
+         calendar.day_abbr[ weekday ]
+         for weekday in ordered
+      )
 
 
    @staticmethod
@@ -51,6 +57,27 @@ class CalendarDates:
 
 
    @staticmethod
+   def month_index( name: str ) -> int | None:
+      folded = name.casefold()
+
+      for index, month_name in enumerate( calendar.month_name ):
+         if month_name and month_name.casefold() == folded:
+            return index
+
+      return None
+
+
+   @staticmethod
+   def resolve_month_day( month: int, day: int, today: date ) -> date:
+      this_year = date( today.year, month, day )
+
+      if this_year < today:
+         return this_year.replace( year=today.year + 1 )
+
+      return this_year
+
+
+   @staticmethod
    def get_month_abbreviation( month: Types.MonthInput ) -> str:
       if isinstance( month, int ):
          if month < 1 or month > 12:
@@ -66,12 +93,10 @@ class CalendarDates:
                raise ValueError( f'Invalid month: { month }' )
             return CalendarDates.MONTH_ABBREVIATIONS[ month_num - 1 ]
 
-         lowered = month.lower()
+         index = CalendarDates.month_index( month )
 
-         if lowered in CalendarDates.MONTH_FULL_NAME_TO_INDEX:
-            return CalendarDates.MONTH_ABBREVIATIONS[
-               CalendarDates.MONTH_FULL_NAME_TO_INDEX[ lowered ] - 1
-            ]
+         if index is not None:
+            return CalendarDates.MONTH_ABBREVIATIONS[ index - 1 ]
 
          abbrev = month[ :3 ].title()
          if abbrev in CalendarDates.MONTH_ABBREVIATIONS:

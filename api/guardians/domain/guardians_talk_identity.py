@@ -31,3 +31,20 @@ class GuardiansTalkIdentity():
          return name, None
 
       return name, enclosure_name
+
+
+   @classmethod
+   def matches(
+         cls,
+         talk_name: str,
+         location: str,
+         enclosure_name: str | None,
+         *,
+         other_talk_name: str,
+         other_location: str,
+         other_enclosure_name: str | None ) -> bool:
+      return (
+         talk_name == other_talk_name
+         and location == other_location
+         and enclosure_name == other_enclosure_name
+      )

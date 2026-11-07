@@ -6,6 +6,7 @@ import pytest
 
 from api.shared.enums.position import Position
 from api.wild_encounters.data_access.wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
+from api.wild_encounters.data_access.wild_encounter_schedule_listing_record import WildEncounterScheduleListingRecord
 from api.wild_encounters.data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
 from api.wild_encounters.scheduling.wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
 from api.wild_encounters.scheduling.wild_encounter_schedule_input import WildEncounterScheduleInput
@@ -589,6 +590,34 @@ def Test_SaveScheduleEnd_TestCoveringSchedule_ExpectUpdatesEndDate(
 
    assert row is not None
    assert row[ 'SCHEDULE_END_DATE' ] == '2026-06-20'
+
+
+def Test_FetchScheduleListings_TestOpenEndedRow_ExpectWeekdaysAndTime(
+      schedule_provider_conn: sqlite3.Connection ) -> None:
+   _insert_schedule_row(
+      schedule_provider_conn,
+      start_date=START_DATE,
+      end_date=None,
+      encounter_time=KANGAROO_ENCOUNTER_TIME )
+   schedule_provider_conn.commit()
+
+   listings = WildEncounterScheduleProvider.fetch_schedule_listings( schedule_provider_conn )
+
+   assert listings == [
+      WildEncounterScheduleListingRecord(
+         wild_encounter=KANGAROO,
+         schedule_start_date=START_DATE,
+         schedule_end_date=None,
+         encounter_time=KANGAROO_ENCOUNTER_TIME,
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True,
+      ),
+   ]
 
 
 def Test_SaveScheduleEnd_TestNoMatchingSchedule_ExpectReturnsFalse(

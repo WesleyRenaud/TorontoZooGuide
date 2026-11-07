@@ -6,9 +6,12 @@ import pytest
 
 from api.giftshops.coordinators import gift_shop_coordinator as gift_shop_coordinator_module
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
+from api.giftshops.data_access.gift_shop_closure_record import GiftShopClosureRecord
 from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
 from api.giftshops.data_access.gift_shop_status_provider import GiftShopStatusProvider
 from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
+from api.giftshops.domain.seasonal_gift_shop import SeasonalGiftShop
+from api.giftshops.domain.seasonal_gift_shop_builder import SeasonalGiftShopBuilder
 from api.giftshops.search.gift_shops_matching_query_builder import GiftShopsMatchingQueryBuilder
 from api.giftshops.status.gift_shop_season_closure_builder import GiftShopSeasonClosureBuilder
 from api.models.gift_shop import GiftShop
@@ -334,3 +337,58 @@ def Test_SetGiftShopAsOpenForSeason_TestProvider_ExpectDeleted(
    result = GiftShopCoordinator.set_gift_shop_as_open_for_season( GIFT_SHOP_NAME )
 
    assert result is True
+
+
+def Test_GetClosureRecords_TestProvider_ExpectRecords(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   closure_record = GiftShopClosureRecord(
+      gift_shop=GIFT_SHOP_NAME,
+      closed_start='2026-11-02',
+      closed_end=None,
+      closed_message=None,
+      is_closed_for_season=True )
+
+   monkeypatch.setattr(
+      GiftShopStatusProvider,
+      'fetch_closure_records',
+      lambda _conn: [ closure_record ] )
+
+   records = GiftShopCoordinator.get_closure_records()
+
+   assert records == [ closure_record ]
+
+
+def Test_GetSeasonalGiftShops_TestClosures_ExpectBuiltGiftShops(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   gift_shops = [ GIFT_SHOP_NAME ]
+   closure_records = [ GiftShopClosureRecord(
+      gift_shop=GIFT_SHOP_NAME,
+      closed_start='2026-11-02',
+      closed_end=None,
+      closed_message=None,
+      is_closed_for_season=True,
+   ) ]
+   built = [ SeasonalGiftShop(
+      name=GIFT_SHOP_NAME,
+      is_closed=True,
+      start=date( 2026, 11, 2 ),
+      end=None,
+      closed_for_season=True,
+   ) ]
+   captured: dict[ str, object ] = {}
+
+   monkeypatch.setattr( GiftShopCoordinator, 'get_gift_shop_names', lambda: gift_shops )
+   monkeypatch.setattr( GiftShopCoordinator, 'get_closure_records', lambda: closure_records )
+
+   def build( **kwargs: object ) -> list[ SeasonalGiftShop ]:
+      captured.update( kwargs )
+      return built
+
+   monkeypatch.setattr( SeasonalGiftShopBuilder, 'build', build )
+
+   result = GiftShopCoordinator.get_seasonal_gift_shops()
+
+   assert result is built
+   assert captured[ 'gift_shops' ] is gift_shops
+   assert captured[ 'closure_records' ] is closure_records

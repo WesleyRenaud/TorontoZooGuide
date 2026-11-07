@@ -363,6 +363,47 @@ def check_typing_annotations(
    return violations
 
 
+def check_module_level_class_assignments(
+      path: Path,
+      file_text: str ) -> list[ tuple[ str, int, int, str ] ]:
+   try:
+      tree = ast.parse( file_text )
+   except SyntaxError:
+      return []
+
+   class_names = {
+      node.name
+      for node in tree.body
+      if isinstance( node, ast.ClassDef )
+   }
+   violations: list[ tuple[ str, int, int, str ] ] = []
+
+   for node in tree.body:
+      targets = node.targets if isinstance( node, ast.Assign ) else []
+
+      if isinstance( node, ast.AnnAssign ):
+         targets = [ node.target ]
+
+      for target in targets:
+         if not isinstance( target, ast.Attribute ) or not isinstance( target.value, ast.Name ):
+            continue
+
+         if target.value.id not in class_names:
+            continue
+
+         add_violation(
+            violations,
+            path,
+            node.lineno,
+            node.col_offset + 1,
+            (
+               f'Do not assign "{ target.value.id }.{ target.attr }" outside a method.'
+            )
+         )
+
+   return violations
+
+
 def check_method_spacing(
       path: Path,
       file_text: str,
@@ -637,6 +678,7 @@ def check_file(
       if token.type != tokenize.ENDMARKER
    ]
    violations = check_method_spacing( path, file_text, blank_lines_between_methods )
+   violations.extend( check_module_level_class_assignments( path, file_text ) )
 
    if enforce_typing:
       violations.extend( check_typing_annotations( path, file_text ) )

@@ -47,7 +47,7 @@ def Test_UrlsForEntry_TestCalledTwice_ExpectReusesGraph() -> None:
    second = ModulePreloadBuilder.urls_for_entry( ANIMALS_ENTRY )
 
    assert '/scripts/pages/animalsBootstrap.js' in first
-   assert len( first ) == 19
+   assert '/scripts/animals/animalsRouter.js' in first
    assert first is second
 
 

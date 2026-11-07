@@ -4,6 +4,7 @@ import sqlite3
 
 import pytest
 
+from api.animals.data_access.animal_off_display_record import AnimalOffDisplayRecord
 from api.animals.data_access.animal_status_provider import AnimalStatusProvider
 from api.animals.domain.animal_viewing_scope import AnimalViewingScope
 
@@ -165,4 +166,32 @@ def Test_SaveAnimalOffDisplayStatus_TestOffDisplayForSeason_ExpectPersistsSeason
 
    assert _status_rows( animal_status_conn ) == [
       ( 'Male Herd', 1, START_DATE, END_DATE, MESSAGE, 1 ),
+   ]
+
+
+def Test_FetchOffDisplayRecords_TestEmptyTable_ExpectNoRecords(
+      animal_status_conn: sqlite3.Connection ) -> None:
+   assert AnimalStatusProvider.fetch_off_display_records( animal_status_conn ) == []
+
+
+def Test_FetchOffDisplayRecords_TestSeasonRow_ExpectRecord(
+      animal_status_conn: sqlite3.Connection ) -> None:
+   AnimalStatusProvider.save_animal_off_display_status(
+      animal_status_conn,
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      viewing_scopes=[ MALE_HERD ],
+      start_date=START_DATE,
+      end_date=None,
+      message=MESSAGE,
+      is_off_display_for_season=True )
+
+   assert AnimalStatusProvider.fetch_off_display_records( animal_status_conn ) == [
+      AnimalOffDisplayRecord(
+         species=SPECIES,
+         is_off_display=True,
+         start=START_DATE,
+         end=None,
+         off_for_season=True,
+      ),
    ]

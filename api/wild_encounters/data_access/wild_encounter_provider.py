@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from ..domain.wild_encounter_link import WildEncounterLink
 from ...types import Types
+from .wild_encounter_link_mapper import WildEncounterLinkMapper
 from .wild_encounter_mapper import WildEncounterMapper
 from .wild_encounter_record import WildEncounterRecord
 
@@ -21,6 +23,25 @@ class WildEncounterProvider():
             row[ 'NAME' ]
             for row in data.fetchall()
          ]
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_wild_encounter_links( cls, conn: Types.Connection ) -> list[ WildEncounterLink ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     NAME,
+                     LINK
+                  FROM WildEncounter
+                  ORDER BY NAME;
+            """ )
+
+         return WildEncounterLinkMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()

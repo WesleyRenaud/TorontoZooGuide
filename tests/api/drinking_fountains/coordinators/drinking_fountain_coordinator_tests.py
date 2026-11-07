@@ -10,6 +10,8 @@ from api.drinking_fountains.data_access.drinking_fountain_provider import Drinki
 from api.drinking_fountains.data_access.drinking_fountain_status_provider import DrinkingFountainStatusProvider
 from api.drinking_fountains.data_access.drinking_fountain_status_record import DrinkingFountainStatusRecord
 from api.drinking_fountains.domain.drinking_fountain_builder import DrinkingFountainBuilder
+from api.drinking_fountains.domain.seasonal_drinking_fountains import SeasonalDrinkingFountains
+from api.drinking_fountains.domain.seasonal_drinking_fountains_builder import SeasonalDrinkingFountainsBuilder
 from api.drinking_fountains.status.drinking_fountain_closed_status import DrinkingFountainClosedStatus
 from api.drinking_fountains.status.drinking_fountain_status_builder import DrinkingFountainStatusBuilder
 from api.models.drinking_fountain import DrinkingFountain
@@ -201,3 +203,52 @@ def Test_SetDrinkingFountainsAsOpen_TestProvider_ExpectDeleted(
 
    assert saved_open is True
    assert deleted == [ True ]
+
+
+def Test_GetSeasonalDrinkingFountains_TestStatus_ExpectBuilt(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   built = SeasonalDrinkingFountains(
+      is_closed=True,
+      start=date( 2026, 11, 2 ),
+      end=None,
+   )
+   captured: dict[ str, object ] = {}
+
+   monkeypatch.setattr(
+      DrinkingFountainStatusProvider,
+      'fetch_current_drinking_fountain_status_record',
+      lambda _conn: STATUS_RECORD )
+
+   def build( record: DrinkingFountainStatusRecord ) -> SeasonalDrinkingFountains:
+      captured[ 'record' ] = record
+      return built
+
+   monkeypatch.setattr( SeasonalDrinkingFountainsBuilder, 'build', build )
+
+   result = DrinkingFountainCoordinator.get_seasonal_drinking_fountains()
+
+   assert result is built
+   assert captured[ 'record' ] is STATUS_RECORD
+
+
+def Test_GetSeasonalDrinkingFountains_TestOpenRecord_ExpectOpen(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr(
+      DrinkingFountainStatusProvider,
+      'fetch_current_drinking_fountain_status_record',
+      lambda _conn: DrinkingFountainStatusRecord(
+         is_closed=False,
+         start_date=None,
+         end_date=None,
+         closed_message=None,
+      ) )
+
+   status = DrinkingFountainCoordinator.get_seasonal_drinking_fountains()
+
+   assert status == SeasonalDrinkingFountains(
+      is_closed=False,
+      start=None,
+      end=None,
+   )

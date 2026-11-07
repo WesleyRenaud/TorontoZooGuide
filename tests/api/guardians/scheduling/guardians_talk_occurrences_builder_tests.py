@@ -72,7 +72,8 @@ def Test_Build_TestNoScheduleRecords_ExpectEmpty(
    occurrences = GuardiansTalkOccurrencesBuilder.build(
       schedule_records=[],
       cancellation_records=[],
-      days_ahead=7 )
+      days_ahead=7,
+      start_date=FROZEN_TODAY )
 
    assert occurrences == []
 
@@ -90,7 +91,8 @@ def Test_Build_TestEndBeforeStart_ExpectEmpty(
    occurrences = GuardiansTalkOccurrencesBuilder.build(
       schedule_records=[ schedule_record ],
       cancellation_records=[],
-      days_ahead=( start_date - FROZEN_TODAY ).days )
+      days_ahead=( start_date - FROZEN_TODAY ).days,
+      start_date=FROZEN_TODAY )
 
    assert occurrences == []
 
@@ -103,7 +105,8 @@ def Test_Build_TestMondaySchedule_ExpectUpcomingOccurrences(
    occurrences = GuardiansTalkOccurrencesBuilder.build(
       schedule_records=[ _schedule_record() ],
       cancellation_records=[],
-      days_ahead=7 )
+      days_ahead=7,
+      start_date=FROZEN_TODAY )
 
    assert [ ( occurrence.date, occurrence.time ) for occurrence in occurrences ] == [
       ( '2026-06-15', TALK_TIME ),
@@ -139,7 +142,8 @@ def Test_Build_TestAllWeekdaysWithCancellation_ExpectCancelledDateExcluded(
    occurrences = GuardiansTalkOccurrencesBuilder.build(
       schedule_records=[ _all_weekdays_schedule_record() ],
       cancellation_records=cancellations,
-      days_ahead=6 )
+      days_ahead=6,
+      start_date=FROZEN_TODAY )
 
    assert { occurrence.date for occurrence in occurrences } == {
       '2026-06-15',
@@ -170,6 +174,7 @@ def Test_Build_TestCancelledOccurrenceAndExtraOccurrence_ExpectFilteredMerged(
       schedule_records=[ _schedule_record() ],
       cancellation_records=cancellations,
       days_ahead=7,
+      start_date=FROZEN_TODAY,
       occurrence_records=extra_occurrences )
 
    assert [ ( occurrence.date, occurrence.time ) for occurrence in occurrences ] == [

@@ -3,6 +3,8 @@ from __future__ import annotations
 from ..data_access.drinking_fountain_provider import DrinkingFountainProvider
 from ..data_access.drinking_fountain_status_provider import DrinkingFountainStatusProvider
 from ..domain.drinking_fountain_builder import DrinkingFountainBuilder
+from ..domain.seasonal_drinking_fountains import SeasonalDrinkingFountains
+from ..domain.seasonal_drinking_fountains_builder import SeasonalDrinkingFountainsBuilder
 from ...models import DrinkingFountain
 from ...request_connection_provider import RequestConnectionProvider
 from ...shared.calendar_dates import CalendarDates
@@ -62,6 +64,15 @@ class DrinkingFountainCoordinator():
       return DrinkingFountainStatusProvider.save_drinking_fountain_closed_status(
          RequestConnectionProvider.get(),
          status=status )
+
+
+   @classmethod
+   def get_seasonal_drinking_fountains( cls ) -> SeasonalDrinkingFountains:
+      return SeasonalDrinkingFountainsBuilder.build(
+         DrinkingFountainStatusProvider.fetch_current_drinking_fountain_status_record(
+            RequestConnectionProvider.get()
+         )
+      )
 
 
    @classmethod

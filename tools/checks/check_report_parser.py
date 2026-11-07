@@ -1,0 +1,202 @@
+from __future__ import annotations
+
+import re
+
+from api.app_string_provider import AppStringProvider
+from .check_exit_code import CheckExitCode
+from .check_report import CheckReport
+from .count import Count
+from .report import Report
+from .report_draft import ReportDraft
+
+
+class CheckReportParser():
+   CATEGORY_RE = re.compile( r'^(?P<title>[^ ].*): (?P<count>\d+)$' )
+   COUNT_LABELS = (
+      'reports.wildEncounter.section',
+      'reports.guardiansTalk.section',
+      'site.nav.animals',
+      'map.filter.attractions',
+      'map.filterTypes.restaurant',
+      'checks.countNames.giftShops',
+      'checks.countNames.drinkingFountains',
+      'reports.attractionList.kind',
+      'reports.zooHours.kind',
+   )
+
+
+   @classmethod
+   def header_re( cls ) -> re.Pattern[ str ]:
+      template = AppStringProvider.values()[ 'checks.heading' ]
+      pattern = re.escape( template )
+      pattern = pattern.replace( re.escape( '{kind}' ), r'(?P<kind>.+)' )
+      pattern = pattern.replace( re.escape( '{day}' ), r'(?P<day>\d{4}-\d{2}-\d{2})' )
+      return re.compile( rf'^{ pattern }(?: (?P<note>.*))?$' )
+
+
+   @classmethod
+   def summary_line( cls, body: str ) -> int | None:
+      one_error = AppStringProvider.format( 'checks.error', count=1 )
+      errors_suffix = AppStringProvider.values()[ 'checks.errors' ].removeprefix( '{count}' )
+
+      for line in reversed( body.splitlines() ):
+         stripped = line.strip()
+
+         if stripped == one_error:
+            return 1
+
+         count = stripped.removesuffix( errors_suffix )
+         return int( count )
+
+      return None
+
+
+   @classmethod
+   def format_error_count( cls, count: int ) -> str:
+      key = 'checks.error' if count == 1 else 'checks.errors'
+      return AppStringProvider.format( key, count=count )
+
+
+   @classmethod
+   def subject_for( cls, body: str, exit_code: int ) -> str:
+      if exit_code == CheckExitCode.CLEAR or exit_code == CheckExitCode.DIFFERENCES:
+         error_count = cls.summary_line( body )
+
+         if error_count is not None:
+            return AppStringProvider.format(
+               'checks.subject.summary',
+               line=cls.format_error_count( error_count ),
+            )
+
+         return AppStringProvider.format( 'checks.subject.finished' )
+
+      return AppStringProvider.format( 'checks.subject.couldNotFinish' )
+
+
+   @classmethod
+   def count_marker( cls ) -> str:
+      item = AppStringProvider.values()[ 'checks.countItem' ]
+      return item.removeprefix( '{count}' ).removesuffix( '{name}' )
+
+
+   @classmethod
+   def count_labels( cls ) -> list[ str ]:
+      values = AppStringProvider.values()
+      return [ values[ key ] for key in cls.COUNT_LABELS ]
+
+
+   @classmethod
+   def format_counts( cls, counts: list[ int ] ) -> str:
+      pieces = [
+         AppStringProvider.format( 'checks.countItem', count=count, name=label )
+         for count, label in zip( counts, cls.count_labels() )
+      ]
+      return AppStringProvider.values()[ 'format.listJoin' ].join( pieces )
+
+
+   @classmethod
+   def count_line_re( cls ) -> re.Pattern[ str ]:
+      item = AppStringProvider.values()[ 'checks.countItem' ]
+      pattern = re.escape( item )
+      pattern = pattern.replace( re.escape( '{count}' ), r'\d+' )
+      pattern = pattern.replace( re.escape( '{name}' ), r'.+' )
+      separator = re.escape( AppStringProvider.values()[ 'format.listJoin' ] )
+      return re.compile( rf'^{ pattern }{ separator }' )
+
+
+   @classmethod
+   def parse_counts( cls, line: str ) -> list[ Count ]:
+      separator = AppStringProvider.values()[ 'format.listJoin' ]
+      marker = cls.count_marker()
+      counts = []
+
+      for part in line.split( separator ):
+         count_text, name = part.split( marker, 1 )
+         counts.append( Count( label=name, count=int( count_text ) ) )
+
+      return counts
+
+
+   @classmethod
+   def parse_report( cls, body: str ) -> Report:
+      draft = ReportDraft()
+      error_count = cls.summary_line( body )
+
+      for raw_line in body.splitlines():
+         cls.read_line( draft, raw_line )
+
+      draft.finish_section()
+      return Report( draft.sections, draft.counts, error_count )
+
+
+   @classmethod
+   def read_line( cls, draft: ReportDraft, raw_line: str ) -> None:
+      stripped = raw_line.strip()
+
+      if cls.read_counts( draft, stripped ):
+         return
+
+      if cls.read_header( draft, stripped ):
+         return
+
+      cls.read_section_line( draft, raw_line, stripped )
+
+
+   @classmethod
+   def read_counts( cls, draft: ReportDraft, stripped: str ) -> bool:
+      if cls.count_line_re().match( stripped ) is None:
+         return False
+
+      draft.counts = cls.parse_counts( stripped )
+      draft.finish_section()
+      return True
+
+
+   @classmethod
+   def read_header( cls, draft: ReportDraft, stripped: str ) -> bool:
+      header = cls.header_re().match( stripped )
+
+      if header is None:
+         return False
+
+      note = header.group( 'note' ) or ''
+      draft.start_section( header.group( 'kind' ), header.group( 'day' ), note )
+      return True
+
+
+   @classmethod
+   def read_section_line( cls, draft: ReportDraft, raw_line: str, stripped: str ) -> None:
+      if draft.current is None or stripped == '':
+         return
+
+      if cls.read_category( draft, raw_line ):
+         return
+
+      cls.read_entry( draft, raw_line, stripped )
+
+
+   @classmethod
+   def read_category( cls, draft: ReportDraft, raw_line: str ) -> bool:
+      category_match = cls.CATEGORY_RE.match( raw_line )
+
+      if category_match is None:
+         return False
+
+      draft.start_category(
+         category_match.group( 'title' ),
+         int( category_match.group( 'count' ) ),
+      )
+      return True
+
+
+   @classmethod
+   def read_entry( cls, draft: ReportDraft, raw_line: str, stripped: str ) -> None:
+      if draft.category is None:
+         draft.add_note( stripped )
+         return
+
+      if raw_line.startswith( CheckReport.detail_prefix() ):
+         draft.add_detail( stripped )
+         return
+
+      draft.add_item( stripped )

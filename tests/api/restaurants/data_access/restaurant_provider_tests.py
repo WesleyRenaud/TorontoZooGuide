@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.restaurants.data_access.restaurant_provider import RestaurantProvider
+from api.restaurants.domain.restaurant_menu_link import RestaurantMenuLink
 from api.shared.enums.position import Position
 
 
@@ -118,6 +119,23 @@ def Test_FetchRestaurantNames_TestPopulated_ExpectNames(
    names = RestaurantProvider.fetch_restaurant_names( restaurant_provider_conn )
 
    assert set( names ) == { PEACOCK_CAFE, SIMBA_SNACKS }
+
+
+def Test_FetchRestaurantMenuLinks_TestMultipleRestaurants_ExpectNameAndLinkOrdered(
+      restaurant_provider_conn: sqlite3.Connection ) -> None:
+   _insert_restaurant( restaurant_provider_conn, name=SIMBA_SNACKS, menu_link=None )
+   _insert_restaurant(
+      restaurant_provider_conn,
+      name=PEACOCK_CAFE,
+      menu_link='https://example.test/menu' )
+   restaurant_provider_conn.commit()
+
+   links = RestaurantProvider.fetch_restaurant_menu_links( restaurant_provider_conn )
+
+   assert links == [
+      RestaurantMenuLink( name=PEACOCK_CAFE, menu_link='https://example.test/menu' ),
+      RestaurantMenuLink( name=SIMBA_SNACKS, menu_link='' ),
+   ]
 
 
 def Test_FetchRestaurantRecords_TestNoMultiplier_ExpectDefaultMultipliers(

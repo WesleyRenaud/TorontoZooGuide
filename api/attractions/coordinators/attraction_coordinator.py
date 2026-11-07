@@ -2,11 +2,15 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..data_access.attraction_closure_record import AttractionClosureRecord
 from ..data_access.attraction_hours_schedule_provider import AttractionHoursScheduleProvider
 from ..data_access.attraction_provider import AttractionProvider
 from ..data_access.attraction_schedule_provider import AttractionScheduleProvider
 from ..data_access.attraction_status_provider import AttractionStatusProvider
 from ..domain.attraction_builder import AttractionBuilder
+from ..domain.attraction_info_link import AttractionInfoLink
+from ..domain.seasonal_attraction import SeasonalAttraction
+from ..domain.seasonal_attraction_builder import SeasonalAttractionBuilder
 from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..itinerary.itinerary_attractions_builder import ItineraryAttractionsBuilder
 from ...models import Attraction
@@ -40,6 +44,11 @@ class AttractionCoordinator():
    @classmethod
    def get_attraction_names( cls ) -> list[ str ]:
       return AttractionProvider.fetch_attraction_names( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_attraction_info_links( cls ) -> list[ AttractionInfoLink ]:
+      return AttractionProvider.fetch_attraction_info_links( RequestConnectionProvider.get() )
 
 
    @classmethod
@@ -147,6 +156,19 @@ class AttractionCoordinator():
          end_date: Types.DateInput,
          message: str ) -> bool:
       return _mutations.set_as_closed( attraction, start_date, end_date, message )
+
+
+   @classmethod
+   def get_closure_records( cls ) -> list[ AttractionClosureRecord ]:
+      return AttractionStatusProvider.fetch_closure_records( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_seasonal_attractions( cls ) -> list[ SeasonalAttraction ]:
+      return SeasonalAttractionBuilder.build(
+         attractions=cls.get_attraction_info_links(),
+         closure_records=cls.get_closure_records(),
+      )
 
 
    @classmethod

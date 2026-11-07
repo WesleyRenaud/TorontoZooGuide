@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from ..data_access.animal_day_seasonal_viewability_provider import AnimalDaySeasonalViewabilityProvider
+from ..data_access.animal_day_seasonal_viewability_record import AnimalDaySeasonalViewabilityRecord
 from ..data_access.animal_enclosure_exhibit_name_provider import AnimalEnclosureExhibitNameProvider
 from ..data_access.animal_information_provider import AnimalInformationProvider
 from ..data_access.animal_off_display_exhibit_name_provider import AnimalOffDisplayExhibitNameProvider
+from ..data_access.animal_off_display_record import AnimalOffDisplayRecord
 from ..data_access.animal_off_display_species_name_provider import AnimalOffDisplaySpeciesNameProvider
 from ..data_access.animal_off_display_viewing_scope_provider import AnimalOffDisplayViewingScopeProvider
 from ..data_access.animal_species_name_provider import AnimalSpeciesNameProvider
@@ -15,10 +18,13 @@ from ..data_access.animal_viewing_scope_provider import AnimalViewingScopeProvid
 from ..data_access.animal_visibility_schedule_exhibit_name_provider import AnimalVisibilityScheduleExhibitNameProvider
 from ..data_access.animal_visibility_schedule_provider import AnimalVisibilityScheduleProvider
 from ..data_access.animal_visibility_schedule_species_name_provider import AnimalVisibilityScheduleSpeciesNameProvider
+from ..domain.animal_species_exhibit import AnimalSpeciesExhibit
 from ..domain.animal_viewability_builder import AnimalViewabilityBuilder
 from ..domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
 from ..domain.animal_viewing_scope import AnimalViewingScope
 from ..domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
+from ..domain.seasonal_off_display_animal import SeasonalOffDisplayAnimal
+from ..domain.seasonal_off_display_animal_builder import SeasonalOffDisplayAnimalBuilder
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..itinerary.itinerary_animals_builder import ItineraryAnimalsBuilder
 from ...models import Animal
@@ -86,10 +92,34 @@ class AnimalCoordinator():
 
 
    @classmethod
+   def get_off_display_records( cls ) -> list[ AnimalOffDisplayRecord ]:
+      return AnimalStatusProvider.fetch_off_display_records( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_seasonal_off_display_animals( cls ) -> list[ SeasonalOffDisplayAnimal ]:
+      return SeasonalOffDisplayAnimalBuilder.build(
+         species=cls.get_animal_species_names(),
+         records=cls.get_off_display_records(),
+      )
+
+
+   @classmethod
+   def get_day_seasonal_viewability_records( cls ) -> list[ AnimalDaySeasonalViewabilityRecord ]:
+      return AnimalDaySeasonalViewabilityProvider.fetch_records( RequestConnectionProvider.get() )
+
+
+   @classmethod
    def get_exhibits_for_species( cls, species: str ) -> list[ str ]:
       return AnimalEnclosureExhibitNameProvider.fetch_exhibit_names_for_species(
          RequestConnectionProvider.get(),
          species=species )
+
+
+   @classmethod
+   def get_animal_species_exhibits( cls ) -> list[ AnimalSpeciesExhibit ]:
+      return AnimalEnclosureExhibitNameProvider.fetch_animal_species_exhibits(
+         RequestConnectionProvider.get() )
 
 
    @classmethod

@@ -68,6 +68,63 @@ def Test_normalize_month( value: Types.MonthInput, expected: Types.VisitMonth | 
 
 
 @pytest.mark.parametrize(
+   'weekday, sunday_first, expected',
+   [
+      ( 0, True, 1 ),
+      ( 6, True, 0 ),
+      ( 1, False, 0 ),
+      ( 0, False, 6 ),
+   ]
+)
+def Test_convert_weekday( weekday: int, sunday_first: bool, expected: int ) -> None:
+   assert CalendarDates.convert_weekday( weekday, sunday_first ) == expected
+
+
+@pytest.mark.parametrize(
+   'weekdays, expected',
+   [
+      ( set(), '' ),
+      ( { 0 }, 'Mon' ),
+      ( { 6, 0 }, 'Sun, Mon' ),
+      ( { 5, 6, 0 }, 'Sun, Mon, Sat' ),
+   ]
+)
+def Test_format_weekdays( weekdays: set[ int ], expected: str ) -> None:
+   assert CalendarDates.format_weekdays( weekdays ) == expected
+
+
+@pytest.mark.parametrize(
+   'name, expected',
+   [
+      ( 'January', 1 ),
+      ( 'december', 12 ),
+      ( 'MAY', 5 ),
+      ( 'NotAMonth', None ),
+   ]
+)
+def Test_month_index( name: str, expected: int | None ) -> None:
+   assert CalendarDates.month_index( name ) == expected
+
+
+@pytest.mark.parametrize(
+   'month, day, today, expected',
+   [
+      ( 1, 2, date( 2026, 12, 28 ), date( 2027, 1, 2 ) ),
+      ( 12, 30, date( 2027, 1, 2 ), date( 2027, 12, 30 ) ),
+      ( 12, 28, date( 2026, 12, 28 ), date( 2026, 12, 28 ) ),
+   ]
+)
+def Test_resolve_month_day(
+      month: int,
+      day: int,
+      today: date,
+      expected: date ) -> None:
+   parsed = CalendarDates.resolve_month_day( month, day, today )
+
+   assert parsed == expected
+
+
+@pytest.mark.parametrize(
    'value, expected',
    [
       ( 1, 'Jan' ),

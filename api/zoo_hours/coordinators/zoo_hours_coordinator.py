@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from ..data_access.zoo_hours_provider import ZooHoursProvider
 from ..domain.zoo_hours_builder import ZooHoursBuilder
 from ...models import ZooHours
@@ -28,3 +30,16 @@ class ZooHoursCoordinator():
          return None
 
       return ZooHoursBuilder.build( zoo_hours_record )
+
+
+   @classmethod
+   def get_zoo_hours_on_or_after( cls, start: date ) -> list[ ZooHours ]:
+      records = ZooHoursProvider.fetch_zoo_hours_records_between(
+         RequestConnectionProvider.get(),
+         start.isoformat(),
+      )
+
+      return [
+         ZooHoursBuilder.build( record )
+         for record in records
+      ]

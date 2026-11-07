@@ -12,6 +12,9 @@ from api.attractions.data_access.attraction_provider import AttractionProvider
 from api.attractions.data_access.attraction_record import AttractionRecord
 from api.attractions.data_access.attraction_status_provider import AttractionStatusProvider
 from api.attractions.domain.attraction_builder import AttractionBuilder
+from api.attractions.domain.attraction_info_link import AttractionInfoLink
+from api.attractions.domain.seasonal_attraction import SeasonalAttraction
+from api.attractions.domain.seasonal_attraction_builder import SeasonalAttractionBuilder
 from api.attractions.scheduling.attraction_hours_schedule import AttractionHoursSchedule
 from api.attractions.scheduling.attraction_hours_schedule_conflict_resolver import AttractionHoursScheduleConflictResolver
 from api.attractions.scheduling.attraction_hours_schedule_time_bounds import AttractionHoursScheduleTimeBounds
@@ -332,6 +335,62 @@ def Test_SetAttractionAsOpenForSeason_TestProvider_ExpectDeleted(
 
    assert result is True
    assert captured[ 'attraction' ] == ATTRACTION_NAME
+
+
+def Test_GetClosureRecords_TestProvider_ExpectRecords(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   closure_record = AttractionClosureRecord(
+      attraction=ATTRACTION_NAME,
+      closed_start='2026-11-02',
+      closed_end=None,
+      closed_message=None,
+      is_closed_for_season=True )
+
+   monkeypatch.setattr(
+      AttractionStatusProvider,
+      'fetch_closure_records',
+      lambda _conn: [ closure_record ] )
+
+   records = AttractionCoordinator.get_closure_records()
+
+   assert records == [ closure_record ]
+
+
+def Test_GetSeasonalAttractions_TestClosures_ExpectBuiltAttractions(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   attractions = [ AttractionInfoLink( name=ATTRACTION_NAME, info_link='https://www.torontozoo.com/tz/splash' ) ]
+   closure_records = [ AttractionClosureRecord(
+      attraction=ATTRACTION_NAME,
+      closed_start='2026-11-02',
+      closed_end=None,
+      closed_message=None,
+      is_closed_for_season=True,
+   ) ]
+   built = [ SeasonalAttraction(
+      name=ATTRACTION_NAME,
+      info_link='https://www.torontozoo.com/tz/splash',
+      is_closed=True,
+      start=date( 2026, 11, 2 ),
+      end=None,
+      closed_for_season=True,
+   ) ]
+   captured: dict[ str, object ] = {}
+
+   monkeypatch.setattr( AttractionCoordinator, 'get_attraction_info_links', lambda: attractions )
+   monkeypatch.setattr( AttractionCoordinator, 'get_closure_records', lambda: closure_records )
+
+   def build( **kwargs: object ) -> list[ SeasonalAttraction ]:
+      captured.update( kwargs )
+      return built
+
+   monkeypatch.setattr( SeasonalAttractionBuilder, 'build', build )
+
+   result = AttractionCoordinator.get_seasonal_attractions()
+
+   assert result is built
+   assert captured[ 'attractions' ] is attractions
+   assert captured[ 'closure_records' ] is closure_records
 
 
 def Test_GetClosedForSeasonAttractionNames_TestProvider_ExpectNames(

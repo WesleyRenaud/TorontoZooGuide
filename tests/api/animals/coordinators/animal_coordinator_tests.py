@@ -8,9 +8,12 @@ from typing import cast
 import pytest
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
+from api.animals.data_access.animal_day_seasonal_viewability_provider import AnimalDaySeasonalViewabilityProvider
+from api.animals.data_access.animal_day_seasonal_viewability_record import AnimalDaySeasonalViewabilityRecord
 from api.animals.data_access.animal_enclosure_exhibit_name_provider import AnimalEnclosureExhibitNameProvider
 from api.animals.data_access.animal_information_provider import AnimalInformationProvider
 from api.animals.data_access.animal_off_display_exhibit_name_provider import AnimalOffDisplayExhibitNameProvider
+from api.animals.data_access.animal_off_display_record import AnimalOffDisplayRecord
 from api.animals.data_access.animal_off_display_species_name_provider import AnimalOffDisplaySpeciesNameProvider
 from api.animals.data_access.animal_off_display_viewing_scope_provider import AnimalOffDisplayViewingScopeProvider
 from api.animals.data_access.animal_species_name_provider import AnimalSpeciesNameProvider
@@ -27,6 +30,8 @@ from api.animals.domain.animal_viewability_builder import AnimalViewabilityBuild
 from api.animals.domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
 from api.animals.domain.animal_viewing_scope import AnimalViewingScope
 from api.animals.domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
+from api.animals.domain.seasonal_off_display_animal import SeasonalOffDisplayAnimal
+from api.animals.domain.seasonal_off_display_animal_builder import SeasonalOffDisplayAnimalBuilder
 from api.animals.scheduling.animal_limited_viewing_schedule import AnimalLimitedViewingSchedule
 from api.animals.scheduling.animal_limited_viewing_schedule_builder import AnimalLimitedViewingScheduleBuilder
 from api.animals.search.animals_matching_query_builder import AnimalsMatchingQueryBuilder
@@ -1114,6 +1119,79 @@ def Test_GetAnimalSpeciesNames_TestProviderNames_ExpectReturned(
    animal_species_names = AnimalCoordinator.get_animal_species_names()
 
    assert animal_species_names == [ SPECIES ]
+
+
+def Test_GetOffDisplayRecords_TestProvider_ExpectRecords(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = AnimalOffDisplayRecord(
+      species=SPECIES,
+      is_off_display=True,
+      start='2026-11-02',
+      end=None,
+      off_for_season=True )
+
+   monkeypatch.setattr(
+      AnimalStatusProvider,
+      'fetch_off_display_records',
+      lambda _conn: [ record ] )
+
+   assert AnimalCoordinator.get_off_display_records() == [ record ]
+
+
+def Test_GetSeasonalOffDisplayAnimals_TestRecords_ExpectBuiltAnimals(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   species = [ SPECIES ]
+   records = [ AnimalOffDisplayRecord(
+      species=SPECIES,
+      is_off_display=True,
+      start='2026-11-02',
+      end=None,
+      off_for_season=True,
+   ) ]
+   built = [ SeasonalOffDisplayAnimal(
+      name=SPECIES,
+      is_off_display=True,
+      start=date( 2026, 11, 2 ),
+      end=None,
+      off_for_season=True,
+   ) ]
+   captured: dict[ str, object ] = {}
+
+   monkeypatch.setattr( AnimalCoordinator, 'get_animal_species_names', lambda: species )
+   monkeypatch.setattr( AnimalCoordinator, 'get_off_display_records', lambda: records )
+
+   def build( **kwargs: object ) -> list[ SeasonalOffDisplayAnimal ]:
+      captured.update( kwargs )
+      return built
+
+   monkeypatch.setattr( SeasonalOffDisplayAnimalBuilder, 'build', build )
+
+   result = AnimalCoordinator.get_seasonal_off_display_animals()
+
+   assert result is built
+   assert captured[ 'species' ] is species
+   assert captured[ 'records' ] is records
+
+
+def Test_GetDaySeasonalViewabilityRecords_TestProvider_ExpectRecords(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = AnimalDaySeasonalViewabilityRecord(
+      species=SPECIES,
+      exhibit=EXHIBIT,
+      month=11,
+      day=2,
+      value=0.5 )
+
+   monkeypatch.setattr(
+      AnimalDaySeasonalViewabilityProvider,
+      'fetch_records',
+      lambda _conn: [ record ] )
+
+   records = AnimalCoordinator.get_day_seasonal_viewability_records()
+
+   assert records == [ record ]
 
 
 def Test_GetExhibitsForSpecies_TestProviderNames_ExpectReturned(
