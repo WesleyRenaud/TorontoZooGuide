@@ -10,6 +10,7 @@ class ReportDraft():
    def __init__( self ) -> None:
       self.sections: list[ Section ] = []
       self.counts: list[ Count ] = []
+      self.fixed_count = 0
       self.current: Section | None = None
       self.category: Category | None = None
       self.item: DetailItem | None = None

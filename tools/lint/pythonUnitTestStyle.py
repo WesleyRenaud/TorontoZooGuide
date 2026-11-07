@@ -15,6 +15,7 @@ PARAMETRIZED_TEST_NAME_RE = re.compile( r'^Test_[A-Za-z][A-Za-z0-9_]*$' )
 PRODUCTION_PREFIXES = (
    ( 'tests/api/', 'api' ),
    ( 'tests/tools/checks/', 'tools/checks' ),
+   ( 'tests/tools/', 'tools' ),
 )
 
 
@@ -198,6 +199,49 @@ def check_test_function_names( test_path: Path ) -> list[ str ]:
    return violations
 
 
+def test_definition_start_line( node: ast.FunctionDef ) -> int:
+   if node.decorator_list:
+      return min( decorator.lineno for decorator in node.decorator_list )
+
+   return node.lineno
+
+
+def check_test_spacing( test_path: Path ) -> list[ str ]:
+   display_path = get_display_path( test_path )
+
+   try:
+      file_text = test_path.read_text()
+      tree = ast.parse( file_text )
+   except SyntaxError as error:
+      return [ f'{ display_path }: { error }' ]
+
+   lines = file_text.splitlines()
+   tests = [
+      node
+      for node in tree.body
+      if isinstance( node, ast.FunctionDef ) and node.name.startswith( 'Test_' )
+   ]
+   violations: list[ str ] = []
+
+   for _previous, current in zip( tests, tests[ 1: ] ):
+      current_start = test_definition_start_line( current )
+      blank_line_count = 0
+      line_index = current_start - 2
+
+      while line_index >= 0 and lines[ line_index ].strip() == '':
+         blank_line_count += 1
+         line_index -= 1
+
+      if blank_line_count == 2:
+         continue
+
+      violations.append(
+         f'{ display_path }:{ current_start }: expected 2 blank lines between tests, '
+         f'found { blank_line_count }.' )
+
+   return violations
+
+
 def check_helper_grouping( test_path: Path ) -> list[ str ]:
    display_path = get_display_path( test_path )
    violations: list[ str ] = []
@@ -251,6 +295,7 @@ def main() -> int:
 
    for path in test_paths:
       violations.extend( check_test_function_names( path ) )
+      violations.extend( check_test_spacing( path ) )
       violations.extend( check_helper_grouping( path ) )
 
    if not violations:

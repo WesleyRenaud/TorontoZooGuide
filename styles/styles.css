@@ -5471,8 +5471,7 @@ nav ul li a[aria-current="page"]:hover {
 }
 
 .console-operations-field.is-invisible {
-   visibility: hidden;
-   pointer-events: none;
+   display: none;
 }
 
 .console-operations-label {

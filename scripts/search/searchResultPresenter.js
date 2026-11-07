@@ -9,7 +9,7 @@ import { SearchResultPresentationHelper } from './searchResultPresentationHelper
 import { Strings } from '../strings.js';
 
 export class SearchResultPresenter {
-   static SEARCH_DETAIL_IMAGE_BASE_PATH = '../images/details';
+   static SEARCH_DETAIL_IMAGE_BASE_PATH = `../${DetailImageBuilder.BASE_PATH}`;
 
    static DEFAULT_SEARCH_RESULT_PRESENTATION = {
       getTitle: AnimalSelectorModel.getAnimalTitleLine,

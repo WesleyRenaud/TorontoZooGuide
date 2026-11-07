@@ -163,7 +163,11 @@ class AnimalListChecker():
          if key in other:
             continue
 
-         labels.append( f'{ cls.listing_label( listing.species ) } · { listing.exhibit }' )
+         labels.append( AppStringProvider.format(
+            'format.middleDotPair',
+            first=cls.listing_label( listing.species ),
+            second=listing.exhibit,
+         ) )
 
       return sorted( labels, key=str.casefold )
 

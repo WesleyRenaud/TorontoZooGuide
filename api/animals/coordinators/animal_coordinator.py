@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from ..data_access.animal_day_seasonal_viewability_provider import AnimalDaySeasonalViewabilityProvider
 from ..data_access.animal_day_seasonal_viewability_record import AnimalDaySeasonalViewabilityRecord
 from ..data_access.animal_enclosure_exhibit_name_provider import AnimalEnclosureExhibitNameProvider
@@ -18,10 +20,12 @@ from ..data_access.animal_viewing_scope_provider import AnimalViewingScopeProvid
 from ..data_access.animal_visibility_schedule_exhibit_name_provider import AnimalVisibilityScheduleExhibitNameProvider
 from ..data_access.animal_visibility_schedule_provider import AnimalVisibilityScheduleProvider
 from ..data_access.animal_visibility_schedule_species_name_provider import AnimalVisibilityScheduleSpeciesNameProvider
+from ..data_access.enclosure_off_display_month_provider import EnclosureOffDisplayMonthProvider
 from ..domain.animal_species_exhibit import AnimalSpeciesExhibit
 from ..domain.animal_viewability_builder import AnimalViewabilityBuilder
 from ..domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
 from ..domain.animal_viewing_scope import AnimalViewingScope
+from ..domain.enclosure_off_display_month import EnclosureOffDisplayMonth
 from ..domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from ..domain.seasonal_off_display_animal import SeasonalOffDisplayAnimal
 from ..domain.seasonal_off_display_animal_builder import SeasonalOffDisplayAnimalBuilder
@@ -31,6 +35,7 @@ from ...models import Animal
 from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.animal_limited_viewing_schedule_builder import AnimalLimitedViewingScheduleBuilder
 from ..search.animals_matching_query_builder import AnimalsMatchingQueryBuilder
+from ...shared.calendar_dates import CalendarDates
 from ...shared.date_values import DateValues
 from ..status.animal_off_display_status_builder import AnimalOffDisplayStatusBuilder
 from ..status.animal_viewing_alert_builder import AnimalViewingAlertBuilder
@@ -102,6 +107,12 @@ class AnimalCoordinator():
          species=cls.get_animal_species_names(),
          records=cls.get_off_display_records(),
       )
+
+
+   @classmethod
+   def get_enclosure_off_display_months( cls ) -> list[ EnclosureOffDisplayMonth ]:
+      return EnclosureOffDisplayMonthProvider.fetch_off_display_months(
+         RequestConnectionProvider.get() )
 
 
    @classmethod
@@ -263,6 +274,32 @@ class AnimalCoordinator():
          end_date=status.end_date,
          message=status.message,
          is_off_display_for_season=status.is_off_display_for_season )
+
+
+   @classmethod
+   def set_off_display_for_season_until(
+         cls,
+         species: str,
+         exhibit: str,
+         today: date ) -> bool:
+      until_month = EnclosureOffDisplayMonthProvider.fetch_until_month(
+         RequestConnectionProvider.get(),
+         species=species,
+         exhibit=exhibit )
+      end_date = CalendarDates.next_month_end( until_month, today )
+      viewing_scopes = AnimalViewingScopeProvider.fetch_animal_viewing_scopes(
+         RequestConnectionProvider.get(),
+         species=species,
+         exhibit=exhibit )
+
+      return cls.set_animal_as_off_display(
+         species=species,
+         exhibit=exhibit,
+         start_date=today,
+         end_date=end_date,
+         message='',
+         viewing_scopes=viewing_scopes,
+         is_off_display_for_season=True )
 
 
    @classmethod

@@ -439,6 +439,7 @@ def Test_Build_TestGroupedAnimals_ExpectLoopMetadataAndWalkEndpoints(
    assert indo_unit.exit_walk_node_id == 'n-indo-cheetah'
    assert [ animal.species for animal in indo_unit.stops ] == [ 'Cheetah' ]
 
+
 def Test_Build_TestPartialLoopAnimal_ExpectItineraryAnimalEndpoints(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(
@@ -449,6 +450,7 @@ def Test_Build_TestPartialLoopAnimal_ExpectItineraryAnimalEndpoints(
    assert loop_units[ Position.FIRST ].entry_walk_node_id == 'n-tiger'
    assert loop_units[ Position.FIRST ].exit_walk_node_id == 'n-tiger'
 
+
 def Test_Build_TestTwoWayLoop_ExpectTraversalAndEndpoints(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(
@@ -458,6 +460,7 @@ def Test_Build_TestTwoWayLoop_ExpectTraversalAndEndpoints(
    assert loop_units[ Position.FIRST ].traversal == TWO_WAY_LOOP_TRAVERSAL
    assert loop_units[ Position.FIRST ].entry_walk_node_id == 'n-highland'
    assert loop_units[ Position.FIRST ].exit_walk_node_id == 'n-tur'
+
 
 def Test_Reversed_TestTwoWayLoop_ExpectSwappedEndpointsAndStops(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -471,6 +474,7 @@ def Test_Reversed_TestTwoWayLoop_ExpectSwappedEndpointsAndStops(
       'West Caucasian Tur',
       'Highland Cattle',
    ]
+
 
 def Test_Orientations_TestTwoWayLoop_ExpectForwardAndReversed(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -488,6 +492,7 @@ def Test_Orientations_TestTwoWayLoop_ExpectForwardAndReversed(
       'Highland Cattle',
    ]
 
+
 def Test_Build_TestLoopViewingSpotOrder_ExpectSortedStops(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(
@@ -504,6 +509,7 @@ def Test_Build_TestLoopViewingSpotOrder_ExpectSortedStops(
       'African Penguin',
       'Cheetah',
    ]
+
 
 def Test_Build_TestLionPenguinCheetah_ExpectSingleSavannaLoopUnit(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -524,6 +530,7 @@ def Test_Build_TestLionPenguinCheetah_ExpectSingleSavannaLoopUnit(
       'Cheetah',
    ]
 
+
 def Test_Build_TestWarthogBeforeGiraffe_ExpectSeparateSavannaAndGiraffeUnits(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(
@@ -535,6 +542,7 @@ def Test_Build_TestWarthogBeforeGiraffe_ExpectSeparateSavannaAndGiraffeUnits(
    assert loop_units[ Position.SECOND ].loop_id == 'african_rainforest_giraffe'
    assert [ animal.species for animal in loop_units[ Position.SECOND ].stops ] == [ 'Masai Giraffe' ]
 
+
 def Test_Build_TestUnmappedAnimal_ExpectNoLoopMetadata(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build( [ [ UNKNOWN_ANIMAL ] ] )
@@ -542,6 +550,7 @@ def Test_Build_TestUnmappedAnimal_ExpectNoLoopMetadata(
    assert len( loop_units ) == 1
    assert loop_units[ Position.FIRST ].loop_id is None
    assert loop_units[ Position.FIRST ].side_cluster_id is None
+
 
 def Test_Build_TestWovenAttractionBetweenAnimals_ExpectMasterRouteOrder(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -570,6 +579,7 @@ def Test_Build_TestWovenAttractionBetweenAnimals_ExpectMasterRouteOrder(
       'Amur Tiger',
    ]
 
+
 def Test_Build_TestPavilionSavannaOverlookStops_ExpectExcludedFromSavannaLoop(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(
@@ -592,6 +602,7 @@ def Test_Build_TestPavilionSavannaOverlookStops_ExpectExcludedFromSavannaLoop(
       ( 'Marabou Stork', 'White Rhino Viewing' ),
    ]
 
+
 def Test_Build_TestZebraSavannaGrasslands_ExpectExcludedFromSavannaLoop(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
    loop_units = LoopScheduleUnitBuilder.build(
@@ -602,6 +613,7 @@ def Test_Build_TestZebraSavannaGrasslands_ExpectExcludedFromSavannaLoop(
    assert [ ( animal.species, animal.enclosure_name ) for animal in loop_units[ Position.FIRST ].stops ] == [
       ( "Grevy's Zebra", None ),
    ]
+
 
 def Test_Build_TestOstrichEnclosures_ExpectMasterRouteOrder(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -622,6 +634,7 @@ def Test_Build_TestOstrichEnclosures_ExpectMasterRouteOrder(
       'Kesho Park Offshoot',
    ]
 
+
 def Test_WalkNodeIdForStop_TestTransportation_ExpectResolvedNode(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
@@ -637,6 +650,7 @@ def Test_WalkNodeIdForStop_TestTransportation_ExpectResolvedNode(
          new_likelihood=100 ) )
 
    assert result == 'n-zoomobile'
+
 
 def Test_WalkNodeIdForStop_TestKnownAttraction_ExpectWalkNodeId(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -660,10 +674,12 @@ def Test_WalkNodeIdForStop_TestKnownAttraction_ExpectWalkNodeId(
 
    assert result == 'n-carousel'
 
+
 def Test_WalkEndpointNodeIdsForStops_TestEmptyStops_ExpectNoneEndpoints() -> None:
    result = LoopScheduleUnitBuilder._walk_endpoint_node_ids_for_stops( [] )
 
    assert result == ( None, None )
+
 
 def Test_StopsInMasterRouteLoopOrder_TestNoMappedStops_ExpectOriginalOrder(
       stub_loop_schedule_unit_builder_dependencies: None ) -> None:
@@ -674,6 +690,7 @@ def Test_StopsInMasterRouteLoopOrder_TestNoMappedStops_ExpectOriginalOrder(
       stops )
 
    assert ordered == stops
+
 
 def Test_WalkNodeIdForStop_TestUnknownAttraction_ExpectNone(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -689,6 +706,7 @@ def Test_WalkNodeIdForStop_TestUnknownAttraction_ExpectNone(
          new_likelihood=100 ) )
 
    assert result is None
+
 
 def Test_Key_TestViewingSpot_ExpectNameKey() -> None:
    reference = ViewingSpotReference(

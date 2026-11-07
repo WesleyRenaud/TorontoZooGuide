@@ -19,21 +19,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run check
+      - name: Fix and email the summary
         id: website_check
-        run: |
-          set +e
-          python3 -m tools.checks.schedule_checker > check-output.txt 2>&1
-          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
-
-      - name: Email the summary
         env:
           CHECK_EMAIL_PASSWORD: ${{ secrets.CHECK_EMAIL_PASSWORD }}
-        run: >
-          python3 -m tools.emailCheckSummary
-          --output check-output.txt
-          --exit-code "${{ steps.website_check.outputs.exit_code }}"
+        run: |
+          set +e
+          python3 -m tools.fix
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
-      - name: Fail when the check reported issues
+      - name: Fail when issues remain
         if: always() && steps.website_check.outputs.exit_code != '0'
         run: exit 1

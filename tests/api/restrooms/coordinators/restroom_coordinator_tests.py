@@ -56,6 +56,7 @@ def Test_GetRestroomNames_TestProviderNames_ExpectReturned(
 
    assert restroom_names == [ RESTROOM_TITLE ]
 
+
 def Test_GetClosedRestroomOptions_TestProviderNames_ExpectReturned(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -81,6 +82,7 @@ def Test_GetClosedRestroomOptions_TestProviderNames_ExpectReturned(
    assert closed_restroom_options == [ RESTROOM_TITLE ]
    assert captured == { 'today': '2026-09-16' }
 
+
 def Test_GetRestroomAlertOptions_TestProviderNames_ExpectReturned(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -105,6 +107,7 @@ def Test_GetRestroomAlertOptions_TestProviderNames_ExpectReturned(
 
    assert restroom_alert_options == [ RESTROOM_TITLE ]
    assert captured == { 'today': '2026-09-16' }
+
 
 def Test_GetRestrooms_TestProvidersAndBuilder_ExpectRestrooms(
       stub_request_connection: None,
@@ -139,6 +142,7 @@ def Test_GetRestrooms_TestProvidersAndBuilder_ExpectRestrooms(
    assert captured[ 'context' ] is context
    assert captured[ 'include_closed_restrooms' ] is True
 
+
 def Test_GetRestroomsMatchingQuery_TestBuilder_ExpectMatches(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    restrooms = [ RESTROOM ]
@@ -160,6 +164,7 @@ def Test_GetRestroomsMatchingQuery_TestBuilder_ExpectMatches(
       include_closed_restrooms=False )
 
    assert restrooms_matching_query == restrooms
+
 
 def Test_SetRestroomAsClosed_TestBuilderAndProvider_ExpectDelegated(
       stub_request_connection: None,
@@ -192,6 +197,7 @@ def Test_SetRestroomAsClosed_TestBuilderAndProvider_ExpectDelegated(
    assert result is True
    assert captured[ 'args' ] == ( RESTROOM_TITLE, START_DATE, END_DATE, MESSAGE )
 
+
 def Test_SetRestroomAsOpen_TestProvider_ExpectDelegated(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -220,6 +226,7 @@ def Test_SetRestroomAsOpen_TestProvider_ExpectDelegated(
 
    assert result is True
    assert captured[ 'args' ] == ( RESTROOM_TITLE, START_DATE, END_DATE )
+
 
 def Test_SetRestroomAlert_TestBuilderAndProvider_ExpectDelegated(
       stub_request_connection: None,
@@ -251,6 +258,7 @@ def Test_SetRestroomAlert_TestBuilderAndProvider_ExpectDelegated(
 
    assert result is True
    assert captured[ 'args' ] == ( RESTROOM_TITLE, START_DATE, END_DATE, MESSAGE )
+
 
 def Test_RemoveRestroomAlert_TestProvider_ExpectDelegated(
       stub_request_connection: None,

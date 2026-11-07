@@ -6,6 +6,7 @@ import sqlite3
 
 import pytest
 
+from tools.checks.check_report import CheckReport
 from tools.checks.gift_shop_list_checker import GiftShopListChecker as gift_shop_list_checker
 from tools.checks.website_page import WebsitePage
 
@@ -85,9 +86,9 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'On the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
    assert '  Discovery Zone' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
    assert 'Online Zoo Shop' not in output
    assert 'Hours subject to change' not in output
 
@@ -103,9 +104,9 @@ def Test_CheckLists_TestAppOnly_ExpectAppMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert f'  { KIOSK }' in output
-   assert 'On the website and not in the app: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
 
 
 def Test_CheckLists_TestNormalizedNames_ExpectMatched(
@@ -135,8 +136,8 @@ def Test_CheckLists_TestNormalizedNames_ExpectMatched(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'On the website and not in the app: 0' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
 
 def Test_CheckLists_TestCommentedShop_ExpectIgnored(
@@ -155,8 +156,8 @@ def Test_CheckLists_TestCommentedShop_ExpectIgnored(
    assert result == 1
    assert f'  { KIOSK }' in output
    assert 'Tundra Trading Post' not in output
-   assert 'On the website and not in the app: 0' in output
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
 
 
 def Test_CheckLists_TestBothSides_ExpectIssueCount(
@@ -186,6 +187,6 @@ def Test_CheckLists_TestDuplicateCard_ExpectOneListing(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 2
-   assert 'On the website and not in the app: 1' in output
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert output.count( '  Discovery Zone' ) == 1

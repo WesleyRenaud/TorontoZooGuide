@@ -1,4 +1,4 @@
-import { AssetKeyNormalizer } from '../../assets/assetKeyNormalizer.js';
+import { DetailImageBuilder } from '../../assets/detailImageBuilder.js';
 import { DayPlannerScheduleController } from './dayPlannerScheduleController.js';
 import { RowPresentationHelper } from './rowPresentationHelper.js';
 import { ScheduledOccurrenceTimeModel } from '../scheduledOccurrenceTimeModel.js';
@@ -7,15 +7,7 @@ import { Strings } from '../../strings.js';
 
 export class RowPresenter {
    static buildImageSrc(...pathParts) {
-      const normalizedParts = pathParts
-         .map((part) => AssetKeyNormalizer.normalize(part))
-         .filter(Boolean);
-
-      if (normalizedParts.length !== pathParts.length) {
-         return null;
-      }
-
-      return `images/details/${normalizedParts.join('/')}.png`;
+      return DetailImageBuilder.buildDetailImageSrcFromParts(pathParts);
    }
 
    static buildFieldLine(label, value) {

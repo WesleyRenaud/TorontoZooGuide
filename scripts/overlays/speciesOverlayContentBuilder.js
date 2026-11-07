@@ -1,5 +1,5 @@
 import { ValueNormalizer } from '../api/valueNormalizer.js';
-import { AssetKeyNormalizer } from '../assets/assetKeyNormalizer.js';
+import { DetailImageBuilder } from '../assets/detailImageBuilder.js';
 import { Strings } from '../strings.js';
 
 export class SpeciesOverlayContentBuilder {
@@ -13,7 +13,11 @@ export class SpeciesOverlayContentBuilder {
    static createSpeciesImage(animal) {
       const image = document.createElement('img');
       image.className = 'new-animal-image';
-      image.src = `images/details/animals/${AssetKeyNormalizer.normalize(animal.exhibit)}/${AssetKeyNormalizer.normalize(animal.species)}.png`;
+      image.src = DetailImageBuilder.buildDetailImageSrcFromParts([
+         'animals',
+         animal.exhibit,
+         animal.species,
+      ]);
       image.alt = ValueNormalizer.asTrimmedString(animal.species);
       return image;
    }

@@ -105,6 +105,7 @@ def Test_FetchFromFile_TestJsonFile_ExpectMappedMasterRoute( tmp_path: Path ) ->
    assert route.route_id == 'main'
    assert [ loop.loop_id for loop in route.loops ] == [ 'africa-loop', 'carousel-loop' ]
 
+
 def Test_LoopsById_TestDefaultRoute_ExpectLoopLookup(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr( MasterRouteProvider, 'fetch_default', lambda: MASTER_ROUTE )
@@ -113,6 +114,7 @@ def Test_LoopsById_TestDefaultRoute_ExpectLoopLookup(
 
    assert set( loops_by_id ) == { 'africa-loop', 'carousel-loop' }
    assert loops_by_id[ 'africa-loop' ].name == 'Africa'
+
 
 def Test_RouteIndexByStopKey_TestDefaultRoute_ExpectIndexes(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -123,6 +125,7 @@ def Test_RouteIndexByStopKey_TestDefaultRoute_ExpectIndexes(
    assert indexes[ LION.master_route_key() ] == 0
    assert indexes[ CAROUSEL.master_route_key() ] == 2
 
+
 def Test_LoopIndexByStopKey_TestDefaultRoute_ExpectLoopIndexes(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr( MasterRouteProvider, 'fetch_default', lambda: MASTER_ROUTE )
@@ -131,6 +134,7 @@ def Test_LoopIndexByStopKey_TestDefaultRoute_ExpectLoopIndexes(
 
    assert indexes[ LION.master_route_key() ] == 0
    assert indexes[ CAROUSEL.master_route_key() ] == 1
+
 
 def Test_LoopIdByStopKey_TestDefaultRoute_ExpectLoopIds(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -141,6 +145,7 @@ def Test_LoopIdByStopKey_TestDefaultRoute_ExpectLoopIds(
    assert loop_ids[ LION.master_route_key() ] == 'africa-loop'
    assert loop_ids[ CAROUSEL.master_route_key() ] == 'carousel-loop'
 
+
 def Test_LoopIndexInSideClusterByLoopId_TestDefaultRoute_ExpectIndexes(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr( MasterRouteProvider, 'fetch_default', lambda: MASTER_ROUTE )
@@ -149,6 +154,7 @@ def Test_LoopIndexInSideClusterByLoopId_TestDefaultRoute_ExpectIndexes(
 
    assert indexes[ 'africa-loop' ] == 0
    assert indexes[ 'carousel-loop' ] == 1
+
 
 def Test_LoopSideClusterIdByLoopId_TestDefaultRoute_ExpectClusterIds(
       monkeypatch: pytest.MonkeyPatch ) -> None:

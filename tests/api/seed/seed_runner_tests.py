@@ -37,6 +37,7 @@ def Test_CreateSchema_TestExistingClosureStatuses_ExpectPreserved() -> None:
    finally:
       connection.close()
 
+
 def Test_ApplySchema_TestMonkeypatchedConnect_ExpectSchemaMigrateCommit(
       monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -78,6 +79,7 @@ def Test_ApplySchema_TestMonkeypatchedConnect_ExpectSchemaMigrateCommit(
    ]
    conn.close()
 
+
 def Test_ApplySeedData_TestMonkeypatchedConnect_ExpectSeedCommit(
       monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -109,6 +111,7 @@ def Test_ApplySeedData_TestMonkeypatchedConnect_ExpectSeedCommit(
 
    assert calls == [ 'cursor', 'seed', 'commit', 'close' ]
    conn.close()
+
 
 def Test_Main_TestMonkeypatchedConnect_ExpectSchemaMigrateSeedCommit(
       monkeypatch: pytest.MonkeyPatch,
@@ -155,6 +158,7 @@ def Test_Main_TestMonkeypatchedConnect_ExpectSchemaMigrateSeedCommit(
    ]
    assert 'Database schema and seed data applied successfully.' in capsys.readouterr().out
    conn.close()
+
 
 def Test_ModuleMain_TestMonkeypatchedConnect_ExpectSchemaMigrateSeedCommit(
       monkeypatch: pytest.MonkeyPatch,

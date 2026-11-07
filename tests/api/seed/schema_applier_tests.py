@@ -26,6 +26,7 @@ def Test_Main_TestAppliesSchema_ExpectDelegatesToSeedRunner(
    assert calls == [ DB_PATH ]
    assert 'Database schema applied successfully.' in capsys.readouterr().out
 
+
 def Test_ModuleMain_TestAppliesSchema_ExpectDelegatesToSeedRunner(
       monkeypatch: pytest.MonkeyPatch,
       capsys: pytest.CaptureFixture[ str ] ) -> None:

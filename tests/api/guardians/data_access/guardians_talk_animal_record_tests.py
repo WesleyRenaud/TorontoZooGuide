@@ -150,7 +150,6 @@ def Test_Resolve_TestLinkedEnclosureBeforeTalkNameMatch_ExpectOutdoorNotIndoor()
    assert index != indoor_index
 
 
-
 def Test_SpeciesExhibitKey_TestLinkedAnimal_ExpectKey() -> None:
    result = PENGUIN_OUTDOOR_LINK.species_exhibit_key()
 

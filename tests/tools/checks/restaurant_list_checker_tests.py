@@ -6,6 +6,7 @@ import sqlite3
 
 import pytest
 
+from tools.checks.check_report import CheckReport
 from tools.checks.restaurant_list_checker import RestaurantListChecker as restaurant_list_checker
 from tools.checks.website_page import WebsitePage
 
@@ -135,9 +136,9 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'On the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
    assert '  Discovery Grill' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
    assert 'Pizza Window' not in output
 
 
@@ -158,9 +159,9 @@ def Test_CheckLists_TestAppOnly_ExpectAppMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert f'  { SAVANNA }' in output
-   assert 'On the website and not in the app: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
 
 
 def Test_CheckLists_TestNormalizedNames_ExpectMatched(
@@ -188,8 +189,8 @@ def Test_CheckLists_TestNormalizedNames_ExpectMatched(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert 'On the website and not in the app: 0' in output
-   assert 'In the app and not on the website: 0' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
 
 def Test_CheckLists_TestCardWithoutHours_ExpectMatched(
@@ -260,8 +261,8 @@ def Test_CheckLists_TestDifferentTitles_ExpectEachMiss(
    assert '  Palgong Tea' in output
    assert f'  { THORNTREE }' in output
    assert f'  { PALGONG }' in output
-   assert 'On the website and not in the app: 1' in output
-   assert 'In the app and not on the website: 2' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 2 ) in output
 
 
 def Test_CheckLists_TestSharedMenuNamedCard_ExpectOtherAppMiss(
@@ -286,7 +287,7 @@ def Test_CheckLists_TestSharedMenuNamedCard_ExpectOtherAppMiss(
    assert result == 1
    assert f'  { PALGONG }' in output
    assert THORNTREE not in output
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
 
 
 def Test_CheckLists_TestEmptyHrefDoesNotMatchNullLink_ExpectBothSides(
@@ -357,7 +358,7 @@ def Test_CheckLists_TestAllowedWebsiteRestaurant_ExpectIgnored(
    assert result == 1
    assert f'  { name }' not in output
    assert '  Discovery Grill' in output
-   assert 'On the website and not in the app: 1' in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
 
 
 def Test_CheckLists_TestAllowedRestaurantMissingFromWebsite_ExpectAppMiss(
@@ -381,4 +382,4 @@ def Test_CheckLists_TestAllowedRestaurantMissingFromWebsite_ExpectAppMiss(
 
    assert result == 1
    assert '  Ice Cream Carts' in output
-   assert 'In the app and not on the website: 1' in output
+   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output

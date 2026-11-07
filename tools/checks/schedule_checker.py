@@ -11,11 +11,13 @@ from api.app_string_provider import AppStringProvider
 from .attraction_list_checker import AttractionListChecker
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
+from .check_report import CheckReport
 from .check_report_parser import CheckReportParser
 from .gift_shop_list_checker import GiftShopListChecker
 from .guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
+from .off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker
+from .off_for_season_on_website_not_in_app_checker import OffForSeasonOnWebsiteNotInAppChecker
 from .restaurant_list_checker import RestaurantListChecker
-from .seasonal_animal_off_display_checker import SeasonalAnimalOffDisplayChecker
 from .seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker
 from .seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from .seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
@@ -32,8 +34,19 @@ class ScheduleChecker():
 
    @classmethod
    def check_animals( cls, database: Path, today: date ) -> int:
+      website_lines = OffForSeasonOnWebsiteNotInAppChecker.category_lines( database, today )
+      app_lines = OffForSeasonInAppNotOnWebsiteChecker.category_lines( database, today )
+      print( CheckReport.heading( 'seasonalOffDisplay', today ) )
+      print()
+
+      if website_lines != None:
+         OffForSeasonOnWebsiteNotInAppChecker.report( website_lines )
+
+      OffForSeasonInAppNotOnWebsiteChecker.report( app_lines )
+      website_count = 0 if website_lines == None else len( website_lines )
       return (
-         SeasonalAnimalOffDisplayChecker.check_schedules( database, today )
+         website_count
+         + len( app_lines )
          + AnimalListChecker.check_lists( database, today )
       )
 
@@ -68,6 +81,7 @@ class ScheduleChecker():
          drinking_fountain_check: Callable[ [ Path, date ], int ],
          attraction_list_check: Callable[ [ Path, date ], int ],
          zoo_hours_check: Callable[ [ Path, date ], int ] ) -> int:
+      CheckReport.reset_fixed_count()
       encounter_issues = encounter_check( database, today )
       talk_issues = talk_check( database, today )
       animal_issues = animal_check( database, today )
@@ -88,17 +102,19 @@ class ScheduleChecker():
          + attraction_list_issues
          + zoo_hours_issues
       )
-      print( CheckReportParser.format_counts( [
-         encounter_issues,
-         talk_issues,
-         animal_issues,
-         attraction_issues,
-         restaurant_issues,
-         gift_shop_issues,
-         drinking_fountain_issues,
-         attraction_list_issues,
-         zoo_hours_issues,
-      ] ) )
+      print( CheckReportParser.format_fixed_count( CheckReport.fixed_count ) )
+      print()
+      print( CheckReportParser.format_counts(
+         encounters=encounter_issues,
+         talks=talk_issues,
+         animals=animal_issues,
+         attractions=attraction_issues,
+         restaurants=restaurant_issues,
+         gift_shops=gift_shop_issues,
+         drinking_fountains=drinking_fountain_issues,
+         attraction_list=attraction_list_issues,
+         zoo_hours=zoo_hours_issues,
+      ) )
       print()
       print( CheckReportParser.format_error_count( issues ) )
 

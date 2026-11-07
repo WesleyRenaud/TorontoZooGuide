@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 
 class Paths():
    ROOT = Path( __file__ ).resolve().parents[ 2 ]
+   DETAIL_IMAGES = ROOT / json.loads(
+      ( ROOT / 'shared' / 'detailImages.json' ).read_text()
+   )[ 'root' ]
    DATABASE = ROOT / 'animals.db'
    EXHIBIT_DATA = ROOT / 'api' / 'seed' / 'data' / 'exhibit.json'
    REGION_TOKENS = ROOT / 'styles' / 'tokens.css'

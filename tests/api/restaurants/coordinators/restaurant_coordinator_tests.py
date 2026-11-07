@@ -116,6 +116,7 @@ def Test_GetRestaurants_TestProvidersAndBuilder_ExpectRestaurants(
    assert captured[ 'include_closed_restaurants' ] is True
    assert captured[ 'closure_records' ] == []
 
+
 def Test_GetRestaurantsMatchingQuery_TestBuilder_ExpectMatches(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    restaurants = [ RESTAURANT ]
@@ -137,6 +138,7 @@ def Test_GetRestaurantsMatchingQuery_TestBuilder_ExpectMatches(
       include_closed_restaurants=False )
 
    assert restaurants_matching_query == restaurants
+
 
 def Test_SetRestaurantAsClosed_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -163,6 +165,7 @@ def Test_SetRestaurantAsClosed_TestMutations_ExpectDelegated(
    assert result is True
    assert captured[ 'args' ] == ( RESTAURANT_NAME, START_DATE, END_DATE, MESSAGE )
 
+
 def Test_SetRestaurantClosureOverride_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
@@ -187,6 +190,7 @@ def Test_SetRestaurantClosureOverride_TestMutations_ExpectDelegated(
 
    assert result is True
    assert captured[ 'args' ] == ( RESTAURANT_NAME, START_DATE, END_DATE, MESSAGE )
+
 
 def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -228,6 +232,7 @@ def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
       False,
       MESSAGE )
 
+
 def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    class StubMutations:
@@ -252,6 +257,7 @@ def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
    assert result is True
 
+
 def Test_TrimRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    class StubMutations:
@@ -275,6 +281,7 @@ def Test_TrimRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       MESSAGE )
 
    assert result is True
+
 
 def Test_GetClosureRecords_TestProvider_ExpectRecords(
       stub_request_connection: None,
@@ -345,6 +352,7 @@ def Test_GetClosedForSeasonRestaurantNames_TestProvider_ExpectNames(
 
    assert names == [ RESTAURANT_NAME ]
 
+
 def Test_SetRestaurantAsClosedForSeason_TestBuilderAndProvider_ExpectSaved(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -386,6 +394,7 @@ def Test_SetRestaurantAsClosedForSeason_TestBuilderAndProvider_ExpectSaved(
       'end_date': END_DATE,
       'message': MESSAGE,
    }
+
 
 def Test_SetRestaurantAsOpenForSeason_TestProvider_ExpectDeleted(
       stub_request_connection: None,

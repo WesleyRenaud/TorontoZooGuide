@@ -26,7 +26,7 @@ export class CheckStrings {
       earlyAdmission: 'early admission ',
       email: {
          couldNotFindOutput: 'Could not find the check output.',
-         description: 'Email the daily Toronto Zoo website check summary, or open a local preview of that message.',
+         description: 'Fix differences the Toronto Zoo website check can correct, then email the summary.',
          exitCode: 'Exit code from the check. Required with --output.',
          header: {
             from: 'From',
@@ -42,7 +42,9 @@ export class CheckStrings {
          subtype: 'html',
       },
       error: ' error',
+      errorFixed: ' error fixed',
       errors: ' errors',
+      errorsFixed: ' errors fixed',
       headingMiddle: ' check for ',
       hoursDayCountEnd: ' days): ',
       hoursDayCountStart: ' (',
@@ -57,6 +59,7 @@ export class CheckStrings {
       offForSeasonWebsiteOnly: 'Off for the season on the website and not in the app',
       openTime: 'open ',
       period: '.',
+      photo: 'Photo: ',
       planPageExceptionOutsideRange: 'The plan page hours exception is outside the published range.',
       planPageExceptionWithoutDate: 'The plan page has an hours exception without a date.',
       planPageHoursRangeEndsBeforeStart: 'The plan page hours range ends before it starts.',
@@ -67,11 +70,13 @@ export class CheckStrings {
       planPageNoLastAdmission: 'The plan page has no last admission time.',
       scheduledInAppOnly: 'Scheduled in the app and not on the website',
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
+      setOffDisplayForSeasonFrom: 'Set off display for the season from ',
       status: {
          allClear: 'All clear',
          couldNotFinish: 'Could not finish',
          didNotFinish: 'The check did not finish.',
          differ: 'These checks differ from the website.',
+         noneDetected: 'No errors were detected',
          websiteMatches: 'The website and the app match.',
       },
       subject: {

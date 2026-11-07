@@ -30,6 +30,7 @@ def Test_FetchPicnicSites_TestEmpty_ExpectEmptyList(
 
    assert picnic_sites == []
 
+
 def Test_FetchPicnicSites_TestPopulated_ExpectMappedCoordinates(
       picnic_site_provider_conn: sqlite3.Connection ) -> None:
    picnic_site_provider_conn.execute(

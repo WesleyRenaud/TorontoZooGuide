@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import calendar
 from collections.abc import Callable
 from datetime import date
 from datetime import datetime
@@ -8,6 +9,7 @@ from datetime import time
 from api_test_support.frozen_datetime import patch_database_today
 import pytest
 
+from api.app_string_provider import AppStringProvider
 from api.shared.calendar_dates import DateValues
 from api.types import Types
 
@@ -420,13 +422,38 @@ def Test_FormatDisplayDateValue_TestValidDate_ExpectMonthDayYear() -> None:
 
    display = DateValues.format_display_date_value( value )
 
-   assert display == f'{ parsed.strftime( "%B" ) } { parsed.day }, { parsed.year }'
+   assert display == AppStringProvider.format(
+      'format.pair',
+      first=f'{ parsed.strftime( "%B" ) } { parsed.day }',
+      second=parsed.year,
+   )
 
 
 def Test_FormatDisplayDateValue_TestInvalidDate_ExpectNone() -> None:
    value = None
 
    display = DateValues.format_display_date_value( value )
+
+   assert display is None
+
+
+def Test_FormatDisplayWeekday_TestValidDate_ExpectWeekdayMonthDayYear() -> None:
+   value = '2026-11-04'
+   parsed = DateValues.parse_date_value( value )
+
+   display = DateValues.format_display_weekday( value )
+
+   assert display == AppStringProvider.format(
+      'format.pair',
+      first=calendar.day_name[ parsed.weekday() ],
+      second=DateValues.format_display_date_value( parsed ),
+   )
+
+
+def Test_FormatDisplayWeekday_TestInvalidDate_ExpectNone() -> None:
+   value = None
+
+   display = DateValues.format_display_weekday( value )
 
    assert display is None
 

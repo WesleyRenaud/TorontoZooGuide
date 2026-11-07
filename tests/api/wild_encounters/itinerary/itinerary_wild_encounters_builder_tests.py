@@ -52,6 +52,7 @@ def Test_Build_TestMatchingSaved_ExpectTimesAndDeletedCopied() -> None:
    assert result[ Position.FIRST ].end_time == SAVED_END
    assert result[ Position.FIRST ].is_deleted is True
 
+
 def Test_Build_TestNoMatch_ExpectUnchanged() -> None:
    encounters = [
       _wild_encounter(
@@ -74,6 +75,7 @@ def Test_Build_TestNoMatch_ExpectUnchanged() -> None:
    assert result[ Position.FIRST ].start_time == '10:00 AM'
    assert result[ Position.FIRST ].end_time == '10:20 AM'
    assert result[ Position.FIRST ].is_deleted is False
+
 
 def Test_Build_TestSortsByNameAndStartTime_ExpectOrdered() -> None:
    encounters = [

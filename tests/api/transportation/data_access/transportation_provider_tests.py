@@ -119,6 +119,7 @@ def Test_FetchTransportationRecords_TestEmpty_ExpectEmptyList(
 
    assert transportation_records == []
 
+
 def Test_FetchTransportationRecords_TestPopulated_ExpectMappedFields(
       transportation_provider_conn: sqlite3.Connection ) -> None:
    _insert_zoomobile( transportation_provider_conn )

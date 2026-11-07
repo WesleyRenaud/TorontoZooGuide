@@ -10,13 +10,13 @@ import sys
 import tempfile
 
 from api.app_string_provider import AppStringProvider
-from .check_email_renderer import CheckEmailRenderer
-from .check_exit_code import CheckExitCode
-from .check_report_parser import CheckReportParser
-from .paths import Paths
+from tools.checks.check_email_renderer import CheckEmailRenderer
+from tools.checks.check_exit_code import CheckExitCode
+from tools.checks.check_report_parser import CheckReportParser
+from tools.checks.paths import Paths
 
 
-class EmailCheckSummary():
+class SendSummary():
    SMTP_HOST = 'smtp.gmail.com'
    SMTP_PORT = 587
    EMAIL_ADDRESS = 'wesleyrenaud736@gmail.com'
@@ -92,16 +92,49 @@ class EmailCheckSummary():
 
 
    @classmethod
+   def summary_line( cls, body: str ) -> str:
+      fixed = CheckReportParser.fixed_count( next(
+         line
+         for line in body.splitlines()
+         if CheckReportParser.fixed_count( line ) != None
+      ) )
+
+      if fixed > 0:
+         return CheckReportParser.format_fixed_count( fixed )
+
+      errors = CheckReportParser.summary_line( body )
+
+      if errors == 0:
+         return AppStringProvider.format( 'checks.status.noneDetected' )
+
+      return CheckReportParser.format_error_count( errors )
+
+
+   @classmethod
    def send_summary( cls, body: str, exit_code: int, password: str ) -> None:
       message = EmailMessage()
       message[ AppStringProvider.format( 'checks.email.header.subject' ) ] = CheckReportParser.subject_for( body, exit_code )
       message[ AppStringProvider.format( 'checks.email.header.from' ) ] = cls.EMAIL_ADDRESS
       message[ AppStringProvider.format( 'checks.email.header.to' ) ] = cls.EMAIL_ADDRESS
       message.set_content( body )
+      embedded = CheckEmailRenderer.embed_local_images(
+         CheckEmailRenderer.render_html( body, exit_code )
+      )
       message.add_alternative(
-         CheckEmailRenderer.render_html( body, exit_code ),
+         embedded.html,
          subtype=AppStringProvider.format( 'checks.email.subtype' ),
       )
+      html_part = message.get_body( preferencelist=( 'html', ) )
+
+      if html_part != None:
+         for image in embedded.images:
+            html_part.add_related(
+               image.path.read_bytes(),
+               maintype='image',
+               subtype='png',
+               cid=image.content_id,
+               filename=image.path.name,
+            )
       server = smtplib.SMTP( cls.SMTP_HOST, cls.SMTP_PORT, timeout=30 )
 
       try:
@@ -115,11 +148,37 @@ class EmailCheckSummary():
 
 
    @classmethod
+   def run_and_send( cls ) -> int:
+      password = os.environ.get( cls.PASSWORD_VARIABLE, '' )
+
+      if password == '':
+         print(
+            AppStringProvider.format( 'checks.email.password' ),
+            file=sys.stderr,
+         )
+         return CheckExitCode.COULD_NOT_FINISH
+
+      body, exit_code = cls.run_check()
+      print( cls.summary_line( body ) )
+
+      try:
+         cls.send_summary( cls.message_body( body ), exit_code, password )
+      except OSError as error:
+         print( error, file=sys.stderr )
+         return CheckExitCode.COULD_NOT_FINISH
+
+      return exit_code
+
+
+   @classmethod
    def main( cls ) -> int:
       args = cls.parse_args()
 
       if args.preview:
          return cls.preview( args )
+
+      if args.output is None and args.exit_code is None:
+         return cls.run_and_send()
 
       return cls.send( args )
 
@@ -159,4 +218,4 @@ class EmailCheckSummary():
 
 
 if __name__ == '__main__':
-   raise SystemExit( EmailCheckSummary.main() )
+   raise SystemExit( SendSummary.main() )

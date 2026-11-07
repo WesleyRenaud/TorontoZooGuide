@@ -53,6 +53,7 @@ def Test_FetchPavilions_TestEmpty_ExpectEmptyList(
 
    assert pavilions == []
 
+
 def Test_FetchPavilions_TestPopulated_ExpectMappedFields(
       pavilion_provider_conn: sqlite3.Connection ) -> None:
    _insert_pavilion( pavilion_provider_conn, name=AFRICAN_RAINFOREST )
