@@ -98,27 +98,31 @@ test('Test_Length_TestMeasuredUnit_ExpectScaledOffset', () => {
    _installTooltipUnit(1.236);
 
    const length = HoverTooltipPositioner.length(
-      HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.cursorOffsetX
+      HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.arrowSize
    );
 
-   assert.equal(Math.round(length * 1000) / 1000, 22.248);
+   assert.equal(Math.round(length * 1000) / 1000, 3.09);
 });
 
 
-test('Test_CalculateAndApplyTooltipPosition_TestEvent_ExpectStyle', () => {
+test('Test_CalculateAndApplyTooltipPosition_TestMarker_ExpectArrowOnMarker', () => {
    _installTooltipUnit(1);
    const width = 400;
    const height = 300;
    globalThis.window = { ...(globalThis.window || {}), innerWidth: width, innerHeight: height };
-   const event = { clientX: 100, clientY: 120 };
+   const markerRect = { left: 90, top: 120, width: 20, height: 12 };
+   const anchorX = markerRect.left + markerRect.width / 2;
    const tooltipRect = { width: 80, height: 40 };
+   const arrowSize = HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.arrowSize;
    const el = { style: {} };
 
-   const position = HoverTooltipPositioner.calculateTooltipPosition(event, tooltipRect);
+   const position = HoverTooltipPositioner.calculateTooltipPosition(markerRect, tooltipRect);
    HoverTooltipPositioner.applyTooltipPosition(el, position);
 
-   assert.match(el.style.left, /px$/);
-   assert.match(el.style.top, /px$/);
+   assert.equal(el.style.left, `${anchorX - tooltipRect.width / 2}px`);
+   assert.equal(el.style.top, `${markerRect.top - tooltipRect.height - arrowSize}px`);
+   assert.equal(position.below, false);
+   assert.equal(position.arrowLeft, tooltipRect.width / 2 - arrowSize);
 });
 
 
@@ -127,13 +131,38 @@ test('Test_CalculateTooltipPosition_TestNearTop_ExpectFlippedBelow', () => {
    const width = 400;
    const height = 300;
    globalThis.window = { ...(globalThis.window || {}), innerWidth: width, innerHeight: height };
-   const clientY = 10;
-   const event = { clientX: 100, clientY };
+   const markerRect = { left: 90, top: 30, bottom: 42, width: 20, height: 12 };
    const tooltipRect = { width: 80, height: 40 };
+   const arrowSize = HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.arrowSize;
 
-   const position = HoverTooltipPositioner.calculateTooltipPosition(event, tooltipRect);
+   const position = HoverTooltipPositioner.calculateTooltipPosition(markerRect, tooltipRect);
 
-   assert.ok(position.y > clientY);
+   assert.equal(position.below, true);
+   assert.equal(position.y, markerRect.bottom + arrowSize);
+});
+
+
+test('Test_CalculateTooltipPosition_TestPageZoom_ExpectLayoutAnchor', () => {
+   _installTooltipUnit(1);
+   const width = 1920;
+   const height = 1080;
+   globalThis.window = { ...(globalThis.window || {}), innerWidth: width, innerHeight: height };
+   const zoom = 2;
+   const markerRect = { left: 190, top: 150, width: 20, height: 12 };
+   const anchorX = markerRect.left + markerRect.width / 2;
+   const tooltipRect = { width: 80, height: 40 };
+   const arrowSize = HoverTooltipPositioner.HOVER_TOOLTIP_POSITION.arrowSize;
+
+   const position = HoverTooltipPositioner.calculateTooltipPosition(
+      markerRect,
+      tooltipRect,
+      zoom
+   );
+
+   assert.equal(position.x / zoom, anchorX - tooltipRect.width / 2);
+   assert.equal(position.y / zoom, markerRect.top - tooltipRect.height - arrowSize);
+   assert.equal(position.arrowLeft, tooltipRect.width / 2 - arrowSize);
+   assert.equal(position.below, false);
 });
 
 
@@ -199,15 +228,29 @@ test('Test_PageZoom_TestUnreadableZoom_ExpectOne', () => {
 test('Test_ApplyTooltipPosition_TestScaledPage_ExpectDividedOffset', () => {
    const x = 80;
    const y = 40;
+   const arrowLeft = 12;
    const zoomText = '2';
    const installed = _withPageZoom(zoomText, {});
+   const classes = [];
+   installed.hoverTooltipEl.classList = {
+      toggle(name, on) {
+         classes.push([name, on]);
+      },
+   };
+   installed.hoverTooltipEl.style.setProperty = (name, value) => {
+      installed.hoverTooltipEl.style[name] = value;
+   };
 
-   try {
-      HoverTooltipPositioner.applyTooltipPosition(installed.hoverTooltipEl, { x, y });
+   HoverTooltipPositioner.applyTooltipPosition(installed.hoverTooltipEl, {
+      x,
+      y,
+      below: true,
+      arrowLeft,
+   });
 
-      assert.equal(installed.hoverTooltipEl.style.left, `${x / Number(zoomText)}px`);
-      assert.equal(installed.hoverTooltipEl.style.top, `${y / Number(zoomText)}px`);
-   } finally {
-      installed.restore();
-   }
+   assert.equal(installed.hoverTooltipEl.style.left, `${x / Number(zoomText)}px`);
+   assert.equal(installed.hoverTooltipEl.style.top, `${y / Number(zoomText)}px`);
+   assert.equal(installed.hoverTooltipEl.style['--hover-tooltip-arrow-left'], `${arrowLeft}px`);
+   assert.deepEqual(classes, [['hover-tooltip-below', true]]);
+   installed.restore();
 });

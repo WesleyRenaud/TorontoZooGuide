@@ -1433,7 +1433,7 @@ nav ul li a[aria-current="page"]:hover {
 .hover-tooltip::after {
    content: "";
    position: absolute;
-   left: calc(var(--hover-tooltip-px) * 4.5);
+   left: var(--hover-tooltip-arrow-left, calc(50% - var(--hover-tooltip-px) * 2.5));
    bottom: calc(var(--hover-tooltip-px) * -2.5);
    width: 0;
    height: 0;
@@ -1441,6 +1441,13 @@ nav ul li a[aria-current="page"]:hover {
    border-right: calc(var(--hover-tooltip-px) * 2.5) solid transparent;
    border-top: calc(var(--hover-tooltip-px) * 2.5) solid #5e9600f7;
    filter: drop-shadow(0 calc(var(--hover-tooltip-px) * 1.5) calc(var(--hover-tooltip-px) * 2.5) #00000040);
+}
+
+.hover-tooltip.hover-tooltip-below::after {
+   top: calc(var(--hover-tooltip-px) * -2.5);
+   bottom: auto;
+   border-top: 0;
+   border-bottom: calc(var(--hover-tooltip-px) * 2.5) solid #5e9600f7;
 }
 
 /* ============================================================

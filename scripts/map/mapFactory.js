@@ -91,6 +91,13 @@ export class MapFactory {
          onDateContextChange,
       });
 
+      const repositionTooltips = MapRuntimeFactory.createTooltipRepositioner({
+         tooltip,
+         hover,
+      });
+
+      stage?.addEventListener?.('panzoomchange', repositionTooltips);
+
       return {
          panzoom,
          store,
@@ -100,10 +107,7 @@ export class MapFactory {
          markers,
          focus,
          updater,
-         repositionTooltips: MapRuntimeFactory.createTooltipRepositioner({
-            tooltip,
-            hover,
-         }),
+         repositionTooltips,
       };
    }
 }
