@@ -10,3 +10,4 @@ class ExhibitClosureRecord:
    exhibit: str
    closed_start: Types.DateKey
    closed_end: Types.DateKey | None
+   is_closed_for_season: bool

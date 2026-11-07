@@ -71,6 +71,7 @@ def Test_Build_TestMondaySchedule_ExpectOccurrencesForMatchingWeekdays(
    occurrences = ScheduledOccurrenceBuilder.build(
       [ schedule_record ],
       days_ahead=days_ahead,
+      start_date=FROZEN_TODAY,
       get_time=lambda record: record.occurrence_time,
       get_weekday_flags=_weekday_flags,
       is_cancelled=lambda _date_key, _time: False )
@@ -101,6 +102,7 @@ def Test_Build_TestCancelledOccurrence_ExpectExcluded(
    occurrences = ScheduledOccurrenceBuilder.build(
       [ schedule_record ],
       days_ahead=0,
+      start_date=FROZEN_TODAY,
       get_time=lambda record: record.occurrence_time,
       get_weekday_flags=_weekday_flags,
       is_cancelled=lambda date_key, time: (
@@ -122,6 +124,7 @@ def Test_Build_TestExtraOccurrences_ExpectMergedSortedUnique(
    occurrences = ScheduledOccurrenceBuilder.build(
       [],
       days_ahead=1,
+      start_date=FROZEN_TODAY,
       get_time=lambda _record: '10:00 AM',
       get_weekday_flags=lambda _record: ( True, True, True, True, True, True, True ),
       is_cancelled=lambda _date_key, _time: False,
@@ -155,6 +158,7 @@ def Test_Build_TestScheduleEndsBeforeWindow_ExpectTruncatedEndDate(
    occurrences = ScheduledOccurrenceBuilder.build(
       [ record ],
       days_ahead=7,
+      start_date=FROZEN_TODAY,
       get_time=lambda row: row.occurrence_time,
       get_weekday_flags=_weekday_flags,
       is_cancelled=lambda _date_key, _time: False )
@@ -182,6 +186,7 @@ def Test_Build_TestEndBeforeStart_ExpectSkipped(
    occurrences = ScheduledOccurrenceBuilder.build(
       [ record ],
       days_ahead=7,
+      start_date=FROZEN_TODAY,
       get_time=lambda row: row.occurrence_time,
       get_weekday_flags=_weekday_flags,
       is_cancelled=lambda _date_key, _time: False )

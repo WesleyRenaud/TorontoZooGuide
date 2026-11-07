@@ -12,6 +12,10 @@ from typing import Any
 FULL_TEST_NAME_RE = re.compile(
    r'^Test_[A-Z][A-Za-z0-9]*_Test[A-Za-z0-9][A-Za-z0-9]*_Expect[A-Za-z0-9][A-Za-z0-9]*$' )
 PARAMETRIZED_TEST_NAME_RE = re.compile( r'^Test_[A-Za-z][A-Za-z0-9_]*$' )
+PRODUCTION_PREFIXES = (
+   ( 'tests/api/', 'api' ),
+   ( 'tests/tools/checks/', 'tools/checks' ),
+)
 
 
 def find_root() -> Path:
@@ -63,11 +67,22 @@ def is_excluded_path( path: Path, patterns: list[ str ] ) -> bool:
    return False
 
 
-def expected_production_file( test_path: Path ) -> Path:
-   stem = test_path.name[ : -len( '_tests.py' ) ]
-   api_relative_parent = test_path.relative_to( ROOT / 'tests' / 'api' ).parent
+def production_prefix( test_path: Path ) -> tuple[ str, str ] | None:
+   display_path = get_display_path( test_path )
 
-   return ROOT / 'api' / api_relative_parent / f'{ stem }.py'
+   for test_prefix, production in PRODUCTION_PREFIXES:
+      if display_path.startswith( test_prefix ):
+         return test_prefix, production
+
+   return None
+
+
+def expected_production_file( test_path: Path ) -> Path:
+   test_prefix, production = production_prefix( test_path )
+   stem = test_path.name[ : -len( '_tests.py' ) ]
+   relative_parent = test_path.relative_to( ROOT / test_prefix ).parent
+
+   return ROOT / production / relative_parent / f'{ stem }.py'
 
 
 def has_parametrize_decorator( node: ast.FunctionDef ) -> bool:
@@ -121,7 +136,7 @@ def check_test_file_names( test_paths: list[ Path ] ) -> list[ str ]:
    for test_path in test_paths:
       display_path = get_display_path( test_path )
 
-      if not display_path.startswith( 'tests/api/' ):
+      if production_prefix( test_path ) == None:
          continue
 
       if test_path.name in ( 'conftest.py', '__init__.py' ):

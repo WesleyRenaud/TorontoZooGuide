@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from ..data_access.gift_shop_closure_record import GiftShopClosureRecord
 from ..data_access.gift_shop_provider import GiftShopProvider
 from ..data_access.gift_shop_schedule_provider import GiftShopScheduleProvider
 from ..data_access.gift_shop_status_provider import GiftShopStatusProvider
 from ..domain.gift_shop_builder import GiftShopBuilder
+from ..domain.seasonal_gift_shop import SeasonalGiftShop
+from ..domain.seasonal_gift_shop_builder import SeasonalGiftShopBuilder
 from ...models import GiftShop
 from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.gift_shop_schedule_conflict_resolver import GiftShopScheduleConflictResolver
@@ -78,6 +81,19 @@ class GiftShopCoordinator():
       return GiftShopsMatchingQueryBuilder.build(
          gift_shops,
          query )
+
+
+   @classmethod
+   def get_closure_records( cls ) -> list[ GiftShopClosureRecord ]:
+      return GiftShopStatusProvider.fetch_closure_records( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_seasonal_gift_shops( cls ) -> list[ SeasonalGiftShop ]:
+      return SeasonalGiftShopBuilder.build(
+         gift_shops=cls.get_gift_shop_names(),
+         closure_records=cls.get_closure_records(),
+      )
 
 
    @classmethod

@@ -48,6 +48,14 @@ exclude = [
 [tool.tzg_python_one_class_per_file]
 include = [
    "api/**/*.py",
+   "tools/checks/**/*.py",
+]
+
+[tool.tzg_python_namespace_style]
+include = [
+   "api/**/*.py",
+   "tests/**/*.py",
+   "tools/checks/**/*.py",
 ]
 
 [tool.tzg_python_unit_tests]

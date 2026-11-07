@@ -49,6 +49,8 @@ class DateValues:
          '%H:%M',
          '%I:%M %p',
          '%I:%M:%S %p',
+         '%I:%M%p',
+         '%I:%M:%S%p',
       ):
 
          try:

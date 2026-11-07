@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from .animal_off_display_mapper import AnimalOffDisplayMapper
+from .animal_off_display_record import AnimalOffDisplayRecord
 from .animal_off_display_status_resolver import AnimalOffDisplayStatusResolver
 from ..domain.animal_viewing_scope import AnimalViewingScope
 from ...types import Types
@@ -97,6 +99,27 @@ class AnimalStatusProvider():
          rowcount = cur.rowcount
          conn.commit()
          return rowcount > 0
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_off_display_records( cls, conn: Types.Connection ) -> list[ AnimalOffDisplayRecord ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     SPECIES,
+                     IS_OFF_DISPLAY,
+                     OFF_DISPLAY_START,
+                     OFF_DISPLAY_END,
+                     OFF_DISPLAY_FOR_SEASON
+                  FROM AnimalStatus;
+            """ )
+
+         return AnimalOffDisplayMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()

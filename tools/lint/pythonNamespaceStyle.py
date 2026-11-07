@@ -161,7 +161,10 @@ def check_file(
 
 def main() -> int:
    config = load_config()
-   include = config.get( 'include', [ 'api/**/*.py', 'tests/**/*.py' ] )
+   include = config.get(
+      'include',
+      [ 'api/**/*.py', 'tests/**/*.py', 'tools/checks/**/*.py' ],
+   )
    excluded_patterns = config.get( 'exclude', [] )
    namespace_modules = build_namespace_holder_modules( include )
    violations: list[ str ] = []

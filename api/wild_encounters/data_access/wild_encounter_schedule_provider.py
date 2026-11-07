@@ -7,6 +7,8 @@ from ...shared.enums.position import Position
 from ...types import Types
 from .wild_encounter_schedule_conflict_mapper import WildEncounterScheduleConflictMapper
 from .wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
+from .wild_encounter_schedule_listing_mapper import WildEncounterScheduleListingMapper
+from .wild_encounter_schedule_listing_record import WildEncounterScheduleListingRecord
 from .wild_encounter_schedule_mapper import WildEncounterScheduleMapper
 from .wild_encounter_schedule_record import WildEncounterScheduleRecord
 
@@ -59,6 +61,35 @@ class WildEncounterScheduleProvider():
             { 'VISIT_DATE': target_date } )
 
          return WildEncounterScheduleMapper.map_records( data.fetchall() )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_schedule_listings(
+         cls,
+         conn: Types.Connection ) -> list[ WildEncounterScheduleListingRecord ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     WILD_ENCOUNTER,
+                     SCHEDULE_START_DATE,
+                     SCHEDULE_END_DATE,
+                     ENCOUNTER_TIME,
+                     MONDAY,
+                     TUESDAY,
+                     WEDNESDAY,
+                     THURSDAY,
+                     FRIDAY,
+                     SATURDAY,
+                     SUNDAY
+                  FROM WildEncounterSchedule;
+            """ )
+
+         return WildEncounterScheduleListingMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()

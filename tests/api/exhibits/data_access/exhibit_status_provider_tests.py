@@ -138,3 +138,4 @@ def Test_FetchClosureRecords_TestMixedStatuses_ExpectOnlyClosedExhibits(
    assert records[ Position.FIRST ].exhibit == EXHIBIT
    assert records[ Position.FIRST ].closed_start == START_DATE
    assert records[ Position.FIRST ].closed_end == END_DATE
+   assert records[ Position.FIRST ].is_closed_for_season is False

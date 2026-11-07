@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..cancellations.guardians_talk_cancellation_input import GuardiansTalkCancellationInput
+from .guardians_talk_cancellation_input_mapper import GuardiansTalkCancellationInputMapper
 from .guardians_talk_cancellation_mapper import GuardiansTalkCancellationMapper
 from .guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
 from ...types import Types
@@ -34,6 +35,29 @@ class GuardiansTalkCancellationProvider():
             ) )
 
          return GuardiansTalkCancellationMapper.map_records( data.fetchall() )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_cancellations(
+         cls,
+         conn: Types.Connection ) -> list[ GuardiansTalkCancellationInput ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     TALK_NAME,
+                     LOCATION,
+                     ENCLOSURE_NAME,
+                     CANCELLATION_DATE,
+                     TALK_TIME
+                  FROM GuardiansTalkCancellation
+            """ )
+
+         return GuardiansTalkCancellationInputMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()

@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from ..data_access.restaurant_closure_record import RestaurantClosureRecord
 from ..data_access.restaurant_provider import RestaurantProvider
 from ..data_access.restaurant_schedule_provider import RestaurantScheduleProvider
 from ..data_access.restaurant_status_provider import RestaurantStatusProvider
 from ..domain.restaurant_builder import RestaurantBuilder
+from ..domain.restaurant_menu_link import RestaurantMenuLink
+from ..domain.seasonal_restaurant import SeasonalRestaurant
+from ..domain.seasonal_restaurant_builder import SeasonalRestaurantBuilder
 from ...models import Restaurant
 from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.restaurant_schedule_conflict_resolver import RestaurantScheduleConflictResolver
@@ -30,6 +34,11 @@ class RestaurantCoordinator():
    @classmethod
    def get_restaurant_names( cls ) -> list[ str ]:
       return RestaurantProvider.fetch_restaurant_names( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_restaurant_menu_links( cls ) -> list[ RestaurantMenuLink ]:
+      return RestaurantProvider.fetch_restaurant_menu_links( RequestConnectionProvider.get() )
 
 
    @classmethod
@@ -79,6 +88,19 @@ class RestaurantCoordinator():
       return RestaurantsMatchingQueryBuilder.build(
          restaurants,
          query )
+
+
+   @classmethod
+   def get_closure_records( cls ) -> list[ RestaurantClosureRecord ]:
+      return RestaurantStatusProvider.fetch_closure_records( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_seasonal_restaurants( cls ) -> list[ SeasonalRestaurant ]:
+      return SeasonalRestaurantBuilder.build(
+         restaurants=cls.get_restaurant_menu_links(),
+         closure_records=cls.get_closure_records(),
+      )
 
 
    @classmethod

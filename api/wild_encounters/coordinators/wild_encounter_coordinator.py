@@ -5,9 +5,13 @@ from collections.abc import Callable
 from ..cancellations.wild_encounter_cancellation_builder import WildEncounterCancellationBuilder
 from ..data_access.wild_encounter_cancellation_provider import WildEncounterCancellationProvider
 from ..data_access.wild_encounter_provider import WildEncounterProvider
+from ..data_access.wild_encounter_schedule_listing_record import WildEncounterScheduleListingRecord
 from ..data_access.wild_encounter_schedule_name_provider import WildEncounterScheduleNameProvider
 from ..data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
 from ..domain.wild_encounter_builder import WildEncounterBuilder
+from ..domain.wild_encounter_link import WildEncounterLink
+from ..domain.wild_encounter_schedule import WildEncounterSchedule
+from ..domain.wild_encounter_schedules_builder import WildEncounterSchedulesBuilder
 from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ..itinerary.itinerary_wild_encounters_builder import ItineraryWildEncountersBuilder
 from ...models import ScheduledOccurrence
@@ -79,6 +83,23 @@ class WildEncounterCoordinator():
    @classmethod
    def get_wild_encounter_names( cls ) -> list[ str ]:
       return WildEncounterProvider.fetch_wild_encounter_names( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_wild_encounter_links( cls ) -> list[ WildEncounterLink ]:
+      return WildEncounterProvider.fetch_wild_encounter_links( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_wild_encounter_schedule_listing_records( cls ) -> list[ WildEncounterScheduleListingRecord ]:
+      return WildEncounterScheduleProvider.fetch_schedule_listings( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_wild_encounter_schedules( cls ) -> list[ WildEncounterSchedule ]:
+      return WildEncounterSchedulesBuilder.build(
+         records=cls.get_wild_encounter_schedule_listing_records(),
+      )
 
 
    @classmethod

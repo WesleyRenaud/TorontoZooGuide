@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.animals.data_access.animal_enclosure_exhibit_name_provider import AnimalEnclosureExhibitNameProvider
+from api.animals.domain.animal_species_exhibit import AnimalSpeciesExhibit
 
 
 LION = 'African Lion'
@@ -92,3 +93,28 @@ def Test_FetchExhibitNamesForSpecies_TestUniqueSpecies_ExpectSingleExhibit(
       LION )
 
    assert exhibit_names_for_species == [ SAVANNA ]
+
+
+def Test_FetchAnimalSpeciesExhibits_TestMultipleSpecies_ExpectSpeciesExhibitPairs(
+      enclosure_exhibit_conn: sqlite3.Connection ) -> None:
+   _insert_enclosure(
+      enclosure_exhibit_conn,
+      species=CAMEL,
+      exhibit=EURASIA )
+   _insert_enclosure(
+      enclosure_exhibit_conn,
+      species=CAMEL,
+      exhibit=CANADIAN_DOMAIN )
+   _insert_enclosure(
+      enclosure_exhibit_conn,
+      species=LION,
+      exhibit=SAVANNA )
+
+   species_exhibits = AnimalEnclosureExhibitNameProvider.fetch_animal_species_exhibits(
+      enclosure_exhibit_conn )
+
+   assert species_exhibits == [
+      AnimalSpeciesExhibit( species=LION, exhibit=SAVANNA ),
+      AnimalSpeciesExhibit( species=CAMEL, exhibit=CANADIAN_DOMAIN ),
+      AnimalSpeciesExhibit( species=CAMEL, exhibit=EURASIA ),
+   ]

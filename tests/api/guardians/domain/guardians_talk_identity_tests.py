@@ -30,3 +30,33 @@ def Test_ParseItemKey_TestNamedEnclosure_ExpectNameAndEnclosure() -> None:
 
    assert parsed_name == name
    assert parsed_enclosure_name == enclosure_name
+
+
+def Test_Matches_TestSameTalk_ExpectTrue() -> None:
+   talk_name = 'Masai Giraffe'
+   location = 'African Rainforest Pavilion'
+   enclosure_name = 'Giraffe House'
+
+   matches = GuardiansTalkIdentity.matches(
+      talk_name,
+      location,
+      enclosure_name,
+      other_talk_name=talk_name,
+      other_location=location,
+      other_enclosure_name=enclosure_name,
+   )
+
+   assert matches is True
+
+
+def Test_Matches_TestDifferentEnclosure_ExpectFalse() -> None:
+   matches = GuardiansTalkIdentity.matches(
+      'Masai Giraffe',
+      'African Rainforest Pavilion',
+      'Giraffe House',
+      other_talk_name='Masai Giraffe',
+      other_location='African Rainforest Pavilion',
+      other_enclosure_name='Outdoor',
+   )
+
+   assert matches is False

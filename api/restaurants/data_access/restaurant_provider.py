@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from ..domain.restaurant_menu_link import RestaurantMenuLink
 from .restaurant_mapper import RestaurantMapper
+from .restaurant_menu_link_mapper import RestaurantMenuLinkMapper
 from .restaurant_record import RestaurantRecord
 from .restaurant_schedule_mapper import RestaurantScheduleMapper
 from .restaurant_schedule_override_mapper import RestaurantScheduleOverrideMapper
@@ -23,6 +25,25 @@ class RestaurantProvider():
             """ )
 
          return [ row[ Position.FIRST ] for row in data.fetchall() ]
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_restaurant_menu_links( cls, conn: Types.Connection ) -> list[ RestaurantMenuLink ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     NAME,
+                     MENU_LINK
+                  FROM Restaurant
+                  ORDER BY NAME;
+            """ )
+
+         return RestaurantMenuLinkMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()

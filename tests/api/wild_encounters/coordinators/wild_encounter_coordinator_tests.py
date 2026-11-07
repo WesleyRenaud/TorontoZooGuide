@@ -18,10 +18,14 @@ from api.wild_encounters.data_access.wild_encounter_cancellation_provider import
 from api.wild_encounters.data_access.wild_encounter_cancellation_record import WildEncounterCancellationRecord
 from api.wild_encounters.data_access.wild_encounter_provider import WildEncounterProvider
 from api.wild_encounters.data_access.wild_encounter_record import WildEncounterRecord
+from api.wild_encounters.data_access.wild_encounter_schedule_listing_record import WildEncounterScheduleListingRecord
 from api.wild_encounters.data_access.wild_encounter_schedule_name_provider import WildEncounterScheduleNameProvider
 from api.wild_encounters.data_access.wild_encounter_schedule_provider import WildEncounterScheduleProvider
 from api.wild_encounters.data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from api.wild_encounters.domain.wild_encounter_builder import WildEncounterBuilder
+from api.wild_encounters.domain.wild_encounter_link import WildEncounterLink
+from api.wild_encounters.domain.wild_encounter_schedule import WildEncounterSchedule
+from api.wild_encounters.domain.wild_encounter_schedules_builder import WildEncounterSchedulesBuilder
 from api.wild_encounters.itinerary.itinerary_wild_encounters_builder import ItineraryWildEncountersBuilder
 from api.wild_encounters.scheduling.wild_encounter_day_schedule_builder import WildEncounterDayScheduleBuilder
 from api.wild_encounters.scheduling.wild_encounter_day_schedule_finder import WildEncounterDayScheduleFinder
@@ -102,6 +106,95 @@ def Test_GetWildEncounterNames_TestProviderNames_ExpectReturned(
    wild_encounter_names = WildEncounterCoordinator.get_wild_encounter_names()
 
    assert wild_encounter_names == [ WILD_ENCOUNTER_NAME ]
+
+
+def Test_GetWildEncounterLinks_TestProvider_ExpectLinks(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   links = [ WildEncounterLink( name=WILD_ENCOUNTER_NAME, link='https://example.test/encounter' ) ]
+
+   monkeypatch.setattr(
+      WildEncounterProvider,
+      'fetch_wild_encounter_links',
+      lambda _conn: links )
+
+   result = WildEncounterCoordinator.get_wild_encounter_links()
+
+   assert result is links
+
+
+def Test_GetWildEncounterScheduleListingRecords_TestProvider_ExpectRecords(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   record = WildEncounterScheduleListingRecord(
+      wild_encounter=WILD_ENCOUNTER_NAME,
+      schedule_start_date=START_DATE,
+      schedule_end_date=None,
+      encounter_time=ENCOUNTER_TIME,
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+   )
+
+   monkeypatch.setattr(
+      WildEncounterScheduleProvider,
+      'fetch_schedule_listings',
+      lambda _conn: [ record ] )
+
+   records = WildEncounterCoordinator.get_wild_encounter_schedule_listing_records()
+
+   assert records == [ record ]
+
+
+def Test_GetWildEncounterSchedules_TestListings_ExpectBuiltSchedules(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   records = [ WildEncounterScheduleListingRecord(
+      wild_encounter=WILD_ENCOUNTER_NAME,
+      schedule_start_date=START_DATE,
+      schedule_end_date=None,
+      encounter_time=ENCOUNTER_TIME,
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+   ) ]
+   built = [ WildEncounterSchedule(
+      name=WILD_ENCOUNTER_NAME,
+      start=date( 2026, 6, 1 ),
+      end=None,
+      encounter_time=ENCOUNTER_TIME,
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+   ) ]
+   captured: dict[ str, object ] = {}
+
+   monkeypatch.setattr(
+      WildEncounterCoordinator,
+      'get_wild_encounter_schedule_listing_records',
+      lambda: records )
+
+   def build( records: list[ WildEncounterScheduleListingRecord ] ) -> list[ WildEncounterSchedule ]:
+      captured[ 'records' ] = records
+      return built
+
+   monkeypatch.setattr( WildEncounterSchedulesBuilder, 'build', build )
+
+   result = WildEncounterCoordinator.get_wild_encounter_schedules()
+
+   assert result is built
+   assert captured[ 'records' ] is records
 
 
 def Test_GetWildEncounterScheduleOptions_TestProviderNames_ExpectReturned(

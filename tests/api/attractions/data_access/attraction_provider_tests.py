@@ -6,6 +6,7 @@ import sqlite3
 import pytest
 
 from api.attractions.data_access.attraction_provider import AttractionProvider
+from api.attractions.domain.attraction_info_link import AttractionInfoLink
 from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
 
@@ -139,6 +140,26 @@ def Test_FetchAttractionNames_TestPopulated_ExpectNames(
    names = AttractionProvider.fetch_attraction_names( attraction_provider_conn )
 
    assert set( names ) == { CAROUSEL, TransportationName.ZOOMOBILE }
+
+
+def Test_FetchAttractionInfoLinks_TestMultipleAttractions_ExpectNameAndLinkOrdered(
+      attraction_provider_conn: sqlite3.Connection ) -> None:
+   _insert_attraction( attraction_provider_conn, name=TransportationName.ZOOMOBILE )
+   _insert_attraction( attraction_provider_conn, name=CAROUSEL )
+   attraction_provider_conn.commit()
+
+   links = AttractionProvider.fetch_attraction_info_links( attraction_provider_conn )
+
+   assert links == [
+      AttractionInfoLink(
+         name=CAROUSEL,
+         info_link=f'https://example.test/{ CAROUSEL }',
+      ),
+      AttractionInfoLink(
+         name=TransportationName.ZOOMOBILE,
+         info_link=f'https://example.test/{ TransportationName.ZOOMOBILE }',
+      ),
+   ]
 
 
 def Test_FetchAttractionRecords_TestNoMultiplierOrHours_ExpectDefaultMultipliersAndNullHours(

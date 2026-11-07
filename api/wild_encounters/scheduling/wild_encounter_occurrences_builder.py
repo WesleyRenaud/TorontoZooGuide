@@ -3,6 +3,7 @@ from __future__ import annotations
 from ..data_access.wild_encounter_cancellation_record import WildEncounterCancellationRecord
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from ...models import ScheduledOccurrence
+from ...shared.date_values import DateValues
 from ...shared.scheduled_occurrence_builder import ScheduledOccurrenceBuilder
 
 
@@ -16,6 +17,7 @@ class WildEncounterOccurrencesBuilder():
       return ScheduledOccurrenceBuilder.build(
          schedule_records,
          days_ahead=days_ahead,
+         start_date=DateValues.parse_date_value( DateValues.today_date_key() ),
          get_time=lambda schedule_record: schedule_record.encounter_time,
          get_weekday_flags=lambda schedule_record: (
             schedule_record.monday,

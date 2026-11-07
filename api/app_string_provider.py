@@ -11,6 +11,7 @@ class AppStringProvider():
    STRING_SOURCE_FILES = (
       STRING_EXPORT_SCRIPT,
       Path( './scripts/strings.js' ),
+      Path( './scripts/strings/checkStrings.js' ),
       Path( './scripts/strings/guestStatusStrings.js' ),
       Path( './scripts/strings/commonStrings.js' ),
       Path( './scripts/strings/itineraryStrings.js' ),
@@ -20,33 +21,28 @@ class AppStringProvider():
    )
 
    _cached_mtime: float | None = None
+   _cached_source: dict[ str, Any ] | None = None
    _cached_values: dict[ str, str ] | None = None
 
 
    @classmethod
    def clear_cache( cls ) -> None:
       cls._cached_mtime = None
+      cls._cached_source = None
       cls._cached_values = None
 
 
    @classmethod
    def values( cls ) -> dict[ str, str ]:
-      mtime = cls._string_source_mtime()
+      cls._load( cls._string_source_mtime() )
+      return cls._cached_values or {}
 
-      if cls._cached_values is not None and cls._cached_mtime == mtime:
-         return cls._cached_values
 
-      result = subprocess.run(
-         [ 'node', str( cls.STRING_EXPORT_SCRIPT ) ],
-         check=True,
-         capture_output=True,
-         text=True )
-      values = cls._flatten_string_values( json.loads( result.stdout ) )
-
-      cls._cached_mtime = mtime
-      cls._cached_values = values
-
-      return values
+   @classmethod
+   def reports( cls ) -> dict[ str, dict[ str, str ] ]:
+      cls._load( cls._string_source_mtime() )
+      source = cls._cached_source or {}
+      return source[ 'reports' ]
 
 
    @classmethod
@@ -60,6 +56,23 @@ class AppStringProvider():
          raise KeyError( 'Unknown app string key: {}'.format( key ) )
 
       return template.format( **params )
+
+
+   @classmethod
+   def _load( cls, mtime: float ) -> None:
+      if cls._cached_values is not None and cls._cached_mtime == mtime:
+         return
+
+      result = subprocess.run(
+         [ 'node', str( cls.STRING_EXPORT_SCRIPT ) ],
+         check=True,
+         capture_output=True,
+         text=True )
+      source = json.loads( result.stdout )
+
+      cls._cached_mtime = mtime
+      cls._cached_source = source
+      cls._cached_values = cls._flatten_string_values( source )
 
 
    @classmethod

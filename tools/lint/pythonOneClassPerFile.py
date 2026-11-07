@@ -122,7 +122,7 @@ def iter_python_files( include: list[ str ] ) -> list[ Path ]:
 
 def main() -> int:
    config = load_config()
-   include = config.get( 'include', [ 'api/**/*.py' ] )
+   include = config.get( 'include', [ 'api/**/*.py', 'tools/checks/**/*.py' ] )
    excluded_patterns = config.get( 'exclude', [] )
    shared_enum_modules = load_shared_enum_python_modules()
    violations: list[ str ] = []

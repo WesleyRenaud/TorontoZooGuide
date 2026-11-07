@@ -23,7 +23,7 @@ jobs:
         id: website_check
         run: |
           set +e
-          python3 -m tools.scheduleCheck > check-output.txt 2>&1
+          python3 -m tools.checks.schedule_checker > check-output.txt 2>&1
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
       - name: Email the summary

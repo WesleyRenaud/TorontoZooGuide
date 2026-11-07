@@ -106,6 +106,19 @@ def Test_FetchCancellationRecords_TestMatchingTalk_ExpectMappedRecords(
    ]
 
 
+def Test_FetchCancellations_TestSavedRow_ExpectMappedInput(
+      cancellation_provider_conn: sqlite3.Connection ) -> None:
+   saved = _cancellation_input( enclosure_name='Outdoor' )
+   GuardiansTalkCancellationProvider.save_cancellation(
+      cancellation_provider_conn,
+      saved )
+
+   cancellations = GuardiansTalkCancellationProvider.fetch_cancellations(
+      cancellation_provider_conn )
+
+   assert cancellations == [ saved ]
+
+
 def Test_FetchOccurrenceIsCancelled_TestMissing_ExpectFalse(
       cancellation_provider_conn: sqlite3.Connection ) -> None:
    occurrence_is_cancelled = GuardiansTalkCancellationProvider.fetch_occurrence_is_cancelled(

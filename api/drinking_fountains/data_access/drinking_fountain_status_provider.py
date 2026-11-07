@@ -38,6 +38,31 @@ class DrinkingFountainStatusProvider():
 
 
    @classmethod
+   def fetch_current_drinking_fountain_status_record(
+         cls,
+         conn: Types.Connection ) -> DrinkingFountainStatusRecord:
+      cur = conn.cursor()
+
+      try:
+         row = cur.execute(
+            """   SELECT
+                     COALESCE( status.IS_CLOSED, 0 ) AS IS_CLOSED,
+                     status.START_DATE AS START_DATE,
+                     status.END_DATE AS END_DATE,
+                     status.CLOSED_MESSAGE AS CLOSED_MESSAGE
+                  FROM ( SELECT 1 ) AS anchor
+                  LEFT JOIN DrinkingFountainStatus AS status
+                  LIMIT 1;
+            """
+         ).fetchone()
+
+         return DrinkingFountainStatusMapper.map_record( row )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
    def fetch_drinking_fountain_seasonal_likelihood(
          cls,
          conn: Types.Connection,

@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from datetime import date
 
+from .attraction_info_link_mapper import AttractionInfoLinkMapper
 from .attraction_mapper import AttractionMapper
 from .attraction_record import AttractionRecord
 from .attraction_schedule_mapper import AttractionScheduleMapper
 from .attraction_schedule_override_mapper import AttractionScheduleOverrideMapper
 from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from .attraction_schedule_record import AttractionScheduleRecord
+from ..domain.attraction_info_link import AttractionInfoLink
 from ...shared.constants import Constants
 from ...shared.enums.position import Position
 from ...types import Types
@@ -26,6 +28,25 @@ class AttractionProvider():
             """ )
 
          return [ row[ Position.FIRST ] for row in data.fetchall() ]
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_attraction_info_links( cls, conn: Types.Connection ) -> list[ AttractionInfoLink ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     NAME,
+                     INFO_LINK
+                  FROM Attraction
+                  ORDER BY NAME;
+            """ )
+
+         return AttractionInfoLinkMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()

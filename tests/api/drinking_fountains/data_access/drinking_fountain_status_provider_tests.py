@@ -50,6 +50,40 @@ def drinking_fountain_status_conn() -> sqlite3.Connection:
    conn.close()
 
 
+def Test_FetchCurrentDrinkingFountainStatusRecord_TestEmptyTable_ExpectOpen(
+      drinking_fountain_status_conn: sqlite3.Connection ) -> None:
+   record = DrinkingFountainStatusProvider.fetch_current_drinking_fountain_status_record(
+      drinking_fountain_status_conn )
+
+   assert record.is_closed == 0
+   assert record.start_date == None
+   assert record.end_date == None
+   assert record.closed_message == None
+
+
+def Test_FetchCurrentDrinkingFountainStatusRecord_TestClosedRow_ExpectRow(
+      drinking_fountain_status_conn: sqlite3.Connection ) -> None:
+   drinking_fountain_status_conn.execute(
+      """   INSERT INTO DrinkingFountainStatus (
+               IS_CLOSED,
+               START_DATE,
+               END_DATE,
+               CLOSED_MESSAGE
+            )
+            VALUES ( 1, ?, ?, ? );
+      """,
+      ( START_DATE, END_DATE, CLOSED_MESSAGE ),
+   )
+
+   record = DrinkingFountainStatusProvider.fetch_current_drinking_fountain_status_record(
+      drinking_fountain_status_conn )
+
+   assert record.is_closed == 1
+   assert record.start_date == START_DATE
+   assert record.end_date == END_DATE
+   assert record.closed_message == CLOSED_MESSAGE
+
+
 def Test_FetchDrinkingFountainStatusRecord_TestEmptyTable_ExpectNone(
       drinking_fountain_status_conn: sqlite3.Connection ) -> None:
    drinking_fountain_status_record = DrinkingFountainStatusProvider.fetch_drinking_fountain_status_record(

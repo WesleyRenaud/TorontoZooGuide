@@ -5,11 +5,13 @@ from datetime import date
 from datetime import timedelta
 
 from ..cancellations.guardians_talk_cancellation_builder import GuardiansTalkCancellationBuilder
+from ..cancellations.guardians_talk_cancellation_input import GuardiansTalkCancellationInput
 from ..data_access.guardians_talk_cancellation_provider import GuardiansTalkCancellationProvider
 from ..data_access.guardians_talk_day_schedule_provider import GuardiansTalkDayScheduleProvider
 from ..data_access.guardians_talk_occurrence_provider import GuardiansTalkOccurrenceProvider
 from ..data_access.guardians_talk_schedule_name_provider import GuardiansTalkScheduleNameProvider
 from ..data_access.guardians_talk_schedule_provider import GuardiansTalkScheduleProvider
+from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from ..data_access.meet_the_guardians_talk_provider import MeetTheGuardiansTalkProvider
 from ..domain.guardians_talk_builder import GuardiansTalkBuilder
 from ..domain.guardians_talk_linked_animals_builder import GuardiansTalkLinkedAnimalsBuilder
@@ -153,6 +155,7 @@ class GuardiansCoordinator():
          schedule_records=schedule_records,
          cancellation_records=cancellation_records,
          days_ahead=days_ahead,
+         start_date=today,
          occurrence_records=occurrence_records )
 
 
@@ -165,6 +168,18 @@ class GuardiansCoordinator():
       return GuardiansTalkBuilder.build_details(
          talk_records,
          guardians_talks_to_include=guardians_talks_to_include )
+
+
+   @classmethod
+   def get_guardians_talk_schedule_records( cls ) -> list[ GuardiansTalkScheduleRecord ]:
+      return GuardiansTalkScheduleProvider.fetch_schedule_records(
+         RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_guardians_talk_cancellations( cls ) -> list[ GuardiansTalkCancellationInput ]:
+      return GuardiansTalkCancellationProvider.fetch_cancellations(
+         RequestConnectionProvider.get() )
 
 
    @classmethod

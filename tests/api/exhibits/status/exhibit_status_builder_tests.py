@@ -116,11 +116,13 @@ def Test_ExhibitNamesClosedOnVisitDate_TestMixedRecords_ExpectActiveExhibitsOnly
    savanna_closure = ExhibitClosureRecord(
       exhibit=EXHIBIT_NAME,
       closed_start=CLOSURE_START_DATE,
-      closed_end=CLOSURE_END_DATE )
+      closed_end=CLOSURE_END_DATE,
+      is_closed_for_season=False )
    eurasia_closure = ExhibitClosureRecord(
       exhibit='Eurasia Wilds',
       closed_start='2026-07-01',
-      closed_end='2026-07-31' )
+      closed_end='2026-07-31',
+      is_closed_for_season=False )
    closure_records = [ savanna_closure, eurasia_closure ]
 
    closed_exhibits = ExhibitStatusBuilder.exhibit_names_closed_on_visit_date(

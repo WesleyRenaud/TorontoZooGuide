@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from ..data_access.guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
 from ..data_access.guardians_talk_occurrence_record import GuardiansTalkOccurrenceRecord
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
@@ -15,6 +17,8 @@ class GuardiansTalkOccurrencesBuilder():
          schedule_records: list[ GuardiansTalkScheduleRecord ],
          cancellation_records: list[ GuardiansTalkCancellationRecord ],
          days_ahead: int,
+         *,
+         start_date: date,
          occurrence_records: list[ GuardiansTalkOccurrenceRecord ] | None = None ) -> list[ ScheduledOccurrence ]:
       def occurrence_is_cancelled(
             occurrence_date: str,
@@ -39,6 +43,7 @@ class GuardiansTalkOccurrencesBuilder():
       return ScheduledOccurrenceBuilder.build(
          schedule_records,
          days_ahead=days_ahead,
+         start_date=start_date,
          get_time=lambda schedule_record: schedule_record.talk_time,
          get_weekday_flags=GuardiansTalkWeekdayTimeResolver.weekday_flags,
          is_cancelled=occurrence_is_cancelled,

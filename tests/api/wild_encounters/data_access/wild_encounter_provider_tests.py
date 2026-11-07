@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.wild_encounters.data_access.wild_encounter_provider import WildEncounterProvider
+from api.wild_encounters.domain.wild_encounter_link import WildEncounterLink
 
 
 KANGAROO = 'Kangaroo'
@@ -122,6 +123,42 @@ def Test_FetchWildEncounterNames_TestPopulated_ExpectNames(
       wild_encounter_provider_conn )
 
    assert set( names ) == { KANGAROO, OTTER }
+
+
+def Test_FetchWildEncounterLinks_TestMultipleEncounters_ExpectNameAndLinkOrdered(
+      wild_encounter_provider_conn: sqlite3.Connection ) -> None:
+   _insert_meeting_spot(
+      wild_encounter_provider_conn,
+      name=KANGAROO_SPOT,
+      x_coord=X_COORD,
+      y_coord=Y_COORD,
+      region=REGION )
+   _insert_meeting_spot(
+      wild_encounter_provider_conn,
+      name=OTTER_SPOT,
+      x_coord=3.0,
+      y_coord=4.0,
+      region=OTTER_REGION )
+   _insert_encounter(
+      wild_encounter_provider_conn,
+      name=KANGAROO,
+      meeting_spot=KANGAROO_SPOT,
+      link=LINK,
+      maximum_duration=MAXIMUM_DURATION )
+   _insert_encounter(
+      wild_encounter_provider_conn,
+      name=OTTER,
+      meeting_spot=OTTER_SPOT,
+      link=OTTER_LINK,
+      maximum_duration=OTTER_DURATION )
+   wild_encounter_provider_conn.commit()
+
+   links = WildEncounterProvider.fetch_wild_encounter_links( wild_encounter_provider_conn )
+
+   assert links == [
+      WildEncounterLink( name=KANGAROO, link=LINK ),
+      WildEncounterLink( name=OTTER, link=OTTER_LINK ),
+   ]
 
 
 def Test_FetchWildEncounterRecords_TestEmpty_ExpectEmptyList(
