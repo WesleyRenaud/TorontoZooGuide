@@ -36,6 +36,8 @@ class AnimalListChecker():
       'wood bison female herd': 'wood bison',
       'wood bison male herd': 'wood bison',
    }
+   HEADING_RE = re.compile( r'(?is)<h1\b[^>]*>(?P<title>.*?)</h1>' )
+   ANIMAL_LINK_RE = re.compile( r'(?is)<a href="/animals/(?P<name>[^"]+)" class="thm"' )
    ALLOWED_APP_ONLY_ANIMALS = {
       ( 'Cheetah', 'Indo-Malaya Outdoor' ),
       ( 'Great Horned Owl', 'Americas Pavilion' ),
@@ -67,7 +69,7 @@ class AnimalListChecker():
    @classmethod
    def parse_website_animals( cls, page_html: str ) -> list[ AnimalSpeciesExhibit ]:
       names = []
-      headings = list( re.finditer( r'(?is)<h1\b[^>]*>(.*?)</h1>', page_html ) )
+      headings = list( cls.HEADING_RE.finditer( page_html ) )
       next_headings = headings[ 1: ]
       next_headings.append( None )
 
@@ -77,12 +79,10 @@ class AnimalListChecker():
          else:
             end = next_heading.start()
 
-         exhibit = unescape( re.sub( r'<[^>]+>', ' ', heading.group( 1 ) ) )
+         exhibit = unescape( re.sub( r'<[^>]+>', ' ', heading.group( 'title' ) ) )
          exhibit = re.sub( r'\s+', ' ', exhibit ).strip()
 
-         for href in re.findall(
-               r'(?is)<a href="/animals/([^"]+)" class="thm"',
-               page_html[ heading.end():end ] ):
+         for href in cls.ANIMAL_LINK_RE.findall( page_html[ heading.end():end ] ):
             name = WebsitePage.clean_website_name( href )
             listing = AnimalSpeciesExhibit( species=name, exhibit=exhibit )
 
@@ -205,10 +205,7 @@ class AnimalListChecker():
 
       if not args.database.exists():
          print(
-            AppStringProvider.format(
-               'checks.couldNotFindDatabase',
-               database=args.database,
-            ),
+            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH

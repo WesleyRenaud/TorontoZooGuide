@@ -144,7 +144,7 @@ class GuardiansTalkScheduleChecker():
       candidates = [
          talk
          for talk in catalog
-         if talk.name.casefold() == name.casefold()
+         if WebsitePage.normalize_name( talk.name ) == WebsitePage.normalize_name( name )
       ]
       exhibit_keys = {
          ExhibitName.key( exhibit )
@@ -266,17 +266,16 @@ class GuardiansTalkScheduleChecker():
 
    @classmethod
    def label( cls, identity: GuardiansTalkListing ) -> str:
-      return AppStringProvider.format(
-         'format.pair',
-         first=identity.name,
-         second=identity.location,
-      )
+      return AppStringProvider.values()[ 'format.listJoin' ].join( [
+         identity.name,
+         identity.location,
+      ] )
 
 
    @classmethod
    def names_only( cls, identities: set[ GuardiansTalkListing ] ) -> list[ str ]:
       return [
-         AppStringProvider.format( 'checks.categoryItem', item=cls.label( identity ) )
+         CheckReport.text( 'checks.categoryItem' ) + cls.label( identity )
          for identity in sorted( identities, key=cls.label )
       ]
 
@@ -304,19 +303,19 @@ class GuardiansTalkScheduleChecker():
 
       for identity in sorted( identities, key=cls.label ):
          lines.append( CheckReport.join_lines( [
-            AppStringProvider.format( 'checks.categoryItem', item=cls.label( identity ) ),
-            CheckReport.detail_item( AppStringProvider.format(
-               'checks.websiteSchedule',
-               schedule=ScheduleSlotGroup.describe(
+            CheckReport.text( 'checks.categoryItem' ) + cls.label( identity ),
+            CheckReport.detail_item(
+               CheckReport.text( 'checks.websiteSchedule' )
+               + ScheduleSlotGroup.describe(
                   cls.slot_pairs( website.for_listing( identity ) ),
                ),
-            ) ),
-            CheckReport.detail_item( AppStringProvider.format(
-               'checks.appSchedule',
-               schedule=ScheduleSlotGroup.describe(
+            ),
+            CheckReport.detail_item(
+               CheckReport.text( 'checks.appSchedule' )
+               + ScheduleSlotGroup.describe(
                   cls.slot_pairs( app.for_listing( identity ) ),
                ),
-            ) ),
+            ),
          ] ) )
 
       return lines
@@ -339,21 +338,21 @@ class GuardiansTalkScheduleChecker():
             date.fromisoformat( occurrence.occurrence_date )
             for occurrence in app.for_listing( identity )
          }
-         parts = [ AppStringProvider.format( 'checks.categoryItem', item=cls.label( identity ) ) ]
+         parts = [ CheckReport.text( 'checks.categoryItem' ) + cls.label( identity ) ]
          app_only = sorted( app_dates - website_dates )
          website_only = sorted( website_dates - app_dates )
 
          if app_only:
-            parts.append( CheckReport.detail_item( AppStringProvider.format(
-               'checks.appDatesNotOnWebsite',
-               dates=CheckReport.format_date_list( app_only ),
-            ) ) )
+            parts.append( CheckReport.detail_item(
+               CheckReport.text( 'checks.appDatesNotOnWebsite' )
+               + CheckReport.format_date_list( app_only ),
+            ) )
 
          if website_only:
-            parts.append( CheckReport.detail_item( AppStringProvider.format(
-               'checks.websiteDatesNotInApp',
-               dates=CheckReport.format_date_list( website_only ),
-            ) ) )
+            parts.append( CheckReport.detail_item(
+               CheckReport.text( 'checks.websiteDatesNotInApp' )
+               + CheckReport.format_date_list( website_only ),
+            ) )
 
          if len( parts ) > 1:
             lines.append( CheckReport.join_lines( parts ) )
@@ -364,18 +363,16 @@ class GuardiansTalkScheduleChecker():
    @classmethod
    def comparison_note( cls, compared_dates: list[ date ], today: date ) -> str:
       if compared_dates:
-         return AppStringProvider.format(
-            'checks.websiteDatesCompared',
-            span=AppStringProvider.format(
-               'format.dateRangeThrough',
-               start=min( compared_dates ).isoformat(),
-               end=max( compared_dates ).isoformat(),
-            ),
+         return (
+            CheckReport.text( 'checks.websiteDatesCompared' )
+            + CheckReport.format_date_span( min( compared_dates ), max( compared_dates ) )
+            + CheckReport.text( 'checks.period' )
          )
 
-      return AppStringProvider.format(
-         'checks.noWebsiteDatesAfter',
-         day=today.isoformat(),
+      return (
+         CheckReport.text( 'checks.noWebsiteDatesAfter' )
+         + today.isoformat()
+         + CheckReport.text( 'checks.period' )
       )
 
 
@@ -430,10 +427,7 @@ class GuardiansTalkScheduleChecker():
 
       if not args.database.exists():
          print(
-            AppStringProvider.format(
-               'checks.couldNotFindDatabase',
-               database=args.database,
-            ),
+            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH

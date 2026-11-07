@@ -88,7 +88,7 @@ class WildEncounterScheduleChecker():
    @classmethod
    def names_only( cls, names: set[ str ] ) -> list[ str ]:
       return [
-         AppStringProvider.format( 'checks.categoryItem', item=name )
+         CheckReport.text( 'checks.categoryItem' ) + name
          for name in sorted( names, key=str.casefold )
       ]
 
@@ -103,15 +103,15 @@ class WildEncounterScheduleChecker():
 
       for name in sorted( names, key=str.casefold ):
          lines.append( CheckReport.join_lines( [
-            AppStringProvider.format( 'checks.categoryItem', item=name ),
-            CheckReport.detail_item( AppStringProvider.format(
-               'checks.websiteSchedule',
-               schedule=ScheduleSlotGroup.describe( website_slots.for_name( name ) ),
-            ) ),
-            CheckReport.detail_item( AppStringProvider.format(
-               'checks.appSchedule',
-               schedule=ScheduleSlotGroup.describe( app_slots.for_name( name ) ),
-            ) ),
+            CheckReport.text( 'checks.categoryItem' ) + name,
+            CheckReport.detail_item(
+               CheckReport.text( 'checks.websiteSchedule' )
+               + ScheduleSlotGroup.describe( website_slots.for_name( name ) ),
+            ),
+            CheckReport.detail_item(
+               CheckReport.text( 'checks.appSchedule' )
+               + ScheduleSlotGroup.describe( app_slots.for_name( name ) ),
+            ),
          ] ) )
 
       return lines
@@ -146,14 +146,14 @@ class WildEncounterScheduleChecker():
    @classmethod
    def window_line( cls, name: str, detail: str ) -> str:
       return CheckReport.join_lines( [
-         AppStringProvider.format( 'checks.categoryItem', item=name ),
+         CheckReport.text( 'checks.categoryItem' ) + name,
          detail,
       ] )
 
 
    @classmethod
-   def detail_line( cls, key: str, **params: object ) -> str:
-      return CheckReport.detail_item( AppStringProvider.format( key, **params ) )
+   def detail_line( cls, key: str, value: str = '' ) -> str:
+      return CheckReport.detail_item( CheckReport.text( key ) + value )
 
 
    @classmethod
@@ -161,7 +161,7 @@ class WildEncounterScheduleChecker():
       if not dates:
          return None
 
-      return cls.detail_line( key, dates=CheckReport.format_date_list( dates ) )
+      return cls.detail_line( key, CheckReport.format_date_list( dates ) )
 
 
    @classmethod
@@ -199,29 +199,26 @@ class WildEncounterScheduleChecker():
 
       try:
          booking_type = BookingCalendar.tour_id( WebsitePage.fetch_text( link ) )
-      except RuntimeError as error:
-         return cls.detail_line( 'checks.couldNotReadBookingPage', error=error )
+      except RuntimeError:
+         return cls.detail_line( 'checks.couldNotReadBookingPage' )
 
       if booking_type == None:
          return cls.detail_line( 'checks.noTourId' )
 
       try:
          bookable = BookingCalendar.enabled_dates( booking_type, first, last )
-      except ( RuntimeError, ValueError, KeyError, TypeError ) as error:
-         return cls.detail_line( 'checks.couldNotReadBookingCalendar', error=error )
+      except ( RuntimeError, ValueError, KeyError, TypeError ):
+         return cls.detail_line( 'checks.couldNotReadBookingCalendar' )
 
       return cls.date_mismatch( app_dates, bookable )
 
 
    @classmethod
    def comparison_note( cls, first: date, last: date ) -> str:
-      return AppStringProvider.format(
-         'checks.bookingDatesCompared',
-         span=AppStringProvider.format(
-            'format.dateRangeThrough',
-            start=first.isoformat(),
-            end=last.isoformat(),
-         ),
+      return (
+         CheckReport.text( 'checks.bookingDatesCompared' )
+         + CheckReport.format_date_span( first, last )
+         + CheckReport.text( 'checks.period' )
       )
 
 
@@ -272,10 +269,7 @@ class WildEncounterScheduleChecker():
 
       if not args.database.exists():
          print(
-            AppStringProvider.format(
-               'checks.couldNotFindDatabase',
-               database=args.database,
-            ),
+            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
             file=sys.stderr,
          )
          return CheckExitCode.COULD_NOT_FINISH

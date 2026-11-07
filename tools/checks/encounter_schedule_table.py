@@ -14,7 +14,7 @@ from .website_page import WebsitePage
 class EncounterScheduleTable():
    TABLE_RE = re.compile( r'(?is)<table.*?</table>' )
    ROW_RE = re.compile( r'(?is)<tr.*?</tr>' )
-   CELL_RE = re.compile( r'(?is)<t[dh][^>]*>(.*?)</t[dh]>' )
+   CELL_RE = re.compile( r'(?is)<t[dh][^>]*>(?P<cell>.*?)</t[dh]>' )
    CLOCK_WITH_MERIDIEM = '%I:%M %p'
    CLOCK_WITHOUT_MERIDIEM = '%H:%M'
    WEBSITE_NAME_ALIASES = {
@@ -71,8 +71,8 @@ class EncounterScheduleTable():
    @classmethod
    def cells( cls, row: str ) -> list[ str ]:
       return [
-         WebsitePage.clean_html( cell )
-         for cell in cls.CELL_RE.findall( row )
+         WebsitePage.clean_html( match.group( 'cell' ) )
+         for match in cls.CELL_RE.finditer( row )
       ]
 
 

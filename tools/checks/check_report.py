@@ -9,22 +9,21 @@ from .schedule_check import ScheduleCheck
 
 class CheckReport():
    @classmethod
+   def text( cls, key: str ) -> str:
+      return AppStringProvider.format( key )
+
+
+   @classmethod
    def print_category(
          cls,
          title: str,
          items: list[ str ],
          indent: bool = True ) -> None:
-      print(
-         AppStringProvider.format(
-            'checks.categoryCount',
-            title=title,
-            count=len( items ),
-         ),
-      )
+      print( f'{ title }{ cls.text( "checks.labelValue" ) }{ len( items ) }' )
 
       for item in items:
          if indent:
-            print( AppStringProvider.format( 'checks.categoryItem', item=item ) )
+            print( cls.text( 'checks.categoryItem' ) + item )
          else:
             print( item )
 
@@ -57,11 +56,7 @@ class CheckReport():
          check: str,
          day: date,
          schedule: ScheduleCheck ) -> None:
-      print( AppStringProvider.format(
-         'checks.headingNote',
-         heading=cls.heading( check, day ),
-         note=schedule.note,
-      ) )
+      print( f'{ cls.heading( check, day ) } { schedule.note }' )
       print()
       cls.print_category(
          AppStringProvider.format( 'checks.scheduledInAppOnly' ),
@@ -97,10 +92,11 @@ class CheckReport():
 
    @classmethod
    def heading( cls, check: str, day: date ) -> str:
-      return AppStringProvider.format(
-         'checks.heading',
-         kind=AppStringProvider.reports()[ check ][ 'kind' ],
-         day=day.isoformat(),
+      return (
+         AppStringProvider.reports()[ check ][ 'kind' ]
+         + cls.text( 'checks.headingMiddle' )
+         + day.isoformat()
+         + cls.text( 'checks.period' )
       )
 
 
@@ -111,7 +107,7 @@ class CheckReport():
 
    @classmethod
    def detail_item( cls, item: str ) -> str:
-      return AppStringProvider.format( 'checks.detailItem', item=item )
+      return cls.text( 'checks.detailItem' ) + item
 
 
    @classmethod
@@ -124,11 +120,7 @@ class CheckReport():
       if start == end:
          return start.isoformat()
 
-      return AppStringProvider.format(
-         'format.dateRangeThrough',
-         start=start.isoformat(),
-         end=end.isoformat(),
-      )
+      return start.isoformat() + cls.text( 'checks.dateThrough' ) + end.isoformat()
 
 
    @classmethod

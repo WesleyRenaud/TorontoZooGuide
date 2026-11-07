@@ -195,8 +195,8 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 2
-   assert f'  { STORK }' in output
-   assert f'  { HAWK }' in output
+   assert '  Marabou stork' in output
+   assert "  Harris's hawk" in output
    assert '&#39;' not in output
    assert 'Off for the season on the website and not in the app: 2' in output
    assert 'Off for the season in the app and not on the website: 0' in output
@@ -241,7 +241,7 @@ def Test_CheckSchedules_TestExhibitClosedNotForSeason_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert f'  { HAWK }' in output
+   assert "  Harris's hawk" in output
    assert 'Off for the season on the website and not in the app: 1' in output
 
 

@@ -27,17 +27,19 @@ class CheckReportParser():
 
    @classmethod
    def header_re( cls ) -> re.Pattern[ str ]:
-      template = AppStringProvider.values()[ 'checks.heading' ]
-      pattern = re.escape( template )
-      pattern = pattern.replace( re.escape( '{kind}' ), r'(?P<kind>.+)' )
-      pattern = pattern.replace( re.escape( '{day}' ), r'(?P<day>\d{4}-\d{2}-\d{2})' )
-      return re.compile( rf'^{ pattern }(?: (?P<note>.*))?$' )
+      values = AppStringProvider.values()
+      middle = re.escape( values[ 'checks.headingMiddle' ] )
+      period = re.escape( values[ 'checks.period' ] )
+      return re.compile(
+         rf'^(?P<kind>.+){ middle }(?P<day>\d{{4}}-\d{{2}}-\d{{2}}){ period }(?: (?P<note>.*))?$'
+      )
 
 
    @classmethod
    def summary_line( cls, body: str ) -> int | None:
-      one_error = AppStringProvider.format( 'checks.error', count=1 )
-      errors_suffix = AppStringProvider.values()[ 'checks.errors' ].removeprefix( '{count}' )
+      values = AppStringProvider.values()
+      one_error = f'1{ values[ "checks.error" ] }'
+      errors_suffix = values[ 'checks.errors' ]
 
       for line in reversed( body.splitlines() ):
          stripped = line.strip()
@@ -53,8 +55,8 @@ class CheckReportParser():
 
    @classmethod
    def format_error_count( cls, count: int ) -> str:
-      key = 'checks.error' if count == 1 else 'checks.errors'
-      return AppStringProvider.format( key, count=count )
+      suffix = 'checks.error' if count == 1 else 'checks.errors'
+      return f'{ count }{ AppStringProvider.format( suffix ) }'
 
 
    @classmethod
@@ -63,9 +65,9 @@ class CheckReportParser():
          error_count = cls.summary_line( body )
 
          if error_count is not None:
-            return AppStringProvider.format(
-               'checks.subject.summary',
-               line=cls.format_error_count( error_count ),
+            return (
+               AppStringProvider.format( 'checks.subject.summary' )
+               + cls.format_error_count( error_count )
             )
 
          return AppStringProvider.format( 'checks.subject.finished' )
@@ -75,8 +77,7 @@ class CheckReportParser():
 
    @classmethod
    def count_marker( cls ) -> str:
-      item = AppStringProvider.values()[ 'checks.countItem' ]
-      return item.removeprefix( '{count}' ).removesuffix( '{name}' )
+      return AppStringProvider.values()[ 'checks.countItem' ]
 
 
    @classmethod
@@ -88,7 +89,7 @@ class CheckReportParser():
    @classmethod
    def format_counts( cls, counts: list[ int ] ) -> str:
       pieces = [
-         AppStringProvider.format( 'checks.countItem', count=count, name=label )
+         f'{ count }{ AppStringProvider.format( "checks.countItem" ) }{ label }'
          for count, label in zip( counts, cls.count_labels() )
       ]
       return AppStringProvider.values()[ 'format.listJoin' ].join( pieces )
@@ -96,12 +97,9 @@ class CheckReportParser():
 
    @classmethod
    def count_line_re( cls ) -> re.Pattern[ str ]:
-      item = AppStringProvider.values()[ 'checks.countItem' ]
-      pattern = re.escape( item )
-      pattern = pattern.replace( re.escape( '{count}' ), r'\d+' )
-      pattern = pattern.replace( re.escape( '{name}' ), r'.+' )
+      marker = re.escape( cls.count_marker() )
       separator = re.escape( AppStringProvider.values()[ 'format.listJoin' ] )
-      return re.compile( rf'^{ pattern }{ separator }' )
+      return re.compile( rf'^\d+{ marker }.+{ separator }' )
 
 
    @classmethod
