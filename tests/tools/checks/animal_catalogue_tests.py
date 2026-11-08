@@ -19,6 +19,14 @@ def _page( names: list[ str ], exhibit: str = 'Africa Savanna' ) -> str:
    return ''.join( parts )
 
 
+def Test_SameName_TestWebsiteHerdAlias_ExpectWoodBison() -> None:
+   assert AnimalCatalogue.same_name( 'Wood bison - female herd', 'Wood Bison' )
+
+
+def Test_SameName_TestDifferentSpecies_ExpectDifferent() -> None:
+   assert not AnimalCatalogue.same_name( 'African Lion', 'Sumatran Orangutan' )
+
+
 def Test_ParseWebsiteAnimals_TestHeadingWithBreak_ExpectExhibitName() -> None:
    page = _page( [ LION ], 'Americas Outdoor<br />Mayan Temple Ruins' )
 

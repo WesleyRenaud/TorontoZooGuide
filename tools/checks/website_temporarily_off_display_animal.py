@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from html import unescape
 from urllib.parse import unquote
 
+from .animal_catalogue import AnimalCatalogue
+from api.animals.domain.animal_species_exhibit import AnimalSpeciesExhibit
 from api.app_string_provider import AppStringProvider
 from .website_off_display_animal import WebsiteOffDisplayAnimal
 from .website_page import WebsitePage
@@ -13,6 +15,13 @@ from .website_page import WebsitePage
 class WebsiteTemporarilyOffDisplayAnimal:
    section: str
    name: str
+
+
+   def matches( self, enclosure: AnimalSpeciesExhibit ) -> bool:
+      return (
+         WebsitePage.normalize_name( self.section ) == WebsitePage.normalize_name( enclosure.exhibit )
+         and AnimalCatalogue.same_name( self.name, enclosure.species )
+      )
 
 
    @classmethod

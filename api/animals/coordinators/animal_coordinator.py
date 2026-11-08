@@ -27,6 +27,7 @@ from ..domain.animal_viewability_context_builder import AnimalViewabilityContext
 from ..domain.animal_viewing_scope import AnimalViewingScope
 from ..domain.closure_linked_off_display_animal import ClosureLinkedOffDisplayAnimal
 from ..domain.enclosure_off_display_month import EnclosureOffDisplayMonth
+from ..domain.enclosure_off_display_status import EnclosureOffDisplayStatus
 from ..domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from ..domain.seasonal_off_display_animal import SeasonalOffDisplayAnimal
 from ..domain.seasonal_off_display_animal_builder import SeasonalOffDisplayAnimalBuilder
@@ -100,6 +101,12 @@ class AnimalCoordinator():
    @classmethod
    def get_off_display_records( cls ) -> list[ AnimalOffDisplayRecord ]:
       return AnimalStatusProvider.fetch_off_display_records( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_off_display_enclosure_statuses( cls ) -> list[ EnclosureOffDisplayStatus ]:
+      return AnimalStatusProvider.fetch_off_display_enclosure_statuses(
+         RequestConnectionProvider.get() )
 
 
    @classmethod

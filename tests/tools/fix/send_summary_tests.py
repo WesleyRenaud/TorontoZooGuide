@@ -283,6 +283,39 @@ def Test_RenderHtml_TestCorrectedAppOffDisplay_ExpectPhotoExhibitAndCorrection()
    assert f'border:3px solid { colors.foreground }' in html
 
 
+def Test_RenderHtml_TestAllAnimalErrorsFixed_ExpectGreenTotal() -> None:
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'temporaryOffDisplay', date( 2026, 11, 8 ) ) }
+
+      { CheckReport.category_line( 'checks.temporaryOffDisplayWebsiteOnly', 2 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Brush-Tailed Bettong', second='Australasia Pavilion' ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Red-Tailed Black Cockatoo', second='Australasia Pavilion' ) }
+
+      { CheckReportParser.format_fixed_count( 2 ) }
+
+      { CheckReportParser.format_counts() }
+
+      { CheckReportParser.format_error_count( 0 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 0 )
+   green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
+   danger = ColorTokens.color( ColorToken.DANGER )
+   animals = html[ html.index( '>Animals<' ):html.index( '>Encounters<' ) ]
+   detected = CheckReportParser.format_detected( 2, 2 )
+
+   assert detected in html
+   assert f'color:{ green };">{ detected }' in html
+   assert '>2<' in animals
+   assert f'color:{ green }' in animals
+   assert danger not in animals
+   assert CheckReportParser.subject_for( body, 0 ) == (
+      AppStringProvider.format( 'checks.subject.summary' )
+      + CheckReportParser.format_error_count( 2 )
+   )
+
+
 def Test_RenderHtml_TestOneErrorFixed_ExpectFixedHeadline() -> None:
    fixed = CheckReportParser.format_fixed_count( 1 )
    body = textwrap.dedent(
@@ -346,6 +379,9 @@ def Test_RenderHtml_TestFixedAndCatalogueMiss_ExpectGreenFixAndDangerMiss() -> N
    detected = CheckReportParser.format_detected( 2, 1 )
 
    assert f'color:{ danger };">{ detected }' in html
+   animals = html[ html.index( '>Animals<' ):html.index( '>Encounters<' ) ]
+   assert '>2<' in animals
+   assert f'color:{ danger }' in animals
    assert html.index( '>Encounters<' ) < html.index( 'Warthog' )
    assert f'color:{ green };">{ fixed_title }' in html
    assert f'color:{ danger };">{ missed_title }' in html
@@ -430,6 +466,22 @@ def Test_SubjectFor_TestOneError_ExpectSummarySubject() -> None:
    assert subject == (
       AppStringProvider.format( 'checks.subject.summary' )
       + CheckReportParser.format_error_count( 1 )
+   )
+
+
+def Test_SubjectFor_TestFixedErrors_ExpectAllErrors() -> None:
+   body = (
+      CheckReportParser.format_fixed_count( 2 )
+      + '\n\n'
+      + CheckReportParser.format_error_count( 0 )
+      + '\n'
+   )
+
+   subject = CheckReportParser.subject_for( body, 0 )
+
+   assert subject == (
+      AppStringProvider.format( 'checks.subject.summary' )
+      + CheckReportParser.format_error_count( 2 )
    )
 
 

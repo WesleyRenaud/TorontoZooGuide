@@ -99,14 +99,27 @@ class CheckReportParser():
 
 
    @classmethod
+   def recorded_fixed_count( cls, body: str ) -> int:
+      fixed = 0
+
+      for line in body.splitlines():
+         count = cls.fixed_count( line )
+
+         if count != None:
+            fixed = count
+
+      return fixed
+
+
+   @classmethod
    def subject_for( cls, body: str, exit_code: int ) -> str:
       if exit_code == CheckExitCode.CLEAR or exit_code == CheckExitCode.DIFFERENCES:
          error_count = cls.summary_line( body )
 
-         if error_count is not None:
+         if error_count != None:
             return (
                AppStringProvider.format( 'checks.subject.summary' )
-               + cls.format_error_count( error_count )
+               + cls.format_error_count( error_count + cls.recorded_fixed_count( body ) )
             )
 
          return AppStringProvider.format( 'checks.subject.finished' )

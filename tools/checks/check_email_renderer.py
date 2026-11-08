@@ -99,8 +99,62 @@ class CheckEmailRenderer():
 
 
    @classmethod
-   def count_cell( cls, label: str, count: int ) -> str:
-      clear = count == 0
+   def count_kinds( cls ) -> dict[ str, list[ str ] ]:
+      return {
+         AppStringProvider.format( 'site.nav.animals' ): [
+            cls.check_kind( 'animalList' ),
+            cls.check_kind( 'closureOffDisplay' ),
+            cls.check_kind( 'seasonalOffDisplay' ),
+            cls.check_kind( 'temporaryOffDisplay' ),
+         ],
+         AppStringProvider.format( 'reports.wildEncounter.section' ): [
+            cls.check_kind( 'wildEncounter' ),
+         ],
+         AppStringProvider.format( 'reports.guardiansTalk.section' ): [
+            cls.check_kind( 'guardiansTalk' ),
+         ],
+         AppStringProvider.format( 'map.filter.attractions' ): [
+            cls.check_kind( 'seasonalAttraction' ),
+         ],
+         AppStringProvider.format( 'map.filterTypes.restaurant' ): [
+            cls.check_kind( 'seasonalRestaurant' ),
+            cls.check_kind( 'restaurantList' ),
+         ],
+         AppStringProvider.format( 'checks.countNames.giftShops' ): [
+            cls.check_kind( 'seasonalGiftShop' ),
+            cls.check_kind( 'giftShopList' ),
+         ],
+         AppStringProvider.format( 'checks.countNames.drinkingFountains' ): [
+            cls.check_kind( 'seasonalDrinkingFountain' ),
+         ],
+         cls.check_kind( 'attractionList' ): [
+            cls.check_kind( 'attractionList' ),
+         ],
+         cls.check_kind( 'zooHours' ): [
+            cls.check_kind( 'zooHours' ),
+         ],
+      }
+
+
+   @classmethod
+   def issue_total( cls, label: str, sections: list[ Section ] ) -> int:
+      kinds = cls.count_kinds().get( label, [] )
+      return sum(
+         category.count
+         for section in sections
+         if section.kind in kinds
+         for category in section.categories
+      )
+
+
+   @classmethod
+   def count_total( cls, count: Count, sections: list[ Section ] ) -> int:
+      return max( count.count, cls.issue_total( count.label, sections ) )
+
+
+   @classmethod
+   def count_cell( cls, label: str, count: int, all_fixed: bool ) -> str:
+      clear = all_fixed
       return cls.markup(
          'count_cell',
          label=cls.text( label ),
@@ -124,9 +178,13 @@ class CheckEmailRenderer():
 
 
    @classmethod
-   def count_row( cls, counts: list[ Count ] ) -> str:
+   def count_row( cls, counts: list[ Count ], sections: list[ Section ] ) -> str:
       cells = ''.join(
-         cls.count_cell( count.label, count.count )
+         cls.count_cell(
+            count.label,
+            cls.count_total( count, sections ),
+            count.count == 0,
+         )
          for count in counts
       )
 
@@ -137,21 +195,21 @@ class CheckEmailRenderer():
 
 
    @classmethod
-   def count_grid( cls, counts: list[ Count ] ) -> str:
+   def count_grid( cls, report: Report ) -> str:
       rows = []
       row: list[ Count ] = []
 
-      for count in counts:
+      for count in report.counts:
          row.append( count )
 
          if len( row ) < 2:
             continue
 
-         rows.append( cls.count_row( row ) )
+         rows.append( cls.count_row( row, report.sections ) )
          row = []
 
       if row:
-         rows.append( cls.count_row( row ) )
+         rows.append( cls.count_row( row, report.sections ) )
 
       return cls.markup( 'count_grid', rows=''.join( rows ) )
 
@@ -305,6 +363,7 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.closureOffDisplayReturningTomorrow' ),
          AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' ),
          AppStringProvider.format( 'checks.offForSeasonAppOnly' ),
+         AppStringProvider.format( 'checks.temporaryOffDisplayWebsiteOnly' ),
       )
 
 
@@ -368,6 +427,7 @@ class CheckEmailRenderer():
          cls.check_kind( 'animalList' ),
          cls.check_kind( 'closureOffDisplay' ),
          cls.check_kind( 'seasonalOffDisplay' ),
+         cls.check_kind( 'temporaryOffDisplay' ),
       )
       grouped: dict[ str, list[ Section ] ] = {
          kind: []
@@ -455,7 +515,7 @@ class CheckEmailRenderer():
             headline=cls.text( status.headline ),
             summary=cls.text( status.summary ),
          )
-         + cls.count_grid( report.counts )
+         + cls.count_grid( report )
          + ''.join( cls.section_card( section ) for section in sections )
       )
       return cls.markup( 'document', content=content )
