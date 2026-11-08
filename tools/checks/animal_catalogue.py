@@ -48,6 +48,11 @@ class AnimalCatalogue():
 
 
    @classmethod
+   def same_name( cls, website_name: str, app_name: str ) -> bool:
+      return cls.comparison_key( website_name, True ) == cls.comparison_key( app_name, False )
+
+
+   @classmethod
    def parse_website_animals( cls, page_html: str ) -> list[ AnimalSpeciesExhibit ]:
       names = []
       headings = list( cls.HEADING_RE.finditer( page_html ) )

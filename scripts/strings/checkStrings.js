@@ -76,6 +76,7 @@ export class CheckStrings {
       scheduledInAppOnly: 'Scheduled in the app and not on the website',
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
       setOffDisplayForSeasonFrom: 'Set off display for the season from ',
+      setOffDisplayThrough: 'Set off display through ',
       setOnDisplayForSeason: 'Set on display for the season.',
       status: {
          allClear: 'All clear',
@@ -92,6 +93,7 @@ export class CheckStrings {
          summary: 'Toronto Zoo check: ',
       },
       temporarilyNotViewable: 'temporarily not viewable',
+      temporaryOffDisplayWebsiteOnly: 'Temporarily off display on the website and not in the app',
       websiteCatalogueNotInApp: 'On the website catalogue and not in the app',
       websiteDatesCompared: 'Website dates compared from ',
       websiteDatesNotInApp: 'Website dates not in the app: ',
@@ -153,6 +155,10 @@ export class CheckStrings {
          description: 'Compare restaurants closed for the season on the Toronto Zoo website with the restaurants closed for the season in the app.',
          kind: 'Seasonal restaurant closure',
          section: 'Restaurants closed for the season',
+      },
+      temporaryOffDisplay: {
+         description: 'Compare animals temporarily off display on the Toronto Zoo alerts page with the animals off display in the app.',
+         kind: 'Temporary off-display',
       },
       wildEncounter: {
          description: 'Compare scheduled wild encounters with the Toronto Zoo website and each encounter booking calendar.',
