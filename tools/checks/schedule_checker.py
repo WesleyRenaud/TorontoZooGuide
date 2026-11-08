@@ -9,7 +9,7 @@ import sys
 from .animal_app_catalogue_not_on_website_checker import AnimalAppCatalogueNotOnWebsiteChecker
 from .animal_closure_off_display_extension_checker import AnimalClosureOffDisplayExtensionChecker
 from .animal_off_for_season_in_app_not_on_website_checker import AnimalOffForSeasonInAppNotOnWebsiteChecker
-from .animal_off_for_season_on_website_not_in_app_checker import AnimalOffForSeasonOnWebsiteNotInAppChecker
+from .animal_off_for_season_ramp_down_on_website_not_in_app_checker import AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker
 from .animal_temporary_off_display_in_app_not_on_website_checker import AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker
 from .animal_temporary_off_display_on_website_not_in_app_checker import AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker
 from .animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
@@ -40,7 +40,7 @@ class ScheduleChecker():
    @classmethod
    def check_animals( cls, database: Path, today: date ) -> int:
       return (
-         AnimalOffForSeasonOnWebsiteNotInAppChecker.check_schedules( database, today )
+         AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker.check_schedules( database, today )
          + AnimalOffForSeasonInAppNotOnWebsiteChecker.check_schedules( database, today )
          + AnimalClosureOffDisplayExtensionChecker.check_schedules( database, today )
          + AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker.check_schedules( database, today )

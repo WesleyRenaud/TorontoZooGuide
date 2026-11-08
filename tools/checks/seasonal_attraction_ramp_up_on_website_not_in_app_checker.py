@@ -12,10 +12,10 @@ from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .constants import Constants
 from .seasonal_attraction_comparison import SeasonalAttractionComparison
-from tools.fix.seasonal_attraction_closed_fixer import SeasonalAttractionClosedFixer
+from tools.fix.seasonal_attraction_closed_week_fixer import SeasonalAttractionClosedWeekFixer
 
 
-class SeasonalAttractionOnWebsiteNotInAppChecker():
+class SeasonalAttractionRampUpOnWebsiteNotInAppChecker():
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse(
@@ -24,33 +24,24 @@ class SeasonalAttractionOnWebsiteNotInAppChecker():
 
 
    @classmethod
-   def category_lines( cls, database: Path, today: date ) -> list[ str ] | None:
-      if today.month not in Constants.WEBSITE_NOT_IN_APP_SEASON_MONTHS:
-         return None
+   def check_schedules( cls, database: Path, today: date ) -> int:
+      if today.month in Constants.WEBSITE_NOT_IN_APP_SEASON_MONTHS:
+         return 0
 
       attractions = SeasonalAttractionComparison.load_seasonal_attractions( database )
       listings = SeasonalAttractionComparison.fetch_closed_for_season_attractions( today )
-      matched = SeasonalAttractionComparison.missed_website_attractions(
-         listings,
-         attractions,
+      lines = SeasonalAttractionClosedWeekFixer.fix(
+         database,
          today,
+         SeasonalAttractionComparison.week_extension_names( listings, attractions, today ),
       )
       unmatched = SeasonalAttractionComparison.missed_unmatched_listings( listings, attractions )
-      return SeasonalAttractionClosedFixer.fix( database, today, matched ) + unmatched
-
-
-   @classmethod
-   def check_schedules( cls, database: Path, today: date ) -> int:
-      lines = cls.category_lines( database, today )
-
-      if lines == None:
-         return 0
 
       print( CheckReport.heading( 'seasonalAttraction', today ) )
       print()
-      CheckReport.print_category( 'checks.closedForSeasonWebsiteOnly', lines )
-      corrected = CheckReport.text( 'checks.setClosedForSeasonFrom' )
-      return sum( corrected not in line for line in lines )
+      CheckReport.print_category( 'checks.closedForSeasonReturningSoon', lines )
+      CheckReport.print_category( 'checks.closedForSeasonWebsiteOnly', unmatched )
+      return len( unmatched )
 
 
    @classmethod
@@ -77,4 +68,4 @@ class SeasonalAttractionOnWebsiteNotInAppChecker():
 
 
 if __name__ == '__main__':
-   raise SystemExit( SeasonalAttractionOnWebsiteNotInAppChecker.main() )
+   raise SystemExit( SeasonalAttractionRampUpOnWebsiteNotInAppChecker.main() )

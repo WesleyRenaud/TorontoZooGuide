@@ -22,7 +22,7 @@ from .website_off_display_animal import WebsiteOffDisplayAnimal
 from .website_page import WebsitePage
 
 
-class AnimalOffForSeasonOnWebsiteNotInAppChecker():
+class AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker():
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse(
@@ -153,4 +153,4 @@ class AnimalOffForSeasonOnWebsiteNotInAppChecker():
 
 
 if __name__ == '__main__':
-   raise SystemExit( AnimalOffForSeasonOnWebsiteNotInAppChecker.main() )
+   raise SystemExit( AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker.main() )

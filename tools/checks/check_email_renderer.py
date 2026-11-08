@@ -369,6 +369,7 @@ class CheckEmailRenderer():
    @classmethod
    def recorded_fix( cls, category: Category ) -> bool:
       phrases = (
+         AppStringProvider.format( 'checks.extendedClosedForSeasonThrough' ),
          AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
          AppStringProvider.format( 'checks.setOpenForSeason' ),
       )

@@ -10,7 +10,8 @@ from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .seasonal_attraction_in_app_not_on_website_checker import SeasonalAttractionInAppNotOnWebsiteChecker
-from .seasonal_attraction_on_website_not_in_app_checker import SeasonalAttractionOnWebsiteNotInAppChecker
+from .seasonal_attraction_ramp_down_on_website_not_in_app_checker import SeasonalAttractionRampDownOnWebsiteNotInAppChecker
+from .seasonal_attraction_ramp_up_on_website_not_in_app_checker import SeasonalAttractionRampUpOnWebsiteNotInAppChecker
 
 
 class SeasonalAttractionClosureChecker():
@@ -24,7 +25,8 @@ class SeasonalAttractionClosureChecker():
    @classmethod
    def check_schedules( cls, database: Path, today: date ) -> int:
       return (
-         SeasonalAttractionOnWebsiteNotInAppChecker.check_schedules( database, today )
+         SeasonalAttractionRampDownOnWebsiteNotInAppChecker.check_schedules( database, today )
+         + SeasonalAttractionRampUpOnWebsiteNotInAppChecker.check_schedules( database, today )
          + SeasonalAttractionInAppNotOnWebsiteChecker.check_schedules( database, today )
       )
 
