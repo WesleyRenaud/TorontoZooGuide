@@ -20,9 +20,6 @@ from .website_page import WebsitePage
 
 
 class AnimalOffForSeasonInAppNotOnWebsiteChecker():
-   OFF_FOR_SEASON_IN_APP_NOT_ON_WEBSITE_MONTHS = ( 2, 3, 4, 5, 6, 7 )
-
-
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse(
@@ -114,10 +111,7 @@ class AnimalOffForSeasonInAppNotOnWebsiteChecker():
 
 
    @classmethod
-   def category_lines( cls, database: Path, today: date ) -> list[ str ] | None:
-      if today.month not in cls.OFF_FOR_SEASON_IN_APP_NOT_ON_WEBSITE_MONTHS:
-         return None
-
+   def category_lines( cls, database: Path, today: date ) -> list[ str ]:
       animals = cls.load_off_display_animals( database )
       listings = WebsiteOffDisplayAnimal.fetch()
       return cls.correct( database, cls.app_only( listings, animals, today ) )
@@ -131,9 +125,6 @@ class AnimalOffForSeasonInAppNotOnWebsiteChecker():
    @classmethod
    def check_schedules( cls, database: Path, today: date ) -> int:
       lines = cls.category_lines( database, today )
-
-      if lines == None:
-         return 0
 
       print( CheckReport.heading( 'seasonalOffDisplay', today ) )
       print()

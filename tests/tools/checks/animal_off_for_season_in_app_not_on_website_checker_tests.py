@@ -357,7 +357,7 @@ def Test_CheckSchedules_TestOffDisplayOnSteadyDate_ExpectNoAppMiss(
    assert f'  { STORK }' not in output
 
 
-def Test_CheckSchedules_TestNovember_ExpectNotCompared(
+def Test_CheckSchedules_TestNovember_ExpectOpened(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -368,11 +368,7 @@ def Test_CheckSchedules_TestNovember_ExpectNotCompared(
       [ ( STORK, TODAY.isoformat(), None ) ],
       [],
    )
-
-   def fetch_text( url: str ) -> str:
-      raise AssertionError( 'fetch_text' )
-
-   monkeypatch.setattr( WebsitePage, 'fetch_text', fetch_text )
+   _install_page( monkeypatch, _page( [] ) )
 
    result, output = _check( database, TODAY, capsys )
 
@@ -381,5 +377,7 @@ def Test_CheckSchedules_TestNovember_ExpectNotCompared(
    connection.close()
 
    assert result == 0
-   assert output == ''
-   assert species == [ ( STORK, ) ]
+   assert f'  { STORK }' in output
+   assert CheckReport.text( 'checks.setOnDisplayForSeason' ) in output
+   assert species == []
+   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 1 ) in output
