@@ -53,6 +53,21 @@ class AttractionProvider():
 
 
    @classmethod
+   def fetch_closed_for_season_until_month(
+         cls,
+         conn: Types.Connection,
+         attraction: str ) -> int | None:
+      row = conn.execute(
+         """   SELECT CLOSED_FOR_SEASON_UNTIL_MONTH
+               FROM Attraction
+               WHERE NAME = ?;
+         """,
+         ( attraction, ) ).fetchone()
+
+      return row[ 'CLOSED_FOR_SEASON_UNTIL_MONTH' ]
+
+
+   @classmethod
    def fetch_attraction_records(
          cls,
          conn: Types.Connection,

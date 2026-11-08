@@ -75,10 +75,12 @@ export class CheckStrings {
       planPageNoLastAdmission: 'The plan page has no last admission time.',
       scheduledInAppOnly: 'Scheduled in the app and not on the website',
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
+      setClosedForSeasonFrom: 'Set closed for the season from ',
       setOffDisplayForSeasonFrom: 'Set off display for the season from ',
       setOffDisplayThrough: 'Set off display through ',
       setOnDisplay: 'Set on display.',
       setOnDisplayForSeason: 'Set on display for the season.',
+      setOpenForSeason: 'Set open for the season.',
       status: {
          allClear: 'All clear',
          couldNotFinish: 'Could not finish',

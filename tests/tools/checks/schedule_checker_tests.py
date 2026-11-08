@@ -5,19 +5,19 @@ from pathlib import Path
 
 import pytest
 
-from tools.checks.app_catalogue_not_on_website_checker import AppCatalogueNotOnWebsiteChecker
+from tools.checks.animal_app_catalogue_not_on_website_checker import AnimalAppCatalogueNotOnWebsiteChecker
+from tools.checks.animal_closure_off_display_extension_checker import AnimalClosureOffDisplayExtensionChecker
+from tools.checks.animal_off_for_season_in_app_not_on_website_checker import AnimalOffForSeasonInAppNotOnWebsiteChecker
+from tools.checks.animal_off_for_season_on_website_not_in_app_checker import AnimalOffForSeasonOnWebsiteNotInAppChecker
+from tools.checks.animal_temporary_off_display_in_app_not_on_website_checker import AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker
+from tools.checks.animal_temporary_off_display_on_website_not_in_app_checker import AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker
+from tools.checks.animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
 from tools.checks.check_report_parser import CheckReportParser
-from tools.checks.closure_off_display_extension_checker import ClosureOffDisplayExtensionChecker
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
-from tools.checks.off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker
-from tools.checks.off_for_season_on_website_not_in_app_checker import OffForSeasonOnWebsiteNotInAppChecker
 from tools.checks.restaurant_list_checker import RestaurantListChecker
 from tools.checks.schedule_checker import ScheduleChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
-from tools.checks.temporary_off_display_in_app_not_on_website_checker import TemporaryOffDisplayInAppNotOnWebsiteChecker
-from tools.checks.temporary_off_display_on_website_not_in_app_checker import TemporaryOffDisplayOnWebsiteNotInAppChecker
-from tools.checks.website_catalogue_not_in_app_checker import WebsiteCatalogueNotInAppChecker
 
 
 TODAY = date( 2026, 11, 2 )
@@ -57,33 +57,33 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       return 3
 
    monkeypatch.setattr(
-      OffForSeasonOnWebsiteNotInAppChecker,
+      AnimalOffForSeasonOnWebsiteNotInAppChecker,
       'category_lines',
       check_website,
    )
-   monkeypatch.setattr( OffForSeasonInAppNotOnWebsiteChecker, 'category_lines', check_app )
+   monkeypatch.setattr( AnimalOffForSeasonInAppNotOnWebsiteChecker, 'category_lines', check_app )
    monkeypatch.setattr(
-      ClosureOffDisplayExtensionChecker,
+      AnimalClosureOffDisplayExtensionChecker,
       'check_schedules',
       check_closure,
    )
    monkeypatch.setattr(
-      TemporaryOffDisplayOnWebsiteNotInAppChecker,
+      AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker,
       'check_schedules',
       check_temporary,
    )
    monkeypatch.setattr(
-      TemporaryOffDisplayInAppNotOnWebsiteChecker,
+      AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker,
       'check_schedules',
       check_temporary_app,
    )
    monkeypatch.setattr(
-      WebsiteCatalogueNotInAppChecker,
+      AnimalWebsiteCatalogueNotInAppChecker,
       'check_lists',
       check_website_catalogue,
    )
    monkeypatch.setattr(
-      AppCatalogueNotOnWebsiteChecker,
+      AnimalAppCatalogueNotOnWebsiteChecker,
       'check_lists',
       check_app_catalogue,
    )

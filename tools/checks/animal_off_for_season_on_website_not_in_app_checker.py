@@ -16,15 +16,13 @@ from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
+from .constants import Constants
 from .seasonal_off_display_correction import SeasonalOffDisplayCorrection
 from .website_off_display_animal import WebsiteOffDisplayAnimal
 from .website_page import WebsitePage
 
 
-class OffForSeasonOnWebsiteNotInAppChecker():
-   OFF_FOR_SEASON_ON_WEBSITE_NOT_IN_APP_MONTHS = ( 1, 8, 9, 10, 11, 12 )
-
-
+class AnimalOffForSeasonOnWebsiteNotInAppChecker():
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse(
@@ -102,7 +100,7 @@ class OffForSeasonOnWebsiteNotInAppChecker():
 
    @classmethod
    def category_lines( cls, database: Path, today: date ) -> list[ str ] | None:
-      if today.month not in cls.OFF_FOR_SEASON_ON_WEBSITE_NOT_IN_APP_MONTHS:
+      if today.month not in Constants.WEBSITE_NOT_IN_APP_SEASON_MONTHS:
          return None
 
       animals = cls.load_off_display_animals( database )
@@ -155,4 +153,4 @@ class OffForSeasonOnWebsiteNotInAppChecker():
 
 
 if __name__ == '__main__':
-   raise SystemExit( OffForSeasonOnWebsiteNotInAppChecker.main() )
+   raise SystemExit( AnimalOffForSeasonOnWebsiteNotInAppChecker.main() )

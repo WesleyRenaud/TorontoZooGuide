@@ -8,9 +8,9 @@ import pytest
 
 from api.app_string_provider import AppStringProvider
 from api.shared.date_values import DateValues
+from tools.checks.animal_closure_off_display_extension_checker import AnimalClosureOffDisplayExtensionChecker as CHECKER
 from tools.checks.animal_detail_image import AnimalDetailImage
 from tools.checks.check_report import CheckReport
-from tools.checks.closure_off_display_extension_checker import ClosureOffDisplayExtensionChecker as CHECKER
 from tools.checks.website_page import WebsitePage
 
 

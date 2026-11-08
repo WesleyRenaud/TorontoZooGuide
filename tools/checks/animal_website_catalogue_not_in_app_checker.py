@@ -13,20 +13,7 @@ from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 
 
-class AppCatalogueNotOnWebsiteChecker():
-   ALLOWED_APP_ONLY_ANIMALS = {
-      ( 'Cheetah', 'Indo-Malaya Outdoor' ),
-      ( 'Great Horned Owl', 'Americas Pavilion' ),
-      ( 'Greater Kudu', 'African Rainforest Pavilion' ),
-      ( "Grevy's Zebra", 'Canadian Domain' ),
-      ( 'Marabou Stork', 'African Rainforest Pavilion' ),
-      ( 'Ostrich', 'African Rainforest Pavilion' ),
-      ( 'Southern Ground Hornbill', 'African Rainforest Pavilion' ),
-      ( 'West Caucasian Tur', 'Indo-Malaya Outdoor' ),
-      ( 'White-Headed Vulture', 'African Rainforest Pavilion' ),
-   }
-
-
+class AnimalWebsiteCatalogueNotInAppChecker():
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse( AppStringProvider.format( 'reports.animalList.description' ) )
@@ -35,21 +22,12 @@ class AppCatalogueNotOnWebsiteChecker():
    @classmethod
    def check_lists( cls, database: Path, today: date ) -> int:
       app_listings, website_listings = AnimalCatalogue.listings( database )
-      allowed_keys = {
-         AnimalCatalogue.listing_key( exhibit, species, False )
-         for species, exhibit in cls.ALLOWED_APP_ONLY_ANIMALS
-      }
-      unapproved_app_listings = {
-         key: listing
-         for key, listing in app_listings.items()
-         if key not in allowed_keys
-      }
-      app_only = AnimalCatalogue.missing_labels( unapproved_app_listings, website_listings )
+      website_only = AnimalCatalogue.missing_labels( website_listings, app_listings )
 
       print( CheckReport.heading( 'animalList', today ) )
       print()
-      CheckReport.print_category( 'checks.appCatalogueNotOnWebsite', app_only )
-      return len( app_only )
+      CheckReport.print_category( 'checks.websiteCatalogueNotInApp', website_only )
+      return len( website_only )
 
 
    @classmethod
@@ -76,4 +54,4 @@ class AppCatalogueNotOnWebsiteChecker():
 
 
 if __name__ == '__main__':
-   raise SystemExit( AppCatalogueNotOnWebsiteChecker.main() )
+   raise SystemExit( AnimalWebsiteCatalogueNotInAppChecker.main() )

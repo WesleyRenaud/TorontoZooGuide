@@ -11,5 +11,6 @@ class Paths():
    )[ 'root' ]
    DATABASE = ROOT / 'animals.db'
    EXHIBIT_DATA = ROOT / 'api' / 'seed' / 'data' / 'exhibit.json'
+   ATTRACTION_DATA = ROOT / 'api' / 'seed' / 'data' / 'attraction.json'
    REGION_TOKENS = ROOT / 'styles' / 'tokens.css'
    EMAIL_TEMPLATES = ROOT / 'tools' / 'checks' / 'email'

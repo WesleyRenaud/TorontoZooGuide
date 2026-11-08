@@ -9,8 +9,8 @@ import pytest
 from api.app_string_provider import AppStringProvider
 from api.shared.date_values import DateValues
 from tools.checks.animal_detail_image import AnimalDetailImage
+from tools.checks.animal_temporary_off_display_on_website_not_in_app_checker import AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker as CHECKER
 from tools.checks.check_report import CheckReport
-from tools.checks.temporary_off_display_on_website_not_in_app_checker import TemporaryOffDisplayOnWebsiteNotInAppChecker as CHECKER
 from tools.checks.website_page import WebsitePage
 
 

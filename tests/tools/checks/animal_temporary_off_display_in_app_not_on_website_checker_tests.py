@@ -8,8 +8,8 @@ import pytest
 
 from api.app_string_provider import AppStringProvider
 from tools.checks.animal_detail_image import AnimalDetailImage
+from tools.checks.animal_temporary_off_display_in_app_not_on_website_checker import AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker as CHECKER
 from tools.checks.check_report import CheckReport
-from tools.checks.temporary_off_display_in_app_not_on_website_checker import TemporaryOffDisplayInAppNotOnWebsiteChecker as CHECKER
 from tools.checks.website_page import WebsitePage
 
 

@@ -6,27 +6,27 @@ from datetime import date
 from pathlib import Path
 import sys
 
+from .animal_app_catalogue_not_on_website_checker import AnimalAppCatalogueNotOnWebsiteChecker
+from .animal_closure_off_display_extension_checker import AnimalClosureOffDisplayExtensionChecker
+from .animal_off_for_season_in_app_not_on_website_checker import AnimalOffForSeasonInAppNotOnWebsiteChecker
+from .animal_off_for_season_on_website_not_in_app_checker import AnimalOffForSeasonOnWebsiteNotInAppChecker
+from .animal_temporary_off_display_in_app_not_on_website_checker import AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker
+from .animal_temporary_off_display_on_website_not_in_app_checker import AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker
+from .animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
 from api.app_string_provider import AppStringProvider
 from api.shared.date_values import DateValues
-from .app_catalogue_not_on_website_checker import AppCatalogueNotOnWebsiteChecker
 from .attraction_list_checker import AttractionListChecker
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .check_report_parser import CheckReportParser
-from .closure_off_display_extension_checker import ClosureOffDisplayExtensionChecker
 from .gift_shop_list_checker import GiftShopListChecker
 from .guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
-from .off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker
-from .off_for_season_on_website_not_in_app_checker import OffForSeasonOnWebsiteNotInAppChecker
 from .restaurant_list_checker import RestaurantListChecker
 from .seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker
 from .seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from .seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from .seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
-from .temporary_off_display_in_app_not_on_website_checker import TemporaryOffDisplayInAppNotOnWebsiteChecker
-from .temporary_off_display_on_website_not_in_app_checker import TemporaryOffDisplayOnWebsiteNotInAppChecker
-from .website_catalogue_not_in_app_checker import WebsiteCatalogueNotInAppChecker
 from .wild_encounter_schedule_checker import WildEncounterScheduleChecker
 from .zoo_hours_checker import ZooHoursChecker
 
@@ -40,13 +40,13 @@ class ScheduleChecker():
    @classmethod
    def check_animals( cls, database: Path, today: date ) -> int:
       return (
-         OffForSeasonOnWebsiteNotInAppChecker.check_schedules( database, today )
-         + OffForSeasonInAppNotOnWebsiteChecker.check_schedules( database, today )
-         + ClosureOffDisplayExtensionChecker.check_schedules( database, today )
-         + TemporaryOffDisplayOnWebsiteNotInAppChecker.check_schedules( database, today )
-         + TemporaryOffDisplayInAppNotOnWebsiteChecker.check_schedules( database, today )
-         + WebsiteCatalogueNotInAppChecker.check_lists( database, today )
-         + AppCatalogueNotOnWebsiteChecker.check_lists( database, today )
+         AnimalOffForSeasonOnWebsiteNotInAppChecker.check_schedules( database, today )
+         + AnimalOffForSeasonInAppNotOnWebsiteChecker.check_schedules( database, today )
+         + AnimalClosureOffDisplayExtensionChecker.check_schedules( database, today )
+         + AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker.check_schedules( database, today )
+         + AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker.check_schedules( database, today )
+         + AnimalWebsiteCatalogueNotInAppChecker.check_lists( database, today )
+         + AnimalAppCatalogueNotOnWebsiteChecker.check_lists( database, today )
       )
 
 

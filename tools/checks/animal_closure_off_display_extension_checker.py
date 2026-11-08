@@ -6,97 +6,97 @@ from pathlib import Path
 import sys
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.animals.domain.temporary_off_display_animal import TemporaryOffDisplayAnimal
+from api.animals.domain.closure_linked_off_display_animals import ClosureLinkedOffDisplayAnimals
 from api.app_string_provider import AppStringProvider
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.calendar_dates import CalendarDates
 from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
-from tools.fix.temporary_on_display_fixer import TemporaryOnDisplayFixer
+from tools.fix.animal_closure_off_display_extension_fixer import AnimalClosureOffDisplayExtensionFixer
+from .website_page import WebsitePage
 from .website_temporarily_off_display_animal import WebsiteTemporarilyOffDisplayAnimal
 
 
-class TemporaryOffDisplayInAppNotOnWebsiteChecker():
+class AnimalClosureOffDisplayExtensionChecker():
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse(
-         AppStringProvider.format( 'reports.temporaryOffDisplay.description' )
+         AppStringProvider.format( 'reports.closureOffDisplay.description' )
       )
 
 
    @classmethod
-   def load_animals( cls, database: Path ) -> list[ TemporaryOffDisplayAnimal ]:
+   def on_website(
+         cls,
+         species: str,
+         listings: list[ WebsiteTemporarilyOffDisplayAnimal ] ) -> bool:
+      folded = WebsitePage.normalize_name( species )
+      return any(
+         WebsitePage.normalize_name( listing.name ) == folded
+         for listing in listings
+      )
+
+
+   @classmethod
+   def load_groups( cls, database: Path ) -> list[ ClosureLinkedOffDisplayAnimals ]:
       connection = DatabaseConnectionProvider.open( str( database ) )
       RequestConnectionProvider.set( connection )
 
       try:
-         return AnimalCoordinator.get_temporary_off_display_animals()
+         return ClosureLinkedOffDisplayAnimals.groups(
+            AnimalCoordinator.get_closure_linked_off_display_animals()
+         )
       finally:
          RequestConnectionProvider.clear()
          connection.close()
 
 
    @classmethod
-   def on_website(
+   def groups_returning_tomorrow(
          cls,
-         animal: TemporaryOffDisplayAnimal,
-         listings: list[ WebsiteTemporarilyOffDisplayAnimal ] ) -> bool:
-      enclosure = animal.enclosure()
-      return any( listing.matches( enclosure ) for listing in listings )
-
-
-   @classmethod
-   def kept_for_closure(
-         cls,
-         animal: TemporaryOffDisplayAnimal,
-         animals: list[ TemporaryOffDisplayAnimal ],
-         listings: list[ WebsiteTemporarilyOffDisplayAnimal ] ) -> bool:
-      return any(
-         animal.shares_closure( other ) and cls.on_website( other, listings )
-         for other in animals
-      )
-
-
-   @classmethod
-   def app_only(
-         cls,
-         listings: list[ WebsiteTemporarilyOffDisplayAnimal ],
-         animals: list[ TemporaryOffDisplayAnimal ],
-         today: date ) -> list[ TemporaryOffDisplayAnimal ]:
-      current = [
-         animal
-         for animal in animals
-         if animal.covers( today )
+         database: Path,
+         today: date ) -> list[ ClosureLinkedOffDisplayAnimals ]:
+      groups = [
+         group
+         for group in cls.load_groups( database )
+         if group.ends_on( today )
       ]
+
+      if groups == []:
+         return []
+
+      listings = WebsiteTemporarilyOffDisplayAnimal.fetch()
       return [
-         animal
-         for animal in current
-         if (
-            not cls.on_website( animal, listings )
-            and not cls.kept_for_closure( animal, current, listings )
+         group
+         for group in groups
+         if any(
+            cls.on_website( animal.species, listings )
+            for animal in group.animals
+            if animal.end == today
          )
       ]
 
 
    @classmethod
    def category_lines( cls, database: Path, today: date ) -> list[ str ] | None:
-      animals = cls.app_only(
-         WebsiteTemporarilyOffDisplayAnimal.fetch(),
-         cls.load_animals( database ),
-         today,
-      )
+      groups = cls.groups_returning_tomorrow( database, today )
 
-      if animals == []:
+      if groups == []:
          return None
 
-      return TemporaryOnDisplayFixer.fix( database, animals )
+      return AnimalClosureOffDisplayExtensionFixer.fix(
+         database,
+         groups,
+         CalendarDates.one_week_later( today ),
+      )
 
 
    @classmethod
    def report( cls, lines: list[ str ] ) -> None:
-      CheckReport.print_category( 'checks.temporaryOffDisplayAppOnly', lines )
+      CheckReport.print_category( 'checks.closureOffDisplayReturningTomorrow', lines )
 
 
    @classmethod
@@ -106,10 +106,10 @@ class TemporaryOffDisplayInAppNotOnWebsiteChecker():
       if lines == None:
          return 0
 
-      print( CheckReport.heading( 'temporaryOffDisplay', today ) )
+      print( CheckReport.heading( 'closureOffDisplay', today ) )
       print()
       cls.report( lines )
-      corrected = CheckReport.text( 'checks.setOnDisplay' )
+      corrected = CheckReport.text( 'checks.extendedOffDisplayThrough' )
       return sum( corrected not in line for line in lines )
 
 
@@ -137,4 +137,4 @@ class TemporaryOffDisplayInAppNotOnWebsiteChecker():
 
 
 if __name__ == '__main__':
-   raise SystemExit( TemporaryOffDisplayInAppNotOnWebsiteChecker.main() )
+   raise SystemExit( AnimalClosureOffDisplayExtensionChecker.main() )

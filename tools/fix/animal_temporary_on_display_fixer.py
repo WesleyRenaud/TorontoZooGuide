@@ -13,7 +13,7 @@ from tools.checks.animal_detail_image import AnimalDetailImage
 from tools.checks.check_report import CheckReport
 
 
-class TemporaryOnDisplayFixer():
+class AnimalTemporaryOnDisplayFixer():
    @classmethod
    def line( cls, species: str, exhibit: str ) -> str:
       return CheckReport.join_lines( [

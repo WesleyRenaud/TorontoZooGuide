@@ -7,14 +7,16 @@ import sqlite3
 
 import pytest
 
+from api.app_string_provider import AppStringProvider
 from tools.checks.animal_detail_image import AnimalDetailImage
+from tools.checks.animal_off_for_season_on_website_not_in_app_checker import AnimalOffForSeasonOnWebsiteNotInAppChecker as CHECKER
 from tools.checks.check_report import CheckReport
-from tools.checks.off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker as CHECKER
 from tools.checks.website_page import WebsitePage
 
 
 STORK = 'Marabou Stork'
 TORTOISE = 'African Spurred Tortoise'
+HAWK = "Harris's Hawk"
 TODAY = date( 2026, 11, 2 )
 STEADY = date( 2026, 7, 15 )
 SCHEMA = """
@@ -31,7 +33,9 @@ CREATE TABLE AnimalStatus (
    OFF_DISPLAY_MESSAGE     TEXT,
    OFF_DISPLAY_START       DATE,
    OFF_DISPLAY_END         DATE,
-   OFF_DISPLAY_FOR_SEASON  BOOL NOT NULL
+   OFF_DISPLAY_FOR_SEASON  BOOL NOT NULL,
+   CLOSURE_UPDATE_TITLE    TEXT,
+   CLOSURE_UPDATE_START    DATE
 );
 
 CREATE TABLE AnimalDaySeasonalViewabilityMultiplier (
@@ -195,6 +199,26 @@ def _page( animals: list[ str ], section: str = 'Africa Savanna' ) -> str:
    )
 
 
+def _corrected( species: str, exhibit: str, start: str, end: str ) -> str:
+   lines = [
+      CheckReport.text( 'checks.categoryItem' )
+      + AppStringProvider.format( 'format.middleDotPair', first=species, second=exhibit )
+   ]
+   photo = AnimalDetailImage.source( exhibit, species )
+
+   if photo != '':
+      lines.append( CheckReport.detail_item( CheckReport.text( 'checks.photo' ) + photo ) )
+
+   lines.append( CheckReport.detail_item(
+      CheckReport.text( 'checks.setOffDisplayForSeasonFrom' )
+      + start
+      + CheckReport.text( 'checks.dateThrough' )
+      + end
+      + CheckReport.text( 'checks.period' )
+   ) )
+   return '\n'.join( lines )
+
+
 def _install_page( monkeypatch: pytest.MonkeyPatch, page: str ) -> None:
    def fetch_text( url: str ) -> str:
       return page
@@ -210,38 +234,104 @@ def _check(
    return result, capsys.readouterr().out
 
 
-def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
+def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   today = STEADY
    database = tmp_path / 'animals.db'
-   ended = today - timedelta( days=1 )
+   _write_database( database, [ STORK, HAWK ], [], [ ( TODAY, 1.0, 0.5 ) ] )
+   _install_page(
+      monkeypatch,
+      _page( [ 'Marabou stork' ] ).replace(
+         '</div>',
+         '<a href="/animals/Harris&#39;s%20hawk">'
+         '<span class="line2 status sseason">Off for the Season</span></a></div>',
+         1,
+      ),
+   )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 0
+   assert _corrected( STORK, 'Africa Savanna', 'November 2, 2026', 'April 30, 2027' ) in output
+   assert _corrected( HAWK, 'Africa Savanna', 'November 2, 2026', 'April 30, 2027' ) in output
+   assert '&#39;' not in output
+   assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 2 ) in output
+   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 0 ) not in output
+   assert 'Brush-tailed bettong' not in output
+
+
+def Test_CheckSchedules_TestExhibitClosedForSeason_ExpectAnimalsCovered(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
    _write_database(
       database,
-      [ STORK, TORTOISE ],
-      [
-         ( STORK, today.isoformat(), None ),
-         ( TORTOISE, None, ended.isoformat() ),
-      ],
-      [ ( today, 1.0, 0.5 ) ],
+      [ HAWK ],
+      [],
+      [ ( TODAY, 1.0, 0.5 ) ],
+      [ ( 'Kids Zoo', TODAY.isoformat(), None, True ) ],
    )
-   _install_page( monkeypatch, _page( [] ) )
+   _install_page( monkeypatch, _page( [ "Harris's hawk" ], 'Kids Zoo' ) )
 
-   result, output = _check( database, today, capsys )
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 0
+   assert HAWK not in output
+   assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 0 ) in output
+
+
+def Test_CheckSchedules_TestExhibitClosedNotForSeason_ExpectWebsiteMiss(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [ HAWK ],
+      [],
+      [ ( TODAY, 1.0, 0.5 ) ],
+      [ ( 'Kids Zoo', TODAY.isoformat(), None, False ) ],
+      home_exhibit='Kids Zoo',
+   )
+   _install_page( monkeypatch, _page( [ "Harris's hawk" ], 'Kids Zoo' ) )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 0
+   assert _corrected( HAWK, 'Kids Zoo', 'November 2, 2026', 'April 30, 2027' ) in output
+   assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 1 ) in output
+
+
+def Test_CheckSchedules_TestWebsiteOnly_ExpectSavedUntilMonthEnd(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ 'Warthog' ], [], [ ( TODAY, 1.0, 0.5 ) ] )
+   _install_page( monkeypatch, _page( [ 'Warthog' ] ) )
+
+   result, output = _check( database, TODAY, capsys )
 
    connection = sqlite3.connect( database )
-   species = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
+   row = connection.execute(
+      """   SELECT
+               IS_OFF_DISPLAY,
+               OFF_DISPLAY_START,
+               OFF_DISPLAY_END,
+               OFF_DISPLAY_FOR_SEASON,
+               VIEWING_SCOPE
+            FROM AnimalStatus
+            WHERE SPECIES = 'Warthog'
+               AND EXHIBIT = 'Africa Savanna';
+      """
+   ).fetchone()
    connection.close()
 
    assert result == 0
-   assert f'  { STORK }' in output
-   assert AnimalDetailImage.source( 'Africa Savanna', STORK ) in output
-   assert CheckReport.text( 'checks.setOnDisplayForSeason' ) in output
-   assert TORTOISE not in output
-   assert species == [ ( TORTOISE, ) ]
-   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 1 ) in output
-   assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 0 ) not in output
+   assert _corrected( 'Warthog', 'Africa Savanna', 'November 2, 2026', 'April 30, 2027' ) in output
+   assert row == ( 1, TODAY.isoformat(), '2027-04-30', 1, '' )
 
 
 def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
@@ -252,24 +342,19 @@ def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
    _write_database(
       database,
       [ STORK ],
-      [ ( STORK, STEADY.isoformat(), None ) ],
-      [ ( STEADY, 1.0, 0.5 ) ],
+      [ ( STORK, TODAY.isoformat(), None ) ],
+      [ ( TODAY, 1.0, 0.5 ) ],
    )
    _install_page( monkeypatch, _page( [ 'Marabou stork' ] ) )
 
-   result, output = _check( database, STEADY, capsys )
-
-   connection = sqlite3.connect( database )
-   species = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
-   connection.close()
+   result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert species == [ ( STORK, ) ]
-   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 0 ) in output
-   assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 0 ) not in output
+   assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 0 ) not in output
 
 
-def Test_CheckSchedules_TestDifferentAnimalsOffDisplay_ExpectAppMiss(
+def Test_CheckSchedules_TestDifferentAnimalsOffDisplay_ExpectWebsiteMiss(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -277,25 +362,51 @@ def Test_CheckSchedules_TestDifferentAnimalsOffDisplay_ExpectAppMiss(
    _write_database(
       database,
       [ STORK, TORTOISE ],
-      [ ( STORK, STEADY.isoformat(), None ) ],
+      [ ( STORK, TODAY.isoformat(), None ) ],
       [],
    )
    _install_page( monkeypatch, _page( [ TORTOISE ] ) )
 
-   result, output = _check( database, STEADY, capsys )
-
-   connection = sqlite3.connect( database )
-   species = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
-   connection.close()
+   result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert f'  { STORK }' in output
-   assert species == []
-   assert TORTOISE not in output
-   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 1 ) in output
+   assert f'  { STORK }' not in output
+   assert _corrected( TORTOISE, 'Africa Savanna', 'November 2, 2026', 'April 30, 2027' ) in output
+   assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 1 ) not in output
 
 
-def Test_CheckSchedules_TestMarchStorkOffInApp_ExpectAppMiss(
+def Test_CheckSchedules_TestAugust_ExpectWebsiteMiss(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   today = date( 2026, 8, 1 )
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ 'Zebra' ], [], [] )
+   _install_page( monkeypatch, _page( [ 'Zebra' ] ) )
+
+   result, output = _check( database, today, capsys )
+
+   assert result == 0
+   assert _corrected( 'Zebra', 'Africa Savanna', 'August 1, 2026', 'April 30, 2027' ) in output
+
+
+def Test_CheckSchedules_TestJanuary_ExpectWebsiteMiss(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   today = date( 2026, 1, 31 )
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ 'Zebra' ], [], [] )
+   _install_page( monkeypatch, _page( [ 'Zebra' ] ) )
+
+   result, output = _check( database, today, capsys )
+
+   assert result == 0
+   assert _corrected( 'Zebra', 'Africa Savanna', 'January 31, 2026', 'April 30, 2026' ) in output
+
+
+def Test_CheckSchedules_TestMarchZebraComingOnDisplay_ExpectNotCompared(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -307,22 +418,24 @@ def Test_CheckSchedules_TestMarchStorkOffInApp_ExpectAppMiss(
       [ ( STORK, today.isoformat(), None ) ],
       [],
    )
-   _install_page( monkeypatch, _page( [ 'Zebra' ] ) )
+
+   def fetch_text( url: str ) -> str:
+      raise AssertionError( 'fetch_text' )
+
+   monkeypatch.setattr( WebsitePage, 'fetch_text', fetch_text )
 
    result, output = _check( database, today, capsys )
 
    connection = sqlite3.connect( database )
-   species = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
+   rows = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
    connection.close()
 
    assert result == 0
-   assert f'  { STORK }' in output
-   assert species == []
-   assert 'Zebra' not in output
-   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 1 ) in output
+   assert rows == [ ( STORK, ) ]
+   assert output == ''
 
 
-def Test_CheckSchedules_TestFebruary_ExpectCompared(
+def Test_CheckSchedules_TestFebruary_ExpectNotCompared(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -333,11 +446,10 @@ def Test_CheckSchedules_TestFebruary_ExpectCompared(
    result, output = _check( database, date( 2026, 2, 1 ), capsys )
 
    assert result == 0
-   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 0 ) in output
-   assert 'Zebra' not in output
+   assert output == ''
 
 
-def Test_CheckSchedules_TestOffDisplayOnSteadyDate_ExpectNoAppMiss(
+def Test_CheckSchedules_TestOffDisplayOnSteadyDate_ExpectNotCompared(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -353,33 +465,4 @@ def Test_CheckSchedules_TestOffDisplayOnSteadyDate_ExpectNoAppMiss(
    result, output = _check( database, STEADY, capsys )
 
    assert result == 0
-   assert CheckReport.category_line( 'checks.offForSeasonAppOnly', 0 ) in output
-   assert f'  { STORK }' not in output
-
-
-def Test_CheckSchedules_TestNovember_ExpectNotCompared(
-      tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ],
-      monkeypatch: pytest.MonkeyPatch ) -> None:
-   database = tmp_path / 'animals.db'
-   _write_database(
-      database,
-      [ STORK ],
-      [ ( STORK, TODAY.isoformat(), None ) ],
-      [],
-   )
-
-   def fetch_text( url: str ) -> str:
-      raise AssertionError( 'fetch_text' )
-
-   monkeypatch.setattr( WebsitePage, 'fetch_text', fetch_text )
-
-   result, output = _check( database, TODAY, capsys )
-
-   connection = sqlite3.connect( database )
-   species = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
-   connection.close()
-
-   assert result == 0
    assert output == ''
-   assert species == [ ( STORK, ) ]

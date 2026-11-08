@@ -22,6 +22,7 @@ from ..scheduling.attraction_hours_schedule_time_bounds_builder import Attractio
 from ..scheduling.attraction_schedule_conflict_resolver import AttractionScheduleConflictResolver
 from ..search.attractions_matching_query_builder import AttractionsMatchingQueryBuilder
 from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ..status.attraction_hours_schedule_status_builder import AttractionHoursScheduleStatusBuilder
 from ..status.attraction_season_closure_builder import AttractionSeasonClosureBuilder
@@ -197,6 +198,28 @@ class AttractionCoordinator():
          start_date=status.start_date,
          end_date=status.end_date,
          message=status.message )
+
+
+   @classmethod
+   def closed_for_season_until_month( cls, attraction: str ) -> int | None:
+      return AttractionProvider.fetch_closed_for_season_until_month(
+         RequestConnectionProvider.get(),
+         attraction=attraction )
+
+
+   @classmethod
+   def set_attraction_as_closed_for_season_until(
+         cls,
+         attraction: str,
+         today: date ) -> bool:
+      until_month = cls.closed_for_season_until_month( attraction )
+      end_date = CalendarDates.next_month_end( until_month, today )
+
+      return cls.set_attraction_as_closed_for_season(
+         attraction=attraction,
+         start_date=today,
+         end_date=end_date,
+         message='' )
 
 
    @classmethod

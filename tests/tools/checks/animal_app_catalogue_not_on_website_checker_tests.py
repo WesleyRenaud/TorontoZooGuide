@@ -9,8 +9,8 @@ import pytest
 
 from api.animals.domain.animal_species_exhibit import AnimalSpeciesExhibit
 from api.app_string_provider import AppStringProvider
+from tools.checks.animal_app_catalogue_not_on_website_checker import AnimalAppCatalogueNotOnWebsiteChecker
 from tools.checks.animal_catalogue import AnimalCatalogue
-from tools.checks.app_catalogue_not_on_website_checker import AppCatalogueNotOnWebsiteChecker
 from tools.checks.check_report import CheckReport
 from tools.checks.website_page import WebsitePage
 
@@ -74,7 +74,7 @@ def _check(
       database: Path,
       today: date,
       capsys: pytest.CaptureFixture[ str ] ) -> tuple[ int, str ]:
-   result = AppCatalogueNotOnWebsiteChecker.check_lists( database, today )
+   result = AnimalAppCatalogueNotOnWebsiteChecker.check_lists( database, today )
    return result, capsys.readouterr().out
 
 
@@ -118,7 +118,7 @@ def Test_CheckLists_TestZebraInCanada_ExpectAllowed(
 
 @pytest.mark.parametrize(
    ( 'species', 'exhibit' ),
-   sorted( AppCatalogueNotOnWebsiteChecker.ALLOWED_APP_ONLY_ANIMALS ),
+   sorted( AnimalAppCatalogueNotOnWebsiteChecker.ALLOWED_APP_ONLY_ANIMALS ),
 )
 def Test_CheckLists_TestAllowedPairAndOtherExhibit_ExpectOnlyOtherExhibitFlagged(
       tmp_path: Path,

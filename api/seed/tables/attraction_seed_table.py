@@ -16,6 +16,7 @@ RECORD_FIELDS = [
    'default_itinerary_duration_minutes',
    'region',
    'is_also_transportation',
+   'closed_for_season_until_month',
 ]
 
 DB_COLUMNS = [
@@ -29,6 +30,7 @@ DB_COLUMNS = [
    'DEFAULT_ITINERARY_DURATION_MINUTES',
    'REGION',
    'IS_ALSO_TRANSPORTATION',
+   'CLOSED_FOR_SEASON_UNTIL_MONTH',
 ]
 
 DATA_FILE = 'attraction.json'

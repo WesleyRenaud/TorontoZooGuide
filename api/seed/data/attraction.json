@@ -9,7 +9,8 @@
     "y_coord": 83.343,
     "default_itinerary_duration_minutes": 30,
     "region": "Front Courtyard",
-    "is_also_transportation": 1
+    "is_also_transportation": 1,
+    "closed_for_season_until_month": null
   },
   {
     "name": "Conservation Carousel",
@@ -21,7 +22,8 @@
     "y_coord": 75.904,
     "default_itinerary_duration_minutes": 15,
     "region": "Front Courtyard",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": null
   },
   {
     "name": "Greenhouse",
@@ -33,7 +35,8 @@
     "y_coord": 54.277,
     "default_itinerary_duration_minutes": 15,
     "region": "Wildlife Science Campus",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": null
   },
   {
     "name": "Wildlife Health & Science Centre",
@@ -45,7 +48,8 @@
     "y_coord": 50.743,
     "default_itinerary_duration_minutes": 10,
     "region": "Wildlife Science Campus",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": null
   },
   {
     "name": "Kangaroo Walk-Thru",
@@ -57,7 +61,8 @@
     "y_coord": 71.34,
     "default_itinerary_duration_minutes": 10,
     "region": "Australasia",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": 4
   },
   {
     "name": "Wild Explorer Virtual Reality (VR) Theatre!",
@@ -69,7 +74,8 @@
     "y_coord": 59.947,
     "default_itinerary_duration_minutes": 20,
     "region": "Tundra Trek",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "TundraAir Ride",
@@ -81,7 +87,8 @@
     "y_coord": 60.212,
     "default_itinerary_duration_minutes": 15,
     "region": "Tundra Trek",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "Gorilla Climb Ropes Course",
@@ -93,7 +100,8 @@
     "y_coord": 58.884,
     "default_itinerary_duration_minutes": 40,
     "region": "Africa",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": 3
   },
   {
     "name": "Splash Island",
@@ -105,7 +113,8 @@
     "y_coord": 72.648,
     "default_itinerary_duration_minutes": 60,
     "region": "Discovery Zone",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": 4
   },
   {
     "name": "Face Painting, Caricatures and Henna! - Front Gates",
@@ -117,7 +126,8 @@
     "y_coord": 77.766,
     "default_itinerary_duration_minutes": 20,
     "region": "Front Courtyard",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": 3
   },
   {
     "name": "Face Painting, Caricatures and Henna! - Tundra Trek",
@@ -129,6 +139,7 @@
     "y_coord": 59.054,
     "default_itinerary_duration_minutes": 20,
     "region": "Tundra Trek",
-    "is_also_transportation": 0
+    "is_also_transportation": 0,
+    "closed_for_season_until_month": 3
   }
 ]
