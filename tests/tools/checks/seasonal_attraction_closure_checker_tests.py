@@ -19,10 +19,18 @@ TUNDRA = 'Face Painting, Caricatures and Henna! - Tundra Trek'
 KANGAROO = 'Kangaroo Walk-Thru'
 FACE_PAINTING_LINK = 'https://www.torontozoo.com/tz/facepainting'
 TODAY = date( 2026, 11, 2 )
+UNTIL_MONTHS = {
+   SPLASH: 4,
+   CLIMB: 3,
+   FRONT_GATES: 3,
+   TUNDRA: 3,
+   KANGAROO: 4,
+}
 SCHEMA = """
 CREATE TABLE Attraction (
    NAME      TEXT NOT NULL,
    INFO_LINK TEXT NOT NULL,
+   CLOSED_FOR_SEASON_UNTIL_MONTH INTEGER,
    PRIMARY KEY ( NAME )
 );
 
@@ -32,7 +40,8 @@ CREATE TABLE AttractionStatus (
    CLOSED_MESSAGE     TEXT,
    CLOSED_START       DATE,
    CLOSED_END         DATE,
-   CLOSED_FOR_SEASON  BOOL NOT NULL
+   CLOSED_FOR_SEASON  BOOL NOT NULL,
+   PRIMARY KEY ( ATTRACTION )
 );
 
 CREATE TABLE AnimalDaySeasonalViewabilityMultiplier (
@@ -55,8 +64,11 @@ def _write_database(
    connection = sqlite3.connect( path )
    connection.executescript( SCHEMA )
    connection.executemany(
-      'INSERT INTO Attraction ( NAME, INFO_LINK ) VALUES ( ?, ? )',
-      attractions,
+      'INSERT INTO Attraction ( NAME, INFO_LINK, CLOSED_FOR_SEASON_UNTIL_MONTH ) VALUES ( ?, ?, ? )',
+      [
+         ( name, link, UNTIL_MONTHS.get( name ) )
+         for name, link in attractions
+      ],
    )
 
    for name, start, end in closed_for_season:
@@ -126,11 +138,33 @@ def _check(
       database: Path,
       today: date,
       capsys: pytest.CaptureFixture[ str ] ) -> tuple[ int, str ]:
+   CheckReport.reset_fixed_count()
    result = CHECKER.check_schedules( database, today )
    return result, capsys.readouterr().out
 
 
-def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
+def _season_row( database: Path, name: str ) -> tuple[ int, str | None, str | None, int ] | None:
+   connection = sqlite3.connect( database )
+   row = connection.execute(
+      """   SELECT
+               IS_CLOSED,
+               CLOSED_START,
+               CLOSED_END,
+               CLOSED_FOR_SEASON
+            FROM AttractionStatus
+            WHERE ATTRACTION = ?
+      """,
+      ( name, ),
+   ).fetchone()
+   connection.close()
+
+   if row == None:
+      return None
+
+   return ( row[ 0 ], row[ 1 ], row[ 2 ], row[ 3 ] )
+
+
+def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectClosedForSeason(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -151,11 +185,40 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { SPLASH }' in output
+   assert 'images/details/attractions/splash-island.png' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert _season_row( database, SPLASH ) == ( 1, TODAY.isoformat(), '2027-04-30', 1 )
    assert KANGAROO not in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
+
+
+def Test_CheckSchedules_TestMayWebsiteClosed_ExpectUnchanged(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   may = date( 2027, 5, 1 )
+   _write_database(
+      database,
+      [ ( SPLASH, 'https://www.torontozoo.com/tz/splash' ) ],
+      [],
+      [ ( may, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/tz/splash', 'Splash island', 'Closed For The Season' ) ] ),
+   )
+
+   result, output = _check( database, may, capsys )
+
+   assert result == 0
+   assert SPLASH not in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) not in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) not in output
+   assert _season_row( database, SPLASH ) == None
 
 
 def Test_CheckSchedules_TestAllowedWebsiteOnlyAttraction_ExpectNoIssues(
@@ -239,7 +302,7 @@ def Test_CheckSchedules_TestSharedLink_ExpectBothLocationsCovered(
    assert TUNDRA not in output
 
 
-def Test_CheckSchedules_TestSharedLinkOneLocation_ExpectWebsiteMiss(
+def Test_CheckSchedules_TestSharedLinkOneLocation_ExpectClosedForSeason(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -266,13 +329,15 @@ def Test_CheckSchedules_TestSharedLinkOneLocation_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { TUNDRA }' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert _season_row( database, TUNDRA ) == ( 1, TODAY.isoformat(), '2027-03-31', 1 )
    assert FRONT_GATES not in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
 
 
-def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
+def Test_CheckSchedules_TestRampDownAppOnly_ExpectOpenedAndClosed(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -301,9 +366,13 @@ def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 2
+   assert result == 0
    assert f'  { SPLASH }' in output
    assert f'  { KANGAROO }' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert _season_row( database, SPLASH ) == ( 1, TODAY.isoformat(), '2027-04-30', 1 )
+   assert _season_row( database, KANGAROO ) == None
    assert CLIMB not in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
 
@@ -334,7 +403,7 @@ def Test_CheckSchedules_TestOpenThroughPastDate_ExpectWebsiteSeason(
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
+def Test_CheckSchedules_TestOpenThroughToday_ExpectOpenedForSeason(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -355,8 +424,10 @@ def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
 
    result, output = _check( database, through_today, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { KANGAROO }' in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert _season_row( database, KANGAROO ) == None
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
 
@@ -384,7 +455,7 @@ def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestDifferentAttractionsClosed_ExpectBoth(
+def Test_CheckSchedules_TestDifferentAttractionsClosed_ExpectBothCorrected(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -405,8 +476,32 @@ def Test_CheckSchedules_TestDifferentAttractionsClosed_ExpectBoth(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 2
+   assert result == 0
    assert f'  { SPLASH }' in output
    assert f'  { KANGAROO }' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert _season_row( database, KANGAROO ) == ( 1, TODAY.isoformat(), '2027-04-30', 1 )
+   assert _season_row( database, SPLASH ) == None
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
+
+
+def Test_CheckSchedules_TestNoUntilMonth_ExpectCrash(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   carousel = 'Conservation Carousel'
+   _write_database(
+      database,
+      [ ( carousel, 'https://www.torontozoo.com/tz/carousel' ) ],
+      [],
+      [ ( TODAY, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/tz/carousel', carousel, 'Closed for the Season' ) ] ),
+   )
+
+   with pytest.raises( TypeError ):
+      CHECKER.check_schedules( database, TODAY )

@@ -19,7 +19,7 @@ from .website_off_display_animal import WebsiteOffDisplayAnimal
 from .website_page import WebsitePage
 
 
-class OffForSeasonInAppNotOnWebsiteChecker():
+class AnimalOffForSeasonInAppNotOnWebsiteChecker():
    OFF_FOR_SEASON_IN_APP_NOT_ON_WEBSITE_MONTHS = ( 2, 3, 4, 5, 6, 7 )
 
 
@@ -166,4 +166,4 @@ class OffForSeasonInAppNotOnWebsiteChecker():
 
 
 if __name__ == '__main__':
-   raise SystemExit( OffForSeasonInAppNotOnWebsiteChecker.main() )
+   raise SystemExit( AnimalOffForSeasonInAppNotOnWebsiteChecker.main() )

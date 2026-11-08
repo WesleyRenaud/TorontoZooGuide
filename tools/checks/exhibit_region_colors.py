@@ -63,6 +63,16 @@ class ExhibitRegionColors():
 
 
    @classmethod
+   def attraction_region( cls, name: str ) -> str:
+      folded = name.casefold()
+      return next(
+         row[ 'region' ]
+         for row in json.loads( Paths.ATTRACTION_DATA.read_text() )
+         if row[ 'name' ].casefold() == folded
+      )
+
+
+   @classmethod
    def exhibit_region( cls, exhibit: str ) -> str:
       folded = exhibit.casefold()
       return next(
@@ -80,3 +90,24 @@ class ExhibitRegionColors():
    @classmethod
    def exhibit_colors( cls, exhibit: str ) -> RegionColor:
       return cls.region_colors( cls.exhibit_region( exhibit ) )
+
+
+   @classmethod
+   def place_region( cls, place: str ) -> str:
+      folded = place.casefold()
+      regions = [
+         row[ 'region' ]
+         for row in json.loads( Paths.EXHIBIT_DATA.read_text() )
+         if row[ 'name' ].casefold() == folded
+      ]
+      regions.extend(
+         item.region
+         for item in cls._load_colors()
+         if item.region.casefold() == folded
+      )
+      return next( iter( regions ) )
+
+
+   @classmethod
+   def place_colors( cls, place: str ) -> RegionColor:
+      return cls.region_colors( cls.place_region( place ) )

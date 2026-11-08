@@ -14,13 +14,12 @@ class CheckReportParser():
    CATEGORY_RE = re.compile( r'^(?P<title>[^ ].*): (?P<count>\d+)$' )
    COUNT_LABELS = (
       'site.nav.animals',
+      'map.filter.attractions',
       'reports.wildEncounter.section',
       'reports.guardiansTalk.section',
-      'map.filter.attractions',
       'map.filterTypes.restaurant',
       'checks.countNames.giftShops',
       'checks.countNames.drinkingFountains',
-      'reports.attractionList.kind',
       'reports.zooHours.kind',
    )
 
@@ -152,13 +151,12 @@ class CheckReportParser():
          zoo_hours: int = 0 ) -> str:
       counts = (
          animals,
+         attractions + attraction_list,
          encounters,
          talks,
-         attractions,
          restaurants,
          gift_shops,
          drinking_fountains,
-         attraction_list,
          zoo_hours,
       )
       pieces = [

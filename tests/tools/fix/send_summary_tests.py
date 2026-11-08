@@ -10,6 +10,7 @@ import pytest
 
 from api.app_string_provider import AppStringProvider
 from tools.checks.animal_detail_image import AnimalDetailImage
+from tools.checks.attraction_detail_image import AttractionDetailImage
 from tools.checks.check_email_renderer import CheckEmailRenderer
 from tools.checks.check_report import CheckReport
 from tools.checks.check_report_parser import CheckReportParser
@@ -118,7 +119,8 @@ def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
 
    assert report.error_count == 1
    assert report.counts[ 0 ] == Count( label='Animals', count=0 )
-   assert report.counts[ 1 ] == Count( label='Encounters', count=0 )
+   assert report.counts[ 1 ] == Count( label='Attractions', count=0 )
+   assert report.counts[ 2 ] == Count( label='Encounters', count=0 )
    assert report.counts[ -1 ] == Count( label='Zoo hours', count=1 )
    assert report.sections[ 0 ].kind == 'Wild encounter schedule'
    assert report.sections[ 0 ].note.startswith( CheckReport.text( 'checks.bookingDatesCompared' ) )
@@ -281,6 +283,59 @@ def Test_RenderHtml_TestCorrectedAppOffDisplay_ExpectPhotoExhibitAndCorrection()
    assert CheckReport.text( 'checks.setOnDisplayForSeason' ) in html
    assert CheckReport.text( 'checks.photo' ) not in html
    assert f'border:3px solid { colors.foreground }' in html
+
+
+def Test_RenderHtml_TestAttractionChecks_ExpectSecondTabAndOneSection() -> None:
+   closed = CheckReport.text( 'checks.closedForSeasonWebsiteOnly' )
+   website_only = CheckReport.text( 'checks.websiteOnly' )
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'seasonalAttraction', date( 2026, 11, 8 ) ) }
+
+      { CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Splash Island', second='Discovery Zone' ) }
+          { CheckReport.text( 'checks.photo' ) }{ AttractionDetailImage.source( 'Splash Island' ) }
+          { CheckReport.text( 'checks.setClosedForSeasonFrom' ) }November 8, 2026 through April 30, 2027.
+
+      { CheckReport.heading( 'attractionList', date( 2026, 11, 8 ) ) }
+
+      { CheckReport.category_line( 'checks.websiteOnly', 1 ) }
+        Stingray Bay
+
+      { CheckReport.category_line( 'checks.appOnly', 0 ) }
+
+      { CheckReportParser.format_fixed_count( 1 ) }
+
+      { CheckReportParser.format_counts( attractions=0, attraction_list=1 ) }
+
+      { CheckReportParser.format_error_count( 1 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+   green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
+   danger = ColorTokens.color( ColorToken.DANGER )
+   attractions = html[ html.index( '>Attractions<' ):html.index( '>Encounters<' ) ]
+
+   assert html.index( '>Animals<' ) < html.index( '>Attractions<' )
+   assert html.index( '>Attractions<' ) < html.index( '>Encounters<' )
+   assert html.count( '>Attractions<' ) == 2
+   assert 'Attractions closed for the season' not in html
+   assert 'Attraction list' not in html
+   assert '>2<' in attractions
+   assert f'color:{ danger }' in attractions
+   assert f'color:{ green };">{ closed }' in html
+   assert f'color:{ danger };">{ website_only }' in html
+   photo = AttractionDetailImage.source( 'Splash Island' )
+   image = CheckEmailRenderer.image_src( photo )
+   colors = ExhibitRegionColors.region_colors( 'Discovery Zone' )
+
+   assert image in html
+   assert f'color:{ colors.foreground };">Splash Island' in html
+   assert f'border:3px solid { colors.foreground }' in html
+   assert html.index( image ) < html.index( 'Splash Island' )
+   assert CheckReport.text( 'checks.photo' ) not in html
+   assert html.index( '>Attractions<' ) < html.index( 'Splash Island' )
+   assert html.index( 'Splash Island' ) < html.index( 'Stingray Bay' )
 
 
 def Test_RenderHtml_TestAllAnimalErrorsFixed_ExpectGreenTotal() -> None:

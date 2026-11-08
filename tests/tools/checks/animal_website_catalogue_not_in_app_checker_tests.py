@@ -11,8 +11,8 @@ from api.animals.domain.animal_species_exhibit import AnimalSpeciesExhibit
 from api.app_string_provider import AppStringProvider
 from tools.checks.animal_catalogue import AnimalCatalogue
 from tools.checks.animal_detail_image import AnimalDetailImage
+from tools.checks.animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
 from tools.checks.check_report import CheckReport
-from tools.checks.website_catalogue_not_in_app_checker import WebsiteCatalogueNotInAppChecker
 from tools.checks.website_page import WebsitePage
 
 
@@ -76,7 +76,7 @@ def _check(
       database: Path,
       today: date,
       capsys: pytest.CaptureFixture[ str ] ) -> tuple[ int, str ]:
-   result = WebsiteCatalogueNotInAppChecker.check_lists( database, today )
+   result = AnimalWebsiteCatalogueNotInAppChecker.check_lists( database, today )
    return result, capsys.readouterr().out
 
 

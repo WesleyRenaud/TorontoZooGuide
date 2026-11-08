@@ -115,6 +115,7 @@ class CheckEmailRenderer():
          ],
          AppStringProvider.format( 'map.filter.attractions' ): [
             cls.check_kind( 'seasonalAttraction' ),
+            cls.check_kind( 'attractionList' ),
          ],
          AppStringProvider.format( 'map.filterTypes.restaurant' ): [
             cls.check_kind( 'seasonalRestaurant' ),
@@ -126,9 +127,6 @@ class CheckEmailRenderer():
          ],
          AppStringProvider.format( 'checks.countNames.drinkingFountains' ): [
             cls.check_kind( 'seasonalDrinkingFountain' ),
-         ],
-         cls.check_kind( 'attractionList' ): [
-            cls.check_kind( 'attractionList' ),
          ],
          cls.check_kind( 'zooHours' ): [
             cls.check_kind( 'zooHours' ),
@@ -231,7 +229,7 @@ class CheckEmailRenderer():
 
    @classmethod
    def exhibit_pill( cls, exhibit: str ) -> str:
-      colors = ExhibitRegionColors.exhibit_colors( exhibit )
+      colors = ExhibitRegionColors.place_colors( exhibit )
       safe = cls.text( exhibit )
       return cls.markup(
          'exhibit_pill',
@@ -250,7 +248,7 @@ class CheckEmailRenderer():
       if separator == '':
          return cls.text( title )
 
-      colors = ExhibitRegionColors.exhibit_colors( exhibit )
+      colors = ExhibitRegionColors.place_colors( exhibit )
       name = f'<span style="color:{ colors.foreground };">{ cls.text( species ) }</span>'
       return f'{ name }{ separator }{ cls.exhibit_pill( exhibit ) }'
 
@@ -317,7 +315,7 @@ class CheckEmailRenderer():
       species, _, exhibit = item.title.rpartition(
          AppStringProvider.format( 'format.middleDotJoin' )
       )
-      colors = ExhibitRegionColors.exhibit_colors( exhibit )
+      colors = ExhibitRegionColors.place_colors( exhibit )
       label = cls.item_label( item.title )
       photo_url, details = cls.photo_and_details( item.details )
       photo = ''
@@ -369,6 +367,27 @@ class CheckEmailRenderer():
 
 
    @classmethod
+   def recorded_fix( cls, category: Category ) -> bool:
+      phrases = (
+         AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
+         AppStringProvider.format( 'checks.setOpenForSeason' ),
+      )
+
+      if category.items == []:
+         return False
+
+      return all(
+         any( phrase in detail for phrase in phrases for detail in item.details )
+         for item in category.items
+      )
+
+
+   @classmethod
+   def category_is_fixed( cls, category: Category ) -> bool:
+      return cls.fixed_category( category.title ) or cls.recorded_fix( category )
+
+
+   @classmethod
    def category_block( cls, category: Category ) -> str:
       if category.count == 0:
          return ''
@@ -376,7 +395,7 @@ class CheckEmailRenderer():
       number_color = ColorTokens.color( ColorToken.BRAND_PRIMARY )
       title_color = ColorTokens.color( ColorToken.BRAND_PRIMARY_DARK )
 
-      if category.count > 0 and cls.fixed_category( category.title ):
+      if category.count > 0 and cls.category_is_fixed( category ):
          title_color = ColorTokens.color( ColorToken.BRAND_PRIMARY )
       elif category.count > 0:
          number_color = ColorTokens.color( ColorToken.DANGER )
@@ -423,13 +442,7 @@ class CheckEmailRenderer():
 
 
    @classmethod
-   def animal_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
-      kinds = (
-         cls.check_kind( 'animalList' ),
-         cls.check_kind( 'closureOffDisplay' ),
-         cls.check_kind( 'seasonalOffDisplay' ),
-         cls.check_kind( 'temporaryOffDisplay' ),
-      )
+   def grouped_sections( cls, sections: list[ Section ], kinds: list[ str ] ) -> list[ Section ]:
       grouped: dict[ str, list[ Section ] ] = {
          kind: []
          for kind in kinds
@@ -458,6 +471,24 @@ class CheckEmailRenderer():
 
 
    @classmethod
+   def animal_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
+      return cls.grouped_sections( sections, [
+         cls.check_kind( 'animalList' ),
+         cls.check_kind( 'closureOffDisplay' ),
+         cls.check_kind( 'seasonalOffDisplay' ),
+         cls.check_kind( 'temporaryOffDisplay' ),
+      ] )
+
+
+   @classmethod
+   def attraction_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
+      return cls.grouped_sections( sections, [
+         cls.check_kind( 'seasonalAttraction' ),
+         cls.check_kind( 'attractionList' ),
+      ] )
+
+
+   @classmethod
    def has_issue( cls, categories: list[ Category ] ) -> bool:
       return any( category.count > 0 for category in categories )
 
@@ -478,20 +509,53 @@ class CheckEmailRenderer():
 
 
    @classmethod
+   def combined_attractions( cls, sections: list[ Section ] ) -> Section | None:
+      sources = cls.attraction_sections( sections )
+      categories = [
+         category
+         for section in sources
+         for category in section.categories
+      ]
+
+      if not cls.has_issue( categories ):
+         return None
+
+      return Section(
+         AppStringProvider.format( 'map.filter.attractions' ),
+         sources[ 0 ].day,
+         '',
+         categories,
+      )
+
+
+   @classmethod
    def notable_sections( cls, report: Report ) -> list[ Section ]:
       notable = []
       animals = cls.combined_animals( report.sections )
+      attractions = cls.combined_attractions( report.sections )
       animals_placed = False
-      folded = {
+      attractions_placed = False
+      folded_animals = {
          section.kind
          for section in cls.animal_sections( report.sections )
       }
+      folded_attractions = {
+         section.kind
+         for section in cls.attraction_sections( report.sections )
+      }
 
       for section in report.sections:
-         if section.kind in folded:
+         if section.kind in folded_animals:
             if animals is not None and not animals_placed:
                notable.append( animals )
                animals_placed = True
+
+            continue
+
+         if section.kind in folded_attractions:
+            if attractions is not None and not attractions_placed:
+               notable.append( attractions )
+               attractions_placed = True
 
             continue
 

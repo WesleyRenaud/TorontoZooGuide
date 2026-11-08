@@ -14,7 +14,7 @@ from tools.checks.animal_detail_image import AnimalDetailImage
 from tools.checks.check_report import CheckReport
 
 
-class TemporaryOffDisplayFixer():
+class AnimalTemporaryOffDisplayFixer():
    @classmethod
    def line( cls, species: str, exhibit: str, end: date ) -> str:
       lines = [

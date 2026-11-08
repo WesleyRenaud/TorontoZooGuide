@@ -16,11 +16,11 @@ from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .temporary_off_display_website_only import TemporaryOffDisplayWebsiteOnly
-from tools.fix.temporary_off_display_fixer import TemporaryOffDisplayFixer
+from tools.fix.animal_temporary_off_display_fixer import AnimalTemporaryOffDisplayFixer
 from .website_temporarily_off_display_animal import WebsiteTemporarilyOffDisplayAnimal
 
 
-class TemporaryOffDisplayOnWebsiteNotInAppChecker():
+class AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker():
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse(
@@ -119,7 +119,7 @@ class TemporaryOffDisplayOnWebsiteNotInAppChecker():
       if website_only.enclosures == [] and website_only.unmatched == []:
          return None
 
-      lines = TemporaryOffDisplayFixer.fix( database, website_only.enclosures, today )
+      lines = AnimalTemporaryOffDisplayFixer.fix( database, website_only.enclosures, today )
       lines.extend( website_only.unmatched )
       return sorted( lines, key=str.casefold )
 
@@ -167,4 +167,4 @@ class TemporaryOffDisplayOnWebsiteNotInAppChecker():
 
 
 if __name__ == '__main__':
-   raise SystemExit( TemporaryOffDisplayOnWebsiteNotInAppChecker.main() )
+   raise SystemExit( AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker.main() )
