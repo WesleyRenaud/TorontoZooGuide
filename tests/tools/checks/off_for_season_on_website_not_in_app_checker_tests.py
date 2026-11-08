@@ -250,7 +250,7 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 2
+   assert result == 0
    assert _corrected( STORK, 'Africa Savanna', 'November 2, 2026', 'April 30, 2027' ) in output
    assert _corrected( HAWK, 'Africa Savanna', 'November 2, 2026', 'April 30, 2027' ) in output
    assert '&#39;' not in output
@@ -297,7 +297,7 @@ def Test_CheckSchedules_TestExhibitClosedNotForSeason_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert _corrected( HAWK, 'Kids Zoo', 'November 2, 2026', 'April 30, 2027' ) in output
    assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 1 ) in output
 
@@ -327,7 +327,7 @@ def Test_CheckSchedules_TestWebsiteOnly_ExpectSavedUntilMonthEnd(
    ).fetchone()
    connection.close()
 
-   assert result == 1
+   assert result == 0
    assert _corrected( 'Warthog', 'Africa Savanna', 'November 2, 2026', 'April 30, 2027' ) in output
    assert row == ( 1, TODAY.isoformat(), '2027-04-30', 1, '' )
 
@@ -367,7 +367,7 @@ def Test_CheckSchedules_TestDifferentAnimalsOffDisplay_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { STORK }' not in output
    assert _corrected( TORTOISE, 'Africa Savanna', 'November 2, 2026', 'April 30, 2027' ) in output
    assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 1 ) in output
@@ -385,7 +385,7 @@ def Test_CheckSchedules_TestAugust_ExpectWebsiteMiss(
 
    result, output = _check( database, today, capsys )
 
-   assert result == 1
+   assert result == 0
    assert _corrected( 'Zebra', 'Africa Savanna', 'August 1, 2026', 'April 30, 2027' ) in output
 
 
@@ -400,7 +400,7 @@ def Test_CheckSchedules_TestJanuary_ExpectWebsiteMiss(
 
    result, output = _check( database, today, capsys )
 
-   assert result == 1
+   assert result == 0
    assert _corrected( 'Zebra', 'Africa Savanna', 'January 31, 2026', 'April 30, 2026' ) in output
 
 

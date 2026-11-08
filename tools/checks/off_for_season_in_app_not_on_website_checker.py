@@ -138,7 +138,8 @@ class OffForSeasonInAppNotOnWebsiteChecker():
       print( CheckReport.heading( 'seasonalOffDisplay', today ) )
       print()
       cls.report( lines )
-      return len( lines )
+      corrected = CheckReport.text( 'checks.setOnDisplayForSeason' )
+      return sum( corrected not in line for line in lines )
 
 
    @classmethod

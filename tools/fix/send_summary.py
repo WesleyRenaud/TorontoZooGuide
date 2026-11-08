@@ -99,15 +99,12 @@ class SendSummary():
          if CheckReportParser.fixed_count( line ) != None
       ) )
 
-      if fixed > 0:
-         return CheckReportParser.format_fixed_count( fixed )
-
       errors = CheckReportParser.summary_line( body )
 
-      if errors == 0:
+      if fixed == 0 and errors == 0:
          return AppStringProvider.format( 'checks.status.noneDetected' )
 
-      return CheckReportParser.format_error_count( errors )
+      return CheckReportParser.format_detected( errors + fixed, fixed )
 
 
    @classmethod
@@ -133,6 +130,7 @@ class SendSummary():
                maintype='image',
                subtype='png',
                cid=image.content_id,
+               disposition='inline',
                filename=image.path.name,
             )
       server = smtplib.SMTP( cls.SMTP_HOST, cls.SMTP_PORT, timeout=30 )

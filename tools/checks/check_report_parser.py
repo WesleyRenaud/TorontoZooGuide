@@ -13,9 +13,9 @@ from .report_draft import ReportDraft
 class CheckReportParser():
    CATEGORY_RE = re.compile( r'^(?P<title>[^ ].*): (?P<count>\d+)$' )
    COUNT_LABELS = (
+      'site.nav.animals',
       'reports.wildEncounter.section',
       'reports.guardiansTalk.section',
-      'site.nav.animals',
       'map.filter.attractions',
       'map.filterTypes.restaurant',
       'checks.countNames.giftShops',
@@ -63,6 +63,17 @@ class CheckReportParser():
    def format_fixed_count( cls, count: int ) -> str:
       suffix = 'checks.errorFixed' if count == 1 else 'checks.errorsFixed'
       return f'{ count }{ AppStringProvider.format( suffix ) }'
+
+
+   @classmethod
+   def format_detected( cls, detected: int, fixed: int ) -> str:
+      suffix = 'checks.errorDetected' if detected == 1 else 'checks.errorsDetected'
+      headline = f'{ detected }{ AppStringProvider.format( suffix ) }'
+
+      if fixed == 0:
+         return headline
+
+      return headline + AppStringProvider.format( 'checks.status.detectedFixed', count=fixed )
 
 
    @classmethod
@@ -117,9 +128,9 @@ class CheckReportParser():
    @classmethod
    def format_counts(
          cls,
+         animals: int = 0,
          encounters: int = 0,
          talks: int = 0,
-         animals: int = 0,
          attractions: int = 0,
          restaurants: int = 0,
          gift_shops: int = 0,
@@ -127,9 +138,9 @@ class CheckReportParser():
          attraction_list: int = 0,
          zoo_hours: int = 0 ) -> str:
       counts = (
+         animals,
          encounters,
          talks,
-         animals,
          attractions,
          restaurants,
          gift_shops,

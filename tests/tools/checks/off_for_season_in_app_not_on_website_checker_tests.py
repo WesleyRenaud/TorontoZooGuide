@@ -234,7 +234,7 @@ def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
    species = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
    connection.close()
 
-   assert result == 1
+   assert result == 0
    assert f'  { STORK }' in output
    assert AnimalDetailImage.source( 'Africa Savanna', STORK ) in output
    assert CheckReport.text( 'checks.setOnDisplayForSeason' ) in output
@@ -288,7 +288,7 @@ def Test_CheckSchedules_TestDifferentAnimalsOffDisplay_ExpectAppMiss(
    species = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
    connection.close()
 
-   assert result == 1
+   assert result == 0
    assert f'  { STORK }' in output
    assert species == []
    assert TORTOISE not in output
@@ -315,7 +315,7 @@ def Test_CheckSchedules_TestMarchStorkOffInApp_ExpectAppMiss(
    species = connection.execute( 'SELECT SPECIES FROM AnimalStatus' ).fetchall()
    connection.close()
 
-   assert result == 1
+   assert result == 0
    assert f'  { STORK }' in output
    assert species == []
    assert 'Zebra' not in output
