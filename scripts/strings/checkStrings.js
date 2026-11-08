@@ -71,6 +71,7 @@ export class CheckStrings {
       scheduledInAppOnly: 'Scheduled in the app and not on the website',
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
       setOffDisplayForSeasonFrom: 'Set off display for the season from ',
+      setOnDisplayForSeason: 'Set on display for the season.',
       status: {
          allClear: 'All clear',
          couldNotFinish: 'Could not finish',
