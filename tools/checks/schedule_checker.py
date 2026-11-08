@@ -14,6 +14,7 @@ from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .check_report_parser import CheckReportParser
+from .closure_off_display_extension_checker import ClosureOffDisplayExtensionChecker
 from .gift_shop_list_checker import GiftShopListChecker
 from .guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
 from .off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker
@@ -39,6 +40,7 @@ class ScheduleChecker():
       return (
          OffForSeasonOnWebsiteNotInAppChecker.check_schedules( database, today )
          + OffForSeasonInAppNotOnWebsiteChecker.check_schedules( database, today )
+         + ClosureOffDisplayExtensionChecker.check_schedules( database, today )
          + WebsiteCatalogueNotInAppChecker.check_lists( database, today )
          + AppCatalogueNotOnWebsiteChecker.check_lists( database, today )
       )

@@ -25,6 +25,7 @@ from ..domain.animal_species_exhibit import AnimalSpeciesExhibit
 from ..domain.animal_viewability_builder import AnimalViewabilityBuilder
 from ..domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
 from ..domain.animal_viewing_scope import AnimalViewingScope
+from ..domain.closure_linked_off_display_animal import ClosureLinkedOffDisplayAnimal
 from ..domain.enclosure_off_display_month import EnclosureOffDisplayMonth
 from ..domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from ..domain.seasonal_off_display_animal import SeasonalOffDisplayAnimal
@@ -99,6 +100,25 @@ class AnimalCoordinator():
    @classmethod
    def get_off_display_records( cls ) -> list[ AnimalOffDisplayRecord ]:
       return AnimalStatusProvider.fetch_off_display_records( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_closure_linked_off_display_animals( cls ) -> list[ ClosureLinkedOffDisplayAnimal ]:
+      return AnimalStatusProvider.fetch_closure_linked_off_display_animals(
+         RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def extend_closure_linked_off_display(
+         cls,
+         title: str,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> None:
+      AnimalStatusProvider.extend_closure_linked_off_display_end(
+         RequestConnectionProvider.get(),
+         title=title,
+         start_date=start_date,
+         end_date=end_date )
 
 
    @classmethod

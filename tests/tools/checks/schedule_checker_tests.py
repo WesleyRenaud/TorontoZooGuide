@@ -7,6 +7,7 @@ import pytest
 
 from tools.checks.app_catalogue_not_on_website_checker import AppCatalogueNotOnWebsiteChecker
 from tools.checks.check_report_parser import CheckReportParser
+from tools.checks.closure_off_display_extension_checker import ClosureOffDisplayExtensionChecker
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
 from tools.checks.off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker
 from tools.checks.off_for_season_on_website_not_in_app_checker import OffForSeasonOnWebsiteNotInAppChecker
@@ -33,6 +34,10 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       calls.append( 'app off for season' )
       return [ 'app', 'app' ]
 
+   def check_closure( database: Path, today: date ) -> int:
+      calls.append( 'closure off display' )
+      return 0
+
    def check_website_catalogue( database: Path, today: date ) -> int:
       calls.append( 'website catalogue' )
       return 4
@@ -47,6 +52,11 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       check_website,
    )
    monkeypatch.setattr( OffForSeasonInAppNotOnWebsiteChecker, 'category_lines', check_app )
+   monkeypatch.setattr(
+      ClosureOffDisplayExtensionChecker,
+      'check_schedules',
+      check_closure,
+   )
    monkeypatch.setattr(
       WebsiteCatalogueNotInAppChecker,
       'check_lists',
@@ -64,6 +74,7 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
    assert calls == [
       'website off for season',
       'app off for season',
+      'closure off display',
       'website catalogue',
       'app catalogue',
    ]

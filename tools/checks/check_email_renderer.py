@@ -288,15 +288,11 @@ class CheckEmailRenderer():
 
    @classmethod
    def rows_for( cls, category_title: str, item: DetailItem ) -> str:
-      corrected = (
-         AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' ),
-         AppStringProvider.format( 'checks.offForSeasonAppOnly' ),
-      )
       photo, _details = cls.photo_and_details( item.details )
 
       if (
          AppStringProvider.format( 'format.middleDotJoin' ) in item.title
-         and ( category_title in corrected or photo != '' )
+         and ( cls.fixed_category( category_title ) or photo != '' )
       ):
          return cls.corrected_animal_rows( item )
 
@@ -306,6 +302,7 @@ class CheckEmailRenderer():
    @classmethod
    def fixed_category( cls, title: str ) -> bool:
       return title in (
+         AppStringProvider.format( 'checks.closureOffDisplayReturningTomorrow' ),
          AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' ),
          AppStringProvider.format( 'checks.offForSeasonAppOnly' ),
       )
@@ -369,6 +366,7 @@ class CheckEmailRenderer():
    def animal_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
       kinds = (
          cls.check_kind( 'animalList' ),
+         cls.check_kind( 'closureOffDisplay' ),
          cls.check_kind( 'seasonalOffDisplay' ),
       )
       grouped: dict[ str, list[ Section ] ] = {

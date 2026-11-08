@@ -520,6 +520,10 @@ def Test_NextWeekdayDate_TestFromMonday_ExpectSameDate() -> None:
    assert next_weekday == monday
 
 
+def Test_OneWeekLater_TestNovember20_ExpectNovember27() -> None:
+   assert CalendarDates.one_week_later( date( 2026, 11, 20 ) ) == date( 2026, 11, 27 )
+
+
 def Test_NextWeekendOrHolidayDate_TestFromWeekday_ExpectWeekendOrHoliday() -> None:
    weekday = date( 2026, 6, 15 )
 
