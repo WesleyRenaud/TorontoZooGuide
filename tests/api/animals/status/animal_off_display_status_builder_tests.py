@@ -21,7 +21,9 @@ def Test_Build_TestCustomMessage_ExpectMappedStatus() -> None:
       start_date=START_DATE,
       end_date=END_DATE,
       message=CUSTOM_MESSAGE,
-      is_off_display_for_season=False )
+      is_off_display_for_season=False,
+      closure_update_title=None,
+      closure_update_start=None )
 
    assert status.species == SPECIES
    assert status.exhibit == EXHIBIT
@@ -42,7 +44,9 @@ def Test_Build_TestMissingMessage_ExpectDefaultGuestMessage() -> None:
       start_date=START_DATE,
       end_date=None,
       message='',
-      is_off_display_for_season=False )
+      is_off_display_for_season=False,
+      closure_update_title=None,
+      closure_update_start=None )
 
    assert status.end_date is None
    assert status.message == AppStringProvider.format(
@@ -58,7 +62,9 @@ def Test_Build_TestMissingMessageForSeason_ExpectSeasonGuestMessage() -> None:
       start_date=START_DATE,
       end_date=END_DATE,
       message='',
-      is_off_display_for_season=True )
+      is_off_display_for_season=True,
+      closure_update_title=None,
+      closure_update_start=None )
 
    assert status.is_off_display_for_season is True
    assert status.message == AppStringProvider.format(

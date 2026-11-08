@@ -33,6 +33,17 @@ class UpdateCoordinator():
 
 
    @classmethod
+   def get_closure_update(
+         cls,
+         title: str,
+         start_date: Types.DateInput ) -> Update | None:
+      return UpdateProvider.fetch_closure_update(
+         RequestConnectionProvider.get(),
+         title=title,
+         start_date=DateValues.normalize_date_key( start_date ) )
+
+
+   @classmethod
    def get_unexpired_updates( cls ) -> list[ Update ]:
       as_of_date = DateValues.today_date_key()
 

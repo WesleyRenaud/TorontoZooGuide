@@ -17,7 +17,9 @@ class AnimalOffDisplayStatusBuilder():
          start_date: Types.DateInput,
          end_date: Types.DateInput,
          message: str,
-         is_off_display_for_season: bool ) -> AnimalOffDisplayStatus:
+         is_off_display_for_season: bool,
+         closure_update_title: str | None,
+         closure_update_start: Types.DateInput | None ) -> AnimalOffDisplayStatus:
       if not message:
          message = AppStringProvider.format(
             cls._default_message_key( is_off_display_for_season ),
@@ -34,7 +36,9 @@ class AnimalOffDisplayStatusBuilder():
          start_date=date_range.start_date,
          end_date=date_range.end_date,
          message=message,
-         is_off_display_for_season=is_off_display_for_season )
+         is_off_display_for_season=is_off_display_for_season,
+         closure_update_title=closure_update_title,
+         closure_update_start=closure_update_start )
 
 
    @classmethod

@@ -29,6 +29,7 @@ export class AnimalOffController {
       startDateEl,
       endDateEl,
       messageEl,
+      closureUpdateEl,
       activatePanel,
    }, {
       isOffDisplayForSeason,
@@ -46,21 +47,16 @@ export class AnimalOffController {
          startDateEl,
          endDateEl,
          messageEl,
+         closureUpdateEl,
          activatePanel,
          submitDisplayStatus: ({
-            species,
-            exhibit,
             startDate,
             endDate,
-            message,
-            viewingScopes,
+            ...formValues
          }) => ConsoleOperationsClient.setAnimalOffDisplay({
-            species,
-            exhibit,
-            viewingScopes,
+            ...formValues,
             startDate: startDate || null,
             endDate: endDate || null,
-            message,
             isOffDisplayForSeason,
          }),
          successMessage,

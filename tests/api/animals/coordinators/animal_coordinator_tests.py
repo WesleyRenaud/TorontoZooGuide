@@ -1788,7 +1788,9 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
       start_date=START_DATE,
       end_date=END_DATE,
       message=MESSAGE,
-      is_off_display_for_season=True )
+      is_off_display_for_season=True,
+      closure_update_title=None,
+      closure_update_start=None )
    captured: dict[ str, Any ] = {}
 
    def build( **kwargs: Any ) -> AnimalOffDisplayStatus:
@@ -1809,7 +1811,9 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
          start_date: Types.DateInput,
          end_date: Types.DateInput,
          message: str,
-         is_off_display_for_season: bool ) -> bool:
+         is_off_display_for_season: bool,
+         closure_update_title: str | None,
+         closure_update_start: Types.DateInput | None ) -> bool:
       captured[ 'args' ] = (
          species,
          exhibit,
@@ -1817,7 +1821,9 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
          start_date,
          end_date,
          message,
-         is_off_display_for_season )
+         is_off_display_for_season,
+         closure_update_title,
+         closure_update_start )
       return True
 
    monkeypatch.setattr(
@@ -1832,7 +1838,9 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
       END_DATE,
       MESSAGE,
       viewing_scopes=[ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ],
-      is_off_display_for_season=True )
+      is_off_display_for_season=True,
+      closure_update_title=None,
+      closure_update_start=None )
 
    assert result is True
    assert captured[ 'build_is_off_display_for_season' ] is True
@@ -1843,7 +1851,43 @@ def Test_SetAnimalAsOffDisplay_TestBuilderAndProvider_ExpectDelegated(
       START_DATE,
       END_DATE,
       MESSAGE,
-      True )
+      True,
+      None,
+      None )
+
+
+def Test_SetAnimalAsOffDisplay_TestClosureUpdate_ExpectFormDates(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, Any ] = {}
+
+   def save_animal_off_display_status(
+         _conn: Types.Connection,
+         **kwargs: Any ) -> bool:
+      captured[ 'args' ] = kwargs
+      return True
+
+   monkeypatch.setattr(
+      AnimalStatusProvider,
+      'save_animal_off_display_status',
+      save_animal_off_display_status )
+
+   result = AnimalCoordinator.set_animal_as_off_display(
+      SPECIES,
+      EXHIBIT,
+      START_DATE,
+      END_DATE,
+      MESSAGE,
+      viewing_scopes=[ AnimalViewingScope.from_enclosure_name( 'Male Herd' ) ],
+      is_off_display_for_season=False,
+      closure_update_title='Savanna reno',
+      closure_update_start='2026-11-01' )
+
+   assert result is True
+   assert captured[ 'args' ][ 'start_date' ] == START_DATE
+   assert captured[ 'args' ][ 'end_date' ] == END_DATE
+   assert captured[ 'args' ][ 'closure_update_title' ] == 'Savanna reno'
+   assert captured[ 'args' ][ 'closure_update_start' ] == '2026-11-01'
 
 
 def Test_GetEnclosureOffDisplayMonths_TestProvider_ExpectDelegated(
@@ -1903,6 +1947,8 @@ def Test_SetOffDisplayForSeasonUntil_TestAprilAfterSeason_ExpectNextApril(
       'message': '',
       'viewing_scopes': scopes,
       'is_off_display_for_season': True,
+      'closure_update_title': None,
+      'closure_update_start': None,
    }
 
 

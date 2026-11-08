@@ -75,6 +75,7 @@ export class CommonStrings {
       alertMessage: 'Alert message',
       closedMessage: 'Closed message',
       closureMessage: 'Closure message',
+      closureUpdate: 'Closure update',
       dailyViewingEndTime: 'Daily viewing end time',
       dailyViewingStartTime: 'Daily viewing start time',
       weekdayEndTime: 'Weekday end time',

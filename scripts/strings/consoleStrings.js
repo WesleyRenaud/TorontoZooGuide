@@ -24,6 +24,9 @@ export class ConsoleStrings {
          + 'reopened (no last day).'
       ),
       keepCurrentEndDate: 'Leave blank to keep the current stop date.',
+      closureUpdateDates: (
+         'The animal stays off display for the dates of this update.'
+      ),
       keepOffDisplayUntilOnDisplay: (
          'Leave blank to keep the animal off display until it is manually set '
          + 'back on display (no last day).'
@@ -109,6 +112,7 @@ export class ConsoleStrings {
       enclosure: 'Select an enclosure',
       time: 'Select a time',
       type: 'Select a type',
+      closureUpdate: 'No closure update',
       update: 'Select an update',
       viewingScope: 'Select viewing scope',
       wildEncounter: 'Select a Wild Encounter',

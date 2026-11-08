@@ -5481,6 +5481,15 @@ nav ul li a[aria-current="page"]:hover {
    display: none;
 }
 
+#offDisplayViewingScope {
+   min-height: 12px;
+}
+
+#offDisplayPanel .console-operations-field:has(#offDisplayViewingScope).is-invisible {
+   display: flex;
+   visibility: hidden;
+}
+
 .console-operations-label {
    font-size: 0.725em;
    font-weight: 850;
@@ -5833,6 +5842,16 @@ nav ul li a[aria-current="page"]:hover {
 .console-operations-datetime:focus {
    border-color: #5e9600f2;
    box-shadow: 0 3.5px 8.5px #00000029;
+}
+
+.console-operations-datetime:disabled {
+   color: #14230a6b;
+   -webkit-text-fill-color: #14230a6b;
+   background: #ebf0e4eb;
+   border-color: #5e96002e;
+   box-shadow: none;
+   cursor: not-allowed;
+   opacity: 1;
 }
 
 /* ============================================================

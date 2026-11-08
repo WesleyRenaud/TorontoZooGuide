@@ -206,7 +206,8 @@ class AnimalController():
       message = data.get( 'message' )
       viewing_scopes = AnimalViewingScopeMapper.map_payload( data.get( 'viewingScopes' ) )
       is_off_display_for_season = bool( data.get( 'isOffDisplayForSeason' ) )
-
+      closure_update_title = data.get( 'closureUpdateTitle' )
+      closure_update_start = data.get( 'closureUpdateStartDate' )
       success = AnimalCoordinator.set_animal_as_off_display(
          species=species,
          exhibit=exhibit,
@@ -214,7 +215,9 @@ class AnimalController():
          end_date=end_date,
          message=message,
          viewing_scopes=viewing_scopes,
-         is_off_display_for_season=is_off_display_for_season )
+         is_off_display_for_season=is_off_display_for_season,
+         closure_update_title=closure_update_title,
+         closure_update_start=closure_update_start )
 
       response = {
          'success': success,
@@ -227,9 +230,6 @@ class AnimalController():
             viewing_scope.to_dict() for viewing_scope in viewing_scopes
          ],
       }
-
-      if not success:
-         ApiErrorResponseApplier.apply_error( response, ApiErrorType.NO_ANIMAL_FOUND_WITH_SPECIES, species=species )
 
       handler._write_json( response )
 
