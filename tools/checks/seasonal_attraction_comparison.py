@@ -38,6 +38,23 @@ class SeasonalAttractionComparison():
 
 
    @classmethod
+   def week_extension_names(
+         cls,
+         listings: list[ WebsiteAttraction ],
+         attractions: list[ SeasonalAttraction ],
+         today: date ) -> list[ str ]:
+      return sorted(
+         {
+            attraction.name
+            for listing in listings
+            for attraction in cls.matched_attractions( listing, attractions )
+            if not attraction.closed_for_season_on( today ) or attraction.end == today
+         },
+         key=str.casefold,
+      )
+
+
+   @classmethod
    def missed_website_attractions(
          cls,
          listings: list[ WebsiteAttraction ],

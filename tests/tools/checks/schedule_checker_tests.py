@@ -8,7 +8,7 @@ import pytest
 from tools.checks.animal_app_catalogue_not_on_website_checker import AnimalAppCatalogueNotOnWebsiteChecker
 from tools.checks.animal_closure_off_display_extension_checker import AnimalClosureOffDisplayExtensionChecker
 from tools.checks.animal_off_for_season_in_app_not_on_website_checker import AnimalOffForSeasonInAppNotOnWebsiteChecker
-from tools.checks.animal_off_for_season_on_website_not_in_app_checker import AnimalOffForSeasonOnWebsiteNotInAppChecker
+from tools.checks.animal_off_for_season_ramp_down_on_website_not_in_app_checker import AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker
 from tools.checks.animal_temporary_off_display_in_app_not_on_website_checker import AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker
 from tools.checks.animal_temporary_off_display_on_website_not_in_app_checker import AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker
 from tools.checks.animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
@@ -57,7 +57,7 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       return 3
 
    monkeypatch.setattr(
-      AnimalOffForSeasonOnWebsiteNotInAppChecker,
+      AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker,
       'category_lines',
       check_website,
    )

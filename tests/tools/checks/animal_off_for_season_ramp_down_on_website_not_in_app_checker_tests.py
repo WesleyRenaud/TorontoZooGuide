@@ -9,7 +9,7 @@ import pytest
 
 from api.app_string_provider import AppStringProvider
 from tools.checks.animal_detail_image import AnimalDetailImage
-from tools.checks.animal_off_for_season_on_website_not_in_app_checker import AnimalOffForSeasonOnWebsiteNotInAppChecker as CHECKER
+from tools.checks.animal_off_for_season_ramp_down_on_website_not_in_app_checker import AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker as CHECKER
 from tools.checks.check_report import CheckReport
 from tools.checks.website_page import WebsitePage
 

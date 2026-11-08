@@ -195,7 +195,7 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectClosedForSeason(
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestMayWebsiteClosed_ExpectUnchanged(
+def Test_CheckSchedules_TestMayWebsiteClosed_ExpectClosedForOneWeek(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -215,10 +215,90 @@ def Test_CheckSchedules_TestMayWebsiteClosed_ExpectUnchanged(
    result, output = _check( database, may, capsys )
 
    assert result == 0
-   assert SPLASH not in output
+   assert f'  { SPLASH }' in output
+   assert CheckReport.text( 'checks.extendedClosedForSeasonThrough' ) in output
+   assert 'May 8, 2027' in output
    assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) not in output
-   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) not in output
-   assert _season_row( database, SPLASH ) == None
+   assert _season_row( database, SPLASH ) == ( 1, may.isoformat(), '2027-05-08', 1 )
+   assert CheckReport.category_line( 'checks.closedForSeasonReturningSoon', 1 ) in output
+
+
+def Test_CheckSchedules_TestApril30SeasonEnd_ExpectExtendedOneWeek(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   april = date( 2027, 4, 30 )
+   start = '2026-11-08'
+   _write_database(
+      database,
+      [ ( SPLASH, 'https://www.torontozoo.com/tz/splash' ) ],
+      [ ( SPLASH, start, april.isoformat() ) ],
+      [ ( april, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/tz/splash', 'Splash island', 'Closed For The Season' ) ] ),
+   )
+
+   result, output = _check( database, april, capsys )
+
+   assert result == 0
+   assert CheckReport.text( 'checks.extendedClosedForSeasonThrough' ) in output
+   assert 'May 8, 2027' in output
+   assert _season_row( database, SPLASH ) == ( 1, start, '2027-05-08', 1 )
+   assert CheckReport.category_line( 'checks.closedForSeasonReturningSoon', 1 ) in output
+
+
+def Test_CheckSchedules_TestMayAfterMissedApril30_ExpectSameWeek(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   may = date( 2027, 5, 1 )
+   start = '2026-11-08'
+   _write_database(
+      database,
+      [ ( SPLASH, 'https://www.torontozoo.com/tz/splash' ) ],
+      [ ( SPLASH, start, '2027-04-30' ) ],
+      [ ( may, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/tz/splash', 'Splash island', 'Closed For The Season' ) ] ),
+   )
+
+   result, output = _check( database, may, capsys )
+
+   assert result == 0
+   assert 'May 8, 2027' in output
+   assert _season_row( database, SPLASH ) == ( 1, start, '2027-05-08', 1 )
+
+
+def Test_CheckSchedules_TestClosedPastTomorrow_ExpectUnchanged(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   april = date( 2027, 4, 30 )
+   start = '2026-11-08'
+   _write_database(
+      database,
+      [ ( SPLASH, 'https://www.torontozoo.com/tz/splash' ) ],
+      [ ( SPLASH, start, '2027-05-20' ) ],
+      [ ( april, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/tz/splash', 'Splash island', 'Closed For The Season' ) ] ),
+   )
+
+   result, output = _check( database, april, capsys )
+
+   assert result == 0
+   assert CheckReport.text( 'checks.extendedClosedForSeasonThrough' ) not in output
+   assert _season_row( database, SPLASH ) == ( 1, start, '2027-05-20', 1 )
+   assert CheckReport.category_line( 'checks.closedForSeasonReturningSoon', 0 ) in output
 
 
 def Test_CheckSchedules_TestAllowedWebsiteOnlyAttraction_ExpectNoIssues(
