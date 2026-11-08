@@ -433,7 +433,7 @@ class GuardiansTalkScheduleChecker():
          return CheckExitCode.COULD_NOT_FINISH
 
       try:
-         issues = cls.check_schedules( args.database, date.today() )
+         issues = cls.check_schedules( args.database, DateValues.today() )
       except RuntimeError as error:
          print( error, file=sys.stderr )
          return CheckExitCode.COULD_NOT_FINISH

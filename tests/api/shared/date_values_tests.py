@@ -5,6 +5,8 @@ from collections.abc import Callable
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timezone
+from datetime import tzinfo
 
 from api_test_support.frozen_datetime import patch_database_today
 import pytest
@@ -15,6 +17,18 @@ from api.types import Types
 
 
 MISSING_START_FALLBACK_DATE = date( 2026, 6, 15 )
+
+
+class _Clock( datetime ):
+   instant = datetime( 2026, 11, 8, 0, 30, tzinfo=timezone.utc )
+
+
+   @classmethod
+   def now( cls, tz: tzinfo | None = None ) -> datetime:
+      if tz == None:
+         return cls.instant.replace( tzinfo=None )
+
+      return cls.instant.astimezone( tz )
 
 
 @pytest.fixture
@@ -448,6 +462,24 @@ def Test_FormatDisplayWeekday_TestValidDate_ExpectWeekdayMonthDayYear() -> None:
       first=calendar.day_name[ parsed.weekday() ],
       second=DateValues.format_display_date_value( parsed ),
    )
+
+
+def Test_Today_TestUtcAfterMidnight_ExpectEasternDate(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   _Clock.instant = datetime( 2026, 11, 8, 0, 30, tzinfo=timezone.utc )
+
+   monkeypatch.setattr( 'api.shared.date_values.datetime', _Clock )
+
+   assert DateValues.today() == date( 2026, 11, 7 )
+
+
+def Test_Today_TestAfterEasternMidnight_ExpectEasternDate(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   _Clock.instant = datetime( 2026, 11, 8, 5, 30, tzinfo=timezone.utc )
+
+   monkeypatch.setattr( 'api.shared.date_values.datetime', _Clock )
+
+   assert DateValues.today() == date( 2026, 11, 8 )
 
 
 def Test_FormatDisplayWeekday_TestInvalidDate_ExpectNone() -> None:

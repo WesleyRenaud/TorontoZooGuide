@@ -21,6 +21,10 @@ from api.shared.enums.transportation_name import TransportationName
 VISIT_DATE = '2026-06-15'
 
 
+class _UnknownScheduleItemKey:
+   pass
+
+
 def Test_FindSavedItineraryScheduleItemRow_TestAnimalKey_ExpectAnimalRow() -> None:
    species = 'Masai Giraffe'
    exhibit = 'Africa Savanna'
@@ -373,14 +377,11 @@ def Test_FindSavedItineraryScheduleItemRow_TestDeletedWildEncounter_ExpectNone()
 
 
 def Test_FindSavedItineraryScheduleItemRow_TestUnknownKeyType_ExpectNone() -> None:
-   class UnknownScheduleItemKey:
-      pass
-
    saved_itinerary = SavedItinerary(
       date_value=VISIT_DATE,
       arrival_time=None,
       departure_time=None )
-   schedule_item_key = UnknownScheduleItemKey()
+   schedule_item_key = _UnknownScheduleItemKey()
 
    row = SavedItineraryScheduleItemRowFinder.find_saved_itinerary_schedule_item_row(
       saved_itinerary,

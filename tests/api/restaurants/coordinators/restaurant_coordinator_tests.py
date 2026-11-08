@@ -17,8 +17,7 @@ from api.restaurants.domain.seasonal_restaurant_builder import SeasonalRestauran
 from api.restaurants.search.restaurants_matching_query_builder import RestaurantsMatchingQueryBuilder
 from api.restaurants.status.restaurant_season_closure_builder import RestaurantSeasonClosureBuilder
 from api.shared.calendar_dates import DateValues
-from api.shared.enums.position import Position
-from api.types import Types
+
 
 VISIT_DAY = 15
 VISIT_MONTH = 'June'
@@ -34,6 +33,180 @@ RESTAURANT = Restaurant(
    name=RESTAURANT_NAME,
    location='African Savanna',
    sub_location='Near Lions' )
+
+
+class _Mutations:
+   def __init__(
+         self,
+         captured: dict[ str, object ] | None = None,
+         name: str | None = None ) -> None:
+      self.captured = captured
+      self.name = name
+
+
+   def set_as_closed(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      return self._closed( name, start_date, end_date, message )
+
+
+   def set_closure_override(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      return self._closed( name, start_date, end_date, message )
+
+
+   def set_opening_schedule(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def replace_opening_schedule_overlaps(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def trim_opening_schedule_overlaps(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def _closed(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      if self.captured != None:
+         self.captured[ 'args' ] = ( name, start_date, end_date, message )
+         return True
+
+      return name == self.name
+
+
+   def _opening(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      if self.captured != None:
+         self.captured[ 'args' ] = (
+            name,
+            start_date,
+            end_date,
+            monday,
+            tuesday,
+            wednesday,
+            thursday,
+            friday,
+            saturday,
+            sunday,
+            holidays_only,
+            message )
+         return True
+
+      return name == self.name
+
+
+class _RestaurantContext:
+   normalized_month = 6
+   normalized_day = 15
+   target_date = VISIT_DATE
+
+
+class _RestaurantSeasonStatus:
+   restaurant = RESTAURANT_NAME
+   start_date = START_DATE
+   end_date = END_DATE
+   message = MESSAGE
+
 
 def Test_GetRestaurantNames_TestProviderNames_ExpectReturned(
       stub_request_connection: None,
@@ -71,15 +244,10 @@ def Test_GetRestaurants_TestProvidersAndBuilder_ExpectRestaurants(
    override_records = [ object() ]
    captured: dict[ str, object ] = {}
 
-   class _Context:
-      normalized_month = 6
-      normalized_day = 15
-      target_date = VISIT_DATE
-
    monkeypatch.setattr(
       RestaurantBuilder,
       'resolve_context',
-      lambda **_kwargs: _Context() )
+      lambda **_kwargs: _RestaurantContext() )
    monkeypatch.setattr(
       RestaurantProvider,
       'fetch_restaurant_records',
@@ -144,17 +312,10 @@ def Test_SetRestaurantAsClosed_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_as_closed(
-            self,
-            name: str,
-            start_date: Types.DateInput,
-            end_date: Types.DateInput,
-            message: str ) -> bool:
-         captured[ 'args' ] = ( name, start_date, end_date, message )
-         return True
-
-   monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      restaurant_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = RestaurantCoordinator.set_restaurant_as_closed(
       RESTAURANT_NAME,
@@ -170,17 +331,10 @@ def Test_SetRestaurantClosureOverride_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_closure_override(
-            self,
-            name: str,
-            start_date: Types.DateInput,
-            end_date: Types.DateInput,
-            message: str ) -> bool:
-         captured[ 'args' ] = ( name, start_date, end_date, message )
-         return True
-
-   monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      restaurant_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = RestaurantCoordinator.set_restaurant_closure_override(
       RESTAURANT_NAME,
@@ -196,12 +350,10 @@ def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_opening_schedule( self, *args: object ) -> bool:
-         captured[ 'args' ] = args
-         return True
-
-   monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      restaurant_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = RestaurantCoordinator.set_restaurant_opening_schedule(
       RESTAURANT_NAME,
@@ -235,11 +387,10 @@ def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
 
 def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   class StubMutations:
-      def replace_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ Position.FIRST ] == RESTAURANT_NAME
-
-   monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      restaurant_coordinator_module,
+      '_mutations',
+      _Mutations( name=RESTAURANT_NAME ) )
 
    result = RestaurantCoordinator.replace_restaurant_opening_schedule_overlaps(
       RESTAURANT_NAME,
@@ -260,11 +411,10 @@ def Test_ReplaceRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
 def Test_TrimRestaurantOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   class StubMutations:
-      def trim_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ Position.FIRST ] == RESTAURANT_NAME
-
-   monkeypatch.setattr( restaurant_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      restaurant_coordinator_module,
+      '_mutations',
+      _Mutations( name=RESTAURANT_NAME ) )
 
    result = RestaurantCoordinator.trim_restaurant_opening_schedule_overlaps(
       RESTAURANT_NAME,
@@ -358,15 +508,9 @@ def Test_SetRestaurantAsClosedForSeason_TestBuilderAndProvider_ExpectSaved(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class _Status:
-      restaurant = RESTAURANT_NAME
-      start_date = START_DATE
-      end_date = END_DATE
-      message = MESSAGE
-
-   def build( **kwargs: object ) -> _Status:
+   def build( **kwargs: object ) -> _RestaurantSeasonStatus:
       captured[ 'built' ] = kwargs
-      return _Status()
+      return _RestaurantSeasonStatus()
 
    def save( _conn: str, **kwargs: object ) -> bool:
       captured[ 'saved' ] = kwargs

@@ -9,6 +9,25 @@ from api.seed.schema_creator import SchemaCreator
 from api.seed.seed_runner import SeedRunner
 
 
+class _Conn:
+   def __init__( self, calls: list[ str ], cursor: sqlite3.Cursor ) -> None:
+      self.calls = calls
+      self._cursor = cursor
+
+
+   def cursor( self ) -> sqlite3.Cursor:
+      self.calls.append( 'cursor' )
+      return self._cursor
+
+
+   def commit( self ) -> None:
+      self.calls.append( 'commit' )
+
+
+   def close( self ) -> None:
+      self.calls.append( 'close' )
+
+
 def Test_CreateSchema_TestExistingClosureStatuses_ExpectPreserved() -> None:
    connection = sqlite3.connect( ':memory:' )
 
@@ -45,22 +64,9 @@ def Test_ApplySchema_TestMonkeypatchedConnect_ExpectSchemaMigrateCommit(
    conn = sqlite3.connect( ':memory:' )
    cursor = conn.cursor()
 
-   class _Conn:
-      def cursor( self ) -> sqlite3.Cursor:
-         calls.append( 'cursor' )
-         return cursor
-
-
-      def commit( self ) -> None:
-         calls.append( 'commit' )
-
-
-      def close( self ) -> None:
-         calls.append( 'close' )
-
    monkeypatch.setattr(
       'api.seed.seed_runner.sqlite3.connect',
-      lambda db_path: _Conn() )
+      lambda db_path: _Conn( calls, cursor ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.SchemaCreator.create',
       lambda cur: calls.append( 'schema' ) )
@@ -87,22 +93,9 @@ def Test_ApplySeedData_TestMonkeypatchedConnect_ExpectSeedCommit(
    conn = sqlite3.connect( ':memory:' )
    cursor = conn.cursor()
 
-   class _Conn:
-      def cursor( self ) -> sqlite3.Cursor:
-         calls.append( 'cursor' )
-         return cursor
-
-
-      def commit( self ) -> None:
-         calls.append( 'commit' )
-
-
-      def close( self ) -> None:
-         calls.append( 'close' )
-
    monkeypatch.setattr(
       'api.seed.seed_runner.sqlite3.connect',
-      lambda db_path: _Conn() )
+      lambda db_path: _Conn( calls, cursor ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.StaticDataSeeder.seed',
       lambda cur: calls.append( 'seed' ) )
@@ -120,22 +113,9 @@ def Test_Main_TestMonkeypatchedConnect_ExpectSchemaMigrateSeedCommit(
    conn = sqlite3.connect( ':memory:' )
    cursor = conn.cursor()
 
-   class _Conn:
-      def cursor( self ) -> sqlite3.Cursor:
-         calls.append( 'cursor' )
-         return cursor
-
-
-      def commit( self ) -> None:
-         calls.append( 'commit' )
-
-
-      def close( self ) -> None:
-         calls.append( 'close' )
-
    monkeypatch.setattr(
       'api.seed.seed_runner.sqlite3.connect',
-      lambda db_path: _Conn() )
+      lambda db_path: _Conn( calls, cursor ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.SchemaCreator.create',
       lambda cur: calls.append( 'schema' ) )
@@ -167,22 +147,9 @@ def Test_ModuleMain_TestMonkeypatchedConnect_ExpectSchemaMigrateSeedCommit(
    conn = sqlite3.connect( ':memory:' )
    cursor = conn.cursor()
 
-   class _Conn:
-      def cursor( self ) -> sqlite3.Cursor:
-         calls.append( 'cursor' )
-         return cursor
-
-
-      def commit( self ) -> None:
-         calls.append( 'commit' )
-
-
-      def close( self ) -> None:
-         calls.append( 'close' )
-
    monkeypatch.setattr(
       'api.seed.seed_runner.sqlite3.connect',
-      lambda db_path: _Conn() )
+      lambda db_path: _Conn( calls, cursor ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.SchemaCreator.create',
       lambda cur: calls.append( 'schema' ) )

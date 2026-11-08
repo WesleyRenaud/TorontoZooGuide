@@ -16,8 +16,7 @@ from api.giftshops.search.gift_shops_matching_query_builder import GiftShopsMatc
 from api.giftshops.status.gift_shop_season_closure_builder import GiftShopSeasonClosureBuilder
 from api.models.gift_shop import GiftShop
 from api.shared.calendar_dates import DateValues
-from api.shared.enums.position import Position
-from api.types import Types
+
 
 VISIT_DAY = 15
 VISIT_MONTH = 'June'
@@ -32,6 +31,179 @@ MESSAGE = 'Closed for maintenance.'
 GIFT_SHOP = GiftShop(
    name=GIFT_SHOP_NAME,
    location='Main Entrance' )
+
+
+class _Mutations:
+   def __init__(
+         self,
+         captured: dict[ str, object ] | None = None,
+         name: str | None = None ) -> None:
+      self.captured = captured
+      self.name = name
+
+
+   def set_as_closed(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      return self._closed( name, start_date, end_date, message )
+
+
+   def set_closure_override(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      return self._closed( name, start_date, end_date, message )
+
+
+   def set_opening_schedule(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def replace_opening_schedule_overlaps(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def trim_opening_schedule_overlaps(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def _closed(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      if self.captured != None:
+         self.captured[ 'args' ] = ( name, start_date, end_date, message )
+         return True
+
+      return name == self.name
+
+
+   def _opening(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      if self.captured != None:
+         self.captured[ 'args' ] = (
+            name,
+            start_date,
+            end_date,
+            monday,
+            tuesday,
+            wednesday,
+            thursday,
+            friday,
+            saturday,
+            sunday,
+            holidays_only,
+            message )
+         return True
+
+      return name == self.name
+
+
+class _GiftShopContext:
+   normalized_month = 6
+   normalized_day = 15
+   target_date = VISIT_DATE
+
+
+class _GiftShopSeasonStatus:
+   gift_shop = GIFT_SHOP_NAME
+   start_date = START_DATE
+   end_date = END_DATE
+   message = MESSAGE
 
 
 def Test_GetGiftShopNames_TestProviderNames_ExpectReturned(
@@ -55,15 +227,10 @@ def Test_GetGiftShops_TestProvidersAndBuilder_ExpectGiftShops(
    override_records = [ object() ]
    captured: dict[ str, object ] = {}
 
-   class _Context:
-      normalized_month = 6
-      normalized_day = 15
-      target_date = VISIT_DATE
-
    monkeypatch.setattr(
       GiftShopBuilder,
       'resolve_context',
-      lambda **_kwargs: _Context() )
+      lambda **_kwargs: _GiftShopContext() )
    monkeypatch.setattr(
       GiftShopProvider,
       'fetch_gift_shop_records',
@@ -130,17 +297,10 @@ def Test_SetGiftShopAsClosed_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_as_closed(
-            self,
-            name: str,
-            start_date: Types.DateInput,
-            end_date: Types.DateInput,
-            message: str ) -> bool:
-         captured[ 'args' ] = ( name, start_date, end_date, message )
-         return True
-
-   monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      gift_shop_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = GiftShopCoordinator.set_gift_shop_as_closed(
       GIFT_SHOP_NAME,
@@ -156,17 +316,10 @@ def Test_SetGiftShopClosureOverride_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_closure_override(
-            self,
-            name: str,
-            start_date: Types.DateInput,
-            end_date: Types.DateInput,
-            message: str ) -> bool:
-         captured[ 'args' ] = ( name, start_date, end_date, message )
-         return True
-
-   monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      gift_shop_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = GiftShopCoordinator.set_gift_shop_closure_override(
       GIFT_SHOP_NAME,
@@ -182,12 +335,10 @@ def Test_SetGiftShopOpeningSchedule_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_opening_schedule( self, *args: object ) -> bool:
-         captured[ 'args' ] = args
-         return True
-
-   monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      gift_shop_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = GiftShopCoordinator.set_gift_shop_opening_schedule(
       GIFT_SHOP_NAME,
@@ -221,11 +372,10 @@ def Test_SetGiftShopOpeningSchedule_TestMutations_ExpectDelegated(
 
 def Test_ReplaceGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   class StubMutations:
-      def replace_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ Position.FIRST ] == GIFT_SHOP_NAME
-
-   monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      gift_shop_coordinator_module,
+      '_mutations',
+      _Mutations( name=GIFT_SHOP_NAME ) )
 
    result = GiftShopCoordinator.replace_gift_shop_opening_schedule_overlaps(
       GIFT_SHOP_NAME,
@@ -246,11 +396,10 @@ def Test_ReplaceGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
 def Test_TrimGiftShopOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   class StubMutations:
-      def trim_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ Position.FIRST ] == GIFT_SHOP_NAME
-
-   monkeypatch.setattr( gift_shop_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      gift_shop_coordinator_module,
+      '_mutations',
+      _Mutations( name=GIFT_SHOP_NAME ) )
 
    result = GiftShopCoordinator.trim_gift_shop_opening_schedule_overlaps(
       GIFT_SHOP_NAME,
@@ -288,15 +437,9 @@ def Test_SetGiftShopAsClosedForSeason_TestBuilderAndProvider_ExpectSaved(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class _Status:
-      gift_shop = GIFT_SHOP_NAME
-      start_date = START_DATE
-      end_date = END_DATE
-      message = MESSAGE
-
-   def build( **kwargs: object ) -> _Status:
+   def build( **kwargs: object ) -> _GiftShopSeasonStatus:
       captured[ 'built' ] = kwargs
-      return _Status()
+      return _GiftShopSeasonStatus()
 
    def save( _conn: str, **kwargs: object ) -> bool:
       captured[ 'saved' ] = kwargs

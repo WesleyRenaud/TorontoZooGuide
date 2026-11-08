@@ -9,6 +9,7 @@ from api.app_string_provider import AppStringProvider
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
@@ -113,7 +114,7 @@ class GiftShopListChecker():
          return CheckExitCode.COULD_NOT_FINISH
 
       try:
-         issues = cls.check_lists( args.database, date.today() )
+         issues = cls.check_lists( args.database, DateValues.today() )
       except RuntimeError as error:
          print( error, file=sys.stderr )
          return CheckExitCode.COULD_NOT_FINISH

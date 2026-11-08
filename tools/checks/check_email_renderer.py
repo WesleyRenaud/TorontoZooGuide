@@ -284,8 +284,13 @@ class CheckEmailRenderer():
 
    @classmethod
    def rows_for( cls, category_title: str, item: DetailItem ) -> str:
+      corrected = (
+         AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' ),
+         AppStringProvider.format( 'checks.offForSeasonAppOnly' ),
+      )
+
       if (
-         category_title == AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' )
+         category_title in corrected
          and AppStringProvider.format( 'format.middleDotJoin' ) in item.title
       ):
          return cls.corrected_animal_rows( item )

@@ -213,6 +213,35 @@ def Test_RenderHtml_TestCorrectedOffDisplay_ExpectPhotoExhibitAndCorrection() ->
    assert CheckReport.text( 'checks.photo' ) not in html
 
 
+def Test_RenderHtml_TestCorrectedAppOffDisplay_ExpectPhotoExhibitAndCorrection() -> None:
+   photo = AnimalDetailImage.source( 'Kids Zoo', 'Abyssinian Ground Hornbill' )
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'seasonalOffDisplay', date( 2027, 3, 15 ) ) }
+
+      { CheckReport.category_line( 'checks.offForSeasonAppOnly', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Abyssinian Ground Hornbill', second='Kids Zoo' ) }
+          { CheckReport.text( 'checks.photo' ) }{ photo }
+          { CheckReport.text( 'checks.setOnDisplayForSeason' ) }
+
+      { CheckReportParser.format_counts( animals=1 ) }
+
+      { CheckReportParser.format_error_count( 1 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+   colors = ExhibitRegionColors.exhibit_colors( 'Kids Zoo' )
+   image = CheckEmailRenderer.image_src( photo )
+   label = f'<span style="color:{ colors.foreground };">Abyssinian Ground Hornbill</span>'
+
+   assert image in html
+   assert label in html
+   assert html.index( image ) < html.index( label )
+   assert CheckReport.text( 'checks.setOnDisplayForSeason' ) in html
+   assert CheckReport.text( 'checks.photo' ) not in html
+   assert f'border:3px solid { colors.foreground }' in html
+
+
 def Test_RenderHtml_TestOneErrorFixed_ExpectFixedHeadline() -> None:
    fixed = CheckReportParser.format_fixed_count( 1 )
    body = textwrap.dedent(

@@ -8,6 +8,7 @@ import sys
 
 from .animal_list_checker import AnimalListChecker
 from api.app_string_provider import AppStringProvider
+from api.shared.date_values import DateValues
 from .attraction_list_checker import AttractionListChecker
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
@@ -34,19 +35,9 @@ class ScheduleChecker():
 
    @classmethod
    def check_animals( cls, database: Path, today: date ) -> int:
-      website_lines = OffForSeasonOnWebsiteNotInAppChecker.category_lines( database, today )
-      app_lines = OffForSeasonInAppNotOnWebsiteChecker.category_lines( database, today )
-      print( CheckReport.heading( 'seasonalOffDisplay', today ) )
-      print()
-
-      if website_lines != None:
-         OffForSeasonOnWebsiteNotInAppChecker.report( website_lines )
-
-      OffForSeasonInAppNotOnWebsiteChecker.report( app_lines )
-      website_count = 0 if website_lines == None else len( website_lines )
       return (
-         website_count
-         + len( app_lines )
+         OffForSeasonOnWebsiteNotInAppChecker.check_schedules( database, today )
+         + OffForSeasonInAppNotOnWebsiteChecker.check_schedules( database, today )
          + AnimalListChecker.check_lists( database, today )
       )
 
@@ -138,7 +129,7 @@ class ScheduleChecker():
       try:
          return cls.run_checks(
             args.database,
-            date.today(),
+            DateValues.today(),
             WildEncounterScheduleChecker.check_schedules,
             GuardiansTalkScheduleChecker.check_schedules,
             cls.check_animals,
