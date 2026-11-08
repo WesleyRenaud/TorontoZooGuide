@@ -244,6 +244,11 @@ class CalendarDates:
 
 
    @staticmethod
+   def one_week_later( day: date ) -> date:
+      return day + timedelta( days=7 )
+
+
+   @staticmethod
    def get_family_day( year: Types.VisitYear ) -> date:
       d = date( year, 2, 1 )
 
@@ -316,4 +321,4 @@ class CalendarDates:
       while d.weekday() != 0:
          d += timedelta( days=1 )
 
-      return d + timedelta( days=7 )
+      return CalendarDates.one_week_later( d )

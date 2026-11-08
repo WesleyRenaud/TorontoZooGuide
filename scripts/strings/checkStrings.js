@@ -12,6 +12,7 @@ export class CheckStrings {
       closedForSeason: 'closed for the season',
       closedForSeasonAppOnly: 'Closed for the season in the app and not on the website',
       closedForSeasonWebsiteOnly: 'Closed for the season on the website and not in the app',
+      closureOffDisplayReturningTomorrow: 'Off display on the website and the app, back on display tomorrow',
       countItem: ' for ',
       countNames: {
          drinkingFountains: 'Drinking fountains',
@@ -48,6 +49,7 @@ export class CheckStrings {
       errors: ' errors',
       errorsDetected: ' errors detected',
       errorsFixed: ' errors fixed',
+      extendedOffDisplayThrough: 'Extended off display through ',
       headingMiddle: ' check for ',
       hoursDayCountEnd: ' days): ',
       hoursDayCountStart: ' (',
@@ -89,6 +91,7 @@ export class CheckStrings {
          finished: 'Toronto Zoo check finished',
          summary: 'Toronto Zoo check: ',
       },
+      temporarilyNotViewable: 'temporarily not viewable',
       websiteCatalogueNotInApp: 'On the website catalogue and not in the app',
       websiteDatesCompared: 'Website dates compared from ',
       websiteDatesNotInApp: 'Website dates not in the app: ',
@@ -105,6 +108,10 @@ export class CheckStrings {
       attractionList: {
          description: 'Compare attractions listed on the Toronto Zoo website with the attractions in the app.',
          kind: 'Attraction list',
+      },
+      closureOffDisplay: {
+         description: 'Compare animals off display on the Toronto Zoo alerts page that are linked to a closure update with the animals off display in the app.',
+         kind: 'Closure off-display',
       },
       giftShopList: {
          description: 'Compare gift shops listed on the Toronto Zoo website with the gift shops in the app.',
