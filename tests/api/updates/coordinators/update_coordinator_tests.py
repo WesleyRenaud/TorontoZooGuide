@@ -201,3 +201,38 @@ def Test_CreateUpdate_TestConsoleStatusTypes_ExpectPersistAnimalBirthAndPassing(
    )
 
    assert result is True
+
+
+def Test_GetClosureUpdate_TestClosure_ExpectUpdate( db: SeededDatabase ) -> None:
+   created = UpdateCoordinator.create_update(
+      title='Savanna reno',
+      description='Habitat work',
+      update_type='Closure',
+      start_date='2026-11-01',
+      end_date='2027-03-01' )
+
+   assert created is True
+
+   update = UpdateCoordinator.get_closure_update(
+      title='Savanna reno',
+      start_date='2026-11-01' )
+
+   assert update != None
+   assert update.title == 'Savanna reno'
+   assert update.start_date == '2026-11-01'
+   assert update.end_date == '2027-03-01'
+
+
+def Test_GetClosureUpdate_TestBirth_ExpectNone( db: SeededDatabase ) -> None:
+   created = UpdateCoordinator.create_update(
+      title='New calf',
+      description='A calf was born.',
+      update_type='Animal Birth',
+      start_date='2026-11-01',
+      end_date=None )
+
+   assert created is True
+
+   assert UpdateCoordinator.get_closure_update(
+      title='New calf',
+      start_date='2026-11-01' ) == None

@@ -255,7 +255,9 @@ class AnimalCoordinator():
          end_date: Types.DateInput,
          message: str,
          viewing_scopes: list[ AnimalViewingScope ],
-         is_off_display_for_season: bool ) -> bool:
+         is_off_display_for_season: bool,
+         closure_update_title: str | None,
+         closure_update_start: Types.DateInput | None ) -> bool:
       status = AnimalOffDisplayStatusBuilder.build(
          species=species,
          exhibit=exhibit,
@@ -263,7 +265,9 @@ class AnimalCoordinator():
          start_date=start_date,
          end_date=end_date,
          message=message,
-         is_off_display_for_season=is_off_display_for_season )
+         is_off_display_for_season=is_off_display_for_season,
+         closure_update_title=closure_update_title,
+         closure_update_start=closure_update_start )
 
       return AnimalStatusProvider.save_animal_off_display_status(
          RequestConnectionProvider.get(),
@@ -273,7 +277,9 @@ class AnimalCoordinator():
          start_date=status.start_date,
          end_date=status.end_date,
          message=status.message,
-         is_off_display_for_season=status.is_off_display_for_season )
+         is_off_display_for_season=status.is_off_display_for_season,
+         closure_update_title=status.closure_update_title,
+         closure_update_start=status.closure_update_start )
 
 
    @classmethod
@@ -299,7 +305,9 @@ class AnimalCoordinator():
          end_date=end_date,
          message='',
          viewing_scopes=viewing_scopes,
-         is_off_display_for_season=True )
+         is_off_display_for_season=True,
+         closure_update_title=None,
+         closure_update_start=None )
 
 
    @classmethod

@@ -9,6 +9,7 @@ export class ConsoleSelectFieldBuilder {
       includeEmptyOption = true,
       disabled = false,
       invisible = false,
+      helpText = '',
    } = {}) {
       const fieldEl = ConsoleFieldPrimitiveBuilder.createFieldWrapper();
 
@@ -37,6 +38,12 @@ export class ConsoleSelectFieldBuilder {
       });
 
       fieldEl.append(labelEl, selectEl);
+      const helpEl = ConsoleFieldPrimitiveBuilder.createHelpText(helpText);
+
+      if (helpEl) {
+         fieldEl.append(helpEl);
+      }
+
       return fieldEl;
    }
 }

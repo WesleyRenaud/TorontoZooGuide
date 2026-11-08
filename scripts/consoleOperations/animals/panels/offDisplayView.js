@@ -29,6 +29,12 @@ export class OffDisplayView {
                label: Strings.labels.viewingScope,
                gridId: 'offDisplayViewingScope',
             }),
+            ConsoleSelectFieldBuilder.createSelectField({
+               label: Strings.labels.closureUpdate,
+               inputId: 'offDisplayClosureUpdate',
+               emptyOptionLabel: Strings.placeholders.closureUpdate,
+               helpText: Strings.help.closureUpdateDates,
+            }),
             ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'offDisplayStartDate',
                startHelpText: Strings.help.startImmediately,

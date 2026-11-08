@@ -7,6 +7,7 @@ import { ConsoleDropdownPopulator } from '../options/consoleDropdownPopulator.js
 import { ConsoleOptionsLoader } from '../options/consoleOptionsLoader.js';
 import { ConsoleStatusPresenter } from '../shell/consoleStatusPresenter.js';
 import { Strings } from '../../strings.js';
+import { UpdateOptions } from '../updates/controllers/updateOptions.js';
 
 export class AnimalDisplayStatusControllerFactory {
    static createAnimalDisplayStatusController({
@@ -21,6 +22,7 @@ export class AnimalDisplayStatusControllerFactory {
       startDateEl = null,
       endDateEl = null,
       messageEl = null,
+      closureUpdateEl,
       activatePanel,
       submitDisplayStatus,
       successMessage,
@@ -33,6 +35,7 @@ export class AnimalDisplayStatusControllerFactory {
       const formFieldEls = [
          speciesEl,
          exhibitEl,
+         closureUpdateEl,
          startDateEl,
          endDateEl,
          messageEl,
@@ -47,7 +50,7 @@ export class AnimalDisplayStatusControllerFactory {
 
 
       function getFormValues() {
-         return {
+         const formValues = {
             species: ControllerHelper.getFieldValue(speciesEl),
             exhibit: ControllerHelper.getFieldValue(exhibitEl),
             viewingScopes: viewingScopeControl.selectedEnclosureNames(),
@@ -55,6 +58,49 @@ export class AnimalDisplayStatusControllerFactory {
             endDate: ControllerHelper.getFieldValue(endDateEl),
             message: ControllerHelper.getFieldValue(messageEl),
          };
+
+         if (closureUpdateEl) {
+            const closureUpdate = UpdateOptions.getSelectedUpdateIdentity(closureUpdateEl);
+            formValues.closureUpdateTitle = closureUpdate.title || null;
+            formValues.closureUpdateStartDate = closureUpdate.startDate || null;
+         }
+
+         return formValues;
+      }
+
+      function enableDateFields() {
+         if (startDateEl) {
+            startDateEl.disabled = false;
+         }
+
+         if (endDateEl) {
+            endDateEl.disabled = false;
+         }
+      }
+
+      function applyClosureUpdateDates() {
+         const closureUpdate = UpdateOptions.getSelectedUpdateData(closureUpdateEl);
+         const linked = Boolean(closureUpdate.title);
+
+         if (startDateEl) {
+            startDateEl.disabled = linked;
+            startDateEl.value = linked ? closureUpdate.startDate : '';
+         }
+
+         if (endDateEl) {
+            endDateEl.disabled = linked;
+            endDateEl.value = linked ? closureUpdate.endDate : '';
+         }
+      }
+
+      async function refreshClosureUpdates() {
+         if (!closureUpdateEl) {
+            return;
+         }
+
+         enableDateFields();
+         const updates = await UpdateOptions.loadActiveUpdates();
+         UpdateOptions.populateClosureUpdateDropdown(closureUpdateEl, updates);
       }
 
       function validateForm({
@@ -84,6 +130,7 @@ export class AnimalDisplayStatusControllerFactory {
       }
 
       function clearFields() {
+         enableDateFields();
          ControllerHelper.resetFormFields(formFieldEls);
          viewingScopeControl.reset();
       }
@@ -99,6 +146,13 @@ export class AnimalDisplayStatusControllerFactory {
          }
          catch (err) {
             clearFields();
+         }
+
+         try {
+            await refreshClosureUpdates();
+         }
+         catch (err) {
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.loadErrors.updates, 'is-error');
          }
       }
 
@@ -132,6 +186,13 @@ export class AnimalDisplayStatusControllerFactory {
             panelEl,
             errorMessage: Strings.loadErrors.exhibits,
          });
+
+         try {
+            await refreshClosureUpdates();
+         }
+         catch (err) {
+            ConsoleStatusPresenter.setStatus(statusEl, Strings.loadErrors.updates, 'is-error');
+         }
       }
 
       async function onSubmitClick() {
@@ -174,6 +235,7 @@ export class AnimalDisplayStatusControllerFactory {
          onUniqueFill: () => viewingScopeControl.refresh(),
       });
 
+      closureUpdateEl?.addEventListener('change', applyClosureUpdateDates);
       showButtonEl?.addEventListener('click', show);
       cancelButtonEl?.addEventListener('click', hide);
       submitButtonEl?.addEventListener('click', onSubmitClick);

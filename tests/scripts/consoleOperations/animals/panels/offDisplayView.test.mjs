@@ -20,6 +20,18 @@ function _findById(node, id) {
    return null;
 }
 
+function _idsInOrder(node, ids = []) {
+   if (node?.id) {
+      ids.push(node.id);
+   }
+
+   for (const child of node?.children ?? []) {
+      _idsInOrder(child, ids);
+   }
+
+   return ids;
+}
+
 installDomTestHooks();
 
 
@@ -36,6 +48,12 @@ test('Test_CreateOffDisplayPanel_TestDefault_ExpectPanel', () => {
    assert.ok(_findById(panelEl, 'offDisplayViewingScope'));
    assert.ok(_findById(panelEl, 'offDisplayStartDate'));
    assert.ok(_findById(panelEl, 'offDisplayEndDate'));
+   assert.ok(_findById(panelEl, 'offDisplayClosureUpdate'));
+   assert.ok(panelEl.textContent.includes(Strings.help.closureUpdateDates));
+   const fieldOrder = _idsInOrder(panelEl);
+   const closureIndex = fieldOrder.indexOf('offDisplayClosureUpdate');
+   assert.ok(fieldOrder.indexOf('offDisplayViewingScope') < closureIndex);
+   assert.ok(closureIndex < fieldOrder.indexOf('offDisplayStartDate'));
    assert.ok(_findById(panelEl, 'offDisplayMessage'));
    assert.ok(_findById(panelEl, 'submitOffDisplay'));
    assert.ok(_findById(panelEl, 'offDisplayStatus'));

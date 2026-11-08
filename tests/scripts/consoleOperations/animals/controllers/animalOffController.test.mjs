@@ -5,6 +5,7 @@ import { ConsoleOperationsClient } from '../../../../../scripts/api/consoleOpera
 import { ApiErrorMessageResolver } from '../../../../../scripts/consoleOperations/apiErrorMessageResolver.js';
 import { AnimalExhibitAutofillController } from '../../../../../scripts/consoleOperations/animals/controllers/animalExhibitAutofillController.js';
 import { AnimalOffController } from '../../../../../scripts/consoleOperations/animals/controllers/animalOffController.js';
+import { UpdateOptions } from '../../../../../scripts/consoleOperations/updates/controllers/updateOptions.js';
 import { AnimalViewingScopeController } from '../../../../../scripts/consoleOperations/animals/controllers/animalViewingScopeController.js';
 import { ControllerHelper } from '../../../../../scripts/consoleOperations/helpers/controllerHelper.js';
 import { ConsoleDropdownPopulator } from '../../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
@@ -88,6 +89,7 @@ function _createController({
    exhibit = 'Savanna',
    startDate = '2026-06-01',
    message = 'Vet care',
+   closureUpdateEl,
    createController = AnimalOffController.createAnimalOffDisplayController,
 } = {}) {
    const submitButtonEl = document.createElement('button');
@@ -95,6 +97,7 @@ function _createController({
    const speciesEl = document.createElement('input');
    const exhibitEl = document.createElement('select');
    const startDateEl = document.createElement('input');
+   const endDateEl = document.createElement('input');
    const messageEl = document.createElement('input');
    speciesEl.value = species;
    exhibitEl.value = exhibit;
@@ -111,8 +114,9 @@ function _createController({
       exhibitEl,
       viewingScopeEl: document.createElement('select'),
       startDateEl,
-      endDateEl: document.createElement('input'),
+      endDateEl,
       messageEl,
+      closureUpdateEl,
       activatePanel: () => {},
    });
 
@@ -122,6 +126,8 @@ function _createController({
       cancelButtonEl,
       speciesEl,
       exhibitEl,
+      startDateEl,
+      endDateEl,
       panelEl,
    };
 }
@@ -156,6 +162,8 @@ test('Test_CreateAnimalOffDisplayController_TestSubmitSuccess_ExpectStatus', asy
    const startDate = '2026-06-01';
    const message = 'Vet care';
    const originals = _installBaseStubs({ statuses, resets, viewingScopes });
+   const originalLoadUpdates = UpdateOptions.loadActiveUpdates;
+   UpdateOptions.loadActiveUpdates = async () => [];
 
    ConsoleOperationsClient.setAnimalOffDisplay = async (payload) => {
       assert.deepEqual(payload, {
@@ -166,12 +174,20 @@ test('Test_CreateAnimalOffDisplayController_TestSubmitSuccess_ExpectStatus', asy
          endDate: null,
          message,
          isOffDisplayForSeason: false,
+         closureUpdateTitle: null,
+         closureUpdateStartDate: null,
       });
       return { success: true, species, exhibit };
    };
 
    try {
-      const { submitButtonEl } = _createController({ species, exhibit, startDate, message });
+      const { submitButtonEl } = _createController({
+         species,
+         exhibit,
+         startDate,
+         message,
+         closureUpdateEl: document.createElement('select'),
+      });
 
       await submitButtonEl.listeners.click();
 
@@ -183,6 +199,73 @@ test('Test_CreateAnimalOffDisplayController_TestSubmitSuccess_ExpectStatus', asy
       );
       assert.ok(resets.length >= 1);
    } finally {
+      UpdateOptions.loadActiveUpdates = originalLoadUpdates;
+      _restore(originals);
+   }
+});
+
+
+test('Test_CreateAnimalOffDisplayController_TestClosureUpdate_ExpectUpdateDates', async () => {
+   const statuses = [];
+   const payloads = [];
+   const species = 'Lion';
+   const exhibit = 'Savanna';
+   const viewingScopes = ['Male Herd'];
+   const title = 'Savanna reno';
+   const startDate = '2026-11-01';
+   const endDate = '2027-03-01';
+   const option = {
+      dataset: {
+         title,
+         startDate,
+         endDate,
+      },
+   };
+   const closureUpdateEl = {
+      tagName: 'DIV',
+      selectedOptions: [option],
+      listeners: {},
+      addEventListener(name, handler) {
+         this.listeners[name] = handler;
+      },
+   };
+   const originals = _installBaseStubs({ statuses, viewingScopes });
+   const originalLoad = UpdateOptions.loadActiveUpdates;
+   UpdateOptions.loadActiveUpdates = async () => [];
+   ConsoleOperationsClient.setAnimalOffDisplay = async (payload) => {
+      payloads.push(payload);
+      return { success: true, species, exhibit };
+   };
+
+   try {
+      const { submitButtonEl, startDateEl, endDateEl } = _createController({
+         species,
+         exhibit,
+         closureUpdateEl,
+      });
+
+      closureUpdateEl.listeners.change();
+
+      assert.equal(startDateEl.disabled, true);
+      assert.equal(startDateEl.value, startDate);
+      assert.equal(endDateEl.disabled, true);
+      assert.equal(endDateEl.value, endDate);
+
+      await submitButtonEl.listeners.click();
+
+      assert.deepEqual(payloads, [{
+         species,
+         exhibit,
+         viewingScopes,
+         startDate,
+         endDate,
+         message: 'Vet care',
+         isOffDisplayForSeason: false,
+         closureUpdateTitle: title,
+         closureUpdateStartDate: startDate,
+      }]);
+   } finally {
+      UpdateOptions.loadActiveUpdates = originalLoad;
       _restore(originals);
    }
 });

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..domain.update_type import UpdateType
 from ..inputs.update_create_input import UpdateCreateInput
 from ..inputs.update_edit_input import UpdateEditInput
 from ..inputs.update_end_input import UpdateEndInput
@@ -87,6 +88,38 @@ class UpdateProvider():
 
          conn.commit()
          return cur.rowcount > 0
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_closure_update(
+         cls,
+         conn: Types.Connection,
+         title: str,
+         start_date: Types.DateKey ) -> Update | None:
+      cur = conn.cursor()
+
+      try:
+         row = cur.execute(
+            """   SELECT
+                     TITLE,
+                     DESCRIPTION,
+                     UPDATE_TYPE,
+                     START_DATE,
+                     END_DATE
+                  FROM ZooUpdate
+                  WHERE TITLE = ?
+                     AND START_DATE = ?
+                     AND UPDATE_TYPE = ?;
+            """,
+            ( title, start_date, UpdateType.CLOSURE.value ) ).fetchone()
+
+         if row == None:
+            return None
+
+         return UpdateMapper.map_record( row )
 
       finally:
          cur.close()

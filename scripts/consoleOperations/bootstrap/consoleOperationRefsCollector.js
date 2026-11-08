@@ -17,6 +17,7 @@ export class ConsoleOperationRefsCollector {
             includeDateRange: true,
             fieldSuffixes: {
                viewingScopeEl: 'ViewingScope',
+               closureUpdateEl: 'ClosureUpdate',
                messageEl: 'Message',
             },
          },

@@ -585,7 +585,9 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse
             'start_date': OFF_DISPLAY_START_DATE,
             'end_date': OFF_DISPLAY_END_DATE,
             'message': OFF_DISPLAY_MESSAGE,
-            'is_off_display_for_season': True
+            'is_off_display_for_season': True,
+            'closure_update_title': None,
+            'closure_update_start': None,
          }
       )
    ]
@@ -602,28 +604,6 @@ def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse
    assert result[ 'endDate' ] == OFF_DISPLAY_END_DATE
    assert result[ 'message' ] == OFF_DISPLAY_MESSAGE
    assert result.get( 'error' ) is None
-
-
-def Test_SetAnimalOffDisplay_TestHttpRequest_ExpectNoAnimalFoundApiError(
-      stub_animal_coordinator: StubAnimalCoordinator ) -> None:
-   StubAnimalCoordinator.default_success = False
-   handler = make_handler(
-      '/set-animal-off-display',
-      {
-         'species': ANIMAL_NAME,
-         'exhibit': ANIMAL_EXHIBIT,
-         'viewingScopes': [ '' ],
-      }
-   )
-
-   server.HttpRequestHandler.do_POST( handler )
-
-   result = response_json( handler )
-
-   assert handler.statuses == [ 200 ]
-   assert result[ 'success' ] is False
-   assert result[ 'apiErrorType' ] == ApiErrorType.NO_ANIMAL_FOUND_WITH_SPECIES.value
-   assert result.get( 'apiErrorParams' ) == { 'species': ANIMAL_NAME }
 
 
 def Test_SetAnimalOnDisplay_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(

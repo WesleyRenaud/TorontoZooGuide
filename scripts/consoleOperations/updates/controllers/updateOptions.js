@@ -8,13 +8,13 @@ export class UpdateOptions {
       return result?.updates ?? [];
    }
 
-   static populateUpdateDropdown(selectEl, updates = []) {
+   static populateUpdateDropdown(selectEl, updates = [], placeholder = Strings.placeholders.update) {
       if (selectEl?.tagName !== 'SELECT') {
          return;
       }
 
       const fragment = document.createDocumentFragment();
-      fragment.appendChild(UpdateOptionsFormatter.createPlaceholderOption(Strings.placeholders.update));
+      fragment.appendChild(UpdateOptionsFormatter.createPlaceholderOption(placeholder));
 
       updates.forEach((update) => {
          const optionEl = document.createElement('option');
@@ -32,6 +32,14 @@ export class UpdateOptions {
       });
 
       selectEl.replaceChildren(fragment);
+   }
+
+   static populateClosureUpdateDropdown(selectEl, updates = []) {
+      UpdateOptions.populateUpdateDropdown(
+         selectEl,
+         updates.filter((update) => update.type === 'Closure'),
+         Strings.placeholders.closureUpdate,
+      );
    }
 
    static getSelectedUpdateIdentity(selectEl) {

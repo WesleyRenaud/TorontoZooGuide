@@ -8,6 +8,7 @@ import { ControllerHelper } from '../../../../scripts/consoleOperations/helpers/
 import { ConsoleOptionsLoader } from '../../../../scripts/consoleOperations/options/consoleOptionsLoader.js';
 import { ConsoleDropdownPopulator } from '../../../../scripts/consoleOperations/options/consoleDropdownPopulator.js';
 import { ConsoleStatusPresenter } from '../../../../scripts/consoleOperations/shell/consoleStatusPresenter.js';
+import { UpdateOptions } from '../../../../scripts/consoleOperations/updates/controllers/updateOptions.js';
 import { Strings } from '../../../../scripts/strings.js';
 import { installDomTestHooks } from '../../helpers/domTestSetup.mjs';
 
@@ -435,6 +436,120 @@ test('Test_CreateAnimalDisplayStatusController_TestReloadOptionsThrows_ExpectCle
       ControllerHelper.reloadOptions = originalReload;
       ControllerHelper.resetFormFields = originalReset;
       ControllerHelper.bindResetValueOnChange = originalBind;
+      AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
+   }
+});
+
+
+test('Test_CreateAnimalDisplayStatusController_TestClosureUpdatesFailOnShow_ExpectErrorStatus', async () => {
+   const statuses = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalLoad = ControllerHelper.loadOptionsAndShowPanel;
+   const originalUpdates = UpdateOptions.loadActiveUpdates;
+   const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
+
+   ConsoleStatusPresenter.setStatus = (...args) => {
+      statuses.push(args);
+   };
+   ControllerHelper.loadOptionsAndShowPanel = async () => {};
+   UpdateOptions.loadActiveUpdates = async () => {
+      throw new Error('updates failed');
+   };
+   AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
+      reset: () => {},
+      refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
+   });
+
+   try {
+      const controller = AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
+         panelEl: {},
+         statusEl: {},
+         speciesEl: document.createElement('input'),
+         exhibitEl: document.createElement('select'),
+         viewingScopeEl: document.createElement('select'),
+         closureUpdateEl: document.createElement('select'),
+         activatePanel: () => {},
+         submitDisplayStatus: async () => ({ success: true }),
+         successMessage: () => 'ok',
+      });
+
+      await controller.show();
+      assert.ok(
+         statuses.some((entry) => (
+            entry[1] === Strings.loadErrors.updates
+            && entry[2] === 'is-error'
+         ))
+      );
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.loadOptionsAndShowPanel = originalLoad;
+      UpdateOptions.loadActiveUpdates = originalUpdates;
+      AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
+   }
+});
+
+
+test('Test_CreateAnimalDisplayStatusController_TestClosureUpdatesFailOnReset_ExpectErrorStatus', async () => {
+   const statuses = [];
+   const originalStatus = ConsoleStatusPresenter.setStatus;
+   const originalGet = ControllerHelper.getFieldValue;
+   const originalReload = ControllerHelper.reloadOptions;
+   const originalReset = ControllerHelper.resetFormFields;
+   const originalBind = ControllerHelper.bindResetValueOnChange;
+   const originalUpdates = UpdateOptions.loadActiveUpdates;
+   const originalScope = AnimalViewingScopeController.createAnimalViewingScopeControl;
+
+   ConsoleStatusPresenter.setStatus = (...args) => {
+      statuses.push(args);
+   };
+   ControllerHelper.getFieldValue = (el) => el?.value ?? '';
+   ControllerHelper.reloadOptions = async () => {};
+   ControllerHelper.resetFormFields = () => {};
+   ControllerHelper.bindResetValueOnChange = () => {};
+   UpdateOptions.loadActiveUpdates = async () => {
+      throw new Error('updates failed');
+   };
+   AnimalViewingScopeController.createAnimalViewingScopeControl = () => ({
+      reset: () => {},
+      refresh: async () => {},
+      selectedEnclosureNames: () => [ 'Male Herd' ],
+   });
+
+   try {
+      const submitButtonEl = document.createElement('button');
+      const speciesEl = document.createElement('input');
+      const exhibitEl = document.createElement('select');
+      speciesEl.value = 'Lion';
+      exhibitEl.value = 'Savanna';
+
+      AnimalDisplayStatusControllerFactory.createAnimalDisplayStatusController({
+         submitButtonEl,
+         panelEl: {},
+         statusEl: {},
+         speciesEl,
+         exhibitEl,
+         viewingScopeEl: document.createElement('select'),
+         closureUpdateEl: document.createElement('select'),
+         activatePanel: () => {},
+         submitDisplayStatus: async () => ({ success: true, species: 'Lion' }),
+         successMessage: () => 'ok',
+      });
+
+      await submitButtonEl.listeners.click();
+      assert.ok(
+         statuses.some((entry) => (
+            entry[1] === Strings.loadErrors.updates
+            && entry[2] === 'is-error'
+         ))
+      );
+   } finally {
+      ConsoleStatusPresenter.setStatus = originalStatus;
+      ControllerHelper.getFieldValue = originalGet;
+      ControllerHelper.reloadOptions = originalReload;
+      ControllerHelper.resetFormFields = originalReset;
+      ControllerHelper.bindResetValueOnChange = originalBind;
+      UpdateOptions.loadActiveUpdates = originalUpdates;
       AnimalViewingScopeController.createAnimalViewingScopeControl = originalScope;
    }
 });
