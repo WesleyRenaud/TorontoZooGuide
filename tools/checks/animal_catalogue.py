@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import argparse
-from datetime import date
 from html import unescape
 from pathlib import Path
 import re
-import sys
 
 from .animal_detail_image import AnimalDetailImage
 from .animal_listing import AnimalListing
@@ -15,15 +12,12 @@ from api.animals.search.species_exhibit_key import SpeciesExhibitKey
 from api.app_string_provider import AppStringProvider
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
-from api.shared.date_values import DateValues
-from .check_args_parser import CheckArgsParser
-from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .paths import Paths
 from .website_page import WebsitePage
 
 
-class AnimalListChecker():
+class AnimalCatalogue():
    PAGE = 'animals'
    WEBSITE_REGION_PATHS = (
       'africa',
@@ -41,22 +35,6 @@ class AnimalListChecker():
    }
    HEADING_RE = re.compile( r'(?is)<h1\b[^>]*>(?P<title>.*?)</h1>' )
    ANIMAL_LINK_RE = re.compile( r'(?is)<a href="/animals/(?P<name>[^"]+)" class="thm"' )
-   ALLOWED_APP_ONLY_ANIMALS = {
-      ( 'Cheetah', 'Indo-Malaya Outdoor' ),
-      ( 'Great Horned Owl', 'Americas Pavilion' ),
-      ( 'Greater Kudu', 'African Rainforest Pavilion' ),
-      ( "Grevy's Zebra", 'Canadian Domain' ),
-      ( 'Marabou Stork', 'African Rainforest Pavilion' ),
-      ( 'Ostrich', 'African Rainforest Pavilion' ),
-      ( 'Southern Ground Hornbill', 'African Rainforest Pavilion' ),
-      ( 'West Caucasian Tur', 'Indo-Malaya Outdoor' ),
-      ( 'White-Headed Vulture', 'African Rainforest Pavilion' ),
-   }
-
-
-   @classmethod
-   def parse_args( cls ) -> argparse.Namespace:
-      return CheckArgsParser.parse( AppStringProvider.format( 'reports.animalList.description' ) )
 
 
    @classmethod
@@ -194,7 +172,12 @@ class AnimalListChecker():
 
 
    @classmethod
-   def check_lists( cls, database: Path, today: date ) -> int:
+   def listings(
+         cls,
+         database: Path ) -> tuple[
+            dict[ SpeciesExhibitKey, AnimalListing ],
+            dict[ SpeciesExhibitKey, AnimalListing ],
+         ]:
       app_listings: dict[ SpeciesExhibitKey, AnimalListing ] = {}
       website_listings: dict[ SpeciesExhibitKey, AnimalListing ] = {}
 
@@ -204,47 +187,4 @@ class AnimalListChecker():
       for animal in cls.fetch_website_animals():
          cls.add_listing( website_listings, animal.exhibit, animal.species, True )
 
-      website_only = cls.missing_labels( website_listings, app_listings )
-      allowed_keys = {
-         cls.listing_key( exhibit, species, False )
-         for species, exhibit in cls.ALLOWED_APP_ONLY_ANIMALS
-      }
-      unapproved_app_listings = {
-         key: listing
-         for key, listing in app_listings.items()
-         if key not in allowed_keys
-      }
-      app_only = cls.missing_labels( unapproved_app_listings, website_listings )
-
-      print( CheckReport.heading( 'animalList', today ) )
-      print()
-      CheckReport.print_category( 'checks.websiteCatalogueNotInApp', website_only )
-      CheckReport.print_category( 'checks.appOnly', app_only )
-      return CheckReport.count_differences( website_only, app_only )
-
-
-   @classmethod
-   def main( cls ) -> CheckExitCode:
-      args = cls.parse_args()
-
-      if not args.database.exists():
-         print(
-            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
-            file=sys.stderr,
-         )
-         return CheckExitCode.COULD_NOT_FINISH
-
-      try:
-         issues = cls.check_lists( args.database, DateValues.today() )
-      except RuntimeError as error:
-         print( error, file=sys.stderr )
-         return CheckExitCode.COULD_NOT_FINISH
-
-      if issues:
-         return CheckExitCode.DIFFERENCES
-
-      return CheckExitCode.CLEAR
-
-
-if __name__ == '__main__':
-   raise SystemExit( AnimalListChecker.main() )
+      return app_listings, website_listings

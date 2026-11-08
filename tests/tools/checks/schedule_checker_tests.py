@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.checks.animal_list_checker import AnimalListChecker
+from tools.checks.app_catalogue_not_on_website_checker import AppCatalogueNotOnWebsiteChecker
 from tools.checks.check_report_parser import CheckReportParser
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
 from tools.checks.off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker
@@ -14,6 +14,7 @@ from tools.checks.restaurant_list_checker import RestaurantListChecker
 from tools.checks.schedule_checker import ScheduleChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
+from tools.checks.website_catalogue_not_in_app_checker import WebsiteCatalogueNotInAppChecker
 
 
 TODAY = date( 2026, 11, 2 )
@@ -32,9 +33,13 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       calls.append( 'app off for season' )
       return [ 'app', 'app' ]
 
-   def check_animal_catalog( database: Path, today: date ) -> int:
-      calls.append( 'catalog' )
-      return 7
+   def check_website_catalogue( database: Path, today: date ) -> int:
+      calls.append( 'website catalogue' )
+      return 4
+
+   def check_app_catalogue( database: Path, today: date ) -> int:
+      calls.append( 'app catalogue' )
+      return 3
 
    monkeypatch.setattr(
       OffForSeasonOnWebsiteNotInAppChecker,
@@ -42,12 +47,26 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       check_website,
    )
    monkeypatch.setattr( OffForSeasonInAppNotOnWebsiteChecker, 'category_lines', check_app )
-   monkeypatch.setattr( AnimalListChecker, 'check_lists', check_animal_catalog )
+   monkeypatch.setattr(
+      WebsiteCatalogueNotInAppChecker,
+      'check_lists',
+      check_website_catalogue,
+   )
+   monkeypatch.setattr(
+      AppCatalogueNotOnWebsiteChecker,
+      'check_lists',
+      check_app_catalogue,
+   )
 
    result = ScheduleChecker.check_animals( tmp_path / 'animals.db', TODAY )
 
    assert result == 10
-   assert calls == [ 'website off for season', 'app off for season', 'catalog' ]
+   assert calls == [
+      'website off for season',
+      'app off for season',
+      'website catalogue',
+      'app catalogue',
+   ]
 
 
 def Test_CheckRestaurants_TestClosureAndCatalog_ExpectOneCount(
