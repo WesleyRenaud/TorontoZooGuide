@@ -7,7 +7,9 @@ from .closure_linked_off_display_animal_mapper import ClosureLinkedOffDisplayAni
 from ..domain.animal_viewing_scope import AnimalViewingScope
 from ..domain.closure_linked_off_display_animal import ClosureLinkedOffDisplayAnimal
 from ..domain.enclosure_off_display_status import EnclosureOffDisplayStatus
+from ..domain.temporary_off_display_animal import TemporaryOffDisplayAnimal
 from .enclosure_off_display_status_mapper import EnclosureOffDisplayStatusMapper
+from .temporary_off_display_animal_mapper import TemporaryOffDisplayAnimalMapper
 from ...types import Types
 
 
@@ -184,6 +186,33 @@ class AnimalStatusProvider():
             """ )
 
          return EnclosureOffDisplayStatusMapper.map_records( data.fetchall() )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_temporary_off_display_animals(
+         cls,
+         conn: Types.Connection ) -> list[ TemporaryOffDisplayAnimal ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     SPECIES,
+                     EXHIBIT,
+                     VIEWING_SCOPE,
+                     OFF_DISPLAY_START,
+                     OFF_DISPLAY_END,
+                     CLOSURE_UPDATE_TITLE,
+                     CLOSURE_UPDATE_START
+                  FROM AnimalStatus
+                  WHERE IS_OFF_DISPLAY = 1
+                     AND OFF_DISPLAY_FOR_SEASON = 0;
+            """ )
+
+         return TemporaryOffDisplayAnimalMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()

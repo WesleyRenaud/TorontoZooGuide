@@ -77,6 +77,7 @@ export class CheckStrings {
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
       setOffDisplayForSeasonFrom: 'Set off display for the season from ',
       setOffDisplayThrough: 'Set off display through ',
+      setOnDisplay: 'Set on display.',
       setOnDisplayForSeason: 'Set on display for the season.',
       status: {
          allClear: 'All clear',
@@ -93,6 +94,7 @@ export class CheckStrings {
          summary: 'Toronto Zoo check: ',
       },
       temporarilyNotViewable: 'temporarily not viewable',
+      temporaryOffDisplayAppOnly: 'Off display in the app and not on the website',
       temporaryOffDisplayWebsiteOnly: 'Temporarily off display on the website and not in the app',
       websiteCatalogueNotInApp: 'On the website catalogue and not in the app',
       websiteDatesCompared: 'Website dates compared from ',

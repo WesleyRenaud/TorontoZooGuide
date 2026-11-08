@@ -31,6 +31,7 @@ from ..domain.enclosure_off_display_status import EnclosureOffDisplayStatus
 from ..domain.itinerary_animal_records_filter_builder import ItineraryAnimalRecordsFilterBuilder
 from ..domain.seasonal_off_display_animal import SeasonalOffDisplayAnimal
 from ..domain.seasonal_off_display_animal_builder import SeasonalOffDisplayAnimalBuilder
+from ..domain.temporary_off_display_animal import TemporaryOffDisplayAnimal
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..itinerary.itinerary_animals_builder import ItineraryAnimalsBuilder
 from ...models import Animal
@@ -106,6 +107,12 @@ class AnimalCoordinator():
    @classmethod
    def get_off_display_enclosure_statuses( cls ) -> list[ EnclosureOffDisplayStatus ]:
       return AnimalStatusProvider.fetch_off_display_enclosure_statuses(
+         RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_temporary_off_display_animals( cls ) -> list[ TemporaryOffDisplayAnimal ]:
+      return AnimalStatusProvider.fetch_temporary_off_display_animals(
          RequestConnectionProvider.get() )
 
 

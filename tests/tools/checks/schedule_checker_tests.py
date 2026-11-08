@@ -15,6 +15,7 @@ from tools.checks.restaurant_list_checker import RestaurantListChecker
 from tools.checks.schedule_checker import ScheduleChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
+from tools.checks.temporary_off_display_in_app_not_on_website_checker import TemporaryOffDisplayInAppNotOnWebsiteChecker
 from tools.checks.temporary_off_display_on_website_not_in_app_checker import TemporaryOffDisplayOnWebsiteNotInAppChecker
 from tools.checks.website_catalogue_not_in_app_checker import WebsiteCatalogueNotInAppChecker
 
@@ -43,6 +44,10 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       calls.append( 'temporary off display' )
       return 0
 
+   def check_temporary_app( database: Path, today: date ) -> int:
+      calls.append( 'temporary off display app' )
+      return 0
+
    def check_website_catalogue( database: Path, today: date ) -> int:
       calls.append( 'website catalogue' )
       return 4
@@ -68,6 +73,11 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       check_temporary,
    )
    monkeypatch.setattr(
+      TemporaryOffDisplayInAppNotOnWebsiteChecker,
+      'check_schedules',
+      check_temporary_app,
+   )
+   monkeypatch.setattr(
       WebsiteCatalogueNotInAppChecker,
       'check_lists',
       check_website_catalogue,
@@ -86,6 +96,7 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       'app off for season',
       'closure off display',
       'temporary off display',
+      'temporary off display app',
       'website catalogue',
       'app catalogue',
    ]

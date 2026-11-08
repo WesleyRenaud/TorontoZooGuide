@@ -363,6 +363,7 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.closureOffDisplayReturningTomorrow' ),
          AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' ),
          AppStringProvider.format( 'checks.offForSeasonAppOnly' ),
+         AppStringProvider.format( 'checks.temporaryOffDisplayAppOnly' ),
          AppStringProvider.format( 'checks.temporaryOffDisplayWebsiteOnly' ),
       )
 
