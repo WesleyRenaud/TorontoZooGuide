@@ -5,6 +5,7 @@ from datetime import date
 from pathlib import Path
 import sys
 
+from .animal_detail_image import AnimalDetailImage
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.domain.seasonal_off_display_animal import SeasonalOffDisplayAnimal
 from api.app_string_provider import AppStringProvider
@@ -71,6 +72,10 @@ class OffForSeasonInAppNotOnWebsiteChecker():
             'format.middleDotPair',
             first=species,
             second=exhibit,
+         ),
+         CheckReport.detail_item(
+            CheckReport.text( 'checks.photo' )
+            + AnimalDetailImage.source( exhibit, species )
          ),
          CheckReport.detail_item( CheckReport.text( 'checks.setOnDisplayForSeason' ) ),
       ] )

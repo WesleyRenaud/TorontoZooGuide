@@ -7,6 +7,7 @@ import sqlite3
 
 import pytest
 
+from tools.checks.animal_detail_image import AnimalDetailImage
 from tools.checks.check_report import CheckReport
 from tools.checks.off_for_season_in_app_not_on_website_checker import OffForSeasonInAppNotOnWebsiteChecker as CHECKER
 from tools.checks.website_page import WebsitePage
@@ -235,6 +236,7 @@ def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
 
    assert result == 1
    assert f'  { STORK }' in output
+   assert AnimalDetailImage.source( 'Africa Savanna', STORK ) in output
    assert CheckReport.text( 'checks.setOnDisplayForSeason' ) in output
    assert TORTOISE not in output
    assert species == [ ( TORTOISE, ) ]
