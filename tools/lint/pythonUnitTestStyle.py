@@ -271,6 +271,38 @@ def check_helper_grouping( test_path: Path ) -> list[ str ]:
    return violations
 
 
+def check_definitions_inside_tests( test_path: Path ) -> list[ str ]:
+   display_path = get_display_path( test_path )
+
+   try:
+      tree = ast.parse( test_path.read_text() )
+   except SyntaxError as error:
+      return [ f'{ display_path }: { error }' ]
+
+   violations: list[ str ] = []
+
+   def visit( node: ast.AST, test_name: str ) -> None:
+      for child in ast.iter_child_nodes( node ):
+         if isinstance( child, ast.ClassDef ):
+            violations.append(
+               f'{ display_path }:{ child.lineno }: do not define class { child.name } '
+               f'inside { test_name }' )
+
+            for member in child.body:
+               if isinstance( member, ( ast.FunctionDef, ast.AsyncFunctionDef ) ):
+                  violations.append(
+                     f'{ display_path }:{ member.lineno }: do not define method { member.name } '
+                     f'inside { test_name }' )
+
+         visit( child, test_name )
+
+   for node in tree.body:
+      if isinstance( node, ast.FunctionDef ) and node.name.startswith( 'Test_' ):
+         visit( node, node.name )
+
+   return violations
+
+
 def iter_test_files( include: list[ str ] ) -> list[ Path ]:
    paths: set[ Path ] = set()
 
@@ -297,6 +329,7 @@ def main() -> int:
       violations.extend( check_test_function_names( path ) )
       violations.extend( check_test_spacing( path ) )
       violations.extend( check_helper_grouping( path ) )
+      violations.extend( check_definitions_inside_tests( path ) )
 
    if not violations:
       return 0

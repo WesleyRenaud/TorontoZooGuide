@@ -83,6 +83,10 @@ CAROUSEL_WALK_NODE = MapLocationWalkNode(
    snap_distance_px=5.0 )
 
 
+class _UnknownStop:
+   kind = ScheduleItemKind.ENTRANCE
+
+
 @pytest.fixture
 def stub_viewing_spot_walk_nodes( monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
@@ -152,9 +156,6 @@ def Test_Resolve_TestAttractionStops_ExpectWalkNodeIds(
 
 
 def Test_WalkNodeIdForRouteStop_TestUnknownKind_ExpectNone() -> None:
-   class _UnknownStop:
-      kind = ScheduleItemKind.ENTRANCE
-
    result = LoopWalkEndpointNodeIdsResolver._walk_node_id_for_route_stop(
       _UnknownStop() )
 

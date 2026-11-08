@@ -12,6 +12,12 @@ import api.shared.date_values as date_values
 from api.types import Types
 
 
+class _FixedDatetime( datetime ):
+   @classmethod
+   def now( cls, tz: datetime.tzinfo | None = None ) -> datetime:
+      return datetime( 2032, 3, 1, 0, 0, 0 )
+
+
 @pytest.mark.parametrize(
    'value, expected',
    [
@@ -229,16 +235,11 @@ def Test_ResolveVisitCalendarYear_TestExplicitYear_ExpectValue() -> None:
 
 
 def Test_ResolveVisitCalendarYear_TestNone_ExpectModuleDatetime( monkeypatch: pytest.MonkeyPatch ) -> None:
-   class Fixed( datetime ):
-      @classmethod
-      def now( cls, tz: datetime.tzinfo | None = None ) -> datetime:
-         return datetime( 2032, 3, 1, 0, 0, 0 )
-
-   monkeypatch.setattr( date_values, 'datetime', Fixed )
+   monkeypatch.setattr( date_values, 'datetime', _FixedDatetime )
 
    year = CalendarDates.resolve_visit_calendar_year( None )
 
-   assert year == Fixed.now().year
+   assert year == _FixedDatetime.now().year
 
 
 def Test_VisitTargetDate_TestMonthName_ExpectDate() -> None:

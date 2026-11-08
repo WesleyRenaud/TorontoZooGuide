@@ -3,6 +3,7 @@ from __future__ import annotations
 import calendar
 from datetime import date, datetime, time, timedelta
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from ..app_string_provider import AppStringProvider
 from .enums.position import Position
@@ -11,6 +12,9 @@ from ..types import Types
 
 
 class DateValues:
+   EASTERN_TIME = ZoneInfo( 'America/Toronto' )
+
+
    @staticmethod
    def parse_datetime_value( value: str | None ) -> datetime | None:
       if value == None:
@@ -244,6 +248,11 @@ class DateValues:
          return None
 
       return parsed.isoformat()
+
+
+   @staticmethod
+   def today() -> date:
+      return datetime.now( DateValues.EASTERN_TIME ).date()
 
 
    @staticmethod

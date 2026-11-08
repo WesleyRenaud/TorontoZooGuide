@@ -8,6 +8,7 @@ import sys
 
 from .animal_list_checker import AnimalListChecker
 from api.app_string_provider import AppStringProvider
+from api.shared.date_values import DateValues
 from .attraction_list_checker import AttractionListChecker
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
@@ -128,7 +129,7 @@ class ScheduleChecker():
       try:
          return cls.run_checks(
             args.database,
-            date.today(),
+            DateValues.today(),
             WildEncounterScheduleChecker.check_schedules,
             GuardiansTalkScheduleChecker.check_schedules,
             cls.check_animals,

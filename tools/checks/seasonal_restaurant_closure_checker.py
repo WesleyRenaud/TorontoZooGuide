@@ -11,6 +11,7 @@ from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restaurants.domain.seasonal_restaurant import SeasonalRestaurant
+from api.shared.date_values import DateValues
 from .attraction_card import AttractionCard
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
@@ -165,7 +166,7 @@ class SeasonalRestaurantClosureChecker():
          return CheckExitCode.COULD_NOT_FINISH
 
       try:
-         issues = cls.check_schedules( args.database, date.today() )
+         issues = cls.check_schedules( args.database, DateValues.today() )
       except RuntimeError as error:
          print( error, file=sys.stderr )
          return CheckExitCode.COULD_NOT_FINISH

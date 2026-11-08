@@ -16,6 +16,20 @@ from api.shared.enums.position import Position
 from api.shared.operating_hours import OperatingHours
 from api.types import Types
 
+
+class _RecordingSink:
+   saved_calls: list[ object ] = []
+
+
+   def save(
+         self,
+         conn: Types.Connection,
+         blockers: list[ TimeBlock ],
+         stop_slots: list[ LoopScheduleSlot ] ) -> bool:
+      self.saved_calls.append( ( conn, blockers, stop_slots ) )
+      return True
+
+
 def _animal_record(
       *,
       species: str,
@@ -415,16 +429,7 @@ def Test_AssignContiguousEndingBy_TestSegmentOverflow_ExpectNone(
 
 def Test_Save_TestDefaultSlotSink_ExpectDelegates(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   saved_calls: list[ object ] = []
-
-   class _RecordingSink:
-      def save(
-            self,
-            conn: Types.Connection,
-            blockers: list[ TimeBlock ],
-            stop_slots: list[ LoopScheduleSlot ] ) -> bool:
-         saved_calls.append( ( conn, blockers, stop_slots ) )
-         return True
+   _RecordingSink.saved_calls = []
 
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.loop_schedule_slot_assigner.LoopScheduleSlotSink',
@@ -436,4 +441,4 @@ def Test_Save_TestDefaultSlotSink_ExpectDelegates(
       [] )
 
    assert result is True
-   assert len( saved_calls ) == 1
+   assert len( _RecordingSink.saved_calls ) == 1

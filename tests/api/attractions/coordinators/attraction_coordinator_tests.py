@@ -24,8 +24,6 @@ from api.attractions.search.attractions_matching_query_builder import Attraction
 from api.attractions.status.attraction_hours_schedule_status_builder import AttractionHoursScheduleStatusBuilder
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.models.attraction import Attraction
-from api.shared.enums.position import Position
-from api.types import Types
 
 
 VISIT_DAY = 15
@@ -68,6 +66,170 @@ TIME_BOUNDS = AttractionHoursScheduleTimeBounds(
       operating_date=START_DATE ) )
 
 
+class _Mutations:
+   def __init__(
+         self,
+         captured: dict[ str, object ] | None = None,
+         name: str | None = None ) -> None:
+      self.captured = captured
+      self.name = name
+
+
+   def set_as_closed(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      return self._closed( name, start_date, end_date, message )
+
+
+   def set_closure_override(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      return self._closed( name, start_date, end_date, message )
+
+
+   def set_opening_schedule(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def replace_opening_schedule_overlaps(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def trim_opening_schedule_overlaps(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return self._opening(
+         name,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   def _closed(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         message: str ) -> bool:
+      if self.captured != None:
+         self.captured[ 'args' ] = ( name, start_date, end_date, message )
+         return True
+
+      return name == self.name
+
+
+   def _opening(
+         self,
+         name: str,
+         start_date: str,
+         end_date: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      if self.captured != None:
+         self.captured[ 'args' ] = (
+            name,
+            start_date,
+            end_date,
+            monday,
+            tuesday,
+            wednesday,
+            thursday,
+            friday,
+            saturday,
+            sunday,
+            holidays_only,
+            message )
+         return True
+
+      return name == self.name
+
+
+class _AttractionContext:
+   target_date = VISIT_DATE
+
+
 def _attraction( name: str ) -> Attraction:
    return Attraction(
       name=name,
@@ -95,13 +257,10 @@ def Test_GetAttractions_TestProvidersAndBuilder_ExpectAttractions(
    override_records = [ object() ]
    captured: dict[ str, object ] = {}
 
-   class _Context:
-      target_date = VISIT_DATE
-
    monkeypatch.setattr(
       AttractionBuilder,
       'resolve_context',
-      lambda **_kwargs: _Context() )
+      lambda **_kwargs: _AttractionContext() )
    monkeypatch.setattr(
       AttractionProvider,
       'fetch_attraction_records',
@@ -227,17 +386,10 @@ def Test_SetAttractionAsClosed_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_as_closed(
-            self,
-            name: str,
-            start_date: Types.DateInput,
-            end_date: Types.DateInput,
-            message: str ) -> bool:
-         captured[ 'args' ] = ( name, start_date, end_date, message )
-         return True
-
-   monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      attraction_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = AttractionCoordinator.set_attraction_as_closed(
       ATTRACTION_NAME,
@@ -410,17 +562,10 @@ def Test_SetAttractionClosureOverride_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_closure_override(
-            self,
-            name: str,
-            start_date: Types.DateInput,
-            end_date: Types.DateInput,
-            message: str ) -> bool:
-         captured[ 'args' ] = ( name, start_date, end_date, message )
-         return True
-
-   monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      attraction_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = AttractionCoordinator.set_attraction_closure_override(
       ATTRACTION_NAME,
@@ -436,12 +581,10 @@ def Test_SetAttractionOpeningSchedule_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    captured: dict[ str, object ] = {}
 
-   class StubMutations:
-      def set_opening_schedule( self, *args: object ) -> bool:
-         captured[ 'args' ] = args
-         return True
-
-   monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      attraction_coordinator_module,
+      '_mutations',
+      _Mutations( captured ) )
 
    result = AttractionCoordinator.set_attraction_opening_schedule(
       ATTRACTION_NAME,
@@ -475,11 +618,10 @@ def Test_SetAttractionOpeningSchedule_TestMutations_ExpectDelegated(
 
 def Test_ReplaceAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   class StubMutations:
-      def replace_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ Position.FIRST ] == ATTRACTION_NAME
-
-   monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      attraction_coordinator_module,
+      '_mutations',
+      _Mutations( name=ATTRACTION_NAME ) )
 
    result = AttractionCoordinator.replace_attraction_opening_schedule_overlaps(
       ATTRACTION_NAME,
@@ -500,11 +642,10 @@ def Test_ReplaceAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
 
 def Test_TrimAttractionOpeningScheduleOverlaps_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   class StubMutations:
-      def trim_opening_schedule_overlaps( self, *args: object ) -> bool:
-         return args[ Position.FIRST ] == ATTRACTION_NAME
-
-   monkeypatch.setattr( attraction_coordinator_module, '_mutations', StubMutations() )
+   monkeypatch.setattr(
+      attraction_coordinator_module,
+      '_mutations',
+      _Mutations( name=ATTRACTION_NAME ) )
 
    result = AttractionCoordinator.trim_attraction_opening_schedule_overlaps(
       ATTRACTION_NAME,

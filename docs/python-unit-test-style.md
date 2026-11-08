@@ -80,6 +80,31 @@ def Test_AsBoolean( value: Any, expected: bool ) -> None:
    ...
 ```
 
+## No classes or methods inside tests
+
+Do not define a class, or a method on a class, inside a `Test_` function. Put the class with the other module-level stubs, before the tests.
+
+```python
+# ❌ BAD
+def Test_Today_TestUtcAfterMidnight_ExpectEasternDate() -> None:
+   class Clock( datetime ):
+      @classmethod
+      def now( cls, tz: tzinfo | None = None ) -> datetime:
+         ...
+
+# ✅ GOOD
+class _Clock( datetime ):
+   @classmethod
+   def now( cls, tz: tzinfo | None = None ) -> datetime:
+      ...
+
+
+def Test_Today_TestUtcAfterMidnight_ExpectEasternDate() -> None:
+   ...
+```
+
+Enforced by `tools/lint/pythonUnitTestStyle.py`.
+
 ## Helpers and tests grouped
 
 Keep this top-to-bottom order. Do not place helpers, constants, or fixtures between `Test_` functions.

@@ -221,6 +221,61 @@ def _timed_itinerary() -> Itinerary:
       departure_time=DEPARTURE_TIME )
 
 
+class _SavedAnimalCoordinator:
+   animals: list[ Animal ] = []
+
+
+   @staticmethod
+   def get_animals_for_saved_itinerary( **_kwargs: object ) -> list[ Animal ]:
+      return _SavedAnimalCoordinator.animals
+
+
+class _SavedAttractionCoordinator:
+   attractions: list[ Attraction ] = []
+
+
+   @staticmethod
+   def get_attractions_for_saved_itinerary( **_kwargs: object ) -> list[ Attraction ]:
+      return _SavedAttractionCoordinator.attractions
+
+
+class _SavedGuardiansCoordinator:
+   talks: list[ GuardiansTalk ] = []
+
+
+   @staticmethod
+   def get_guardians_talks_for_saved_itinerary(
+         _talk_rows: list[ ItineraryGuardiansTalkRecord ] ) -> list[ GuardiansTalk ]:
+      return _SavedGuardiansCoordinator.talks
+
+
+class _SavedWildEncounterCoordinator:
+   encounters: list[ WildEncounter ] = []
+
+
+   @staticmethod
+   def get_wild_encounters_for_saved_itinerary(
+         _encounter_rows: list[ ItineraryWildEncounterRecord ] ) -> list[ WildEncounter ]:
+      return _SavedWildEncounterCoordinator.encounters
+
+
+class _PreparedSlotSink:
+   slots: list[ LoopScheduleSlot ] = []
+
+
+   def __init__( self, *, persist: bool ) -> None:
+      self.persist = persist
+      self.slots = list( _PreparedSlotSink.slots )
+
+
+class _ViewabilityContext:
+   calendar_month = 6
+   day_of_month = 15
+   target_date = VISIT_DATE
+   temp = 22.0
+   sigma = 2
+
+
 def Test_IsIsolatedAfterAdding_TestNotIsolatedOnCurrentItinerary_ExpectFalse(
       long_wait_conn: sqlite3.Connection,
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -598,35 +653,17 @@ def Test_BuildItineraryFromProposedItems_TestCoordinatorStubs_ExpectBuiltItinera
    built_animals = [ _lion_animal() ]
    built_attractions = [ _splash_attraction() ]
    built_talks = [ ISOLATED_TALK ]
-   built_encounters: list[ object ] = []
-
-   class _AnimalCoordinator:
-      @staticmethod
-      def get_animals_for_saved_itinerary( **_kwargs: object ) -> list[ Animal ]:
-         return built_animals
-
-   class _AttractionCoordinator:
-      @staticmethod
-      def get_attractions_for_saved_itinerary( **_kwargs: object ) -> list[ Attraction ]:
-         return built_attractions
-
-   class _GuardiansCoordinator:
-      @staticmethod
-      def get_guardians_talks_for_saved_itinerary(
-            _talk_rows: list[ ItineraryGuardiansTalkRecord ] ) -> list[ GuardiansTalk ]:
-         return built_talks
-
-   class _WildEncounterCoordinator:
-      @staticmethod
-      def get_wild_encounters_for_saved_itinerary(
-            _encounter_rows: list[ ItineraryWildEncounterRecord ] ) -> list[ WildEncounter ]:
-         return built_encounters
+   built_encounters: list[ WildEncounter ] = []
+   _SavedAnimalCoordinator.animals = built_animals
+   _SavedAttractionCoordinator.attractions = built_attractions
+   _SavedGuardiansCoordinator.talks = built_talks
+   _SavedWildEncounterCoordinator.encounters = built_encounters
 
    context = {
-      'animal_coordinator': _AnimalCoordinator,
-      'attraction_coordinator': _AttractionCoordinator,
-      'guardians_coordinator': _GuardiansCoordinator,
-      'wild_encounter_coordinator': _WildEncounterCoordinator,
+      'animal_coordinator': _SavedAnimalCoordinator,
+      'attraction_coordinator': _SavedAttractionCoordinator,
+      'guardians_coordinator': _SavedGuardiansCoordinator,
+      'wild_encounter_coordinator': _SavedWildEncounterCoordinator,
       'visit_date_temp': None,
    }
 
@@ -693,11 +730,7 @@ def Test_PackAnimalsInMemory_TestHappyPathWithStubs_ExpectSlotsAndCoverageApplie
       old_likelihood=None,
       new_likelihood=100 )
    slot = LoopScheduleSlot( animal_row, '10:15 AM', '10:23 AM' )
-
-   class _SlotSink:
-      def __init__( self, *, persist: bool ) -> None:
-         self.persist = persist
-         self.slots = [ slot ]
+   _PreparedSlotSink.slots = [ slot ]
 
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.bulk_reschedule_long_wait_simulator.ItineraryProvider.fetch_saved_itinerary',
@@ -758,7 +791,7 @@ def Test_PackAnimalsInMemory_TestHappyPathWithStubs_ExpectSlotsAndCoverageApplie
       lambda schedule_windows, loop_pins: schedule_windows )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.bulk_reschedule_long_wait_simulator.LoopScheduleSlotSink',
-      _SlotSink )
+      _PreparedSlotSink )
    monkeypatch.setattr(
       'api.itinerary.scheduling.bulk.bulk_reschedule_long_wait_simulator.MasterRouteLoopScheduler.schedule',
       lambda *args, **kwargs: schedule_calls.append( ( args, kwargs ) ) or ( [], WINDOW_ANCHOR_SECONDS ) )
@@ -1667,17 +1700,10 @@ def Test_GetAnimalsViewableOnDay_TestProvidersAndBuilder_ExpectAnimals(
    filtered_records = [ { 'species': SPECIES, 'filtered': True } ]
    captured: dict[ str, Any ] = {}
 
-   class _Context:
-      calendar_month = 6
-      day_of_month = 15
-      target_date = VISIT_DATE
-      temp = 22.0
-      sigma = 2
-
    monkeypatch.setattr(
       AnimalViewabilityContextBuilder,
       'resolve',
-      lambda **_kwargs: _Context() )
+      lambda **_kwargs: _ViewabilityContext() )
    monkeypatch.setattr(
       AnimalViewableOnDayProvider,
       'fetch_animals_viewable_on_day_records',

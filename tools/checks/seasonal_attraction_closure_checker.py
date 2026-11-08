@@ -10,6 +10,7 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.attractions.domain.seasonal_attraction import SeasonalAttraction
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.date_values import DateValues
 from .attraction_list_checker import AttractionListChecker
 from .attraction_listing import AttractionListing
 from .check_args_parser import CheckArgsParser
@@ -186,7 +187,7 @@ class SeasonalAttractionClosureChecker():
          return CheckExitCode.COULD_NOT_FINISH
 
       try:
-         issues = cls.check_schedules( args.database, date.today() )
+         issues = cls.check_schedules( args.database, DateValues.today() )
       except RuntimeError as error:
          print( error, file=sys.stderr )
          return CheckExitCode.COULD_NOT_FINISH
