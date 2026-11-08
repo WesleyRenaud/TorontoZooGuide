@@ -371,16 +371,31 @@ class CheckEmailRenderer():
          cls.check_kind( 'animalList' ),
          cls.check_kind( 'seasonalOffDisplay' ),
       )
-      by_kind = {
-         section.kind: section
-         for section in sections
-         if section.kind in kinds
-      }
-      return [
-         by_kind[ kind ]
+      grouped: dict[ str, list[ Section ] ] = {
+         kind: []
          for kind in kinds
-         if kind in by_kind
-      ]
+      }
+
+      for section in sections:
+         if section.kind in grouped:
+            grouped[ section.kind ].append( section )
+
+      merged = []
+
+      for kind in kinds:
+         parts = grouped[ kind ]
+
+         if parts == []:
+            continue
+
+         categories = [
+            category
+            for section in parts
+            for category in section.categories
+         ]
+         merged.append( Section( kind, parts[ 0 ].day, parts[ 0 ].note, categories ) )
+
+      return merged
 
 
    @classmethod

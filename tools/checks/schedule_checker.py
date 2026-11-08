@@ -6,9 +6,9 @@ from datetime import date
 from pathlib import Path
 import sys
 
-from .animal_list_checker import AnimalListChecker
 from api.app_string_provider import AppStringProvider
 from api.shared.date_values import DateValues
+from .app_catalogue_not_on_website_checker import AppCatalogueNotOnWebsiteChecker
 from .attraction_list_checker import AttractionListChecker
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
@@ -23,6 +23,7 @@ from .seasonal_attraction_closure_checker import SeasonalAttractionClosureChecke
 from .seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from .seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from .seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
+from .website_catalogue_not_in_app_checker import WebsiteCatalogueNotInAppChecker
 from .wild_encounter_schedule_checker import WildEncounterScheduleChecker
 from .zoo_hours_checker import ZooHoursChecker
 
@@ -38,7 +39,8 @@ class ScheduleChecker():
       return (
          OffForSeasonOnWebsiteNotInAppChecker.check_schedules( database, today )
          + OffForSeasonInAppNotOnWebsiteChecker.check_schedules( database, today )
-         + AnimalListChecker.check_lists( database, today )
+         + WebsiteCatalogueNotInAppChecker.check_lists( database, today )
+         + AppCatalogueNotOnWebsiteChecker.check_lists( database, today )
       )
 
 

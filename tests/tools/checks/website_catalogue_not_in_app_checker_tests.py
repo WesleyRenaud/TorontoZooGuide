@@ -9,9 +9,10 @@ import pytest
 
 from api.animals.domain.animal_species_exhibit import AnimalSpeciesExhibit
 from api.app_string_provider import AppStringProvider
+from tools.checks.animal_catalogue import AnimalCatalogue
 from tools.checks.animal_detail_image import AnimalDetailImage
-from tools.checks.animal_list_checker import AnimalListChecker as animal_list_checker
 from tools.checks.check_report import CheckReport
+from tools.checks.website_catalogue_not_in_app_checker import WebsiteCatalogueNotInAppChecker
 from tools.checks.website_page import WebsitePage
 
 
@@ -75,7 +76,7 @@ def _check(
       database: Path,
       today: date,
       capsys: pytest.CaptureFixture[ str ] ) -> tuple[ int, str ]:
-   result = animal_list_checker.check_lists( database, today )
+   result = WebsiteCatalogueNotInAppChecker.check_lists( database, today )
    return result, capsys.readouterr().out
 
 
@@ -92,23 +93,7 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
    assert result == 1
    assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 1 ) in output
    assert '  ' + AppStringProvider.format( 'format.middleDotPair', first='Tiger', second='Africa Savanna' ) in output
-   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
-
-
-def Test_CheckLists_TestAppOnly_ExpectAppMiss(
-      tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ],
-      monkeypatch: pytest.MonkeyPatch ) -> None:
-   database = tmp_path / 'animals.db'
-   _write_database( database, [ LION, 'Penguin' ] )
-   _install_pages( monkeypatch )
-
-   result, output = _check( database, TODAY, capsys )
-
-   assert result == 1
-   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
-   assert '  Penguin' in output
-   assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 0 ) in output
+   assert CheckReport.text( 'checks.appCatalogueNotOnWebsite' ) not in output
 
 
 def Test_CheckLists_TestNormalizedNames_ExpectMatched(
@@ -142,7 +127,6 @@ def Test_CheckLists_TestNormalizedNames_ExpectMatched(
 
    assert result == 0
    assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 0 ) in output
-   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
 
 def Test_CheckLists_TestKnownWebsiteAliases_ExpectMatched(
@@ -203,82 +187,15 @@ def Test_CheckLists_TestDifferentSpellingsOnTwoExhibits_ExpectTwoListings(
    assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 2 ) in output
    assert '  ' + AppStringProvider.format( 'format.middleDotPair', first=LAU, second='Africa Savanna' ) in output
    assert '  ' + AppStringProvider.format( 'format.middleDotPair', first='Lau banded iguana', second='Australasia Pavilion' ) in output
-   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
-
-
-def Test_CheckLists_TestBothSides_ExpectIssueCount(
-      tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ],
-      monkeypatch: pytest.MonkeyPatch ) -> None:
-   database = tmp_path / 'animals.db'
-   _write_database( database, [ LION, 'Penguin' ] )
-   _install_pages( monkeypatch, { 'tundra': [ 'Tiger' ] } )
-
-   result, output = _check( database, TODAY, capsys )
-
-   assert result == 2
-   assert output.startswith( f'Animal list check for { TODAY.isoformat() }.' )
-   assert '  Tiger' in output
-   assert '  Penguin' in output
-
-
-def Test_CheckLists_TestZebraInCanada_ExpectAllowed(
-      tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ],
-      monkeypatch: pytest.MonkeyPatch ) -> None:
-   database = tmp_path / 'animals.db'
-   _write_database( database, [ LION, "Grevy's Zebra" ] )
-   connection = sqlite3.connect( database )
-   connection.execute(
-      'INSERT INTO Enclosure ( SPECIES, EXHIBIT ) VALUES ( ?, ? )',
-      ( "Grevy's Zebra", 'Canadian Domain' ),
-   )
-   connection.commit()
-   connection.close()
-   _install_pages( monkeypatch, { 'africa': [ "Grevy's Zebra" ] } )
-
-   result, output = _check( database, TODAY, capsys )
-
-   assert result == 0
-   assert '  ' + AppStringProvider.format( 'format.middleDotPair', first="Grevy's Zebra", second='Canadian Domain' ) not in output
-   assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 0 ) in output
-   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
-
-
-@pytest.mark.parametrize(
-   ( 'species', 'exhibit' ),
-   sorted( animal_list_checker.ALLOWED_APP_ONLY_ANIMALS ),
-)
-def Test_CheckLists_TestAllowedPairAndOtherExhibit_ExpectOnlyOtherExhibitFlagged(
-      tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ],
-      monkeypatch: pytest.MonkeyPatch,
-      species: str,
-      exhibit: str ) -> None:
-   monkeypatch.setattr(
-      animal_list_checker,
-      'load_species',
-      lambda database: [
-         AnimalSpeciesExhibit( species=species, exhibit=exhibit ),
-         AnimalSpeciesExhibit( species=species, exhibit='Other Exhibit' ),
-      ],
-   )
-   monkeypatch.setattr( animal_list_checker, 'fetch_website_animals', lambda: [] )
-
-   result, output = _check( tmp_path / 'animals.db', TODAY, capsys )
-
-   assert result == 1
-   assert '  ' + AppStringProvider.format( 'format.middleDotPair', first=species, second='Other Exhibit' ) in output
-   assert '  ' + AppStringProvider.format( 'format.middleDotPair', first=species, second=exhibit ) not in output
 
 
 def Test_CheckLists_TestAllowedPairMissingFromApp_ExpectWebsiteMiss(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr( animal_list_checker, 'load_species', lambda database: [] )
+   monkeypatch.setattr( AnimalCatalogue, 'load_species', lambda database: [] )
    monkeypatch.setattr(
-      animal_list_checker,
+      AnimalCatalogue,
       'fetch_website_animals',
       lambda: [
          AnimalSpeciesExhibit( species="Grevy's Zebra", exhibit='Canadian Domain' ),
@@ -296,9 +213,9 @@ def Test_CheckLists_TestWebsiteMissAtKnownExhibit_ExpectAppPhoto(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr( animal_list_checker, 'load_species', lambda database: [] )
+   monkeypatch.setattr( AnimalCatalogue, 'load_species', lambda database: [] )
    monkeypatch.setattr(
-      animal_list_checker,
+      AnimalCatalogue,
       'fetch_website_animals',
       lambda: [
          AnimalSpeciesExhibit( species='Red Panda', exhibit='Africa Savanna' ),
@@ -311,16 +228,3 @@ def Test_CheckLists_TestWebsiteMissAtKnownExhibit_ExpectAppPhoto(
    assert result == 1
    assert photo in output
    assert 'Eurasia Wilds' not in output
-
-
-def Test_ParseWebsiteAnimals_TestHeadingWithBreak_ExpectExhibitName() -> None:
-   page = _page( [ LION ], 'Americas Outdoor<br />Mayan Temple Ruins' )
-
-   listings = animal_list_checker.parse_website_animals( page )
-
-   assert listings == [
-      AnimalSpeciesExhibit(
-         species=LION,
-         exhibit='Americas Outdoor Mayan Temple Ruins',
-      ),
-   ]

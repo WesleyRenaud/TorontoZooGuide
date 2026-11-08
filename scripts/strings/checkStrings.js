@@ -1,5 +1,6 @@
 export class CheckStrings {
    static checks = {
+      appCatalogueNotOnWebsite: 'In the app catalogue and not on the website',
       appDatesNotBookable: 'App dates not bookable: ',
       appDatesNotOnWebsite: 'App dates not on the website: ',
       appOnly: 'In the app and not on the website',

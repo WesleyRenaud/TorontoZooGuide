@@ -171,6 +171,33 @@ def Test_RenderHtml_TestAnimalCatalogAndOffDisplay_ExpectOneSection() -> None:
    assert html.index( '>Encounters<' ) < html.index( 'Capybara' )
 
 
+def Test_RenderHtml_TestSplitAnimalCatalog_ExpectBothSides() -> None:
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'animalList', date( 2026, 11, 4 ) ) }
+
+      { CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Tiger', second='Africa Savanna' ) }
+
+      { CheckReport.heading( 'animalList', date( 2026, 11, 4 ) ) }
+
+      { CheckReport.category_line( 'checks.appCatalogueNotOnWebsite', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Penguin', second='Africa Savanna' ) }
+
+      { CheckReportParser.format_counts( animals=2 ) }
+
+      { CheckReportParser.format_error_count( 2 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+
+   assert html.count( '>Animals<' ) == 2
+   assert 'Animal list' not in html
+   assert 'Tiger' in html
+   assert 'Penguin' in html
+   assert html.index( 'Tiger' ) < html.index( 'Penguin' )
+
+
 def Test_EmbedLocalImages_TestAppPhoto_ExpectShortContentId() -> None:
    photo = AnimalDetailImage.source( 'Africa Savanna', 'Red Panda' )
    embedded = CheckEmailRenderer.embed_local_images(
