@@ -24,6 +24,7 @@ from .seasonal_attraction_closure_checker import SeasonalAttractionClosureChecke
 from .seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from .seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from .seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
+from .temporary_off_display_in_app_not_on_website_checker import TemporaryOffDisplayInAppNotOnWebsiteChecker
 from .temporary_off_display_on_website_not_in_app_checker import TemporaryOffDisplayOnWebsiteNotInAppChecker
 from .website_catalogue_not_in_app_checker import WebsiteCatalogueNotInAppChecker
 from .wild_encounter_schedule_checker import WildEncounterScheduleChecker
@@ -43,6 +44,7 @@ class ScheduleChecker():
          + OffForSeasonInAppNotOnWebsiteChecker.check_schedules( database, today )
          + ClosureOffDisplayExtensionChecker.check_schedules( database, today )
          + TemporaryOffDisplayOnWebsiteNotInAppChecker.check_schedules( database, today )
+         + TemporaryOffDisplayInAppNotOnWebsiteChecker.check_schedules( database, today )
          + WebsiteCatalogueNotInAppChecker.check_lists( database, today )
          + AppCatalogueNotOnWebsiteChecker.check_lists( database, today )
       )
