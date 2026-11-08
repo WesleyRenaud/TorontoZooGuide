@@ -9,6 +9,7 @@ import pytest
 
 from api.animals.domain.animal_species_exhibit import AnimalSpeciesExhibit
 from api.app_string_provider import AppStringProvider
+from tools.checks.animal_detail_image import AnimalDetailImage
 from tools.checks.animal_list_checker import AnimalListChecker as animal_list_checker
 from tools.checks.check_report import CheckReport
 from tools.checks.website_page import WebsitePage
@@ -89,7 +90,7 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 1 ) in output
    assert '  ' + AppStringProvider.format( 'format.middleDotPair', first='Tiger', second='Africa Savanna' ) in output
    assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
@@ -107,7 +108,7 @@ def Test_CheckLists_TestAppOnly_ExpectAppMiss(
    assert result == 1
    assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert '  Penguin' in output
-   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 0 ) in output
 
 
 def Test_CheckLists_TestNormalizedNames_ExpectMatched(
@@ -140,7 +141,7 @@ def Test_CheckLists_TestNormalizedNames_ExpectMatched(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 0 ) in output
    assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
 
@@ -199,7 +200,7 @@ def Test_CheckLists_TestDifferentSpellingsOnTwoExhibits_ExpectTwoListings(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 2
-   assert CheckReport.category_line( 'checks.websiteOnly', 2 ) in output
+   assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 2 ) in output
    assert '  ' + AppStringProvider.format( 'format.middleDotPair', first=LAU, second='Africa Savanna' ) in output
    assert '  ' + AppStringProvider.format( 'format.middleDotPair', first='Lau banded iguana', second='Australasia Pavilion' ) in output
    assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
@@ -240,7 +241,7 @@ def Test_CheckLists_TestZebraInCanada_ExpectAllowed(
 
    assert result == 0
    assert '  ' + AppStringProvider.format( 'format.middleDotPair', first="Grevy's Zebra", second='Canadian Domain' ) not in output
-   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 0 ) in output
    assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
 
 
@@ -287,8 +288,29 @@ def Test_CheckLists_TestAllowedPairMissingFromApp_ExpectWebsiteMiss(
    result, output = _check( tmp_path / 'animals.db', TODAY, capsys )
 
    assert result == 1
-   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 1 ) in output
    assert '  ' + AppStringProvider.format( 'format.middleDotPair', first="Grevy's Zebra", second='Canadian Domain' ) in output
+
+
+def Test_CheckLists_TestWebsiteMissAtKnownExhibit_ExpectAppPhoto(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr( animal_list_checker, 'load_species', lambda database: [] )
+   monkeypatch.setattr(
+      animal_list_checker,
+      'fetch_website_animals',
+      lambda: [
+         AnimalSpeciesExhibit( species='Red Panda', exhibit='Africa Savanna' ),
+      ],
+   )
+
+   result, output = _check( tmp_path / 'animals.db', TODAY, capsys )
+   photo = AnimalDetailImage.source( 'Africa Savanna', 'Red Panda' )
+
+   assert result == 1
+   assert photo in output
+   assert 'Eurasia Wilds' not in output
 
 
 def Test_ParseWebsiteAnimals_TestHeadingWithBreak_ExpectExhibitName() -> None:

@@ -117,7 +117,8 @@ def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
    report = CheckReportParser.parse_report( CLEAR_REPORT )
 
    assert report.error_count == 1
-   assert report.counts[ 0 ] == Count( label='Encounters', count=0 )
+   assert report.counts[ 0 ] == Count( label='Animals', count=0 )
+   assert report.counts[ 1 ] == Count( label='Encounters', count=0 )
    assert report.counts[ -1 ] == Count( label='Zoo hours', count=1 )
    assert report.sections[ 0 ].kind == 'Wild encounter schedule'
    assert report.sections[ 0 ].note.startswith( CheckReport.text( 'checks.bookingDatesCompared' ) )
@@ -152,7 +153,7 @@ def Test_RenderHtml_TestAnimalCatalogAndOffDisplay_ExpectOneSection() -> None:
    )
    html = CheckEmailRenderer.render_html( body, 1 )
 
-   assert html.count( '>Animals<' ) == 3
+   assert html.count( '>Animals<' ) == 2
    assert 'Animal list' not in html
    assert 'Animals off display' not in html
    assert CheckReport.text( 'checks.websiteOnly' ) in html
@@ -164,9 +165,22 @@ def Test_RenderHtml_TestAnimalCatalogAndOffDisplay_ExpectOneSection() -> None:
    assert CheckReport.text( 'checks.offForSeasonWebsiteOnly' ) in html
    assert 'Polar Bear' in html
    assert '<img ' not in html
-   assert html.index( 'Polar Bear' ) < html.index( '>Encounters<' )
+   assert html.index( '>Animals<' ) < html.index( '>Encounters<' )
+   assert html.index( '>Encounters<' ) < html.index( 'Polar Bear' )
    assert html.index( '>Encounters<' ) < html.index( 'Marabou Stork' )
    assert html.index( '>Encounters<' ) < html.index( 'Capybara' )
+
+
+def Test_EmbedLocalImages_TestAppPhoto_ExpectShortContentId() -> None:
+   photo = AnimalDetailImage.source( 'Africa Savanna', 'Red Panda' )
+   embedded = CheckEmailRenderer.embed_local_images(
+      f'<img src="{ CheckEmailRenderer.image_src( photo ) }">'
+   )
+   image = embedded.images[ 0 ]
+
+   assert image.content_id.endswith( '@zoo.guide>' )
+   assert 'ip6.arpa' not in image.content_id
+   assert image.src() in embedded.html
 
 
 def Test_RenderHtml_TestCorrectedOffDisplay_ExpectPhotoExhibitAndCorrection() -> None:
@@ -198,7 +212,7 @@ def Test_RenderHtml_TestCorrectedOffDisplay_ExpectPhotoExhibitAndCorrection() ->
    label = f'<span style="color:{ colors.foreground };">Harris&#x27;s Hawk</span>'
    correction = CheckReport.text( 'checks.setOffDisplayForSeasonFrom' )
    assert image in html
-   assert html.index( image ) < html.index( '>Encounters<' )
+   assert html.index( '>Encounters<' ) < html.index( image )
    assert html.index( image ) < html.index( label ) < html.index( correction )
    assert '</tr>' in html[ html.index( image ):html.index( label ) ]
    assert f'border:3px solid { colors.foreground }' in html
@@ -262,17 +276,67 @@ def Test_RenderHtml_TestOneErrorFixed_ExpectFixedHeadline() -> None:
    report = CheckReportParser.parse_report( body )
    html = CheckEmailRenderer.render_html( body, 1 )
 
+   detected = CheckReportParser.format_detected( 3, 1 )
+
    assert report.fixed_count == 1
    assert report.error_count == 2
-   assert fixed in html
+   assert detected in html
+   assert fixed not in html
    assert CheckReport.text( 'checks.status.differ' ) in html
+   danger = ColorTokens.color( ColorToken.DANGER )
+   assert f'color:{ danger };">{ detected }' in html
+
+
+def Test_RenderHtml_TestFixedAndCatalogueMiss_ExpectGreenFixAndDangerMiss() -> None:
+   fixed_title = CheckReport.text( 'checks.offForSeasonAppOnly' )
+   missed_title = CheckReport.text( 'checks.websiteCatalogueNotInApp' )
+   photo = AnimalDetailImage.source( 'Africa Savanna', 'Tiger' )
+   body = textwrap.dedent(
+      f"""\
+      Seasonal off-display check for 2026-11-04.
+
+      { CheckReport.category_line( 'checks.offForSeasonAppOnly', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Warthog', second='Africa Savanna' ) }
+
+      Animal list check for 2026-11-04.
+
+      { CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Tiger', second='Africa Savanna' ) }
+          { CheckReport.text( 'checks.photo' ) }{ photo }
+
+      { CheckReport.category_line( 'checks.appOnly', 0 ) }
+
+      { CheckReportParser.format_fixed_count( 1 ) }
+
+      { CheckReportParser.format_counts( animals=1 ) }
+
+      { CheckReportParser.format_error_count( 1 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+   green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
+   danger = ColorTokens.color( ColorToken.DANGER )
+   detected = CheckReportParser.format_detected( 2, 1 )
+
+   assert f'color:{ danger };">{ detected }' in html
+   assert html.index( '>Encounters<' ) < html.index( 'Warthog' )
+   assert f'color:{ green };">{ fixed_title }' in html
+   assert f'color:{ danger };">{ missed_title }' in html
+   assert CheckReport.text( 'checks.appOnly' ) not in html
+   colors = ExhibitRegionColors.exhibit_colors( 'Africa Savanna' )
+   assert f'color:{ colors.foreground };">Tiger' in html
+   image = CheckEmailRenderer.image_src( photo )
+   assert image in html
+   assert html.index( image ) < html.index( '>Tiger<' )
 
 
 def Test_RenderHtml_TestIssues_ExpectStyledDetails() -> None:
    html = CheckEmailRenderer.render_html( CLEAR_REPORT, 1 )
 
    assert CheckReport.text( 'checks.status.allClear' ) not in html
-   assert CheckReportParser.format_fixed_count( 0 ) in html
+   assert CheckReport.text( 'checks.appOnly' ) not in html
+   assert CheckReportParser.format_detected( 1, 0 ) in html
+   assert CheckReportParser.format_fixed_count( 0 ) not in html
    assert 'Wednesday, November 4, 2026' in html
    assert 'Zoo hours' in html
    assert '2027-01-01 to 2027-03-12' in html
@@ -377,7 +441,8 @@ def Test_SendSummary_TestMessage_ExpectLoginAndSend(
    assert message[ 'From' ] == send_summary.EMAIL_ADDRESS
    assert message[ 'To' ] == send_summary.EMAIL_ADDRESS
    html = message.get_body( preferencelist=( 'html', ) ).get_content()
-   assert CheckReportParser.format_fixed_count( 0 ) in html
+   assert CheckReportParser.format_error_count( 2 ) in html
+   assert CheckReportParser.format_fixed_count( 0 ) not in html
    assert ColorTokens.color( ColorToken.BRAND_PRIMARY ) in html
    assert 'Toronto Zoo Guide' in html
 
@@ -533,16 +598,16 @@ def Test_SummaryLine_TestNothingFixedWithErrors_ExpectErrorCount() -> None:
       + '\n'
    )
 
-   assert send_summary.summary_line( body ) == CheckReportParser.format_error_count( 2 )
+   assert send_summary.summary_line( body ) == CheckReportParser.format_detected( 2, 0 )
 
 
 def Test_Main_TestNoArgs_ExpectCheckEmailed(
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   summary = CheckReportParser.format_fixed_count( 1 )
+   summary = CheckReportParser.format_detected( 2, 1 )
    report = (
       'Zoo hours check for 2026-11-04.\n\n'
-      + summary
+      + CheckReportParser.format_fixed_count( 1 )
       + '\n\n'
       + CheckReportParser.format_error_count( 1 )
       + '\n'

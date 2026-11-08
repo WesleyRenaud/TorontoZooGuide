@@ -29,7 +29,7 @@ class WebsitePage():
 
 
    @classmethod
-   def fetch_text( cls, url: str ) -> str:
+   def fetch_bytes( cls, url: str ) -> bytes:
       result = subprocess.run(
          [ 'curl', '-fsS', '--max-time', '30', '-A', cls.USER_AGENT, url ],
          check=False,
@@ -40,7 +40,12 @@ class WebsitePage():
          detail = result.stderr.decode( errors='replace' ).strip()
          raise RuntimeError( detail or AppStringProvider.format( 'checks.curlExited' ) )
 
-      return result.stdout.decode()
+      return result.stdout
+
+
+   @classmethod
+   def fetch_text( cls, url: str ) -> str:
+      return cls.fetch_bytes( url ).decode()
 
 
    @classmethod

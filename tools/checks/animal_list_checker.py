@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import sys
 
+from .animal_detail_image import AnimalDetailImage
 from .animal_listing import AnimalListing
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.domain.animal_species_exhibit import AnimalSpeciesExhibit
@@ -18,6 +19,7 @@ from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
+from .paths import Paths
 from .website_page import WebsitePage
 
 
@@ -154,6 +156,16 @@ class AnimalListChecker():
 
 
    @classmethod
+   def app_photo( cls, key: SpeciesExhibitKey ) -> str:
+      photo = AnimalDetailImage.source( key.exhibit, key.species )
+
+      if ( Paths.ROOT / photo ).is_file():
+         return photo
+
+      return ''
+
+
+   @classmethod
    def missing_labels(
          cls,
          source: dict[ SpeciesExhibitKey, AnimalListing ],
@@ -164,11 +176,19 @@ class AnimalListChecker():
          if key in other:
             continue
 
-         labels.append( AppStringProvider.format(
+         label = AppStringProvider.format(
             'format.middleDotPair',
             first=cls.listing_label( listing.species ),
             second=listing.exhibit,
-         ) )
+         )
+         photo = cls.app_photo( key )
+
+         if photo != '':
+            label += '\n' + CheckReport.detail_item(
+               CheckReport.text( 'checks.photo' ) + photo
+            )
+
+         labels.append( label )
 
       return sorted( labels, key=str.casefold )
 
@@ -196,11 +216,10 @@ class AnimalListChecker():
       }
       app_only = cls.missing_labels( unapproved_app_listings, website_listings )
 
-      CheckReport.report_differences(
-         CheckReport.heading( 'animalList', today ),
-         website_only,
-         app_only,
-      )
+      print( CheckReport.heading( 'animalList', today ) )
+      print()
+      CheckReport.print_category( 'checks.websiteCatalogueNotInApp', website_only )
+      CheckReport.print_category( 'checks.appOnly', app_only )
       return CheckReport.count_differences( website_only, app_only )
 
 

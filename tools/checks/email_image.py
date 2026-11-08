@@ -17,7 +17,7 @@ class EmailImage:
    @classmethod
    def from_file_uri( cls, src: str ) -> EmailImage:
       return cls(
-         content_id=make_msgid(),
+         content_id=make_msgid( domain='zoo.guide' ),
          path=Path( unquote( urlparse( unescape( src ) ).path ) ),
       )
 

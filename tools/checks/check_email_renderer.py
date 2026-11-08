@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import replace
 from html import escape
 from pathlib import Path
 import re
 
-from api.animals.search.species_exhibit_key import SpeciesExhibitKey
 from api.app_string_provider import AppStringProvider
 from api.shared.date_values import DateValues
 from .category import Category
@@ -79,18 +77,23 @@ class CheckEmailRenderer():
             summary=AppStringProvider.format( 'checks.status.didNotFinish' ),
          )
 
-      if error_count == 0:
+      if error_count == 0 and fixed_count == 0:
          return StatusCopy(
             headline_color=ColorTokens.color( ColorToken.BRAND_PRIMARY ),
             headline=AppStringProvider.format( 'checks.status.noneDetected' ),
             summary=AppStringProvider.format( 'checks.status.websiteMatches' ),
          )
 
-      headline = CheckReportParser.format_fixed_count( fixed_count )
+      if error_count == 0:
+         return StatusCopy(
+            headline_color=ColorTokens.color( ColorToken.BRAND_PRIMARY ),
+            headline=CheckReportParser.format_detected( fixed_count, fixed_count ),
+            summary=AppStringProvider.format( 'checks.status.websiteMatches' ),
+         )
 
       return StatusCopy(
          headline_color=ColorTokens.color( ColorToken.DANGER ),
-         headline=headline,
+         headline=CheckReportParser.format_detected( error_count + fixed_count, fixed_count ),
          summary=AppStringProvider.format( 'checks.status.differ' ),
       )
 
@@ -189,7 +192,9 @@ class CheckEmailRenderer():
       if separator == '':
          return cls.text( title )
 
-      return f'{ cls.text( species ) }{ separator }{ cls.exhibit_pill( exhibit ) }'
+      colors = ExhibitRegionColors.exhibit_colors( exhibit )
+      name = f'<span style="color:{ colors.foreground };">{ cls.text( species ) }</span>'
+      return f'{ name }{ separator }{ cls.exhibit_pill( exhibit ) }'
 
 
    @classmethod
@@ -251,12 +256,11 @@ class CheckEmailRenderer():
 
    @classmethod
    def corrected_animal_rows( cls, item: DetailItem ) -> str:
-      species, separator, exhibit = item.title.rpartition(
+      species, _, exhibit = item.title.rpartition(
          AppStringProvider.format( 'format.middleDotJoin' )
       )
       colors = ExhibitRegionColors.exhibit_colors( exhibit )
-      name = f'<span style="color:{ colors.foreground };">{ cls.text( species ) }</span>'
-      label = f'{ name }{ separator }{ cls.exhibit_pill( exhibit ) }'
+      label = cls.item_label( item.title )
       photo_url, details = cls.photo_and_details( item.details )
       photo = ''
 
@@ -288,10 +292,11 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' ),
          AppStringProvider.format( 'checks.offForSeasonAppOnly' ),
       )
+      photo, _details = cls.photo_and_details( item.details )
 
       if (
-         category_title in corrected
-         and AppStringProvider.format( 'format.middleDotJoin' ) in item.title
+         AppStringProvider.format( 'format.middleDotJoin' ) in item.title
+         and ( category_title in corrected or photo != '' )
       ):
          return cls.corrected_animal_rows( item )
 
@@ -299,13 +304,32 @@ class CheckEmailRenderer():
 
 
    @classmethod
-   def category_block( cls, category: Category ) -> str:
-      number_color = (
-         ColorTokens.color( ColorToken.BRAND_PRIMARY )
-         if category.count == 0
-         else ColorTokens.color( ColorToken.DANGER )
+   def fixed_category( cls, title: str ) -> bool:
+      return title in (
+         AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' ),
+         AppStringProvider.format( 'checks.offForSeasonAppOnly' ),
       )
-      title_cell = cls.markup( 'category_title', title=cls.text( category.title ) )
+
+
+   @classmethod
+   def category_block( cls, category: Category ) -> str:
+      if category.count == 0:
+         return ''
+
+      number_color = ColorTokens.color( ColorToken.BRAND_PRIMARY )
+      title_color = ColorTokens.color( ColorToken.BRAND_PRIMARY_DARK )
+
+      if category.count > 0 and cls.fixed_category( category.title ):
+         title_color = ColorTokens.color( ColorToken.BRAND_PRIMARY )
+      elif category.count > 0:
+         number_color = ColorTokens.color( ColorToken.DANGER )
+         title_color = ColorTokens.color( ColorToken.DANGER )
+
+      title_cell = cls.markup(
+         'category_title',
+         title=cls.text( category.title ),
+         title_color=title_color,
+      )
       count_badge = cls.markup(
          'category_count',
          number_color=number_color,
@@ -404,81 +428,12 @@ class CheckEmailRenderer():
 
 
    @classmethod
-   def animal_key( cls, title: str ) -> SpeciesExhibitKey:
-      species, _, exhibit = title.rpartition(
-         AppStringProvider.format( 'format.middleDotJoin' )
-      )
-      return SpeciesExhibitKey.from_values( species, exhibit )
-
-
-   @classmethod
-   def off_for_season_on_website_not_in_app( cls, sections: list[ Section ] ) -> list[ SpeciesExhibitKey ]:
-      kind = cls.check_kind( 'seasonalOffDisplay' )
-      title = AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' )
-      return [
-         cls.animal_key( item.title )
-         for section in sections
-         if section.kind == kind
-         for category in section.categories
-         if category.title == title
-         for item in category.items
-      ]
-
-
-   @classmethod
-   def without_off_for_season_on_website_not_in_app( cls, report: Report ) -> Report:
-      keys = set( cls.off_for_season_on_website_not_in_app( report.sections ) )
-      return replace(
-         report,
-         sections=[
-            replace(
-               section,
-               categories=[
-                  category
-                  for category in section.categories
-                  if keys.isdisjoint(
-                     cls.animal_key( item.title )
-                     for item in category.items
-                  )
-               ],
-            )
-            for section in report.sections
-         ],
-      )
-
-
-   @classmethod
-   def off_for_season_on_website_not_in_app_card( cls, sections: list[ Section ] ) -> str:
-      keys = set( cls.off_for_season_on_website_not_in_app( sections ) )
-      return ''.join(
-         cls.section_card( replace(
-            section,
-            kind=AppStringProvider.format( 'site.nav.animals' ),
-            categories=[
-               category
-               for category in section.categories
-               if not keys.isdisjoint(
-                  cls.animal_key( item.title )
-                  for item in category.items
-               )
-            ],
-         ) )
-         for section in sections
-         if not keys.isdisjoint(
-            cls.animal_key( item.title )
-            for category in section.categories
-            for item in category.items
-         )
-      )
-
-
-   @classmethod
    def render_html( cls, body: str, exit_code: int ) -> str:
       report = CheckReportParser.parse_report( body )
       day = report.sections[ 0 ].day
       status = cls.status_copy( exit_code, report.error_count, report.fixed_count )
       date_line = cls.markup( 'date_line', day=cls.text( DateValues.format_display_weekday( day ) ) )
-      sections = cls.notable_sections( cls.without_off_for_season_on_website_not_in_app( report ) )
+      sections = cls.notable_sections( report )
       content = (
          cls.markup( 'header', title_padding='6px 24px 2px', date_line=date_line )
          + cls.markup(
@@ -487,7 +442,6 @@ class CheckEmailRenderer():
             headline=cls.text( status.headline ),
             summary=cls.text( status.summary ),
          )
-         + cls.off_for_season_on_website_not_in_app_card( report.sections )
          + cls.count_grid( report.counts )
          + ''.join( cls.section_card( section ) for section in sections )
       )
