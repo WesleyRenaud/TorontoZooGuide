@@ -4,6 +4,13 @@ from ...types import Types
 
 
 class ExhibitClosedStatus:
+   exhibit: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey
+   message: str
+   is_closed_for_season: bool
+
+
    def __init__(
          self,
          exhibit: str,

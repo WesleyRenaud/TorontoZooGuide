@@ -4,6 +4,15 @@ from ...types import Types
 
 
 class AttractionHoursSchedule:
+   attraction: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey | None
+   weekday_start_time: Types.ScheduleTimeKey
+   weekday_end_time: Types.ScheduleTimeKey
+   weekend_holiday_start_time: Types.ScheduleTimeKey
+   weekend_holiday_end_time: Types.ScheduleTimeKey
+
+
    def __init__(
          self,
          attraction: str,

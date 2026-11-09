@@ -7,6 +7,23 @@ from ..types import Types
 
 
 class ItineraryTransportation:
+   name: str
+   old_likelihood: int | None
+   likelihood: int | None
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+   x_coord: float | None
+   y_coord: float | None
+   main_station: str | None
+   legs: list[ ItineraryTransportationLeg ] | None
+   stations: list[ ItineraryTransportationStation ] | None
+   route: str | None
+   route_marker_sequences: list[ list[ str ] ] | None
+   added_as_attraction: bool
+   route_duration_minutes: int | None
+   bulk_transit_evaluated: bool
+
+
    def __init__(
          self,
          name: str,

@@ -5,6 +5,18 @@ from ..types import Types
 
 
 class TransportationDiff:
+   name: str
+   old_likelihood: int | None
+   new_likelihood: int | None
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+   legs: list[ ItineraryTransportationLeg ] | None
+   route: str | None
+   route_marker_sequences: list[ list[ str ] ] | None
+   added_as_attraction: bool
+   bulk_transit_evaluated: bool
+
+
    def __init__(
          self,
          name: str,

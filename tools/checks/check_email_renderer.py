@@ -386,6 +386,7 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
          AppStringProvider.format( 'checks.setOpenForSeason' ),
          AppStringProvider.format( 'checks.setScheduleFrom' ),
+         AppStringProvider.format( 'checks.removedSchedule' ),
       )
 
       if category.items == []:
@@ -545,21 +546,30 @@ class CheckEmailRenderer():
 
    @classmethod
    def notable_sections( cls, report: Report ) -> list[ Section ]:
+      sections = report.sections
       notable = []
-      animals = cls.combined_animals( report.sections )
-      attractions = cls.combined_attractions( report.sections )
+      animals = cls.combined_animals( sections )
+      attractions = cls.combined_attractions( sections )
       animals_placed = False
       attractions_placed = False
       folded_animals = {
          section.kind
-         for section in cls.animal_sections( report.sections )
+         for section in cls.animal_sections( sections )
       }
       folded_attractions = {
          section.kind
-         for section in cls.attraction_sections( report.sections )
+         for section in cls.attraction_sections( sections )
       }
+      schedule_sections = {
+         section.kind: section
+         for section in cls.grouped_sections( sections, [
+            cls.check_kind( 'wildEncounter' ),
+            cls.check_kind( 'guardiansTalk' ),
+         ] )
+      }
+      placed_schedules: set[ str ] = set()
 
-      for section in report.sections:
+      for section in sections:
          if section.kind in folded_animals:
             if animals is not None and not animals_placed:
                notable.append( animals )
@@ -571,6 +581,16 @@ class CheckEmailRenderer():
             if attractions is not None and not attractions_placed:
                notable.append( attractions )
                attractions_placed = True
+
+            continue
+
+         if section.kind in schedule_sections:
+            if section.kind not in placed_schedules:
+               placed_schedules.add( section.kind )
+               card = schedule_sections[ section.kind ]
+
+               if cls.has_issue( card.categories ):
+                  notable.append( card )
 
             continue
 

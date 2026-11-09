@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from api_test_support.coordinator_call import CoordinatorCall
+
 from api.models.region import Region
 from api.models.region_with_exhibits import RegionWithExhibits
 
@@ -9,6 +11,13 @@ from api.models.region_with_exhibits import RegionWithExhibits
 class StubExhibitCoordinator():
    instances: list[ StubExhibitCoordinator ] = []
    default_success: bool = True
+   region_name: str
+   exhibit_name: str
+   animal_names: list[ str ]
+   exhibit_names: list[ str ]
+   closed_exhibit_names: list[ str ]
+   calls: list[ CoordinatorCall ]
+   closed: bool
 
 
    def __init__(
@@ -24,7 +33,7 @@ class StubExhibitCoordinator():
       self.animal_names = animal_names
       self.exhibit_names = exhibit_names
       self.closed_exhibit_names = closed_exhibit_names
-      self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
+      self.calls = []
       self.closed = False
       StubExhibitCoordinator.instances.append( self )
 
@@ -34,17 +43,17 @@ class StubExhibitCoordinator():
 
 
    def get_exhibits_in_region( self, region: str ) -> list[ str ]:
-      self.calls.append( ( 'get_exhibits_in_region', { 'region': region } ) )
+      self.calls.append( CoordinatorCall( 'get_exhibits_in_region', { 'region': region } ) )
       return [ self.exhibit_name ]
 
 
    def get_regions( self ) -> list[ Region ]:
-      self.calls.append( ( 'get_regions', {} ) )
+      self.calls.append( CoordinatorCall( 'get_regions', {} ) )
       return [ Region( name=self.region_name, has_exhibits=True ) ]
 
 
    def get_names_of_animals_in_exhibit( self, exhibit: str ) -> list[ str ]:
-      self.calls.append( ( 'get_names_of_animals_in_exhibit', { 'exhibit': exhibit } ) )
+      self.calls.append( CoordinatorCall( 'get_names_of_animals_in_exhibit', { 'exhibit': exhibit } ) )
       return list( self.animal_names )
 
 
@@ -54,20 +63,20 @@ class StubExhibitCoordinator():
          day: int,
          year: int ) -> list[ str ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_closed_exhibits_for_visit_date',
             {
                'month': month,
                'day': day,
                'year': year,
-            }
+            },
          )
       )
       return list( self.closed_exhibit_names )
 
 
    def get_regions_with_exhibits( self ) -> list[ RegionWithExhibits ]:
-      self.calls.append( ( 'get_regions_with_exhibits', {} ) )
+      self.calls.append( CoordinatorCall( 'get_regions_with_exhibits', {} ) )
       return [
          RegionWithExhibits(
             name=self.region_name,
@@ -76,20 +85,20 @@ class StubExhibitCoordinator():
 
 
    def get_exhibits( self ) -> list[ str ]:
-      self.calls.append( ( 'get_exhibits', {} ) )
+      self.calls.append( CoordinatorCall( 'get_exhibits', {} ) )
       return list( self.exhibit_names )
 
 
    def get_closed_exhibit_options( self, **kwargs: Any ) -> list[ str ]:
-      self.calls.append( ( 'get_closed_exhibit_options', kwargs ) )
+      self.calls.append( CoordinatorCall( 'get_closed_exhibit_options', kwargs ) )
       return list( self.closed_exhibit_names )
 
 
    def set_exhibit_as_closed( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_exhibit_as_closed', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_exhibit_as_closed', kwargs ) )
       return StubExhibitCoordinator.default_success
 
 
    def set_exhibit_as_open( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_exhibit_as_open', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_exhibit_as_open', kwargs ) )
       return StubExhibitCoordinator.default_success

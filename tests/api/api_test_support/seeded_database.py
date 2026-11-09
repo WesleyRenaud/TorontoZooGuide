@@ -6,8 +6,12 @@ from api.types import Types
 
 
 class SeededDatabase:
+   conn: Types.Connection | None
+   _closed: bool
+
+
    def __init__( self, connection: Types.Connection ) -> None:
-      self.conn: Types.Connection | None = connection
+      self.conn = connection
       self._closed = False
 
 

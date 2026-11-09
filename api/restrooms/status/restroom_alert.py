@@ -4,6 +4,12 @@ from ...types import Types
 
 
 class RestroomAlert:
+   restroom: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey | None
+   message: str
+
+
    def __init__(
          self,
          restroom: str,

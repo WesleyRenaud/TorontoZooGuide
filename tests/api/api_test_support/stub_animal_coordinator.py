@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from api_test_support.coordinator_call import CoordinatorCall
+
 from api.animals.domain.animal_viewing_scope import AnimalViewingScope
 from api.models.animal import Animal
 
@@ -9,6 +11,12 @@ from api.models.animal import Animal
 class StubAnimalCoordinator():
    instances: list[ StubAnimalCoordinator ] = []
    default_success: bool = True
+   animal_name: str
+   animal_exhibit: str
+   species_names: list[ str ]
+   viewability_likelihood: int
+   calls: list[ CoordinatorCall ]
+   closed: bool
 
 
    def __init__(
@@ -22,7 +30,7 @@ class StubAnimalCoordinator():
       self.animal_exhibit = animal_exhibit
       self.species_names = species_names
       self.viewability_likelihood = viewability_likelihood
-      self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
+      self.calls = []
       self.closed = False
       StubAnimalCoordinator.instances.append( self )
 
@@ -32,7 +40,7 @@ class StubAnimalCoordinator():
 
 
    def get_animals_viewable_on_day( self, **kwargs: Any ) -> list[ Animal ]:
-      self.calls.append( ( 'get_animals_viewable_on_day', kwargs ) )
+      self.calls.append( CoordinatorCall( 'get_animals_viewable_on_day', kwargs ) )
       return [
          Animal(
             species=self.animal_name,
@@ -46,12 +54,12 @@ class StubAnimalCoordinator():
          species: str,
          exhibit: str ) -> list[ AnimalViewingScope ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_animal_viewing_scopes',
             {
                'species': species,
                'exhibit': exhibit,
-            }
+            },
          )
       )
       return [
@@ -62,29 +70,29 @@ class StubAnimalCoordinator():
 
    def get_animal_information( self, species: str, exhibit: str ) -> Animal:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_animal_information',
             {
                'species': species,
                'exhibit': exhibit,
-            }
+            },
          )
       )
       return Animal( species=species, exhibit=exhibit )
 
 
    def get_animal_species_names( self ) -> list[ str ]:
-      self.calls.append( ( 'get_animal_species_names', {} ) )
+      self.calls.append( CoordinatorCall( 'get_animal_species_names', {} ) )
       return list( self.species_names )
 
 
    def get_exhibits_for_species( self, species: str ) -> list[ str ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_exhibits_for_species',
             {
                'species': species,
-            }
+            },
          )
       )
       return [ self.animal_exhibit ]
@@ -95,12 +103,12 @@ class StubAnimalCoordinator():
          exhibit: str | None,
          for_season_only: bool ) -> list[ str ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_off_display_animal_options',
             {
                'exhibit': exhibit,
                'for_season_only': for_season_only,
-            }
+            },
          )
       )
       return list( self.species_names )
@@ -111,12 +119,12 @@ class StubAnimalCoordinator():
          species: str,
          for_season_only: bool ) -> list[ str ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_off_display_exhibit_options',
             {
                'species': species,
                'for_season_only': for_season_only,
-            }
+            },
          )
       )
       return [ self.animal_exhibit ]
@@ -128,13 +136,13 @@ class StubAnimalCoordinator():
          exhibit: str,
          for_season_only: bool ) -> list[ AnimalViewingScope ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_off_display_viewing_scope_options',
             {
                'species': species,
                'exhibit': exhibit,
                'for_season_only': for_season_only,
-            }
+            },
          )
       )
       return [
@@ -145,11 +153,11 @@ class StubAnimalCoordinator():
 
    def get_animal_visibility_schedule_options( self, exhibit: str | None = None ) -> list[ str ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_animal_visibility_schedule_options',
             {
                'exhibit': exhibit,
-            }
+            },
          )
       )
       return list( self.species_names )
@@ -157,11 +165,11 @@ class StubAnimalCoordinator():
 
    def get_animal_visibility_schedule_exhibit_options( self, species: str ) -> list[ str ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_animal_visibility_schedule_exhibit_options',
             {
                'species': species,
-            }
+            },
          )
       )
       return [ self.animal_exhibit ]
@@ -169,11 +177,11 @@ class StubAnimalCoordinator():
 
    def get_animal_viewing_alert_options( self, exhibit: str | None = None ) -> list[ str ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_animal_viewing_alert_options',
             {
                'exhibit': exhibit,
-            }
+            },
          )
       )
       return list( self.species_names )
@@ -181,41 +189,41 @@ class StubAnimalCoordinator():
 
    def get_animal_viewing_alert_exhibit_options( self, species: str ) -> list[ str ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_animal_viewing_alert_exhibit_options',
             {
                'species': species,
-            }
+            },
          )
       )
       return [ self.animal_exhibit ]
 
 
    def set_animal_as_off_display( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_animal_as_off_display', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_animal_as_off_display', kwargs ) )
       return StubAnimalCoordinator.default_success
 
 
    def set_animal_as_on_display( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_animal_as_on_display', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_animal_as_on_display', kwargs ) )
       return StubAnimalCoordinator.default_success
 
 
    def set_animal_limited_viewing_schedule( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_animal_limited_viewing_schedule', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_animal_limited_viewing_schedule', kwargs ) )
       return StubAnimalCoordinator.default_success
 
 
    def remove_animal_visibility_schedule( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'remove_animal_visibility_schedule', kwargs ) )
+      self.calls.append( CoordinatorCall( 'remove_animal_visibility_schedule', kwargs ) )
       return StubAnimalCoordinator.default_success
 
 
    def set_animal_viewing_alert( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_animal_viewing_alert', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_animal_viewing_alert', kwargs ) )
       return StubAnimalCoordinator.default_success
 
 
    def remove_animal_viewing_alert( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'remove_animal_viewing_alert', kwargs ) )
+      self.calls.append( CoordinatorCall( 'remove_animal_viewing_alert', kwargs ) )
       return StubAnimalCoordinator.default_success

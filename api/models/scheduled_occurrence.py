@@ -4,6 +4,10 @@ from ..types import Types
 
 
 class ScheduledOccurrence:
+   date: Types.DateKey
+   time: Types.ScheduleTimeKey
+
+
    def __init__( self, date: Types.DateKey, time: Types.ScheduleTimeKey ) -> None:
       self.date = date
       self.time = time

@@ -57,6 +57,9 @@ def _time_block( start_minutes: int, duration_minutes: int ) -> TimeBlock:
 
 
 class _GuardiansTalkDetailsStub:
+   _talks: list[ GuardiansTalk ]
+
+
    def __init__( self, talks: list[ GuardiansTalk ] ) -> None:
       self._talks = talks
 
@@ -70,6 +73,9 @@ class _GuardiansTalkDetailsStub:
 
 
 class _WildEncounterDetailsStub:
+   _encounters: list[ WildEncounter ]
+
+
    def __init__( self, encounters: list[ WildEncounter ] ) -> None:
       self._encounters = encounters
 

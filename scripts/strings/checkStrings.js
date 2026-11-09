@@ -75,6 +75,7 @@ export class CheckStrings {
       planPageNoHoursList: 'The plan page has no hours list.',
       planPageNoHoursRange: 'The plan page has no hours range.',
       planPageNoLastAdmission: 'The plan page has no last admission time.',
+      removedSchedule: 'Removed the schedule.',
       scheduledInAppOnly: 'Scheduled in the app and not on the website',
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
       setClosedForSeasonFrom: 'Set closed for the season from ',

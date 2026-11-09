@@ -4,6 +4,15 @@ from ...types import Types
 
 
 class AnimalLimitedViewingSchedule:
+   species: str
+   exhibit: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey
+   daily_start_time: str
+   daily_end_time: str
+   message: str
+
+
    def __init__(
          self,
          species: str,

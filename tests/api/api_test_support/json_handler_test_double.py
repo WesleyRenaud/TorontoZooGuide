@@ -6,13 +6,20 @@ from typing import Any
 
 
 class JsonHandlerTestDouble():
+   headers: dict[ str, str ]
+   rfile: BytesIO
+   wfile: BytesIO
+   statuses: list[ int ]
+   sent_headers: list[ tuple[ str, str ] ]
+
+
    def __init__( self, body: dict[ str, Any ] | None = None ) -> None:
       encoded = json.dumps( body or {} ).encode( 'utf-8' )
       self.headers = { 'Content-Length': str( len( encoded ) ) }
       self.rfile = BytesIO( encoded )
       self.wfile = BytesIO()
-      self.statuses: list[ int ] = []
-      self.sent_headers: list[ tuple[ str, str ] ] = []
+      self.statuses = []
+      self.sent_headers = []
 
 
    def send_response( self, code: int, message: str | None = None ) -> None:

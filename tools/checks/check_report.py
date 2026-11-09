@@ -4,7 +4,6 @@ from datetime import date
 
 from api.app_string_provider import AppStringProvider
 from .date_span import DateSpan
-from .schedule_check import ScheduleCheck
 
 
 class CheckReport():
@@ -76,27 +75,16 @@ class CheckReport():
 
 
    @classmethod
-   def report_schedule(
+   def report_category(
          cls,
          check: str,
          day: date,
-         schedule: ScheduleCheck ) -> None:
-      print( f'{ cls.heading( check, day ) } { schedule.note }' )
+         note: str,
+         key: str,
+         items: list[ str ] ) -> None:
+      print( f'{ cls.heading( check, day ) } { note }' )
       print()
-      cls.print_category( 'checks.scheduledInAppOnly', schedule.only_in_app, indent=False )
-      cls.print_category( 'checks.scheduledOnWebsiteOnly', schedule.only_on_website, indent=False )
-      cls.print_category( 'checks.differentDaysOrTimes', schedule.different_slots, indent=False )
-      cls.print_category( 'checks.windowsDoNotAlign', schedule.windows, indent=False )
-
-
-   @classmethod
-   def count_schedule( cls, schedule: ScheduleCheck ) -> int:
-      return (
-         len( schedule.only_in_app )
-         + len( schedule.only_on_website )
-         + len( schedule.different_slots )
-         + len( schedule.windows )
-      )
+      cls.print_category( key, items, indent=False )
 
 
    @classmethod

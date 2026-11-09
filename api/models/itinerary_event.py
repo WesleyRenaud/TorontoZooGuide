@@ -6,6 +6,11 @@ from ..types import Types
 
 
 class ItineraryEvent:
+   event_type: ItineraryEventType
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+
+
    def __init__(
          self,
          event_type: ItineraryEventType,

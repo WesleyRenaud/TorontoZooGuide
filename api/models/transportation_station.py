@@ -5,6 +5,12 @@ from ..types import Types
 
 
 class TransportationStation:
+   name: str
+   description: str
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
+
+
    def __init__(
          self,
          name: str,

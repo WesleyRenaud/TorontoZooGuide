@@ -4,6 +4,13 @@ from ...types import Types
 
 
 class AnimalViewingAlert:
+   species: str
+   exhibit: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey
+   message: str
+
+
    def __init__(
          self,
          species: str,

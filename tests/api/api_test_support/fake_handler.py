@@ -6,6 +6,17 @@ from typing import Any
 
 
 class FakeHandler():
+   path: str
+   headers: dict[ str, str ] | None
+   rfile: BytesIO
+   wfile: BytesIO
+   statuses: list[ int ]
+   sent_headers: list[ tuple[ str, str ] ]
+   ended: bool
+   errors: list[ tuple[ int, str | None ] ]
+   files: list[ tuple[ str, str | None ] ]
+
+
    def __init__(
          self,
          path: str = '/',
@@ -15,11 +26,11 @@ class FakeHandler():
       self.headers = headers or {}
       self.rfile = BytesIO( json.dumps( body or {} ).encode( 'utf-8' ) )
       self.wfile = BytesIO()
-      self.statuses: list[ int ] = []
-      self.sent_headers: list[ tuple[ str, str ] ] = []
+      self.statuses = []
+      self.sent_headers = []
       self.ended = False
-      self.errors: list[ tuple[ int, str | None ] ] = []
-      self.files: list[ tuple[ str, str | None ] ] = []
+      self.errors = []
+      self.files = []
 
 
    def send_response( self, code: int ) -> None:

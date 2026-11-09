@@ -2,6 +2,13 @@ from __future__ import annotations
 
 
 class Pavilion:
+   name: str
+   region: str
+   description: str | None
+   x_coord: float | None
+   y_coord: float | None
+
+
    def __init__(
          self,
          name: str,

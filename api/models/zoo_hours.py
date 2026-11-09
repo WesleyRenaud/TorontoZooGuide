@@ -4,6 +4,13 @@ from ..types import Types
 
 
 class ZooHours:
+   date: Types.DateKey
+   early_admission_time: Types.ScheduleTimeKey
+   open_time: Types.ScheduleTimeKey
+   last_admission_time: Types.ScheduleTimeKey
+   close_time: Types.ScheduleTimeKey
+
+
    def __init__(
          self,
          date: Types.DateKey,

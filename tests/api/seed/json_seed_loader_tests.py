@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
+from api_test_support.execute_many_call import ExecuteManyCall
 import pytest
 
 from api.seed.json_seed_loader import JsonSeedLoader, SEED_DATA_DIR
@@ -11,12 +12,15 @@ from api.shared.enums.position import Position
 from api.types import Types
 
 class StubCursor:
+   executemany_calls: list[ ExecuteManyCall ]
+
+
    def __init__( self ) -> None:
-      self.executemany_calls: list[ tuple[ str, list[ list[ Any ] ] ] ] = []
+      self.executemany_calls = []
 
 
    def executemany( self, sql: str, rows: list[ list[ Any ] ] ) -> None:
-      self.executemany_calls.append( ( sql, rows ) )
+      self.executemany_calls.append( ExecuteManyCall( sql, rows ) )
 
 def _cursor() -> tuple[ StubCursor, Types.Cursor ]:
    stub = StubCursor()
@@ -262,9 +266,9 @@ def Test_InsertRows_TestValidRows_ExpectExecutemany() -> None:
       rows=[ [ 'Lion', 'Africa' ] ] )
 
    assert len( stub.executemany_calls ) == 1
-   sql, rows = stub.executemany_calls[ Position.FIRST ]
-   assert 'INSERT INTO Animal' in sql
-   assert rows == [ [ 'Lion', 'Africa' ] ]
+   call = stub.executemany_calls[ Position.FIRST ]
+   assert 'INSERT INTO Animal' in call.sql
+   assert call.rows == [ [ 'Lion', 'Africa' ] ]
 
 
 def Test_InsertJsonRows_TestPath_ExpectInserted(
@@ -279,7 +283,7 @@ def Test_InsertJsonRows_TestPath_ExpectInserted(
       columns=[ 'SPECIES', 'EXHIBIT' ],
       path=path )
 
-   assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 'Africa' ] ]
+   assert stub.executemany_calls[ Position.FIRST ].rows == [ [ 'Lion', 'Africa' ] ]
 
 
 def Test_InsertJsonRecords_TestPath_ExpectInserted(
@@ -297,7 +301,7 @@ def Test_InsertJsonRecords_TestPath_ExpectInserted(
       fields=[ 'species', 'exhibit' ],
       path=path )
 
-   assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 'Africa' ] ]
+   assert stub.executemany_calls[ Position.FIRST ].rows == [ [ 'Lion', 'Africa' ] ]
 
 
 def Test_InsertDayCurveFile_TestPath_ExpectInserted(
@@ -319,7 +323,7 @@ def Test_InsertDayCurveFile_TestPath_ExpectInserted(
       entity_fields=[ 'species' ],
       day_fields=[ 'day', 'value' ] )
 
-   assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 1, 0.5 ] ]
+   assert stub.executemany_calls[ Position.FIRST ].rows == [ [ 'Lion', 1, 0.5 ] ]
 
 
 def Test_InsertDayCurveDirectory_TestDirectory_ExpectInserted(
@@ -341,4 +345,4 @@ def Test_InsertDayCurveDirectory_TestDirectory_ExpectInserted(
       entity_fields=[ 'species' ],
       day_fields=[ 'day', 'value' ] )
 
-   assert stub.executemany_calls[ Position.FIRST ][ Position.SECOND ] == [ [ 'Lion', 1, 0.5 ] ]
+   assert stub.executemany_calls[ Position.FIRST ].rows == [ [ 'Lion', 1, 0.5 ] ]

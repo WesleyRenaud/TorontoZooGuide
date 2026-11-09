@@ -12,6 +12,9 @@ from ....types import Types
 
 
 class ItineraryActivityScheduler:
+   itinerary: Itinerary
+
+
    def __init__( self, itinerary: Itinerary ) -> None:
       self.itinerary = itinerary
 

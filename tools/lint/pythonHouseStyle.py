@@ -404,6 +404,146 @@ def check_module_level_class_assignments(
    return violations
 
 
+def class_body_field_names( node: ast.ClassDef ) -> set[ str ]:
+   names: set[ str ] = set()
+
+   for item in node.body:
+      if isinstance( item, ast.AnnAssign ) and isinstance( item.target, ast.Name ):
+         names.add( item.target.id )
+         continue
+
+      if not isinstance( item, ast.Assign ):
+         continue
+
+      for target in item.targets:
+         names.update( assigned_name_targets( target ) )
+
+   return names
+
+
+def assigned_name_targets( target: ast.AST ) -> set[ str ]:
+   if isinstance( target, ast.Name ):
+      return { target.id }
+
+   if isinstance( target, ( ast.Tuple, ast.List ) ):
+      names: set[ str ] = set()
+
+      for element in target.elts:
+         names.update( assigned_name_targets( element ) )
+
+      return names
+
+   return set()
+
+
+def defined_class_fields(
+      node: ast.ClassDef,
+      class_map: dict[ str, ast.ClassDef ],
+      seen: set[ str ] ) -> set[ str ]:
+   if node.name in seen:
+      return set()
+
+   seen.add( node.name )
+   names = class_body_field_names( node )
+
+   for base in node.bases:
+      if not isinstance( base, ast.Name ) or base.id not in class_map:
+         continue
+
+      names.update( defined_class_fields( class_map[ base.id ], class_map, seen ) )
+
+   return names
+
+
+def instance_attribute_targets( node: ast.AST ) -> list[ ast.Attribute ]:
+   if isinstance( node, ast.Assign ):
+      targets = node.targets
+   elif isinstance( node, ( ast.AnnAssign, ast.AugAssign ) ):
+      targets = [ node.target ]
+   else:
+      return []
+
+   attributes: list[ ast.Attribute ] = []
+
+   for target in targets:
+      attributes.extend( self_attribute_targets( target ) )
+
+   return attributes
+
+
+def self_attribute_targets( target: ast.AST ) -> list[ ast.Attribute ]:
+   if isinstance( target, ast.Attribute ) and isinstance( target.value, ast.Name ):
+      if target.value.id == 'self':
+         return [ target ]
+
+      return []
+
+   if isinstance( target, ( ast.Tuple, ast.List ) ):
+      attributes: list[ ast.Attribute ] = []
+
+      for element in target.elts:
+         attributes.extend( self_attribute_targets( element ) )
+
+      return attributes
+
+   return []
+
+
+def method_instance_attributes( node: ast.AST ) -> list[ ast.Attribute ]:
+   attributes: list[ ast.Attribute ] = []
+
+   for child in ast.iter_child_nodes( node ):
+      if isinstance( child, ast.ClassDef ):
+         continue
+
+      attributes.extend( instance_attribute_targets( child ) )
+      attributes.extend( method_instance_attributes( child ) )
+
+   return attributes
+
+
+def check_class_field_assignments(
+      path: Path,
+      file_text: str ) -> list[ tuple[ str, int, int, str ] ]:
+   try:
+      tree = ast.parse( file_text )
+   except SyntaxError:
+      return []
+
+   class_map = {
+      node.name: node
+      for node in ast.walk( tree )
+      if isinstance( node, ast.ClassDef )
+   }
+   violations: list[ tuple[ str, int, int, str ] ] = []
+
+   for node in class_map.values():
+      defined = defined_class_fields( node, class_map, set() )
+      reported: set[ str ] = set()
+
+      for item in node.body:
+         if not isinstance( item, ( ast.FunctionDef, ast.AsyncFunctionDef ) ):
+            continue
+
+         for attribute in method_instance_attributes( item ):
+            if attribute.attr in defined or attribute.attr in reported:
+               continue
+
+            reported.add( attribute.attr )
+            add_violation(
+               violations,
+               path,
+               attribute.lineno,
+               attribute.col_offset + 1,
+               (
+                  f'Define "{ attribute.attr }" on the class before '
+                  f'assigning "self.{ attribute.attr }".'
+               ),
+            )
+
+   return violations
+
+
 def check_method_spacing(
       path: Path,
       file_text: str,
@@ -679,6 +819,7 @@ def check_file(
    ]
    violations = check_method_spacing( path, file_text, blank_lines_between_methods )
    violations.extend( check_module_level_class_assignments( path, file_text ) )
+   violations.extend( check_class_field_assignments( path, file_text ) )
 
    if enforce_typing:
       violations.extend( check_typing_annotations( path, file_text ) )

@@ -2,6 +2,10 @@ from __future__ import annotations
 
 
 class RegionWithExhibits:
+   name: str
+   exhibits: list[ str ] | None
+
+
    def __init__( self, name: str, exhibits: list[ str ] | None ) -> None:
       self.name = name
       self.exhibits = exhibits or []

@@ -5,13 +5,19 @@ from typing import Any
 import pytest
 
 from api.http_request_handler import HttpRequestHandler
+from api.server_address import ServerAddress
 import api.server_runner as server_runner
 from api.server_runner import ServerRunner
 from api.shared.enums.position import Position
 
 
 class _FakeServer:
-   def __init__( self, address: tuple[ str, int ], handler: Any ) -> None:
+   address: ServerAddress
+   handler: Any
+   served: bool
+
+
+   def __init__( self, address: ServerAddress, handler: Any ) -> None:
       self.address = address
       self.handler = handler
       self.served = False
@@ -25,7 +31,7 @@ def Test_Run_TestDefaultPort_ExpectStartsThreadedHttpServer(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    created: list[ _FakeServer ] = []
 
-   def fake_server( address: tuple[ str, int ], handler: Any ) -> _FakeServer:
+   def fake_server( address: ServerAddress, handler: Any ) -> _FakeServer:
       server = _FakeServer( address, handler )
       created.append( server )
       return server
@@ -35,6 +41,9 @@ def Test_Run_TestDefaultPort_ExpectStartsThreadedHttpServer(
    ServerRunner.run()
 
    assert len( created ) == 1
-   assert created[ Position.FIRST ].address == ( 'localhost', ServerRunner.DEFAULT_PORT )
+   assert created[ Position.FIRST ].address == ServerAddress(
+      'localhost',
+      ServerRunner.DEFAULT_PORT,
+   )
    assert created[ Position.FIRST ].handler is HttpRequestHandler
    assert created[ Position.FIRST ].served is True

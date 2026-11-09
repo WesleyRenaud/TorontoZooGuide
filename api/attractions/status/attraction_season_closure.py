@@ -4,6 +4,13 @@ from ...types import Types
 
 
 class AttractionSeasonClosure:
+   attraction: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey | None
+   message: str
+   is_closed_for_season: bool
+
+
    def __init__(
          self,
          attraction: str,

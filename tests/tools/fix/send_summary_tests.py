@@ -5,6 +5,7 @@ from email.message import EmailMessage
 from pathlib import Path
 import sys
 import textwrap
+from typing import NamedTuple
 
 import pytest
 
@@ -23,8 +24,20 @@ from tools.fix.send_summary import SendSummary as send_summary
 import tools.fix.send_summary as send_summary_module
 
 
+class SmtpLogin( NamedTuple ):
+   username: str
+   password: str
+
+
 class FakeSmtp():
    instances: list[ FakeSmtp ] = []
+   host: str
+   port: int
+   timeout: int
+   started_tls: bool
+   logged_in: SmtpLogin | None
+   sent: EmailMessage | None
+   quit_called: bool
 
 
    def __init__( self, host: str, port: int, timeout: int ) -> None:
@@ -32,8 +45,8 @@ class FakeSmtp():
       self.port = port
       self.timeout = timeout
       self.started_tls = False
-      self.logged_in: tuple[ str, str ] | None = None
-      self.sent: EmailMessage | None = None
+      self.logged_in = None
+      self.sent = None
       self.quit_called = False
       FakeSmtp.instances.append( self )
 
@@ -47,7 +60,7 @@ class FakeSmtp():
 
 
    def login( self, username: str, password: str ) -> None:
-      self.logged_in = ( username, password )
+      self.logged_in = SmtpLogin( username, password )
 
 
    def send_message( self, message: EmailMessage ) -> None:
@@ -338,6 +351,46 @@ def Test_RenderHtml_TestAttractionChecks_ExpectSecondTabAndOneSection() -> None:
    assert html.index( 'Splash Island' ) < html.index( 'Stingray Bay' )
 
 
+def Test_RenderHtml_TestRepeatedScheduleHeadings_ExpectOneCardEach() -> None:
+   day = date( 2026, 11, 8 )
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'wildEncounter', day ) } Compared.
+
+      { CheckReport.category_line( 'checks.scheduledInAppOnly', 1 ) }
+        Giraffe
+
+      { CheckReport.heading( 'wildEncounter', day ) } Compared.
+
+      { CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 1 ) }
+        Kangaroo
+
+      { CheckReport.heading( 'guardiansTalk', day ) } Compared.
+
+      { CheckReport.category_line( 'checks.scheduledInAppOnly', 1 ) }
+        Snow Leopard
+
+      { CheckReport.heading( 'guardiansTalk', day ) } Compared.
+
+      { CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) }
+        Penguin
+
+      { CheckReportParser.format_fixed_count( 0 ) }
+
+      { CheckReportParser.format_counts( encounters=2, talks=2 ) }
+
+      { CheckReportParser.format_error_count( 4 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+
+   assert html.count( '>Encounters<' ) == 1
+   assert html.count( '>Guardians Talks<' ) == 2
+   assert html.index( 'Giraffe' ) < html.index( 'Kangaroo' )
+   assert html.index( 'Kangaroo' ) < html.index( 'Snow Leopard' )
+   assert html.index( 'Snow Leopard' ) < html.index( 'Penguin' )
+
+
 def Test_RenderHtml_TestAllAnimalErrorsFixed_ExpectGreenTotal() -> None:
    body = textwrap.dedent(
       f"""\
@@ -565,7 +618,9 @@ def Test_SendSummary_TestMessage_ExpectLoginAndSend(
    assert server.port == send_summary.SMTP_PORT
    assert server.timeout == 30
    assert server.started_tls
-   assert server.logged_in == ( send_summary.EMAIL_ADDRESS, 'app-password' )
+   assert server.logged_in == SmtpLogin(
+      send_summary.EMAIL_ADDRESS,
+      'app-password' )
    assert server.quit_called
    assert message is not None
    assert message[ 'Subject' ] == (
@@ -613,7 +668,10 @@ def Test_SendSummary_TestAppPhoto_ExpectRelatedImage(
    assert photo != ''
    assert 'cid:' in html
    assert 'file:' not in html
-   assert images[ 0 ].get_content() == ( Paths.ROOT / photo ).read_bytes()
+   content = images[ 0 ].get_content()
+   assert images[ 0 ].get_content_subtype() == 'jpeg'
+   assert content.startswith( b'\xff\xd8' )
+   assert len( content ) < ( Paths.ROOT / photo ).stat().st_size
 
 
 def Test_Main_TestMissingPassword_ExpectExitCode2(

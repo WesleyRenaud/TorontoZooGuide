@@ -6,6 +6,20 @@ from ..types import Types
 
 
 class WildEncounter:
+   name: str
+   meeting_spot: str
+   link: str
+   start_time: Types.ScheduleTimeKey
+   maximum_duration: int | None
+   end_time: Types.ScheduleTimeKey
+   x_coord: float | None
+   y_coord: float | None
+   region: str | None
+   is_available: bool
+   unavailable_message: str | None
+   is_deleted: bool
+
+
    def __init__(
          self,
          name: str,

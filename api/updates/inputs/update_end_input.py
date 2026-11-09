@@ -4,6 +4,11 @@ from ...types import Types
 
 
 class UpdateEndInput:
+   title: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey
+
+
    def __init__(
          self,
          title: str,

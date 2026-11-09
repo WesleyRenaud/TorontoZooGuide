@@ -7,12 +7,13 @@ import sqlite3
 
 import pytest
 
+from api.app_string_provider import AppStringProvider
 from tools.checks.booking_calendar import BookingCalendar
 from tools.checks.check_email_renderer import CheckEmailRenderer
 from tools.checks.check_report import CheckReport
 from tools.checks.check_report_parser import CheckReportParser
-from tools.checks.encounter_schedule_table import EncounterScheduleTable
 from tools.checks.website_page import WebsitePage
+from tools.checks.wild_encounter_comparison import WildEncounterComparison
 from tools.checks.wild_encounter_detail_image import WildEncounterDetailImage
 from tools.checks.wild_encounter_schedule_checker import WildEncounterScheduleChecker as CHECKER
 
@@ -29,6 +30,7 @@ TODAY = date( 2026, 11, 1 )
 SCHEDULE_START = TODAY
 SCHEDULE_END = date( 2026, 11, 5 )
 CLOCK = '11:00 AM'
+REGION = 'Africa'
 WEBSITE_CLOCK = '11:00'
 OTHER_CLOCK = '2:00'
 SCHEMA = """
@@ -37,6 +39,14 @@ CREATE TABLE WildEncounter (
    MEETING_SPOT      TEXT    NOT NULL,
    LINK              TEXT    NOT NULL,
    MAXIMUM_DURATION  INTEGER NOT NULL,
+   PRIMARY KEY ( NAME )
+);
+
+CREATE TABLE WildEncounterMeetingSpot (
+   NAME      TEXT NOT NULL,
+   X_COORD   FLOAT,
+   Y_COORD   FLOAT,
+   REGION    TEXT NOT NULL,
    PRIMARY KEY ( NAME )
 );
 
@@ -66,6 +76,16 @@ def _write_database(
       schedules: list[ tuple[ str, str, str, str ] ] ) -> None:
    connection = sqlite3.connect( path )
    connection.executescript( SCHEMA )
+   connection.execute(
+      """   INSERT INTO WildEncounterMeetingSpot (
+               NAME,
+               X_COORD,
+               Y_COORD,
+               REGION )
+            VALUES ( 'Spot', 0, 0, ? )
+      """,
+      ( REGION, ),
+   )
    connection.executemany(
       """   INSERT INTO WildEncounter (
                NAME,
@@ -142,9 +162,11 @@ def _enabled_dates( days: list[ date ] ) -> dict[ str, object ]:
 
 
 def _matched_dates() -> list[ date ]:
-   first = TODAY + timedelta( days=1 )
    last = SCHEDULE_END - timedelta( days=1 )
-   return [ first, first + timedelta( days=1 ), last ]
+   return [
+      TODAY + timedelta( days=offset )
+      for offset in range( ( last - TODAY ).days + 1 )
+   ]
 
 
 def _install_web(
@@ -207,12 +229,83 @@ def _schedule_end( path: Path, name: str ) -> str:
 
 def _giraffe_pages( website_time: str ) -> dict[ str, str ]:
    return {
-      WebsitePage.url( CHECKER.PAGE ): _schedule_page( [ ( website_time, GIRAFFE ) ] ),
+      WebsitePage.url( WildEncounterComparison.PAGE ): _schedule_page( [ ( website_time, GIRAFFE ) ] ),
       GIRAFFE_LINK: _booking_page( GIRAFFE_TOUR ),
    }
 
 
-def Test_CheckSchedules_TestAppOnlyEncounter_ExpectAppViolation(
+def _encounter_label( name: str ) -> str:
+   return AppStringProvider.format(
+      'format.middleDotPair',
+      first=name,
+      second=REGION,
+   )
+
+
+def _schedule_count( path: Path, name: str ) -> int:
+   connection = sqlite3.connect( path )
+   row = connection.execute(
+      """   SELECT COUNT( * )
+            FROM WildEncounterSchedule
+            WHERE WILD_ENCOUNTER = ?
+      """,
+      ( name, ),
+   ).fetchone()
+   connection.close()
+   return row[ 0 ]
+
+
+def Test_CheckSchedules_TestAppOnlyEncounter_ExpectScheduleRemoved(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [ ( GIRAFFE, GIRAFFE_LINK ), ( 'Masai Giraffe', KANGAROO_LINK ) ],
+      [
+         (
+            GIRAFFE,
+            SCHEDULE_START.isoformat(),
+            SCHEDULE_END.isoformat(),
+            CLOCK,
+         ),
+         (
+            'Masai Giraffe',
+            SCHEDULE_START.isoformat(),
+            SCHEDULE_END.isoformat(),
+            CLOCK,
+         ),
+      ] )
+   _install_web(
+      monkeypatch,
+      _giraffe_pages( WEBSITE_CLOCK ),
+      { GIRAFFE_TOUR: _enabled_dates( _matched_dates() ) } )
+
+   result = CHECKER.check_schedules( database, TODAY )
+
+   output = capsys.readouterr().out
+   assert result == 0
+   assert CheckReport.category_line( 'checks.scheduledInAppOnly', 1 ) in output
+   photo = WildEncounterDetailImage.source( 'Masai Giraffe' )
+   assert f'  { _encounter_label( "Masai Giraffe" ) }' in output
+   assert photo in output
+   assert CheckReport.text( 'checks.removedSchedule' ) in output
+   assert _schedule_count( database, 'Masai Giraffe' ) == 0
+   assert _schedule_count( database, GIRAFFE ) == 1
+   assert f'  { _encounter_label( GIRAFFE ) }' not in output
+   assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
+   html = _email( output, result )
+   assert 'Masai Giraffe' in html
+   assert CheckEmailRenderer.image_src( photo ) in html
+   assert CheckReport.text( 'checks.scheduledInAppOnly' ) in html
+   assert CheckReport.text( 'checks.removedSchedule' ) in html
+   assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
+   assert f'>{ GIRAFFE }<' not in html
+
+
+def Test_CheckSchedules_TestFutureEncounterNotOnWebsite_ExpectScheduleRemoved(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch,
       capsys: pytest.CaptureFixture[ str ] ) -> None:
@@ -229,8 +322,8 @@ def Test_CheckSchedules_TestAppOnlyEncounter_ExpectAppViolation(
          ),
          (
             KANGAROO,
-            SCHEDULE_START.isoformat(),
             SCHEDULE_END.isoformat(),
+            ( SCHEDULE_END + timedelta( days=7 ) ).isoformat(),
             CLOCK,
          ),
       ] )
@@ -242,18 +335,51 @@ def Test_CheckSchedules_TestAppOnlyEncounter_ExpectAppViolation(
    result = CHECKER.check_schedules( database, TODAY )
 
    output = capsys.readouterr().out
-   assert result == 1
+   assert result == 0
    assert CheckReport.category_line( 'checks.scheduledInAppOnly', 1 ) in output
-   assert f'  { KANGAROO }' in output
-   assert GIRAFFE not in output
-   assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
-   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 0 ) in output
+   assert f'  { _encounter_label( KANGAROO ) }' in output
+   assert CheckReport.text( 'checks.removedSchedule' ) in output
+   assert _schedule_count( database, KANGAROO ) == 0
+   assert _schedule_count( database, GIRAFFE ) == 1
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
-   html = _email( output, result )
-   assert 'Kangaroo' in html
-   assert CheckReport.text( 'checks.scheduledInAppOnly' ) in html
-   assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
-   assert GIRAFFE not in html
+
+
+def Test_CheckSchedules_TestScheduleEndedToday_ExpectScheduleRemoved(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [ ( GIRAFFE, GIRAFFE_LINK ), ( KANGAROO, KANGAROO_LINK ) ],
+      [
+         (
+            GIRAFFE,
+            SCHEDULE_START.isoformat(),
+            SCHEDULE_END.isoformat(),
+            CLOCK,
+         ),
+         (
+            KANGAROO,
+            TODAY.isoformat(),
+            ( TODAY + timedelta( days=1 ) ).isoformat(),
+            CLOCK,
+         ),
+      ] )
+   _install_web(
+      monkeypatch,
+      _giraffe_pages( WEBSITE_CLOCK ),
+      { GIRAFFE_TOUR: _enabled_dates( _matched_dates() ) } )
+
+   result = CHECKER.check_schedules( database, TODAY )
+
+   output = capsys.readouterr().out
+   assert result == 0
+   assert f'  { _encounter_label( KANGAROO ) }' in output
+   assert CheckReport.text( 'checks.removedSchedule' ) in output
+   assert CheckReport.category_line( 'checks.scheduledInAppOnly', 1 ) in output
+   assert _schedule_count( database, KANGAROO ) == 0
+   assert _schedule_count( database, GIRAFFE ) == 1
 
 
 def Test_CheckSchedules_TestUnscheduledEncounter_ExpectWindowFixed(
@@ -275,7 +401,7 @@ def Test_CheckSchedules_TestUnscheduledEncounter_ExpectWindowFixed(
       ) ] )
    pages = _giraffe_pages( WEBSITE_CLOCK )
    penguin_image = '/!/img/pg/wildencounters/penguin.webp'
-   pages[ WebsitePage.url( CHECKER.PAGE ) ] = (
+   pages[ WebsitePage.url( WildEncounterComparison.PAGE ) ] = (
       _schedule_page( [
          ( WEBSITE_CLOCK, GIRAFFE ),
          ( WEBSITE_CLOCK, SNOW_LEOPARD_WEBSITE ),
@@ -303,10 +429,10 @@ def Test_CheckSchedules_TestUnscheduledEncounter_ExpectWindowFixed(
       CheckReport.detail_item( CheckReport.text( 'checks.photo' ) + penguin_photo ),
    ] ) in output
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
-   assert f'  { SNOW_LEOPARD }' in output
+   assert f'  { _encounter_label( SNOW_LEOPARD ) }' in output
    assert f'  { SNOW_LEOPARD_WEBSITE }' not in output
    assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert 'November 2, 2026 through November 4, 2026.' in output
+   assert 'November 1, 2026 through November 4, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in output
    html = _email( output, result )
    assert SNOW_LEOPARD in html
@@ -315,7 +441,7 @@ def Test_CheckSchedules_TestUnscheduledEncounter_ExpectWindowFixed(
    assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
 
 
-def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
+def Test_CheckSchedules_TestDifferentTime_ExpectWindowFixed(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch,
       capsys: pytest.CaptureFixture[ str ] ) -> None:
@@ -329,18 +455,15 @@ def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
    result = CHECKER.check_schedules( database, TODAY )
 
    output = capsys.readouterr().out
-   assert result == 1
-   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 1 ) in output
-   assert f'  { GIRAFFE }' in output
-   assert EncounterScheduleTable.normalize_clock( OTHER_CLOCK ) in output
-   assert EncounterScheduleTable.normalize_clock( CLOCK ) in output
-   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
+   assert result == 0
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
+   assert f'  { _encounter_label( GIRAFFE ) }' in output
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
+   assert 'November 1, 2026 through November 4, 2026.' in output
+   assert f'{ CheckReport.text( "format.bulletItem" ) }2:00 PM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in output
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-05'
    html = _email( output, result )
-   assert CheckReport.text( 'checks.differentDaysOrTimes' ) in html
-   assert 'Website' in html
-   assert '2:00 PM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in html
-   assert 'App' in html
-   assert '11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in html
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
 
 
@@ -363,7 +486,7 @@ def Test_CheckSchedules_TestBookableWindowLonger_ExpectWindowViolation(
    output = capsys.readouterr().out
    assert result == 0
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
-   assert f'  { GIRAFFE }' in output
+   assert f'  { _encounter_label( GIRAFFE ) }' in output
    assert CheckReport.text( 'checks.setScheduleFrom' ) in output
    assert 'November 1, 2026 through November 6, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in output
@@ -391,12 +514,12 @@ def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
    output = capsys.readouterr().out
    assert result == 0
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
-   assert f'  { GIRAFFE }' in output
+   assert f'  { _encounter_label( GIRAFFE ) }' in output
    assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert 'November 1, 2026 through November 2, 2026.' in output
+   assert 'November 1, 2026 through November 1, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in output
    assert CheckReport.text( 'checks.appDatesNotBookable' ) not in output
-   assert _schedule_end( database, GIRAFFE ) == '2026-11-03'
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-02'
    html = _email( output, result )
    assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
@@ -419,7 +542,6 @@ def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
    assert result == 0
    assert CheckReport.category_line( 'checks.scheduledInAppOnly', 0 ) in output
    assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
-   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 0 ) in output
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
    html = _email( output, result )
    assert CheckReport.text( 'checks.status.noneDetected' ) in html
@@ -437,7 +559,7 @@ def Test_CheckSchedules_TestUnscheduledWithImage_ExpectPhotoAndSchedule(
    link = 'https://example.test/masai'
    _write_database( database, [ ( name, link ) ], [] )
    pages = {
-      WebsitePage.url( CHECKER.PAGE ): _schedule_page( [ ( WEBSITE_CLOCK, name ) ] ),
+      WebsitePage.url( WildEncounterComparison.PAGE ): _schedule_page( [ ( WEBSITE_CLOCK, name ) ] ),
       link: _booking_page( GIRAFFE_TOUR ),
    }
    _install_web(

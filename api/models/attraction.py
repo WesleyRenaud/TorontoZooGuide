@@ -6,6 +6,28 @@ from ..types import Types
 
 
 class Attraction:
+   name: str
+   free_with_admission: bool
+   description: str | None
+   info_link: str | None
+   hyperlink_text: str | None
+   x_coord: float | None
+   y_coord: float | None
+   region: str | None
+   is_closed: bool
+   closed_message: str | None
+   likelihood: int | None
+   is_deleted: bool
+   old_likelihood: int | None
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+   open_time: Types.ScheduleTimeKey
+   close_time: Types.ScheduleTimeKey
+   is_also_transportation: bool
+   route_duration_minutes: int | None
+   is_closed_for_season: bool
+
+
    def __init__(
          self,
          name: str,

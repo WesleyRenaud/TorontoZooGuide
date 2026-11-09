@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from datetime import timedelta
 import json
 import re
 import subprocess
@@ -82,6 +83,22 @@ class BookingCalendar():
          return None
 
       return match.group( 'id' )
+
+
+   @classmethod
+   def enabled_dates_from( cls, booking_type: str, first: date ) -> list[ date ]:
+      found: list[ date ] = []
+      cursor = first
+
+      while True:
+         chunk_last = cursor + timedelta( days=365 )
+         chunk = cls.enabled_dates( booking_type, cursor, chunk_last )
+
+         if chunk == []:
+            return found
+
+         found.extend( chunk )
+         cursor = chunk_last + timedelta( days=1 )
 
 
    @classmethod

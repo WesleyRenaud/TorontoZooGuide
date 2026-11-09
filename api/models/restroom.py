@@ -4,6 +4,15 @@ from ..shared.value_conversion import ValueConversion
 
 
 class Restroom:
+   title: str
+   x_coord: float | None
+   y_coord: float | None
+   is_closed: bool | None
+   closed_message: str | None
+   has_alert: bool | None
+   alert_message: str | None
+
+
    def __init__(
          self,
          title: str,

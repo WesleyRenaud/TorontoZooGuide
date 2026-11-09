@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
+from api_test_support.recorded_closure import RecordedClosure
+from api_test_support.recorded_opening_schedule import RecordedOpeningSchedule
 import pytest
 
 from api.models.restaurant import Restaurant
@@ -36,12 +38,21 @@ RESTAURANT = Restaurant(
 
 
 class _Mutations:
+   record: bool
+   name: str | None
+   closure: RecordedClosure | None
+   opening: RecordedOpeningSchedule | None
+
+
    def __init__(
          self,
-         captured: dict[ str, object ] | None = None,
+         *,
+         record: bool = False,
          name: str | None = None ) -> None:
-      self.captured = captured
+      self.record = record
       self.name = name
+      self.closure = None
+      self.opening = None
 
 
    def set_as_closed(
@@ -155,8 +166,8 @@ class _Mutations:
          start_date: str,
          end_date: str,
          message: str ) -> bool:
-      if self.captured != None:
-         self.captured[ 'args' ] = ( name, start_date, end_date, message )
+      if self.record:
+         self.closure = RecordedClosure( name, start_date, end_date, message )
          return True
 
       return name == self.name
@@ -176,8 +187,8 @@ class _Mutations:
          sunday: bool,
          holidays_only: bool,
          message: str ) -> bool:
-      if self.captured != None:
-         self.captured[ 'args' ] = (
+      if self.record:
+         self.opening = RecordedOpeningSchedule(
             name,
             start_date,
             end_date,
@@ -310,12 +321,12 @@ def Test_GetRestaurantsMatchingQuery_TestBuilder_ExpectMatches(
 
 def Test_SetRestaurantAsClosed_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   captured: dict[ str, object ] = {}
+   mutations = _Mutations( record=True )
 
    monkeypatch.setattr(
       restaurant_coordinator_module,
       '_mutations',
-      _Mutations( captured ) )
+      mutations )
 
    result = RestaurantCoordinator.set_restaurant_as_closed(
       RESTAURANT_NAME,
@@ -324,17 +335,21 @@ def Test_SetRestaurantAsClosed_TestMutations_ExpectDelegated(
       MESSAGE )
 
    assert result is True
-   assert captured[ 'args' ] == ( RESTAURANT_NAME, START_DATE, END_DATE, MESSAGE )
+   assert mutations.closure == RecordedClosure(
+      RESTAURANT_NAME,
+      START_DATE,
+      END_DATE,
+      MESSAGE )
 
 
 def Test_SetRestaurantClosureOverride_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   captured: dict[ str, object ] = {}
+   mutations = _Mutations( record=True )
 
    monkeypatch.setattr(
       restaurant_coordinator_module,
       '_mutations',
-      _Mutations( captured ) )
+      mutations )
 
    result = RestaurantCoordinator.set_restaurant_closure_override(
       RESTAURANT_NAME,
@@ -343,17 +358,21 @@ def Test_SetRestaurantClosureOverride_TestMutations_ExpectDelegated(
       MESSAGE )
 
    assert result is True
-   assert captured[ 'args' ] == ( RESTAURANT_NAME, START_DATE, END_DATE, MESSAGE )
+   assert mutations.closure == RecordedClosure(
+      RESTAURANT_NAME,
+      START_DATE,
+      END_DATE,
+      MESSAGE )
 
 
 def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   captured: dict[ str, object ] = {}
+   mutations = _Mutations( record=True )
 
    monkeypatch.setattr(
       restaurant_coordinator_module,
       '_mutations',
-      _Mutations( captured ) )
+      mutations )
 
    result = RestaurantCoordinator.set_restaurant_opening_schedule(
       RESTAURANT_NAME,
@@ -370,7 +389,7 @@ def Test_SetRestaurantOpeningSchedule_TestMutations_ExpectDelegated(
       MESSAGE )
 
    assert result is True
-   assert captured[ 'args' ] == (
+   assert mutations.opening == RecordedOpeningSchedule(
       RESTAURANT_NAME,
       START_DATE,
       END_DATE,
