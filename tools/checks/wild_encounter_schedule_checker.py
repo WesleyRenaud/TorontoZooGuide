@@ -20,6 +20,8 @@ from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .encounter_schedule_slots import EncounterScheduleSlots
 from .encounter_schedule_table import EncounterScheduleTable
+from .encounter_website_card import EncounterWebsiteCard
+from .encounter_website_images import EncounterWebsiteImages
 from .paths import Paths
 from .schedule_check import ScheduleCheck
 from .schedule_slot import ScheduleSlot
@@ -94,6 +96,30 @@ class WildEncounterScheduleChecker():
    def names_only( cls, names: set[ str ] ) -> list[ str ]:
       return [
          CheckReport.text( 'checks.categoryItem' ) + name
+         for name in sorted( names, key=str.casefold )
+      ]
+
+
+   @classmethod
+   def website_only_line( cls, name: str, image: str ) -> str:
+      line = CheckReport.text( 'checks.categoryItem' ) + name
+
+      if image == '':
+         return line
+
+      return CheckReport.join_lines( [
+         line,
+         CheckReport.detail_item( CheckReport.text( 'checks.photo' ) + image ),
+      ] )
+
+
+   @classmethod
+   def website_only_lines(
+         cls,
+         names: set[ str ],
+         images: EncounterWebsiteImages ) -> list[ str ]:
+      return [
+         cls.website_only_line( name, images.for_name( name ) )
          for name in sorted( names, key=str.casefold )
       ]
 
@@ -307,8 +333,9 @@ class WildEncounterScheduleChecker():
    def schedule_check( cls, database: Path, today: date ) -> ScheduleCheck:
       encounters = cls.load_links( database )
       schedules = cls.load_schedules( database )
+      page_html = WebsitePage.fetch_text( WebsitePage.url( cls.PAGE ) )
       website_slots = EncounterScheduleTable.resolve(
-         EncounterScheduleTable.parse( WebsitePage.fetch_text( WebsitePage.url( cls.PAGE ) ) ),
+         EncounterScheduleTable.parse( page_html ),
          encounters,
       )
       current_app_slots = cls.active_slots( schedules, today )
@@ -327,7 +354,10 @@ class WildEncounterScheduleChecker():
       return ScheduleCheck(
          note=cls.comparison_note( first, last ),
          only_in_app=cls.names_only( app_names - website_names ),
-         only_on_website=cls.names_only( website_names - catalog ),
+         only_on_website=cls.website_only_lines(
+            website_names - catalog,
+            EncounterWebsiteCard.images( page_html ),
+         ),
          different_slots=cls.different_slot_lines(
             different_names,
             website_slots,

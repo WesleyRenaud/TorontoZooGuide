@@ -96,6 +96,15 @@ def _write_database(
    connection.close()
 
 
+def _encounter_card( name: str, image: str ) -> str:
+   return (
+      f'<a class="col3" href="/tickets/wepenguin">'
+      f'<img alt="" src="{ image }" />'
+      f'<div class="col3title">{ name }</div>'
+      f'</a>'
+   )
+
+
 def _schedule_page( rows: list[ tuple[ str, str ] ] ) -> str:
    header = (
       '<tr><th>Time</th><th>Sunday</th><th>Monday</th><th>Tuesday</th>'
@@ -265,11 +274,15 @@ def Test_CheckSchedules_TestUnscheduledEncounter_ExpectWindowFixed(
          CLOCK,
       ) ] )
    pages = _giraffe_pages( WEBSITE_CLOCK )
-   pages[ WebsitePage.url( CHECKER.PAGE ) ] = _schedule_page( [
-      ( WEBSITE_CLOCK, GIRAFFE ),
-      ( WEBSITE_CLOCK, SNOW_LEOPARD_WEBSITE ),
-      ( WEBSITE_CLOCK, 'Penguin Splash' ),
-   ] )
+   penguin_image = '/!/img/pg/wildencounters/penguin.webp'
+   pages[ WebsitePage.url( CHECKER.PAGE ) ] = (
+      _schedule_page( [
+         ( WEBSITE_CLOCK, GIRAFFE ),
+         ( WEBSITE_CLOCK, SNOW_LEOPARD_WEBSITE ),
+         ( WEBSITE_CLOCK, 'Penguin Splash' ),
+      ] )
+      + _encounter_card( 'Penguin Splash', penguin_image )
+   )
    pages[ SNOW_LEOPARD_LINK ] = _booking_page( '99' )
    _install_web(
       monkeypatch,
@@ -283,8 +296,12 @@ def Test_CheckSchedules_TestUnscheduledEncounter_ExpectWindowFixed(
 
    output = capsys.readouterr().out
    assert result == 1
+   penguin_photo = WebsitePage.absolute_url( penguin_image )
    assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 1 ) in output
-   assert '  Penguin Splash' in output
+   assert CheckReport.join_lines( [
+      CheckReport.text( 'checks.categoryItem' ) + 'Penguin Splash',
+      CheckReport.detail_item( CheckReport.text( 'checks.photo' ) + penguin_photo ),
+   ] ) in output
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert f'  { SNOW_LEOPARD }' in output
    assert f'  { SNOW_LEOPARD_WEBSITE }' not in output
@@ -293,6 +310,7 @@ def Test_CheckSchedules_TestUnscheduledEncounter_ExpectWindowFixed(
    assert f'{ CheckReport.text( "format.bulletItem" ) }11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in output
    html = _email( output, result )
    assert SNOW_LEOPARD in html
+   assert penguin_photo in html
    assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
 
