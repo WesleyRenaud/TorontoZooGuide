@@ -13,16 +13,21 @@ from api.shared.date_values import DateValues
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.wild_encounters.domain.wild_encounter_link import WildEncounterLink
 from api.wild_encounters.domain.wild_encounter_schedule import WildEncounterSchedule
+from .bookable_dates import BookableDates
 from .booking_calendar import BookingCalendar
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .encounter_schedule_slots import EncounterScheduleSlots
 from .encounter_schedule_table import EncounterScheduleTable
+from .paths import Paths
 from .schedule_check import ScheduleCheck
 from .schedule_slot import ScheduleSlot
 from .schedule_slot_group import ScheduleSlotGroup
+from tools.fix.encounter_schedule_correction import EncounterScheduleCorrection
+from tools.fix.wild_encounter_window_fixer import WildEncounterWindowFixer
 from .website_page import WebsitePage
+from .wild_encounter_detail_image import WildEncounterDetailImage
 
 
 class WildEncounterScheduleChecker():
@@ -118,19 +123,79 @@ class WildEncounterScheduleChecker():
 
 
    @classmethod
+   def window_names(
+         cls,
+         website_names: set[ str ],
+         encounters: list[ WildEncounterLink ] ) -> list[ str ]:
+      catalog = { encounter.name for encounter in encounters }
+      return sorted( website_names & catalog, key=str.casefold )
+
+
+   @classmethod
+   def window_fix(
+         cls,
+         database: Path,
+         correction: EncounterScheduleCorrection ) -> str:
+      return WildEncounterWindowFixer.apply( database, correction )
+
+
+   @classmethod
+   def window_detail(
+         cls,
+         database: Path,
+         name: str,
+         encounters: list[ WildEncounterLink ],
+         schedules: list[ WildEncounterSchedule ],
+         website_slots: EncounterScheduleSlots,
+         first: date,
+         last: date ) -> str | None:
+      booking = cls.read_bookable(
+         WildEncounterLink.booking_link( name, encounters ),
+         first,
+         last,
+      )
+
+      if booking.failure != None:
+         return booking.failure
+
+      app_dates = WildEncounterSchedule.dates( schedules, name, first, last )
+      mismatch = cls.date_mismatch( app_dates, booking.dates )
+
+      if mismatch == None:
+         return None
+
+      return cls.window_fix(
+         database,
+         WildEncounterWindowFixer.correction(
+            name,
+            booking.dates,
+            app_dates,
+            schedules,
+            website_slots,
+            first,
+         ),
+      )
+
+
+   @classmethod
    def window_lines(
          cls,
+         database: Path,
          names: list[ str ],
          encounters: list[ WildEncounterLink ],
          schedules: list[ WildEncounterSchedule ],
+         website_slots: EncounterScheduleSlots,
          first: date,
          last: date ) -> list[ str ]:
       lines = []
 
       for name in names:
-         detail = cls.read_window_difference(
-            WildEncounterLink.booking_link( name, encounters ),
-            WildEncounterSchedule.dates( schedules, name, first, last ),
+         detail = cls.window_detail(
+            database,
+            name,
+            encounters,
+            schedules,
+            website_slots,
             first,
             last,
          )
@@ -145,9 +210,25 @@ class WildEncounterScheduleChecker():
 
    @classmethod
    def window_line( cls, name: str, detail: str ) -> str:
-      return CheckReport.join_lines( [
-         CheckReport.text( 'checks.categoryItem' ) + name,
-         detail,
+      lines = [ CheckReport.text( 'checks.categoryItem' ) + name ]
+      photo = WildEncounterDetailImage.source( name )
+
+      if ( Paths.ROOT / photo ).is_file():
+         lines.append( CheckReport.detail_item(
+            CheckReport.text( 'checks.photo' ) + photo
+         ) )
+
+      lines.append( detail )
+      return CheckReport.join_lines( lines )
+
+
+   @classmethod
+   def unfixed_windows( cls, lines: list[ str ] ) -> int:
+      phrase = CheckReport.text( 'checks.setScheduleFrom' )
+      return len( [
+         line
+         for line in lines
+         if phrase not in line
       ] )
 
 
@@ -188,29 +269,29 @@ class WildEncounterScheduleChecker():
 
 
    @classmethod
-   def read_window_difference(
+   def read_bookable(
          cls,
          link: str,
-         app_dates: list[ date ],
          first: date,
-         last: date ) -> str | None:
+         last: date ) -> BookableDates:
       if link == '':
-         return cls.detail_line( 'checks.noBookingLink' )
+         return BookableDates( dates=[], failure=cls.detail_line( 'checks.noBookingLink' ) )
 
       try:
          booking_type = BookingCalendar.tour_id( WebsitePage.fetch_text( link ) )
       except RuntimeError:
-         return cls.detail_line( 'checks.couldNotReadBookingPage' )
+         return BookableDates( dates=[], failure=cls.detail_line( 'checks.couldNotReadBookingPage' ) )
 
       if booking_type == None:
-         return cls.detail_line( 'checks.noTourId' )
+         return BookableDates( dates=[], failure=cls.detail_line( 'checks.noTourId' ) )
 
       try:
-         bookable = BookingCalendar.enabled_dates( booking_type, first, last )
+         return BookableDates(
+            dates=BookingCalendar.enabled_dates( booking_type, first, last ),
+            failure=None,
+         )
       except ( RuntimeError, ValueError, KeyError, TypeError ):
-         return cls.detail_line( 'checks.couldNotReadBookingCalendar' )
-
-      return cls.date_mismatch( app_dates, bookable )
+         return BookableDates( dates=[], failure=cls.detail_line( 'checks.couldNotReadBookingCalendar' ) )
 
 
    @classmethod
@@ -233,6 +314,7 @@ class WildEncounterScheduleChecker():
       current_app_slots = cls.active_slots( schedules, today )
       website_names = website_slots.names()
       app_names = current_app_slots.names()
+      catalog = { encounter.name for encounter in encounters }
       shared_names = website_names & app_names
       different_names = {
          name
@@ -241,18 +323,25 @@ class WildEncounterScheduleChecker():
       }
       first = today + timedelta( days=1 )
       last = today + timedelta( days=cls.BOOKING_HORIZON_DAYS )
-      shared_name_list = sorted( shared_names, key=str.casefold )
 
       return ScheduleCheck(
          note=cls.comparison_note( first, last ),
          only_in_app=cls.names_only( app_names - website_names ),
-         only_on_website=cls.names_only( website_names - app_names ),
+         only_on_website=cls.names_only( website_names - catalog ),
          different_slots=cls.different_slot_lines(
             different_names,
             website_slots,
             current_app_slots,
          ),
-         windows=cls.window_lines( shared_name_list, encounters, schedules, first, last ),
+         windows=cls.window_lines(
+            database,
+            cls.window_names( website_names, encounters ),
+            encounters,
+            schedules,
+            website_slots,
+            first,
+            last,
+         ),
       )
 
 
@@ -260,7 +349,12 @@ class WildEncounterScheduleChecker():
    def check_schedules( cls, database: Path, today: date ) -> int:
       schedule = cls.schedule_check( database, today )
       CheckReport.report_schedule( 'wildEncounter', today, schedule )
-      return CheckReport.count_schedule( schedule )
+      return (
+         len( schedule.only_in_app )
+         + len( schedule.only_on_website )
+         + len( schedule.different_slots )
+         + cls.unfixed_windows( schedule.windows )
+      )
 
 
    @classmethod

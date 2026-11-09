@@ -15,7 +15,7 @@ class CheckReportParser():
    COUNT_LABELS = (
       'site.nav.animals',
       'map.filter.attractions',
-      'reports.wildEncounter.section',
+      'site.nav.wildEncounters',
       'reports.guardiansTalk.section',
       'map.filterTypes.restaurant',
       'checks.countNames.giftShops',

@@ -120,7 +120,7 @@ def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
    assert report.error_count == 1
    assert report.counts[ 0 ] == Count( label='Animals', count=0 )
    assert report.counts[ 1 ] == Count( label='Attractions', count=0 )
-   assert report.counts[ 2 ] == Count( label='Encounters', count=0 )
+   assert report.counts[ 2 ] == Count( label='Wild Encounters', count=0 )
    assert report.counts[ -1 ] == Count( label='Zoo hours', count=1 )
    assert report.sections[ 0 ].kind == 'Wild encounter schedule'
    assert report.sections[ 0 ].note.startswith( CheckReport.text( 'checks.bookingDatesCompared' ) )
@@ -167,10 +167,10 @@ def Test_RenderHtml_TestAnimalCatalogAndOffDisplay_ExpectOneSection() -> None:
    assert CheckReport.text( 'checks.offForSeasonWebsiteOnly' ) in html
    assert 'Polar Bear' in html
    assert '<img ' not in html
-   assert html.index( '>Animals<' ) < html.index( '>Encounters<' )
-   assert html.index( '>Encounters<' ) < html.index( 'Polar Bear' )
-   assert html.index( '>Encounters<' ) < html.index( 'Marabou Stork' )
-   assert html.index( '>Encounters<' ) < html.index( 'Capybara' )
+   assert html.index( '>Animals<' ) < html.index( '>Wild Encounters<' )
+   assert html.index( '>Wild Encounters<' ) < html.index( 'Polar Bear' )
+   assert html.index( '>Wild Encounters<' ) < html.index( 'Marabou Stork' )
+   assert html.index( '>Wild Encounters<' ) < html.index( 'Capybara' )
 
 
 def Test_RenderHtml_TestSplitAnimalCatalog_ExpectBothSides() -> None:
@@ -241,7 +241,7 @@ def Test_RenderHtml_TestCorrectedOffDisplay_ExpectPhotoExhibitAndCorrection() ->
    label = f'<span style="color:{ colors.foreground };">Harris&#x27;s Hawk</span>'
    correction = CheckReport.text( 'checks.setOffDisplayForSeasonFrom' )
    assert image in html
-   assert html.index( '>Encounters<' ) < html.index( image )
+   assert html.index( '>Wild Encounters<' ) < html.index( image )
    assert html.index( image ) < html.index( label ) < html.index( correction )
    assert '</tr>' in html[ html.index( image ):html.index( label ) ]
    assert f'border:3px solid { colors.foreground }' in html
@@ -314,10 +314,10 @@ def Test_RenderHtml_TestAttractionChecks_ExpectSecondTabAndOneSection() -> None:
    html = CheckEmailRenderer.render_html( body, 1 )
    green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
    danger = ColorTokens.color( ColorToken.DANGER )
-   attractions = html[ html.index( '>Attractions<' ):html.index( '>Encounters<' ) ]
+   attractions = html[ html.index( '>Attractions<' ):html.index( '>Wild Encounters<' ) ]
 
    assert html.index( '>Animals<' ) < html.index( '>Attractions<' )
-   assert html.index( '>Attractions<' ) < html.index( '>Encounters<' )
+   assert html.index( '>Attractions<' ) < html.index( '>Wild Encounters<' )
    assert html.count( '>Attractions<' ) == 2
    assert 'Attractions closed for the season' not in html
    assert 'Attraction list' not in html
@@ -357,7 +357,7 @@ def Test_RenderHtml_TestAllAnimalErrorsFixed_ExpectGreenTotal() -> None:
    html = CheckEmailRenderer.render_html( body, 0 )
    green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
    danger = ColorTokens.color( ColorToken.DANGER )
-   animals = html[ html.index( '>Animals<' ):html.index( '>Encounters<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Wild Encounters<' ) ]
    detected = CheckReportParser.format_detected( 2, 2 )
 
    assert detected in html
@@ -434,10 +434,10 @@ def Test_RenderHtml_TestFixedAndCatalogueMiss_ExpectGreenFixAndDangerMiss() -> N
    detected = CheckReportParser.format_detected( 2, 1 )
 
    assert f'color:{ danger };">{ detected }' in html
-   animals = html[ html.index( '>Animals<' ):html.index( '>Encounters<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Wild Encounters<' ) ]
    assert '>2<' in animals
    assert f'color:{ danger }' in animals
-   assert html.index( '>Encounters<' ) < html.index( 'Warthog' )
+   assert html.index( '>Wild Encounters<' ) < html.index( 'Warthog' )
    assert f'color:{ green };">{ fixed_title }' in html
    assert f'color:{ danger };">{ missed_title }' in html
    assert CheckReport.text( 'checks.appOnly' ) not in html
