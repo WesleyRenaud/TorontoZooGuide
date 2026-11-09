@@ -8,3 +8,4 @@ class WebsiteAttraction:
    href: str
    title: str
    status: str | None
+   image: str = ''

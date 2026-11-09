@@ -7,3 +7,4 @@ from dataclasses import dataclass
 class AnimalSpeciesExhibit:
    species: str
    exhibit: str
+   image: str = ''

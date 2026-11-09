@@ -15,6 +15,7 @@ class AttractionListing:
    }
    name: str
    link: str = ''
+   image: str = ''
 
 
    @classmethod

@@ -280,6 +280,9 @@ class CheckEmailRenderer():
 
    @classmethod
    def image_src( cls, photo: str ) -> str:
+      if photo.startswith( 'http://' ) or photo.startswith( 'https://' ):
+         return photo
+
       return cls.local_image( photo ).as_uri()
 
 
@@ -287,6 +290,9 @@ class CheckEmailRenderer():
    def embed_local_images( cls, html: str ) -> EmbeddedHtml:
       sources = re.findall( r'src="(file:[^"]+)"', html )
       images = [ EmailImage.from_file_uri( src ) for src in sources ]
+      web_sources = re.findall( r'src="(https?://[^"]+)"', html )
+      images.extend( EmailImage.from_url( src ) for src in web_sources )
+      sources.extend( web_sources )
 
       for src, image in zip( sources, images, strict=True ):
          html = html.replace( f'src="{ src }"', f'src="{ image.src() }"', 1 )
@@ -312,10 +318,17 @@ class CheckEmailRenderer():
 
    @classmethod
    def corrected_animal_rows( cls, item: DetailItem ) -> str:
-      species, _, exhibit = item.title.rpartition(
+      species, separator, exhibit = item.title.rpartition(
          AppStringProvider.format( 'format.middleDotJoin' )
       )
-      colors = ExhibitRegionColors.place_colors( exhibit )
+
+      if separator == '':
+         alt = item.title
+         border = ColorTokens.color( ColorToken.TEXT_PRIMARY )
+      else:
+         alt = species
+         border = ExhibitRegionColors.place_colors( exhibit ).foreground
+
       label = cls.item_label( item.title )
       photo_url, details = cls.photo_and_details( item.details )
       photo = ''
@@ -324,8 +337,8 @@ class CheckEmailRenderer():
          photo = cls.markup(
             'animal_photo',
             src=cls.text( cls.image_src( photo_url ) ),
-            alt=cls.text( species ),
-            border=colors.foreground,
+            alt=cls.text( alt ),
+            border=border,
          )
 
       return cls.markup(
@@ -346,9 +359,9 @@ class CheckEmailRenderer():
    def rows_for( cls, category_title: str, item: DetailItem ) -> str:
       photo, _details = cls.photo_and_details( item.details )
 
-      if (
+      if photo != '' or (
          AppStringProvider.format( 'format.middleDotJoin' ) in item.title
-         and ( cls.fixed_category( category_title ) or photo != '' )
+         and cls.fixed_category( category_title )
       ):
          return cls.corrected_animal_rows( item )
 

@@ -29,7 +29,10 @@ class WebsiteAttractionNotInAppChecker():
       website_listings = AttractionCatalogue.website_listings(
          AttractionCatalogue.fetch_website_attractions()
       )
-      website_only = AttractionCatalogue.missing_names( website_listings, app_listings )
+      website_only = [
+         AttractionCatalogue.website_line( listing )
+         for listing in AttractionCatalogue.missing_listings( website_listings, app_listings )
+      ]
 
       print( CheckReport.heading( 'attractionList', today ) )
       print()

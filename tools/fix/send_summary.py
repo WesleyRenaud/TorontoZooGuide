@@ -126,12 +126,12 @@ class SendSummary():
       if html_part != None:
          for image in embedded.images:
             html_part.add_related(
-               image.path.read_bytes(),
+               image.content,
                maintype='image',
-               subtype='png',
+               subtype=image.subtype,
                cid=image.content_id,
                disposition='inline',
-               filename=image.path.name,
+               filename=image.filename,
             )
       server = smtplib.SMTP( cls.SMTP_HOST, cls.SMTP_PORT, timeout=30 )
 
