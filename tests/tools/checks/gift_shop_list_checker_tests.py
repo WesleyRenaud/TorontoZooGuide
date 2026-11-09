@@ -12,7 +12,7 @@ from tools.checks.website_page import WebsitePage
 
 
 ZOOTIQUE = 'Zootique'
-KIOSK = 'Courtyard Kiosk'
+KIOSK = 'Savanna Shop'
 OUTPOST = 'Eurasia Wilds Outpost'
 TODAY = date( 2026, 11, 3 )
 SCHEMA = """
@@ -190,3 +190,44 @@ def Test_CheckLists_TestDuplicateCard_ExpectOneListing(
    assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert output.count( '  Discovery Zone' ) == 1
+
+
+def Test_CheckLists_TestWebsiteImage_ExpectWebPhoto(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ ZOOTIQUE ] )
+   _install_page(
+      monkeypatch,
+      _page( [ ZOOTIQUE ] )
+      + (
+         '<div class="col3">'
+         '<img alt="" src="/!/img/pg/shops/discovery.jpg" />'
+         '<strong>Discovery Zone</strong>'
+         '<span class="opentxt">Open Daily</span>'
+         '<strong>(Hours subject to change)</strong>'
+         '</div>'
+      ),
+   )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 1
+   assert 'https://www.torontozoo.com/!/img/pg/shops/discovery.jpg' in output
+   assert '  Discovery Zone' in output
+
+
+def Test_CheckLists_TestAppPhoto_ExpectDetailImage(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ ZOOTIQUE, OUTPOST ] )
+   _install_page( monkeypatch, _page( [ ZOOTIQUE ] ) )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 1
+   assert 'images/details/gift-shops/eurasia-wilds-outpost.png' in output
+   assert f'  { OUTPOST } · Eurasia Wilds' in output

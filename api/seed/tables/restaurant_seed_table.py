@@ -13,6 +13,7 @@ RECORD_FIELDS = [
    'menu_link',
    'x_coord',
    'y_coord',
+   'closed_for_season_until_month',
 ]
 
 DB_COLUMNS = [
@@ -23,6 +24,7 @@ DB_COLUMNS = [
    'MENU_LINK',
    'X_COORD',
    'Y_COORD',
+   'CLOSED_FOR_SEASON_UNTIL_MONTH',
 ]
 
 DATA_FILE = 'restaurant.json'

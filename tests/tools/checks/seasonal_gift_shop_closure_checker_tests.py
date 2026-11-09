@@ -13,19 +13,25 @@ from tools.checks.website_page import WebsitePage
 
 
 ZOOTIQUE = 'Zootique'
-KIOSK = 'Courtyard Kiosk'
+KIOSK = 'Savanna Shop'
 OUTPOST = 'Eurasia Wilds Outpost'
 TODAY = date( 2026, 11, 2 )
 RAMP_UP = date( 2026, 3, 15 )
 STEADY = date( 2026, 7, 15 )
+APRIL = date( 2027, 4, 30 )
+UNTIL_MONTHS = {
+   KIOSK: 3,
+   OUTPOST: 3,
+}
 SCHEMA = """
 CREATE TABLE GiftShop (
    NAME TEXT NOT NULL,
+   CLOSED_FOR_SEASON_UNTIL_MONTH INTEGER,
    PRIMARY KEY ( NAME )
 );
 
 CREATE TABLE GiftShopStatus (
-   GIFT_SHOP          TEXT NOT NULL,
+   GIFT_SHOP          TEXT NOT NULL PRIMARY KEY,
    IS_CLOSED          BOOL NOT NULL,
    CLOSED_MESSAGE     TEXT,
    CLOSED_START       DATE,
@@ -53,8 +59,11 @@ def _write_database(
    connection = sqlite3.connect( path )
    connection.executescript( SCHEMA )
    connection.executemany(
-      'INSERT INTO GiftShop ( NAME ) VALUES ( ? )',
-      [ ( name, ) for name in gift_shops ],
+      'INSERT INTO GiftShop ( NAME, CLOSED_FOR_SEASON_UNTIL_MONTH ) VALUES ( ?, ? )',
+      [
+         ( name, UNTIL_MONTHS.get( name ) )
+         for name in gift_shops
+      ],
    )
 
    for name, start, end in closed_for_season:
@@ -130,11 +139,33 @@ def _check(
       database: Path,
       today: date,
       capsys: pytest.CaptureFixture[ str ] ) -> tuple[ int, str ]:
+   CheckReport.reset_fixed_count()
    result = CHECKER.check_schedules( database, today )
    return result, capsys.readouterr().out
 
 
-def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
+def _season_row( database: Path, name: str ) -> tuple[ int, str | None, str | None, int ] | None:
+   connection = sqlite3.connect( database )
+   row = connection.execute(
+      """   SELECT
+               IS_CLOSED,
+               CLOSED_START,
+               CLOSED_END,
+               CLOSED_FOR_SEASON
+            FROM GiftShopStatus
+            WHERE GIFT_SHOP = ?
+      """,
+      ( name, ),
+   ).fetchone()
+   connection.close()
+
+   if row == None:
+      return None
+
+   return ( row[ 0 ], row[ 1 ], row[ 2 ], row[ 3 ] )
+
+
+def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectClosedForSeason(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -148,21 +179,25 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
    _install_page(
       monkeypatch,
       _page( [
-         ( '', 'Courtyard kiosk', 'Closed For The Season' ),
+         ( '', 'Savanna shop', 'Closed For The Season' ),
          ( '', ZOOTIQUE, 'Open Daily' ),
       ] ),
    )
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { KIOSK }' in output
+   assert 'images/details/gift-shops/savanna-shop.png' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert 'March 31, 2027' in output
+   assert _season_row( database, KIOSK ) == ( 1, TODAY.isoformat(), '2027-03-31', 1 )
    assert ZOOTIQUE not in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestCardWithoutLink_ExpectMatched(
+def Test_CheckSchedules_TestCardWithoutLink_ExpectUnmatchedReported(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -183,10 +218,10 @@ def Test_CheckSchedules_TestCardWithoutLink_ExpectMatched(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 0
+   assert result == 1
    assert KIOSK not in output
-   assert 'Discovery Zone' not in output
-   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert '  Discovery Zone' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
@@ -224,7 +259,7 @@ def Test_CheckSchedules_TestCommentedClosedCard_ExpectIgnored(
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestUnknownWebsiteCard_ExpectIgnored(
+def Test_CheckSchedules_TestUnknownWebsiteCard_ExpectReported(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -242,12 +277,12 @@ def Test_CheckSchedules_TestUnknownWebsiteCard_ExpectIgnored(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 0
-   assert 'Discovery Zone' not in output
-   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
+   assert result == 1
+   assert '  Discovery Zone' in output
+   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
 
 
-def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
+def Test_CheckSchedules_TestRampDownAppOnly_ExpectOpenedAndClosed(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -272,9 +307,14 @@ def Test_CheckSchedules_TestRampDownAppOnly_ExpectAppMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 2
+   assert result == 0
    assert f'  { KIOSK }' in output
    assert f'  { OUTPOST }' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert _season_row( database, KIOSK ) == ( 1, TODAY.isoformat(), '2027-03-31', 1 )
+   assert _season_row( database, OUTPOST ) == None
+   assert ZOOTIQUE not in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
 
 
@@ -304,7 +344,7 @@ def Test_CheckSchedules_TestOpenThroughPastDate_ExpectWebsiteSeason(
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
+def Test_CheckSchedules_TestOpenThroughToday_ExpectOpenedForSeason(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -325,8 +365,10 @@ def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
 
    result, output = _check( database, through_today, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { KIOSK }' in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert _season_row( database, KIOSK ) == None
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
 
@@ -344,7 +386,7 @@ def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
    )
    _install_page(
       monkeypatch,
-      _page( [ ( '', 'Courtyard kiosk', 'Closed For The Season' ) ] ),
+      _page( [ ( '', 'Savanna shop', 'Closed For The Season' ) ] ),
    )
 
    result, output = _check( database, TODAY, capsys )
@@ -354,7 +396,7 @@ def Test_CheckSchedules_TestRampDownMatch_ExpectNoIssues(
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestDifferentGiftShopsClosed_ExpectBoth(
+def Test_CheckSchedules_TestDifferentGiftShopsClosed_ExpectBothCorrected(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -372,10 +414,15 @@ def Test_CheckSchedules_TestDifferentGiftShopsClosed_ExpectBoth(
 
    result, output = _check( database, RAMP_UP, capsys )
 
-   assert result == 2
+   assert result == 0
    assert f'  { KIOSK }' in output
-   assert f'  { ZOOTIQUE }' in output
-   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
+   assert f'  { ZOOTIQUE } · Front Courtyard' in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert CheckReport.text( 'checks.extendedClosedForSeasonThrough' ) in output
+   assert 'March 22, 2026' in output
+   assert _season_row( database, KIOSK ) == None
+   assert _season_row( database, ZOOTIQUE ) == ( 1, RAMP_UP.isoformat(), '2026-03-22', 1 )
+   assert CheckReport.category_line( 'checks.closedForSeasonReturningSoon', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
 
 
@@ -401,3 +448,47 @@ def Test_CheckSchedules_TestClosedOnSteadyDate_ExpectNoIssues(
    assert KIOSK not in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
+
+
+def Test_CheckSchedules_TestSeasonEndToday_ExpectExtendedOneWeek(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   start = '2026-11-08'
+   _write_database(
+      database,
+      [ KIOSK ],
+      [ ( KIOSK, start, APRIL.isoformat() ) ],
+      [ ( APRIL, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '', KIOSK, 'Closed For The Season' ) ] ),
+   )
+
+   result, output = _check( database, APRIL, capsys )
+
+   assert result == 0
+   assert CheckReport.text( 'checks.extendedClosedForSeasonThrough' ) in output
+   assert 'May 8, 2027' in output
+   assert _season_row( database, KIOSK ) == ( 1, start, '2027-05-08', 1 )
+
+
+def Test_CheckSchedules_TestNoUntilMonth_ExpectCrash(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [ ZOOTIQUE ],
+      [],
+      [ ( TODAY, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '', ZOOTIQUE, 'Closed for the Season' ) ] ),
+   )
+
+   with pytest.raises( TypeError ):
+      CHECKER.check_schedules( database, TODAY )

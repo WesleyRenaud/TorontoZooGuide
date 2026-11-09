@@ -9,6 +9,7 @@ from .website_page import WebsitePage
 @dataclass( frozen=True )
 class GiftShopListing:
    name: str
+   image: str = ''
 
 
    def __eq__( self, other: Any ) -> bool:

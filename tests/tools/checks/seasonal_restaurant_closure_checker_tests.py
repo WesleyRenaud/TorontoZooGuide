@@ -9,6 +9,7 @@ import pytest
 
 from tools.checks.check_report import CheckReport
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker as CHECKER
+from tools.checks.seasonal_restaurant_comparison import SeasonalRestaurantComparison
 from tools.checks.website_page import WebsitePage
 
 
@@ -16,20 +17,30 @@ AFRICA = 'Africa Restaurant'
 SAVANNA = 'Savanna Snack Bar'
 TACOS = 'Tundra Tacos'
 EURASIA = 'Eurasia Pizza Pizza'
-PIZZA = 'Pizza Window'
+PIZZA = 'BeaverTails Trailer'
 SHARED_LINK = 'https://www.torontozoo.com/!/pdfs/food/Eurasia%20pizza%20pizza%20menu%202025.pdf'
+COCOA = 'Cocoa Flow'
 TODAY = date( 2026, 11, 2 )
 RAMP_UP = date( 2026, 3, 15 )
 STEADY = date( 2026, 7, 15 )
+APRIL = date( 2027, 4, 30 )
+UNTIL_MONTHS = {
+   SAVANNA: 4,
+   TACOS: 3,
+   EURASIA: 4,
+   PIZZA: 4,
+   COCOA: 2,
+}
 SCHEMA = """
 CREATE TABLE Restaurant (
    NAME      TEXT NOT NULL,
    MENU_LINK TEXT,
+   CLOSED_FOR_SEASON_UNTIL_MONTH INTEGER,
    PRIMARY KEY ( NAME )
 );
 
 CREATE TABLE RestaurantStatus (
-   RESTAURANT         TEXT NOT NULL,
+   RESTAURANT         TEXT NOT NULL PRIMARY KEY,
    IS_CLOSED          BOOL NOT NULL,
    CLOSED_MESSAGE     TEXT,
    CLOSED_START       DATE,
@@ -48,8 +59,16 @@ def _write_database(
    connection = sqlite3.connect( path )
    connection.executescript( SCHEMA )
    connection.executemany(
-      'INSERT INTO Restaurant ( NAME, MENU_LINK ) VALUES ( ?, ? )',
-      restaurants,
+      """   INSERT INTO Restaurant (
+               NAME,
+               MENU_LINK,
+               CLOSED_FOR_SEASON_UNTIL_MONTH
+            ) VALUES ( ?, ?, ? )
+      """,
+      [
+         ( name, link, UNTIL_MONTHS.get( name ) )
+         for name, link in restaurants
+      ],
    )
 
    for name, start, end in closed_for_season:
@@ -103,11 +122,33 @@ def _check(
       database: Path,
       today: date,
       capsys: pytest.CaptureFixture[ str ] ) -> tuple[ int, str ]:
+   CheckReport.reset_fixed_count()
    result = CHECKER.check_schedules( database, today )
    return result, capsys.readouterr().out
 
 
-def Test_CheckSchedules_TestWebsiteOnly_ExpectWebsiteMiss(
+def _season_row( database: Path, name: str ) -> tuple[ int, str | None, str | None, int ] | None:
+   connection = sqlite3.connect( database )
+   row = connection.execute(
+      """   SELECT
+               IS_CLOSED,
+               CLOSED_START,
+               CLOSED_END,
+               CLOSED_FOR_SEASON
+            FROM RestaurantStatus
+            WHERE RESTAURANT = ?
+      """,
+      ( name, ),
+   ).fetchone()
+   connection.close()
+
+   if row == None:
+      return None
+
+   return ( row[ 0 ], row[ 1 ], row[ 2 ], row[ 3 ] )
+
+
+def Test_CheckSchedules_TestWebsiteOnly_ExpectClosedForSeason(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -127,8 +168,12 @@ def Test_CheckSchedules_TestWebsiteOnly_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { SAVANNA }' in output
+   assert 'images/details/restaurants/savanna-snack-bar.png' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert 'April 30, 2027' in output
+   assert _season_row( database, SAVANNA ) == ( 1, TODAY.isoformat(), '2027-04-30', 1 )
    assert AFRICA not in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
@@ -243,7 +288,7 @@ def Test_CheckSchedules_TestSharedLink_ExpectBothRestaurantsCovered(
    assert PIZZA not in output
 
 
-def Test_CheckSchedules_TestSharedLinkOneRestaurant_ExpectWebsiteMiss(
+def Test_CheckSchedules_TestSharedLinkOneRestaurant_ExpectClosedForSeason(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -269,13 +314,15 @@ def Test_CheckSchedules_TestSharedLinkOneRestaurant_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { PIZZA }' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert _season_row( database, PIZZA ) == ( 1, TODAY.isoformat(), '2027-04-30', 1 )
    assert EURASIA not in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
 
 
-def Test_CheckSchedules_TestWebsiteAndAppMisses_ExpectBoth(
+def Test_CheckSchedules_TestWebsiteAndAppMisses_ExpectOpenedAndClosed(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -303,9 +350,13 @@ def Test_CheckSchedules_TestWebsiteAndAppMisses_ExpectBoth(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 2
+   assert result == 0
    assert f'  { SAVANNA }' in output
    assert f'  { TACOS }' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert _season_row( database, SAVANNA ) == ( 1, TODAY.isoformat(), '2027-04-30', 1 )
+   assert _season_row( database, TACOS ) == None
    assert AFRICA not in output
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
 
@@ -335,7 +386,7 @@ def Test_CheckSchedules_TestOpenThroughPastDate_ExpectWebsiteSeason(
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
+def Test_CheckSchedules_TestOpenThroughToday_ExpectOpenedForSeason(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -355,8 +406,10 @@ def Test_CheckSchedules_TestOpenThroughToday_ExpectStillOpen(
 
    result, output = _check( database, through_today, capsys )
 
-   assert result == 1
+   assert result == 0
    assert f'  { TACOS }' in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert _season_row( database, TACOS ) == None
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 0 ) in output
 
@@ -383,7 +436,7 @@ def Test_CheckSchedules_TestMatchingClosure_ExpectNoIssues(
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 0 ) in output
 
 
-def Test_CheckSchedules_TestDifferentRestaurantsClosed_ExpectBoth(
+def Test_CheckSchedules_TestDifferentRestaurantsClosed_ExpectBothCorrected(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -403,11 +456,16 @@ def Test_CheckSchedules_TestDifferentRestaurantsClosed_ExpectBoth(
 
    result, output = _check( database, RAMP_UP, capsys )
 
-   assert result == 2
+   assert result == 0
    assert f'  { SAVANNA }' in output
    assert f'  { AFRICA }' in output
+   assert CheckReport.text( 'checks.setOpenForSeason' ) in output
+   assert CheckReport.text( 'checks.extendedClosedForSeasonThrough' ) in output
+   assert 'March 22, 2026' in output
+   assert _season_row( database, SAVANNA ) == None
+   assert _season_row( database, AFRICA ) == ( 1, RAMP_UP.isoformat(), '2026-03-22', 1 )
    assert CheckReport.category_line( 'checks.closedForSeasonAppOnly', 1 ) in output
-   assert CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) in output
+   assert CheckReport.category_line( 'checks.closedForSeasonReturningSoon', 1 ) in output
 
 
 def Test_CheckSchedules_TestClosedOnSteadyDate_ExpectNoIssues(
@@ -445,6 +503,70 @@ def Test_ParseWebsiteRestaurants_TestMissingOpeningStatus_ExpectOmitted() -> Non
       '</a>'
    )
 
-   listings = CHECKER.parse_website_restaurants( page, TODAY )
+   listings = SeasonalRestaurantComparison.parse_website_restaurants( page, TODAY )
 
    assert [ listing.title for listing in listings ] == [ SAVANNA ]
+
+
+def Test_CheckSchedules_TestCocoaFlowWebsiteOnly_ExpectDetailImage(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ ( COCOA, None ) ], [] )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '', COCOA, 'Closed For The Season' ) ] ),
+   )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 0
+   assert 'images/details/restaurants/cocoa-flow.png' in output
+   assert '  Cocoa Flow · Front Courtyard' in output
+   assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
+   assert 'February 28, 2027' in output
+   assert _season_row( database, COCOA ) == ( 1, TODAY.isoformat(), '2027-02-28', 1 )
+
+
+def Test_CheckSchedules_TestSeasonEndToday_ExpectExtendedOneWeek(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   start = '2026-11-08'
+   _write_database(
+      database,
+      [ ( SAVANNA, 'https://www.torontozoo.com/!/pdfs/food/savanna.pdf' ) ],
+      [ ( SAVANNA, start, APRIL.isoformat() ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/!/pdfs/food/savanna.pdf', SAVANNA, 'Closed For The Season' ) ] ),
+   )
+
+   result, output = _check( database, APRIL, capsys )
+
+   assert result == 0
+   assert CheckReport.text( 'checks.extendedClosedForSeasonThrough' ) in output
+   assert 'May 8, 2027' in output
+   assert _season_row( database, SAVANNA ) == ( 1, start, '2027-05-08', 1 )
+   assert CheckReport.category_line( 'checks.closedForSeasonReturningSoon', 1 ) in output
+
+
+def Test_CheckSchedules_TestNoUntilMonth_ExpectCrash(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [ ( AFRICA, 'https://www.torontozoo.com/!/pdfs/food/africa.pdf' ) ],
+      [],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/!/pdfs/food/africa.pdf', AFRICA, 'Closed for the Season' ) ] ),
+   )
+
+   with pytest.raises( TypeError ):
+      CHECKER.check_schedules( database, TODAY )

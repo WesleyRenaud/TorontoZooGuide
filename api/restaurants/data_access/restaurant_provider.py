@@ -50,6 +50,21 @@ class RestaurantProvider():
 
 
    @classmethod
+   def fetch_closed_for_season_until_month(
+         cls,
+         conn: Types.Connection,
+         restaurant: str ) -> int | None:
+      row = conn.execute(
+         """   SELECT CLOSED_FOR_SEASON_UNTIL_MONTH
+               FROM Restaurant
+               WHERE NAME = ?;
+         """,
+         ( restaurant, ) ).fetchone()
+
+      return row[ 'CLOSED_FOR_SEASON_UNTIL_MONTH' ]
+
+
+   @classmethod
    def fetch_restaurant_records(
          cls,
          conn: Types.Connection,

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import re
 
@@ -13,6 +12,7 @@ from .attraction_card import AttractionCard
 from .attraction_detail_image import AttractionDetailImage
 from .attraction_listing import AttractionListing
 from .check_report import CheckReport
+from .exhibit_region_colors import ExhibitRegionColors
 from .paths import Paths
 from .website_attraction import WebsiteAttraction
 from .website_page import WebsitePage
@@ -91,17 +91,6 @@ class AttractionCatalogue():
 
 
    @classmethod
-   def seed_region( cls, name: str ) -> str | None:
-      folded = name.casefold()
-
-      for row in json.loads( Paths.ATTRACTION_DATA.read_text() ):
-         if row[ 'name' ].casefold() == folded:
-            return row[ 'region' ]
-
-      return None
-
-
-   @classmethod
    def app_photo( cls, name: str ) -> str:
       photo = AttractionDetailImage.source( name )
 
@@ -124,16 +113,11 @@ class AttractionCatalogue():
 
    @classmethod
    def app_line( cls, name: str ) -> str:
-      region = cls.seed_region( name )
-
-      if region == None:
-         return name
-
       return cls.photo_line(
          AppStringProvider.format(
             'format.middleDotPair',
             first=name,
-            second=region,
+            second=ExhibitRegionColors.listed_region( name ),
          ),
          cls.app_photo( name ),
       )

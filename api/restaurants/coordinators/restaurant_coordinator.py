@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from ..data_access.restaurant_closure_record import RestaurantClosureRecord
 from ..data_access.restaurant_provider import RestaurantProvider
 from ..data_access.restaurant_schedule_provider import RestaurantScheduleProvider
@@ -13,6 +15,7 @@ from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.restaurant_schedule_conflict_resolver import RestaurantScheduleConflictResolver
 from ..search.restaurants_matching_query_builder import RestaurantsMatchingQueryBuilder
 from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ..status.restaurant_season_closure_builder import RestaurantSeasonClosureBuilder
 from ..status.restaurant_status_builder import RestaurantStatusBuilder
@@ -136,6 +139,28 @@ class RestaurantCoordinator():
       return RestaurantStatusProvider.delete_closed_for_season(
          RequestConnectionProvider.get(),
          restaurant=restaurant )
+
+
+   @classmethod
+   def closed_for_season_until_month( cls, restaurant: str ) -> int | None:
+      return RestaurantProvider.fetch_closed_for_season_until_month(
+         RequestConnectionProvider.get(),
+         restaurant=restaurant )
+
+
+   @classmethod
+   def set_restaurant_as_closed_for_season_until(
+         cls,
+         restaurant: str,
+         today: date ) -> bool:
+      until_month = cls.closed_for_season_until_month( restaurant )
+      end_date = CalendarDates.next_month_end( until_month, today )
+
+      return cls.set_restaurant_as_closed_for_season(
+         restaurant=restaurant,
+         start_date=today,
+         end_date=end_date,
+         message='' )
 
 
    @classmethod

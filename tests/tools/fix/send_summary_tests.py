@@ -351,6 +351,65 @@ def Test_RenderHtml_TestAttractionChecks_ExpectSecondTabAndOneSection() -> None:
    assert html.index( 'Splash Island' ) < html.index( 'Stingray Bay' )
 
 
+def Test_RenderHtml_TestRestaurantAndGiftShopChecks_ExpectOneSectionEach() -> None:
+   closed = CheckReport.text( 'checks.closedForSeasonWebsiteOnly' )
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'seasonalRestaurant', date( 2026, 11, 9 ) ) }
+
+      { CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) }
+        Cocoa Flow
+          { CheckReport.text( 'checks.setClosedForSeasonFrom' ) }November 9, 2026 through February 28, 2027.
+
+      { CheckReport.heading( 'seasonalRestaurant', date( 2026, 11, 9 ) ) }
+
+      { CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) }
+        Snack Hut
+
+      { CheckReport.heading( 'restaurantList', date( 2026, 11, 9 ) ) }
+
+      { CheckReport.category_line( 'checks.websiteOnly', 1 ) }
+        Grill
+
+      { CheckReport.heading( 'seasonalGiftShop', date( 2026, 11, 9 ) ) }
+
+      { CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) }
+        Eurasia Wilds Outpost
+
+      { CheckReport.heading( 'giftShopList', date( 2026, 11, 9 ) ) }
+
+      { CheckReport.category_line( 'checks.appOnly', 1 ) }
+        Twiga Market
+
+      { CheckReportParser.format_fixed_count( 1 ) }
+
+      { CheckReportParser.format_counts( restaurants=2, gift_shops=2 ) }
+
+      { CheckReportParser.format_error_count( 4 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+   restaurant_title = html.index( '>Restaurants<', html.index( '>Restaurants<' ) + 1 )
+   gift_shop_title = html.index( '>Gift shops<', html.index( '>Gift shops<' ) + 1 )
+   restaurants = html[ restaurant_title:gift_shop_title ]
+   gift_shops = html[ gift_shop_title: ]
+
+   assert html.count( '>Restaurants<' ) == 2
+   assert html.count( '>Gift shops<' ) == 2
+   assert 'Restaurants closed for the season' not in html
+   assert 'Restaurant list' not in html
+   assert 'Gift shops closed for the season' not in html
+   assert 'Gift shop list' not in html
+   assert html.count( f'>{ closed }<' ) == 2
+   assert 'Cocoa Flow' in restaurants
+   assert 'Snack Hut' in restaurants
+   assert 'Grill' in restaurants
+   assert 'Eurasia Wilds Outpost' in gift_shops
+   assert 'Twiga Market' in gift_shops
+   assert restaurants.index( 'Cocoa Flow' ) < restaurants.index( 'Snack Hut' )
+   assert restaurants.index( 'Snack Hut' ) < restaurants.index( 'Grill' )
+
+
 def Test_RenderHtml_TestRepeatedScheduleHeadings_ExpectOneCardEach() -> None:
    day = date( 2026, 11, 8 )
    body = textwrap.dedent(

@@ -370,7 +370,7 @@ def Test_CheckLists_TestAllowedRestaurantMissingFromWebsite_ExpectAppMiss(
       database,
       [
          ( AFRICA, 'https://www.torontozoo.com/!/pdfs/food/africa.pdf' ),
-         ( 'Ice Cream Carts', 'https://www.torontozoo.com/!/pdfs/food/ice.pdf' ),
+         ( 'Cocoa Flow', 'https://www.torontozoo.com/!/pdfs/food/ice.pdf' ),
       ],
    )
    _install_page(
@@ -381,5 +381,51 @@ def Test_CheckLists_TestAllowedRestaurantMissingFromWebsite_ExpectAppMiss(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 1
-   assert '  Ice Cream Carts' in output
+   assert '  Cocoa Flow · Front Courtyard' in output
    assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
+
+
+def Test_CheckLists_TestWebsiteImage_ExpectWebPhoto(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ ( AFRICA, 'https://www.torontozoo.com/!/pdfs/food/africa.pdf' ) ] )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/!/pdfs/food/africa.pdf', AFRICA ) ] )
+      + (
+         '<a class="col3" href="/!/pdfs/food/grill.pdf">'
+         '<img alt="" src="/!/img/pg/food/grill.jpg" />'
+         '<div class="col3title">Discovery Grill</div>'
+         '<span class="opentxt">Open Daily</span>'
+         '</a>'
+      ),
+   )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 1
+   assert 'https://www.torontozoo.com/!/img/pg/food/grill.jpg' in output
+   assert '  Discovery Grill' in output
+
+
+def Test_CheckLists_TestAppPhoto_ExpectDetailImage(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [
+         ( AFRICA, 'https://www.torontozoo.com/!/pdfs/food/africa.pdf' ),
+         ( 'Cocoa Flow', None ),
+      ],
+   )
+   _install_page( monkeypatch, _page( [ ( '/!/pdfs/food/africa.pdf', AFRICA ) ] ) )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 1
+   assert 'images/details/restaurants/cocoa-flow.png' in output
+   assert '  Cocoa Flow · Front Courtyard' in output

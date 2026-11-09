@@ -505,6 +505,42 @@ class CheckEmailRenderer():
 
 
    @classmethod
+   def restaurant_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
+      return cls.grouped_sections( sections, [
+         cls.check_kind( 'seasonalRestaurant' ),
+         cls.check_kind( 'restaurantList' ),
+      ] )
+
+
+   @classmethod
+   def gift_shop_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
+      return cls.grouped_sections( sections, [
+         cls.check_kind( 'seasonalGiftShop' ),
+         cls.check_kind( 'giftShopList' ),
+      ] )
+
+
+   @classmethod
+   def merged_categories( cls, categories: list[ Category ] ) -> list[ Category ]:
+      merged: list[ Category ] = []
+      by_title: dict[ str, Category ] = {}
+
+      for category in categories:
+         current = by_title.get( category.title )
+
+         if current is None:
+            current = Category( category.title, category.count, list( category.items ) )
+            by_title[ category.title ] = current
+            merged.append( current )
+            continue
+
+         current.count += category.count
+         current.items.extend( category.items )
+
+      return merged
+
+
+   @classmethod
    def has_issue( cls, categories: list[ Category ] ) -> bool:
       return any( category.count > 0 for category in categories )
 
@@ -545,13 +581,57 @@ class CheckEmailRenderer():
 
 
    @classmethod
+   def combined_restaurants( cls, sections: list[ Section ] ) -> Section | None:
+      sources = cls.restaurant_sections( sections )
+      categories = cls.merged_categories( [
+         category
+         for section in sources
+         for category in section.categories
+      ] )
+
+      if not cls.has_issue( categories ):
+         return None
+
+      return Section(
+         AppStringProvider.format( 'map.filterTypes.restaurant' ),
+         sources[ 0 ].day,
+         '',
+         categories,
+      )
+
+
+   @classmethod
+   def combined_gift_shops( cls, sections: list[ Section ] ) -> Section | None:
+      sources = cls.gift_shop_sections( sections )
+      categories = cls.merged_categories( [
+         category
+         for section in sources
+         for category in section.categories
+      ] )
+
+      if not cls.has_issue( categories ):
+         return None
+
+      return Section(
+         AppStringProvider.format( 'checks.countNames.giftShops' ),
+         sources[ 0 ].day,
+         '',
+         categories,
+      )
+
+
+   @classmethod
    def notable_sections( cls, report: Report ) -> list[ Section ]:
       sections = report.sections
       notable = []
       animals = cls.combined_animals( sections )
       attractions = cls.combined_attractions( sections )
+      restaurants = cls.combined_restaurants( sections )
+      gift_shops = cls.combined_gift_shops( sections )
       animals_placed = False
       attractions_placed = False
+      restaurants_placed = False
+      gift_shops_placed = False
       folded_animals = {
          section.kind
          for section in cls.animal_sections( sections )
@@ -559,6 +639,14 @@ class CheckEmailRenderer():
       folded_attractions = {
          section.kind
          for section in cls.attraction_sections( sections )
+      }
+      folded_restaurants = {
+         section.kind
+         for section in cls.restaurant_sections( sections )
+      }
+      folded_gift_shops = {
+         section.kind
+         for section in cls.gift_shop_sections( sections )
       }
       schedule_sections = {
          section.kind: section
@@ -581,6 +669,20 @@ class CheckEmailRenderer():
             if attractions is not None and not attractions_placed:
                notable.append( attractions )
                attractions_placed = True
+
+            continue
+
+         if section.kind in folded_restaurants:
+            if restaurants is not None and not restaurants_placed:
+               notable.append( restaurants )
+               restaurants_placed = True
+
+            continue
+
+         if section.kind in folded_gift_shops:
+            if gift_shops is not None and not gift_shops_placed:
+               notable.append( gift_shops )
+               gift_shops_placed = True
 
             continue
 
