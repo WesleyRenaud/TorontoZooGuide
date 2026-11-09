@@ -34,7 +34,12 @@ class AnimalCatalogue():
       'wood bison male herd': 'wood bison',
    }
    HEADING_RE = re.compile( r'(?is)<h1\b[^>]*>(?P<title>.*?)</h1>' )
-   ANIMAL_LINK_RE = re.compile( r'(?is)<a href="/animals/(?P<name>[^"]+)" class="thm"' )
+   ANIMAL_LINK_RE = re.compile(
+      r'(?is)<a href="/animals/(?P<name>[^"]+)" class="thm">(?P<body>.*?)</a>'
+   )
+   THUMB_RE = re.compile(
+      r"(?is)background-image\s*:\s*url\(\s*(?:'(?P<single>[^']*)'|\"(?P<double>[^\"]*)\"|(?P<bare>[^)]*))\s*\)"
+   )
 
 
    @classmethod
@@ -53,6 +58,22 @@ class AnimalCatalogue():
 
 
    @classmethod
+   def thumbnail( cls, body: str ) -> str:
+      match = cls.THUMB_RE.search( body )
+
+      if match == None:
+         return ''
+
+      src = match.group( 'single' ) or match.group( 'double' ) or match.group( 'bare' ) or ''
+      src = src.strip()
+
+      if src == '':
+         return ''
+
+      return WebsitePage.absolute_url( src )
+
+
+   @classmethod
    def parse_website_animals( cls, page_html: str ) -> list[ AnimalSpeciesExhibit ]:
       names = []
       headings = list( cls.HEADING_RE.finditer( page_html ) )
@@ -67,10 +88,15 @@ class AnimalCatalogue():
 
          exhibit = unescape( re.sub( r'<[^>]+>', ' ', heading.group( 'title' ) ) )
          exhibit = re.sub( r'\s+', ' ', exhibit ).strip()
+         section = page_html[ heading.end():end ]
 
-         for href in cls.ANIMAL_LINK_RE.findall( page_html[ heading.end():end ] ):
-            name = WebsitePage.clean_website_name( href )
-            listing = AnimalSpeciesExhibit( species=name, exhibit=exhibit )
+         for link in cls.ANIMAL_LINK_RE.finditer( section ):
+            name = WebsitePage.clean_website_name( link.group( 'name' ) )
+            listing = AnimalSpeciesExhibit(
+               species=name,
+               exhibit=exhibit,
+               image=cls.thumbnail( link.group( 'body' ) ),
+            )
 
             if name == '' or listing in names:
                continue
@@ -121,16 +147,20 @@ class AnimalCatalogue():
          listings: dict[ SpeciesExhibitKey, AnimalListing ],
          exhibit: str,
          name: str,
-         use_website_aliases: bool ) -> None:
+         use_website_aliases: bool,
+         image: str = '' ) -> None:
       key = cls.listing_key( exhibit, name, use_website_aliases )
       stored = listings.get( key )
 
       if stored == None:
-         listings[ key ] = AnimalListing( exhibit=exhibit, species=[ name ] )
+         listings[ key ] = AnimalListing( exhibit=exhibit, species=[ name ], image=image )
          return
 
       if name not in stored.species:
          stored.species.append( name )
+
+      if stored.image == '' and image != '':
+         stored.image = image
 
 
    @classmethod
@@ -164,7 +194,10 @@ class AnimalCatalogue():
             first=cls.listing_label( listing.species ),
             second=listing.exhibit,
          )
-         photo = cls.app_photo( key )
+         photo = listing.image
+
+         if photo == '':
+            photo = cls.app_photo( key )
 
          if photo != '':
             label += '\n' + CheckReport.detail_item(
@@ -190,6 +223,12 @@ class AnimalCatalogue():
          cls.add_listing( app_listings, animal.exhibit, animal.species, False )
 
       for animal in cls.fetch_website_animals():
-         cls.add_listing( website_listings, animal.exhibit, animal.species, True )
+         cls.add_listing(
+            website_listings,
+            animal.exhibit,
+            animal.species,
+            True,
+            animal.image,
+         )
 
       return app_listings, website_listings

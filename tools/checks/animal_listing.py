@@ -7,3 +7,4 @@ from dataclasses import dataclass
 class AnimalListing:
    exhibit: str
    species: list[ str ]
+   image: str = ''

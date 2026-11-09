@@ -29,6 +29,20 @@ class WebsitePage():
 
 
    @classmethod
+   def absolute_url( cls, src: str ) -> str:
+      if src.startswith( 'http://' ) or src.startswith( 'https://' ):
+         return src
+
+      if src.startswith( '//' ):
+         return f'https:{ src }'
+
+      if src.startswith( '/' ):
+         return f'{ cls.BASE_URL }{ src }'
+
+      return f'{ cls.BASE_URL }/{ src }'
+
+
+   @classmethod
    def fetch_bytes( cls, url: str ) -> bytes:
       result = subprocess.run(
          [ 'curl', '-fsS', '--max-time', '30', '-A', cls.USER_AGENT, url ],

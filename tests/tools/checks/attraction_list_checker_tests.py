@@ -90,6 +90,31 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
    assert 'Conservation Carousel' not in output
 
 
+def Test_CheckLists_TestWebsiteImage_ExpectWebPhoto(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ ( SPLASH, 'https://www.torontozoo.com/tz/splash' ) ] )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/tz/splash', SPLASH ) ] )
+      + (
+         '<a class="col3" href="/tz/stingray">'
+         '<img alt="" src="/!/img/pg/attractions/stingray.jpg" />'
+         '<div class="col3title">Stingray Bay</div>'
+         '<span class="opentxt">Open Daily</span>'
+         '</a>'
+      ),
+   )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 1
+   assert 'https://www.torontozoo.com/!/img/pg/attractions/stingray.jpg' in output
+   assert '  Stingray Bay' in output
+
+
 def Test_CheckLists_TestAppOnly_ExpectAppMiss(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
@@ -109,6 +134,8 @@ def Test_CheckLists_TestAppOnly_ExpectAppMiss(
    assert result == 1
    assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert f'  { CLIMB }' in output
+   assert ' · Africa' in output
+   assert 'images/details/attractions/gorilla-climb-ropes-course.png' in output
    assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
 
 

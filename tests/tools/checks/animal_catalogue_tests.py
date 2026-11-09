@@ -38,3 +38,17 @@ def Test_ParseWebsiteAnimals_TestHeadingWithBreak_ExpectExhibitName() -> None:
          exhibit='Americas Outdoor Mayan Temple Ruins',
       ),
    ]
+
+
+def Test_ParseWebsiteAnimals_TestThumbnail_ExpectWebsiteImage() -> None:
+   href = quote( LION, safe='' )
+   page = (
+      '<h1>Africa Savanna</h1>'
+      f'<a href="/animals/{ href }" class="thm">'
+      '<div class="thm-img" style="background-image:url(\'/img/640/lion.jpg\');"></div>'
+      '</a>'
+   )
+
+   listings = AnimalCatalogue.parse_website_animals( page )
+
+   assert listings[ 0 ].image == 'https://www.torontozoo.com/img/640/lion.jpg'
