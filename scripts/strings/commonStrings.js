@@ -8,6 +8,7 @@ export class CommonStrings {
    };
 
    static format = {
+      bulletItem: '\u2022 ',
       bulletSeparator: ' \u2022 ',
       subtitleSeparator: '  \u2022  ',
       emptySubtitle: '-',

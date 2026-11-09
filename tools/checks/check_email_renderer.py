@@ -107,7 +107,7 @@ class CheckEmailRenderer():
             cls.check_kind( 'seasonalOffDisplay' ),
             cls.check_kind( 'temporaryOffDisplay' ),
          ],
-         AppStringProvider.format( 'reports.wildEncounter.section' ): [
+         AppStringProvider.format( 'site.nav.wildEncounters' ): [
             cls.check_kind( 'wildEncounter' ),
          ],
          AppStringProvider.format( 'reports.guardiansTalk.section' ): [
@@ -385,6 +385,7 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.extendedClosedForSeasonThrough' ),
          AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
          AppStringProvider.format( 'checks.setOpenForSeason' ),
+         AppStringProvider.format( 'checks.setScheduleFrom' ),
       )
 
       if category.items == []:
