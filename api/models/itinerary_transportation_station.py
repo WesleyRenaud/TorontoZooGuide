@@ -6,6 +6,14 @@ from ..types import Types
 
 
 class ItineraryTransportationStation:
+   name: str
+   transportation: str
+   role: ItineraryTransportationStationRole
+   description: str
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
+
+
    def __init__(
          self,
          name: str,

@@ -4,6 +4,14 @@ from ..types import Types
 
 
 class Event:
+   name: str
+   location: str
+   description: str
+   link: str
+   start_date: Types.DateInput
+   end_date: Types.DateInput
+
+
    def __init__(
          self,
          name: str,

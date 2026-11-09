@@ -4,6 +4,14 @@ from ..types import Types
 
 
 class ItineraryTransportationLeg:
+   from_station: str
+   to_station: str
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+   transportation: str
+   added_as_attraction: bool
+
+
    def __init__(
          self,
          from_station: str,

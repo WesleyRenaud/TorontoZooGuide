@@ -5,6 +5,14 @@ from ..types import Types
 
 
 class GuardiansTalkDiff:
+   name: str
+   is_deleted: bool
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+   location: str
+   enclosure_name: str | None
+
+
    def __init__(
          self,
          name: str,

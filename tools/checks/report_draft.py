@@ -7,13 +7,21 @@ from .section import Section
 
 
 class ReportDraft():
+   sections: list[ Section ]
+   counts: list[ Count ]
+   fixed_count: int
+   current: Section | None
+   category: Category | None
+   item: DetailItem | None
+
+
    def __init__( self ) -> None:
-      self.sections: list[ Section ] = []
-      self.counts: list[ Count ] = []
+      self.sections = []
+      self.counts = []
       self.fixed_count = 0
-      self.current: Section | None = None
-      self.category: Category | None = None
-      self.item: DetailItem | None = None
+      self.current = None
+      self.category = None
+      self.item = None
 
 
    def finish_category( self ) -> None:

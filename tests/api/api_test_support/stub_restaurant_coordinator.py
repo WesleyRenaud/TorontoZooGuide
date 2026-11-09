@@ -2,12 +2,18 @@ from __future__ import annotations
 
 from typing import Any
 
+from api_test_support.coordinator_call import CoordinatorCall
+
 from api.models.restaurant import Restaurant
 
 
 class StubRestaurantCoordinator():
    instances: list[ StubRestaurantCoordinator ] = []
    default_success: bool = True
+   restaurant_names: list[ str ]
+   restaurants: list[ Restaurant ]
+   calls: list[ CoordinatorCall ]
+   closed: bool
 
 
    def __init__(
@@ -17,7 +23,7 @@ class StubRestaurantCoordinator():
          restaurants: list[ Restaurant ] ) -> None:
       self.restaurant_names = restaurant_names
       self.restaurants = restaurants
-      self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
+      self.calls = []
       self.closed = False
       StubRestaurantCoordinator.instances.append( self )
 
@@ -27,7 +33,7 @@ class StubRestaurantCoordinator():
 
 
    def get_restaurant_names( self ) -> list[ str ]:
-      self.calls.append( ( 'get_restaurant_names', {} ) )
+      self.calls.append( CoordinatorCall( 'get_restaurant_names', {} ) )
       return list( self.restaurant_names )
 
 
@@ -40,7 +46,7 @@ class StubRestaurantCoordinator():
          include_closed_restaurants: bool | None = None,
          restaurants_to_include: list[ str ] | None = None ) -> list[ Restaurant ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_restaurants',
             {
                'day': day,
@@ -48,47 +54,47 @@ class StubRestaurantCoordinator():
                'year': year,
                'include_closed_restaurants': include_closed_restaurants,
                'restaurants_to_include': restaurants_to_include,
-            }
+            },
          )
       )
       return list( self.restaurants )
 
 
    def set_restaurant_as_closed( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_restaurant_as_closed', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_restaurant_as_closed', kwargs ) )
       return StubRestaurantCoordinator.default_success
 
 
    def get_closed_for_season_restaurant_names( self ) -> list[ str ]:
-      self.calls.append( ( 'get_closed_for_season_restaurant_names', {} ) )
+      self.calls.append( CoordinatorCall( 'get_closed_for_season_restaurant_names', {} ) )
       return list( self.restaurant_names )
 
 
    def set_restaurant_as_closed_for_season( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_restaurant_as_closed_for_season', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_restaurant_as_closed_for_season', kwargs ) )
       return StubRestaurantCoordinator.default_success
 
 
    def set_restaurant_as_open_for_season( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_restaurant_as_open_for_season', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_restaurant_as_open_for_season', kwargs ) )
       return StubRestaurantCoordinator.default_success
 
 
    def set_restaurant_closure_override( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_restaurant_closure_override', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_restaurant_closure_override', kwargs ) )
       return StubRestaurantCoordinator.default_success
 
 
    def set_restaurant_opening_schedule( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_restaurant_opening_schedule', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_restaurant_opening_schedule', kwargs ) )
       return StubRestaurantCoordinator.default_success
 
 
    def replace_restaurant_opening_schedule_overlaps( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'replace_restaurant_opening_schedule_overlaps', kwargs ) )
+      self.calls.append( CoordinatorCall( 'replace_restaurant_opening_schedule_overlaps', kwargs ) )
       return StubRestaurantCoordinator.default_success
 
 
    def trim_restaurant_opening_schedule_overlaps( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'trim_restaurant_opening_schedule_overlaps', kwargs ) )
+      self.calls.append( CoordinatorCall( 'trim_restaurant_opening_schedule_overlaps', kwargs ) )
       return StubRestaurantCoordinator.default_success

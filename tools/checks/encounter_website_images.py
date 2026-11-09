@@ -4,8 +4,11 @@ from .website_page import WebsitePage
 
 
 class EncounterWebsiteImages():
+   by_name: dict[ str, str ]
+
+
    def __init__( self ) -> None:
-      self.by_name: dict[ str, str ] = {}
+      self.by_name = {}
 
 
    def add( self, name: str, image: str ) -> None:

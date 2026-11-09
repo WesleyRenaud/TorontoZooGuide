@@ -4,6 +4,13 @@ from ...types import Types
 
 
 class RestaurantScheduleOverride:
+   restaurant: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey | None
+   is_closed: bool
+   message: str | None
+
+
    def __init__(
          self,
          restaurant: str,

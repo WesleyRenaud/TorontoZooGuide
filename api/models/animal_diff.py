@@ -6,6 +6,18 @@ from ..types import Types
 
 
 class AnimalDiff:
+   species: str
+   exhibit: str
+   enclosure_name: str | None
+   old_likelihood: int | None
+   new_likelihood: int | None
+   is_added: bool
+   covered_by_talk: bool
+   added_by_transportation: bool
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+
+
    def __init__(
          self,
          species: str,

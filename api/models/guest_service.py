@@ -4,6 +4,11 @@ from ..types import Types
 
 
 class GuestService:
+   service_type: str
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
+
+
    def __init__( self, service_type: str, x_coord: Types.Coordinate, y_coord: Types.Coordinate ) -> None:
       self.service_type = service_type
       self.x_coord = x_coord

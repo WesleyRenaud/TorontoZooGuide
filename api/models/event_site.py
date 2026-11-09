@@ -4,6 +4,11 @@ from ..types import Types
 
 
 class EventSite:
+   name: str
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
+
+
    def __init__( self, name: str, x_coord: Types.Coordinate, y_coord: Types.Coordinate ) -> None:
       self.name = name
       self.x_coord = x_coord

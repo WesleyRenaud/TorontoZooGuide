@@ -7,10 +7,13 @@ import sqlite3
 
 import pytest
 
-from api.shared.date_values import DateValues
+from tools.checks.animal_detail_image import AnimalDetailImage
 from tools.checks.check_email_renderer import CheckEmailRenderer
 from tools.checks.check_report import CheckReport
 from tools.checks.check_report_parser import CheckReportParser
+from tools.checks.guardians_talk_comparison import GuardiansTalkComparison
+from tools.checks.guardians_talk_detail_image import GuardiansTalkDetailImage
+from tools.checks.guardians_talk_listing import GuardiansTalkListing
 from tools.checks.guardians_talk_schedule_checker import GuardiansTalkScheduleChecker as CHECKER
 from tools.checks.website_page import WebsitePage
 
@@ -61,12 +64,27 @@ CREATE TABLE GuardiansTalkSchedule (
    )
 );
 
+CREATE TABLE GuardiansTalkAnimal (
+   TALK_NAME       TEXT NOT NULL,
+   LOCATION        TEXT NOT NULL,
+   ENCLOSURE_NAME  TEXT,
+   SPECIES         TEXT NOT NULL,
+   EXHIBIT         TEXT NOT NULL
+);
+
 CREATE TABLE GuardiansTalkCancellation (
    TALK_NAME          TEXT NOT NULL,
    LOCATION           TEXT NOT NULL,
    ENCLOSURE_NAME     TEXT,
    CANCELLATION_DATE  DATE NOT NULL,
-   TALK_TIME          TEXT NOT NULL
+   TALK_TIME          TEXT NOT NULL,
+   PRIMARY KEY (
+      TALK_NAME,
+      LOCATION,
+      ENCLOSURE_NAME,
+      CANCELLATION_DATE,
+      TALK_TIME
+   )
 );
 """
 
@@ -177,6 +195,46 @@ def _install_page(
    monkeypatch.setattr( WebsitePage, 'fetch_text', fetch_text )
 
 
+def _schedule_end( path: Path, name: str ) -> str:
+   connection = sqlite3.connect( path )
+   row = connection.execute(
+      """   SELECT SCHEDULE_END_DATE
+            FROM GuardiansTalkSchedule
+            WHERE TALK_NAME = ?
+      """,
+      ( name, ),
+   ).fetchone()
+   connection.close()
+   return row[ 0 ]
+
+
+def _cancellations( path: Path, name: str ) -> list[ str ]:
+   connection = sqlite3.connect( path )
+   rows = connection.execute(
+      """   SELECT CANCELLATION_DATE
+            FROM GuardiansTalkCancellation
+            WHERE TALK_NAME = ?
+            ORDER BY CANCELLATION_DATE
+      """,
+      ( name, ),
+   ).fetchall()
+   connection.close()
+   return [ row[ 0 ] for row in rows ]
+
+
+def _schedule_count( path: Path, name: str ) -> int:
+   connection = sqlite3.connect( path )
+   row = connection.execute(
+      """   SELECT COUNT( * )
+            FROM GuardiansTalkSchedule
+            WHERE TALK_NAME = ?
+      """,
+      ( name, ),
+   ).fetchone()
+   connection.close()
+   return row[ 0 ]
+
+
 def _check( database: Path, capsys: pytest.CaptureFixture[ str ] ) -> tuple[ int, str ]:
    result = CHECKER.check_schedules( database, TODAY )
    return result, capsys.readouterr().out
@@ -196,7 +254,7 @@ def _email( output: str, issues: int ) -> str:
 def Test_ParseHeading_TestJanuaryAfterDecember_ExpectNextYear() -> None:
    today = date( 2026, 12, 28 )
 
-   parsed = CHECKER.parse_heading( 'Friday, January 2', today )
+   parsed = GuardiansTalkComparison.parse_heading( 'Friday, January 2', today )
 
    assert parsed == date( today.year + 1, 1, 2 )
 
@@ -204,12 +262,12 @@ def Test_ParseHeading_TestJanuaryAfterDecember_ExpectNextYear() -> None:
 def Test_ParseHeading_TestDecemberBeforeJanuary_ExpectThisYear() -> None:
    today = date( 2027, 1, 2 )
 
-   parsed = CHECKER.parse_heading( 'Wednesday, December 30', today )
+   parsed = GuardiansTalkComparison.parse_heading( 'Wednesday, December 30', today )
 
    assert parsed == date( today.year, 12, 30 )
 
 
-def Test_CheckSchedules_TestClosedToday_ExpectTodayIgnored(
+def Test_CheckSchedules_TestClosedToday_ExpectTodayFixed(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -247,10 +305,12 @@ def Test_CheckSchedules_TestClosedToday_ExpectTodayIgnored(
 
    result, output = _check( database, capsys )
 
-   assert result == 0
-   assert 'West Caucasian tur' not in output
-   assert 'Domestic Goat' not in output
-   assert CheckReport.text( 'checks.websiteDatesCompared' ) + tomorrow.isoformat() in output
+   assert result == 1
+   assert 'West Caucasian tur' in output
+   assert 'Domestic Goat' in output
+   assert CheckReport.text( 'checks.removedSchedule' ) in output
+   assert _schedule_count( database, 'Domestic Goat' ) == 0
+   assert CheckReport.text( 'checks.websiteDatesCompared' ) + TODAY.isoformat() in output
 
 
 def Test_CheckSchedules_TestOtherEnclosureSchedule_ExpectIgnored(
@@ -295,18 +355,17 @@ def Test_CheckSchedules_TestOtherEnclosureSchedule_ExpectIgnored(
    result, output = _check( database, capsys )
 
    assert result == 0
-   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 0 ) in output
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
 
 
-def Test_CheckSchedules_TestAppTalkAfterWindow_ExpectNoViolation(
+def Test_CheckSchedules_TestAppTalkAfterWindow_ExpectScheduleRemoved(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
    database = tmp_path / 'animals.db'
    _write_database(
       database,
-      [ ( 'Amur Tiger', LOCATION ) ],
+      [ ( 'Amur Tiger', LOCATION ), ( TALK, LOCATION ) ],
       [
          (
             'Amur Tiger',
@@ -333,11 +392,16 @@ def Test_CheckSchedules_TestAppTalkAfterWindow_ExpectNoViolation(
 
    result, output = _check( database, capsys )
 
+   talk = GuardiansTalkListing( name=TALK, location=LOCATION )
    assert result == 0
+   assert f'  { GuardiansTalkComparison.label( talk ) }' in output
+   assert CheckReport.text( 'checks.removedSchedule' ) in output
+   assert _schedule_count( database, TALK ) == 0
+   assert 'Amur Tiger' not in output
    assert THURSDAY.isoformat() not in output
 
 
-def Test_CheckSchedules_TestAppOnlyInsideWindow_ExpectAppViolation(
+def Test_CheckSchedules_TestAppOnlyInsideWindow_ExpectScheduleRemoved(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -355,17 +419,38 @@ def Test_CheckSchedules_TestAppOnlyInsideWindow_ExpectAppViolation(
       ) ],
    )
    _install_page( monkeypatch, _page( [ ( THURSDAY, [] ) ] ) )
+   connection = sqlite3.connect( database )
+   connection.execute(
+      """   INSERT INTO GuardiansTalkAnimal (
+               TALK_NAME,
+               LOCATION,
+               ENCLOSURE_NAME,
+               SPECIES,
+               EXHIBIT )
+            VALUES ( ?, ?, NULL, ?, ? )
+      """,
+      ( TALK, LOCATION, TALK, LOCATION ),
+   )
+   connection.commit()
+   connection.close()
 
    result, output = _check( database, capsys )
 
-   assert result == 1
-   assert f'  { TALK }, { LOCATION }' in output
+   talk = GuardiansTalkListing( name=TALK, location=LOCATION )
+   photo = AnimalDetailImage.source( LOCATION, TALK )
+   assert result == 0
+   assert f'  { GuardiansTalkComparison.label( talk ) }' in output
+   assert photo in output
+   assert CheckReport.text( 'checks.removedSchedule' ) in output
+   assert _schedule_count( database, TALK ) == 0
    assert CheckReport.category_line( 'checks.scheduledInAppOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
    html = _email( output, result )
    assert 'Guardians Talks' in html
-   assert f'{ TALK }, { LOCATION }' in html
+   assert TALK in html
+   assert CheckEmailRenderer.image_src( photo ) in html
    assert CheckReport.text( 'checks.scheduledInAppOnly' ) in html
+   assert CheckReport.text( 'checks.removedSchedule' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
@@ -382,18 +467,84 @@ def Test_CheckSchedules_TestWebsiteOnly_ExpectWebsiteViolation(
 
    result, output = _check( database, capsys )
 
+   website_talk = GuardiansTalkListing( name='West Caucasian tur', location=WEBSITE_LOCATION )
    assert result == 1
-   assert '  West Caucasian tur, Eurasia' in output
-   assert f'  { TALK }, { LOCATION }' not in output
+   assert f'  { GuardiansTalkComparison.label( website_talk ) }' in output
+   assert f'  { GuardiansTalkComparison.label( GuardiansTalkListing( name=TALK, location=LOCATION ) ) }' not in output
    assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 1 ) in output
    html = _email( output, result )
-   assert 'West Caucasian tur, Eurasia' in html
+   assert 'West Caucasian tur' in html
    assert CheckReport.text( 'checks.scheduledOnWebsiteOnly' ) in html
-   assert f'{ TALK }, { LOCATION }' not in html
+   assert TALK not in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
-def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
+def Test_CheckSchedules_TestCatalogTalkWithoutSchedule_ExpectWindowFixed(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database( database, [ ( TALK, LOCATION ) ], [] )
+   _install_page(
+      monkeypatch,
+      _page( [ ( THURSDAY, [ ( WEBSITE_CLOCK, TALK, WEBSITE_LOCATION ) ] ) ] ),
+   )
+
+   result, output = _check( database, capsys )
+
+   assert result == 0
+   assert f'  { GuardiansTalkComparison.label( GuardiansTalkListing( name=TALK, location=LOCATION ) ) }' in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
+   assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
+   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
+   assert _schedule_count( database, TALK ) == 1
+   assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
+   html = _email( output, result )
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
+   assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
+
+
+def Test_CheckSchedules_TestScheduleEndedBeforeWindow_ExpectWindowFixed(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   ended = date( 2026, 10, 29 )
+   _write_database(
+      database,
+      [ ( TALK, LOCATION ) ],
+      [ (
+         TALK,
+         LOCATION,
+         ended.isoformat(),
+         ( ended + timedelta( days=1 ) ).isoformat(),
+         OTHER_CLOCK,
+         { ended.weekday() },
+      ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( THURSDAY, [ ( WEBSITE_CLOCK, TALK, WEBSITE_LOCATION ) ] ) ] ),
+   )
+
+   result, output = _check( database, capsys )
+
+   assert result == 0
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
+   assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
+   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
+   assert _schedule_count( database, TALK ) == 1
+   assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
+   html = _email( output, result )
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
+   assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
+
+
+def Test_CheckSchedules_TestDifferentTime_ExpectWindowFixed(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -417,21 +568,18 @@ def Test_CheckSchedules_TestDifferentTime_ExpectDayOrTimeViolation(
 
    result, output = _check( database, capsys )
 
-   assert result == 1
-   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 1 ) in output
-   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
-   assert DateValues.normalize_schedule_time( WEBSITE_CLOCK ) in output
-   assert OTHER_CLOCK in output
+   assert result == 0
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
+   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
+   assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.text( 'checks.differentDaysOrTimes' ) in html
-   assert 'Website' in html
-   assert '1:00 PM Thu' in html
-   assert 'App' in html
-   assert '11:00 AM Thu' in html
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
-def Test_CheckSchedules_TestWebsiteWindowLonger_ExpectWindowViolation(
+def Test_CheckSchedules_TestWebsiteWindowLonger_ExpectWindowFixed(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -458,19 +606,23 @@ def Test_CheckSchedules_TestWebsiteWindowLonger_ExpectWindowViolation(
 
    result, output = _check( database, capsys )
 
-   assert result == 1
+   photo = GuardiansTalkDetailImage.source( LOCATION, TALK )
+   assert result == 0
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
-   assert CheckReport.category_line( 'checks.differentDaysOrTimes', 0 ) in output
-   assert CheckReport.text( 'checks.websiteDatesNotInApp' ) + NEXT_THURSDAY.isoformat() in output
+   assert photo in output
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
+   assert 'November 5, 2026 through November 12, 2026.' in output
+   assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
+   assert CheckReport.text( 'checks.websiteDatesNotInApp' ) not in output
    assert CheckReport.text( 'checks.appDatesNotOnWebsite' ) not in output
+   assert _schedule_end( database, TALK ) == NEXT_THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.label( 'checks.websiteDatesNotInApp' ) in html
-   assert NEXT_THURSDAY.isoformat() in html
-   assert CheckReport.text( 'checks.appDatesNotOnWebsite' ) not in html
+   assert CheckEmailRenderer.image_src( photo ) in html
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
-def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
+def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowFixed(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -497,18 +649,55 @@ def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
 
    result, output = _check( database, capsys )
 
-   assert result == 1
-   assert CheckReport.text( 'checks.appDatesNotOnWebsite' ) + NEXT_THURSDAY.isoformat() in output
+   assert result == 0
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
+   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
    assert AFTER_WINDOW.isoformat() not in output
+   assert CheckReport.text( 'checks.appDatesNotOnWebsite' ) not in output
    assert CheckReport.text( 'checks.websiteDatesNotInApp' ) not in output
+   assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.label( 'checks.appDatesNotOnWebsite' ) in html
-   assert NEXT_THURSDAY.isoformat() in html
-   assert CheckReport.text( 'checks.websiteDatesNotInApp' ) not in html
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
-def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
+def Test_CheckSchedules_TestAppDateBetweenWebsiteDates_ExpectNoViolation(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [ ( TALK, LOCATION ) ],
+      [ (
+         TALK,
+         LOCATION,
+         THURSDAY.isoformat(),
+         AFTER_WINDOW.isoformat(),
+         CLOCK,
+         { THURSDAY.weekday() },
+      ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [
+         ( THURSDAY, [ ( WEBSITE_CLOCK, TALK, WEBSITE_LOCATION ) ] ),
+         ( NEXT_THURSDAY, [] ),
+         ( AFTER_WINDOW, [ ( WEBSITE_CLOCK, TALK, WEBSITE_LOCATION ) ] ),
+      ] ),
+   )
+
+   result, output = _check( database, capsys )
+
+   assert result == 0
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
+   assert CheckReport.text( 'checks.setScheduleFrom' ) not in output
+   assert _schedule_end( database, TALK ) == AFTER_WINDOW.isoformat()
+   assert _cancellations( database, TALK ) == []
+
+
+def Test_CheckSchedules_TestAppWindowPastWebsite_ExpectWindowFixed(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -533,12 +722,13 @@ def Test_CheckSchedules_TestMatchingWindow_ExpectNoViolations(
    result, output = _check( database, capsys )
 
    assert result == 0
-   assert AFTER_WINDOW.isoformat() not in output
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert CheckReport.category_line( 'checks.scheduledInAppOnly', 0 ) in output
-   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
+   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
+   assert AFTER_WINDOW.isoformat() not in output
+   assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.text( 'checks.status.noneDetected' ) in html
-   assert CheckReport.text( 'checks.status.websiteMatches' ) in html
-   assert 'Guardians Talks' in html
-   assert f'{ TALK }, { LOCATION }' not in html
+   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html

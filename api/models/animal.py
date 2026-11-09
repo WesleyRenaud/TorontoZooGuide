@@ -6,6 +6,43 @@ from ..types import Types
 
 
 class Animal:
+   species: str
+   latin_name: str | None
+   general_viewing_tips: str | None
+   seasonal_viewing_tips: str | None
+   identification: str | None
+   habitat_and_range: str | None
+   diet_and_feeding: str | None
+   behaviour_and_life_cycle: str | None
+   adaptations: str | None
+   reproduction_and_life_cycle: str | None
+   animals_at_the_zoo: str | None
+   exhibit: str | None
+   seasonal_viewing_summary: str | None
+   seasonal_viewing_information: str | None
+   off_display_message: str | None
+   is_off_display_for_season: bool
+   enclosure_type: str | None
+   enclosure_name: str | None
+   x_coord: float | None
+   y_coord: float | None
+   likelihood: int | None
+   has_limited_viewing_schedule: bool | None
+   limited_viewing_message: str | None
+   viewing_alert_messages: list[ str ] | None
+   is_deleted: bool
+   old_likelihood: int | None
+   is_added: bool
+   covered_by_talk: bool
+   added_by_transportation: bool
+   is_zoomobile_only: bool
+   transportation: str | None
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+   viewing_walk_node_id: str | None
+   include_all_viewing_spots: bool | None
+
+
    def __init__(
          self,
          species: str,

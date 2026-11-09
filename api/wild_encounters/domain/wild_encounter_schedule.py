@@ -27,6 +27,13 @@ class WildEncounterSchedule:
       return self.end == None or self.end > day
 
 
+   def last_day( self ) -> date | None:
+      if self.end == None:
+         return None
+
+      return self.end - timedelta( days=1 )
+
+
    @classmethod
    def dates(
          cls,

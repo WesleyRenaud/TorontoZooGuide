@@ -10,6 +10,10 @@ from api.seed.seed_runner import SeedRunner
 
 
 class _Conn:
+   calls: list[ str ]
+   _cursor: sqlite3.Cursor
+
+
    def __init__( self, calls: list[ str ], cursor: sqlite3.Cursor ) -> None:
       self.calls = calls
       self._cursor = cursor

@@ -5,6 +5,14 @@ from ..types import Types
 
 
 class DrinkingFountain:
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
+   is_closed: bool
+   closed_message: str | None
+   likelihood: int | None
+   is_closed_for_season: bool
+
+
    def __init__(
          self,
          x_coord: Types.Coordinate,

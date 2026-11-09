@@ -5,6 +5,17 @@ from ...types import Types
 
 
 class AnimalOffDisplayStatus:
+   species: str
+   exhibit: str
+   viewing_scopes: list[ AnimalViewingScope ]
+   start_date: Types.DateKey
+   end_date: Types.DateKey
+   message: str
+   is_off_display_for_season: bool
+   closure_update_title: str | None
+   closure_update_start: Types.DateKey | None
+
+
    def __init__(
          self,
          species: str,

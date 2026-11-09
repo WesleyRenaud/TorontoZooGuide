@@ -4,6 +4,13 @@ from ...types import Types
 
 
 class AttractionScheduleOverride:
+   attraction: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey | None
+   is_closed: bool
+   message: str | None
+
+
    def __init__(
          self,
          attraction: str,

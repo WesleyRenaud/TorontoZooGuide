@@ -4,6 +4,11 @@ from ..types import Types
 
 
 class TransportationRouteMarker:
+   route_type: str
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
+
+
    def __init__( self, route_type: str, x_coord: Types.Coordinate, y_coord: Types.Coordinate ) -> None:
       self.route_type = route_type
       self.x_coord = x_coord

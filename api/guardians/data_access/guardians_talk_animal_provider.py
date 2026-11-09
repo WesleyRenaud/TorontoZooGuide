@@ -26,6 +26,27 @@ class GuardiansTalkAnimalProvider():
 
 
    @classmethod
+   def fetch_records( cls, conn: Types.Connection ) -> list[ GuardiansTalkAnimalRecord ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     TALK_NAME,
+                     LOCATION,
+                     SPECIES,
+                     EXHIBIT,
+                     ENCLOSURE_NAME
+                  FROM GuardiansTalkAnimal;
+            """ )
+
+         return GuardiansTalkAnimalRecordMapper.map_records( data.fetchall() )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
    def fetch_animal_links(
          cls,
          conn: Types.Connection,

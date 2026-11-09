@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from api_test_support.coordinator_call import CoordinatorCall
+
 from api.models.scheduled_occurrence import ScheduledOccurrence
 from api.models.wild_encounter import WildEncounter
 
@@ -9,6 +11,12 @@ from api.models.wild_encounter import WildEncounter
 class StubWildEncounterCoordinator():
    instances: list[ StubWildEncounterCoordinator ] = []
    default_success: bool = True
+   wild_encounters: list[ WildEncounter ]
+   wild_encounter_names: list[ str ]
+   wild_encounter_occurrences: list[ ScheduledOccurrence ]
+   wild_encounter_schedule_times: list[ str ]
+   calls: list[ CoordinatorCall ]
+   closed: bool
 
 
    def __init__(
@@ -22,7 +30,7 @@ class StubWildEncounterCoordinator():
       self.wild_encounter_names = wild_encounter_names
       self.wild_encounter_occurrences = wild_encounter_occurrences
       self.wild_encounter_schedule_times = wild_encounter_schedule_times
-      self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
+      self.calls = []
       self.closed = False
       StubWildEncounterCoordinator.instances.append( self )
 
@@ -38,25 +46,25 @@ class StubWildEncounterCoordinator():
          day: int,
          year: int ) -> list[ WildEncounter ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_available_wild_encounters',
             {
                'month': month,
                'day': day,
                'year': year,
-            }
+            },
          )
       )
       return list( self.wild_encounters )
 
 
    def get_wild_encounter_names( self ) -> list[ str ]:
-      self.calls.append( ( 'get_wild_encounter_names', {} ) )
+      self.calls.append( CoordinatorCall( 'get_wild_encounter_names', {} ) )
       return list( self.wild_encounter_names )
 
 
    def get_wild_encounter_schedule_options( self ) -> list[ str ]:
-      self.calls.append( ( 'get_wild_encounter_schedule_options', {} ) )
+      self.calls.append( CoordinatorCall( 'get_wild_encounter_schedule_options', {} ) )
       return list( self.wild_encounter_names )
 
 
@@ -65,26 +73,23 @@ class StubWildEncounterCoordinator():
          *,
          wild_encounter_name: str ) -> list[ ScheduledOccurrence ]:
       self.calls.append(
-         (
-            'get_wild_encounter_occurrences',
-            { 'wild_encounter_name': wild_encounter_name },
-         )
+         CoordinatorCall( 'get_wild_encounter_occurrences', { 'wild_encounter_name': wild_encounter_name } )
       )
       return list( self.wild_encounter_occurrences )
 
 
    def set_wild_encounter_schedule( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_wild_encounter_schedule', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_wild_encounter_schedule', kwargs ) )
       return StubWildEncounterCoordinator.default_success
 
 
    def replace_wild_encounter_schedule_overlaps( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'replace_wild_encounter_schedule_overlaps', kwargs ) )
+      self.calls.append( CoordinatorCall( 'replace_wild_encounter_schedule_overlaps', kwargs ) )
       return StubWildEncounterCoordinator.default_success
 
 
    def trim_wild_encounter_schedule_overlaps( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'trim_wild_encounter_schedule_overlaps', kwargs ) )
+      self.calls.append( CoordinatorCall( 'trim_wild_encounter_schedule_overlaps', kwargs ) )
       return StubWildEncounterCoordinator.default_success
 
 
@@ -93,19 +98,16 @@ class StubWildEncounterCoordinator():
          *,
          wild_encounter_name: str ) -> list[ str ]:
       self.calls.append(
-         (
-            'get_wild_encounter_schedule_times',
-            { 'wild_encounter_name': wild_encounter_name },
-         )
+         CoordinatorCall( 'get_wild_encounter_schedule_times', { 'wild_encounter_name': wild_encounter_name } )
       )
       return list( self.wild_encounter_schedule_times )
 
 
    def end_wild_encounter_schedule( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'end_wild_encounter_schedule', kwargs ) )
+      self.calls.append( CoordinatorCall( 'end_wild_encounter_schedule', kwargs ) )
       return StubWildEncounterCoordinator.default_success
 
 
    def cancel_wild_encounter_occurrence( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'cancel_wild_encounter_occurrence', kwargs ) )
+      self.calls.append( CoordinatorCall( 'cancel_wild_encounter_occurrence', kwargs ) )
       return StubWildEncounterCoordinator.default_success

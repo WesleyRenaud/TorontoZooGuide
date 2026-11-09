@@ -4,6 +4,13 @@ from ...types import Types
 
 
 class GiftShopSeasonClosure:
+   gift_shop: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey | None
+   message: str
+   is_closed_for_season: bool
+
+
    def __init__(
          self,
          gift_shop: str,

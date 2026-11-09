@@ -5,6 +5,14 @@ from ..types import Types
 
 
 class WildEncounterDiff:
+   name: str
+   is_deleted: bool
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+   meeting_spot: str | None
+   link: str | None
+
+
    def __init__(
          self,
          name: str,

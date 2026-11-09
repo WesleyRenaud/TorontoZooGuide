@@ -358,6 +358,26 @@ class GuardiansTalkScheduleProvider():
 
 
    @classmethod
+   def delete_schedules(
+         cls,
+         conn: Types.Connection,
+         talk_name: str,
+         location: str ) -> None:
+      cur = conn.cursor()
+
+      try:
+         cur.execute(
+            """   DELETE FROM GuardiansTalkSchedule
+                  WHERE TALK_NAME = ?
+                     AND LOCATION = ?;
+            """,
+            ( talk_name, location ) )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
    def delete_schedule(
          cls,
          conn: Types.Connection,

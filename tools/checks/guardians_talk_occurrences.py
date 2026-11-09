@@ -8,8 +8,11 @@ from .guardians_talk_listing import GuardiansTalkListing
 
 
 class GuardiansTalkOccurrences():
+   by_listing: dict[ GuardiansTalkListing, set[ GuardiansTalkOccurrenceRecord ] ]
+
+
    def __init__( self ) -> None:
-      self.by_listing: dict[ GuardiansTalkListing, set[ GuardiansTalkOccurrenceRecord ] ] = {}
+      self.by_listing = {}
 
 
    def add(
@@ -23,6 +26,10 @@ class GuardiansTalkOccurrences():
             talk_time=talk_time,
          )
       )
+
+
+   def add_listing( self, listing: GuardiansTalkListing ) -> None:
+      self.by_listing.setdefault( listing, set() )
 
 
    def add_scheduled(
@@ -42,4 +49,4 @@ class GuardiansTalkOccurrences():
 
 
    def for_listing( self, listing: GuardiansTalkListing ) -> set[ GuardiansTalkOccurrenceRecord ]:
-      return self.by_listing[ listing ]
+      return self.by_listing.get( listing, set() )

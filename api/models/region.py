@@ -2,6 +2,10 @@ from __future__ import annotations
 
 
 class Region:
+   name: str
+   has_exhibits: bool
+
+
    def __init__( self, name: str, has_exhibits: bool ) -> None:
       self.name = name
       self.has_exhibits = has_exhibits

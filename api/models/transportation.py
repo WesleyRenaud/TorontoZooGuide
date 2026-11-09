@@ -6,6 +6,19 @@ from ..types import Types
 
 
 class Transportation:
+   name: str
+   is_also_attraction: bool
+   free_with_admission: bool
+   description: str | None
+   info_link: str | None
+   hyperlink_text: str | None
+   x_coord: Types.Coordinate | None
+   y_coord: Types.Coordinate | None
+   region: str | None
+   open_time: Types.ScheduleTimeKey
+   close_time: Types.ScheduleTimeKey
+
+
    def __init__(
          self,
          name: str,

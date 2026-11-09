@@ -4,6 +4,13 @@ from ...types import Types
 
 
 class UpdateEditInput:
+   title: str
+   start_date: Types.DateKey
+   description: str
+   update_type: str
+   end_date: Types.DateKey | None
+
+
    def __init__(
          self,
          title: str,

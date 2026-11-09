@@ -248,6 +248,24 @@ class WildEncounterScheduleProvider():
 
 
    @classmethod
+   def delete_schedules(
+         cls,
+         conn: Types.Connection,
+         wild_encounter: str ) -> None:
+      cur = conn.cursor()
+
+      try:
+         cur.execute(
+            """   DELETE FROM WildEncounterSchedule
+                  WHERE WILD_ENCOUNTER = ?;
+            """,
+            ( wild_encounter, ) )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
    def delete_schedule(
          cls,
          conn: Types.Connection,

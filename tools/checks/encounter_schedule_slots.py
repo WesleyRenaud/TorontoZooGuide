@@ -4,8 +4,11 @@ from .schedule_slot import ScheduleSlot
 
 
 class EncounterScheduleSlots():
+   by_name: dict[ str, set[ ScheduleSlot ] ]
+
+
    def __init__( self ) -> None:
-      self.by_name: dict[ str, set[ ScheduleSlot ] ] = {}
+      self.by_name = {}
 
 
    def add( self, name: str, slot: ScheduleSlot ) -> None:

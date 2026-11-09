@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from api_test_support.coordinator_call import CoordinatorCall
+
 from api.attractions.scheduling.attraction_hours_schedule_time_bounds import AttractionHoursScheduleTimeBounds
 from api.models.attraction import Attraction
 
@@ -11,6 +13,11 @@ class StubAttractionCoordinator():
    default_success: bool = True
    raise_time_bounds_error: bool = False
    raise_hours_schedule_error: bool = False
+   attraction_names: list[ str ]
+   attractions: list[ Attraction ]
+   hours_time_bounds: AttractionHoursScheduleTimeBounds | None
+   calls: list[ CoordinatorCall ]
+   closed: bool
 
 
    def __init__(
@@ -22,7 +29,7 @@ class StubAttractionCoordinator():
       self.attraction_names = attraction_names
       self.attractions = attractions
       self.hours_time_bounds = hours_time_bounds
-      self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
+      self.calls = []
       self.closed = False
       StubAttractionCoordinator.instances.append( self )
 
@@ -32,7 +39,7 @@ class StubAttractionCoordinator():
 
 
    def get_attraction_names( self ) -> list[ str ]:
-      self.calls.append( ( 'get_attraction_names', {} ) )
+      self.calls.append( CoordinatorCall( 'get_attraction_names', {} ) )
       return list( self.attraction_names )
 
 
@@ -44,56 +51,56 @@ class StubAttractionCoordinator():
          year: int,
          include_closed_attractions: bool = False ) -> list[ Attraction ]:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_attractions',
             {
                'day': day,
                'month': month,
                'year': year,
                'include_closed_attractions': include_closed_attractions,
-            }
+            },
          )
       )
       return list( self.attractions )
 
 
    def set_attraction_as_closed( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_attraction_as_closed', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_attraction_as_closed', kwargs ) )
       return StubAttractionCoordinator.default_success
 
 
    def get_closed_for_season_attraction_names( self ) -> list[ str ]:
-      self.calls.append( ( 'get_closed_for_season_attraction_names', {} ) )
+      self.calls.append( CoordinatorCall( 'get_closed_for_season_attraction_names', {} ) )
       return list( self.attraction_names )
 
 
    def set_attraction_as_closed_for_season( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_attraction_as_closed_for_season', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_attraction_as_closed_for_season', kwargs ) )
       return StubAttractionCoordinator.default_success
 
 
    def set_attraction_as_open_for_season( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_attraction_as_open_for_season', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_attraction_as_open_for_season', kwargs ) )
       return StubAttractionCoordinator.default_success
 
 
    def set_attraction_closure_override( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_attraction_closure_override', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_attraction_closure_override', kwargs ) )
       return StubAttractionCoordinator.default_success
 
 
    def set_attraction_opening_schedule( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_attraction_opening_schedule', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_attraction_opening_schedule', kwargs ) )
       return StubAttractionCoordinator.default_success
 
 
    def replace_attraction_opening_schedule_overlaps( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'replace_attraction_opening_schedule_overlaps', kwargs ) )
+      self.calls.append( CoordinatorCall( 'replace_attraction_opening_schedule_overlaps', kwargs ) )
       return StubAttractionCoordinator.default_success
 
 
    def trim_attraction_opening_schedule_overlaps( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'trim_attraction_opening_schedule_overlaps', kwargs ) )
+      self.calls.append( CoordinatorCall( 'trim_attraction_opening_schedule_overlaps', kwargs ) )
       return StubAttractionCoordinator.default_success
 
 
@@ -103,12 +110,12 @@ class StubAttractionCoordinator():
          start_date: str | None = None,
          end_date: str | None = None ) -> AttractionHoursScheduleTimeBounds:
       self.calls.append(
-         (
+         CoordinatorCall(
             'get_attraction_hours_schedule_time_bounds',
             {
                'start_date': start_date,
                'end_date': end_date,
-            }
+            },
          )
       )
       if StubAttractionCoordinator.raise_time_bounds_error:
@@ -119,21 +126,21 @@ class StubAttractionCoordinator():
 
 
    def set_attraction_hours_schedule( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'set_attraction_hours_schedule', kwargs ) )
+      self.calls.append( CoordinatorCall( 'set_attraction_hours_schedule', kwargs ) )
       if StubAttractionCoordinator.raise_hours_schedule_error:
          raise ValueError( 'Attraction hours must fall within regular zoo hours.' )
       return StubAttractionCoordinator.default_success
 
 
    def replace_attraction_hours_schedule_overlaps( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'replace_attraction_hours_schedule_overlaps', kwargs ) )
+      self.calls.append( CoordinatorCall( 'replace_attraction_hours_schedule_overlaps', kwargs ) )
       if StubAttractionCoordinator.raise_hours_schedule_error:
          raise ValueError( 'Attraction hours must fall within regular zoo hours.' )
       return StubAttractionCoordinator.default_success
 
 
    def trim_attraction_hours_schedule_overlaps( self, **kwargs: Any ) -> bool:
-      self.calls.append( ( 'trim_attraction_hours_schedule_overlaps', kwargs ) )
+      self.calls.append( CoordinatorCall( 'trim_attraction_hours_schedule_overlaps', kwargs ) )
       if StubAttractionCoordinator.raise_hours_schedule_error:
          raise ValueError( 'Attraction hours must fall within regular zoo hours.' )
       return StubAttractionCoordinator.default_success

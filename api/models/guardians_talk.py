@@ -7,6 +7,20 @@ from ..types import Types
 
 
 class GuardiansTalk:
+   name: str
+   location: str
+   enclosure_name: str | None
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
+   start_time: Types.ScheduleTimeKey
+   maximum_duration: int | None
+   end_time: Types.ScheduleTimeKey
+   is_available: bool
+   unavailable_message: str | None
+   is_deleted: bool
+   linked_animals: list[ GuardiansTalkLinkedAnimal ] | None
+
+
    def __init__(
          self,
          name: str,

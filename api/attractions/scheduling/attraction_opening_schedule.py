@@ -4,6 +4,20 @@ from ...types import Types
 
 
 class AttractionOpeningSchedule:
+   attraction: str
+   start_date: Types.DateKey
+   end_date: Types.DateKey | None
+   monday: bool
+   tuesday: bool
+   wednesday: bool
+   thursday: bool
+   friday: bool
+   saturday: bool
+   sunday: bool
+   holidays_only: bool
+   message: str | None
+
+
    def __init__(
          self,
          attraction: str,

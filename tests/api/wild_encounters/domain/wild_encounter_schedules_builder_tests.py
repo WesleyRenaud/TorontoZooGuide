@@ -83,6 +83,18 @@ def Test_Covers_TestOpenEndedRange_ExpectStartThroughLaterDates() -> None:
    assert not schedule.covers( date( 2026, 11, 5 ) )
 
 
+def Test_LastDay_TestEndDate_ExpectDayBeforeEnd() -> None:
+   assert _monday_schedule().last_day() == date( 2026, 11, 4 )
+
+
+def Test_LastDay_TestOpenEnded_ExpectNone() -> None:
+   schedule = WildEncounterSchedulesBuilder.build( [
+      _record( GIRAFFE, '2026-11-01', None, monday=True ),
+   ] )[ 0 ]
+
+   assert schedule.last_day() == None
+
+
 def Test_WeekdayIndexes_TestMondayAndSunday_ExpectPythonWeekdays() -> None:
    schedule = WildEncounterSchedulesBuilder.build( [
       _record( GIRAFFE, '2026-11-01', None, monday=True, sunday=True ),

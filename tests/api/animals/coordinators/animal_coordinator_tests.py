@@ -261,6 +261,7 @@ class _SavedWildEncounterCoordinator:
 
 class _PreparedSlotSink:
    slots: list[ LoopScheduleSlot ] = []
+   persist: bool
 
 
    def __init__( self, *, persist: bool ) -> None:

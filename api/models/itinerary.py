@@ -13,6 +13,19 @@ from .wild_encounter import WildEncounter
 
 
 class Itinerary:
+   date: str
+   selected_exhibits: list[ str ] | None
+   animals: list[ Animal ] | None
+   attractions: list[ Attraction ] | None
+   transportations: list[ ItineraryTransportation ] | None
+   transportation_stations: list[ ItineraryTransportationStation ] | None
+   guardians_talks: list[ GuardiansTalk ] | None
+   wild_encounters: list[ WildEncounter ] | None
+   events: list[ ItineraryEvent ] | None
+   arrival_time: Types.ScheduleTimeKey
+   departure_time: Types.ScheduleTimeKey
+
+
    def __init__(
          self,
          date: str,

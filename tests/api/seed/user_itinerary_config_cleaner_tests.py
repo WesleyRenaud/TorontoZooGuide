@@ -24,9 +24,13 @@ CREATE TABLE ItineraryStatusSuppression (
 
 
 class _SharedConnection:
+   _conn: sqlite3.Connection
+   calls: list[ str ]
+
+
    def __init__( self, conn: sqlite3.Connection ) -> None:
       self._conn = conn
-      self.calls: list[ str ] = []
+      self.calls = []
 
 
    def cursor( self ) -> sqlite3.Cursor:

@@ -5,6 +5,17 @@ from ..shared.value_conversion import ValueConversion
 
 
 class GiftShop:
+   name: str
+   location: str
+   description: str | None
+   x_coord: float | None
+   y_coord: float | None
+   is_closed: bool | None
+   closed_message: str | None
+   likelihood: int | None
+   is_closed_for_season: bool
+
+
    def __init__(
          self,
          name: str,

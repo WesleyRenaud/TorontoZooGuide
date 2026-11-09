@@ -4,6 +4,10 @@ from ..types import Types
 
 
 class EmergencyIntercom:
+   x_coord: Types.Coordinate
+   y_coord: Types.Coordinate
+
+
    def __init__( self, x_coord: Types.Coordinate, y_coord: Types.Coordinate ) -> None:
       self.x_coord = x_coord
       self.y_coord = y_coord

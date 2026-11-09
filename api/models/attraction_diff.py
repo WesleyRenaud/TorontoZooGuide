@@ -4,6 +4,13 @@ from ..types import Types
 
 
 class AttractionDiff:
+   name: str
+   old_likelihood: int | None
+   new_likelihood: int | None
+   start_time: Types.ScheduleTimeKey
+   end_time: Types.ScheduleTimeKey
+
+
    def __init__(
          self,
          name: str,
