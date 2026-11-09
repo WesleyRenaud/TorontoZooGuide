@@ -5,6 +5,7 @@ import json
 import re
 import subprocess
 
+from api.app_string_provider import AppStringProvider
 from .paths import Paths
 from .region_color import RegionColor
 from .region_slug import RegionSlug
@@ -73,6 +74,17 @@ class ExhibitRegionColors():
 
 
    @classmethod
+   def listed_region( cls, name: str ) -> str:
+      folded = name.casefold()
+      return next(
+         row[ 'region' ]
+         for path in ( Paths.ATTRACTION_DATA, Paths.EXHIBIT_DATA )
+         for row in json.loads( path.read_text() )
+         if row[ 'name' ].casefold() == folded
+      )
+
+
+   @classmethod
    def exhibit_region( cls, exhibit: str ) -> str:
       folded = exhibit.casefold()
       return next(
@@ -111,3 +123,35 @@ class ExhibitRegionColors():
    @classmethod
    def place_colors( cls, place: str ) -> RegionColor:
       return cls.region_colors( cls.place_region( place ) )
+
+
+   @classmethod
+   def restaurant_label( cls, name: str ) -> str:
+      folded = name.casefold()
+      return next(
+         (
+            AppStringProvider.format(
+               'format.middleDotPair',
+               first=name,
+               second=cls.place_region( row[ 'location' ] ),
+            )
+            for row in json.loads( Paths.RESTAURANT_DATA.read_text() )
+            if row[ 'name' ].casefold() == folded
+         ),
+      )
+
+
+   @classmethod
+   def gift_shop_label( cls, name: str ) -> str:
+      folded = name.casefold()
+      return next(
+         (
+            AppStringProvider.format(
+               'format.middleDotPair',
+               first=name,
+               second=cls.place_region( row[ 'location' ] ),
+            )
+            for row in json.loads( Paths.GIFT_SHOP_DATA.read_text() )
+            if row[ 'name' ].casefold() == folded
+         ),
+      )

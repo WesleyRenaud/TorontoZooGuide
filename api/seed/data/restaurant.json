@@ -6,7 +6,8 @@
     "description": "Enjoy Tim Hortons fresh coffee, hot and cold beverages, breakfast sandwiches, pastries and more.",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/peacockcafemenu.pdf",
     "x_coord": 57.079,
-    "y_coord": 83.618
+    "y_coord": 83.618,
+    "closed_for_season_until_month": null
   },
   {
     "name": "Africa Restaurant",
@@ -15,7 +16,8 @@
     "description": "Enjoy a variety of cuisine including Pizza Pizza, Smokes Poutinerie (seasonal), and our very own Zoo Grill. *Fully Licensed.",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Africa%20Menu%202025.pdf?",
     "x_coord": 53.383,
-    "y_coord": 57.213
+    "y_coord": 57.213,
+    "closed_for_season_until_month": null
   },
   {
     "name": "BeaverTails Trailer",
@@ -24,7 +26,8 @@
     "description": "Iconic hand-stretched pastries, creating delicious memories since 1978.",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf",
     "x_coord": 60.179,
-    "y_coord": 74.959
+    "y_coord": 74.959,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "Americas Pretzel Bar",
@@ -33,7 +36,8 @@
     "description": "Serving warm Jumbo pretzels, assorted Craft beers, wine, seltzers, soft drinks, ice cream, and snacks",
     "menu_link": null,
     "x_coord": 69.49,
-    "y_coord": 56.634
+    "y_coord": 56.634,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "Caribou Café",
@@ -42,7 +46,8 @@
     "description": "Located next to the arctic wolves, enjoy a variety of options including Zoo Grill, and Pizza Pizza! *Fully Licensed.",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Caribou%20Cafe%20Menu%202025.pdf?",
     "x_coord": 71.91,
-    "y_coord": 56.193
+    "y_coord": 56.193,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "Thorntree Café",
@@ -51,7 +56,8 @@
     "description": "Come hang out for bubble tea and smoothies at Palgong Tea near the Masai giraffes!",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf",
     "x_coord": 41.323,
-    "y_coord": 67.206
+    "y_coord": 67.206,
+    "closed_for_season_until_month": 3
   },
   {
     "name": "Eurasia Pizza Pizza",
@@ -60,7 +66,8 @@
     "description": "Enjoy a hot slice of Pizza Pizza or order a whole pizza for the whole family!",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Eurasia%20pizza%20pizza%20menu%202025.pdf",
     "x_coord": 78.302,
-    "y_coord": 72.147
+    "y_coord": 72.147,
+    "closed_for_season_until_month": 4
   },
   {
     "name": "Cocoa Flow",
@@ -69,7 +76,8 @@
     "description": "CocoaFlow brings a sweet twist to fresh fruit! We serve freshly prepared strawberries, bananas, and other fruits topped with smooth Belgian chocolate, pistachio, Biscoff, and other delicious toppings. From our signature Dubai Chocolate cups to refreshing fruit creations, CocoaFlow is the perfect sweet stop during your day at the Toronto Zoo.",
     "menu_link": null,
     "x_coord": 58.555,
-    "y_coord": 78.791
+    "y_coord": 78.791,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "Souvlaki Bros",
@@ -78,7 +86,8 @@
     "description": "Enjoy Chicken Souvlaki, Falafel, Greek Salad, Wraps and Churros!",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Souvlaki%20Bros%20Menu.pdf",
     "x_coord": 53.202,
-    "y_coord": 58.399
+    "y_coord": 58.399,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "Caribou Café Palgong",
@@ -87,7 +96,8 @@
     "description": "Located next to the arctic wolves, outside of Caribou Café!",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf",
     "x_coord": 71.344,
-    "y_coord": 56.601
+    "y_coord": 56.601,
+    "closed_for_season_until_month": 3
   },
   {
     "name": "Tundra Tacos",
@@ -96,7 +106,8 @@
     "description": "Traditional tacos, venison tacos and churros, corn dogs, and fries, beer, wine, soft drinks and seltzers, There is something for everyone!",
     "menu_link": null,
     "x_coord": 72.858,
-    "y_coord": 56.303
+    "y_coord": 56.303,
+    "closed_for_season_until_month": 3
   },
   {
     "name": "Singh's Trini Vibes",
@@ -105,7 +116,8 @@
     "description": "Authentic Caribbean cuisine at the Tundra Zoomobile Station. Open Wednesday to Sunday, weather permitting.",
     "menu_link": null,
     "x_coord": 79.709,
-    "y_coord": 55.642
+    "y_coord": 55.642,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "Savanna Snack Bar",
@@ -114,7 +126,8 @@
     "description": "Snacks, Beverages, Ice cream, Beer, Wine, and Pizza Pizza!",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Toronto%20Zoo%20Savana%20Hut%20Menu%20Spring%202025.pdf",
     "x_coord": 56.812,
-    "y_coord": 38.413
+    "y_coord": 38.413,
+    "closed_for_season_until_month": 4
   },
   {
     "name": "Simba Safari Lodge",
@@ -123,7 +136,8 @@
     "description": "Located overlooking the white rhinos, enjoy a variety of drinks, snacks, burgers, hot dogs, salads, poutine and chicken. *Fully Licensed.",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Simba%20Menu%202025.pdf?",
     "x_coord": 37.786,
-    "y_coord": 50.566
+    "y_coord": 50.566,
+    "closed_for_season_until_month": 3
   },
   {
     "name": "Smokes Poutinerie Trailer",
@@ -132,7 +146,8 @@
     "description": "Enjoy a variety of poutine creations.",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Smokes-Front-Courtyard-Menu.pdf",
     "x_coord": 60.694,
-    "y_coord": 74.56
+    "y_coord": 74.56,
+    "closed_for_season_until_month": 2
   },
   {
     "name": "Wolf's Den Café",
@@ -141,6 +156,7 @@
     "description": "Birch Bark Indigenous coffee, Cold Beverages, Jamaican Beef Patties, Samosas, Egg rolls, Jumbo Warm Pretzels, Sushi, Bubble tea and Snacks!",
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Express%20Menu%202025.pdf",
     "x_coord": 79.073,
-    "y_coord": 56.207
+    "y_coord": 56.207,
+    "closed_for_season_until_month": 2
   }
 ]

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from ..data_access.gift_shop_closure_record import GiftShopClosureRecord
 from ..data_access.gift_shop_provider import GiftShopProvider
 from ..data_access.gift_shop_schedule_provider import GiftShopScheduleProvider
@@ -12,6 +14,7 @@ from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.gift_shop_schedule_conflict_resolver import GiftShopScheduleConflictResolver
 from ..search.gift_shops_matching_query_builder import GiftShopsMatchingQueryBuilder
 from ...shared.amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ..status.gift_shop_season_closure_builder import GiftShopSeasonClosureBuilder
 from ..status.gift_shop_status_builder import GiftShopStatusBuilder
@@ -129,6 +132,28 @@ class GiftShopCoordinator():
       return GiftShopStatusProvider.delete_closed_for_season(
          RequestConnectionProvider.get(),
          gift_shop=gift_shop )
+
+
+   @classmethod
+   def closed_for_season_until_month( cls, gift_shop: str ) -> int | None:
+      return GiftShopProvider.fetch_closed_for_season_until_month(
+         RequestConnectionProvider.get(),
+         gift_shop=gift_shop )
+
+
+   @classmethod
+   def set_gift_shop_as_closed_for_season_until(
+         cls,
+         gift_shop: str,
+         today: date ) -> bool:
+      until_month = cls.closed_for_season_until_month( gift_shop )
+      end_date = CalendarDates.next_month_end( until_month, today )
+
+      return cls.set_gift_shop_as_closed_for_season(
+         gift_shop=gift_shop,
+         start_date=today,
+         end_date=end_date,
+         message='' )
 
 
    @classmethod

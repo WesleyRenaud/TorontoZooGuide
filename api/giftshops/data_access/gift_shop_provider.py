@@ -29,6 +29,21 @@ class GiftShopProvider():
 
 
    @classmethod
+   def fetch_closed_for_season_until_month(
+         cls,
+         conn: Types.Connection,
+         gift_shop: str ) -> int | None:
+      row = conn.execute(
+         """   SELECT CLOSED_FOR_SEASON_UNTIL_MONTH
+               FROM GiftShop
+               WHERE NAME = ?;
+         """,
+         ( gift_shop, ) ).fetchone()
+
+      return row[ 'CLOSED_FOR_SEASON_UNTIL_MONTH' ]
+
+
+   @classmethod
    def fetch_gift_shop_records(
          cls,
          conn: Types.Connection,

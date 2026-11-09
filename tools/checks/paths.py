@@ -12,5 +12,7 @@ class Paths():
    DATABASE = ROOT / 'animals.db'
    EXHIBIT_DATA = ROOT / 'api' / 'seed' / 'data' / 'exhibit.json'
    ATTRACTION_DATA = ROOT / 'api' / 'seed' / 'data' / 'attraction.json'
+   RESTAURANT_DATA = ROOT / 'api' / 'seed' / 'data' / 'restaurant.json'
+   GIFT_SHOP_DATA = ROOT / 'api' / 'seed' / 'data' / 'gift_shop.json'
    REGION_TOKENS = ROOT / 'styles' / 'tokens.css'
    EMAIL_TEMPLATES = ROOT / 'tools' / 'checks' / 'email'
