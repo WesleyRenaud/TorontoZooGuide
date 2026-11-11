@@ -169,7 +169,7 @@ def Test_GetDrinkingFountains_TestStatusMissing_ExpectSeasonalFallback(
 def Test_SetDrinkingFountainsAsClosed_TestBuilderAndProvider_ExpectDelegated(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   saved: list[ DrinkingFountainClosedStatus ] = []
+   saved: list[ tuple[ bool, str, str, str ] ] = []
 
    monkeypatch.setattr(
       DrinkingFountainStatusBuilder,
@@ -177,8 +177,10 @@ def Test_SetDrinkingFountainsAsClosed_TestBuilderAndProvider_ExpectDelegated(
       lambda **_kwargs: CLOSED_STATUS )
    monkeypatch.setattr(
       DrinkingFountainStatusProvider,
-      'save_drinking_fountain_closed_status',
-      lambda _conn, *, status: saved.append( status ) or True )
+      'save_drinking_fountain_status',
+      lambda _conn, *, is_closed, start_date, end_date, message: saved.append(
+         ( is_closed, start_date, end_date, message )
+      ) or True )
 
    saved_closed = DrinkingFountainCoordinator.set_drinking_fountains_as_closed(
       start_date=START_DATE,
@@ -186,7 +188,7 @@ def Test_SetDrinkingFountainsAsClosed_TestBuilderAndProvider_ExpectDelegated(
       message=MESSAGE )
 
    assert saved_closed is True
-   assert saved == [ CLOSED_STATUS ]
+   assert saved == [ ( True, START_DATE, END_DATE, MESSAGE ) ]
 
 
 def Test_SetDrinkingFountainsAsOpen_TestProvider_ExpectDeleted(

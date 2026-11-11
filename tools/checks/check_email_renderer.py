@@ -388,6 +388,7 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.extendedClosedForSeasonThrough' ),
          AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
          AppStringProvider.format( 'checks.setOpenForSeason' ),
+         AppStringProvider.format( 'checks.setOpenForSeasonFrom' ),
          AppStringProvider.format( 'checks.setScheduleFrom' ),
          AppStringProvider.format( 'checks.removedSchedule' ),
       )

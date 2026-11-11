@@ -8,6 +8,7 @@ from ..domain.seasonal_drinking_fountains_builder import SeasonalDrinkingFountai
 from ...models import DrinkingFountain
 from ...request_connection_provider import RequestConnectionProvider
 from ...shared.calendar_dates import CalendarDates
+from ...shared.date_values import DateValues
 from ..status.drinking_fountain_status_builder import DrinkingFountainStatusBuilder
 from ...types import Types
 
@@ -61,9 +62,13 @@ class DrinkingFountainCoordinator():
          end_date=end_date,
          message=message )
 
-      return DrinkingFountainStatusProvider.save_drinking_fountain_closed_status(
+      return DrinkingFountainStatusProvider.save_drinking_fountain_status(
          RequestConnectionProvider.get(),
-         status=status )
+         is_closed=True,
+         start_date=status.start_date,
+         end_date=status.end_date,
+         message=status.message,
+      )
 
 
    @classmethod
@@ -79,3 +84,30 @@ class DrinkingFountainCoordinator():
    def set_drinking_fountains_as_open( cls ) -> bool:
       return DrinkingFountainStatusProvider.delete_drinking_fountain_status(
          RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def set_drinking_fountain_window(
+         cls,
+         is_closed: bool,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> bool:
+      if is_closed:
+         return cls.set_drinking_fountains_as_closed(
+            start_date=start_date,
+            end_date=end_date,
+            message='',
+         )
+
+      date_range = DateValues.resolve_open_ended_date_range(
+         start_date=start_date,
+         end_date=end_date,
+      )
+
+      return DrinkingFountainStatusProvider.save_drinking_fountain_status(
+         RequestConnectionProvider.get(),
+         is_closed=False,
+         start_date=date_range.start_date,
+         end_date=date_range.end_date,
+         message=None,
+      )

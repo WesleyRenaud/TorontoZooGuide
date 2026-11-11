@@ -84,6 +84,7 @@ export class CheckStrings {
       setOnDisplay: 'Set on display.',
       setOnDisplayForSeason: 'Set on display for the season.',
       setOpenForSeason: 'Set open for the season.',
+      setOpenForSeasonFrom: 'Set open for the season from ',
       setScheduleFrom: 'Set the schedule from ',
       status: {
          allClear: 'All clear',

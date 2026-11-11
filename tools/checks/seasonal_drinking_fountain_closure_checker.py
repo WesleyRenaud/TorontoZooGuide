@@ -15,6 +15,8 @@ from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
+from .drinking_fountain_window import DrinkingFountainWindow
+from tools.fix.drinking_fountain_window_fixer import DrinkingFountainWindowFixer
 from .website_page import WebsitePage
 
 
@@ -87,59 +89,37 @@ class SeasonalDrinkingFountainClosureChecker():
 
 
    @classmethod
-   def fountain_name( cls ) -> str:
-      return AppStringProvider.format( 'checks.countNames.drinkingFountains' )
+   def lines( cls, database: Path, today: date ) -> list[ str ]:
+      status = cls.load_seasonal_drinking_fountains( database )
+      website_closed = cls.fetch_fountains_closed_on_website( today )
+      window = DrinkingFountainWindow.replacement( website_closed, status, today )
+
+      if window is None:
+         return []
+
+      return [ DrinkingFountainWindowFixer.apply( database, window ) ]
 
 
    @classmethod
-   def closed_in_app( cls, status: SeasonalDrinkingFountains, today: date ) -> bool:
-      return status.closed_for_season_on( today )
+   def remaining( cls, lines: list[ str ] ) -> int:
+      phrases = (
+         CheckReport.text( 'checks.setClosedForSeasonFrom' ),
+         CheckReport.text( 'checks.setOpenForSeasonFrom' ),
+      )
 
-
-   @classmethod
-   def website_only(
-         cls,
-         website_closed: bool,
-         status: SeasonalDrinkingFountains,
-         today: date ) -> list[ str ]:
-      if website_closed and not cls.closed_in_app( status, today ):
-         return [ cls.fountain_name() ]
-
-      return []
-
-
-   @classmethod
-   def app_only(
-         cls,
-         website_closed: bool,
-         status: SeasonalDrinkingFountains,
-         today: date ) -> list[ str ]:
-      if cls.closed_in_app( status, today ) and not website_closed:
-         return [ cls.fountain_name() ]
-
-      return []
-
-
-   @classmethod
-   def report(
-         cls,
-         today: date,
-         website_only: list[ str ],
-         app_only: list[ str ] ) -> None:
-      print( CheckReport.heading( 'seasonalDrinkingFountain', today ) )
-      print()
-      CheckReport.print_category( 'checks.closedForSeasonWebsiteOnly', website_only )
-      CheckReport.print_category( 'checks.closedForSeasonAppOnly', app_only )
+      return sum(
+         all( phrase not in line for phrase in phrases )
+         for line in lines
+      )
 
 
    @classmethod
    def check_schedules( cls, database: Path, today: date ) -> int:
-      status = cls.load_seasonal_drinking_fountains( database )
-      website_closed = cls.fetch_fountains_closed_on_website( today )
-      website_only = cls.website_only( website_closed, status, today )
-      app_only = cls.app_only( website_closed, status, today )
-      cls.report( today, website_only, app_only )
-      return CheckReport.count_differences( website_only, app_only )
+      lines = cls.lines( database, today )
+      print( CheckReport.heading( 'seasonalDrinkingFountain', today ) )
+      print()
+      CheckReport.print_category( 'checks.windowsDoNotAlign', lines )
+      return cls.remaining( lines )
 
 
    @classmethod
