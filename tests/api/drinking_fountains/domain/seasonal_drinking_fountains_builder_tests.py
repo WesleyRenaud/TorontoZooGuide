@@ -45,3 +45,13 @@ def Test_ClosedForSeasonOn_TestEndedStatus_ExpectNotClosed() -> None:
    )
 
    assert status.closed_for_season_on( date( 2026, 11, 2 ) ) is False
+
+
+def Test_ClosedForSeasonOn_TestOpenStatus_ExpectNotClosed() -> None:
+   status = SeasonalDrinkingFountains(
+      is_closed=False,
+      start=date( 2026, 6, 1 ),
+      end=date( 2026, 10, 31 ),
+   )
+
+   assert status.closed_for_season_on( date( 2026, 6, 15 ) ) is False

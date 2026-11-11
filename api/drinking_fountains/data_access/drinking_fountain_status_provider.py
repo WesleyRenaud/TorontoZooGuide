@@ -4,7 +4,6 @@ from datetime import date
 
 from .drinking_fountain_status_mapper import DrinkingFountainStatusMapper
 from .drinking_fountain_status_record import DrinkingFountainStatusRecord
-from ..status.drinking_fountain_closed_status import DrinkingFountainClosedStatus
 from ...types import Types
 
 
@@ -91,10 +90,14 @@ class DrinkingFountainStatusProvider():
 
 
    @classmethod
-   def save_drinking_fountain_closed_status(
+   def save_drinking_fountain_status(
          cls,
          conn: Types.Connection,
-         status: DrinkingFountainClosedStatus ) -> bool:
+         *,
+         is_closed: bool,
+         start_date: Types.DateKey | None,
+         end_date: Types.DateKey | None,
+         message: str | None ) -> bool:
       cur = conn.cursor()
 
       try:
@@ -107,12 +110,13 @@ class DrinkingFountainStatusProvider():
                      END_DATE,
                      CLOSED_MESSAGE
                   )
-                  VALUES (1, ?, ?, ?);
+                  VALUES (?, ?, ?, ?);
             """,
             (
-               status.start_date,
-               status.end_date,
-               status.message,
+               is_closed,
+               start_date,
+               end_date,
+               message,
             ) )
 
          conn.commit()

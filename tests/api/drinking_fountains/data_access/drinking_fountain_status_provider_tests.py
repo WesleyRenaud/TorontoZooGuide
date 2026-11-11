@@ -6,7 +6,6 @@ import sqlite3
 import pytest
 
 from api.drinking_fountains.data_access.drinking_fountain_status_provider import DrinkingFountainStatusProvider
-from api.drinking_fountains.status.drinking_fountain_closed_status import DrinkingFountainClosedStatus
 
 
 START_DATE = '2026-06-01'
@@ -92,14 +91,14 @@ def Test_FetchDrinkingFountainStatusRecord_TestEmptyTable_ExpectNone(
    assert drinking_fountain_status_record is None
 
 
-def Test_SaveClosedStatus_TestClosedStatus_ExpectPersistsAndFetches(
+def Test_SaveDrinkingFountainStatus_TestClosedStatus_ExpectPersistsAndFetches(
       drinking_fountain_status_conn: sqlite3.Connection ) -> None:
-   result = DrinkingFountainStatusProvider.save_drinking_fountain_closed_status(
+   result = DrinkingFountainStatusProvider.save_drinking_fountain_status(
       drinking_fountain_status_conn,
-      DrinkingFountainClosedStatus(
-         start_date=START_DATE,
-         end_date=END_DATE,
-         message=CLOSED_MESSAGE ) )
+      is_closed=True,
+      start_date=START_DATE,
+      end_date=END_DATE,
+      message=CLOSED_MESSAGE )
 
    assert result is True
 
@@ -115,12 +114,12 @@ def Test_SaveClosedStatus_TestClosedStatus_ExpectPersistsAndFetches(
 
 def Test_DeleteStatus_TestClosedStatus_ExpectRemoved(
       drinking_fountain_status_conn: sqlite3.Connection ) -> None:
-   DrinkingFountainStatusProvider.save_drinking_fountain_closed_status(
+   DrinkingFountainStatusProvider.save_drinking_fountain_status(
       drinking_fountain_status_conn,
-      DrinkingFountainClosedStatus(
-         start_date=START_DATE,
-         end_date=END_DATE,
-         message=CLOSED_MESSAGE ) )
+      is_closed=True,
+      start_date=START_DATE,
+      end_date=END_DATE,
+      message=CLOSED_MESSAGE )
 
    result = DrinkingFountainStatusProvider.delete_drinking_fountain_status(
       drinking_fountain_status_conn )
