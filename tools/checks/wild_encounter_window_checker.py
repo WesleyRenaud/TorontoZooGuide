@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from api.app_string_provider import AppStringProvider
+from api.shared.calendar_dates import CalendarDates
 from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
@@ -75,7 +76,11 @@ class WildEncounterWindowChecker():
 
    @classmethod
    def check_schedules( cls, database: Path, today: date ) -> int:
-      prepared = WildEncounterComparison.prepare( database, today )
+      # The booking calendar does not list today's encounter even when it is running.
+      prepared = WildEncounterComparison.prepare(
+         database,
+         CalendarDates.one_day_later( today ),
+      )
       lines = cls.lines( database, prepared )
       CheckReport.report_category(
          'wildEncounter',

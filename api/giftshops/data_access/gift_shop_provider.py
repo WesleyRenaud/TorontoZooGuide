@@ -7,6 +7,7 @@ from .gift_shop_schedule_override_mapper import GiftShopScheduleOverrideMapper
 from .gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from .gift_shop_schedule_record import GiftShopScheduleRecord
 from ...shared.enums.position import Position
+from ...shared.peak_months import PeakMonths
 from ...types import Types
 
 
@@ -41,6 +42,24 @@ class GiftShopProvider():
          ( gift_shop, ) ).fetchone()
 
       return row[ 'CLOSED_FOR_SEASON_UNTIL_MONTH' ]
+
+
+   @classmethod
+   def fetch_peak_months( cls, conn: Types.Connection ) -> dict[ str, PeakMonths ]:
+      rows = conn.execute(
+         """   SELECT
+                  NAME,
+                  WEEKDAY_START_MONTH,
+                  WEEKDAY_END_MONTH,
+                  WEEKEND_START_MONTH,
+                  WEEKEND_END_MONTH
+               FROM GiftShop;
+         """ ).fetchall()
+
+      return {
+         row[ 'NAME' ]: PeakMonths.from_row( row )
+         for row in rows
+      }
 
 
    @classmethod

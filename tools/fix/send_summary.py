@@ -98,7 +98,6 @@ class SendSummary():
          for line in body.splitlines()
          if CheckReportParser.fixed_count( line ) != None
       ) )
-
       errors = CheckReportParser.summary_line( body )
 
       if fixed == 0 and errors == 0:

@@ -894,3 +894,58 @@ def Test_Main_TestNoArgsMissingPassword_ExpectExitCode2(
    captured = capsys.readouterr()
    assert result == 2
    assert send_summary.PASSWORD_VARIABLE in captured.err
+
+
+def Test_RenderHtml_TestAmenityWindowChecks_ExpectFoldedSections() -> None:
+   day = date( 2026, 11, 9 )
+   windows = CheckReport.text( 'checks.windowsDoNotAlign' )
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'seasonalAttraction', day ) }
+
+      { CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) }
+        Splash Island
+
+      { CheckReport.heading( 'attractionWindow', day ) } Compared.
+
+      { CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) }
+        Zoomobile
+
+      { CheckReport.heading( 'seasonalRestaurant', day ) }
+
+      { CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) }
+        Cocoa Flow
+
+      { CheckReport.heading( 'restaurantWindow', day ) } Compared.
+
+      { CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) }
+        Peacock Café
+
+      { CheckReport.heading( 'seasonalGiftShop', day ) }
+
+      { CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) }
+        Savanna Shop
+
+      { CheckReport.heading( 'giftShopWindow', day ) } Compared.
+
+      { CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) }
+        Zootique
+
+      { CheckReportParser.format_counts(
+         attractions=1,
+         restaurants=1,
+         gift_shops=1,
+      ) }
+
+      { CheckReportParser.format_error_count( 3 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+
+   assert html.count( '>Attractions<' ) == 2
+   assert html.count( '>Restaurants<' ) == 2
+   assert html.count( '>Gift shops<' ) == 2
+   assert 'Attractions closed for the season' not in html
+   assert 'Restaurants closed for the season' not in html
+   assert 'Gift shops closed for the season' not in html
+   assert html.count( f'>{ windows }<' ) == 3

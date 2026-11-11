@@ -1,28 +1,24 @@
 from __future__ import annotations
 
 from datetime import date
-from datetime import timedelta
 from pathlib import Path
 
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restaurants.domain.seasonal_restaurant import SeasonalRestaurant
-from api.shared.calendar_dates import CalendarDates
 from api.shared.date_values import DateValues
 from tools.checks.check_report import CheckReport
 from tools.checks.exhibit_region_colors import ExhibitRegionColors
 from tools.checks.paths import Paths
 from tools.checks.restaurant_detail_image import RestaurantDetailImage
+from tools.checks.season_window import SeasonWindow
 
 
 class SeasonalRestaurantClosedWeekFixer():
    @classmethod
    def extension_end( cls, restaurant: SeasonalRestaurant, today: date ) -> date:
-      if restaurant.end == today:
-         return CalendarDates.one_week_later( today + timedelta( days=1 ) )
-
-      return CalendarDates.one_week_later( today )
+      return SeasonWindow.week_extension_end( restaurant.end, today )
 
 
    @classmethod

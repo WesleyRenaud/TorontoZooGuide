@@ -116,14 +116,17 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'map.filter.attractions' ): [
             cls.check_kind( 'seasonalAttraction' ),
             cls.check_kind( 'attractionList' ),
+            cls.check_kind( 'attractionWindow' ),
          ],
          AppStringProvider.format( 'map.filterTypes.restaurant' ): [
             cls.check_kind( 'seasonalRestaurant' ),
             cls.check_kind( 'restaurantList' ),
+            cls.check_kind( 'restaurantWindow' ),
          ],
          AppStringProvider.format( 'checks.countNames.giftShops' ): [
             cls.check_kind( 'seasonalGiftShop' ),
             cls.check_kind( 'giftShopList' ),
+            cls.check_kind( 'giftShopWindow' ),
          ],
          AppStringProvider.format( 'checks.countNames.drinkingFountains' ): [
             cls.check_kind( 'seasonalDrinkingFountain' ),
@@ -501,6 +504,7 @@ class CheckEmailRenderer():
       return cls.grouped_sections( sections, [
          cls.check_kind( 'seasonalAttraction' ),
          cls.check_kind( 'attractionList' ),
+         cls.check_kind( 'attractionWindow' ),
       ] )
 
 
@@ -509,6 +513,7 @@ class CheckEmailRenderer():
       return cls.grouped_sections( sections, [
          cls.check_kind( 'seasonalRestaurant' ),
          cls.check_kind( 'restaurantList' ),
+         cls.check_kind( 'restaurantWindow' ),
       ] )
 
 
@@ -517,6 +522,7 @@ class CheckEmailRenderer():
       return cls.grouped_sections( sections, [
          cls.check_kind( 'seasonalGiftShop' ),
          cls.check_kind( 'giftShopList' ),
+         cls.check_kind( 'giftShopWindow' ),
       ] )
 
 

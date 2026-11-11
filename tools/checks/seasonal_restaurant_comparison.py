@@ -9,6 +9,7 @@ from api.request_connection_provider import RequestConnectionProvider
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restaurants.domain.seasonal_restaurant import SeasonalRestaurant
 from .restaurant_catalogue import RestaurantCatalogue
+from .season_window import SeasonWindow
 from .website_attraction import WebsiteAttraction
 from .website_page import WebsitePage
 
@@ -81,7 +82,11 @@ class SeasonalRestaurantComparison():
             restaurant.name
             for listing in listings
             for restaurant in cls.matched_restaurants( listing, restaurants )
-            if not restaurant.closed_for_season_on( today ) or restaurant.end == today
+            if SeasonWindow.needs_week_extension(
+               restaurant.closed_for_season_on( today ),
+               restaurant.end,
+               today,
+            )
          },
          key=str.casefold,
       )

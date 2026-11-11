@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import date
-from datetime import timedelta
 from pathlib import Path
 
 from api.app_string_provider import AppStringProvider
@@ -9,20 +8,17 @@ from api.attractions.coordinators.attraction_coordinator import AttractionCoordi
 from api.attractions.domain.seasonal_attraction import SeasonalAttraction
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
-from api.shared.calendar_dates import CalendarDates
 from api.shared.date_values import DateValues
 from tools.checks.attraction_detail_image import AttractionDetailImage
 from tools.checks.check_report import CheckReport
 from tools.checks.exhibit_region_colors import ExhibitRegionColors
+from tools.checks.season_window import SeasonWindow
 
 
 class SeasonalAttractionClosedWeekFixer():
    @classmethod
    def extension_end( cls, attraction: SeasonalAttraction, today: date ) -> date:
-      if attraction.end == today:
-         return CalendarDates.one_week_later( today + timedelta( days=1 ) )
-
-      return CalendarDates.one_week_later( today )
+      return SeasonWindow.week_extension_end( attraction.end, today )
 
 
    @classmethod

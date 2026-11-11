@@ -520,8 +520,36 @@ def Test_NextWeekdayDate_TestFromMonday_ExpectSameDate() -> None:
    assert next_weekday == monday
 
 
+def Test_UpcomingMonthStart_TestAprilStillAhead_ExpectThisApril() -> None:
+   assert CalendarDates.upcoming_month_start( 4, date( 2026, 2, 10 ) ) == date( 2026, 4, 1 )
+
+
+def Test_UpcomingMonthStart_TestAprilAlreadyStarted_ExpectNextApril() -> None:
+   assert CalendarDates.upcoming_month_start( 4, date( 2026, 11, 11 ) ) == date( 2027, 4, 1 )
+
+
+def Test_NextMonthStart_TestApril_ExpectMay1() -> None:
+   assert CalendarDates.next_month_start( 2026, 4 ) == date( 2026, 5, 1 )
+
+
+def Test_NextMonthStart_TestDecember_ExpectJanuary1() -> None:
+   assert CalendarDates.next_month_start( 2026, 12 ) == date( 2027, 1, 1 )
+
+
+def Test_OneDayEarlier_TestNovember2_ExpectNovember1() -> None:
+   assert CalendarDates.one_day_earlier( date( 2026, 11, 2 ) ) == date( 2026, 11, 1 )
+
+
+def Test_OneDayLater_TestNovember1_ExpectNovember2() -> None:
+   assert CalendarDates.one_day_later( date( 2026, 11, 1 ) ) == date( 2026, 11, 2 )
+
+
 def Test_OneWeekLater_TestNovember20_ExpectNovember27() -> None:
    assert CalendarDates.one_week_later( date( 2026, 11, 20 ) ) == date( 2026, 11, 27 )
+
+
+def Test_TwoWeeksLater_TestNovember9_ExpectNovember23() -> None:
+   assert CalendarDates.two_weeks_later( date( 2026, 11, 9 ) ) == date( 2026, 11, 23 )
 
 
 def Test_NextWeekendOrHolidayDate_TestFromWeekday_ExpectWeekendOrHoliday() -> None:

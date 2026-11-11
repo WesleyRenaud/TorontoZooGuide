@@ -7,7 +7,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/peacockcafemenu.pdf",
     "x_coord": 57.079,
     "y_coord": 83.618,
-    "closed_for_season_until_month": null
+    "closed_for_season_until_month": null,
+    "weekday_start_month": null,
+    "weekday_end_month": null,
+    "weekend_start_month": null,
+    "weekend_end_month": null
   },
   {
     "name": "Africa Restaurant",
@@ -17,7 +21,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Africa%20Menu%202025.pdf?",
     "x_coord": 53.383,
     "y_coord": 57.213,
-    "closed_for_season_until_month": null
+    "closed_for_season_until_month": null,
+    "weekday_start_month": null,
+    "weekday_end_month": null,
+    "weekend_start_month": null,
+    "weekend_end_month": null
   },
   {
     "name": "BeaverTails Trailer",
@@ -27,7 +35,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf",
     "x_coord": 60.179,
     "y_coord": 74.959,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Americas Pretzel Bar",
@@ -37,7 +49,11 @@
     "menu_link": null,
     "x_coord": 69.49,
     "y_coord": 56.634,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 5,
+    "weekday_end_month": 9,
+    "weekend_start_month": 4,
+    "weekend_end_month": 10
   },
   {
     "name": "Caribou Café",
@@ -47,7 +63,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Caribou%20Cafe%20Menu%202025.pdf?",
     "x_coord": 71.91,
     "y_coord": 56.193,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 5,
+    "weekday_end_month": 9,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Thorntree Café",
@@ -57,7 +77,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf",
     "x_coord": 41.323,
     "y_coord": 67.206,
-    "closed_for_season_until_month": 3
+    "closed_for_season_until_month": 3,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Eurasia Pizza Pizza",
@@ -67,7 +91,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Eurasia%20pizza%20pizza%20menu%202025.pdf",
     "x_coord": 78.302,
     "y_coord": 72.147,
-    "closed_for_season_until_month": 4
+    "closed_for_season_until_month": 4,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Cocoa Flow",
@@ -77,7 +105,11 @@
     "menu_link": null,
     "x_coord": 58.555,
     "y_coord": 78.791,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Souvlaki Bros",
@@ -87,7 +119,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Souvlaki%20Bros%20Menu.pdf",
     "x_coord": 53.202,
     "y_coord": 58.399,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Caribou Café Palgong",
@@ -97,7 +133,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf",
     "x_coord": 71.344,
     "y_coord": 56.601,
-    "closed_for_season_until_month": 3
+    "closed_for_season_until_month": 3,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Tundra Tacos",
@@ -107,7 +147,11 @@
     "menu_link": null,
     "x_coord": 72.858,
     "y_coord": 56.303,
-    "closed_for_season_until_month": 3
+    "closed_for_season_until_month": 3,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Singh's Trini Vibes",
@@ -117,7 +161,11 @@
     "menu_link": null,
     "x_coord": 79.709,
     "y_coord": 55.642,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Savanna Snack Bar",
@@ -127,7 +175,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Toronto%20Zoo%20Savana%20Hut%20Menu%20Spring%202025.pdf",
     "x_coord": 56.812,
     "y_coord": 38.413,
-    "closed_for_season_until_month": 4
+    "closed_for_season_until_month": 4,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Simba Safari Lodge",
@@ -137,7 +189,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Simba%20Menu%202025.pdf?",
     "x_coord": 37.786,
     "y_coord": 50.566,
-    "closed_for_season_until_month": 3
+    "closed_for_season_until_month": 3,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Smokes Poutinerie Trailer",
@@ -147,7 +203,11 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Smokes-Front-Courtyard-Menu.pdf",
     "x_coord": 60.694,
     "y_coord": 74.56,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Wolf's Den Café",
@@ -157,6 +217,10 @@
     "menu_link": "https://www.torontozoo.com/!/pdfs/food/Express%20Menu%202025.pdf",
     "x_coord": 79.073,
     "y_coord": 56.207,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   }
 ]

@@ -275,6 +275,34 @@ def Test_CheckSchedules_TestMayAfterMissedApril30_ExpectSameWeek(
    assert _season_row( database, SPLASH ) == ( 1, start, '2027-05-08', 1 )
 
 
+def Test_CheckSchedules_TestClosedWithinAWeek_ExpectExtendedOneWeek(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   april = date( 2027, 4, 30 )
+   end = date( 2027, 5, 4 )
+   start = '2026-11-08'
+   _write_database(
+      database,
+      [ ( SPLASH, 'https://www.torontozoo.com/tz/splash' ) ],
+      [ ( SPLASH, start, end.isoformat() ) ],
+      [ ( april, 1.0, 0.5 ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( '/tz/splash', 'Splash island', 'Closed For The Season' ) ] ),
+   )
+
+   result, output = _check( database, april, capsys )
+
+   assert result == 0
+   assert CheckReport.text( 'checks.extendedClosedForSeasonThrough' ) in output
+   assert 'May 12, 2027' in output
+   assert _season_row( database, SPLASH ) == ( 1, start, '2027-05-12', 1 )
+   assert CheckReport.category_line( 'checks.closedForSeasonReturningSoon', 1 ) in output
+
+
 def Test_CheckSchedules_TestClosedPastTomorrow_ExpectUnchanged(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],

@@ -12,10 +12,14 @@ from tools.checks.animal_off_for_season_ramp_down_on_website_not_in_app_checker 
 from tools.checks.animal_temporary_off_display_in_app_not_on_website_checker import AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker
 from tools.checks.animal_temporary_off_display_on_website_not_in_app_checker import AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker
 from tools.checks.animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
+from tools.checks.attraction_window_checker import AttractionWindowChecker
 from tools.checks.check_report_parser import CheckReportParser
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
+from tools.checks.gift_shop_window_checker import GiftShopWindowChecker
 from tools.checks.restaurant_list_checker import RestaurantListChecker
+from tools.checks.restaurant_window_checker import RestaurantWindowChecker
 from tools.checks.schedule_checker import ScheduleChecker
+from tools.checks.seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
 
@@ -115,13 +119,18 @@ def Test_CheckRestaurants_TestClosureAndCatalog_ExpectOneCount(
       calls.append( 'catalog' )
       return 4
 
+   def check_windows( database: Path, today: date ) -> int:
+      calls.append( 'windows' )
+      return 0
+
    monkeypatch.setattr( SeasonalRestaurantClosureChecker, 'check_schedules', check_closure )
    monkeypatch.setattr( RestaurantListChecker, 'check_lists', check_catalog )
+   monkeypatch.setattr( RestaurantWindowChecker, 'check_schedules', check_windows )
 
    result = ScheduleChecker.check_restaurants( tmp_path / 'animals.db', TODAY )
 
    assert result == 5
-   assert calls == [ 'closure', 'catalog' ]
+   assert calls == [ 'closure', 'catalog', 'windows' ]
 
 
 def Test_CheckGiftShops_TestClosureAndCatalog_ExpectOneCount(
@@ -137,13 +146,40 @@ def Test_CheckGiftShops_TestClosureAndCatalog_ExpectOneCount(
       calls.append( 'catalog' )
       return 6
 
+   def check_windows( database: Path, today: date ) -> int:
+      calls.append( 'windows' )
+      return 0
+
    monkeypatch.setattr( SeasonalGiftShopClosureChecker, 'check_schedules', check_closure )
    monkeypatch.setattr( GiftShopListChecker, 'check_lists', check_catalog )
+   monkeypatch.setattr( GiftShopWindowChecker, 'check_schedules', check_windows )
 
    result = ScheduleChecker.check_gift_shops( tmp_path / 'animals.db', TODAY )
 
    assert result == 8
-   assert calls == [ 'closure', 'catalog' ]
+   assert calls == [ 'closure', 'catalog', 'windows' ]
+
+
+def Test_CheckAttractions_TestClosureAndWindows_ExpectOneCount(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   calls = []
+
+   def check_closure( database: Path, today: date ) -> int:
+      calls.append( 'closure' )
+      return 3
+
+   def check_windows( database: Path, today: date ) -> int:
+      calls.append( 'windows' )
+      return 1
+
+   monkeypatch.setattr( SeasonalAttractionClosureChecker, 'check_schedules', check_closure )
+   monkeypatch.setattr( AttractionWindowChecker, 'check_schedules', check_windows )
+
+   result = ScheduleChecker.check_attractions( tmp_path / 'animals.db', TODAY )
+
+   assert result == 4
+   assert calls == [ 'closure', 'windows' ]
 
 
 def Test_RunChecks_TestIssueCounts_ExpectSummary(
