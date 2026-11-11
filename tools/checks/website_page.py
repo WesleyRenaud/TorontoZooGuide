@@ -122,7 +122,7 @@ class WebsitePage():
          .replace( '\u201b', "'" )
       )
       text = re.sub( r'\s*\([^)]*\)', '', text )
-      text = re.sub( f'[{ Constants.DASHES }]', ' ', text )
+      text = re.sub( f'[{ Constants.DASHES }{ Constants.MIDDLE_DOT }]', ' ', text )
       text = text.casefold()
       return re.sub( r'\s+', ' ', text ).strip()
 

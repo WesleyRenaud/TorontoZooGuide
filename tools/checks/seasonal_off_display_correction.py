@@ -11,6 +11,7 @@ from api.request_connection_provider import RequestConnectionProvider
 from api.shared.calendar_dates import CalendarDates
 from api.shared.date_values import DateValues
 from .check_report import CheckReport
+from .exhibit_name import ExhibitName
 from .website_off_display_animal import WebsiteOffDisplayAnimal
 from .website_page import WebsitePage
 
@@ -74,7 +75,10 @@ class SeasonalOffDisplayCorrection():
 
             for enclosure in enclosures:
                if (
-                  cls.same_animal( listing.section, enclosure.exhibit )
+                  enclosure.exhibit in ExhibitName.matching(
+                     listing.section,
+                     [ enclosure.exhibit ],
+                  )
                   and cls.same_animal( listing.name, enclosure.species )
                ):
                   end = CalendarDates.next_month_end( enclosure.until_month, today )

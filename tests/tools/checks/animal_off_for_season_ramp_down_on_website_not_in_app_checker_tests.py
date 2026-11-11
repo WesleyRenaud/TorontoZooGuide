@@ -261,6 +261,33 @@ def Test_CheckSchedules_TestRampDownWebsiteOnly_ExpectWebsiteMiss(
    assert 'Brush-tailed bettong' not in output
 
 
+def Test_CheckSchedules_TestMayanTempleWebsiteSection_ExpectVultureOffDisplay(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   vulture = 'Turkey Vulture'
+   exhibit = 'Americas Outdoor Mayan Temple Ruins'
+   _write_database(
+      database,
+      [ vulture ],
+      [],
+      [],
+      home_exhibit=exhibit,
+      until_month=3,
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ 'Turkey vulture' ], 'Americas Outdoor &#183; Mayan Temple' ),
+   )
+
+   result, output = _check( database, TODAY, capsys )
+
+   assert result == 0
+   assert _corrected( vulture, exhibit, 'November 2, 2026', 'March 31, 2027' ) in output
+   assert CheckReport.category_line( 'checks.offForSeasonWebsiteOnly', 1 ) in output
+
+
 def Test_CheckSchedules_TestExhibitClosedForSeason_ExpectAnimalsCovered(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
