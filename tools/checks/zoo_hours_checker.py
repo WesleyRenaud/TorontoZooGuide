@@ -15,6 +15,7 @@ from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .date_span import DateSpan
+from tools.fix.zoo_hours_fixer import ZooHoursFixer
 from .website_page import WebsitePage
 from .zoo_hours_page import ZooHoursPage
 
@@ -57,21 +58,15 @@ class ZooHoursChecker():
 
 
    @classmethod
-   def hours_on( cls, day: date, hours: list[ ZooHours ] ) -> ZooHours | None:
-      key = day.isoformat()
-
-      for item in hours:
-         if item.date == key:
-            return item
-
-      return None
+   def by_day( cls, hours: list[ ZooHours ] ) -> dict[ date, ZooHours ]:
+      return {
+         date.fromisoformat( item.date ): item
+         for item in hours
+      }
 
 
    @classmethod
-   def same_clocks( cls, left: ZooHours | None, right: ZooHours | None ) -> bool:
-      if left == None or right == None:
-         return left == right
-
+   def same_clocks( cls, left: ZooHours, right: ZooHours ) -> bool:
       return (
          left.early_admission_time == right.early_admission_time
          and left.open_time == right.open_time
@@ -85,11 +80,23 @@ class ZooHoursChecker():
       parts = []
 
       if hours.early_admission_time != None:
-         parts.append( CheckReport.text( 'checks.earlyAdmission' ) + hours.early_admission_time )
+         parts.append(
+            CheckReport.text( 'checks.earlyAdmission' )
+            + DateValues.format_display_time_value( hours.early_admission_time )
+         )
 
-      parts.append( CheckReport.text( 'checks.openTime' ) + hours.open_time )
-      parts.append( CheckReport.text( 'checks.lastAdmission' ) + hours.last_admission_time )
-      parts.append( CheckReport.text( 'checks.closeTime' ) + hours.close_time )
+      parts.append(
+         CheckReport.text( 'checks.openTime' )
+         + DateValues.format_display_time_value( hours.open_time )
+      )
+      parts.append(
+         CheckReport.text( 'checks.lastAdmission' )
+         + DateValues.format_display_time_value( hours.last_admission_time )
+      )
+      parts.append(
+         CheckReport.text( 'checks.closeTime' )
+         + DateValues.format_display_time_value( hours.close_time )
+      )
       return AppStringProvider.values()[ 'format.listJoin' ].join( parts )
 
 
@@ -143,37 +150,112 @@ class ZooHoursChecker():
 
 
    @classmethod
-   def check_lists( cls, database: Path, today: date ) -> int:
-      app_hours = cls.load_hours( database, today )
-      website_hours = cls.listed_on_or_after( cls.fetch_website_hours( today ), today )
-      days = sorted( {
-         date.fromisoformat( item.date )
-         for item in website_hours + app_hours
-      } )
-      website_only = []
-      app_only = []
+   def changed_line( cls, app: ZooHours, website: ZooHours ) -> str:
+      return CheckReport.join_lines( [
+         app.date,
+         CheckReport.detail_item(
+            CheckReport.text( 'checks.appSchedule' ) + cls.format_hours( app )
+         ),
+         CheckReport.detail_item(
+            CheckReport.text( 'checks.websiteSchedule' ) + cls.format_hours( website )
+         ),
+         CheckReport.detail_item( CheckReport.text( 'checks.updatedHours' ) ),
+      ] )
 
-      for day in days:
-         website = cls.hours_on( day, website_hours )
-         app = cls.hours_on( day, app_hours )
 
-         if cls.same_clocks( website, app ):
-            continue
+   @classmethod
+   def corrected_groups( cls, hours: list[ ZooHours ], phrase_key: str ) -> list[ str ]:
+      detail = CheckReport.detail_item( CheckReport.text( phrase_key ) )
 
-         if website != None:
-            website_only.append( website )
+      return [
+         CheckReport.join_lines( [ line, detail ] )
+         for line in cls.format_groups( hours )
+      ]
 
-         if app != None:
-            app_only.append( app )
 
-      website_groups = cls.format_groups( website_only )
-      app_groups = cls.format_groups( app_only )
-      CheckReport.report_differences(
-         CheckReport.heading( 'zooHours', today ),
-         website_groups,
-         app_groups,
+   @classmethod
+   def remaining( cls, lines: list[ str ] ) -> int:
+      phrases = (
+         CheckReport.text( 'checks.setHours' ),
+         CheckReport.text( 'checks.removedHours' ),
+         CheckReport.text( 'checks.updatedHours' ),
       )
-      return CheckReport.count_differences( website_groups, app_groups )
+
+      return sum(
+         all( phrase not in line for phrase in phrases )
+         for line in lines
+      )
+
+
+   @classmethod
+   def only_on_website(
+         cls,
+         website_by_day: dict[ date, ZooHours ],
+         app_by_day: dict[ date, ZooHours ] ) -> list[ ZooHours ]:
+      return [
+         hours
+         for day, hours in website_by_day.items()
+         if day not in app_by_day
+      ]
+
+
+   @classmethod
+   def different_hours(
+         cls,
+         website_by_day: dict[ date, ZooHours ],
+         app_by_day: dict[ date, ZooHours ] ) -> list[ ZooHours ]:
+      return [
+         hours
+         for day, hours in website_by_day.items()
+         if day in app_by_day and not cls.same_clocks( hours, app_by_day[ day ] )
+      ]
+
+
+   @classmethod
+   def only_in_app(
+         cls,
+         website_by_day: dict[ date, ZooHours ],
+         app_by_day: dict[ date, ZooHours ] ) -> list[ ZooHours ]:
+      return [
+         hours
+         for day, hours in app_by_day.items()
+         if day not in website_by_day
+      ]
+
+
+   @classmethod
+   def report(
+         cls,
+         today: date,
+         app_by_day: dict[ date, ZooHours ],
+         added: list[ ZooHours ],
+         updated: list[ ZooHours ],
+         removed: list[ ZooHours ] ) -> int:
+      changed = [
+         cls.changed_line( app_by_day[ date.fromisoformat( hours.date ) ], hours )
+         for hours in sorted( updated, key=lambda hours: hours.date )
+      ]
+      added_lines = cls.corrected_groups( added, 'checks.setHours' )
+      removed_lines = cls.corrected_groups( removed, 'checks.removedHours' )
+      print( CheckReport.heading( 'zooHours', today ) )
+      print()
+      CheckReport.print_category( 'checks.websiteOnly', added_lines )
+      CheckReport.print_category( 'checks.differentHours', changed )
+      CheckReport.print_category( 'checks.appOnly', removed_lines )
+      return cls.remaining( added_lines + changed + removed_lines )
+
+
+   @classmethod
+   def check_lists( cls, database: Path, today: date ) -> int:
+      website_by_day = cls.by_day(
+         cls.listed_on_or_after( cls.fetch_website_hours( today ), today )
+      )
+      app_by_day = cls.by_day( cls.load_hours( database, today ) )
+      added = cls.only_on_website( website_by_day, app_by_day )
+      updated = cls.different_hours( website_by_day, app_by_day )
+      removed = cls.only_in_app( website_by_day, app_by_day )
+      ZooHoursFixer.apply( database, added + updated, removed )
+      return cls.report( today, app_by_day, added, updated, removed )
 
 
    @classmethod

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from ..data_access.zoo_hours_provider import ZooHoursProvider
+from ..data_access.zoo_hours_record import ZooHoursRecord
 from ..domain.zoo_hours_builder import ZooHoursBuilder
 from ...models import ZooHours
 from ...request_connection_provider import RequestConnectionProvider
@@ -43,3 +44,23 @@ class ZooHoursCoordinator():
          ZooHoursBuilder.build( record )
          for record in records
       ]
+
+
+   @classmethod
+   def set_zoo_hours( cls, hours: ZooHours ) -> bool:
+      return ZooHoursProvider.save_zoo_hours(
+         RequestConnectionProvider.get(),
+         ZooHoursRecord(
+            operating_date=hours.date,
+            early_admission_time=hours.early_admission_time,
+            open_time=hours.open_time,
+            last_admission_time=hours.last_admission_time,
+            close_time=hours.close_time,
+         ) )
+
+
+   @classmethod
+   def delete_zoo_hours( cls, operating_date: Types.DateKey ) -> bool:
+      return ZooHoursProvider.delete_zoo_hours(
+         RequestConnectionProvider.get(),
+         operating_date )
