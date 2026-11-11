@@ -17,6 +17,10 @@ RECORD_FIELDS = [
    'region',
    'is_also_transportation',
    'closed_for_season_until_month',
+   'weekday_start_month',
+   'weekday_end_month',
+   'weekend_start_month',
+   'weekend_end_month',
 ]
 
 DB_COLUMNS = [
@@ -31,6 +35,10 @@ DB_COLUMNS = [
    'REGION',
    'IS_ALSO_TRANSPORTATION',
    'CLOSED_FOR_SEASON_UNTIL_MONTH',
+   'WEEKDAY_START_MONTH',
+   'WEEKDAY_END_MONTH',
+   'WEEKEND_START_MONTH',
+   'WEEKEND_END_MONTH',
 ]
 
 DATA_FILE = 'attraction.json'

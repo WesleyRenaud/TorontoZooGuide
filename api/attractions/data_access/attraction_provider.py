@@ -12,6 +12,7 @@ from .attraction_schedule_record import AttractionScheduleRecord
 from ..domain.attraction_info_link import AttractionInfoLink
 from ...shared.constants import Constants
 from ...shared.enums.position import Position
+from ...shared.peak_months import PeakMonths
 from ...types import Types
 
 
@@ -65,6 +66,24 @@ class AttractionProvider():
          ( attraction, ) ).fetchone()
 
       return row[ 'CLOSED_FOR_SEASON_UNTIL_MONTH' ]
+
+
+   @classmethod
+   def fetch_peak_months( cls, conn: Types.Connection ) -> dict[ str, PeakMonths ]:
+      rows = conn.execute(
+         """   SELECT
+                  NAME,
+                  WEEKDAY_START_MONTH,
+                  WEEKDAY_END_MONTH,
+                  WEEKEND_START_MONTH,
+                  WEEKEND_END_MONTH
+               FROM Attraction;
+         """ ).fetchall()
+
+      return {
+         row[ 'NAME' ]: PeakMonths.from_row( row )
+         for row in rows
+      }
 
 
    @classmethod

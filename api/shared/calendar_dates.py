@@ -79,12 +79,10 @@ class CalendarDates:
 
    @staticmethod
    def next_month_end( month: int, today: date ) -> date:
-      year = today.year
-      end = date( year, month, calendar.monthrange( year, month )[ 1 ] )
+      end = CalendarDates.month_end( today.year, month )
 
       if end < today:
-         year += 1
-         end = date( year, month, calendar.monthrange( year, month )[ 1 ] )
+         end = CalendarDates.month_end( today.year + 1, month )
 
       return end
 
@@ -244,8 +242,47 @@ class CalendarDates:
 
 
    @staticmethod
+   def one_day_earlier( day: date ) -> date:
+      return day - timedelta( days=1 )
+
+
+   @staticmethod
+   def one_day_later( day: date ) -> date:
+      return day + timedelta( days=1 )
+
+
+   @staticmethod
    def one_week_later( day: date ) -> date:
       return day + timedelta( days=7 )
+
+
+   @staticmethod
+   def upcoming_month_start( month: int, today: date ) -> date:
+      opening = date( today.year, month, 1 )
+
+      if opening <= today:
+         return date( today.year + 1, month, 1 )
+
+      return opening
+
+
+   @staticmethod
+   def next_month_start( year: int, month: int ) -> date:
+      if month == 12:
+         return date( year + 1, 1, 1 )
+
+      return date( year, month + 1, 1 )
+
+
+   @staticmethod
+   def month_end( year: int, month: int ) -> date:
+      _first_weekday, number_of_days = calendar.monthrange( year, month )
+      return date( year, month, number_of_days )
+
+
+   @staticmethod
+   def two_weeks_later( day: date ) -> date:
+      return day + timedelta( days=14 )
 
 
    @staticmethod

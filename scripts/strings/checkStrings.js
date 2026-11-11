@@ -11,7 +11,7 @@ export class CheckStrings {
       closeTime: 'close ',
       closedForSeason: 'closed for the season',
       closedForSeasonAppOnly: 'Closed for the season in the app and not on the website',
-      closedForSeasonReturningSoon: 'Closed for the season on the website, back on display today or tomorrow',
+      closedForSeasonReturningSoon: 'Closed for the season on the website, back on display within a week',
       closedForSeasonWebsiteOnly: 'Closed for the season on the website and not in the app',
       closureOffDisplayReturningTomorrow: 'Off display on the website and the app, back on display tomorrow',
       countItem: ' for ',
@@ -119,6 +119,10 @@ export class CheckStrings {
          description: 'Compare attractions listed on the Toronto Zoo website with the attractions in the app.',
          kind: 'Attraction list',
       },
+      attractionWindow: {
+         description: 'Compare attraction days of the week on the Toronto Zoo website with the attraction schedules in the app.',
+         kind: 'Attraction schedule',
+      },
       closureOffDisplay: {
          description: 'Compare animals off display on the Toronto Zoo alerts page that are linked to a closure update with the animals off display in the app.',
          kind: 'Closure off-display',
@@ -126,6 +130,10 @@ export class CheckStrings {
       giftShopList: {
          description: 'Compare gift shops listed on the Toronto Zoo website with the gift shops in the app.',
          kind: 'Gift shop list',
+      },
+      giftShopWindow: {
+         description: 'Compare gift shop days of the week on the Toronto Zoo website with the gift shop schedules in the app.',
+         kind: 'Gift shop schedule',
       },
       guardiansTalk: {
          description: 'Compare guardians talks with the dates listed on the Toronto Zoo website.',
@@ -135,6 +143,10 @@ export class CheckStrings {
       restaurantList: {
          description: 'Compare restaurants listed on the Toronto Zoo website with the restaurants in the app.',
          kind: 'Restaurant list',
+      },
+      restaurantWindow: {
+         description: 'Compare restaurant days of the week on the Toronto Zoo website with the restaurant schedules in the app.',
+         kind: 'Restaurant schedule',
       },
       schedule: {
          description: 'Compare wild encounters, guardians talks, animals, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',

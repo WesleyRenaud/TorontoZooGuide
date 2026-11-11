@@ -14,6 +14,10 @@ RECORD_FIELDS = [
    'x_coord',
    'y_coord',
    'closed_for_season_until_month',
+   'weekday_start_month',
+   'weekday_end_month',
+   'weekend_start_month',
+   'weekend_end_month',
 ]
 
 DB_COLUMNS = [
@@ -25,6 +29,10 @@ DB_COLUMNS = [
    'X_COORD',
    'Y_COORD',
    'CLOSED_FOR_SEASON_UNTIL_MONTH',
+   'WEEKDAY_START_MONTH',
+   'WEEKDAY_END_MONTH',
+   'WEEKEND_START_MONTH',
+   'WEEKEND_END_MONTH',
 ]
 
 DATA_FILE = 'restaurant.json'

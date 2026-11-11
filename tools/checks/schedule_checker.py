@@ -16,13 +16,16 @@ from .animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueN
 from api.app_string_provider import AppStringProvider
 from api.shared.date_values import DateValues
 from .attraction_list_checker import AttractionListChecker
+from .attraction_window_checker import AttractionWindowChecker
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .check_report_parser import CheckReportParser
 from .gift_shop_list_checker import GiftShopListChecker
+from .gift_shop_window_checker import GiftShopWindowChecker
 from .guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
 from .restaurant_list_checker import RestaurantListChecker
+from .restaurant_window_checker import RestaurantWindowChecker
 from .seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker
 from .seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from .seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
@@ -51,10 +54,19 @@ class ScheduleChecker():
 
 
    @classmethod
+   def check_attractions( cls, database: Path, today: date ) -> int:
+      return (
+         SeasonalAttractionClosureChecker.check_schedules( database, today )
+         + AttractionWindowChecker.check_schedules( database, today )
+      )
+
+
+   @classmethod
    def check_restaurants( cls, database: Path, today: date ) -> int:
       return (
          SeasonalRestaurantClosureChecker.check_schedules( database, today )
          + RestaurantListChecker.check_lists( database, today )
+         + RestaurantWindowChecker.check_schedules( database, today )
       )
 
 
@@ -63,6 +75,7 @@ class ScheduleChecker():
       return (
          SeasonalGiftShopClosureChecker.check_schedules( database, today )
          + GiftShopListChecker.check_lists( database, today )
+         + GiftShopWindowChecker.check_schedules( database, today )
       )
 
 
@@ -141,7 +154,7 @@ class ScheduleChecker():
             WildEncounterScheduleChecker.check_schedules,
             GuardiansTalkScheduleChecker.check_schedules,
             cls.check_animals,
-            SeasonalAttractionClosureChecker.check_schedules,
+            cls.check_attractions,
             cls.check_restaurants,
             cls.check_gift_shops,
             SeasonalDrinkingFountainClosureChecker.check_schedules,

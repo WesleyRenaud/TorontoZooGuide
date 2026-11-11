@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import json
+from typing import TypedDict
+
 from api.seed.data import Data
+from api.seed.json_seed_loader import JsonSeedLoader
 from api.seed.tables.animal_day_seasonal_viewability_multiplier_seed_table import animal_day_seasonal_viewability_multipliers
 from api.seed.tables.animal_seed_table import animals
 from api.seed.tables.attraction_day_seasonal_availability_multiplier_seed_table import attraction_day_seasonal_availability_multipliers
 from api.seed.tables.attraction_seed_table import attractions
+from api.seed.tables.attraction_seed_table import DATA_FILE as ATTRACTION_DATA_FILE
 from api.seed.tables.defibrillator_seed_table import defibrillators
 from api.seed.tables.drinking_fountain_day_seasonal_availability_multiplier_seed_table import drinking_fountain_day_seasonal_availability_multipliers
 from api.seed.tables.drinking_fountain_seed_table import drinking_fountains
@@ -15,6 +20,7 @@ from api.seed.tables.event_site_seed_table import event_sites
 from api.seed.tables.exhibit_day_seasonal_availability_multiplier_seed_table import exhibit_day_seasonal_availability_multipliers
 from api.seed.tables.exhibit_seed_table import exhibits
 from api.seed.tables.gift_shop_day_seasonal_availability_multiplier_seed_table import gift_shop_day_seasonal_availability_multipliers
+from api.seed.tables.gift_shop_seed_table import DATA_FILE as GIFT_SHOP_DATA_FILE
 from api.seed.tables.gift_shop_seed_table import gift_shops
 from api.seed.tables.guest_service_seed_table import guest_services
 from api.seed.tables.itinerary_event_default_seed_table import itinerary_event_defaults
@@ -24,6 +30,7 @@ from api.seed.tables.pavilion_seed_table import pavilions
 from api.seed.tables.picnic_site_seed_table import picnic_sites
 from api.seed.tables.region_seed_table import regions
 from api.seed.tables.restaurant_day_seasonal_availability_multiplier_seed_table import restaurant_day_seasonal_availability_multipliers
+from api.seed.tables.restaurant_seed_table import DATA_FILE as RESTAURANT_DATA_FILE
 from api.seed.tables.restaurant_seed_table import restaurants
 from api.seed.tables.restroom_seed_table import restrooms
 from api.seed.tables.transportation_day_route_seed_table import transportation_day_routes
@@ -37,6 +44,85 @@ from api.seed.tables.transportation_station_seed_table import transportation_sta
 from api.seed.tables.wild_encounter_meeting_spot_seed_table import wild_encounter_meeting_spots
 from api.seed.tables.wild_encounter_seed_table import wild_encounters
 from api.seed.tables.zoo_hours_seed_table import zoo_hours
+from api.shared.peak_months import PeakMonths
+
+
+class PeakMonthSeed( TypedDict ):
+   name: str
+   weekday_start_month: int | None
+   weekday_end_month: int | None
+   weekend_start_month: int | None
+   weekend_end_month: int | None
+
+
+SEASON = PeakMonths( 6, 8, 5, 10 )
+ATTRACTION_MONTHS = {
+   'Zoomobile': PeakMonths( 4, 10 ),
+   'Conservation Carousel': PeakMonths( 5, 10, 3, 12 ),
+   'Greenhouse': PeakMonths(),
+   'Wildlife Health & Science Centre': PeakMonths(),
+   'Kangaroo Walk-Thru': PeakMonths( 7, 8, 6, 10 ),
+   'Wild Explorer Virtual Reality (VR) Theatre!': SEASON,
+   'TundraAir Ride': SEASON,
+   'Gorilla Climb Ropes Course': SEASON,
+   'Splash Island': PeakMonths( 7, 8, 7, 8 ),
+   'Face Painting, Caricatures and Henna! - Front Gates': SEASON,
+   'Face Painting, Caricatures and Henna! - Tundra Trek': SEASON,
+}
+RESTAURANT_MONTHS = {
+   'Peacock Café': PeakMonths(),
+   'Africa Restaurant': PeakMonths(),
+   'BeaverTails Trailer': SEASON,
+   'Americas Pretzel Bar': PeakMonths( 5, 9, 4, 10 ),
+   'Caribou Café': PeakMonths( 5, 9, 5, 10 ),
+   'Thorntree Café': SEASON,
+   'Eurasia Pizza Pizza': SEASON,
+   'Cocoa Flow': SEASON,
+   'Souvlaki Bros': SEASON,
+   'Caribou Café Palgong': SEASON,
+   'Tundra Tacos': SEASON,
+   'Singh\'s Trini Vibes': SEASON,
+   'Savanna Snack Bar': SEASON,
+   'Simba Safari Lodge': SEASON,
+   'Smokes Poutinerie Trailer': SEASON,
+   'Wolf\'s Den Café': SEASON,
+}
+GIFT_SHOP_MONTHS = {
+   'Zootique': PeakMonths(),
+   'Eurasia Wilds Outpost': SEASON,
+   'Savanna Shop': SEASON,
+   'Twiga Market': SEASON,
+}
+
+
+def _seed_records( filename: str ) -> list[ PeakMonthSeed ]:
+   loaded = json.loads(
+      JsonSeedLoader.seed_data_path( filename ).read_text( encoding='utf-8' )
+   )
+   records: list[ PeakMonthSeed ] = []
+
+   for record in loaded:
+      records.append( {
+         'name': record[ 'name' ],
+         'weekday_start_month': record[ 'weekday_start_month' ],
+         'weekday_end_month': record[ 'weekday_end_month' ],
+         'weekend_start_month': record[ 'weekend_start_month' ],
+         'weekend_end_month': record[ 'weekend_end_month' ],
+      } )
+
+   return records
+
+
+def _stored_months( records: list[ PeakMonthSeed ] ) -> dict[ str, PeakMonths ]:
+   return {
+      record[ 'name' ]: PeakMonths(
+         record[ 'weekday_start_month' ],
+         record[ 'weekday_end_month' ],
+         record[ 'weekend_start_month' ],
+         record[ 'weekend_end_month' ],
+      )
+      for record in records
+   }
 
 
 def Test_Data_TestSeedTables_ExpectWired() -> None:
@@ -76,3 +162,15 @@ def Test_Data_TestSeedTables_ExpectWired() -> None:
    assert Data.wild_encounters is wild_encounters
    assert Data.wild_encounter_meeting_spots is wild_encounter_meeting_spots
    assert Data.zoo_hours is zoo_hours
+
+
+def Test_Attractions_TestPeakMonths_ExpectSeeded() -> None:
+   assert _stored_months( _seed_records( ATTRACTION_DATA_FILE ) ) == ATTRACTION_MONTHS
+
+
+def Test_Restaurants_TestPeakMonths_ExpectSeeded() -> None:
+   assert _stored_months( _seed_records( RESTAURANT_DATA_FILE ) ) == RESTAURANT_MONTHS
+
+
+def Test_GiftShops_TestPeakMonths_ExpectSeeded() -> None:
+   assert _stored_months( _seed_records( GIFT_SHOP_DATA_FILE ) ) == GIFT_SHOP_MONTHS

@@ -9,6 +9,7 @@ from api.giftshops.domain.seasonal_gift_shop import SeasonalGiftShop
 from api.request_connection_provider import RequestConnectionProvider
 from .gift_shop_card import GiftShopCard
 from .gift_shop_listing import GiftShopListing
+from .season_window import SeasonWindow
 from .website_page import WebsitePage
 
 
@@ -64,7 +65,11 @@ class SeasonalGiftShopComparison():
             gift_shop.name
             for title in listings
             for gift_shop in cls.matched_gift_shops( title, gift_shops )
-            if not gift_shop.closed_for_season_on( today ) or gift_shop.end == today
+            if SeasonWindow.needs_week_extension(
+               gift_shop.closed_for_season_on( today ),
+               gift_shop.end,
+               today,
+            )
          },
          key=str.casefold,
       )

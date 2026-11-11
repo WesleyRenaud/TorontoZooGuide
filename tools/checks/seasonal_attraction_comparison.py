@@ -9,6 +9,7 @@ from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
 from .attraction_catalogue import AttractionCatalogue
 from .attraction_listing import AttractionListing
+from .season_window import SeasonWindow
 from .website_attraction import WebsiteAttraction
 from .website_page import WebsitePage
 
@@ -48,7 +49,11 @@ class SeasonalAttractionComparison():
             attraction.name
             for listing in listings
             for attraction in cls.matched_attractions( listing, attractions )
-            if not attraction.closed_for_season_on( today ) or attraction.end == today
+            if SeasonWindow.needs_week_extension(
+               attraction.closed_for_season_on( today ),
+               attraction.end,
+               today,
+            )
          },
          key=str.casefold,
       )

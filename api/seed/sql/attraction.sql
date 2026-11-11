@@ -12,5 +12,9 @@ CREATE TABLE Attraction
    REGION                                VARCHAR(64) NOT NULL,
    IS_ALSO_TRANSPORTATION                BOOL        NOT NULL,
    CLOSED_FOR_SEASON_UNTIL_MONTH         INTEGER,
+   WEEKDAY_START_MONTH                   INTEGER,
+   WEEKDAY_END_MONTH                     INTEGER,
+   WEEKEND_START_MONTH                   INTEGER,
+   WEEKEND_END_MONTH                     INTEGER,
    FOREIGN KEY (REGION) REFERENCES Region(Name),
    PRIMARY KEY (NAME) );

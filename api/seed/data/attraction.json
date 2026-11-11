@@ -10,7 +10,11 @@
     "default_itinerary_duration_minutes": 30,
     "region": "Front Courtyard",
     "is_also_transportation": 1,
-    "closed_for_season_until_month": null
+    "closed_for_season_until_month": null,
+    "weekday_start_month": 4,
+    "weekday_end_month": 10,
+    "weekend_start_month": null,
+    "weekend_end_month": null
   },
   {
     "name": "Conservation Carousel",
@@ -23,7 +27,11 @@
     "default_itinerary_duration_minutes": 15,
     "region": "Front Courtyard",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": null
+    "closed_for_season_until_month": null,
+    "weekday_start_month": 5,
+    "weekday_end_month": 10,
+    "weekend_start_month": 3,
+    "weekend_end_month": 12
   },
   {
     "name": "Greenhouse",
@@ -36,7 +44,11 @@
     "default_itinerary_duration_minutes": 15,
     "region": "Wildlife Science Campus",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": null
+    "closed_for_season_until_month": null,
+    "weekday_start_month": null,
+    "weekday_end_month": null,
+    "weekend_start_month": null,
+    "weekend_end_month": null
   },
   {
     "name": "Wildlife Health & Science Centre",
@@ -49,7 +61,11 @@
     "default_itinerary_duration_minutes": 10,
     "region": "Wildlife Science Campus",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": null
+    "closed_for_season_until_month": null,
+    "weekday_start_month": null,
+    "weekday_end_month": null,
+    "weekend_start_month": null,
+    "weekend_end_month": null
   },
   {
     "name": "Kangaroo Walk-Thru",
@@ -62,7 +78,11 @@
     "default_itinerary_duration_minutes": 10,
     "region": "Australasia",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": 4
+    "closed_for_season_until_month": 4,
+    "weekday_start_month": 7,
+    "weekday_end_month": 8,
+    "weekend_start_month": 6,
+    "weekend_end_month": 10
   },
   {
     "name": "Wild Explorer Virtual Reality (VR) Theatre!",
@@ -75,7 +95,11 @@
     "default_itinerary_duration_minutes": 20,
     "region": "Tundra Trek",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "TundraAir Ride",
@@ -88,7 +112,11 @@
     "default_itinerary_duration_minutes": 15,
     "region": "Tundra Trek",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": 2
+    "closed_for_season_until_month": 2,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Gorilla Climb Ropes Course",
@@ -101,7 +129,11 @@
     "default_itinerary_duration_minutes": 40,
     "region": "Africa",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": 3
+    "closed_for_season_until_month": 3,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Splash Island",
@@ -114,7 +146,11 @@
     "default_itinerary_duration_minutes": 60,
     "region": "Discovery Zone",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": 4
+    "closed_for_season_until_month": 4,
+    "weekday_start_month": 7,
+    "weekday_end_month": 8,
+    "weekend_start_month": 7,
+    "weekend_end_month": 8
   },
   {
     "name": "Face Painting, Caricatures and Henna! - Front Gates",
@@ -127,7 +163,11 @@
     "default_itinerary_duration_minutes": 20,
     "region": "Front Courtyard",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": 3
+    "closed_for_season_until_month": 3,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   },
   {
     "name": "Face Painting, Caricatures and Henna! - Tundra Trek",
@@ -140,6 +180,10 @@
     "default_itinerary_duration_minutes": 20,
     "region": "Tundra Trek",
     "is_also_transportation": 0,
-    "closed_for_season_until_month": 3
+    "closed_for_season_until_month": 3,
+    "weekday_start_month": 6,
+    "weekday_end_month": 8,
+    "weekend_start_month": 5,
+    "weekend_end_month": 10
   }
 ]
