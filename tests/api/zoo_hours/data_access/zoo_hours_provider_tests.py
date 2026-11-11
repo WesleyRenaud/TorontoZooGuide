@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
+from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
 ZOO_HOURS_PROVIDER_SCHEMA = """
@@ -162,3 +163,71 @@ def Test_FetchZooHoursRecordsBetween_TestEmptyRange_ExpectEmptyList(
       '2026-07-31' )
 
    assert zoo_hours_records_between == []
+
+
+def Test_SaveZooHours_TestNewDate_ExpectStored(
+      zoo_hours_provider_conn: sqlite3.Connection ) -> None:
+   saved = ZooHoursProvider.save_zoo_hours(
+      zoo_hours_provider_conn,
+      ZooHoursRecord(
+         operating_date='2026-07-01',
+         early_admission_time=None,
+         open_time='09:30',
+         last_admission_time='16:00',
+         close_time='17:00',
+      ) )
+
+   record = ZooHoursProvider.fetch_zoo_hours_record(
+      zoo_hours_provider_conn,
+      '2026-07-01' )
+
+   assert saved is True
+   assert record is not None
+   assert record.open_time == '09:30'
+   assert record.close_time == '17:00'
+   assert record.early_admission_time is None
+
+
+def Test_SaveZooHours_TestExistingDate_ExpectUpdated(
+      zoo_hours_provider_conn: sqlite3.Connection ) -> None:
+   saved = ZooHoursProvider.save_zoo_hours(
+      zoo_hours_provider_conn,
+      ZooHoursRecord(
+         operating_date='2026-06-20',
+         early_admission_time=None,
+         open_time='10:00',
+         last_admission_time='17:00',
+         close_time='18:00',
+      ) )
+
+   record = ZooHoursProvider.fetch_zoo_hours_record(
+      zoo_hours_provider_conn,
+      '2026-06-20' )
+
+   assert saved is True
+   assert record is not None
+   assert record.early_admission_time is None
+   assert record.open_time == '10:00'
+   assert record.last_admission_time == '17:00'
+   assert record.close_time == '18:00'
+
+
+def Test_DeleteZooHours_TestExistingDate_ExpectRemoved(
+      zoo_hours_provider_conn: sqlite3.Connection ) -> None:
+   deleted = ZooHoursProvider.delete_zoo_hours(
+      zoo_hours_provider_conn,
+      '2026-06-22' )
+
+   assert deleted is True
+   assert ZooHoursProvider.fetch_zoo_hours_record(
+      zoo_hours_provider_conn,
+      '2026-06-22' ) is None
+
+
+def Test_DeleteZooHours_TestMissingDate_ExpectFalse(
+      zoo_hours_provider_conn: sqlite3.Connection ) -> None:
+   deleted = ZooHoursProvider.delete_zoo_hours(
+      zoo_hours_provider_conn,
+      '2026-07-01' )
+
+   assert deleted is False

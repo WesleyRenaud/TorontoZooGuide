@@ -9,6 +9,7 @@ from api.shared.calendar_dates import CalendarDates
 from api.types import Types
 from api.zoo_hours.coordinators.zoo_hours_coordinator import ZooHoursCoordinator
 from api.zoo_hours.data_access.zoo_hours_provider import ZooHoursProvider
+from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 from api.zoo_hours.domain.zoo_hours_builder import ZooHoursBuilder
 
 VISIT_DAY = 15
@@ -91,3 +92,41 @@ def Test_GetZooHoursOnOrAfter_TestRecords_ExpectBuiltHours(
    hours = ZooHoursCoordinator.get_zoo_hours_on_or_after( VISIT_DATE )
 
    assert hours == [ ZOO_HOURS ]
+
+
+def Test_SetZooHours_TestRecord_ExpectSaved(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   saved: list[ ZooHoursRecord ] = []
+
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'save_zoo_hours',
+      lambda _conn, record: saved.append( record ) or True )
+
+   result = ZooHoursCoordinator.set_zoo_hours( ZOO_HOURS )
+
+   assert result is True
+   assert saved == [ ZooHoursRecord(
+      operating_date=DATE_KEY,
+      early_admission_time=EARLY_ADMISSION,
+      open_time=OPEN_TIME,
+      last_admission_time=LAST_ADMISSION,
+      close_time=CLOSE_TIME,
+   ) ]
+
+
+def Test_DeleteZooHours_TestDate_ExpectDeleted(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   deleted: list[ str ] = []
+
+   monkeypatch.setattr(
+      ZooHoursProvider,
+      'delete_zoo_hours',
+      lambda _conn, operating_date: deleted.append( operating_date ) or True )
+
+   result = ZooHoursCoordinator.delete_zoo_hours( DATE_KEY )
+
+   assert result is True
+   assert deleted == [ DATE_KEY ]

@@ -7,6 +7,7 @@ import sqlite3
 import pytest
 
 from api.models import ZooHours
+from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 from tools.checks.check_report import CheckReport
 from tools.checks.website_page import WebsitePage
 from tools.checks.zoo_hours_checker import ZooHoursChecker as zoo_hours_checker
@@ -79,6 +80,45 @@ def _hours_on( hours: list[ ZooHours ], day: date ) -> ZooHours:
    return next( item for item in hours if item.date == day.isoformat() )
 
 
+def _stored( path: Path ) -> list[ ZooHoursRecord ]:
+   connection = sqlite3.connect( path )
+   rows = connection.execute(
+      """   SELECT
+               OPERATING_DATE,
+               EARLY_ADMISSION_TIME,
+               OPEN_TIME,
+               LAST_ADMISSION_TIME,
+               CLOSE_TIME
+            FROM ZooHours
+            ORDER BY OPERATING_DATE
+      """
+   ).fetchall()
+   connection.close()
+   return [
+      ZooHoursRecord(
+         operating_date=row[ 0 ],
+         early_admission_time=row[ 1 ],
+         open_time=row[ 2 ],
+         last_admission_time=row[ 3 ],
+         close_time=row[ 4 ],
+      )
+      for row in rows
+   ]
+
+
+def _row(
+      day: date,
+      clocks: tuple[ str | None, str, str, str ] ) -> ZooHoursRecord:
+   early, open_time, last_admission, close = clocks
+   return ZooHoursRecord(
+      operating_date=day.isoformat(),
+      early_admission_time=early,
+      open_time=open_time,
+      last_admission_time=last_admission,
+      close_time=close,
+   )
+
+
 def Test_Parse_TestPublishedParagraph_ExpectChristmasOverride() -> None:
    page = (
       '<div id="currenthours"></div>'
@@ -127,6 +167,11 @@ def Test_CheckLists_TestMatchingHours_ExpectNoIssues(
    assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
    assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
    assert '2026-11-02' not in output
+   assert _stored( database ) == [
+      _row( date( 2026, 11, 2 ), ( None, '11:00', '14:00', '15:00' ) ),
+      _row( TODAY, WINTER ),
+      _row( date( 2026, 11, 4 ), WINTER ),
+   ]
 
 
 def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
@@ -139,10 +184,18 @@ def Test_CheckLists_TestWebsiteOnly_ExpectWebsiteMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
-   assert '  2026-11-04 to 2026-11-06 (3 days): open 09:30, last admission 15:30, close 16:30' in output
+   assert '  2026-11-04 to 2026-11-06 (3 days): open 9:30 AM, last admission 3:30 PM, close 4:30 PM' in output
+   assert CheckReport.text( 'checks.setHours' ) in output
+   assert CheckReport.category_line( 'checks.differentHours', 0 ) in output
    assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
+   assert _stored( database ) == [
+      _row( TODAY, WINTER ),
+      _row( date( 2026, 11, 4 ), WINTER ),
+      _row( date( 2026, 11, 5 ), WINTER ),
+      _row( date( 2026, 11, 6 ), WINTER ),
+   ]
 
 
 def Test_CheckLists_TestAppOnly_ExpectAppMiss(
@@ -161,13 +214,16 @@ def Test_CheckLists_TestAppOnly_ExpectAppMiss(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 1
+   assert result == 0
    assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
-   assert '  2026-11-04: open 09:30, last admission 17:00, close 18:00' in output
+   assert '  2026-11-04: open 9:30 AM, last admission 5:00 PM, close 6:00 PM' in output
+   assert CheckReport.text( 'checks.removedHours' ) in output
    assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.differentHours', 0 ) in output
+   assert _stored( database ) == [ _row( TODAY, WINTER ) ]
 
 
-def Test_CheckLists_TestDifferentHours_ExpectBothSides(
+def Test_CheckLists_TestDifferentHours_ExpectUpdated(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -177,11 +233,21 @@ def Test_CheckLists_TestDifferentHours_ExpectBothSides(
 
    result, output = _check( database, TODAY, capsys )
 
-   assert result == 2
-   assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
-   assert '  2026-11-03: open 09:30, last admission 15:30, close 16:30' in output
-   assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
-   assert '  2026-11-03: early admission 09:00, open 09:30, last admission 15:30, close 16:30' in output
+   assert result == 0
+   assert CheckReport.category_line( 'checks.differentHours', 1 ) in output
+   assert '  2026-11-03\n' in output
+   assert (
+      CheckReport.text( 'checks.appSchedule' )
+      + 'early admission 9:00 AM, open 9:30 AM, last admission 3:30 PM, close 4:30 PM'
+   ) in output
+   assert (
+      CheckReport.text( 'checks.websiteSchedule' )
+      + 'open 9:30 AM, last admission 3:30 PM, close 4:30 PM'
+   ) in output
+   assert CheckReport.text( 'checks.updatedHours' ) in output
+   assert CheckReport.category_line( 'checks.websiteOnly', 0 ) in output
+   assert CheckReport.category_line( 'checks.appOnly', 0 ) in output
+   assert _stored( database ) == [ _row( TODAY, WINTER ) ]
 
 
 def Test_CheckLists_TestChristmasException_ExpectMatched(

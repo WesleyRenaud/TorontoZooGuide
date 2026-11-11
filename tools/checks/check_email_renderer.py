@@ -390,7 +390,10 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.setOpenForSeason' ),
          AppStringProvider.format( 'checks.setOpenForSeasonFrom' ),
          AppStringProvider.format( 'checks.setScheduleFrom' ),
+         AppStringProvider.format( 'checks.removedHours' ),
          AppStringProvider.format( 'checks.removedSchedule' ),
+         AppStringProvider.format( 'checks.setHours' ),
+         AppStringProvider.format( 'checks.updatedHours' ),
       )
 
       if category.items == []:
