@@ -16,6 +16,7 @@ from tools.checks.weekday_window import WeekdayWindow
 
 
 COCOA = 'Cocoa Flow'
+WOLF = "Wolf's Den Café"
 TODAY = date( 2026, 11, 9 )
 SCHEMA = """
 CREATE TABLE Restaurant (
@@ -78,6 +79,33 @@ def _write_database( path: Path ) -> None:
    connection.close()
 
 
+def _wolf_database( path: Path ) -> None:
+   connection = sqlite3.connect( path )
+   connection.executescript( SCHEMA )
+   connection.execute(
+      """   INSERT INTO Restaurant (
+               NAME,
+               WEEKDAY_START_MONTH,
+               WEEKDAY_END_MONTH,
+               WEEKEND_START_MONTH,
+               WEEKEND_END_MONTH
+            ) VALUES ( ?, 6, 8, 5, 10 )
+      """,
+      ( WOLF, ),
+   )
+   connection.commit()
+   connection.close()
+
+
+def _wolf_page() -> str:
+   return (
+      '<a class="col3" href="https://www.torontozoo.com/tz/wolfsden">'
+      '<div class="col3title">Wolf&#39;s Den Café</div>'
+      '<font color="#ac208d"><b>Weekends</b></font>'
+      '</a>'
+   )
+
+
 def _page() -> str:
    return (
       '<a class="col3" href="https://www.torontozoo.com/tz/cocoa">'
@@ -128,3 +156,36 @@ def Test_CheckSchedules_TestThursdayToSunday_ExpectTwoWeekWindow(
    assert row[ 'SUNDAY' ] == 1
    assert row[ 'HOLIDAYS_ONLY' ] == 0
    assert CheckReport.fixed_count == 1
+
+
+def Test_CheckSchedules_TestFontWeekends_ExpectWeekendWindow(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database = tmp_path / 'animals.db'
+   _wolf_database( database )
+
+   def fetch_text( url: str ) -> str:
+      return _wolf_page()
+
+   monkeypatch.setattr( WebsitePage, 'fetch_text', fetch_text )
+   CheckReport.reset_fixed_count()
+
+   result = CHECKER.check_schedules( database, TODAY )
+   output = capsys.readouterr().out
+   connection = sqlite3.connect( database )
+   connection.row_factory = sqlite3.Row
+   row = connection.execute(
+      'SELECT * FROM RestaurantOpeningSchedule WHERE RESTAURANT = ?',
+      ( WOLF, ),
+   ).fetchone()
+   connection.close()
+
+   assert result == 0
+   assert ExhibitRegionColors.restaurant_label( WOLF ) in output
+   assert row[ 'SCHEDULE_START_DATE' ] == TODAY.isoformat()
+   assert row[ 'SCHEDULE_END_DATE' ] == CalendarDates.two_weeks_later( TODAY ).isoformat()
+   assert row[ 'FRIDAY' ] == 0
+   assert row[ 'SATURDAY' ] == 1
+   assert row[ 'SUNDAY' ] == 1
+   assert row[ 'HOLIDAYS_ONLY' ] == 0
