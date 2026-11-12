@@ -136,6 +136,21 @@ class AnimalCoordinator():
 
 
    @classmethod
+   def move_closure_update(
+         cls,
+         title: str,
+         start_date: Types.DateInput,
+         new_title: str,
+         new_start_date: Types.DateInput ) -> None:
+      AnimalStatusProvider.move_closure_update(
+         RequestConnectionProvider.get(),
+         title=title,
+         start_date=start_date,
+         new_title=new_title,
+         new_start_date=new_start_date )
+
+
+   @classmethod
    def get_seasonal_off_display_animals( cls ) -> list[ SeasonalOffDisplayAnimal ]:
       return SeasonalOffDisplayAnimalBuilder.build(
          species=cls.get_animal_species_names(),

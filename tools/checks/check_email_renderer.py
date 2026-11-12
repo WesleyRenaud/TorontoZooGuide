@@ -104,6 +104,7 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'site.nav.animals' ): [
             cls.check_kind( 'animalList' ),
             cls.check_kind( 'closureOffDisplay' ),
+            cls.check_kind( 'closureUpdate' ),
             cls.check_kind( 'seasonalOffDisplay' ),
             cls.check_kind( 'temporaryOffDisplay' ),
          ],
@@ -323,6 +324,22 @@ class CheckEmailRenderer():
 
 
    @classmethod
+   def photo_markup( cls, photo: str, alt: str, border: str ) -> str:
+      values = {
+         'src': cls.text( cls.image_src( photo ) ),
+         'alt': cls.text( alt ),
+      }
+      name = 'animal_photo'
+
+      if photo.startswith( ( 'images/details/exhibits/', 'images/details/regions/' ) ):
+         name = 'detail_icon'
+      else:
+         values[ 'border' ] = border
+
+      return cls.markup( name, **values )
+
+
+   @classmethod
    def corrected_animal_rows( cls, item: DetailItem ) -> str:
       species, separator, exhibit = item.title.rpartition(
          AppStringProvider.format( 'format.middleDotJoin' )
@@ -340,12 +357,7 @@ class CheckEmailRenderer():
       photo = ''
 
       if photo_url != '':
-         photo = cls.markup(
-            'animal_photo',
-            src=cls.text( cls.image_src( photo_url ) ),
-            alt=cls.text( alt ),
-            border=border,
-         )
+         photo = cls.photo_markup( photo_url, alt, border )
 
       return cls.markup(
          'row',

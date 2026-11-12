@@ -245,3 +245,33 @@ class AnimalStatusProvider():
 
       finally:
          cur.close()
+
+
+   @classmethod
+   def move_closure_update(
+         cls,
+         conn: Types.Connection,
+         title: str,
+         start_date: Types.DateInput,
+         new_title: str,
+         new_start_date: Types.DateInput ) -> None:
+      cur = conn.cursor()
+
+      try:
+         cur.execute(
+            """   UPDATE AnimalStatus
+                  SET CLOSURE_UPDATE_TITLE = ?,
+                      CLOSURE_UPDATE_START = ?
+                  WHERE CLOSURE_UPDATE_TITLE = ?
+                     AND CLOSURE_UPDATE_START = ?;
+            """,
+            (
+               new_title,
+               new_start_date,
+               title,
+               start_date,
+            ) )
+         conn.commit()
+
+      finally:
+         cur.close()

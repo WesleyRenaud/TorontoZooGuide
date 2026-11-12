@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from ..data_access.update_provider import UpdateProvider
 from ..domain.updates_display_builder import UpdatesDisplayBuilder
 from ...models import Update
@@ -49,6 +51,13 @@ class UpdateCoordinator():
 
       return UpdatesDisplayBuilder.sort_for_display(
          UpdateProvider.fetch_updates( RequestConnectionProvider.get(), as_of_date ) )
+
+
+   @classmethod
+   def get_active_updates( cls, day: date ) -> list[ Update ]:
+      return UpdateProvider.fetch_updates(
+         RequestConnectionProvider.get(),
+         day.isoformat() )
 
 
    @classmethod

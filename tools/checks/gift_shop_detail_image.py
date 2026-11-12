@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from .animal_detail_image import AnimalDetailImage
+from .asset_key_normalizer import AssetKeyNormalizer
 from .paths import Paths
 
 
 class GiftShopDetailImage():
    @classmethod
    def source( cls, name: str ) -> str:
-      image = Paths.DETAIL_IMAGES / 'gift-shops' / f'{ AnimalDetailImage.normalize( name ) }.png'
+      image = Paths.DETAIL_IMAGES / 'gift-shops' / AssetKeyNormalizer.file_name( name )
       return image.relative_to( Paths.ROOT ).as_posix()

@@ -6,7 +6,10 @@ import sqlite3
 
 import pytest
 
+from tools.checks.check_email_renderer import CheckEmailRenderer
 from tools.checks.check_report import CheckReport
+from tools.checks.check_report_parser import CheckReportParser
+from tools.checks.exhibit_detail_image import ExhibitDetailImage
 from tools.checks.exhibit_season_checker import ExhibitSeasonChecker
 from tools.checks.website_page import WebsitePage
 
@@ -172,8 +175,21 @@ def Test_CheckSchedules_TestEveryAnimalOff_ExpectExhibitClosed(
 
    result, output = _check( database, capsys )
 
+   photo = ExhibitDetailImage.source( MAYAN )
+   html = CheckEmailRenderer.render_html(
+      (
+         f'{ output }\n'
+         f'{ CheckReportParser.format_counts( exhibits=result ) }\n\n'
+         f'{ CheckReportParser.format_error_count( result ) }\n'
+      ),
+      0,
+   )
+
    assert result == 0
    assert MAYAN in output
+   assert photo in output
+   assert CheckEmailRenderer.image_src( photo ) in html
+   assert 'border:3px solid' not in html
    assert CheckReport.text( 'checks.setClosedForSeasonFrom' ) in output
    assert 'March 31, 2027' in output
    assert _status( database ) == ( 1, '2026-11-11', '2027-03-31', 1 )
