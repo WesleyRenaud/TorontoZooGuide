@@ -107,6 +107,9 @@ class CheckEmailRenderer():
             cls.check_kind( 'seasonalOffDisplay' ),
             cls.check_kind( 'temporaryOffDisplay' ),
          ],
+         AppStringProvider.format( 'checks.countNames.exhibits' ): [
+            cls.check_kind( 'seasonalExhibit' ),
+         ],
          AppStringProvider.format( 'site.nav.wildEncounters' ): [
             cls.check_kind( 'wildEncounter' ),
          ],

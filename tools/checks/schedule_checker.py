@@ -21,6 +21,7 @@ from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .check_report_parser import CheckReportParser
+from .exhibit_season_checker import ExhibitSeasonChecker
 from .gift_shop_list_checker import GiftShopListChecker
 from .gift_shop_window_checker import GiftShopWindowChecker
 from .guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
@@ -92,8 +93,10 @@ class ScheduleChecker():
          gift_shop_check: Callable[ [ Path, date ], int ],
          drinking_fountain_check: Callable[ [ Path, date ], int ],
          attraction_list_check: Callable[ [ Path, date ], int ],
-         zoo_hours_check: Callable[ [ Path, date ], int ] ) -> int:
+         zoo_hours_check: Callable[ [ Path, date ], int ],
+         exhibit_check: Callable[ [ Path, date ], int ] ) -> int:
       CheckReport.reset_fixed_count()
+      exhibit_issues = exhibit_check( database, today )
       encounter_issues = encounter_check( database, today )
       talk_issues = talk_check( database, today )
       animal_issues = animal_check( database, today )
@@ -104,7 +107,8 @@ class ScheduleChecker():
       attraction_list_issues = attraction_list_check( database, today )
       zoo_hours_issues = zoo_hours_check( database, today )
       issues = (
-         encounter_issues
+         exhibit_issues
+         + encounter_issues
          + talk_issues
          + animal_issues
          + attraction_issues
@@ -117,6 +121,7 @@ class ScheduleChecker():
       print( CheckReportParser.format_fixed_count( CheckReport.fixed_count ) )
       print()
       print( CheckReportParser.format_counts(
+         exhibits=exhibit_issues,
          encounters=encounter_issues,
          talks=talk_issues,
          animals=animal_issues,
@@ -160,6 +165,7 @@ class ScheduleChecker():
             SeasonalDrinkingFountainClosureChecker.check_schedules,
             AttractionListChecker.check_lists,
             ZooHoursChecker.check_lists,
+            ExhibitSeasonChecker.check_schedules,
          )
       except RuntimeError as error:
          print( error, file=sys.stderr )

@@ -1,58 +1,86 @@
 [
   {
     "name": "Australasia Pavilion",
-    "region": "Australasia"
+    "region": "Australasia",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Australasia Outdoor",
-    "region": "Australasia"
+    "region": "Australasia",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Eurasia Wilds",
-    "region": "Eurasia Wilds"
+    "region": "Eurasia Wilds",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Tundra Trek",
-    "region": "Tundra Trek"
+    "region": "Tundra Trek",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Americas Outdoor Mayan Temple Ruins",
-    "region": "Americas"
+    "region": "Americas",
+    "open_start_month": 4,
+    "open_end_month": 10
   },
   {
     "name": "Americas Pavilion",
-    "region": "Americas"
+    "region": "Americas",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Canadian Domain",
-    "region": "Canadian Domain"
+    "region": "Canadian Domain",
+    "open_start_month": 4,
+    "open_end_month": 11
   },
   {
     "name": "Africa Savanna",
-    "region": "Africa"
+    "region": "Africa",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "African Rainforest Pavilion",
-    "region": "Africa"
+    "region": "Africa",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Indo-Malaya Pavilion",
-    "region": "Indo-Malaya"
+    "region": "Indo-Malaya",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Indo-Malaya Outdoor",
-    "region": "Indo-Malaya"
+    "region": "Indo-Malaya",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Malayan Woods Pavilion",
-    "region": "Indo-Malaya"
+    "region": "Indo-Malaya",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Goat World",
-    "region": "Discovery Zone"
+    "region": "Discovery Zone",
+    "open_start_month": null,
+    "open_end_month": null
   },
   {
     "name": "Kids Zoo",
-    "region": "Discovery Zone"
+    "region": "Discovery Zone",
+    "open_start_month": 5,
+    "open_end_month": 10
   }
 ]

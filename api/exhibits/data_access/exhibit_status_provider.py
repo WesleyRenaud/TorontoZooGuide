@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from ..domain.exhibit_season_status import ExhibitSeasonStatus
 from .exhibit_closure_mapper import ExhibitClosureMapper
 from .exhibit_closure_record import ExhibitClosureRecord
+from .exhibit_season_status_mapper import ExhibitSeasonStatusMapper
 from ...types import Types
 
 
@@ -87,6 +89,21 @@ class ExhibitStatusProvider():
 
       finally:
          cur.close()
+
+
+   @classmethod
+   def fetch_season_statuses( cls, conn: Types.Connection ) -> list[ ExhibitSeasonStatus ]:
+      rows = conn.execute(
+         """   SELECT
+                  EXHIBIT,
+                  IS_CLOSED,
+                  CLOSED_START,
+                  CLOSED_END,
+                  CLOSED_FOR_SEASON
+               FROM ExhibitStatus;
+         """ ).fetchall()
+
+      return ExhibitSeasonStatusMapper.map_records( rows )
 
 
    @classmethod

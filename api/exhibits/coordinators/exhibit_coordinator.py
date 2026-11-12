@@ -4,6 +4,9 @@ from ..data_access.closed_exhibit_name_provider import ClosedExhibitNameProvider
 from ..data_access.exhibit_closure_record import ExhibitClosureRecord
 from ..data_access.exhibit_provider import ExhibitProvider
 from ..data_access.exhibit_status_provider import ExhibitStatusProvider
+from ..domain.exhibit_season import ExhibitSeason
+from ..domain.exhibit_season_status import ExhibitSeasonStatus
+from ..domain.exhibit_species import ExhibitSpecies
 from ..domain.region_options_builder import RegionOptionsBuilder
 from ..domain.regions_with_exhibits_builder import RegionsWithExhibitsBuilder
 from ..domain.seasonal_exhibit import SeasonalExhibit
@@ -52,6 +55,21 @@ class ExhibitCoordinator():
    @classmethod
    def get_closure_records( cls ) -> list[ ExhibitClosureRecord ]:
       return ExhibitStatusProvider.fetch_closure_records( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_exhibit_seasons( cls ) -> list[ ExhibitSeason ]:
+      return ExhibitProvider.fetch_seasons( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_species_by_exhibit( cls ) -> list[ ExhibitSpecies ]:
+      return ExhibitProvider.fetch_species_by_exhibit( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_season_statuses( cls ) -> list[ ExhibitSeasonStatus ]:
+      return ExhibitStatusProvider.fetch_season_statuses( RequestConnectionProvider.get() )
 
 
    @classmethod

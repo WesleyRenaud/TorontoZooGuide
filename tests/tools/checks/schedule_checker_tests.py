@@ -223,6 +223,10 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       print( 'zoo hours' )
       return 11
 
+   def check_exhibits( checked_database: Path, today: date ) -> int:
+      print( 'exhibits' )
+      return 0
+
    result = ScheduleChecker.run_checks(
       database,
       TODAY,
@@ -235,10 +239,12 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_drinking_fountains,
       check_attraction_list,
       check_zoo_hours,
+      check_exhibits,
    )
    output = capsys.readouterr().out
 
    assert result == 1
+   assert output.index( 'exhibits\n' ) < output.index( 'encounters\n' )
    assert output.index( 'encounters\n' ) < output.index( 'talks\n' )
    assert output.index( 'talks\n' ) < output.index( 'animals\n' )
    assert output.index( 'animals\n' ) < output.index( 'attractions\n' )
@@ -311,6 +317,7 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
       check_drinking_fountains,
       check_attraction_list,
       check_zoo_hours,
+      lambda checked_database, today: 0,
    )
    output = capsys.readouterr().out
 
@@ -370,6 +377,7 @@ def Test_RunChecks_TestOneIssue_ExpectSingularError(
       check_drinking_fountains,
       check_attraction_list,
       check_zoo_hours,
+      lambda checked_database, today: 0,
    )
    output = capsys.readouterr().out
 

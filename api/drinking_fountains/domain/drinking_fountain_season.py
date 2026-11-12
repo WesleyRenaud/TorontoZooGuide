@@ -17,7 +17,7 @@ class DrinkingFountainSeason():
 
    @classmethod
    def closed_until_month( cls ) -> int:
-      return cls.OPEN_START_MONTH - 1
+      return CalendarDates.previous_month( cls.OPEN_START_MONTH )
 
 
    @classmethod

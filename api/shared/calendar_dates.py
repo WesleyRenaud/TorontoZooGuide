@@ -267,6 +267,14 @@ class CalendarDates:
 
 
    @staticmethod
+   def previous_month( month: int ) -> int:
+      if month == 1:
+         return 12
+
+      return month - 1
+
+
+   @staticmethod
    def next_month_start( year: int, month: int ) -> date:
       if month == 12:
          return date( year + 1, 1, 1 )

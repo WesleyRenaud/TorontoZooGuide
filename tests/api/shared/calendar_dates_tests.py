@@ -528,6 +528,14 @@ def Test_UpcomingMonthStart_TestAprilAlreadyStarted_ExpectNextApril() -> None:
    assert CalendarDates.upcoming_month_start( 4, date( 2026, 11, 11 ) ) == date( 2027, 4, 1 )
 
 
+def Test_PreviousMonth_TestJanuary_ExpectDecember() -> None:
+   assert CalendarDates.previous_month( 1 ) == 12
+
+
+def Test_PreviousMonth_TestMay_ExpectApril() -> None:
+   assert CalendarDates.previous_month( 5 ) == 4
+
+
 def Test_NextMonthStart_TestApril_ExpectMay1() -> None:
    assert CalendarDates.next_month_start( 2026, 4 ) == date( 2026, 5, 1 )
 
