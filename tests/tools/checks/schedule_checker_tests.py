@@ -14,6 +14,7 @@ from tools.checks.animal_temporary_off_display_on_website_not_in_app_checker imp
 from tools.checks.animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
 from tools.checks.attraction_window_checker import AttractionWindowChecker
 from tools.checks.check_report_parser import CheckReportParser
+from tools.checks.closure_update_checker import ClosureUpdateChecker
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
 from tools.checks.gift_shop_window_checker import GiftShopWindowChecker
 from tools.checks.restaurant_list_checker import RestaurantListChecker
@@ -60,6 +61,10 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       calls.append( 'app catalogue' )
       return 3
 
+   def check_closure_updates( database: Path, today: date ) -> int:
+      calls.append( 'closure updates' )
+      return 0
+
    monkeypatch.setattr(
       AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker,
       'category_lines',
@@ -91,6 +96,11 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       'check_lists',
       check_app_catalogue,
    )
+   monkeypatch.setattr(
+      ClosureUpdateChecker,
+      'check_schedules',
+      check_closure_updates,
+   )
 
    result = ScheduleChecker.check_animals( tmp_path / 'animals.db', TODAY )
 
@@ -103,6 +113,7 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       'temporary off display app',
       'website catalogue',
       'app catalogue',
+      'closure updates',
    ]
 
 

@@ -22,6 +22,7 @@ export class CheckStrings {
       },
       couldNotFindDatabase: 'Could not find the database.',
       couldNotReadBookingCalendar: 'Could not read the booking calendar.',
+      couldNotReadAlertsPage: 'Could not read the alerts page.',
       couldNotReadBookingPage: 'Could not read the booking page.',
       curlExited: 'curl exited.',
       dateThrough: ' through ',
@@ -46,6 +47,7 @@ export class CheckStrings {
          preview: 'Write the email and open it locally. Does not send mail.',
          subtype: 'html',
       },
+      endedUpdate: 'Ended the update.',
       error: ' error',
       errorDetected: ' error detected',
       errorFixed: ' error fixed',
@@ -54,6 +56,7 @@ export class CheckStrings {
       errorsFixed: ' errors fixed',
       extendedClosedForSeasonThrough: 'Extended closed for the season through ',
       extendedOffDisplayThrough: 'Extended off display through ',
+      extendedUpdateThrough: 'Extended the update through ',
       headingMiddle: ' check for ',
       hoursDayCountEnd: ' days): ',
       hoursDayCountStart: ' (',
@@ -90,6 +93,7 @@ export class CheckStrings {
       setOpenForSeason: 'Set open for the season.',
       setOpenForSeasonFrom: 'Set open for the season from ',
       setScheduleFrom: 'Set the schedule from ',
+      setUpdateFrom: 'Set the update from ',
       status: {
          allClear: 'All clear',
          couldNotFinish: 'Could not finish',
@@ -133,6 +137,11 @@ export class CheckStrings {
          description: 'Compare animals off display on the Toronto Zoo alerts page that are linked to a closure update with the animals off display in the app.',
          kind: 'Closure off-display',
       },
+      closureUpdate: {
+         description: 'Copy closure notices from the Toronto Zoo alerts page into the app and keep them active for a month.',
+         kind: 'Closure notice',
+         section: 'Closure updates',
+      },
       giftShopList: {
          description: 'Compare gift shops listed on the Toronto Zoo website with the gift shops in the app.',
          kind: 'Gift shop list',
@@ -155,7 +164,7 @@ export class CheckStrings {
          kind: 'Restaurant schedule',
       },
       schedule: {
-         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
+         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
       },
       seasonalAttraction: {
          description: 'Compare attractions closed for the season on the Toronto Zoo website with the attractions closed for the season in the app.',

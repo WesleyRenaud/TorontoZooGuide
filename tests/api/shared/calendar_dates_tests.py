@@ -560,6 +560,18 @@ def Test_TwoWeeksLater_TestNovember9_ExpectNovember23() -> None:
    assert CalendarDates.two_weeks_later( date( 2026, 11, 9 ) ) == date( 2026, 11, 23 )
 
 
+def Test_OneMonthLater_TestNovember11_ExpectDecember11() -> None:
+   assert CalendarDates.one_month_later( date( 2026, 11, 11 ) ) == date( 2026, 12, 11 )
+
+
+def Test_OneMonthLater_TestJanuary31_ExpectFebruary28() -> None:
+   assert CalendarDates.one_month_later( date( 2026, 1, 31 ) ) == date( 2026, 2, 28 )
+
+
+def Test_OneMonthLater_TestDecember11_ExpectJanuary11() -> None:
+   assert CalendarDates.one_month_later( date( 2026, 12, 11 ) ) == date( 2027, 1, 11 )
+
+
 def Test_NextWeekendOrHolidayDate_TestFromWeekday_ExpectWeekendOrHoliday() -> None:
    weekday = date( 2026, 6, 15 )
 

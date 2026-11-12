@@ -8,13 +8,20 @@ from api.database_connection_provider import DatabaseConnectionProvider
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.request_connection_provider import RequestConnectionProvider
 from tools.checks.check_report import CheckReport
+from tools.checks.exhibit_detail_image import ExhibitDetailImage
 from tools.checks.exhibit_window import ExhibitWindow
 
 
 class ExhibitSeasonFixer():
    @classmethod
    def line( cls, exhibit: str, window: ExhibitWindow ) -> str:
-      return CheckReport.join_lines( [ exhibit, window.detail() ] )
+      return CheckReport.join_lines( [
+         exhibit,
+         CheckReport.detail_item(
+            CheckReport.text( 'checks.photo' ) + ExhibitDetailImage.source( exhibit )
+         ),
+         window.detail(),
+      ] )
 
 
    @classmethod

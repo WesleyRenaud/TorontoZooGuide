@@ -294,6 +294,19 @@ class CalendarDates:
 
 
    @staticmethod
+   def one_month_later( day: date ) -> date:
+      year = day.year
+      month = day.month + 1
+
+      if month == 13:
+         year += 1
+         month = 1
+
+      last_day = calendar.monthrange( year, month )[ 1 ]
+      return date( year, month, min( day.day, last_day ) )
+
+
+   @staticmethod
    def get_family_day( year: Types.VisitYear ) -> date:
       d = date( year, 2, 1 )
 
