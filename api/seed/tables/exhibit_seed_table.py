@@ -8,11 +8,15 @@ from ...types import Types
 RECORD_FIELDS = [
    'name',
    'region',
+   'open_start_month',
+   'open_end_month',
 ]
 
 DB_COLUMNS = [
    'NAME',
    'REGION',
+   'OPEN_START_MONTH',
+   'OPEN_END_MONTH',
 ]
 
 DATA_FILE = 'exhibit.json'

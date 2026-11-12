@@ -17,6 +17,7 @@ export class CheckStrings {
       countItem: ' for ',
       countNames: {
          drinkingFountains: 'Drinking fountains',
+         exhibits: 'Exhibits',
          giftShops: 'Gift shops',
       },
       couldNotFindDatabase: 'Could not find the database.',
@@ -154,7 +155,7 @@ export class CheckStrings {
          kind: 'Restaurant schedule',
       },
       schedule: {
-         description: 'Compare wild encounters, guardians talks, animals, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
+         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
       },
       seasonalAttraction: {
          description: 'Compare attractions closed for the season on the Toronto Zoo website with the attractions closed for the season in the app.',
@@ -165,6 +166,11 @@ export class CheckStrings {
          description: 'Compare drinking fountains closed for the season on the Toronto Zoo alerts page with the drinking fountains closed for the season in the app.',
          kind: 'Seasonal drinking fountain closure',
          section: 'Drinking fountains closed for the season',
+      },
+      seasonalExhibit: {
+         description: 'Close an exhibit for the season when every animal in it is off display for the season, and reopen it when they are not.',
+         kind: 'Seasonal exhibit closure',
+         section: 'Exhibits closed for the season',
       },
       seasonalGiftShop: {
          description: 'Compare gift shops closed for the season on the Toronto Zoo website with the gift shops closed for the season in the app.',
