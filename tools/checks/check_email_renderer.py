@@ -105,6 +105,7 @@ class CheckEmailRenderer():
             cls.check_kind( 'animalList' ),
             cls.check_kind( 'closureOffDisplay' ),
             cls.check_kind( 'closureUpdate' ),
+            cls.check_kind( 'viewingHours' ),
             cls.check_kind( 'seasonalOffDisplay' ),
             cls.check_kind( 'temporaryOffDisplay' ),
          ],

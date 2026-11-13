@@ -7,13 +7,10 @@ import pytest
 from api.animals.data_access.animal_visibility_schedule_provider import AnimalVisibilityScheduleProvider
 
 
-SPECIES = 'Amur Tiger'
-EXHIBIT = 'Eurasia Wilds'
-START_DATE = '2026-06-01'
-END_DATE = '2026-06-30'
-DAILY_START_TIME = '09:00'
-DAILY_END_TIME = '11:00'
-MESSAGE = 'Morning viewing only.'
+LION = 'African Lion'
+TIGER = 'Amur Tiger'
+SAVANNA = 'Africa Savanna'
+EURASIA = 'Eurasia Wilds'
 
 ANIMAL_VISIBILITY_SCHEDULE_SCHEMA = """
 CREATE TABLE AnimalVisibilitySchedule (
@@ -30,7 +27,7 @@ CREATE TABLE AnimalVisibilitySchedule (
 
 
 @pytest.fixture
-def animal_visibility_schedule_conn() -> sqlite3.Connection:
+def visibility_schedule_conn() -> sqlite3.Connection:
    conn = sqlite3.connect( ':memory:' )
    conn.row_factory = sqlite3.Row
    conn.executescript( ANIMAL_VISIBILITY_SCHEDULE_SCHEMA )
@@ -40,22 +37,17 @@ def animal_visibility_schedule_conn() -> sqlite3.Connection:
    conn.close()
 
 
-def Test_SaveAnimalLimitedViewingSchedule_TestNewSchedule_ExpectPersistsRow(
-      animal_visibility_schedule_conn: sqlite3.Connection ) -> None:
-   result = AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
-      animal_visibility_schedule_conn,
-      species=SPECIES,
-      exhibit=EXHIBIT,
-      start_date=START_DATE,
-      end_date=END_DATE,
-      daily_start_time=DAILY_START_TIME,
-      daily_end_time=DAILY_END_TIME,
-      message=MESSAGE )
-
-   assert result is True
-
-   row = animal_visibility_schedule_conn.execute(
-      """   SELECT
+def _insert_schedule(
+      conn: sqlite3.Connection,
+      species: str,
+      exhibit: str,
+      start_date: str | None,
+      end_date: str | None,
+      opens: str,
+      closes: str,
+      message: str ) -> None:
+   conn.execute(
+      """   INSERT INTO AnimalVisibilitySchedule (
                SPECIES,
                EXHIBIT,
                SCHEDULE_START_DATE,
@@ -63,104 +55,64 @@ def Test_SaveAnimalLimitedViewingSchedule_TestNewSchedule_ExpectPersistsRow(
                DAILY_START_TIME,
                DAILY_END_TIME,
                VIEWING_MESSAGE
-            FROM AnimalVisibilitySchedule
-            WHERE SPECIES = ?
-               AND EXHIBIT = ?;
+            )
+            VALUES ( ?, ?, ?, ?, ?, ?, ? );
       """,
-      ( SPECIES, EXHIBIT ) ).fetchone()
+      (
+         species,
+         exhibit,
+         start_date,
+         end_date,
+         opens,
+         closes,
+         message,
+      ) )
+   conn.commit()
 
-   assert tuple( row ) == (
-      SPECIES,
-      EXHIBIT,
-      START_DATE,
-      END_DATE,
-      DAILY_START_TIME,
-      DAILY_END_TIME,
-      MESSAGE,
+
+def Test_FetchAnimalVisibilitySchedules_TestEmpty_ExpectEmptyList(
+      visibility_schedule_conn: sqlite3.Connection ) -> None:
+   schedules = AnimalVisibilityScheduleProvider.fetch_animal_visibility_schedules(
+      visibility_schedule_conn )
+
+   assert schedules == []
+
+
+def Test_FetchAnimalVisibilitySchedules_TestOpenAndDated_ExpectBothRows(
+      visibility_schedule_conn: sqlite3.Connection ) -> None:
+   _insert_schedule(
+      visibility_schedule_conn,
+      TIGER,
+      EURASIA,
+      '2026-11-02',
+      '2026-12-02',
+      '10:00 AM',
+      '2:00 PM',
+      'Tiger hours.',
+   )
+   _insert_schedule(
+      visibility_schedule_conn,
+      LION,
+      SAVANNA,
+      None,
+      None,
+      '9:00 AM',
+      '11:00 AM',
+      'Lion hours.',
    )
 
+   schedules = AnimalVisibilityScheduleProvider.fetch_animal_visibility_schedules(
+      visibility_schedule_conn )
 
-def Test_SaveAnimalLimitedViewingSchedule_TestExistingSchedule_ExpectUpdatesRow(
-      animal_visibility_schedule_conn: sqlite3.Connection ) -> None:
-   AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
-      animal_visibility_schedule_conn,
-      species=SPECIES,
-      exhibit=EXHIBIT,
-      start_date=START_DATE,
-      end_date=END_DATE,
-      daily_start_time=DAILY_START_TIME,
-      daily_end_time=DAILY_END_TIME,
-      message=MESSAGE )
-
-   result = AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
-      animal_visibility_schedule_conn,
-      species=SPECIES,
-      exhibit=EXHIBIT,
-      start_date='2026-07-01',
-      end_date='2026-07-15',
-      daily_start_time='10:00',
-      daily_end_time='12:00',
-      message='Updated schedule.' )
-
-   assert result is True
-
-   row = animal_visibility_schedule_conn.execute(
-      """   SELECT
-               SCHEDULE_START_DATE,
-               SCHEDULE_END_DATE,
-               DAILY_START_TIME,
-               DAILY_END_TIME,
-               VIEWING_MESSAGE
-            FROM AnimalVisibilitySchedule
-            WHERE SPECIES = ?
-               AND EXHIBIT = ?;
-      """,
-      ( SPECIES, EXHIBIT ) ).fetchone()
-
-   assert tuple( row ) == (
-      '2026-07-01',
-      '2026-07-15',
-      '10:00',
-      '12:00',
-      'Updated schedule.',
-   )
-
-
-def Test_DeleteAnimalVisibilitySchedule_TestExistingSchedule_ExpectRemovesRow(
-      animal_visibility_schedule_conn: sqlite3.Connection ) -> None:
-   AnimalVisibilityScheduleProvider.save_animal_limited_viewing_schedule(
-      animal_visibility_schedule_conn,
-      species=SPECIES,
-      exhibit=EXHIBIT,
-      start_date=START_DATE,
-      end_date=END_DATE,
-      daily_start_time=DAILY_START_TIME,
-      daily_end_time=DAILY_END_TIME,
-      message=MESSAGE )
-
-   result = AnimalVisibilityScheduleProvider.delete_animal_visibility_schedule(
-      animal_visibility_schedule_conn,
-      species=SPECIES,
-      exhibit=EXHIBIT )
-
-   assert result is True
-
-   row = animal_visibility_schedule_conn.execute(
-      """   SELECT 1
-            FROM AnimalVisibilitySchedule
-            WHERE SPECIES = ?
-               AND EXHIBIT = ?;
-      """,
-      ( SPECIES, EXHIBIT ) ).fetchone()
-
-   assert row is None
-
-
-def Test_DeleteAnimalVisibilitySchedule_TestMissingSchedule_ExpectFalse(
-      animal_visibility_schedule_conn: sqlite3.Connection ) -> None:
-   result = AnimalVisibilityScheduleProvider.delete_animal_visibility_schedule(
-      animal_visibility_schedule_conn,
-      species=SPECIES,
-      exhibit=EXHIBIT )
-
-   assert result is False
+   assert [ ( item.species, item.exhibit ) for item in schedules ] == [
+      ( LION, SAVANNA ),
+      ( TIGER, EURASIA ),
+   ]
+   assert schedules[ 0 ].start_date == None
+   assert schedules[ 0 ].end_date == None
+   assert schedules[ 0 ].daily_start_time == '9:00 AM'
+   assert schedules[ 0 ].daily_end_time == '11:00 AM'
+   assert schedules[ 0 ].message == 'Lion hours.'
+   assert schedules[ 1 ].start_date == '2026-11-02'
+   assert schedules[ 1 ].end_date == '2026-12-02'
+   assert schedules[ 1 ].message == 'Tiger hours.'

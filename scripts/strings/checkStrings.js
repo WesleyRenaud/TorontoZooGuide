@@ -57,6 +57,7 @@ export class CheckStrings {
       extendedClosedForSeasonThrough: 'Extended closed for the season through ',
       extendedOffDisplayThrough: 'Extended off display through ',
       extendedUpdateThrough: 'Extended the update through ',
+      extendedViewingHoursThrough: 'Extended the viewing hours.',
       headingMiddle: ' check for ',
       hoursDayCountEnd: ' days): ',
       hoursDayCountStart: ' (',
@@ -82,6 +83,7 @@ export class CheckStrings {
       planPageNoLastAdmission: 'The plan page has no last admission time.',
       removedHours: 'Removed the hours.',
       removedSchedule: 'Removed the schedule.',
+      removedViewingHours: 'Removed the viewing hours.',
       scheduledInAppOnly: 'Scheduled in the app and not on the website',
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
       setClosedForSeasonFrom: 'Set closed for the season from ',
@@ -94,6 +96,7 @@ export class CheckStrings {
       setOpenForSeasonFrom: 'Set open for the season from ',
       setScheduleFrom: 'Set the schedule from ',
       setUpdateFrom: 'Set the update from ',
+      setViewingHoursFrom: 'Set the viewing hours.',
       status: {
          allClear: 'All clear',
          couldNotFinish: 'Could not finish',
@@ -112,6 +115,7 @@ export class CheckStrings {
       temporarilyNotViewable: 'temporarily not viewable',
       temporaryOffDisplayAppOnly: 'Off display in the app and not on the website',
       temporaryOffDisplayWebsiteOnly: 'Temporarily off display on the website and not in the app',
+      trimmedViewingHoursThrough: 'Trimmed the viewing hours.',
       websiteCatalogueNotInApp: 'On the website catalogue and not in the app',
       websiteDatesCompared: 'Website dates compared from ',
       websiteDatesNotInApp: 'Website dates not in the app: ',
@@ -164,7 +168,7 @@ export class CheckStrings {
          kind: 'Restaurant schedule',
       },
       schedule: {
-         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
+         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, viewing hours, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
       },
       seasonalAttraction: {
          description: 'Compare attractions closed for the season on the Toronto Zoo website with the attractions closed for the season in the app.',
@@ -199,6 +203,11 @@ export class CheckStrings {
       temporaryOffDisplay: {
          description: 'Compare animals temporarily off display on the Toronto Zoo alerts page with the animals off display in the app.',
          kind: 'Temporary off-display',
+      },
+      viewingHours: {
+         description: 'Copy daily animal viewing hours from featured Toronto Zoo pages and keep them active for a month.',
+         kind: 'Animal viewing hours',
+         section: 'Viewing hours',
       },
       wildEncounter: {
          description: 'Compare scheduled wild encounters with the Toronto Zoo website and each encounter booking calendar.',
