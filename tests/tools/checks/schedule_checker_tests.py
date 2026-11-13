@@ -23,6 +23,7 @@ from tools.checks.schedule_checker import ScheduleChecker
 from tools.checks.seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
+from tools.checks.viewing_hours_checker import ViewingHoursChecker
 
 
 TODAY = date( 2026, 11, 2 )
@@ -65,6 +66,10 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       calls.append( 'closure updates' )
       return 0
 
+   def check_viewing_hours( database: Path, today: date ) -> int:
+      calls.append( 'viewing hours' )
+      return 0
+
    monkeypatch.setattr(
       AnimalOffForSeasonRampDownOnWebsiteNotInAppChecker,
       'category_lines',
@@ -101,6 +106,11 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       'check_schedules',
       check_closure_updates,
    )
+   monkeypatch.setattr(
+      ViewingHoursChecker,
+      'check_schedules',
+      check_viewing_hours,
+   )
 
    result = ScheduleChecker.check_animals( tmp_path / 'animals.db', TODAY )
 
@@ -114,6 +124,7 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       'website catalogue',
       'app catalogue',
       'closure updates',
+      'viewing hours',
    ]
 
 

@@ -25,6 +25,7 @@ from ..domain.animal_species_exhibit import AnimalSpeciesExhibit
 from ..domain.animal_viewability_builder import AnimalViewabilityBuilder
 from ..domain.animal_viewability_context_builder import AnimalViewabilityContextBuilder
 from ..domain.animal_viewing_scope import AnimalViewingScope
+from ..domain.animal_visibility_schedule import AnimalVisibilitySchedule
 from ..domain.closure_linked_off_display_animal import ClosureLinkedOffDisplayAnimal
 from ..domain.enclosure_off_display_month import EnclosureOffDisplayMonth
 from ..domain.enclosure_off_display_status import EnclosureOffDisplayStatus
@@ -179,6 +180,12 @@ class AnimalCoordinator():
    @classmethod
    def get_animal_species_exhibits( cls ) -> list[ AnimalSpeciesExhibit ]:
       return AnimalEnclosureExhibitNameProvider.fetch_animal_species_exhibits(
+         RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def get_animal_visibility_schedules( cls ) -> list[ AnimalVisibilitySchedule ]:
+      return AnimalVisibilityScheduleProvider.fetch_animal_visibility_schedules(
          RequestConnectionProvider.get() )
 
 

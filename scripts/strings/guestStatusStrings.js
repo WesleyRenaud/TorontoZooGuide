@@ -16,7 +16,7 @@ export class GuestStatusStrings {
          ),
          limitedViewingScheduleUntil: (
             'The {species} is viewable daily only from '
-            + '{dailyStartTime} to {dailyEndTime}until {endDate}.'
+            + '{dailyStartTime} to {dailyEndTime} until {endDate}.'
          ),
          exhibitLikelyClosedOnDay: (
             'The {exhibit} is most likely closed on this day.'

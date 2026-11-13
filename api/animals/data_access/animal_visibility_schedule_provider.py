@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from .animal_visibility_schedule_mapper import AnimalVisibilityScheduleMapper
+from ..domain.animal_visibility_schedule import AnimalVisibilitySchedule
 from ...types import Types
 
 
@@ -74,6 +76,32 @@ class AnimalVisibilityScheduleProvider():
 
          conn.commit()
          return cur.rowcount > 0
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_animal_visibility_schedules(
+         cls,
+         conn: Types.Connection ) -> list[ AnimalVisibilitySchedule ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     SPECIES,
+                     EXHIBIT,
+                     SCHEDULE_START_DATE,
+                     SCHEDULE_END_DATE,
+                     DAILY_START_TIME,
+                     DAILY_END_TIME,
+                     VIEWING_MESSAGE
+                  FROM AnimalVisibilitySchedule
+                  ORDER BY SPECIES, EXHIBIT;
+            """ )
+
+         return AnimalVisibilityScheduleMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()
