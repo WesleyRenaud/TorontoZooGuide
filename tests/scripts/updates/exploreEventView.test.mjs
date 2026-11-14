@@ -24,6 +24,9 @@ test('Test_CreateEventCard_TestActive_ExpectVisibleCard', () => {
    assert.match(card.textContent, new RegExp(description));
    assert.equal(card.querySelector('.explore-event-date-range').tagName.toLowerCase(), 'span');
    assert.equal(card.querySelector('.explore-update-description').textContent, description);
+   assert.equal(card.querySelector('img').src, '../images/details/events/fireworks.png');
+   assert.equal(card.querySelector('img').alt, name);
+   assert.deepEqual(card.children.map((child) => child.tagName), ['h4', 'img', 'div', 'p']);
 });
 
 

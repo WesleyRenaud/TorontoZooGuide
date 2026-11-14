@@ -61,7 +61,11 @@ class ViewingHoursChecker():
       found = []
 
       for path in WebsiteFeaturePaths.feature_paths( home, animals ):
-         page = WebsitePage.fetch_text( WebsitePage.url( path ) )
+         status, page = WebsitePage.read( WebsitePage.url( path ) )
+
+         if status != 200:
+            continue
+
          found.extend( WebsiteViewingHours.schedules( page, path, placements ) )
 
       return found
@@ -113,7 +117,7 @@ class ViewingHoursChecker():
          for item in cls.ordered( plan.trimmed )
       ]
       realigned = [
-         item.scheduled_line()
+         item.realigned_line()
          for item in cls.ordered( plan.realigned )
       ]
       print( CheckReport.heading( 'viewingHours', today ) )

@@ -24,7 +24,15 @@ test('Test_CreateCreateEventController_TestShowHideAndSubmit_ExpectFlows', async
    const originalResolveStart = VisitDateValidator.resolveOptionalStartDate;
    const originalCreate = ConsoleOperationsClient.createEvent;
    const originalResolve = ApiErrorMessageResolver.resolveConsoleMutationError;
+   const originalReader = globalThis.FileReader;
    let hideCalls = 0;
+
+   globalThis.FileReader = class {
+      readAsDataURL() {
+         this.result = 'data:image/webp;base64,abc';
+         this.onload();
+      }
+   };
 
    ConsoleStatusPresenter.setStatus = (...args) => { statuses.push(args); };
    ControllerHelper.hideConsolePanel = () => { hideCalls += 1; };
@@ -42,6 +50,8 @@ test('Test_CreateCreateEventController_TestShowHideAndSubmit_ExpectFlows', async
       const nameEl = document.createElement('input');
       const descriptionEl = document.createElement('input');
       const linkEl = document.createElement('input');
+      const imageEl = document.createElement('input');
+      imageEl.files = [{ name: 'party.webp' }];
       nameEl.value = 'Festival';
       descriptionEl.value = 'Details';
       linkEl.value = 'https://example.com';
@@ -56,6 +66,7 @@ test('Test_CreateCreateEventController_TestShowHideAndSubmit_ExpectFlows', async
          locationEl: document.createElement('input'),
          descriptionEl,
          linkEl,
+         imageEl,
          startDateEl: document.createElement('input'),
          endDateEl: document.createElement('input'),
          activatePanel: (panel) => { activations.push(panel); },
@@ -94,5 +105,42 @@ test('Test_CreateCreateEventController_TestShowHideAndSubmit_ExpectFlows', async
       VisitDateValidator.resolveOptionalStartDate = originalResolveStart;
       ConsoleOperationsClient.createEvent = originalCreate;
       ApiErrorMessageResolver.resolveConsoleMutationError = originalResolve;
+      globalThis.FileReader = originalReader;
+   }
+});
+
+
+test('Test_ReadImage_TestFile_ExpectPayload', async () => {
+   const originalReader = globalThis.FileReader;
+
+   try {
+      globalThis.FileReader = class {
+         readAsDataURL() {
+            this.result = 'data:image/webp;base64,abc';
+            this.onload();
+         }
+      };
+
+      const image = await EventController.readImage({
+         files: [{ name: 'party.webp' }],
+      });
+
+      assert.deepEqual(image, {
+         imageData: 'data:image/webp;base64,abc',
+      });
+
+      globalThis.FileReader = class {
+         readAsDataURL() {
+            this.error = new Error('read failed');
+            this.onerror();
+         }
+      };
+
+      await assert.rejects(
+         () => EventController.readImage({ files: [{ name: 'party.webp' }] }),
+         /read failed/
+      );
+   } finally {
+      globalThis.FileReader = originalReader;
    }
 });

@@ -98,6 +98,7 @@ export class CommonStrings {
       location: 'Location',
       message: 'Message',
       name: 'Name',
+      photo: 'Photo',
       occursOnTheseDays: 'Occurs on these days',
       openOnTheseDays: 'Open on these days',
       price: 'Price',

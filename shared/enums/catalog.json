@@ -17,6 +17,15 @@
          "javascriptClass": "EnclosureType"
       },
       {
+         "id": "imageFormat",
+         "json": "imageFormat.json",
+         "valueShape": "object",
+         "pythonModule": "api/shared/enums/image_format.py",
+         "pythonClass": "ImageFormat",
+         "javascriptModule": "scripts/shared/enums/imageFormat.js",
+         "javascriptClass": "ImageFormat"
+      },
+      {
          "id": "itemType",
          "json": "itemType.json",
          "pythonModule": "api/shared/enums/item_type.py",

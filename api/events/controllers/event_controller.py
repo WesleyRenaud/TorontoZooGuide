@@ -31,6 +31,7 @@ class EventController():
       link = data.get( 'link' )
       start_date = data.get( 'startDate' )
       end_date = data.get( 'endDate' )
+      image_data = data.get( 'imageData' )
 
       success = EventCoordinator.create_event(
          name=name,
@@ -38,7 +39,8 @@ class EventController():
          description=description,
          link=link,
          start_date=start_date,
-         end_date=end_date )
+         end_date=end_date,
+         image=image_data )
 
       response = {
          'success': success,

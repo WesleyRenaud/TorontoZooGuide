@@ -13,6 +13,7 @@ Current shared enums:
 | `apiErrorType.json` | `ApiErrorType` | `ApiErrorType` |
 | `animalViewingScope.json` | `AnimalViewingScope` | `AnimalViewingScope` |
 | `enclosureType.json` | `EnclosureType` | `EnclosureType` |
+| `imageFormat.json` | `ImageFormat` | `ImageFormat` |
 | `itemType.json` | `ItemType` | `ItemType` |
 | `itineraryAdjustmentType.json` | `ItineraryAdjustmentType` | `ItineraryAdjustmentType` |
 | `itineraryErrorType.json` | `ItineraryErrorType` | `ItineraryErrorType` |

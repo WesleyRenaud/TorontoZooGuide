@@ -34,6 +34,7 @@ test('Test_CreateCreateEventPanel_TestDefault_ExpectPanel', () => {
    assert.ok(_findById(panelEl, 'createEventLocation'));
    assert.ok(_findById(panelEl, 'createEventDescription'));
    assert.ok(_findById(panelEl, 'createEventLink'));
+   assert.equal(_findById(panelEl, 'createEventImage').type, 'file');
    assert.ok(_findById(panelEl, 'createEventStartDate'));
    assert.ok(_findById(panelEl, 'createEventEndDate'));
    assert.ok(_findById(panelEl, 'submitCreateEvent'));

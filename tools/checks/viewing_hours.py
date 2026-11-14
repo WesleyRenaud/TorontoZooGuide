@@ -98,14 +98,12 @@ class ViewingHours():
 
 
    def extended_line( self ) -> str:
-      return self.line(
-         CheckReport.text( 'checks.extendedViewingHoursThrough' ),
-         self.guest_message(),
-      )
+      return self.line( CheckReport.text( 'checks.extendedViewingHoursThrough' ) )
 
 
    def trimmed_line( self ) -> str:
-      return self.line(
-         CheckReport.text( 'checks.trimmedViewingHoursThrough' ),
-         self.guest_message(),
-      )
+      return self.line( CheckReport.text( 'checks.trimmedViewingHoursThrough' ) )
+
+
+   def realigned_line( self ) -> str:
+      return self.line( CheckReport.text( 'checks.setViewingHoursFrom' ) )

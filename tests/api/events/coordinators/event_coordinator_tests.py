@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import base64
 from datetime import date
+from pathlib import Path
 
 from api_test_support.frozen_datetime import patch_database_today
 from api_test_support.seeded_database import SeededDatabase
 import pytest
 
 from api.events.coordinators.event_coordinator import EventCoordinator
+from api.events.operations.event_image_writer import EventImageWriter
 
 
 EVENT_NAME = 'Conservation Carousel Ride Night'
@@ -15,17 +18,25 @@ EVENT_DESCRIPTION = 'Evening carousel rides for a special cause.'
 EVENT_LINK = 'https://www.torontozoo.com/events/carousel-night'
 EVENT_START_DATE = '2026-06-15'
 EVENT_END_DATE = '2026-06-30'
+EVENT_IMAGE = f'data:image/png;base64,{ base64.b64encode( b"image-bytes" ).decode() }'
+
+
+@pytest.fixture( autouse=True )
+def event_images( tmp_path: Path, monkeypatch: pytest.MonkeyPatch ) -> None:
+   monkeypatch.setattr( EventImageWriter, 'FOLDER', tmp_path )
 
 
 def Test_CreateEvent_TestValidEvent_ExpectPersistsEventFields(
-      db: SeededDatabase ) -> None:
+      db: SeededDatabase,
+      tmp_path: Path ) -> None:
    result = EventCoordinator.create_event(
       name=EVENT_NAME,
       location=EVENT_LOCATION,
       description=EVENT_DESCRIPTION,
       link=EVENT_LINK,
       start_date=EVENT_START_DATE,
-      end_date=EVENT_END_DATE )
+      end_date=EVENT_END_DATE,
+      image=EVENT_IMAGE )
 
    assert result is True
 
@@ -46,6 +57,7 @@ def Test_CreateEvent_TestValidEvent_ExpectPersistsEventFields(
       EVENT_START_DATE,
       EVENT_END_DATE,
    )
+   assert ( tmp_path / 'conservation-carousel-ride-night.png' ).read_bytes() == b'image-bytes'
 
 
 def Test_CreateEvent_TestOpenEndedEvent_ExpectPersistsNullEndDate(
@@ -56,7 +68,8 @@ def Test_CreateEvent_TestOpenEndedEvent_ExpectPersistsNullEndDate(
       description=EVENT_DESCRIPTION,
       link=EVENT_LINK,
       start_date=EVENT_START_DATE,
-      end_date=None )
+      end_date=None,
+      image=EVENT_IMAGE )
 
    assert result is True
 
@@ -80,7 +93,8 @@ def Test_CreateEvent_TestDuplicateNameAndStartDate_ExpectRejectsSecondInsert(
       description='First description.',
       link='https://www.torontozoo.com/events/one',
       start_date=EVENT_START_DATE,
-      end_date=None )
+      end_date=None,
+      image=EVENT_IMAGE )
 
    assert result is True
 
@@ -90,7 +104,8 @@ def Test_CreateEvent_TestDuplicateNameAndStartDate_ExpectRejectsSecondInsert(
       description='Second description.',
       link='https://www.torontozoo.com/events/two',
       start_date=EVENT_START_DATE,
-      end_date=None )
+      end_date=None,
+      image=EVENT_IMAGE )
 
    assert result is False
 
@@ -100,7 +115,8 @@ def Test_CreateEvent_TestDuplicateNameAndStartDate_ExpectRejectsSecondInsert(
       description='Second description.',
       link='https://www.torontozoo.com/events/two',
       start_date='2026-07-01',
-      end_date=None )
+      end_date=None,
+      image=EVENT_IMAGE )
 
    assert result is True
 
@@ -116,7 +132,8 @@ def Test_GetEventsForVisitDate_TestMixedEventDates_ExpectUpcomingAndExcludesExpi
       description='Still happening.',
       link='https://www.torontozoo.com/events/active',
       start_date='2026-06-01',
-      end_date=None )
+      end_date=None,
+      image=EVENT_IMAGE )
 
    assert result is True
 
@@ -126,7 +143,8 @@ def Test_GetEventsForVisitDate_TestMixedEventDates_ExpectUpcomingAndExcludesExpi
       description='Ends later.',
       link='https://www.torontozoo.com/events/ranged',
       start_date='2026-06-10',
-      end_date='2026-06-30' )
+      end_date='2026-06-30',
+      image=EVENT_IMAGE )
 
    assert result is True
 
@@ -136,7 +154,8 @@ def Test_GetEventsForVisitDate_TestMixedEventDates_ExpectUpcomingAndExcludesExpi
       description='Starts later.',
       link='https://www.torontozoo.com/events/future',
       start_date='2026-07-01',
-      end_date='2026-07-15' )
+      end_date='2026-07-15',
+      image=EVENT_IMAGE )
 
    assert result is True
 
@@ -146,7 +165,8 @@ def Test_GetEventsForVisitDate_TestMixedEventDates_ExpectUpcomingAndExcludesExpi
       description='Already ended.',
       link='https://www.torontozoo.com/events/expired',
       start_date='2026-05-01',
-      end_date='2026-05-31' )
+      end_date='2026-05-31',
+      image=EVENT_IMAGE )
 
    assert result is True
 

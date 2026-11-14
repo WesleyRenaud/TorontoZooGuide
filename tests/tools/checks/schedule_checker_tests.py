@@ -16,7 +16,6 @@ from tools.checks.animal_website_catalogue_not_in_app_checker import AnimalWebsi
 from tools.checks.attraction_list_checker import AttractionListChecker
 from tools.checks.attraction_window_checker import AttractionWindowChecker
 from tools.checks.check_report_parser import CheckReportParser
-from tools.checks.closure_update_checker import ClosureUpdateChecker
 from tools.checks.closure_viewing_alert_checker import ClosureViewingAlertChecker
 from tools.checks.exhibit_season_checker import ExhibitSeasonChecker
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
@@ -29,7 +28,6 @@ from tools.checks.seasonal_attraction_closure_checker import SeasonalAttractionC
 from tools.checks.seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
-from tools.checks.viewing_hours_checker import ViewingHoursChecker
 from tools.checks.wild_encounter_schedule_checker import WildEncounterScheduleChecker
 from tools.checks.zoo_event_checker import ZooEventChecker
 from tools.checks.zoo_hours_checker import ZooHoursChecker
@@ -41,6 +39,8 @@ CHECKS = (
    ( WildEncounterScheduleChecker, 'check_schedules' ),
    ( GuardiansTalkScheduleChecker, 'check_schedules' ),
    ( ScheduleChecker, 'check_animals' ),
+   ( ScheduleChecker, 'check_closure_updates' ),
+   ( ScheduleChecker, 'check_viewing_hours' ),
    ( ScheduleChecker, 'check_attractions' ),
    ( ScheduleChecker, 'check_restaurants' ),
    ( ScheduleChecker, 'check_gift_shops' ),
@@ -95,14 +95,6 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       calls.append( 'app catalogue' )
       return 3
 
-   def check_closure_updates( database: Path, today: date ) -> int:
-      calls.append( 'closure updates' )
-      return 0
-
-   def check_viewing_hours( database: Path, today: date ) -> int:
-      calls.append( 'viewing hours' )
-      return 0
-
    def check_viewing_alerts( database: Path, today: date ) -> int:
       calls.append( 'viewing alerts' )
       return 0
@@ -139,16 +131,6 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       check_app_catalogue,
    )
    monkeypatch.setattr(
-      ClosureUpdateChecker,
-      'check_schedules',
-      check_closure_updates,
-   )
-   monkeypatch.setattr(
-      ViewingHoursChecker,
-      'check_schedules',
-      check_viewing_hours,
-   )
-   monkeypatch.setattr(
       ClosureViewingAlertChecker,
       'check_schedules',
       check_viewing_alerts,
@@ -165,8 +147,6 @@ def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
       'temporary off display app',
       'website catalogue',
       'app catalogue',
-      'closure updates',
-      'viewing hours',
       'viewing alerts',
    ]
 
@@ -298,6 +278,8 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_encounters,
       check_talks,
       check_animals,
+      check_clear,
+      check_clear,
       check_attractions,
       check_restaurants,
       check_gift_shops,

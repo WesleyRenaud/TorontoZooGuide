@@ -90,12 +90,10 @@ class ZooEventChecker():
 
    @classmethod
    def added_line( cls, event: WebsiteZooEvent ) -> str:
-      details = []
-
-      if event.image != '':
-         details.append( CheckReport.detail_item( CheckReport.text( 'checks.photo' ) + event.image ) )
-
-      details.append( CheckReport.detail_item( CheckReport.text( 'checks.addedZooEvent' ) ) )
+      details = [
+         CheckReport.detail_item( CheckReport.text( 'checks.photo' ) + event.image ),
+         CheckReport.detail_item( CheckReport.text( 'checks.addedZooEvent' ) ),
+      ]
 
       if event.description != '':
          details.append( CheckReport.detail_item( event.description ) )

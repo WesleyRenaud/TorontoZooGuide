@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from datetime import date
 from html import unescape
+from pathlib import Path
 import re
 import subprocess
+import tempfile
 from urllib.parse import unquote
 
 from api.app_string_provider import AppStringProvider
@@ -33,8 +35,13 @@ class WebsitePage():
 
 
    @classmethod
+   def is_absolute( cls, src: str ) -> bool:
+      return src.startswith( ( 'http://', 'https://' ) )
+
+
+   @classmethod
    def absolute_url( cls, src: str ) -> str:
-      if src.startswith( 'http://' ) or src.startswith( 'https://' ):
+      if cls.is_absolute( src ):
          return src
 
       if src.startswith( '//' ):
@@ -64,6 +71,35 @@ class WebsitePage():
    @classmethod
    def fetch_text( cls, url: str ) -> str:
       return cls.fetch_bytes( url ).decode()
+
+
+   @classmethod
+   def read( cls, url: str ) -> tuple[ int, str ]:
+      with tempfile.TemporaryDirectory() as folder:
+         page = Path( folder ) / 'page'
+         result = subprocess.run(
+            [
+               'curl',
+               '-sS',
+               '--max-time',
+               '30',
+               '-A',
+               cls.USER_AGENT,
+               '-o',
+               str( page ),
+               '-w',
+               '%{http_code}',
+               url,
+            ],
+            check=False,
+            capture_output=True,
+         )
+
+         if result.returncode != 0:
+            detail = result.stderr.decode( errors='replace' ).strip()
+            raise RuntimeError( detail or AppStringProvider.format( 'checks.curlExited' ) )
+
+         return int( result.stdout.decode() ), page.read_text()
 
 
    @classmethod
