@@ -27,10 +27,7 @@ export class CreateUpdateView {
                label: Strings.labels.type,
                inputId: 'createUpdateType',
                emptyOptionLabel: Strings.placeholders.type,
-               options: [
-                  ...Strings.updateTypes,
-                  { value: Strings.labels.departure },
-               ],
+               options: Strings.updateTypes,
             }),
             ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'createUpdateStartDate',
