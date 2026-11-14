@@ -28,6 +28,7 @@ from .gift_shop_window_checker import GiftShopWindowChecker
 from .guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
 from .restaurant_list_checker import RestaurantListChecker
 from .restaurant_window_checker import RestaurantWindowChecker
+from .restroom_notice_checker import RestroomNoticeChecker
 from .seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker
 from .seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from .seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
@@ -102,6 +103,7 @@ class ScheduleChecker():
       talk_issues = GuardiansTalkScheduleChecker.check_schedules( database, today )
       animal_issues = cls.check_animals( database, today )
       closure_update_issues = cls.check_closure_updates( database, today )
+      restroom_issues = RestroomNoticeChecker.check_schedules( database, today )
       viewing_hour_issues = cls.check_viewing_hours( database, today )
       attraction_issues = cls.check_attractions( database, today )
       restaurant_issues = cls.check_restaurants( database, today )
@@ -116,6 +118,7 @@ class ScheduleChecker():
          + talk_issues
          + animal_issues
          + closure_update_issues
+         + restroom_issues
          + viewing_hour_issues
          + attraction_issues
          + restaurant_issues
@@ -133,6 +136,7 @@ class ScheduleChecker():
          talks=talk_issues,
          animals=animal_issues,
          closure_updates=closure_update_issues,
+         restrooms=restroom_issues,
          viewing_hours=viewing_hour_issues,
          attractions=attraction_issues,
          restaurants=restaurant_issues,

@@ -102,6 +102,9 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'reports.closureUpdate.section' ): [
             cls.check_kind( 'closureUpdate' ),
          ],
+         AppStringProvider.format( 'map.filterTypes.restroom' ): [
+            cls.check_kind( 'restroom' ),
+         ],
          AppStringProvider.format( 'reports.viewingHours.section' ): [
             cls.check_kind( 'viewingHours' ),
          ],
@@ -402,6 +405,12 @@ class CheckEmailRenderer():
       phrases = (
          AppStringProvider.format( 'checks.extendedClosedForSeasonThrough' ),
          AppStringProvider.format( 'checks.extendedUpdateThrough' ),
+         AppStringProvider.format( 'checks.extendedRestroomThrough' ),
+         AppStringProvider.format( 'checks.extendedRestroomAlertThrough' ),
+         AppStringProvider.format( 'checks.setRestroomFrom' ),
+         AppStringProvider.format( 'checks.setRestroomAlertFrom' ),
+         AppStringProvider.format( 'checks.openedRestroom' ),
+         AppStringProvider.format( 'checks.removedRestroomAlert' ),
          AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
          AppStringProvider.format( 'checks.setOpenForSeason' ),
          AppStringProvider.format( 'checks.setOpenForSeasonFrom' ),

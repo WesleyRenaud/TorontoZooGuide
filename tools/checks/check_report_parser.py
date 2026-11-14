@@ -15,6 +15,7 @@ class CheckReportParser():
    COUNT_LABELS = (
       'site.nav.animals',
       'reports.closureUpdate.section',
+      'map.filterTypes.restroom',
       'reports.viewingHours.section',
       'checks.countNames.exhibits',
       'map.filter.attractions',
@@ -150,6 +151,7 @@ class CheckReportParser():
          cls,
          animals: int = 0,
          closure_updates: int = 0,
+         restrooms: int = 0,
          viewing_hours: int = 0,
          exhibits: int = 0,
          encounters: int = 0,
@@ -164,6 +166,7 @@ class CheckReportParser():
       counts = (
          animals,
          closure_updates,
+         restrooms,
          viewing_hours,
          exhibits,
          attractions + attraction_list,
