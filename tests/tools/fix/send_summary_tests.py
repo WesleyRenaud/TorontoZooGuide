@@ -484,6 +484,67 @@ def Test_RenderHtml_TestAllAnimalErrorsFixed_ExpectGreenTotal() -> None:
    )
 
 
+def Test_RenderHtml_TestViewingAlertFixed_ExpectGreenCountAndPhoto() -> None:
+   photo = AnimalDetailImage.source( 'Tundra Trek', 'Polar Bear' )
+   title = CheckReport.text( 'checks.animalAlerts' )
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'closureViewingAlert', date( 2026, 11, 13 ) ) }
+
+      { CheckReport.category_line( 'checks.animalAlerts', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Polar Bear', second='Tundra Trek' ) }
+          { CheckReport.text( 'checks.photo' ) }{ photo }
+          { CheckReport.text( 'checks.setViewingAlert' ) }
+          The polar bear underwater viewing area at Tundra Trek is closed for maintenance.
+
+      { CheckReportParser.format_fixed_count( 1 ) }
+
+      { CheckReportParser.format_counts() }
+
+      { CheckReportParser.format_error_count( 0 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 0 )
+   green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
+   danger = ColorTokens.color( ColorToken.DANGER )
+   animals = html[ html.index( '>Animals<' ):html.index( '>Wild Encounters<' ) ]
+
+   assert f'color:{ green };">{ title }' in html
+   assert danger not in animals
+   assert CheckEmailRenderer.image_src( photo ) in html
+   assert CheckReport.text( 'checks.photo' ) not in html
+
+
+def Test_RenderHtml_TestViewingAlertRemoved_ExpectGreenCount() -> None:
+   title = CheckReport.text( 'checks.appOnly' )
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'closureViewingAlert', date( 2026, 11, 13 ) ) }
+
+      { CheckReport.category_line( 'checks.animalAlerts', 0 ) }
+
+      { CheckReport.category_line( 'checks.appOnly', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Snow Leopard', second='Eurasia Wilds' ) }
+          { CheckReport.text( 'checks.removedViewingAlert' ) }
+          Pemba is moving to a new zoo.
+
+      { CheckReportParser.format_fixed_count( 1 ) }
+
+      { CheckReportParser.format_counts() }
+
+      { CheckReportParser.format_error_count( 0 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 0 )
+   green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
+   danger = ColorTokens.color( ColorToken.DANGER )
+   animals = html[ html.index( '>Animals<' ):html.index( '>Wild Encounters<' ) ]
+
+   assert f'color:{ green };">{ title }' in html
+   assert 'Pemba is moving to a new zoo.' in html
+   assert danger not in animals
+
+
 def Test_RenderHtml_TestOneErrorFixed_ExpectFixedHeadline() -> None:
    fixed = CheckReportParser.format_fixed_count( 1 )
    body = textwrap.dedent(
@@ -829,6 +890,12 @@ def Test_Main_TestSentSummary_ExpectExitCode0(
 
    assert result == 0
    assert FakeSmtp.instances[ 0 ].sent is not None
+
+
+def Test_SummaryLine_TestCheckStopped_ExpectDidNotFinish() -> None:
+   body = 'Could not write the viewing alert.\n'
+
+   assert send_summary.summary_line( body ) == CheckReport.text( 'checks.status.didNotFinish' )
 
 
 def Test_SummaryLine_TestNothingFixed_ExpectNoErrorsDetected() -> None:

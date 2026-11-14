@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.shared.text_values import TextValues
 from .website_page import WebsitePage
 
 
@@ -35,4 +36,14 @@ class ExhibitName():
          name
          for name in exhibits
          if cls.key( name ).startswith( f'{ website_key } ' )
+      ]
+
+
+   @classmethod
+   def mentioned_in( cls, text: str, exhibits: list[ str ] ) -> list[ str ]:
+      haystack = TextValues.spaced( cls.key( text ) )
+      return [
+         exhibit
+         for exhibit in exhibits
+         if TextValues.spaced( cls.key( exhibit ) ) in haystack
       ]

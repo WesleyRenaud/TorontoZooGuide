@@ -22,6 +22,7 @@ from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .check_report_parser import CheckReportParser
 from .closure_update_checker import ClosureUpdateChecker
+from .closure_viewing_alert_checker import ClosureViewingAlertChecker
 from .exhibit_season_checker import ExhibitSeasonChecker
 from .gift_shop_list_checker import GiftShopListChecker
 from .gift_shop_window_checker import GiftShopWindowChecker
@@ -55,6 +56,7 @@ class ScheduleChecker():
          + AnimalAppCatalogueNotOnWebsiteChecker.check_lists( database, today )
          + ClosureUpdateChecker.check_schedules( database, today )
          + ViewingHoursChecker.check_schedules( database, today )
+         + ClosureViewingAlertChecker.check_schedules( database, today )
       )
 
 

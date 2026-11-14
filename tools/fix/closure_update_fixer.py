@@ -6,6 +6,7 @@ from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.domain.closure_linked_off_display_animal import ClosureLinkedOffDisplayAnimal
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
+from api.shared.text_values import TextValues
 from api.updates.coordinators.update_coordinator import UpdateCoordinator
 from api.updates.domain.update_type import UpdateType
 from tools.checks.check_report import CheckReport
@@ -16,7 +17,7 @@ from tools.checks.closure_update_plan import ClosureUpdatePlan
 class ClosureUpdateFixer():
    @classmethod
    def mentions( cls, addition: ClosureUpdate, names: list[ str ] ) -> bool:
-      text = f'{ addition.title } { addition.description }'.casefold()
+      text = TextValues.beside( addition.title, addition.description ).casefold()
       return any( name.casefold() in text for name in names )
 
 

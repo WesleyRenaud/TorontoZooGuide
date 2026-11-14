@@ -1,5 +1,6 @@
 export class CheckStrings {
    static checks = {
+      animalAlerts: 'Animal alerts',
       appCatalogueNotOnWebsite: 'In the app catalogue and not on the website',
       appDatesNotBookable: 'App dates not bookable: ',
       appDatesNotOnWebsite: 'App dates not on the website: ',
@@ -21,6 +22,7 @@ export class CheckStrings {
          giftShops: 'Gift shops',
       },
       couldNotFindDatabase: 'Could not find the database.',
+      couldNotWriteViewingAlert: 'Could not write the viewing alert',
       couldNotReadBookingCalendar: 'Could not read the booking calendar.',
       couldNotReadAlertsPage: 'Could not read the alerts page.',
       couldNotReadBookingPage: 'Could not read the booking page.',
@@ -83,6 +85,7 @@ export class CheckStrings {
       planPageNoLastAdmission: 'The plan page has no last admission time.',
       removedHours: 'Removed the hours.',
       removedSchedule: 'Removed the schedule.',
+      removedViewingAlert: 'Removed the viewing alert.',
       removedViewingHours: 'Removed the viewing hours.',
       scheduledInAppOnly: 'Scheduled in the app and not on the website',
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
@@ -96,6 +99,7 @@ export class CheckStrings {
       setOpenForSeasonFrom: 'Set open for the season from ',
       setScheduleFrom: 'Set the schedule from ',
       setUpdateFrom: 'Set the update from ',
+      setViewingAlert: 'Set the viewing alert.',
       setViewingHoursFrom: 'Set the viewing hours.',
       status: {
          allClear: 'All clear',
@@ -112,6 +116,7 @@ export class CheckStrings {
          summary: 'Toronto Zoo check: ',
       },
       updatedHours: 'Updated the app hours to match the website.',
+      updatedViewingAlert: 'Updated the viewing alert.',
       temporarilyNotViewable: 'temporarily not viewable',
       temporaryOffDisplayAppOnly: 'Off display in the app and not on the website',
       temporaryOffDisplayWebsiteOnly: 'Temporarily off display on the website and not in the app',
@@ -146,6 +151,11 @@ export class CheckStrings {
          kind: 'Closure notice',
          section: 'Closure updates',
       },
+      closureViewingAlert: {
+         description: 'Write a guest viewing alert from each closure notice using the exhibit and whether the animal is temporarily off display.',
+         kind: 'Animal viewing alert',
+         section: 'Animal viewing alerts',
+      },
       giftShopList: {
          description: 'Compare gift shops listed on the Toronto Zoo website with the gift shops in the app.',
          kind: 'Gift shop list',
@@ -168,7 +178,7 @@ export class CheckStrings {
          kind: 'Restaurant schedule',
       },
       schedule: {
-         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, viewing hours, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
+         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, viewing hours, closure viewing alerts, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
       },
       seasonalAttraction: {
          description: 'Compare attractions closed for the season on the Toronto Zoo website with the attractions closed for the season in the app.',

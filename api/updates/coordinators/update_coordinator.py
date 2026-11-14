@@ -61,6 +61,13 @@ class UpdateCoordinator():
 
 
    @classmethod
+   def get_current_closures( cls, day: date ) -> list[ Update ]:
+      return UpdateProvider.fetch_current_closures(
+         RequestConnectionProvider.get(),
+         day.isoformat() )
+
+
+   @classmethod
    def create_update(
          cls,
          title: str,
