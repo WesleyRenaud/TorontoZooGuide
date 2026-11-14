@@ -1,0 +1,22 @@
+{
+   "GIF": {
+      "kind": "gif",
+      "extensions": [ ".gif" ],
+      "mime": "image/gif"
+   },
+   "JPEG": {
+      "kind": "jpeg",
+      "extensions": [ ".jpg", ".jpeg" ],
+      "mime": "image/jpeg"
+   },
+   "PNG": {
+      "kind": "png",
+      "extensions": [ ".png" ],
+      "mime": "image/png"
+   },
+   "WEBP": {
+      "kind": "webp",
+      "extensions": [ ".webp" ],
+      "mime": "image/webp"
+   }
+}

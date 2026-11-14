@@ -54,10 +54,18 @@ class ScheduleChecker():
          + AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker.check_schedules( database, today )
          + AnimalWebsiteCatalogueNotInAppChecker.check_lists( database, today )
          + AnimalAppCatalogueNotOnWebsiteChecker.check_lists( database, today )
-         + ClosureUpdateChecker.check_schedules( database, today )
-         + ViewingHoursChecker.check_schedules( database, today )
          + ClosureViewingAlertChecker.check_schedules( database, today )
       )
+
+
+   @classmethod
+   def check_closure_updates( cls, database: Path, today: date ) -> int:
+      return ClosureUpdateChecker.check_schedules( database, today )
+
+
+   @classmethod
+   def check_viewing_hours( cls, database: Path, today: date ) -> int:
+      return ViewingHoursChecker.check_schedules( database, today )
 
 
    @classmethod
@@ -93,6 +101,8 @@ class ScheduleChecker():
       encounter_issues = WildEncounterScheduleChecker.check_schedules( database, today )
       talk_issues = GuardiansTalkScheduleChecker.check_schedules( database, today )
       animal_issues = cls.check_animals( database, today )
+      closure_update_issues = cls.check_closure_updates( database, today )
+      viewing_hour_issues = cls.check_viewing_hours( database, today )
       attraction_issues = cls.check_attractions( database, today )
       restaurant_issues = cls.check_restaurants( database, today )
       gift_shop_issues = cls.check_gift_shops( database, today )
@@ -105,6 +115,8 @@ class ScheduleChecker():
          + encounter_issues
          + talk_issues
          + animal_issues
+         + closure_update_issues
+         + viewing_hour_issues
          + attraction_issues
          + restaurant_issues
          + gift_shop_issues
@@ -120,6 +132,8 @@ class ScheduleChecker():
          encounters=encounter_issues,
          talks=talk_issues,
          animals=animal_issues,
+         closure_updates=closure_update_issues,
+         viewing_hours=viewing_hour_issues,
          attractions=attraction_issues,
          restaurants=restaurant_issues,
          gift_shops=gift_shop_issues,

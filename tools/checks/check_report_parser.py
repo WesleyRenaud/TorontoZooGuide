@@ -14,6 +14,8 @@ class CheckReportParser():
    CATEGORY_RE = re.compile( r'^(?P<title>[^ ].*): (?P<count>\d+)$' )
    COUNT_LABELS = (
       'site.nav.animals',
+      'reports.closureUpdate.section',
+      'reports.viewingHours.section',
       'checks.countNames.exhibits',
       'map.filter.attractions',
       'site.nav.wildEncounters',
@@ -147,6 +149,8 @@ class CheckReportParser():
    def format_counts(
          cls,
          animals: int = 0,
+         closure_updates: int = 0,
+         viewing_hours: int = 0,
          exhibits: int = 0,
          encounters: int = 0,
          talks: int = 0,
@@ -159,6 +163,8 @@ class CheckReportParser():
          events: int = 0 ) -> str:
       counts = (
          animals,
+         closure_updates,
+         viewing_hours,
          exhibits,
          attractions + attraction_list,
          encounters,

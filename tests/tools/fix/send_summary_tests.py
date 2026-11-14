@@ -132,9 +132,11 @@ def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
 
    assert report.error_count == 1
    assert report.counts[ 0 ] == Count( label='Animals', count=0 )
-   assert report.counts[ 1 ] == Count( label='Exhibits', count=0 )
-   assert report.counts[ 2 ] == Count( label='Attractions', count=0 )
-   assert report.counts[ 3 ] == Count( label='Wild Encounters', count=0 )
+   assert report.counts[ 1 ] == Count( label='Closure updates', count=0 )
+   assert report.counts[ 2 ] == Count( label='Viewing hours', count=0 )
+   assert report.counts[ 3 ] == Count( label='Exhibits', count=0 )
+   assert report.counts[ 4 ] == Count( label='Attractions', count=0 )
+   assert report.counts[ 5 ] == Count( label='Wild Encounters', count=0 )
    assert report.counts[ -2 ] == Count( label='Zoo hours', count=1 )
    assert report.counts[ -1 ] == Count( label='Zoo event', count=0 )
    assert report.sections[ 0 ].kind == 'Wild encounter schedule'
@@ -186,6 +188,57 @@ def Test_RenderHtml_TestAnimalCatalogAndOffDisplay_ExpectOneSection() -> None:
    assert html.index( '>Wild Encounters<' ) < html.index( 'Polar Bear' )
    assert html.index( '>Wild Encounters<' ) < html.index( 'Marabou Stork' )
    assert html.index( '>Wild Encounters<' ) < html.index( 'Capybara' )
+
+
+def Test_RenderHtml_TestClosureUpdate_ExpectOwnTab() -> None:
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'closureUpdate', date( 2026, 11, 14 ) ) }
+
+      { CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) }
+        Indo-Malaya Pavilion Construction
+          Extended the update through December 14, 2026.
+
+      { CheckReportParser.format_counts( closure_updates=1 ) }
+
+      { CheckReportParser.format_error_count( 1 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+
+   assert html.count( '>Closure updates<' ) == 2
+   assert html.count( '>Animals<' ) == 1
+
+
+def Test_RenderHtml_TestChecksRunFirst_ExpectCardsFollowTabs() -> None:
+   body = textwrap.dedent(
+      f"""\
+      { CheckReport.heading( 'seasonalExhibit', date( 2026, 11, 14 ) ) }
+
+      { CheckReport.category_line( 'checks.closedForSeasonWebsiteOnly', 1 ) }
+        African Rainforest Pavilion
+
+      { CheckReport.heading( 'wildEncounter', date( 2026, 11, 14 ) ) }
+
+      { CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 1 ) }
+        Giraffe
+
+      { CheckReport.heading( 'animalList', date( 2026, 11, 14 ) ) }
+
+      { CheckReport.category_line( 'checks.websiteCatalogueNotInApp', 1 ) }
+        { AppStringProvider.format( 'format.middleDotPair', first='Tiger', second='Africa Savanna' ) }
+
+      { CheckReportParser.format_counts( animals=1, exhibits=1, encounters=1 ) }
+
+      { CheckReportParser.format_error_count( 3 ) }
+      """
+   )
+   html = CheckEmailRenderer.render_html( body, 1 )
+   animals = html.index( '>Animals<', html.index( '>Animals<' ) + 1 )
+   exhibits = html.index( '>Exhibits<', html.index( '>Exhibits<' ) + 1 )
+   encounters = html.index( '>Wild Encounters<', html.index( '>Wild Encounters<' ) + 1 )
+
+   assert animals < exhibits < encounters
 
 
 def Test_RenderHtml_TestSplitAnimalCatalog_ExpectBothSides() -> None:
@@ -445,7 +498,7 @@ def Test_RenderHtml_TestRepeatedScheduleHeadings_ExpectOneCardEach() -> None:
    )
    html = CheckEmailRenderer.render_html( body, 1 )
 
-   assert html.count( '>Encounters<' ) == 1
+   assert html.count( '>Wild Encounters<' ) == 2
    assert html.count( '>Guardians Talks<' ) == 2
    assert html.index( 'Giraffe' ) < html.index( 'Kangaroo' )
    assert html.index( 'Kangaroo' ) < html.index( 'Snow Leopard' )
@@ -471,7 +524,7 @@ def Test_RenderHtml_TestAllAnimalErrorsFixed_ExpectGreenTotal() -> None:
    html = CheckEmailRenderer.render_html( body, 0 )
    green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
    danger = ColorTokens.color( ColorToken.DANGER )
-   animals = html[ html.index( '>Animals<' ):html.index( '>Wild Encounters<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Closure updates<' ) ]
    detected = CheckReportParser.format_detected( 2, 2 )
 
    assert detected in html
@@ -508,7 +561,7 @@ def Test_RenderHtml_TestViewingAlertFixed_ExpectGreenCountAndPhoto() -> None:
    html = CheckEmailRenderer.render_html( body, 0 )
    green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
    danger = ColorTokens.color( ColorToken.DANGER )
-   animals = html[ html.index( '>Animals<' ):html.index( '>Wild Encounters<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Closure updates<' ) ]
 
    assert f'color:{ green };">{ title }' in html
    assert danger not in animals
@@ -539,7 +592,7 @@ def Test_RenderHtml_TestViewingAlertRemoved_ExpectGreenCount() -> None:
    html = CheckEmailRenderer.render_html( body, 0 )
    green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
    danger = ColorTokens.color( ColorToken.DANGER )
-   animals = html[ html.index( '>Animals<' ):html.index( '>Wild Encounters<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Closure updates<' ) ]
 
    assert f'color:{ green };">{ title }' in html
    assert 'Pemba is moving to a new zoo.' in html
@@ -609,7 +662,7 @@ def Test_RenderHtml_TestFixedAndCatalogueMiss_ExpectGreenFixAndDangerMiss() -> N
    detected = CheckReportParser.format_detected( 2, 1 )
 
    assert f'color:{ danger };">{ detected }' in html
-   animals = html[ html.index( '>Animals<' ):html.index( '>Wild Encounters<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Closure updates<' ) ]
    assert '>2<' in animals
    assert f'color:{ danger }' in animals
    assert html.index( '>Wild Encounters<' ) < html.index( 'Warthog' )

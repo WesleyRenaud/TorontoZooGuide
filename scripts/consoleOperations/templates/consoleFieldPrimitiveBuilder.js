@@ -61,6 +61,7 @@ export class ConsoleFieldPrimitiveBuilder {
       placeholder = '',
       autocomplete = 'off',
       value = '',
+      accept = '',
    } = {}) {
       const inputEl = document.createElement('input');
       inputEl.id = inputId;
@@ -70,6 +71,10 @@ export class ConsoleFieldPrimitiveBuilder {
 
       if (placeholder) {
          inputEl.placeholder = placeholder;
+      }
+
+      if (accept) {
+         inputEl.accept = accept;
       }
 
       if (value) {

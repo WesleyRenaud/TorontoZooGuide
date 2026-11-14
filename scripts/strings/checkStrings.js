@@ -60,6 +60,7 @@ export class CheckStrings {
       extendedClosedForSeasonThrough: 'Extended closed for the season through ',
       extendedOffDisplayThrough: 'Extended off display through ',
       extendedUpdateThrough: 'Extended the update through ',
+      extendedViewingAlertThrough: 'Extended the viewing alert through ',
       extendedViewingHoursThrough: 'Extended the viewing hours.',
       headingMiddle: ' check for ',
       hoursDayCountEnd: ' days): ',

@@ -24,6 +24,7 @@ class ZooEventFixer():
             link=event.link,
             start_date=event.start.isoformat(),
             end_date=event.end.isoformat(),
+            image=event.image,
          )
 
          if not wrote:

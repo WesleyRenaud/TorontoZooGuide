@@ -1,19 +1,29 @@
 from __future__ import annotations
 
 from datetime import date
+from io import BytesIO
 from pathlib import Path
 import sqlite3
 
+from PIL import Image
 import pytest
 
+from api.events.operations.event_image_writer import EventImageWriter
 from api.models import Event
 from tools.checks.check_report import CheckReport
 from tools.checks.date_span import DateSpan
+from tools.checks.website_page import WebsitePage
 from tools.checks.website_zoo_event import WebsiteZooEvent
 from tools.checks.zoo_event_checker import ZooEventChecker
 
 
 TODAY = date( 2026, 11, 13 )
+
+
+def thumbnail() -> bytes:
+   source = BytesIO()
+   Image.new( 'RGB', ( 2, 2 ), ( 12, 34, 56 ) ).save( source, format='JPEG' )
+   return source.getvalue()
 
 
 def card(
@@ -196,7 +206,8 @@ def Test_CheckSchedules_TestUnreadableDates_ExpectReportedAndKept(
 
 def Test_CheckSchedules_TestMissingAndExtra_ExpectAddedAndRemoved(
       tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ] ) -> None:
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
    path = database( tmp_path / 'animals.db', [
       Event(
          'Glow in the Wild',
@@ -228,9 +239,12 @@ def Test_CheckSchedules_TestMissingAndExtra_ExpectAddedAndRemoved(
          'https://www.torontozoo.com/events/veteran#evt',
          'Sunday, November 8<br>Friday, November 13',
          'Complimentary admission.',
+         '/!/img/event/26/veterans.webp',
       ),
    )
    CheckReport.reset_fixed_count()
+   monkeypatch.setattr( EventImageWriter, 'FOLDER', tmp_path )
+   monkeypatch.setattr( WebsitePage, 'fetch_bytes', lambda url: thumbnail() )
 
    issues = ZooEventChecker.check_schedules( path, TODAY, html, {} )
    output = capsys.readouterr().out
@@ -244,3 +258,7 @@ def Test_CheckSchedules_TestMissingAndExtra_ExpectAddedAndRemoved(
       ( 'Member Mondays', '2026-08-02', '2026-08-31' ),
       ( 'Veterans & Military Appreciation Week', '2026-11-08', '2026-11-13' ),
    ]
+   glow = ( tmp_path / 'glow-in-the-wild.png' ).read_bytes()
+   veterans = ( tmp_path / 'veterans-and-military-appreciation-week.png' ).read_bytes()
+   assert glow.startswith( b'\x89PNG' )
+   assert veterans == glow

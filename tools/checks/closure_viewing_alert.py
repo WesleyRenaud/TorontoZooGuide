@@ -58,20 +58,53 @@ class ClosureViewingAlert():
       return ( self.species.casefold(), self.exhibit.casefold() )
 
 
-   def matches( self, stored: AnimalViewingAlert ) -> bool:
+   def current( self, stored: list[ AnimalViewingAlert ] ) -> AnimalViewingAlert | None:
+      for alert in stored:
+         if alert.species == self.species and alert.exhibit == self.exhibit:
+            return alert
+
+      return None
+
+
+   def matches( self, stored: list[ AnimalViewingAlert ] ) -> bool:
+      current = self.current( stored )
+
+      if current == None:
+         return False
+
       return (
-         stored.message == self.message
-         and DateValues.parse_date_value( stored.start_date ) == self.start
-         and DateValues.parse_date_value( stored.end_date ) == self.end
+         current.message == self.message
+         and DateValues.parse_date_value( current.start_date ) == self.start
+         and DateValues.parse_date_value( current.end_date ) == self.end
       )
 
 
    def needs_save( self, stored: list[ AnimalViewingAlert ] ) -> bool:
-      for current in stored:
-         if current.species == self.species and current.exhibit == self.exhibit:
-            return not self.matches( current )
+      return not self.matches( stored )
 
-      return True
+
+   def extends( self, stored: list[ AnimalViewingAlert ] ) -> bool:
+      current = self.current( stored )
+
+      if current == None:
+         return False
+
+      previous_end = DateValues.parse_date_value( current.end_date )
+      return (
+         current.message == self.message
+         and DateValues.parse_date_value( current.start_date ) == self.start
+         and previous_end != None
+         and self.end != None
+         and previous_end < self.end
+      )
+
+
+   def extended_line( self ) -> str:
+      when = (
+         DateValues.format_display_date_value( self.end )
+         + CheckReport.text( 'checks.period' )
+      )
+      return CheckReport.text( 'checks.extendedViewingAlertThrough' ) + when
 
 
    @classmethod
@@ -98,16 +131,23 @@ class ClosureViewingAlert():
       return CheckReport.join_lines( rows )
 
 
-   def line( self ) -> str:
-      action = 'checks.updatedViewingAlert' if self.replacing else 'checks.setViewingAlert'
-      return self.detail_line(
-         self.species,
-         self.exhibit,
-         [
-            CheckReport.text( action ),
-            self.message,
-         ],
-      )
+   def line( self, stored: list[ AnimalViewingAlert ] ) -> str:
+      details = [ self.action( stored ) ]
+
+      if not self.extends( stored ):
+         details.append( self.message )
+
+      return self.detail_line( self.species, self.exhibit, details )
+
+
+   def action( self, stored: list[ AnimalViewingAlert ] ) -> str:
+      if self.extends( stored ):
+         return self.extended_line()
+
+      if self.current( stored ) == None:
+         return CheckReport.text( 'checks.setViewingAlert' )
+
+      return CheckReport.text( 'checks.updatedViewingAlert' )
 
 
    @classmethod

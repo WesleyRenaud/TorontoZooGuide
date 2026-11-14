@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 from PIL import Image
 
+from api.shared.enums.image_format import ImageFormat
 from .website_page import WebsitePage
 
 
@@ -22,19 +23,6 @@ class EmailImage:
    content: bytes
    subtype: str
    filename: str
-
-
-   @classmethod
-   def subtype_for( cls, filename: str ) -> str:
-      suffix = Path( filename ).suffix.casefold()
-      subtypes = {
-         '.jpg': 'jpeg',
-         '.jpeg': 'jpeg',
-         '.png': 'png',
-         '.gif': 'gif',
-         '.webp': 'webp',
-      }
-      return subtypes.get( suffix, 'jpeg' )
 
 
    @classmethod
@@ -67,7 +55,7 @@ class EmailImage:
    def from_bytes( cls, content: bytes, filename: str ) -> EmailImage:
       fitted = cls.fit( content )
       name = filename
-      subtype = cls.subtype_for( filename )
+      subtype = ImageFormat.subtype_for( filename )
 
       if fitted != content:
          name = f'{ Path( filename ).stem or "image" }.jpg'

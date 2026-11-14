@@ -431,6 +431,36 @@ def Test_CheckSchedules_TestDifferentSentence_ExpectUpdatedAlert(
    ]
 
 
+def Test_CheckSchedules_TestLaterEnd_ExpectExtendedAlert(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database_path = tmp_path / 'animals.db'
+   database( database_path )
+   insert_home( database_path, 'Polar Bear', 'Tundra Trek' )
+   insert_closure(
+      database_path,
+      'The polar bear underwater viewing area is closed.',
+      'The pool is still open.',
+      '2026-07-09',
+      '2026-12-14',
+   )
+   insert_alert( database_path, SENTENCE, '2026-12-13' )
+   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( written_sentence ) )
+   CheckReport.reset_fixed_count()
+
+   result = ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
+
+   output = capsys.readouterr().out
+   assert result == 0
+   assert 'Extended the viewing alert through December 14, 2026.' in output
+   assert 'Updated the viewing alert.' not in output
+   assert SENTENCE not in output
+   assert stored_alerts( database_path ) == [
+      ( 'Polar Bear', 'Tundra Trek', SENTENCE, '2026-12-14' ),
+   ]
+
+
 def Test_CheckSchedules_TestClosureEndsToday_ExpectAlertEndsToday(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch ) -> None:

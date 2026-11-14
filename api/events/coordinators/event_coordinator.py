@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..data_access.event_provider import EventProvider
 from ...models import Event
+from ..operations.event_image_writer import EventImageWriter
 from ...request_connection_provider import RequestConnectionProvider
 from ...shared.calendar_dates import CalendarDates
 from ...types import Types
@@ -44,7 +45,8 @@ class EventCoordinator():
          description: str,
          link: str,
          start_date: Types.DateInput,
-         end_date: Types.DateInput ) -> bool:
+         end_date: Types.DateInput,
+         image: str ) -> bool:
       return EventProvider.insert_event(
          RequestConnectionProvider.get(),
          event=Event(
@@ -53,4 +55,4 @@ class EventCoordinator():
             description=description,
             link=link,
             start_date=start_date,
-            end_date=end_date ) )
+            end_date=end_date ) ) and EventImageWriter.save( name, image )

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+
 from api_test_support.patch_coordinator import patch_coordinator_with_stub
 from api_test_support.post_handler import make_handler
 from api_test_support.post_handler import response_json
@@ -23,6 +25,7 @@ EVENT_DESCRIPTION = 'Evening carousel rides for a special cause.'
 EVENT_LINK = 'https://www.torontozoo.com/events/carousel-night'
 START_DATE = '2026-06-15'
 END_DATE = '2026-06-30'
+EVENT_IMAGE = f'data:image/png;base64,{ base64.b64encode( b"image-bytes" ).decode() }'
 VISIT_MONTH = 'June'
 VISIT_DAY = 15
 VISIT_YEAR = 2026
@@ -91,6 +94,7 @@ def Test_CreateEvent_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
          'link': EVENT_LINK,
          'startDate': START_DATE,
          'endDate': END_DATE,
+         'imageData': EVENT_IMAGE,
       }
    )
 
@@ -108,6 +112,7 @@ def Test_CreateEvent_TestHttpRequest_ExpectMapsPayloadAndSuccessResponse(
             'link': EVENT_LINK,
             'start_date': START_DATE,
             'end_date': END_DATE,
+            'image': EVENT_IMAGE,
          }
       )
    ]
@@ -127,6 +132,7 @@ def Test_CreateEvent_TestHttpRequest_ExpectOpenEndedDatesRetained(
          'link': EVENT_LINK,
          'startDate': START_DATE,
          'endDate': None,
+         'imageData': EVENT_IMAGE,
       }
    )
 
@@ -141,10 +147,42 @@ def Test_CreateEvent_TestHttpRequest_ExpectOpenEndedDatesRetained(
 def Test_CreateEvent_TestHttpRequest_ExpectCouldNotCreateEventApiError(
       stub_event_coordinator: StubEventCoordinator ) -> None:
    StubEventCoordinator.default_success = False
-   handler = make_handler( '/create-event', { 'name': EVENT_NAME } )
+   handler = make_handler(
+      '/create-event',
+      {
+         'name': EVENT_NAME,
+         'location': EVENT_LOCATION,
+         'description': EVENT_DESCRIPTION,
+         'link': EVENT_LINK,
+         'startDate': START_DATE,
+         'endDate': END_DATE,
+         'imageData': EVENT_IMAGE,
+      }
+   )
 
    server.HttpRequestHandler.do_POST( handler )
 
    result = response_json( handler )
 
    assert result[ 'apiErrorType' ] == ApiErrorType.COULD_NOT_CREATE_EVENT.value
+
+
+def Test_CreateEvent_TestImageUpload_ExpectPassesImageToCreate(
+      stub_event_coordinator: StubEventCoordinator ) -> None:
+   image = f'data:image/webp;base64,{ base64.b64encode( b"image-bytes" ).decode() }'
+   handler = make_handler(
+      '/create-event',
+      {
+         'name': EVENT_NAME,
+         'location': EVENT_LOCATION,
+         'description': EVENT_DESCRIPTION,
+         'link': EVENT_LINK,
+         'startDate': START_DATE,
+         'endDate': END_DATE,
+         'imageData': image,
+      }
+   )
+
+   server.HttpRequestHandler.do_POST( handler )
+
+   assert stub_event_coordinator.calls[ Position.FIRST ].arguments[ 'image' ] == image

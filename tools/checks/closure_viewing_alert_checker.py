@@ -62,6 +62,7 @@ class ClosureViewingAlertChecker():
          CheckReport.text( 'checks.removedViewingAlert' ),
          CheckReport.text( 'checks.setViewingAlert' ),
          CheckReport.text( 'checks.updatedViewingAlert' ),
+         CheckReport.text( 'checks.extendedViewingAlertThrough' ),
       )
       return sum(
          all( phrase not in line for phrase in phrases )
@@ -107,7 +108,7 @@ class ClosureViewingAlertChecker():
          ClosureViewingAlert.without_closure( stored, alerts, today ),
       )
       lines = [
-         alert.line()
+         alert.line( stored )
          for alert in sorted( saved, key=lambda alert: alert.sort_key() )
       ]
       removed_lines = [

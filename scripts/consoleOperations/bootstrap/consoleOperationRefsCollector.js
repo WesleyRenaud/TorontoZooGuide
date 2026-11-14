@@ -390,6 +390,7 @@ export class ConsoleOperationRefsCollector {
                locationEl: 'Location',
                descriptionEl: 'Description',
                linkEl: 'Link',
+               imageEl: 'Image',
             },
          },
       },

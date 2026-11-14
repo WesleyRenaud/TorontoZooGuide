@@ -22,6 +22,7 @@ from .paths import Paths
 from .report import Report
 from .section import Section
 from .status_copy import StatusCopy
+from .website_page import WebsitePage
 
 
 class CheckEmailRenderer():
@@ -47,16 +48,6 @@ class CheckEmailRenderer():
    @classmethod
    def check_kind( cls, check: str ) -> str:
       return AppStringProvider.reports()[ check ][ 'kind' ]
-
-
-   @classmethod
-   def section_name( cls, kind: str ) -> str:
-      titles = {
-         report[ 'kind' ]: report.get( 'section', report[ 'kind' ] )
-         for report in AppStringProvider.reports().values()
-         if 'kind' in report
-      }
-      return titles.get( kind, kind )
 
 
    @classmethod
@@ -104,25 +95,29 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'site.nav.animals' ): [
             cls.check_kind( 'animalList' ),
             cls.check_kind( 'closureOffDisplay' ),
-            cls.check_kind( 'closureUpdate' ),
-            cls.check_kind( 'viewingHours' ),
             cls.check_kind( 'closureViewingAlert' ),
             cls.check_kind( 'seasonalOffDisplay' ),
             cls.check_kind( 'temporaryOffDisplay' ),
          ],
+         AppStringProvider.format( 'reports.closureUpdate.section' ): [
+            cls.check_kind( 'closureUpdate' ),
+         ],
+         AppStringProvider.format( 'reports.viewingHours.section' ): [
+            cls.check_kind( 'viewingHours' ),
+         ],
          AppStringProvider.format( 'checks.countNames.exhibits' ): [
             cls.check_kind( 'seasonalExhibit' ),
+         ],
+         AppStringProvider.format( 'map.filter.attractions' ): [
+            cls.check_kind( 'seasonalAttraction' ),
+            cls.check_kind( 'attractionList' ),
+            cls.check_kind( 'attractionWindow' ),
          ],
          AppStringProvider.format( 'site.nav.wildEncounters' ): [
             cls.check_kind( 'wildEncounter' ),
          ],
          AppStringProvider.format( 'reports.guardiansTalk.section' ): [
             cls.check_kind( 'guardiansTalk' ),
-         ],
-         AppStringProvider.format( 'map.filter.attractions' ): [
-            cls.check_kind( 'seasonalAttraction' ),
-            cls.check_kind( 'attractionList' ),
-            cls.check_kind( 'attractionWindow' ),
          ],
          AppStringProvider.format( 'map.filterTypes.restaurant' ): [
             cls.check_kind( 'seasonalRestaurant' ),
@@ -292,7 +287,7 @@ class CheckEmailRenderer():
 
    @classmethod
    def image_src( cls, photo: str ) -> str:
-      if photo.startswith( 'http://' ) or photo.startswith( 'https://' ):
+      if WebsitePage.is_absolute( photo ):
          return photo
 
       return cls.local_image( photo ).as_uri()
@@ -406,6 +401,7 @@ class CheckEmailRenderer():
    def recorded_fix( cls, category: Category ) -> bool:
       phrases = (
          AppStringProvider.format( 'checks.extendedClosedForSeasonThrough' ),
+         AppStringProvider.format( 'checks.extendedUpdateThrough' ),
          AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
          AppStringProvider.format( 'checks.setOpenForSeason' ),
          AppStringProvider.format( 'checks.setOpenForSeasonFrom' ),
@@ -419,6 +415,11 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.setViewingAlert' ),
          AppStringProvider.format( 'checks.updatedHours' ),
          AppStringProvider.format( 'checks.updatedViewingAlert' ),
+         AppStringProvider.format( 'checks.extendedViewingAlertThrough' ),
+         AppStringProvider.format( 'checks.extendedViewingHoursThrough' ),
+         AppStringProvider.format( 'checks.trimmedViewingHoursThrough' ),
+         AppStringProvider.format( 'checks.setViewingHoursFrom' ),
+         AppStringProvider.format( 'checks.removedViewingHours' ),
       )
 
       if category.items == []:
@@ -471,7 +472,7 @@ class CheckEmailRenderer():
    def section_card( cls, section: Section ) -> str:
       title = cls.markup(
          'section_title',
-         title=cls.text( cls.section_name( section.kind ) ),
+         title=cls.text( section.kind ),
       )
       rows = [ cls.markup( 'row', cells=title ) ]
 
@@ -487,73 +488,6 @@ class CheckEmailRenderer():
          )
 
       return cls.markup( 'section_card', rows=''.join( rows ) )
-
-
-   @classmethod
-   def grouped_sections( cls, sections: list[ Section ], kinds: list[ str ] ) -> list[ Section ]:
-      grouped: dict[ str, list[ Section ] ] = {
-         kind: []
-         for kind in kinds
-      }
-
-      for section in sections:
-         if section.kind in grouped:
-            grouped[ section.kind ].append( section )
-
-      merged = []
-
-      for kind in kinds:
-         parts = grouped[ kind ]
-
-         if parts == []:
-            continue
-
-         categories = [
-            category
-            for section in parts
-            for category in section.categories
-         ]
-         merged.append( Section( kind, parts[ 0 ].day, parts[ 0 ].note, categories ) )
-
-      return merged
-
-
-   @classmethod
-   def animal_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
-      return cls.grouped_sections( sections, [
-         cls.check_kind( 'animalList' ),
-         cls.check_kind( 'closureOffDisplay' ),
-         cls.check_kind( 'seasonalOffDisplay' ),
-         cls.check_kind( 'temporaryOffDisplay' ),
-         cls.check_kind( 'closureViewingAlert' ),
-      ] )
-
-
-   @classmethod
-   def attraction_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
-      return cls.grouped_sections( sections, [
-         cls.check_kind( 'seasonalAttraction' ),
-         cls.check_kind( 'attractionList' ),
-         cls.check_kind( 'attractionWindow' ),
-      ] )
-
-
-   @classmethod
-   def restaurant_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
-      return cls.grouped_sections( sections, [
-         cls.check_kind( 'seasonalRestaurant' ),
-         cls.check_kind( 'restaurantList' ),
-         cls.check_kind( 'restaurantWindow' ),
-      ] )
-
-
-   @classmethod
-   def gift_shop_sections( cls, sections: list[ Section ] ) -> list[ Section ]:
-      return cls.grouped_sections( sections, [
-         cls.check_kind( 'seasonalGiftShop' ),
-         cls.check_kind( 'giftShopList' ),
-         cls.check_kind( 'giftShopWindow' ),
-      ] )
 
 
    @classmethod
@@ -582,160 +516,28 @@ class CheckEmailRenderer():
 
 
    @classmethod
-   def combined_animals( cls, sections: list[ Section ] ) -> Section | None:
-      sources = cls.animal_sections( sections )
-      categories = [
-         category
-         for section in sources
-         for category in section.categories
-      ]
+   def cards( cls, report: Report ) -> list[ Section ]:
+      built = []
 
-      if not cls.has_issue( categories ):
-         return None
-
-      return Section( AppStringProvider.format( 'site.nav.animals' ), sources[ 0 ].day, '', categories )
-
-
-   @classmethod
-   def combined_attractions( cls, sections: list[ Section ] ) -> Section | None:
-      sources = cls.attraction_sections( sections )
-      categories = [
-         category
-         for section in sources
-         for category in section.categories
-      ]
-
-      if not cls.has_issue( categories ):
-         return None
-
-      return Section(
-         AppStringProvider.format( 'map.filter.attractions' ),
-         sources[ 0 ].day,
-         '',
-         categories,
-      )
-
-
-   @classmethod
-   def combined_restaurants( cls, sections: list[ Section ] ) -> Section | None:
-      sources = cls.restaurant_sections( sections )
-      categories = cls.merged_categories( [
-         category
-         for section in sources
-         for category in section.categories
-      ] )
-
-      if not cls.has_issue( categories ):
-         return None
-
-      return Section(
-         AppStringProvider.format( 'map.filterTypes.restaurant' ),
-         sources[ 0 ].day,
-         '',
-         categories,
-      )
-
-
-   @classmethod
-   def combined_gift_shops( cls, sections: list[ Section ] ) -> Section | None:
-      sources = cls.gift_shop_sections( sections )
-      categories = cls.merged_categories( [
-         category
-         for section in sources
-         for category in section.categories
-      ] )
-
-      if not cls.has_issue( categories ):
-         return None
-
-      return Section(
-         AppStringProvider.format( 'checks.countNames.giftShops' ),
-         sources[ 0 ].day,
-         '',
-         categories,
-      )
-
-
-   @classmethod
-   def notable_sections( cls, report: Report ) -> list[ Section ]:
-      sections = report.sections
-      notable = []
-      animals = cls.combined_animals( sections )
-      attractions = cls.combined_attractions( sections )
-      restaurants = cls.combined_restaurants( sections )
-      gift_shops = cls.combined_gift_shops( sections )
-      animals_placed = False
-      attractions_placed = False
-      restaurants_placed = False
-      gift_shops_placed = False
-      folded_animals = {
-         section.kind
-         for section in cls.animal_sections( sections )
-      }
-      folded_attractions = {
-         section.kind
-         for section in cls.attraction_sections( sections )
-      }
-      folded_restaurants = {
-         section.kind
-         for section in cls.restaurant_sections( sections )
-      }
-      folded_gift_shops = {
-         section.kind
-         for section in cls.gift_shop_sections( sections )
-      }
-      schedule_sections = {
-         section.kind: section
-         for section in cls.grouped_sections( sections, [
-            cls.check_kind( 'wildEncounter' ),
-            cls.check_kind( 'guardiansTalk' ),
+      for label in CheckReportParser.count_labels():
+         kinds = cls.count_kinds().get( label, [] )
+         sources = [
+            section
+            for section in report.sections
+            if section.kind in kinds
+         ]
+         categories = cls.merged_categories( [
+            category
+            for section in sources
+            for category in section.categories
          ] )
-      }
-      placed_schedules: set[ str ] = set()
 
-      for section in sections:
-         if section.kind in folded_animals:
-            if animals is not None and not animals_placed:
-               notable.append( animals )
-               animals_placed = True
-
+         if sources == [] or not cls.has_issue( categories ):
             continue
 
-         if section.kind in folded_attractions:
-            if attractions is not None and not attractions_placed:
-               notable.append( attractions )
-               attractions_placed = True
+         built.append( Section( label, sources[ 0 ].day, '', categories ) )
 
-            continue
-
-         if section.kind in folded_restaurants:
-            if restaurants is not None and not restaurants_placed:
-               notable.append( restaurants )
-               restaurants_placed = True
-
-            continue
-
-         if section.kind in folded_gift_shops:
-            if gift_shops is not None and not gift_shops_placed:
-               notable.append( gift_shops )
-               gift_shops_placed = True
-
-            continue
-
-         if section.kind in schedule_sections:
-            if section.kind not in placed_schedules:
-               placed_schedules.add( section.kind )
-               card = schedule_sections[ section.kind ]
-
-               if cls.has_issue( card.categories ):
-                  notable.append( card )
-
-            continue
-
-         if cls.has_issue( section.categories ):
-            notable.append( section )
-
-      return notable
+      return built
 
 
    @classmethod
@@ -744,7 +546,7 @@ class CheckEmailRenderer():
       day = report.sections[ 0 ].day
       status = cls.status_copy( exit_code, report.error_count, report.fixed_count )
       date_line = cls.markup( 'date_line', day=cls.text( DateValues.format_display_weekday( day ) ) )
-      sections = cls.notable_sections( report )
+      sections = cls.cards( report )
       content = (
          cls.markup( 'header', title_padding='6px 24px 2px', date_line=date_line )
          + cls.markup(

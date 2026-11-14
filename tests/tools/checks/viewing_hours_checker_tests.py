@@ -150,6 +150,11 @@ def _fetch( pages: dict[ str, str ], url: str ) -> str:
    return pages[ url ]
 
 
+def _patch_website( monkeypatch: pytest.MonkeyPatch, pages: dict[ str, str ] ) -> None:
+   monkeypatch.setattr( WebsitePage, 'fetch_text', lambda url: _fetch( pages, url ) )
+   monkeypatch.setattr( WebsitePage, 'read', lambda url: ( 200, _fetch( pages, url ) ) )
+
+
 def _guest_message( species: str, opens: str, closes: str ) -> str:
    return AppStringProvider.format(
       'guestStatus.animals.limitedViewingScheduleUntil',
@@ -224,11 +229,7 @@ def Test_CheckSchedules_TestFeaturedHours_ExpectMonthAligned(
       'Camel hours.',
    )
    pages = _featured_pages()
-   monkeypatch.setattr(
-      WebsitePage,
-      'fetch_text',
-      lambda url: _fetch( pages, url ),
-   )
+   _patch_website( monkeypatch, pages )
    before = CheckReport.fixed_count
 
    result = ViewingHoursChecker.check_schedules( database, TODAY )
@@ -243,9 +244,9 @@ def Test_CheckSchedules_TestFeaturedHours_ExpectMonthAligned(
    assert 'Removed the viewing hours.' in output
    assert 'Extended the viewing hours.' in output
    assert 'Trimmed the viewing hours.' in output
-   assert _guest_message( 'baby pygmy hippopotamus Maple', '10:30 AM', '2:30 PM' ) in output
+   assert _guest_message( 'baby pygmy hippopotamus Maple', '10:30 AM', '2:30 PM' ) not in output
    assert _guest_message( OTTER, '10:00 AM', '1:00 PM' ) in output
-   assert _guest_message( CAMEL, '10:00 AM', '2:00 PM' ) in output
+   assert _guest_message( CAMEL, '10:00 AM', '2:00 PM' ) not in output
    assert GIRAFFE in output
    assert OTTER in output
    assert WOMBAT not in output
@@ -307,11 +308,7 @@ def Test_CheckSchedules_TestMonthAlreadyMatches_ExpectMessageKept(
       WebsitePage.url( AnimalCatalogue.PAGE ): QUIET_ANIMALS,
       WebsitePage.url( 'wombat' ): WOMBAT_PAGE,
    }
-   monkeypatch.setattr(
-      WebsitePage,
-      'fetch_text',
-      lambda url: _fetch( pages, url ),
-   )
+   _patch_website( monkeypatch, pages )
    before = CheckReport.fixed_count
 
    result = ViewingHoursChecker.check_schedules( database, TODAY )
@@ -329,3 +326,36 @@ def Test_CheckSchedules_TestMonthAlreadyMatches_ExpectMessageKept(
    ).fetchone()[ 0 ]
    connection.close()
    assert message == KEPT
+
+
+def Test_CheckSchedules_TestGoneFeaturePage_ExpectOtherHoursStillRead(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database = _database( tmp_path )
+   _insert_enclosure( database, WOMBAT, AUSTRALASIA )
+   pages = {
+      WebsitePage.url( '' ): (
+         '<div class="mySlides">'
+         '<a href="/veteran">Veteran</a>'
+         '<a href="/wombat">Wombat</a>'
+         '</div>'
+      ),
+      WebsitePage.url( AnimalCatalogue.PAGE ): '<html></html>',
+      WebsitePage.url( 'wombat' ): WOMBAT_PAGE,
+   }
+
+   def read( url: str ) -> tuple[ int, str ]:
+      if url == WebsitePage.url( 'veteran' ):
+         return 410, '<title>410 Not found</title>'
+
+      return 200, _fetch( pages, url )
+
+   monkeypatch.setattr( WebsitePage, 'fetch_text', lambda url: _fetch( pages, url ) )
+   monkeypatch.setattr( WebsitePage, 'read', read )
+
+   result = ViewingHoursChecker.check_schedules( database, TODAY )
+
+   output = capsys.readouterr().out
+   assert result == 0
+   assert WOMBAT in output

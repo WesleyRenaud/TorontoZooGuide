@@ -9,6 +9,7 @@ export class ConsoleTextInputFieldBuilder {
       helpText = '',
       type = 'text',
       autocomplete = 'off',
+      accept = '',
    } = {}) {
       const fieldEl = ConsoleFieldPrimitiveBuilder.createFieldWrapper();
       const labelEl = ConsoleFieldPrimitiveBuilder.createLabel({
@@ -22,6 +23,7 @@ export class ConsoleTextInputFieldBuilder {
          className: inputClass,
          placeholder,
          autocomplete,
+         accept,
       });
 
       fieldEl.append(labelEl, inputEl);

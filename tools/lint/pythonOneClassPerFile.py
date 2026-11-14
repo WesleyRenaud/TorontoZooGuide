@@ -75,6 +75,70 @@ def is_excluded_path( path: Path, patterns: list[ str ] ) -> bool:
    return False
 
 
+def assigned_names( node: ast.AST ) -> list[ str ]:
+   if isinstance( node, ast.Assign ):
+      return [
+         target.id
+         for target in node.targets
+         if isinstance( target, ast.Name )
+      ]
+
+   if isinstance( node, ast.AnnAssign ) and isinstance( node.target, ast.Name ):
+      return [ node.target.id ]
+
+   return []
+
+
+def names_loaded_in( node: ast.AST ) -> set[ str ]:
+   return {
+      child.id
+      for child in ast.walk( node )
+      if isinstance( child, ast.Name ) and isinstance( child.ctx, ast.Load )
+   }
+
+
+def outside_class_violations( path: Path ) -> list[ str ]:
+   display_path = get_display_path( path )
+
+   try:
+      tree = ast.parse( path.read_text() )
+   except SyntaxError as error:
+      return [ f'{ display_path }: { error }' ]
+
+   loops = [
+      node
+      for node in tree.body
+      if isinstance( node, ast.For )
+   ]
+
+   if len( loops ) == 0:
+      return []
+
+   used_names: set[ str ] = set()
+
+   for loop in loops:
+      used_names.update( names_loaded_in( loop ) )
+
+   violations: list[ str ] = []
+
+   for node in tree.body:
+      if isinstance( node, ast.For ):
+         violations.append(
+            f'{ display_path }:{ node.lineno }: '
+            'module-level for loop must be inside the class' )
+         continue
+
+      for name in assigned_names( node ):
+         if name not in used_names:
+            continue
+
+         violations.append(
+            f'{ display_path }:{ node.lineno }: '
+            f'{ name } must be inside the class' )
+
+   return violations
+
+
 def class_names( path: Path ) -> list[ str ]:
    try:
       tree = ast.parse( path.read_text() )
@@ -132,6 +196,7 @@ def main() -> int:
          continue
 
       display_path = get_display_path( path )
+      violations.extend( outside_class_violations( path ) )
 
       if display_path in shared_enum_modules:
          continue

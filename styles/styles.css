@@ -776,6 +776,16 @@ body > .console-operations-page {
    background: var(--color-brand-primary);
 }
 
+.explore-event-image {
+   display: block;
+   align-self: flex-start;
+   width: 72px;
+   height: auto;
+   border: 3px solid var(--color-text-primary);
+   border-radius: 8px;
+   margin-bottom: 4px;
+}
+
 .explore-update-description {
    margin: 0;
    font-size: 9.8px;

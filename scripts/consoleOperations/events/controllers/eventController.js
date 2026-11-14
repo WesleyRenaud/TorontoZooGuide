@@ -16,11 +16,12 @@ export class EventController {
       locationEl,
       descriptionEl,
       linkEl,
+      imageEl,
       startDateEl,
       endDateEl,
       activatePanel,
    } = {}) {
-      const formFieldEls = [nameEl, locationEl, descriptionEl, linkEl, startDateEl, endDateEl];
+      const formFieldEls = [nameEl, locationEl, descriptionEl, linkEl, imageEl, startDateEl, endDateEl];
 
       function getFormValues() {
          return {
@@ -37,6 +38,7 @@ export class EventController {
          if (!values.name) return Strings.validation.entityRequired(Strings.labels.name);
          if (!values.description) return Strings.validation.entityRequired(Strings.labels.description);
          if (!values.link) return Strings.validation.entityRequired(Strings.labels.link);
+         if (!imageEl?.files?.[0]) return Strings.validation.entityRequired(Strings.labels.photo);
 
          return ControllerHelper.validateOptionalDateRange(values.startDate, values.endDate);
       }
@@ -67,7 +69,10 @@ export class EventController {
          }
 
          try {
-            const result = await ConsoleOperationsClient.createEvent(values);
+            const result = await ConsoleOperationsClient.createEvent({
+               ...values,
+               ...await EventController.readImage(imageEl),
+            });
 
             if (result.success) {
                ConsoleStatusPresenter.setStatus(
@@ -91,5 +96,19 @@ export class EventController {
       submitButtonEl?.addEventListener('click', onSubmitClick);
 
       return { show, hide };
+   }
+
+
+   static readImage(imageEl) {
+      const file = imageEl.files[0];
+      const reader = new FileReader();
+      const image = new Promise((resolve, reject) => {
+         reader.onload = () => resolve({ imageData: reader.result });
+         reader.onerror = () => reject(reader.error);
+      });
+
+      reader.readAsDataURL(file);
+
+      return image;
    }
 }

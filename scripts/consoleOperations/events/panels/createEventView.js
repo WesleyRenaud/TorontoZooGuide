@@ -1,3 +1,4 @@
+import { ImageFormat } from '../../../shared/enums/imageFormat.js';
 import { Strings } from '../../../strings.js';
 import { ConsoleActionsBuilder } from '../../templates/consoleActionsBuilder.js';
 import { ConsoleDateRangeFieldsBuilder } from '../../templates/consoleDateRangeFieldsBuilder.js';
@@ -31,6 +32,12 @@ export class CreateEventView {
                label: Strings.labels.link,
                inputId: 'createEventLink',
                placeholder: Strings.textareas.eventLinkExample,
+            }),
+            ConsoleTextInputFieldBuilder.createTextInputField({
+               label: Strings.labels.photo,
+               inputId: 'createEventImage',
+               type: 'file',
+               accept: ImageFormat.ACCEPT,
             }),
             ConsoleDateRangeFieldsBuilder.createDateRangeFields({
                startDateId: 'createEventStartDate',
