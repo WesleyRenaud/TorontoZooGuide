@@ -133,10 +133,11 @@ def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
    assert report.error_count == 1
    assert report.counts[ 0 ] == Count( label='Animals', count=0 )
    assert report.counts[ 1 ] == Count( label='Closure updates', count=0 )
-   assert report.counts[ 2 ] == Count( label='Viewing hours', count=0 )
-   assert report.counts[ 3 ] == Count( label='Exhibits', count=0 )
-   assert report.counts[ 4 ] == Count( label='Attractions', count=0 )
-   assert report.counts[ 5 ] == Count( label='Wild Encounters', count=0 )
+   assert report.counts[ 2 ] == Count( label='Restrooms', count=0 )
+   assert report.counts[ 3 ] == Count( label='Viewing hours', count=0 )
+   assert report.counts[ 4 ] == Count( label='Exhibits', count=0 )
+   assert report.counts[ 5 ] == Count( label='Attractions', count=0 )
+   assert report.counts[ 6 ] == Count( label='Wild Encounters', count=0 )
    assert report.counts[ -2 ] == Count( label='Zoo hours', count=1 )
    assert report.counts[ -1 ] == Count( label='Zoo event', count=0 )
    assert report.sections[ 0 ].kind == 'Wild encounter schedule'
