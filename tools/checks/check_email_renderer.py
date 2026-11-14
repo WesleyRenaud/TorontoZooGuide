@@ -140,6 +140,9 @@ class CheckEmailRenderer():
          cls.check_kind( 'zooHours' ): [
             cls.check_kind( 'zooHours' ),
          ],
+         cls.check_kind( 'zooEvent' ): [
+            cls.check_kind( 'zooEvent' ),
+         ],
       }
 
 
@@ -410,6 +413,8 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.removedHours' ),
          AppStringProvider.format( 'checks.removedSchedule' ),
          AppStringProvider.format( 'checks.removedViewingAlert' ),
+         AppStringProvider.format( 'checks.removedZooEvent' ),
+         AppStringProvider.format( 'checks.addedZooEvent' ),
          AppStringProvider.format( 'checks.setHours' ),
          AppStringProvider.format( 'checks.setViewingAlert' ),
          AppStringProvider.format( 'checks.updatedHours' ),

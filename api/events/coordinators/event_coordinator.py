@@ -23,6 +23,20 @@ class EventCoordinator():
 
 
    @classmethod
+   def get_events( cls ) -> list[ Event ]:
+      return EventProvider.fetch_all_events( RequestConnectionProvider.get() )
+
+
+   @classmethod
+   def remove_event( cls, name: str, start_date: Types.DateInput ) -> bool:
+      return EventProvider.delete_event(
+         RequestConnectionProvider.get(),
+         name,
+         start_date,
+      )
+
+
+   @classmethod
    def create_event(
          cls,
          name: str,

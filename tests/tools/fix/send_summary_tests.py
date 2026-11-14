@@ -135,7 +135,8 @@ def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
    assert report.counts[ 1 ] == Count( label='Exhibits', count=0 )
    assert report.counts[ 2 ] == Count( label='Attractions', count=0 )
    assert report.counts[ 3 ] == Count( label='Wild Encounters', count=0 )
-   assert report.counts[ -1 ] == Count( label='Zoo hours', count=1 )
+   assert report.counts[ -2 ] == Count( label='Zoo hours', count=1 )
+   assert report.counts[ -1 ] == Count( label='Zoo event', count=0 )
    assert report.sections[ 0 ].kind == 'Wild encounter schedule'
    assert report.sections[ 0 ].note.startswith( CheckReport.text( 'checks.bookingDatesCompared' ) )
    assert report.sections[ 1 ].note.startswith( 'The seasonal curves' )

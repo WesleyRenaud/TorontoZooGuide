@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 import sys
@@ -35,6 +34,7 @@ from .seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from .seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
 from .viewing_hours_checker import ViewingHoursChecker
 from .wild_encounter_schedule_checker import WildEncounterScheduleChecker
+from .zoo_event_checker import ZooEventChecker
 from .zoo_hours_checker import ZooHoursChecker
 
 
@@ -87,31 +87,19 @@ class ScheduleChecker():
 
 
    @classmethod
-   def run_checks(
-         cls,
-         database: Path,
-         today: date,
-         encounter_check: Callable[ [ Path, date ], int ],
-         talk_check: Callable[ [ Path, date ], int ],
-         animal_check: Callable[ [ Path, date ], int ],
-         attraction_check: Callable[ [ Path, date ], int ],
-         restaurant_check: Callable[ [ Path, date ], int ],
-         gift_shop_check: Callable[ [ Path, date ], int ],
-         drinking_fountain_check: Callable[ [ Path, date ], int ],
-         attraction_list_check: Callable[ [ Path, date ], int ],
-         zoo_hours_check: Callable[ [ Path, date ], int ],
-         exhibit_check: Callable[ [ Path, date ], int ] ) -> int:
+   def run_checks( cls, database: Path, today: date ) -> int:
       CheckReport.reset_fixed_count()
-      exhibit_issues = exhibit_check( database, today )
-      encounter_issues = encounter_check( database, today )
-      talk_issues = talk_check( database, today )
-      animal_issues = animal_check( database, today )
-      attraction_issues = attraction_check( database, today )
-      restaurant_issues = restaurant_check( database, today )
-      gift_shop_issues = gift_shop_check( database, today )
-      drinking_fountain_issues = drinking_fountain_check( database, today )
-      attraction_list_issues = attraction_list_check( database, today )
-      zoo_hours_issues = zoo_hours_check( database, today )
+      exhibit_issues = ExhibitSeasonChecker.check_schedules( database, today )
+      encounter_issues = WildEncounterScheduleChecker.check_schedules( database, today )
+      talk_issues = GuardiansTalkScheduleChecker.check_schedules( database, today )
+      animal_issues = cls.check_animals( database, today )
+      attraction_issues = cls.check_attractions( database, today )
+      restaurant_issues = cls.check_restaurants( database, today )
+      gift_shop_issues = cls.check_gift_shops( database, today )
+      drinking_fountain_issues = SeasonalDrinkingFountainClosureChecker.check_schedules( database, today )
+      attraction_list_issues = AttractionListChecker.check_lists( database, today )
+      zoo_hours_issues = ZooHoursChecker.check_lists( database, today )
+      event_issues = ZooEventChecker.check_schedules( database, today )
       issues = (
          exhibit_issues
          + encounter_issues
@@ -123,6 +111,7 @@ class ScheduleChecker():
          + drinking_fountain_issues
          + attraction_list_issues
          + zoo_hours_issues
+         + event_issues
       )
       print( CheckReportParser.format_fixed_count( CheckReport.fixed_count ) )
       print()
@@ -137,6 +126,7 @@ class ScheduleChecker():
          drinking_fountains=drinking_fountain_issues,
          attraction_list=attraction_list_issues,
          zoo_hours=zoo_hours_issues,
+         events=event_issues,
       ) )
       print()
       print( CheckReportParser.format_error_count( issues ) )
@@ -159,20 +149,7 @@ class ScheduleChecker():
          return CheckExitCode.COULD_NOT_FINISH
 
       try:
-         return cls.run_checks(
-            args.database,
-            DateValues.today(),
-            WildEncounterScheduleChecker.check_schedules,
-            GuardiansTalkScheduleChecker.check_schedules,
-            cls.check_animals,
-            cls.check_attractions,
-            cls.check_restaurants,
-            cls.check_gift_shops,
-            SeasonalDrinkingFountainClosureChecker.check_schedules,
-            AttractionListChecker.check_lists,
-            ZooHoursChecker.check_lists,
-            ExhibitSeasonChecker.check_schedules,
-         )
+         return cls.run_checks( args.database, DateValues.today() )
       except RuntimeError as error:
          print( error, file=sys.stderr )
          return CheckExitCode.COULD_NOT_FINISH

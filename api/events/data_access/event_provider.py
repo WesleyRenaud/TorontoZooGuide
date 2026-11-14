@@ -67,3 +67,48 @@ class EventProvider():
 
       finally:
          cur.close()
+
+
+   @classmethod
+   def fetch_all_events( cls, conn: Types.Connection ) -> list[ Event ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     NAME,
+                     LOCATION,
+                     DESCRIPTION,
+                     LINK,
+                     START_DATE,
+                     END_DATE
+                  FROM ZooEvent
+                  ORDER BY START_DATE ASC, NAME ASC;
+            """ )
+
+         return EventMapper.map_records( data.fetchall() )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def delete_event(
+         cls,
+         conn: Types.Connection,
+         name: str,
+         start_date: Types.DateInput ) -> bool:
+      cur = conn.cursor()
+
+      try:
+         cur.execute(
+            """   DELETE FROM ZooEvent
+                  WHERE NAME = ?
+                     AND START_DATE = ?;
+            """,
+            ( name, start_date, ) )
+         conn.commit()
+         return cur.rowcount > 0
+
+      finally:
+         cur.close()

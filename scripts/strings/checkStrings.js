@@ -23,6 +23,7 @@ export class CheckStrings {
       },
       couldNotFindDatabase: 'Could not find the database.',
       couldNotWriteViewingAlert: 'Could not write the viewing alert',
+      couldNotReadZooEventDates: 'Could not read the zoo event dates.',
       couldNotReadBookingCalendar: 'Could not read the booking calendar.',
       couldNotReadAlertsPage: 'Could not read the alerts page.',
       couldNotReadBookingPage: 'Could not read the booking page.',
@@ -86,6 +87,7 @@ export class CheckStrings {
       removedHours: 'Removed the hours.',
       removedSchedule: 'Removed the schedule.',
       removedViewingAlert: 'Removed the viewing alert.',
+      removedZooEvent: 'Removed the zoo event.',
       removedViewingHours: 'Removed the viewing hours.',
       scheduledInAppOnly: 'Scheduled in the app and not on the website',
       scheduledOnWebsiteOnly: 'Scheduled on the website and not in the app',
@@ -100,6 +102,7 @@ export class CheckStrings {
       setScheduleFrom: 'Set the schedule from ',
       setUpdateFrom: 'Set the update from ',
       setViewingAlert: 'Set the viewing alert.',
+      addedZooEvent: 'Added the zoo event.',
       setViewingHoursFrom: 'Set the viewing hours.',
       status: {
          allClear: 'All clear',
@@ -178,7 +181,7 @@ export class CheckStrings {
          kind: 'Restaurant schedule',
       },
       schedule: {
-         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, viewing hours, closure viewing alerts, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, and zoo hours with the Toronto Zoo website.',
+         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, viewing hours, closure viewing alerts, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, zoo hours, and zoo events with the Toronto Zoo website.',
       },
       seasonalAttraction: {
          description: 'Compare attractions closed for the season on the Toronto Zoo website with the attractions closed for the season in the app.',
@@ -227,6 +230,11 @@ export class CheckStrings {
       zooHours: {
          description: 'Compare zoo hours listed on the Toronto Zoo website with the zoo hours in the app.',
          kind: 'Zoo hours',
+      },
+      zooEvent: {
+         description: 'Copy zoo events from the Toronto Zoo homepage and remove events that are no longer listed.',
+         kind: 'Zoo event',
+         section: 'Zoo events',
       },
    };
 }
