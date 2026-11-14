@@ -5,6 +5,7 @@ import re
 from .animal_catalogue import AnimalCatalogue
 from api.animals.domain.animal_species_exhibit import AnimalSpeciesExhibit
 from api.shared.date_values import DateValues
+from api.shared.text_values import TextValues
 from .exhibit_name import ExhibitName
 from .viewing_hours import ViewingHours
 from .website_page import WebsitePage
@@ -53,13 +54,13 @@ class WebsiteViewingHours():
       if path.casefold().startswith( 'animals/' ):
          names.append( WebsitePage.clean_website_name( path.split( '/', 1 )[ 1 ] ) )
 
-      text = f' { WebsitePage.normalize_name( " ".join( names ) ) } '
+      text = TextValues.spaced( WebsitePage.normalize_name( ' '.join( names ) ) )
       named: set[ str ] = set()
 
       for placement in placements:
          key = AnimalCatalogue.comparison_key( placement.species, False )
 
-         if key != '' and f' { key } ' in text:
+         if TextValues.spaced( key ) in text:
             named.add( placement.species )
 
       return named

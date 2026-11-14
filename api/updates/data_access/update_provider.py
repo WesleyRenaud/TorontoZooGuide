@@ -126,6 +126,37 @@ class UpdateProvider():
 
 
    @classmethod
+   def fetch_current_closures(
+         cls,
+         conn: Types.Connection,
+         as_of_date: Types.DateKey ) -> list[ Update ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     TITLE,
+                     DESCRIPTION,
+                     UPDATE_TYPE,
+                     START_DATE,
+                     END_DATE
+                  FROM ZooUpdate
+                  WHERE UPDATE_TYPE = ?
+                     AND (
+                        END_DATE IS NULL
+                        OR END_DATE >= ?
+                     )
+                  ORDER BY START_DATE, TITLE;
+            """,
+            ( UpdateType.CLOSURE.value, as_of_date ) )
+
+         return UpdateMapper.map_records( data.fetchall() )
+
+      finally:
+         cur.close()
+
+
+   @classmethod
    def fetch_updates(
          cls,
          conn: Types.Connection,

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from .animal_viewing_alert_mapper import AnimalViewingAlertMapper
+from ..status.animal_viewing_alert import AnimalViewingAlert
 from ...types import Types
 
 
@@ -94,6 +96,28 @@ class AnimalViewingAlertProvider():
             exhibit=exhibit )
          conn.commit()
          return cur.rowcount > 0
+
+      finally:
+         cur.close()
+
+
+   @classmethod
+   def fetch_animal_viewing_alerts( cls, conn: Types.Connection ) -> list[ AnimalViewingAlert ]:
+      cur = conn.cursor()
+
+      try:
+         data = cur.execute(
+            """   SELECT
+                     SPECIES,
+                     EXHIBIT,
+                     ALERT_MESSAGE,
+                     ALERT_START_DATE,
+                     ALERT_END_DATE
+                  FROM AnimalViewingAlert
+                  ORDER BY SPECIES, EXHIBIT;
+            """ )
+
+         return AnimalViewingAlertMapper.map_records( data.fetchall() )
 
       finally:
          cur.close()

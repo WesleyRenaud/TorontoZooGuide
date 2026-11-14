@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from ...types import Types
-
 
 class AnimalViewingAlert:
    species: str
    exhibit: str
-   start_date: Types.DateKey
-   end_date: Types.DateKey
+   start_date: str | None
+   end_date: str | None
    message: str
 
 
@@ -15,8 +13,8 @@ class AnimalViewingAlert:
          self,
          species: str,
          exhibit: str,
-         start_date: Types.DateKey,
-         end_date: Types.DateKey,
+         start_date: str | None,
+         end_date: str | None,
          message: str ) -> None:
       self.species = species
       self.exhibit = exhibit

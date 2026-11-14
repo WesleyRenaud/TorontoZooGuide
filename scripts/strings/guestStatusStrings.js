@@ -6,6 +6,18 @@ export class GuestStatusStrings {
          temporarilyOffDisplay: 'The {species} is temporarily off-display.',
          offDisplayForSeason: 'The {species} is off display for the season.',
          viewingAlert: 'The {species} may be less visible than usual at this time.',
+         canBeSeen: 'The {species} can be seen {place}.',
+         atLocation: 'at {exhibit}',
+         outside: 'outside',
+         inside: 'inside',
+         formerHabitat: 'The former {species} habitat is {status}.',
+         formerSpecies: 'former {species}',
+         underConstruction: 'under construction',
+         habitatClosed: 'closed',
+         offDisplayAtExhibit: 'The {species} is temporarily off display at {exhibit}.',
+         isClosed: ' is closed',
+         beforeClosed: '{before} at {exhibit}{after}',
+         sentenceAtExhibit: '{sentence} at {exhibit}.',
          singleHabitatAlternateEnclosureViewingAlert: (
             'If you do not see the {species} {chosenLocation}, '
             + 'then check their {alternateHabitat} habitat.'

@@ -106,6 +106,7 @@ class CheckEmailRenderer():
             cls.check_kind( 'closureOffDisplay' ),
             cls.check_kind( 'closureUpdate' ),
             cls.check_kind( 'viewingHours' ),
+            cls.check_kind( 'closureViewingAlert' ),
             cls.check_kind( 'seasonalOffDisplay' ),
             cls.check_kind( 'temporaryOffDisplay' ),
          ],
@@ -408,8 +409,11 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.setScheduleFrom' ),
          AppStringProvider.format( 'checks.removedHours' ),
          AppStringProvider.format( 'checks.removedSchedule' ),
+         AppStringProvider.format( 'checks.removedViewingAlert' ),
          AppStringProvider.format( 'checks.setHours' ),
+         AppStringProvider.format( 'checks.setViewingAlert' ),
          AppStringProvider.format( 'checks.updatedHours' ),
+         AppStringProvider.format( 'checks.updatedViewingAlert' ),
       )
 
       if category.items == []:
@@ -516,6 +520,7 @@ class CheckEmailRenderer():
          cls.check_kind( 'closureOffDisplay' ),
          cls.check_kind( 'seasonalOffDisplay' ),
          cls.check_kind( 'temporaryOffDisplay' ),
+         cls.check_kind( 'closureViewingAlert' ),
       ] )
 
 

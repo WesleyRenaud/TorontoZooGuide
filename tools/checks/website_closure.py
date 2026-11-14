@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 from api.app_string_provider import AppStringProvider
+from api.shared.text_values import TextValues
 from .website_page import WebsitePage
 
 
@@ -88,7 +89,7 @@ class WebsiteClosure():
 
    @classmethod
    def is_closure( cls, title: str, description: str ) -> bool:
-      text = f'{ title } { description }'.casefold()
+      text = TextValues.beside( title, description ).casefold()
 
       if cls.SEASON_RE.search( text ) != None:
          return False

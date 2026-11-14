@@ -93,17 +93,18 @@ class SendSummary():
 
    @classmethod
    def summary_line( cls, body: str ) -> str:
-      fixed = CheckReportParser.fixed_count( next(
-         line
-         for line in body.splitlines()
-         if CheckReportParser.fixed_count( line ) != None
-      ) )
-      errors = CheckReportParser.summary_line( body )
+      fixed = CheckReportParser.recorded_fixed_count( body )
+      errors = CheckReportParser.error_count( body )
 
-      if fixed == 0 and errors == 0:
+      if fixed == None or errors == None:
+         return AppStringProvider.format( 'checks.status.didNotFinish' )
+
+      detected = errors + fixed
+
+      if detected == 0:
          return AppStringProvider.format( 'checks.status.noneDetected' )
 
-      return CheckReportParser.format_detected( errors + fixed, fixed )
+      return CheckReportParser.format_detected( detected, fixed )
 
 
    @classmethod

@@ -42,6 +42,7 @@ from ..search.animals_matching_query_builder import AnimalsMatchingQueryBuilder
 from ...shared.calendar_dates import CalendarDates
 from ...shared.date_values import DateValues
 from ..status.animal_off_display_status_builder import AnimalOffDisplayStatusBuilder
+from ..status.animal_viewing_alert import AnimalViewingAlert
 from ..status.animal_viewing_alert_builder import AnimalViewingAlertBuilder
 from ...types import Types
 
@@ -275,6 +276,12 @@ class AnimalCoordinator():
       return AnimalViewingAlertExhibitNameProvider.fetch_viewing_alert_exhibit_names(
          RequestConnectionProvider.get(),
          today=DateValues.today_date_key() )
+
+
+   @classmethod
+   def get_animal_viewing_alerts( cls ) -> list[ AnimalViewingAlert ]:
+      return AnimalViewingAlertProvider.fetch_animal_viewing_alerts(
+         RequestConnectionProvider.get() )
 
 
    @classmethod

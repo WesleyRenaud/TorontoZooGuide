@@ -36,21 +36,36 @@ class CheckReportParser():
 
 
    @classmethod
-   def summary_line( cls, body: str ) -> int | None:
+   def count_before( cls, line: str, singular: str, plural: str ) -> int | None:
+      stripped = line.strip()
+
+      if stripped == f'1{ singular }':
+         return 1
+
+      if not stripped.endswith( plural ):
+         return None
+
+      number = stripped.removesuffix( plural )
+
+      if not number.isdigit():
+         return None
+
+      return int( number )
+
+
+   @classmethod
+   def error_count( cls, body: str ) -> int | None:
+      lines = body.splitlines()
+
+      if len( lines ) == 0:
+         return None
+
       values = AppStringProvider.values()
-      one_error = f'1{ values[ "checks.error" ] }'
-      errors_suffix = values[ 'checks.errors' ]
-
-      for line in reversed( body.splitlines() ):
-         stripped = line.strip()
-
-         if stripped == one_error:
-            return 1
-
-         count = stripped.removesuffix( errors_suffix )
-         return int( count )
-
-      return None
+      return cls.count_before(
+         lines[ -1 ],
+         values[ 'checks.error' ],
+         values[ 'checks.errors' ],
+      )
 
 
    @classmethod
@@ -79,28 +94,16 @@ class CheckReportParser():
    @classmethod
    def fixed_count( cls, line: str ) -> int | None:
       values = AppStringProvider.values()
-      stripped = line.strip()
-      one_fixed = f'1{ values[ "checks.errorFixed" ] }'
-
-      if stripped == one_fixed:
-         return 1
-
-      suffix = values[ 'checks.errorsFixed' ]
-
-      if not stripped.endswith( suffix ):
-         return None
-
-      number = stripped.removesuffix( suffix )
-
-      if not number.isdigit():
-         return None
-
-      return int( number )
+      return cls.count_before(
+         line,
+         values[ 'checks.errorFixed' ],
+         values[ 'checks.errorsFixed' ],
+      )
 
 
    @classmethod
-   def recorded_fixed_count( cls, body: str ) -> int:
-      fixed = 0
+   def recorded_fixed_count( cls, body: str ) -> int | None:
+      fixed = None
 
       for line in body.splitlines():
          count = cls.fixed_count( line )
@@ -114,12 +117,13 @@ class CheckReportParser():
    @classmethod
    def subject_for( cls, body: str, exit_code: int ) -> str:
       if exit_code == CheckExitCode.CLEAR or exit_code == CheckExitCode.DIFFERENCES:
-         error_count = cls.summary_line( body )
+         error_count = cls.error_count( body )
 
          if error_count != None:
+            fixed = cls.recorded_fixed_count( body ) or 0
             return (
                AppStringProvider.format( 'checks.subject.summary' )
-               + cls.format_error_count( error_count + cls.recorded_fixed_count( body ) )
+               + cls.format_error_count( error_count + fixed )
             )
 
          return AppStringProvider.format( 'checks.subject.finished' )
@@ -192,7 +196,7 @@ class CheckReportParser():
    @classmethod
    def parse_report( cls, body: str ) -> Report:
       draft = ReportDraft()
-      error_count = cls.summary_line( body )
+      error_count = cls.error_count( body )
 
       for raw_line in body.splitlines():
          cls.read_line( draft, raw_line )
