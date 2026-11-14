@@ -22,6 +22,7 @@ class CheckReportParser():
       'checks.countNames.giftShops',
       'checks.countNames.drinkingFountains',
       'reports.zooHours.kind',
+      'reports.zooEvent.kind',
    )
 
 
@@ -154,7 +155,8 @@ class CheckReportParser():
          gift_shops: int = 0,
          drinking_fountains: int = 0,
          attraction_list: int = 0,
-         zoo_hours: int = 0 ) -> str:
+         zoo_hours: int = 0,
+         events: int = 0 ) -> str:
       counts = (
          animals,
          exhibits,
@@ -165,6 +167,7 @@ class CheckReportParser():
          gift_shops,
          drinking_fountains,
          zoo_hours,
+         events,
       )
       pieces = [
          f'{ count }{ AppStringProvider.format( "checks.countItem" ) }{ label }'

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
@@ -12,22 +13,53 @@ from tools.checks.animal_off_for_season_ramp_down_on_website_not_in_app_checker 
 from tools.checks.animal_temporary_off_display_in_app_not_on_website_checker import AnimalTemporaryOffDisplayInAppNotOnWebsiteChecker
 from tools.checks.animal_temporary_off_display_on_website_not_in_app_checker import AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker
 from tools.checks.animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
+from tools.checks.attraction_list_checker import AttractionListChecker
 from tools.checks.attraction_window_checker import AttractionWindowChecker
 from tools.checks.check_report_parser import CheckReportParser
 from tools.checks.closure_update_checker import ClosureUpdateChecker
 from tools.checks.closure_viewing_alert_checker import ClosureViewingAlertChecker
+from tools.checks.exhibit_season_checker import ExhibitSeasonChecker
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
 from tools.checks.gift_shop_window_checker import GiftShopWindowChecker
+from tools.checks.guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
 from tools.checks.restaurant_list_checker import RestaurantListChecker
 from tools.checks.restaurant_window_checker import RestaurantWindowChecker
 from tools.checks.schedule_checker import ScheduleChecker
 from tools.checks.seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker
+from tools.checks.seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
 from tools.checks.viewing_hours_checker import ViewingHoursChecker
+from tools.checks.wild_encounter_schedule_checker import WildEncounterScheduleChecker
+from tools.checks.zoo_event_checker import ZooEventChecker
+from tools.checks.zoo_hours_checker import ZooHoursChecker
 
 
 TODAY = date( 2026, 11, 2 )
+CHECKS = (
+   ( ExhibitSeasonChecker, 'check_schedules' ),
+   ( WildEncounterScheduleChecker, 'check_schedules' ),
+   ( GuardiansTalkScheduleChecker, 'check_schedules' ),
+   ( ScheduleChecker, 'check_animals' ),
+   ( ScheduleChecker, 'check_attractions' ),
+   ( ScheduleChecker, 'check_restaurants' ),
+   ( ScheduleChecker, 'check_gift_shops' ),
+   ( SeasonalDrinkingFountainClosureChecker, 'check_schedules' ),
+   ( AttractionListChecker, 'check_lists' ),
+   ( ZooHoursChecker, 'check_lists' ),
+   ( ZooEventChecker, 'check_schedules' ),
+)
+
+
+def install_checks(
+      monkeypatch: pytest.MonkeyPatch,
+      checks: list[ Callable[ [ Path, date ], int ] ] ) -> None:
+   for ( owner, name ), check in zip( CHECKS, checks, strict=True ):
+      monkeypatch.setattr( owner, name, check )
+
+
+def check_clear( checked_database: Path, today: date ) -> int:
+   return 0
 
 
 def Test_CheckAnimals_TestBothOffDisplayCasesAndCatalog_ExpectOneCount(
@@ -217,7 +249,8 @@ def Test_CheckAttractions_TestClosureAndWindows_ExpectOneCount(
 
 def Test_RunChecks_TestIssueCounts_ExpectSummary(
       tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ] ) -> None:
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
    database = tmp_path / 'animals.db'
 
    def check_encounters( checked_database: Path, today: date ) -> int:
@@ -260,9 +293,8 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       print( 'exhibits' )
       return 0
 
-   result = ScheduleChecker.run_checks(
-      database,
-      TODAY,
+   install_checks( monkeypatch, [
+      check_exhibits,
       check_encounters,
       check_talks,
       check_animals,
@@ -272,8 +304,9 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_drinking_fountains,
       check_attraction_list,
       check_zoo_hours,
-      check_exhibits,
-   )
+      check_clear,
+   ] )
+   result = ScheduleChecker.run_checks( database, TODAY )
    output = capsys.readouterr().out
 
    assert result == 1
@@ -308,50 +341,11 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
 
 def Test_RunChecks_TestNoIssues_ExpectSuccess(
       tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ] ) -> None:
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
    database = tmp_path / 'animals.db'
-
-   def check_encounters( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_talks( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_animals( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_attractions( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_restaurants( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_gift_shops( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_drinking_fountains( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_attraction_list( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_zoo_hours( checked_database: Path, today: date ) -> int:
-      return 0
-
-   result = ScheduleChecker.run_checks(
-      database,
-      TODAY,
-      check_encounters,
-      check_talks,
-      check_animals,
-      check_attractions,
-      check_restaurants,
-      check_gift_shops,
-      check_drinking_fountains,
-      check_attraction_list,
-      check_zoo_hours,
-      lambda checked_database, today: 0,
-   )
+   install_checks( monkeypatch, [ check_clear ] * len( CHECKS ) )
+   result = ScheduleChecker.run_checks( database, TODAY )
    output = capsys.readouterr().out
 
    assert result == 0
@@ -368,50 +362,17 @@ def Test_RunChecks_TestNoIssues_ExpectSuccess(
 
 def Test_RunChecks_TestOneIssue_ExpectSingularError(
       tmp_path: Path,
-      capsys: pytest.CaptureFixture[ str ] ) -> None:
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
    database = tmp_path / 'animals.db'
 
    def check_encounters( checked_database: Path, today: date ) -> int:
       return 1
 
-   def check_talks( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_animals( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_attractions( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_restaurants( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_gift_shops( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_drinking_fountains( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_attraction_list( checked_database: Path, today: date ) -> int:
-      return 0
-
-   def check_zoo_hours( checked_database: Path, today: date ) -> int:
-      return 0
-
-   result = ScheduleChecker.run_checks(
-      database,
-      TODAY,
-      check_encounters,
-      check_talks,
-      check_animals,
-      check_attractions,
-      check_restaurants,
-      check_gift_shops,
-      check_drinking_fountains,
-      check_attraction_list,
-      check_zoo_hours,
-      lambda checked_database, today: 0,
-   )
+   checks = [ check_clear ] * len( CHECKS )
+   checks[ 1 ] = check_encounters
+   install_checks( monkeypatch, checks )
+   result = ScheduleChecker.run_checks( database, TODAY )
    output = capsys.readouterr().out
 
    assert result == 1
