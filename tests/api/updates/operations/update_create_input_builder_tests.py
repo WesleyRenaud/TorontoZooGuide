@@ -20,7 +20,7 @@ def Test_Normalize_TestDisplayValue_ExpectCanonicalUpdateType() -> None:
 
 
 def Test_Normalize_TestAlias_ExpectCanonicalUpdateType() -> None:
-   alias = 'new_arrival'
+   alias = 'animal_arrival'
 
    normalized = UpdateTypeValueNormalizer.normalize( alias )
 

@@ -5,7 +5,7 @@ from api.models.update import Update
 
 UPDATE_TITLE = 'New baby giraffe'
 UPDATE_DESCRIPTION = 'Come meet the new calf.'
-UPDATE_TYPE = 'New Arrival'
+UPDATE_TYPE = 'Animal Arrival'
 UPDATE_START_DATE = '2026-06-01'
 UPDATE_END_DATE = '2026-06-30'
 

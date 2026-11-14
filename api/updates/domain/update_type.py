@@ -10,8 +10,8 @@ class UpdateType( str, Enum ):
    CLOSURE = 'Closure'
    ANIMAL_BIRTH = 'Animal Birth'
    ANIMAL_PASSING = 'Animal Passing'
-   NEW_ARRIVAL = 'New Arrival'
-   DEPARTURE = 'Departure'
+   NEW_ARRIVAL = 'Animal Arrival'
+   DEPARTURE = 'Animal Departure'
 
 
    @property
@@ -47,5 +47,6 @@ _ORDER_BY_TYPE.update( {
 _ALIASES_BY_TYPE.update( {
    UpdateType.ANIMAL_BIRTH: frozenset( { 'animal_birth' } ),
    UpdateType.ANIMAL_PASSING: frozenset( { 'animal_passing' } ),
-   UpdateType.NEW_ARRIVAL: frozenset( { 'new_arrival' } ),
+   UpdateType.NEW_ARRIVAL: frozenset( { 'animal_arrival' } ),
+   UpdateType.DEPARTURE: frozenset( { 'animal_departure' } ),
 } )

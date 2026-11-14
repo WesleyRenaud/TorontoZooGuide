@@ -265,7 +265,8 @@ export class ConsoleStrings {
       { value: 'Animal Birth' },
       { value: 'Animal Passing' },
       { value: 'Closure' },
-      { value: 'New Arrival' },
+      { value: 'Animal Arrival' },
+      { value: 'Animal Departure' },
    ];
 
    static apiErrors = {

@@ -26,10 +26,7 @@ export class EditUpdateView {
                label: Strings.labels.type,
                inputId: 'editUpdateType',
                emptyOptionLabel: Strings.placeholders.option,
-               options: [
-                  ...Strings.updateTypes,
-                  { value: Strings.labels.departure },
-               ],
+               options: Strings.updateTypes,
             }),
             ConsoleDateFieldBuilder.createDateField({
                label: Strings.labels.noLongerAppliesOn,

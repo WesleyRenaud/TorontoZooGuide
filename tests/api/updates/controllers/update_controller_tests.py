@@ -20,7 +20,7 @@ from api.updates.coordinators.update_coordinator import UpdateCoordinator
 
 UPDATE_TITLE = 'New baby giraffe'
 UPDATE_DESCRIPTION = 'Come meet the new calf.'
-UPDATE_TYPE = 'New Arrival'
+UPDATE_TYPE = 'Animal Arrival'
 START_DATE = '2026-06-01'
 END_DATE = '2026-06-30'
 VISIT_MONTH = 'June'

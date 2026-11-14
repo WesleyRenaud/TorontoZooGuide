@@ -46,7 +46,7 @@ def Test_DisplayOrder_TestKnownTypes_ExpectConfiguredOrder() -> None:
 
 
 def Test_ValueNormalizer_TestAlias_ExpectCanonicalValue() -> None:
-   alias = 'new_arrival'
+   alias = 'animal_arrival'
 
    value = UpdateTypeValueNormalizer.normalize( alias )
 

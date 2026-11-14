@@ -742,11 +742,11 @@ body > .console-operations-page {
    background: var(--color-marker-red);
 }
 
-.explore-update-type-new-arrival {
+.explore-update-type-animal-arrival {
    background: var(--color-marker-blue);
 }
 
-.explore-update-type-departure {
+.explore-update-type-animal-departure {
    background: var(--color-marker-brown);
 }
 

@@ -12,7 +12,7 @@ from api.updates.coordinators.update_coordinator import UpdateCoordinator
 
 UPDATE_TITLE = 'New baby giraffe'
 UPDATE_DESCRIPTION = 'Come meet the new calf.'
-UPDATE_TYPE = 'new arrival'
+UPDATE_TYPE = 'animal_arrival'
 UPDATE_START_DATE = '2026-06-15'
 VISIT_MONTH = 'June'
 VISIT_DAY = 15
@@ -67,7 +67,7 @@ def Test_CreateEndAndEditUpdate_TestLifecycle_ExpectActiveUpdateResultsChange(
    assert result == {
       'title': UPDATE_TITLE,
       'description': UPDATE_DESCRIPTION,
-      'type': 'New Arrival',
+      'type': 'Animal Arrival',
       'start_date': UPDATE_START_DATE,
       'end_date': None,
    }
