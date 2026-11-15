@@ -21,6 +21,7 @@ class WebsitePage():
    ATTRACTIONS = 'attractions'
    GIFT_SHOPS = 'tz/giftshops'
    RESTAURANTS = 'tz/restaurants'
+   ZOOMOBILE = 'tickets/zoomobile'
    COL3_TITLE_RE = re.compile( r'(?is)<div class="col3title">(?P<title>.*?)</div>' )
    COL3_OPENING_RE = re.compile( r'(?is)<(a|div) class="col3"[^>]*>' )
    OPENING_STATUS_RE = re.compile( r'(?is)<span class="opentxt">(?P<status>.*?)</span>' )

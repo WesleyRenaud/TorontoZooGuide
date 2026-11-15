@@ -14,6 +14,16 @@ class BookingCalendar():
    PROPERTY_ID = 'tozoo'
    USER_AGENT = 'Mozilla/5.0'
    TOUR_ID_RE = re.compile( r'tour-id=["\'](?P<id>\d+)["\']' )
+   SEARCH_TOURS_QUERY = """
+      query searchTours( $propertyId: String!, $bookingType: String! ) {
+         searchTours( propertyId: $propertyId, bookingType: $bookingType ) {
+            localizedInfo {
+               locale
+               values { value }
+            }
+         }
+      }
+   """
    ENABLED_DATES_QUERY = """
       query enabledDates(
          $propertyId: String!,

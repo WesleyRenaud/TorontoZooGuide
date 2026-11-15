@@ -1,10 +1,33 @@
 from __future__ import annotations
 
 from ..scheduling.transportation_current_route_schedule import TransportationCurrentRouteSchedule
+from .transportation_route_schedule_mapper import TransportationRouteScheduleMapper
 from ...types import Types
 
 
 class TransportationRouteScheduleProvider():
+   @classmethod
+   def fetch_transportation_route_schedules(
+         cls,
+         conn: Types.Connection,
+         transportation: str ) -> list[ TransportationCurrentRouteSchedule ]:
+      cur = conn.cursor()
+      try:
+         rows = cur.execute(
+            """   SELECT
+                     s.ROUTE,
+                     s.SCHEDULE_START_DATE,
+                     s.SCHEDULE_END_DATE
+                  FROM TransportationRouteSchedule s
+                  WHERE s.TRANSPORTATION = ?;
+            """,
+            ( transportation, ),
+         ).fetchall()
+         return TransportationRouteScheduleMapper.map_records( rows )
+      finally:
+         cur.close()
+
+
    @classmethod
    def save_current_transportation_route_schedule(
          cls,

@@ -38,6 +38,7 @@ from .viewing_hours_checker import ViewingHoursChecker
 from .wild_encounter_schedule_checker import WildEncounterScheduleChecker
 from .zoo_event_checker import ZooEventChecker
 from .zoo_hours_checker import ZooHoursChecker
+from .zoomobile_route_checker import ZoomobileRouteChecker
 
 
 class ScheduleChecker():
@@ -106,6 +107,7 @@ class ScheduleChecker():
       closure_update_issues = cls.check_closure_updates( database, today )
       restroom_issues = RestroomNoticeChecker.check_schedules( database, today )
       station_issues = StationClosureChecker.check_schedules( database, today )
+      route_issues = ZoomobileRouteChecker.check_schedules( database, today )
       viewing_hour_issues = cls.check_viewing_hours( database, today )
       attraction_issues = cls.check_attractions( database, today )
       restaurant_issues = cls.check_restaurants( database, today )
@@ -122,6 +124,7 @@ class ScheduleChecker():
          + closure_update_issues
          + restroom_issues
          + station_issues
+         + route_issues
          + viewing_hour_issues
          + attraction_issues
          + restaurant_issues
@@ -141,6 +144,7 @@ class ScheduleChecker():
          closure_updates=closure_update_issues,
          restrooms=restroom_issues,
          stations=station_issues,
+         routes=route_issues,
          viewing_hours=viewing_hour_issues,
          attractions=attraction_issues,
          restaurants=restaurant_issues,

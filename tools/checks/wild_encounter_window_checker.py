@@ -11,6 +11,7 @@ from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
+from .opening_window import OpeningWindow
 from tools.fix.wild_encounter_window_fixer import WildEncounterWindowFixer
 from .wild_encounter_check import WildEncounterCheck
 from .wild_encounter_comparison import WildEncounterComparison
@@ -89,8 +90,7 @@ class WildEncounterWindowChecker():
          'checks.windowsDoNotAlign',
          lines,
       )
-      phrase = CheckReport.text( 'checks.setScheduleFrom' )
-      return sum( phrase not in line for line in lines )
+      return sum( OpeningWindow.unfixed( line ) for line in lines )
 
 
    @classmethod

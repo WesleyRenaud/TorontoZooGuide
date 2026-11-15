@@ -33,6 +33,7 @@ from tools.checks.station_closure_checker import StationClosureChecker
 from tools.checks.wild_encounter_schedule_checker import WildEncounterScheduleChecker
 from tools.checks.zoo_event_checker import ZooEventChecker
 from tools.checks.zoo_hours_checker import ZooHoursChecker
+from tools.checks.zoomobile_route_checker import ZoomobileRouteChecker
 
 
 TODAY = date( 2026, 11, 2 )
@@ -44,6 +45,7 @@ CHECKS = (
    ( ScheduleChecker, 'check_closure_updates' ),
    ( RestroomNoticeChecker, 'check_schedules' ),
    ( StationClosureChecker, 'check_schedules' ),
+   ( ZoomobileRouteChecker, 'check_schedules' ),
    ( ScheduleChecker, 'check_viewing_hours' ),
    ( ScheduleChecker, 'check_attractions' ),
    ( ScheduleChecker, 'check_restaurants' ),
@@ -282,6 +284,7 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_encounters,
       check_talks,
       check_animals,
+      check_clear,
       check_clear,
       check_clear,
       check_clear,

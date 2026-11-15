@@ -150,8 +150,7 @@ class RestaurantWindowChecker():
          'checks.windowsDoNotAlign',
          lines,
       )
-      phrase = CheckReport.text( 'checks.setScheduleFrom' )
-      return sum( phrase not in line for line in lines )
+      return sum( OpeningWindow.unfixed( line ) for line in lines )
 
 
    @classmethod

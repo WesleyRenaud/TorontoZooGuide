@@ -240,10 +240,11 @@ def Test_CheckSchedules_TestFeaturedHours_ExpectMonthAligned(
    assert CheckReport.category_line( 'checks.websiteOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.appOnly', 1 ) in output
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 2 ) in output
+   horizon = DateValues.format_display_date_value( HORIZON )
    assert 'Set the viewing hours.' in output
    assert 'Removed the viewing hours.' in output
-   assert 'Extended the viewing hours.' in output
-   assert 'Trimmed the viewing hours.' in output
+   assert f'Extended the viewing hours through { horizon }.' in output
+   assert f'Trimmed the viewing hours through { horizon }.' in output
    assert _guest_message( 'baby pygmy hippopotamus Maple', '10:30 AM', '2:30 PM' ) not in output
    assert _guest_message( OTTER, '10:00 AM', '1:00 PM' ) in output
    assert _guest_message( CAMEL, '10:00 AM', '2:00 PM' ) not in output

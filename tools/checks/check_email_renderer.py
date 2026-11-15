@@ -108,6 +108,9 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'reports.stationClosure.section' ): [
             cls.check_kind( 'stationClosure' ),
          ],
+         AppStringProvider.format( 'reports.zoomobileRoute.section' ): [
+            cls.check_kind( 'zoomobileRoute' ),
+         ],
          AppStringProvider.format( 'reports.viewingHours.section' ): [
             cls.check_kind( 'viewingHours' ),
          ],
@@ -407,6 +410,8 @@ class CheckEmailRenderer():
    def recorded_fix( cls, category: Category ) -> bool:
       phrases = (
          AppStringProvider.format( 'checks.extendedClosedForSeasonThrough' ),
+         AppStringProvider.format( 'checks.extendedOpenForSeasonThrough' ),
+         AppStringProvider.format( 'checks.extendedScheduleThrough' ),
          AppStringProvider.format( 'checks.extendedUpdateThrough' ),
          AppStringProvider.format( 'checks.extendedRestroomThrough' ),
          AppStringProvider.format( 'checks.extendedRestroomAlertThrough' ),
@@ -415,6 +420,7 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.openedRestroom' ),
          AppStringProvider.format( 'checks.openedStation' ),
          AppStringProvider.format( 'checks.setStationFrom' ),
+         AppStringProvider.format( 'checks.setRouteTo' ),
          AppStringProvider.format( 'checks.extendedStationThrough' ),
          AppStringProvider.format( 'checks.removedRestroomAlert' ),
          AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
@@ -432,6 +438,9 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.updatedViewingAlert' ),
          AppStringProvider.format( 'checks.extendedViewingAlertThrough' ),
          AppStringProvider.format( 'checks.extendedViewingHoursThrough' ),
+         AppStringProvider.format( 'checks.trimmedClosedForSeasonThrough' ),
+         AppStringProvider.format( 'checks.trimmedOpenForSeasonThrough' ),
+         AppStringProvider.format( 'checks.trimmedScheduleThrough' ),
          AppStringProvider.format( 'checks.trimmedViewingHoursThrough' ),
          AppStringProvider.format( 'checks.setViewingHoursFrom' ),
          AppStringProvider.format( 'checks.removedViewingHours' ),

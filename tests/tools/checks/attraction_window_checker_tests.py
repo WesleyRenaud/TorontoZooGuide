@@ -185,12 +185,12 @@ def Test_CheckSchedules_TestWindowEndingTomorrow_ExpectNoEnd(
 
    assert result == 0
    assert OpeningWindow.detail( OpeningWindow(
-      date( 2026, 1, 1 ),
+      TODAY,
       None,
       WeekdayWindow.parse( 'Open Daily' ),
    ) ) in output
    assert len( rows ) == 1
-   assert rows[ 0 ][ 'SCHEDULE_START_DATE' ] == '2026-01-01'
+   assert rows[ 0 ][ 'SCHEDULE_START_DATE' ] == TODAY.isoformat()
    assert rows[ 0 ][ 'SCHEDULE_END_DATE' ] == None
 
 
@@ -215,10 +215,10 @@ def Test_CheckSchedules_TestMatchingDaysPastTwoWeeks_ExpectNoEnd(
 
    assert result == 0
    assert OpeningWindow.detail( OpeningWindow(
-      date( 2026, 1, 1 ),
+      TODAY,
       None,
       WeekdayWindow.parse( 'Open Daily' ),
    ) ) in output
    assert len( rows ) == 1
-   assert rows[ 0 ][ 'SCHEDULE_START_DATE' ] == '2026-01-01'
+   assert rows[ 0 ][ 'SCHEDULE_START_DATE' ] == TODAY.isoformat()
    assert rows[ 0 ][ 'SCHEDULE_END_DATE' ] == None

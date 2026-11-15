@@ -239,9 +239,9 @@ def Test_CheckSchedules_TestClosedBeyondTheWindow_ExpectShortened(
    result, output = _check( database, capsys )
 
    assert result == 0
-   assert _status( database ) == ( 1, '2026-10-01', '2027-03-31', 1 )
+   assert _status( database ) == ( 1, TODAY.isoformat(), '2027-03-31', 1 )
    assert _animal_ends( database ) == [
-      ( 'Turkey Vulture', '2026-10-01', '2027-03-31', 1 ),
+      ( 'Turkey Vulture', TODAY.isoformat(), '2027-03-31', 1 ),
    ]
 
 
@@ -262,8 +262,8 @@ def Test_CheckSchedules_TestOpenBeyondTheWindow_ExpectShortened(
    result, output = _check( database, capsys )
 
    assert result == 0
-   assert CheckReport.text( 'checks.setOpenForSeasonFrom' ) in output
-   assert _status( database ) == ( 0, '2026-04-01', '2026-11-30', 0 )
+   assert CheckReport.text( 'checks.trimmedOpenForSeasonThrough' ) in output
+   assert _status( database ) == ( 0, TODAY.isoformat(), '2026-11-30', 0 )
 
 
 def Test_CheckSchedules_TestMaintenanceClosure_ExpectLeftAlone(
