@@ -61,6 +61,7 @@ export class CheckStrings {
       extendedOffDisplayThrough: 'Extended off display through ',
       extendedUpdateThrough: 'Extended the update through ',
       extendedRestroomThrough: 'Extended the restroom through ',
+      extendedStationThrough: 'Extended the station through ',
       extendedRestroomAlertThrough: 'Extended the restroom alert through ',
       extendedViewingAlertThrough: 'Extended the viewing alert through ',
       extendedViewingHoursThrough: 'Extended the viewing hours.',
@@ -77,6 +78,7 @@ export class CheckStrings {
       offForSeasonAppOnly: 'Off for the season in the app and not on the website',
       offForSeasonWebsiteOnly: 'Off for the season on the website and not in the app',
       openedRestroom: 'Opened the restroom.',
+      openedStation: 'Opened the station.',
       openTime: 'open ',
       period: '.',
       photo: 'Photo: ',
@@ -106,6 +108,7 @@ export class CheckStrings {
       setOpenForSeasonFrom: 'Set open for the season from ',
       setRestroomAlertFrom: 'Set the restroom alert from ',
       setRestroomFrom: 'Set the restroom from ',
+      setStationFrom: 'Set the station from ',
       setScheduleFrom: 'Set the schedule from ',
       setUpdateFrom: 'Set the update from ',
       setViewingAlert: 'Set the viewing alert.',
@@ -191,8 +194,13 @@ export class CheckStrings {
          description: 'Copy restroom closures and alerts from the Toronto Zoo alerts page into the app and keep them active for a month.',
          kind: 'Restroom notice',
       },
+      stationClosure: {
+         description: 'Copy Zoomobile station closures from the Toronto Zoo alerts page into the app.',
+         kind: 'Station closure',
+         section: 'Zoomobile stations',
+      },
       schedule: {
-         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, restrooms, viewing hours, closure viewing alerts, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, zoo hours, and zoo events with the Toronto Zoo website.',
+         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, restrooms, zoomobile stations, viewing hours, closure viewing alerts, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, zoo hours, and zoo events with the Toronto Zoo website.',
       },
       seasonalAttraction: {
          description: 'Compare attractions closed for the season on the Toronto Zoo website with the attractions closed for the season in the app.',
