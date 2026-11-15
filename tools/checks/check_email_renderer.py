@@ -105,6 +105,9 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'map.filterTypes.restroom' ): [
             cls.check_kind( 'restroom' ),
          ],
+         AppStringProvider.format( 'reports.stationClosure.section' ): [
+            cls.check_kind( 'stationClosure' ),
+         ],
          AppStringProvider.format( 'reports.viewingHours.section' ): [
             cls.check_kind( 'viewingHours' ),
          ],
@@ -410,6 +413,9 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.setRestroomFrom' ),
          AppStringProvider.format( 'checks.setRestroomAlertFrom' ),
          AppStringProvider.format( 'checks.openedRestroom' ),
+         AppStringProvider.format( 'checks.openedStation' ),
+         AppStringProvider.format( 'checks.setStationFrom' ),
+         AppStringProvider.format( 'checks.extendedStationThrough' ),
          AppStringProvider.format( 'checks.removedRestroomAlert' ),
          AppStringProvider.format( 'checks.setClosedForSeasonFrom' ),
          AppStringProvider.format( 'checks.setOpenForSeason' ),

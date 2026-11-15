@@ -29,6 +29,7 @@ from tools.checks.seasonal_attraction_closure_checker import SeasonalAttractionC
 from tools.checks.seasonal_drinking_fountain_closure_checker import SeasonalDrinkingFountainClosureChecker
 from tools.checks.seasonal_gift_shop_closure_checker import SeasonalGiftShopClosureChecker
 from tools.checks.seasonal_restaurant_closure_checker import SeasonalRestaurantClosureChecker
+from tools.checks.station_closure_checker import StationClosureChecker
 from tools.checks.wild_encounter_schedule_checker import WildEncounterScheduleChecker
 from tools.checks.zoo_event_checker import ZooEventChecker
 from tools.checks.zoo_hours_checker import ZooHoursChecker
@@ -42,6 +43,7 @@ CHECKS = (
    ( ScheduleChecker, 'check_animals' ),
    ( ScheduleChecker, 'check_closure_updates' ),
    ( RestroomNoticeChecker, 'check_schedules' ),
+   ( StationClosureChecker, 'check_schedules' ),
    ( ScheduleChecker, 'check_viewing_hours' ),
    ( ScheduleChecker, 'check_attractions' ),
    ( ScheduleChecker, 'check_restaurants' ),
@@ -280,6 +282,7 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_encounters,
       check_talks,
       check_animals,
+      check_clear,
       check_clear,
       check_clear,
       check_clear,
