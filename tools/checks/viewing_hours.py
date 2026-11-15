@@ -97,12 +97,19 @@ class ViewingHours():
       return self.line( CheckReport.text( 'checks.removedViewingHours' ) )
 
 
+   def through( self ) -> str:
+      return (
+         DateValues.format_display_date_value( self.end )
+         + CheckReport.text( 'checks.period' )
+      )
+
+
    def extended_line( self ) -> str:
-      return self.line( CheckReport.text( 'checks.extendedViewingHoursThrough' ) )
+      return self.line( CheckReport.text( 'checks.extendedViewingHoursThrough' ) + self.through() )
 
 
    def trimmed_line( self ) -> str:
-      return self.line( CheckReport.text( 'checks.trimmedViewingHoursThrough' ) )
+      return self.line( CheckReport.text( 'checks.trimmedViewingHoursThrough' ) + self.through() )
 
 
    def realigned_line( self ) -> str:

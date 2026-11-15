@@ -13,6 +13,7 @@ from .check_report import CheckReport
 from .guardians_talk_check import GuardiansTalkCheck
 from .guardians_talk_comparison import GuardiansTalkComparison
 from .guardians_talk_listing import GuardiansTalkListing
+from .opening_window import OpeningWindow
 from tools.fix.guardians_talk_window_fixer import GuardiansTalkWindowFixer
 
 
@@ -85,8 +86,7 @@ class GuardiansTalkWindowChecker():
          'checks.windowsDoNotAlign',
          lines,
       )
-      phrase = CheckReport.text( 'checks.setScheduleFrom' )
-      return sum( phrase not in line for line in lines )
+      return sum( OpeningWindow.unfixed( line ) for line in lines )
 
 
    @classmethod

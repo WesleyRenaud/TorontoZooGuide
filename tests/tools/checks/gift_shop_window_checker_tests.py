@@ -161,6 +161,6 @@ def Test_CheckSchedules_TestWeekendsWithoutSchedule_ExpectTwoWeekWindow(
    assert savanna[ 'HOLIDAYS_ONLY' ] == 0
    assert outpost[ 'MONDAY' ] == 1
    assert outpost[ 'SCHEDULE_END_DATE' ] == '2026-12-31'
-   assert zootique[ 'SCHEDULE_START_DATE' ] == '2026-01-01'
+   assert zootique[ 'SCHEDULE_START_DATE' ] == TODAY.isoformat()
    assert zootique[ 'SCHEDULE_END_DATE' ] == None
    assert CheckReport.fixed_count == 2

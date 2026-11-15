@@ -8,6 +8,7 @@ from api.shared.date_values import DateValues
 from api.shared.peak_months import PeakMonths
 from .check_report import CheckReport
 from .weekday_window import WeekdayWindow
+from .window_change import WindowChange
 
 
 @dataclass( frozen=True )
@@ -15,6 +16,7 @@ class OpeningWindow():
    start: date
    end: date | None
    pattern: WeekdayWindow
+   change: WindowChange = WindowChange.SET
 
 
    @classmethod
@@ -69,25 +71,64 @@ class OpeningWindow():
          if active.end == target:
             return None
 
-         return cls( active.start, target, website )
+         start = today if active.start == None or active.start < today else active.start
+         return cls( start, target, website, cls.end_change( active.end, target ) )
 
       return cls( today, target, website )
 
 
    @classmethod
-   def detail( cls, window: OpeningWindow ) -> str:
+   def end_change( cls, current: date | None, target: date | None ) -> WindowChange:
+      if target == None:
+         return WindowChange.SET
+
+      if current != None and current > target:
+         return WindowChange.TRIMMED
+
+      return WindowChange.EXTENDED
+
+
+   @classmethod
+   def schedule_line( cls, window: OpeningWindow ) -> str:
+      if window.change != WindowChange.SET and window.end != None:
+         key = (
+            'checks.extendedScheduleThrough'
+            if window.change == WindowChange.EXTENDED
+            else 'checks.trimmedScheduleThrough'
+         )
+         return (
+            CheckReport.text( key )
+            + DateValues.format_display_date_value( window.end )
+            + CheckReport.text( 'checks.period' )
+         )
+
       when = DateValues.format_display_date_value( window.start )
       end = DateValues.format_display_date_value( window.end )
 
       if end != None:
          when = when + CheckReport.text( 'checks.dateThrough' ) + end
 
+      return (
+         CheckReport.text( 'checks.setScheduleFrom' )
+         + when
+         + CheckReport.text( 'checks.period' )
+      )
+
+
+   @classmethod
+   def unfixed( cls, line: str ) -> bool:
+      phrases = (
+         CheckReport.text( 'checks.setScheduleFrom' ),
+         CheckReport.text( 'checks.extendedScheduleThrough' ),
+         CheckReport.text( 'checks.trimmedScheduleThrough' ),
+      )
+      return all( phrase not in line for phrase in phrases )
+
+
+   @classmethod
+   def detail( cls, window: OpeningWindow ) -> str:
       return CheckReport.join_lines( [
-         CheckReport.detail_item(
-            CheckReport.text( 'checks.setScheduleFrom' )
-            + when
-            + CheckReport.text( 'checks.period' )
-         ),
+         CheckReport.detail_item( cls.schedule_line( window ) ),
          CheckReport.detail_item(
             CheckReport.text( 'format.bulletItem' )
             + window.pattern.description()

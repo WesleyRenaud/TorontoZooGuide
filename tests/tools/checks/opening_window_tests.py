@@ -7,6 +7,7 @@ import pytest
 from api.shared.peak_months import PeakMonths
 from tools.checks.opening_window import OpeningWindow
 from tools.checks.weekday_window import WeekdayWindow
+from tools.checks.window_change import WindowChange
 
 
 TODAY = date( 2026, 11, 9 )
@@ -26,7 +27,7 @@ def Test_Replacement_TestMatchingWindowPastTwoWeeks_ExpectNoEnd() -> None:
 
    replacement = OpeningWindow.replacement( DAILY, active, TODAY, OPEN_MONTHS )
 
-   assert replacement == OpeningWindow( active.start, None, DAILY )
+   assert replacement == OpeningWindow( TODAY, None, DAILY )
 
 
 def Test_Replacement_TestOpenEndedWindow_ExpectNoChange() -> None:
@@ -57,20 +58,15 @@ def Test_Replacement_TestMatchingWindowEndingToday_ExpectNoEnd() -> None:
 
    replacement = OpeningWindow.replacement( DAILY, active, TODAY, OPEN_MONTHS )
 
-   assert replacement == OpeningWindow( active.start, None, DAILY )
+   assert replacement == OpeningWindow( TODAY, None, DAILY )
 
 
 def Test_Replacement_TestMatchingWindowEndingTomorrow_ExpectNoEnd() -> None:
-   active = _active( TODAY )
+   active = _active( date( 2026, 11, 10 ) )
 
-   replacement = OpeningWindow.replacement(
-      DAILY,
-      _active( date( 2026, 11, 10 ) ),
-      TODAY,
-      OPEN_MONTHS,
-   )
+   replacement = OpeningWindow.replacement( DAILY, active, TODAY, OPEN_MONTHS )
 
-   assert replacement == OpeningWindow( active.start, None, DAILY )
+   assert replacement == OpeningWindow( TODAY, None, DAILY )
 
 
 def Test_Replacement_TestMatchingWindowEndingInTwoWeeks_ExpectNoEnd() -> None:
@@ -78,7 +74,7 @@ def Test_Replacement_TestMatchingWindowEndingInTwoWeeks_ExpectNoEnd() -> None:
 
    replacement = OpeningWindow.replacement( DAILY, active, TODAY, OPEN_MONTHS )
 
-   assert replacement == OpeningWindow( active.start, None, DAILY )
+   assert replacement == OpeningWindow( TODAY, None, DAILY )
 
 
 @pytest.mark.parametrize(
@@ -113,7 +109,8 @@ def Test_Replacement_TestJuneThroughOctober_ExpectTargetEnd(
       assert replacement == None
       return
 
-   assert replacement == OpeningWindow( active.start, target, DAILY )
+   change = OpeningWindow.end_change( current_end, target )
+   assert replacement == OpeningWindow( today, target, DAILY, change )
 
 
 @pytest.mark.parametrize(
@@ -150,8 +147,5 @@ def Test_Replacement_TestWeekdayAndWeekendWindows_ExpectWebsiteSchedule(
       WEEKDAY_AND_WEEKEND,
    )
 
-   if website.matches( app ):
-      assert replacement == OpeningWindow( active.start, target, website )
-      return
-
-   assert replacement == OpeningWindow( today, target, website )
+   change = WindowChange.SET if not website.matches( app ) else OpeningWindow.end_change( current_end, target )
+   assert replacement == OpeningWindow( today, target, website, change )

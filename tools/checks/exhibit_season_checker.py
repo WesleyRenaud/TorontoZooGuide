@@ -166,6 +166,10 @@ class ExhibitSeasonChecker():
       phrases = (
          CheckReport.text( 'checks.setClosedForSeasonFrom' ),
          CheckReport.text( 'checks.setOpenForSeasonFrom' ),
+         CheckReport.text( 'checks.extendedClosedForSeasonThrough' ),
+         CheckReport.text( 'checks.extendedOpenForSeasonThrough' ),
+         CheckReport.text( 'checks.trimmedClosedForSeasonThrough' ),
+         CheckReport.text( 'checks.trimmedOpenForSeasonThrough' ),
       )
 
       return sum(

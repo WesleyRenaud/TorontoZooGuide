@@ -7,6 +7,8 @@ from api.drinking_fountains.domain.drinking_fountain_season import DrinkingFount
 from api.drinking_fountains.domain.seasonal_drinking_fountains import SeasonalDrinkingFountains
 from api.shared.date_values import DateValues
 from .check_report import CheckReport
+from .opening_window import OpeningWindow
+from .window_change import WindowChange
 
 
 @dataclass( frozen=True )
@@ -14,6 +16,7 @@ class DrinkingFountainWindow():
    closed: bool
    start: date
    end: date
+   change: WindowChange = WindowChange.SET
 
 
    @classmethod
@@ -30,18 +33,44 @@ class DrinkingFountainWindow():
          return None
 
       if covers and same_state and status.start is not None:
-         return cls( website_closed, status.start, target )
+         start = status.start if status.start >= today else today
+         return cls(
+            website_closed,
+            start,
+            target,
+            OpeningWindow.end_change( status.end, target ),
+         )
 
       return cls( website_closed, today, target )
 
 
    def detail( self ) -> str:
-      key = 'checks.setClosedForSeasonFrom' if self.closed else 'checks.setOpenForSeasonFrom'
-      when = (
-         DateValues.format_display_date_value( self.start )
-         + CheckReport.text( 'checks.dateThrough' )
-         + DateValues.format_display_date_value( self.end )
-         + CheckReport.text( 'checks.period' )
-      )
+      if self.change == WindowChange.EXTENDED:
+         key = (
+            'checks.extendedClosedForSeasonThrough'
+            if self.closed
+            else 'checks.extendedOpenForSeasonThrough'
+         )
+      elif self.change == WindowChange.TRIMMED:
+         key = (
+            'checks.trimmedClosedForSeasonThrough'
+            if self.closed
+            else 'checks.trimmedOpenForSeasonThrough'
+         )
+      else:
+         key = 'checks.setClosedForSeasonFrom' if self.closed else 'checks.setOpenForSeasonFrom'
+
+      if self.change == WindowChange.SET:
+         when = (
+            DateValues.format_display_date_value( self.start )
+            + CheckReport.text( 'checks.dateThrough' )
+            + DateValues.format_display_date_value( self.end )
+            + CheckReport.text( 'checks.period' )
+         )
+      else:
+         when = (
+            DateValues.format_display_date_value( self.end )
+            + CheckReport.text( 'checks.period' )
+         )
 
       return CheckReport.detail_item( CheckReport.text( key ) + when )

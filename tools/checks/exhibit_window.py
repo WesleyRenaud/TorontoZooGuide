@@ -7,6 +7,8 @@ from api.exhibits.domain.exhibit_season import ExhibitSeason
 from api.exhibits.domain.exhibit_season_status import ExhibitSeasonStatus
 from api.shared.date_values import DateValues
 from .check_report import CheckReport
+from .opening_window import OpeningWindow
+from .window_change import WindowChange
 
 
 @dataclass( frozen=True )
@@ -14,6 +16,7 @@ class ExhibitWindow():
    closed: bool
    start: date
    end: date
+   change: WindowChange = WindowChange.SET
 
 
    @classmethod
@@ -43,7 +46,7 @@ class ExhibitWindow():
 
    @classmethod
    def kept_start( cls, status: ExhibitSeasonStatus | None, today: date ) -> date:
-      if status is None or status.start is None:
+      if status is None or status.start is None or status.start < today:
          return today
 
       return status.start
@@ -81,7 +84,12 @@ class ExhibitWindow():
       if status is None or status.end == target:
          return None
 
-      return cls( closed, cls.kept_start( status, today ), target )
+      return cls(
+         closed,
+         cls.kept_start( status, today ),
+         target,
+         OpeningWindow.end_change( status.end, target ),
+      )
 
 
    @classmethod
@@ -102,12 +110,32 @@ class ExhibitWindow():
 
 
    def detail( self ) -> str:
-      key = 'checks.setClosedForSeasonFrom' if self.closed else 'checks.setOpenForSeasonFrom'
-      when = (
-         DateValues.format_display_date_value( self.start )
-         + CheckReport.text( 'checks.dateThrough' )
-         + DateValues.format_display_date_value( self.end )
-         + CheckReport.text( 'checks.period' )
-      )
+      if self.change == WindowChange.EXTENDED:
+         key = (
+            'checks.extendedClosedForSeasonThrough'
+            if self.closed
+            else 'checks.extendedOpenForSeasonThrough'
+         )
+      elif self.change == WindowChange.TRIMMED:
+         key = (
+            'checks.trimmedClosedForSeasonThrough'
+            if self.closed
+            else 'checks.trimmedOpenForSeasonThrough'
+         )
+      else:
+         key = 'checks.setClosedForSeasonFrom' if self.closed else 'checks.setOpenForSeasonFrom'
+
+      if self.change == WindowChange.SET:
+         when = (
+            DateValues.format_display_date_value( self.start )
+            + CheckReport.text( 'checks.dateThrough' )
+            + DateValues.format_display_date_value( self.end )
+            + CheckReport.text( 'checks.period' )
+         )
+      else:
+         when = (
+            DateValues.format_display_date_value( self.end )
+            + CheckReport.text( 'checks.period' )
+         )
 
       return CheckReport.detail_item( CheckReport.text( key ) + when )

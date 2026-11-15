@@ -153,7 +153,7 @@ def Test_CheckSchedules_TestClosedWindowAlreadySet_ExpectNoChange(
    assert _stored( database ) == ( 1, '2026-11-01', '2027-04-30' )
 
 
-def Test_CheckSchedules_TestClosedWithoutEnd_ExpectEndKeptStart(
+def Test_CheckSchedules_TestClosedWithoutEnd_ExpectEndFromToday(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
       monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -164,8 +164,12 @@ def Test_CheckSchedules_TestClosedWithoutEnd_ExpectEndKeptStart(
    result, output = _check( database, TODAY, capsys )
 
    assert result == 0
-   assert _span( date( 2026, 11, 1 ), date( 2027, 4, 30 ), True ) in output
-   assert _stored( database ) == ( 1, '2026-11-01', '2027-04-30' )
+   assert (
+      CheckReport.text( 'checks.extendedClosedForSeasonThrough' )
+      + DateValues.format_display_date_value( date( 2027, 4, 30 ) )
+      + CheckReport.text( 'checks.period' )
+   ) in output
+   assert _stored( database ) == ( 1, TODAY.isoformat(), '2027-04-30' )
 
 
 def Test_CheckSchedules_TestClosedInMarch_ExpectApril30(
