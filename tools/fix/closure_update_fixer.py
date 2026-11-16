@@ -137,7 +137,7 @@ class ClosureUpdateFixer():
          revised = cls.add( plan.added )
          animals = AnimalCoordinator.get_closure_linked_off_display_animals()
          cls.retire( plan.ended, plan.added, revised, animals )
-         cls.extend( plan.extended )
+         cls.extend( plan.extended + plan.trimmed )
       finally:
          RequestConnectionProvider.clear()
          connection.close()

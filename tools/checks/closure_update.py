@@ -52,3 +52,11 @@ class ClosureUpdate():
          + CheckReport.text( 'checks.period' )
       )
       return self.line( CheckReport.text( 'checks.extendedUpdateThrough' ) + when )
+
+
+   def trimmed_line( self ) -> str:
+      when = (
+         DateValues.format_display_date_value( self.end )
+         + CheckReport.text( 'checks.period' )
+      )
+      return self.line( CheckReport.text( 'checks.trimmedUpdateThrough' ) + when )

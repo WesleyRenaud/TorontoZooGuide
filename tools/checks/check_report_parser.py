@@ -13,21 +13,19 @@ from .report_draft import ReportDraft
 class CheckReportParser():
    CATEGORY_RE = re.compile( r'^(?P<title>[^ ].*): (?P<count>\d+)$' )
    COUNT_LABELS = (
+      'reports.zooHours.kind',
       'site.nav.animals',
       'reports.closureUpdate.section',
-      'map.filterTypes.restroom',
-      'reports.stationClosure.section',
-      'reports.zoomobileRoute.section',
-      'reports.viewingHours.section',
       'checks.countNames.exhibits',
       'map.filter.attractions',
+      'reports.zooEvent.section',
       'site.nav.wildEncounters',
       'reports.guardiansTalk.section',
+      'checks.countNames.zoomobile',
       'map.filterTypes.restaurant',
-      'checks.countNames.giftShops',
-      'checks.countNames.drinkingFountains',
-      'reports.zooHours.kind',
-      'reports.zooEvent.kind',
+      'map.filterTypes.restroom',
+      'map.filterTypes.giftShop',
+      'map.filterTypes.drinkingFountain',
    )
 
 
@@ -168,21 +166,19 @@ class CheckReportParser():
          zoo_hours: int = 0,
          events: int = 0 ) -> str:
       counts = (
-         animals,
+         zoo_hours,
+         animals + viewing_hours,
          closure_updates,
-         restrooms,
-         stations,
-         routes,
-         viewing_hours,
          exhibits,
          attractions + attraction_list,
+         events,
          encounters,
          talks,
+         stations + routes,
          restaurants,
+         restrooms,
          gift_shops,
          drinking_fountains,
-         zoo_hours,
-         events,
       )
       pieces = [
          f'{ count }{ AppStringProvider.format( "checks.countItem" ) }{ label }'

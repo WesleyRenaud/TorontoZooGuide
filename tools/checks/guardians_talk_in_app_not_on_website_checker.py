@@ -30,6 +30,7 @@ class GuardiansTalkInAppNotOnWebsiteChecker():
       return [
          GuardiansTalkComparison.talk_line(
             identity,
+            GuardiansTalkComparison.linked_animal( identity, prepared.animals ),
             [
                GuardiansTalkInAppNotOnWebsiteFixer.fix(
                   database,
@@ -37,15 +38,8 @@ class GuardiansTalkInAppNotOnWebsiteChecker():
                   identity.location,
                ),
             ],
-            GuardiansTalkComparison.linked_animal( identity, prepared.animals ),
          )
-         for identity in sorted(
-            identities,
-            key=lambda identity: GuardiansTalkComparison.label(
-               identity,
-               GuardiansTalkComparison.linked_animal( identity, prepared.animals ),
-            ),
-         )
+         for identity in sorted( identities, key=GuardiansTalkComparison.label )
       ]
 
 

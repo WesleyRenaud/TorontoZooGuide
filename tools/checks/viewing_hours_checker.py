@@ -124,10 +124,9 @@ class ViewingHoursChecker():
       print()
       CheckReport.print_category( 'checks.websiteOnly', added )
       CheckReport.print_category( 'checks.appOnly', removed )
-      CheckReport.print_category(
-         'checks.windowsDoNotAlign',
-         extended + trimmed + realigned,
-      )
+      CheckReport.print_category( 'checks.viewingHoursExtended', extended )
+      CheckReport.print_category( 'checks.viewingHoursTrimmed', trimmed )
+      CheckReport.print_category( 'checks.viewingHoursDoNotMatch', realigned )
       return cls.remaining( added + removed + extended + trimmed + realigned )
 
 

@@ -68,8 +68,8 @@ class GuardiansTalkWindowChecker():
 
          lines.append( GuardiansTalkComparison.talk_line(
             identity,
-            [ detail ],
             GuardiansTalkComparison.linked_animal( identity, prepared.animals ),
+            [ detail ],
          ) )
 
       return lines

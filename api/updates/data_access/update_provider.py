@@ -66,6 +66,33 @@ class UpdateProvider():
 
 
    @classmethod
+   def extend_end_date( cls, conn: Types.Connection, update: UpdateEndInput ) -> bool:
+      cur = conn.cursor()
+
+      try:
+         cur.execute(
+            """   UPDATE ZooUpdate
+                  SET END_DATE = ?
+                  WHERE TITLE = ?
+                     AND START_DATE = ?
+                     AND END_DATE IS NOT NULL
+                     AND END_DATE < ?;
+            """,
+            (
+               update.end_date,
+               update.title,
+               update.start_date,
+               update.end_date,
+            ) )
+
+         conn.commit()
+         return cur.rowcount > 0
+
+      finally:
+         cur.close()
+
+
+   @classmethod
    def edit_update_record( cls, conn: Types.Connection, update: UpdateEditInput ) -> bool:
       cur = conn.cursor()
 

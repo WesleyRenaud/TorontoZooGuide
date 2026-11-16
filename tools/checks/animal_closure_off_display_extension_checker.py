@@ -10,11 +10,11 @@ from api.animals.domain.closure_linked_off_display_animals import ClosureLinkedO
 from api.app_string_provider import AppStringProvider
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
-from api.shared.calendar_dates import CalendarDates
 from api.shared.date_values import DateValues
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
+from .closure_update_builder import ClosureUpdateBuilder
 from tools.fix.animal_closure_off_display_extension_fixer import AnimalClosureOffDisplayExtensionFixer
 from .website_page import WebsitePage
 from .website_temporarily_off_display_animal import WebsiteTemporarilyOffDisplayAnimal
@@ -55,34 +55,40 @@ class AnimalClosureOffDisplayExtensionChecker():
 
 
    @classmethod
-   def groups_returning_tomorrow(
+   def groups_ending_within_the_month(
          cls,
          database: Path,
          today: date ) -> list[ ClosureLinkedOffDisplayAnimals ]:
-      groups = [
-         group
-         for group in cls.load_groups( database )
-         if group.ends_on( today )
-      ]
+      groups = cls.load_groups( database )
 
       if groups == []:
          return []
 
       listings = WebsiteTemporarilyOffDisplayAnimal.fetch()
-      return [
-         group
-         for group in groups
-         if any(
+      found = []
+
+      for group in groups:
+         linked = any(
             cls.on_website( animal.species, listings )
             for animal in group.animals
-            if animal.end == today
          )
-      ]
+         animals = [
+            animal
+            for animal in group.animals
+            if ClosureUpdateBuilder.kept_end( animal.end, today ) != animal.end
+         ]
+
+         if not linked or animals == []:
+            continue
+
+         found.append( ClosureLinkedOffDisplayAnimals( group.title, group.start, animals ) )
+
+      return found
 
 
    @classmethod
    def category_lines( cls, database: Path, today: date ) -> list[ str ] | None:
-      groups = cls.groups_returning_tomorrow( database, today )
+      groups = cls.groups_ending_within_the_month( database, today )
 
       if groups == []:
          return None
@@ -90,13 +96,13 @@ class AnimalClosureOffDisplayExtensionChecker():
       return AnimalClosureOffDisplayExtensionFixer.fix(
          database,
          groups,
-         CalendarDates.one_week_later( today ),
+         ClosureUpdateBuilder.horizon( today ),
       )
 
 
    @classmethod
    def report( cls, lines: list[ str ] ) -> None:
-      CheckReport.print_category( 'checks.closureOffDisplayReturningTomorrow', lines )
+      CheckReport.print_category( 'checks.closureOffDisplayEndingWithinTheMonth', lines )
 
 
    @classmethod

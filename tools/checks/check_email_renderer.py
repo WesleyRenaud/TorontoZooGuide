@@ -92,27 +92,19 @@ class CheckEmailRenderer():
    @classmethod
    def count_kinds( cls ) -> dict[ str, list[ str ] ]:
       return {
+         cls.check_kind( 'zooHours' ): [
+            cls.check_kind( 'zooHours' ),
+         ],
          AppStringProvider.format( 'site.nav.animals' ): [
             cls.check_kind( 'animalList' ),
             cls.check_kind( 'closureOffDisplay' ),
             cls.check_kind( 'closureViewingAlert' ),
             cls.check_kind( 'seasonalOffDisplay' ),
             cls.check_kind( 'temporaryOffDisplay' ),
+            cls.check_kind( 'viewingHours' ),
          ],
          AppStringProvider.format( 'reports.closureUpdate.section' ): [
             cls.check_kind( 'closureUpdate' ),
-         ],
-         AppStringProvider.format( 'map.filterTypes.restroom' ): [
-            cls.check_kind( 'restroom' ),
-         ],
-         AppStringProvider.format( 'reports.stationClosure.section' ): [
-            cls.check_kind( 'stationClosure' ),
-         ],
-         AppStringProvider.format( 'reports.zoomobileRoute.section' ): [
-            cls.check_kind( 'zoomobileRoute' ),
-         ],
-         AppStringProvider.format( 'reports.viewingHours.section' ): [
-            cls.check_kind( 'viewingHours' ),
          ],
          AppStringProvider.format( 'checks.countNames.exhibits' ): [
             cls.check_kind( 'seasonalExhibit' ),
@@ -121,6 +113,10 @@ class CheckEmailRenderer():
             cls.check_kind( 'seasonalAttraction' ),
             cls.check_kind( 'attractionList' ),
             cls.check_kind( 'attractionWindow' ),
+            cls.check_kind( 'temporaryAttraction' ),
+         ],
+         AppStringProvider.format( 'reports.zooEvent.section' ): [
+            cls.check_kind( 'zooEvent' ),
          ],
          AppStringProvider.format( 'site.nav.wildEncounters' ): [
             cls.check_kind( 'wildEncounter' ),
@@ -128,24 +124,27 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'reports.guardiansTalk.section' ): [
             cls.check_kind( 'guardiansTalk' ),
          ],
+         AppStringProvider.format( 'checks.countNames.zoomobile' ): [
+            cls.check_kind( 'stationClosure' ),
+            cls.check_kind( 'zoomobileRoute' ),
+         ],
          AppStringProvider.format( 'map.filterTypes.restaurant' ): [
             cls.check_kind( 'seasonalRestaurant' ),
             cls.check_kind( 'restaurantList' ),
             cls.check_kind( 'restaurantWindow' ),
+            cls.check_kind( 'temporaryRestaurant' ),
          ],
-         AppStringProvider.format( 'checks.countNames.giftShops' ): [
+         AppStringProvider.format( 'map.filterTypes.restroom' ): [
+            cls.check_kind( 'restroom' ),
+         ],
+         AppStringProvider.format( 'map.filterTypes.giftShop' ): [
             cls.check_kind( 'seasonalGiftShop' ),
             cls.check_kind( 'giftShopList' ),
             cls.check_kind( 'giftShopWindow' ),
+            cls.check_kind( 'temporaryGiftShop' ),
          ],
-         AppStringProvider.format( 'checks.countNames.drinkingFountains' ): [
+         AppStringProvider.format( 'map.filterTypes.drinkingFountain' ): [
             cls.check_kind( 'seasonalDrinkingFountain' ),
-         ],
-         cls.check_kind( 'zooHours' ): [
-            cls.check_kind( 'zooHours' ),
-         ],
-         cls.check_kind( 'zooEvent' ): [
-            cls.check_kind( 'zooEvent' ),
          ],
       }
 
@@ -398,7 +397,7 @@ class CheckEmailRenderer():
    @classmethod
    def fixed_category( cls, title: str ) -> bool:
       return title in (
-         AppStringProvider.format( 'checks.closureOffDisplayReturningTomorrow' ),
+         AppStringProvider.format( 'checks.closureOffDisplayEndingWithinTheMonth' ),
          AppStringProvider.format( 'checks.offForSeasonWebsiteOnly' ),
          AppStringProvider.format( 'checks.offForSeasonAppOnly' ),
          AppStringProvider.format( 'checks.temporaryOffDisplayAppOnly' ),
@@ -414,10 +413,13 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.extendedScheduleThrough' ),
          AppStringProvider.format( 'checks.extendedUpdateThrough' ),
          AppStringProvider.format( 'checks.extendedRestroomThrough' ),
+         AppStringProvider.format( 'checks.extendedTemporaryClosureThrough' ),
          AppStringProvider.format( 'checks.extendedRestroomAlertThrough' ),
          AppStringProvider.format( 'checks.setRestroomFrom' ),
+         AppStringProvider.format( 'checks.setTemporaryClosureFrom' ),
          AppStringProvider.format( 'checks.setRestroomAlertFrom' ),
          AppStringProvider.format( 'checks.openedRestroom' ),
+         AppStringProvider.format( 'checks.openedTemporaryClosure' ),
          AppStringProvider.format( 'checks.openedStation' ),
          AppStringProvider.format( 'checks.setStationFrom' ),
          AppStringProvider.format( 'checks.setRouteTo' ),
@@ -442,6 +444,7 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.trimmedOpenForSeasonThrough' ),
          AppStringProvider.format( 'checks.trimmedScheduleThrough' ),
          AppStringProvider.format( 'checks.trimmedViewingHoursThrough' ),
+         AppStringProvider.format( 'checks.trimmedUpdateThrough' ),
          AppStringProvider.format( 'checks.setViewingHoursFrom' ),
          AppStringProvider.format( 'checks.removedViewingHours' ),
       )

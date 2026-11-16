@@ -104,6 +104,22 @@ class UpdateCoordinator():
 
 
    @classmethod
+   def extend_end(
+         cls,
+         title: str,
+         start_date: Types.DateInput,
+         end_date: Types.DateInput ) -> bool:
+      update = UpdateEndInputBuilder.build(
+         title=title,
+         start_date=start_date,
+         end_date=end_date )
+
+      return UpdateProvider.extend_end_date(
+         RequestConnectionProvider.get(),
+         update=update )
+
+
+   @classmethod
    def edit_update(
          cls,
          title: str,

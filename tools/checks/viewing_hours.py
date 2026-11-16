@@ -104,12 +104,29 @@ class ViewingHours():
       )
 
 
+   def clock_span( self ) -> str:
+      return (
+         self.opens
+         + CheckReport.text( 'checks.hoursTo' )
+         + self.closes
+      )
+
+
+   def dated( self, prefix: str ) -> str:
+      return (
+         CheckReport.text( prefix )
+         + self.clock_span()
+         + CheckReport.text( 'checks.dateThrough' )
+         + self.through()
+      )
+
+
    def extended_line( self ) -> str:
-      return self.line( CheckReport.text( 'checks.extendedViewingHoursThrough' ) + self.through() )
+      return self.line( self.dated( 'checks.extendedViewingHoursThrough' ) )
 
 
    def trimmed_line( self ) -> str:
-      return self.line( CheckReport.text( 'checks.trimmedViewingHoursThrough' ) + self.through() )
+      return self.line( self.dated( 'checks.trimmedViewingHoursThrough' ) )
 
 
    def realigned_line( self ) -> str:

@@ -13,7 +13,8 @@ class ClosureLinkedOffDisplayAnimalMapper():
          exhibit=row[ 'EXHIBIT' ],
          end=DateValues.parse_date_value( row[ 'OFF_DISPLAY_END' ] ),
          closure_update_title=row[ 'CLOSURE_UPDATE_TITLE' ],
-         closure_update_start=DateValues.parse_date_value( row[ 'CLOSURE_UPDATE_START' ] ) )
+         closure_update_start=DateValues.parse_date_value( row[ 'CLOSURE_UPDATE_START' ] ),
+         viewing_scope=row[ 'VIEWING_SCOPE' ] )
 
 
    @classmethod

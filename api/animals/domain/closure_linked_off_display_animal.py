@@ -11,3 +11,4 @@ class ClosureLinkedOffDisplayAnimal:
    end: date | None
    closure_update_title: str
    closure_update_start: date
+   viewing_scope: str | None

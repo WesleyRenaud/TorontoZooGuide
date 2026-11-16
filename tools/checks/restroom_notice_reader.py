@@ -4,7 +4,7 @@ import re
 
 from api.shared.text_values import TextValues
 from .restroom_notice import RestroomNotice
-from .viewing_alert_sentence import ViewingAlertSentence
+from .viewing_alert_sentence_builder import ViewingAlertSentenceBuilder
 from .website_closure import WebsiteClosure
 
 
@@ -87,7 +87,7 @@ class RestroomNoticeReader():
       found = {}
 
       for notice in WebsiteClosure.notices( page_html ):
-         for sentence in ViewingAlertSentence.notice_parts( cls.text( notice ) ):
+         for sentence in ViewingAlertSentenceBuilder.notice_parts( cls.text( notice ) ):
             kind = cls.kind( sentence )
 
             if kind == None:

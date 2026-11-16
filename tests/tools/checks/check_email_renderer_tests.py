@@ -13,7 +13,7 @@ def Test_CategoryIsFixed_TestExtendedViewingAlert_ExpectFixed() -> None:
       + AppStringProvider.format( 'checks.period' )
    )
    category = Category(
-      'Animal alerts',
+      AppStringProvider.format( 'checks.animalAlerts' ),
       1,
       [
          DetailItem(

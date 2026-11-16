@@ -6,7 +6,7 @@ import re
 from api.shared.calendar_dates import CalendarDates
 from api.shared.text_values import TextValues
 from .station_closure import StationClosure
-from .viewing_alert_sentence import ViewingAlertSentence
+from .viewing_alert_sentence_builder import ViewingAlertSentenceBuilder
 from .website_closure import WebsiteClosure
 
 
@@ -126,7 +126,7 @@ class StationClosureReader():
       for notice in WebsiteClosure.notices( page_html ):
          pending = None
 
-         for sentence in ViewingAlertSentence.notice_parts( cls.text( notice ) ):
+         for sentence in ViewingAlertSentenceBuilder.notice_parts( cls.text( notice ) ):
             current = cls.span( sentence, today )
             stations = cls.places( sentence ) if cls.closure( sentence ) else []
 

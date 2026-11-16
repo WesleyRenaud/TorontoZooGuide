@@ -15,6 +15,7 @@ from .animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueN
 from api.app_string_provider import AppStringProvider
 from api.shared.date_values import DateValues
 from .attraction_list_checker import AttractionListChecker
+from .attraction_temporary_closure_checker import AttractionTemporaryClosureChecker
 from .attraction_window_checker import AttractionWindowChecker
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
@@ -24,9 +25,11 @@ from .closure_update_checker import ClosureUpdateChecker
 from .closure_viewing_alert_checker import ClosureViewingAlertChecker
 from .exhibit_season_checker import ExhibitSeasonChecker
 from .gift_shop_list_checker import GiftShopListChecker
+from .gift_shop_temporary_closure_checker import GiftShopTemporaryClosureChecker
 from .gift_shop_window_checker import GiftShopWindowChecker
 from .guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
 from .restaurant_list_checker import RestaurantListChecker
+from .restaurant_temporary_closure_checker import RestaurantTemporaryClosureChecker
 from .restaurant_window_checker import RestaurantWindowChecker
 from .restroom_notice_checker import RestroomNoticeChecker
 from .seasonal_attraction_closure_checker import SeasonalAttractionClosureChecker
@@ -76,6 +79,7 @@ class ScheduleChecker():
       return (
          SeasonalAttractionClosureChecker.check_schedules( database, today )
          + AttractionWindowChecker.check_schedules( database, today )
+         + AttractionTemporaryClosureChecker.check_schedules( database, today )
       )
 
 
@@ -85,6 +89,7 @@ class ScheduleChecker():
          SeasonalRestaurantClosureChecker.check_schedules( database, today )
          + RestaurantListChecker.check_lists( database, today )
          + RestaurantWindowChecker.check_schedules( database, today )
+         + RestaurantTemporaryClosureChecker.check_schedules( database, today )
       )
 
 
@@ -94,6 +99,7 @@ class ScheduleChecker():
          SeasonalGiftShopClosureChecker.check_schedules( database, today )
          + GiftShopListChecker.check_lists( database, today )
          + GiftShopWindowChecker.check_schedules( database, today )
+         + GiftShopTemporaryClosureChecker.check_schedules( database, today )
       )
 
 
@@ -103,8 +109,8 @@ class ScheduleChecker():
       exhibit_issues = ExhibitSeasonChecker.check_schedules( database, today )
       encounter_issues = WildEncounterScheduleChecker.check_schedules( database, today )
       talk_issues = GuardiansTalkScheduleChecker.check_schedules( database, today )
-      animal_issues = cls.check_animals( database, today )
       closure_update_issues = cls.check_closure_updates( database, today )
+      animal_issues = cls.check_animals( database, today )
       restroom_issues = RestroomNoticeChecker.check_schedules( database, today )
       station_issues = StationClosureChecker.check_schedules( database, today )
       route_issues = ZoomobileRouteChecker.check_schedules( database, today )

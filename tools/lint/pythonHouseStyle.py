@@ -148,6 +148,49 @@ def is_variadic_tuple_annotation( node: ast.expr ) -> bool:
    return is_ellipsis_node( slice_node.elts[ -1 ] )
 
 
+def annotation_contains_tuple( node: ast.expr ) -> bool:
+   for child in ast.walk( node ):
+      if isinstance( child, ast.Subscript ) and annotation_type_name( child.value ) in { 'tuple', 'Tuple' }:
+         return True
+
+   return False
+
+
+def tuple_dict_key_nodes( annotation: ast.expr | None ) -> list[ ast.expr ]:
+   if annotation is None:
+      return []
+
+   found: list[ ast.expr ] = []
+
+   for child in ast.walk( annotation ):
+      if not isinstance( child, ast.Subscript ):
+         continue
+
+      if annotation_type_name( child.value ) not in { 'dict', 'Dict', 'Mapping' }:
+         continue
+
+      if not isinstance( child.slice, ast.Tuple ) or child.slice.elts == []:
+         continue
+
+      if annotation_contains_tuple( child.slice.elts[ 0 ] ):
+         found.append( child )
+
+   return found
+
+
+def report_tuple_dict_keys(
+      violations: list[ tuple[ str, int, int, str ] ],
+      path: Path,
+      annotation: ast.expr | None ) -> None:
+   for node in tuple_dict_key_nodes( annotation ):
+      add_violation(
+         violations,
+         path,
+         node.lineno or 1,
+         ( node.col_offset or 0 ) + 1,
+         'Do not use a tuple as a dict key type. Name the record.' )
+
+
 def disallowed_homogeneous_collection_message( node: ast.expr ) -> str | None:
    if isinstance( node, ast.Subscript ):
       subscript_name = annotation_type_name( node.value )
@@ -246,7 +289,8 @@ def check_disallowed_collection_imports(
 
 def check_typing_annotations(
       path: Path,
-      file_text: str ) -> list[ tuple[ str, int, int, str ] ]:
+      file_text: str,
+      report_tuple_keys: bool = True ) -> list[ tuple[ str, int, int, str ] ]:
    try:
       tree = ast.parse( file_text )
    except SyntaxError:
@@ -258,6 +302,10 @@ def check_typing_annotations(
    for node in ast.walk( tree ):
       if isinstance( node, ast.AnnAssign ):
          report_disallowed_homogeneous_collections( violations, path, node.annotation )
+
+         if report_tuple_keys:
+            report_tuple_dict_keys( violations, path, node.annotation )
+
          continue
 
       if not isinstance( node, ( ast.FunctionDef, ast.AsyncFunctionDef ) ):
@@ -294,6 +342,9 @@ def check_typing_annotations(
 
          report_disallowed_homogeneous_collections( violations, path, arg.annotation )
 
+         if report_tuple_keys:
+            report_tuple_dict_keys( violations, path, arg.annotation )
+
       if node.args.vararg is not None:
          if node.args.vararg.annotation is None:
             add_violation(
@@ -308,6 +359,9 @@ def check_typing_annotations(
                path,
                node.args.vararg.annotation )
 
+            if report_tuple_keys:
+               report_tuple_dict_keys( violations, path, node.args.vararg.annotation )
+
       if node.args.kwarg is not None:
          if node.args.kwarg.annotation is None:
             add_violation(
@@ -321,6 +375,9 @@ def check_typing_annotations(
                violations,
                path,
                node.args.kwarg.annotation )
+
+            if report_tuple_keys:
+               report_tuple_dict_keys( violations, path, node.args.kwarg.annotation )
 
       if node.name == '__init__':
          if node.returns is None:
@@ -340,6 +397,9 @@ def check_typing_annotations(
                   f'Do not use "object" as the return type for "{ node.name }"; '
                   'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
          report_disallowed_homogeneous_collections( violations, path, node.returns )
+
+         if report_tuple_keys:
+            report_tuple_dict_keys( violations, path, node.returns )
       elif node.returns is None:
          add_violation(
             violations,
@@ -359,6 +419,9 @@ def check_typing_annotations(
                   'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
 
          report_disallowed_homogeneous_collections( violations, path, node.returns )
+
+         if report_tuple_keys:
+            report_tuple_dict_keys( violations, path, node.returns )
 
    return violations
 
@@ -810,7 +873,8 @@ def check_f_string_token(
 def check_file(
       path: Path,
       blank_lines_between_methods: int,
-      enforce_typing: bool ) -> list[ tuple[ str, int, int, str ] ]:
+      enforce_typing: bool,
+      report_tuple_keys: bool = True ) -> list[ tuple[ str, int, int, str ] ]:
    file_text = path.read_text()
    tokens = [
       token
@@ -822,7 +886,7 @@ def check_file(
    violations.extend( check_class_field_assignments( path, file_text ) )
 
    if enforce_typing:
-      violations.extend( check_typing_annotations( path, file_text ) )
+      violations.extend( check_typing_annotations( path, file_text, report_tuple_keys ) )
 
    for index, token in enumerate( tokens ):
       if token.type == tokenize.STRING:
@@ -874,6 +938,7 @@ def check_file(
 def main() -> int:
    style_config = load_style_config()
    excluded_patterns = style_config.get( 'exclude', [] )
+   tuple_dict_key_exclude = style_config.get( 'tuple_dict_key_exclude', [] )
    blank_lines_between_methods = style_config.get( 'blank_lines_between_methods', 2 )
    enforce_typing = style_config.get( 'enforce_typing', True )
    violations: list[ tuple[ str, int, int, str ] ] = []
@@ -886,7 +951,8 @@ def main() -> int:
          check_file(
             path,
             blank_lines_between_methods,
-            enforce_typing ) )
+            enforce_typing,
+            not is_excluded_path( path, tuple_dict_key_exclude ) ) )
 
    if not violations:
       return 0

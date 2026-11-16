@@ -168,6 +168,7 @@ class GuardiansTalkComparison():
          return GuardiansTalkListing(
             name=talk.name,
             location=talk.location,
+            enclosure_name=talk.enclosure_name,
          )
 
       return GuardiansTalkListing( name=name, location=location )
@@ -247,6 +248,7 @@ class GuardiansTalkComparison():
          GuardiansTalkListing(
             name=schedule.name,
             location=schedule.location,
+            enclosure_name=schedule.enclosure_name,
          )
          for schedule in schedules
          if schedule.schedule_end_date == None
@@ -259,6 +261,7 @@ class GuardiansTalkComparison():
          listing = GuardiansTalkListing(
             name=schedule.name,
             location=schedule.location,
+            enclosure_name=schedule.enclosure_name,
          )
 
          if listing in open_ended:
@@ -313,30 +316,27 @@ class GuardiansTalkComparison():
 
 
    @classmethod
-   def label(
-         cls,
-         identity: GuardiansTalkListing,
-         animal: GuardiansTalkLinkedAnimal | None = None ) -> str:
-      location = animal.exhibit if animal != None else cls.color_location( identity.location )
+   def label( cls, identity: GuardiansTalkListing ) -> str:
+      name = identity.name
+
+      if identity.enclosure_name != None:
+         name = (
+            name
+            + AppStringProvider.format( 'format.bulletSeparator' )
+            + identity.enclosure_name
+         )
+
+      location = cls.color_location( identity.location )
 
       return AppStringProvider.format(
          'format.middleDotPair',
-         first=identity.name,
+         first=name,
          second=location,
       )
 
 
    @classmethod
-   def talk_photo(
-         cls,
-         identity: GuardiansTalkListing,
-         animal: GuardiansTalkLinkedAnimal | None = None ) -> str:
-      if animal != None:
-         photo = AnimalDetailImage.source( animal.exhibit, animal.species )
-
-         if ( Paths.ROOT / photo ).is_file():
-            return photo
-
+   def talk_image( cls, identity: GuardiansTalkListing ) -> str:
       location = cls.color_location( identity.location )
       photo = GuardiansTalkDetailImage.source( location, identity.name )
 
@@ -347,15 +347,31 @@ class GuardiansTalkComparison():
 
 
    @classmethod
+   def talk_photo(
+         cls,
+         identity: GuardiansTalkListing,
+         animal: GuardiansTalkLinkedAnimal ) -> str:
+      photo = AnimalDetailImage.source( animal.exhibit, animal.species )
+
+      if ( Paths.ROOT / photo ).is_file():
+         return photo
+
+      return cls.talk_image( identity )
+
+
+   @classmethod
    def talk_line(
          cls,
          identity: GuardiansTalkListing,
-         details: list[ str ] | None = None,
-         animal: GuardiansTalkLinkedAnimal | None = None ) -> str:
+         animal: GuardiansTalkLinkedAnimal | None = None,
+         details: list[ str ] | None = None ) -> str:
       lines = [
-         CheckReport.text( 'checks.categoryItem' ) + cls.label( identity, animal ),
+         CheckReport.text( 'checks.categoryItem' ) + cls.label( identity ),
       ]
-      photo = cls.talk_photo( identity, animal )
+      photo = cls.talk_image( identity )
+
+      if animal != None:
+         photo = cls.talk_photo( identity, animal )
 
       if photo != '':
          lines.append( CheckReport.detail_item(
@@ -438,7 +454,11 @@ class GuardiansTalkComparison():
          ),
          animals=cls.load_animals( database ),
          catalog={
-            GuardiansTalkListing( name=talk.name, location=talk.location )
+            GuardiansTalkListing(
+               name=talk.name,
+               location=talk.location,
+               enclosure_name=talk.enclosure_name,
+            )
             for talk in loaded.talks
          },
       )

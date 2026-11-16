@@ -113,7 +113,7 @@ CLEAR_REPORT = f"""Wild encounter schedule check for 2026-11-04. Booking dates c
 { CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) }
 
 Seasonal off-display check for 2026-11-04. The seasonal curves are not ramping down, so off-display flags were not compared.
-Zoo hours check for 2026-11-04.
+Zoo Hours check for 2026-11-04.
 
 { CheckReport.category_line( 'checks.websiteOnly', 1 ) }
   2027-01-01 to 2027-03-12 (71 days): open 09:30, last admission 15:30, close 16:30
@@ -131,17 +131,15 @@ def Test_ParseReport_TestSample_ExpectSectionsAndCounts() -> None:
    report = CheckReportParser.parse_report( CLEAR_REPORT )
 
    assert report.error_count == 1
-   assert report.counts[ 0 ] == Count( label='Animals', count=0 )
-   assert report.counts[ 1 ] == Count( label='Closure updates', count=0 )
-   assert report.counts[ 2 ] == Count( label='Restrooms', count=0 )
-   assert report.counts[ 3 ] == Count( label='Zoomobile stations', count=0 )
-   assert report.counts[ 4 ] == Count( label='Zoomobile route', count=0 )
-   assert report.counts[ 5 ] == Count( label='Viewing hours', count=0 )
-   assert report.counts[ 6 ] == Count( label='Exhibits', count=0 )
-   assert report.counts[ 7 ] == Count( label='Attractions', count=0 )
-   assert report.counts[ 8 ] == Count( label='Wild Encounters', count=0 )
-   assert report.counts[ -2 ] == Count( label='Zoo hours', count=1 )
-   assert report.counts[ -1 ] == Count( label='Zoo event', count=0 )
+   assert report.counts[ 0 ] == Count( label='Zoo Hours', count=1 )
+   assert report.counts[ 1 ] == Count( label='Animals', count=0 )
+   assert report.counts[ 2 ] == Count( label='Closure Updates', count=0 )
+   assert report.counts[ 3 ] == Count( label='Exhibits', count=0 )
+   assert report.counts[ 4 ] == Count( label='Attractions', count=0 )
+   assert report.counts[ 5 ] == Count( label='Zoo Events', count=0 )
+   assert report.counts[ 6 ] == Count( label='Wild Encounters', count=0 )
+   assert report.counts[ -2 ] == Count( label='Gift Shops', count=0 )
+   assert report.counts[ -1 ] == Count( label='Drinking Fountains', count=0 )
    assert report.sections[ 0 ].kind == 'Wild encounter schedule'
    assert report.sections[ 0 ].note.startswith( CheckReport.text( 'checks.bookingDatesCompared' ) )
    assert report.sections[ 1 ].note.startswith( 'The seasonal curves' )
@@ -209,7 +207,7 @@ def Test_RenderHtml_TestClosureUpdate_ExpectOwnTab() -> None:
    )
    html = CheckEmailRenderer.render_html( body, 1 )
 
-   assert html.count( '>Closure updates<' ) == 2
+   assert html.count( '>Closure Updates<' ) == 2
    assert html.count( '>Animals<' ) == 1
 
 
@@ -448,12 +446,12 @@ def Test_RenderHtml_TestRestaurantAndGiftShopChecks_ExpectOneSectionEach() -> No
    )
    html = CheckEmailRenderer.render_html( body, 1 )
    restaurant_title = html.index( '>Restaurants<', html.index( '>Restaurants<' ) + 1 )
-   gift_shop_title = html.index( '>Gift shops<', html.index( '>Gift shops<' ) + 1 )
+   gift_shop_title = html.index( '>Gift Shops<', html.index( '>Gift Shops<' ) + 1 )
    restaurants = html[ restaurant_title:gift_shop_title ]
    gift_shops = html[ gift_shop_title: ]
 
    assert html.count( '>Restaurants<' ) == 2
-   assert html.count( '>Gift shops<' ) == 2
+   assert html.count( '>Gift Shops<' ) == 2
    assert 'Restaurants closed for the season' not in html
    assert 'Restaurant list' not in html
    assert 'Gift shops closed for the season' not in html
@@ -527,7 +525,7 @@ def Test_RenderHtml_TestAllAnimalErrorsFixed_ExpectGreenTotal() -> None:
    html = CheckEmailRenderer.render_html( body, 0 )
    green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
    danger = ColorTokens.color( ColorToken.DANGER )
-   animals = html[ html.index( '>Animals<' ):html.index( '>Closure updates<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Closure Updates<' ) ]
    detected = CheckReportParser.format_detected( 2, 2 )
 
    assert detected in html
@@ -564,7 +562,7 @@ def Test_RenderHtml_TestViewingAlertFixed_ExpectGreenCountAndPhoto() -> None:
    html = CheckEmailRenderer.render_html( body, 0 )
    green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
    danger = ColorTokens.color( ColorToken.DANGER )
-   animals = html[ html.index( '>Animals<' ):html.index( '>Closure updates<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Closure Updates<' ) ]
 
    assert f'color:{ green };">{ title }' in html
    assert danger not in animals
@@ -595,7 +593,7 @@ def Test_RenderHtml_TestViewingAlertRemoved_ExpectGreenCount() -> None:
    html = CheckEmailRenderer.render_html( body, 0 )
    green = ColorTokens.color( ColorToken.BRAND_PRIMARY )
    danger = ColorTokens.color( ColorToken.DANGER )
-   animals = html[ html.index( '>Animals<' ):html.index( '>Closure updates<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Closure Updates<' ) ]
 
    assert f'color:{ green };">{ title }' in html
    assert 'Pemba is moving to a new zoo.' in html
@@ -606,7 +604,7 @@ def Test_RenderHtml_TestOneErrorFixed_ExpectFixedHeadline() -> None:
    fixed = CheckReportParser.format_fixed_count( 1 )
    body = textwrap.dedent(
       f"""\
-      Zoo hours check for 2026-11-04.
+      Zoo Hours check for 2026-11-04.
 
       { CheckReport.category_line( 'checks.websiteOnly', 2 ) }
 
@@ -665,7 +663,7 @@ def Test_RenderHtml_TestFixedAndCatalogueMiss_ExpectGreenFixAndDangerMiss() -> N
    detected = CheckReportParser.format_detected( 2, 1 )
 
    assert f'color:{ danger };">{ detected }' in html
-   animals = html[ html.index( '>Animals<' ):html.index( '>Closure updates<' ) ]
+   animals = html[ html.index( '>Animals<' ):html.index( '>Closure Updates<' ) ]
    assert '>2<' in animals
    assert f'color:{ danger }' in animals
    assert html.index( '>Wild Encounters<' ) < html.index( 'Warthog' )
@@ -687,7 +685,7 @@ def Test_RenderHtml_TestIssues_ExpectStyledDetails() -> None:
    assert CheckReportParser.format_detected( 1, 0 ) in html
    assert CheckReportParser.format_fixed_count( 0 ) not in html
    assert 'Wednesday, November 4, 2026' in html
-   assert 'Zoo hours' in html
+   assert 'Zoo Hours' in html
    assert '2027-01-01 to 2027-03-12' in html
    assert 'The seasonal curves are not ramping down' not in html
    assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
@@ -698,7 +696,7 @@ def Test_RenderHtml_TestIssues_ExpectStyledDetails() -> None:
 def Test_RenderHtml_TestClear_ExpectAllClear() -> None:
    body = textwrap.dedent(
       f"""\
-      Zoo hours check for 2026-11-04.
+      Zoo Hours check for 2026-11-04.
 
       { CheckReport.category_line( 'checks.websiteOnly', 0 ) }
 
@@ -721,7 +719,7 @@ def Test_RenderHtml_TestClear_ExpectAllClear() -> None:
 
 def Test_RenderHtml_TestFailure_ExpectMessage() -> None:
    html = CheckEmailRenderer.render_html(
-      'Zoo hours check for 2026-11-04.\n\n'
+      'Zoo Hours check for 2026-11-04.\n\n'
       + CheckReportParser.format_error_count( 0 )
       + '\n',
       2,
@@ -783,7 +781,7 @@ def Test_SendSummary_TestMessage_ExpectLoginAndSend(
    monkeypatch.setattr( send_summary_module.smtplib, 'SMTP', FakeSmtp )
 
    send_summary.send_summary(
-      'Zoo hours check for 2026-11-04.\n\n'
+      'Zoo Hours check for 2026-11-04.\n\n'
       + CheckReportParser.format_error_count( 2 )
       + '\n',
       1,
@@ -882,7 +880,7 @@ def Test_Main_TestSmtpFailure_ExpectExitCode2(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    output = _output_file(
       tmp_path,
-      'Zoo hours check for 2026-11-04.\n\n'
+      'Zoo Hours check for 2026-11-04.\n\n'
       + CheckReportParser.format_error_count( 0 )
       + '\n',
    )
@@ -905,7 +903,7 @@ def Test_Main_TestPreview_ExpectOpenedHtml(
       send_summary,
       'run_check',
       lambda: (
-         'Zoo hours check for 2026-11-04.\n\n'
+         'Zoo Hours check for 2026-11-04.\n\n'
          + CheckReportParser.format_error_count( 0 )
          + '\n',
          0,
@@ -936,7 +934,7 @@ def Test_Main_TestSentSummary_ExpectExitCode0(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    output = _output_file(
       tmp_path,
-      'Zoo hours check for 2026-11-04.\n\ndetail\n\n'
+      'Zoo Hours check for 2026-11-04.\n\ndetail\n\n'
       + CheckReportParser.format_error_count( 0 )
       + '\n',
    )
@@ -982,7 +980,7 @@ def Test_Main_TestNoArgs_ExpectCheckEmailed(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    summary = CheckReportParser.format_detected( 2, 1 )
    report = (
-      'Zoo hours check for 2026-11-04.\n\n'
+      'Zoo Hours check for 2026-11-04.\n\n'
       + CheckReportParser.format_fixed_count( 1 )
       + '\n\n'
       + CheckReportParser.format_error_count( 1 )
@@ -999,7 +997,7 @@ def Test_Main_TestNoArgs_ExpectCheckEmailed(
    captured = capsys.readouterr()
    assert result == 1
    assert captured.out == summary + '\n'
-   assert 'Zoo hours' not in captured.out
+   assert 'Zoo Hours' not in captured.out
    assert report not in captured.err
    assert FakeSmtp.instances[ 0 ].sent is not None
 
@@ -1069,7 +1067,7 @@ def Test_RenderHtml_TestAmenityWindowChecks_ExpectFoldedSections() -> None:
 
    assert html.count( '>Attractions<' ) == 2
    assert html.count( '>Restaurants<' ) == 2
-   assert html.count( '>Gift shops<' ) == 2
+   assert html.count( '>Gift Shops<' ) == 2
    assert 'Attractions closed for the season' not in html
    assert 'Restaurants closed for the season' not in html
    assert 'Gift shops closed for the season' not in html
