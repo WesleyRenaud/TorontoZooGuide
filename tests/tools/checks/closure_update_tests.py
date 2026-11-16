@@ -5,7 +5,7 @@ from datetime import date
 from api.models.update import Update
 from api.updates.domain.update_type import UpdateType
 from tools.checks.closure_update import ClosureUpdate
-from tools.checks.closure_update_plan import ClosureUpdatePlan
+from tools.checks.closure_update_builder import ClosureUpdateBuilder
 from tools.checks.website_closure import WebsiteClosure
 
 
@@ -34,7 +34,7 @@ def dates( updates: list[ ClosureUpdate ] ) -> list[ tuple[ str, date, date ] ]:
 
 
 def Test_Build_TestNewNotice_ExpectMonthLongAddition() -> None:
-   plan = ClosureUpdatePlan.build(
+   plan = ClosureUpdateBuilder.build(
       [ notice( 'Polar bear viewing is closed.' ) ],
       [],
       TODAY,
@@ -48,7 +48,7 @@ def Test_Build_TestNewNotice_ExpectMonthLongAddition() -> None:
 
 
 def Test_Build_TestSoonerEnd_ExpectExtension() -> None:
-   plan = ClosureUpdatePlan.build(
+   plan = ClosureUpdateBuilder.build(
       [ notice( 'Pathway is closed.', 'Detour.' ) ],
       [ stored( 'Pathway is closed.', 'Detour.', end='2026-11-20' ) ],
       TODAY,
@@ -62,7 +62,7 @@ def Test_Build_TestSoonerEnd_ExpectExtension() -> None:
 
 
 def Test_Build_TestLaterEnd_ExpectNoChange() -> None:
-   plan = ClosureUpdatePlan.build(
+   plan = ClosureUpdateBuilder.build(
       [ notice( 'Pathway is closed.' ) ],
       [ stored( 'Pathway is closed.', end='2027-06-01' ) ],
       TODAY,
@@ -72,7 +72,7 @@ def Test_Build_TestLaterEnd_ExpectNoChange() -> None:
 
 
 def Test_Build_TestOpenEnd_ExpectNoChange() -> None:
-   plan = ClosureUpdatePlan.build(
+   plan = ClosureUpdateBuilder.build(
       [ notice( 'Pathway is closed.' ) ],
       [ stored( 'Pathway is closed.' ) ],
       TODAY,
@@ -82,7 +82,7 @@ def Test_Build_TestOpenEnd_ExpectNoChange() -> None:
 
 
 def Test_Build_TestBirth_ExpectBirthStays() -> None:
-   plan = ClosureUpdatePlan.build(
+   plan = ClosureUpdateBuilder.build(
       [],
       [ stored( 'New Baby Camel!', 'Born.', UpdateType.ANIMAL_BIRTH.value ) ],
       TODAY,
@@ -92,7 +92,7 @@ def Test_Build_TestBirth_ExpectBirthStays() -> None:
 
 
 def Test_Build_TestMissingOnWebsite_ExpectEnd() -> None:
-   plan = ClosureUpdatePlan.build(
+   plan = ClosureUpdateBuilder.build(
       [],
       [ stored( 'Old closure', 'The shop is closed.', end='2026-12-01' ) ],
       TODAY,
@@ -103,3 +103,62 @@ def Test_Build_TestMissingOnWebsite_ExpectEnd() -> None:
    ]
    assert plan.added == []
    assert plan.extended == []
+
+
+def Test_Build_TestClosedOnANamedDay_ExpectEndTheNextDay() -> None:
+   plan = ClosureUpdateBuilder.build(
+      [ notice( 'The VR station is closed for today, Sunday, November 15.' ) ],
+      [],
+      TODAY,
+   )
+
+   assert dates( plan.added ) == [
+      (
+         'The VR station is closed for today, Sunday, November 15.',
+         TODAY,
+         date( 2026, 11, 16 ),
+      ),
+   ]
+   assert plan.extended == []
+   assert plan.trimmed == []
+
+
+def Test_Build_TestClosedToday_ExpectEndTomorrow() -> None:
+   plan = ClosureUpdateBuilder.build(
+      [ notice( 'The VR station is closed today.' ) ],
+      [],
+      TODAY,
+   )
+
+   assert dates( plan.added ) == [
+      ( 'The VR station is closed today.', TODAY, date( 2026, 11, 12 ) ),
+   ]
+
+
+def Test_Build_TestDateRange_ExpectDayAfterTheLastDay() -> None:
+   day = date( 2026, 6, 1 )
+   plan = ClosureUpdateBuilder.build(
+      [ notice( 'TundraAir Ride Closure June 2nd-4th.' ) ],
+      [],
+      day,
+   )
+
+   assert dates( plan.added ) == [
+      ( 'TundraAir Ride Closure June 2nd-4th.', day, date( 2026, 6, 5 ) ),
+   ]
+
+
+def Test_Build_TestMonthEndOnANamedDay_ExpectTrimmed() -> None:
+   title = 'The VR station is closed for today, Sunday, November 15.'
+   plan = ClosureUpdateBuilder.build(
+      [ notice( title ) ],
+      [ stored( title, start='2026-11-15', end='2026-12-15' ) ],
+      TODAY,
+   )
+
+   assert dates( plan.trimmed ) == [
+      ( title, date( 2026, 11, 15 ), date( 2026, 11, 16 ) ),
+   ]
+   assert plan.added == []
+   assert plan.extended == []
+

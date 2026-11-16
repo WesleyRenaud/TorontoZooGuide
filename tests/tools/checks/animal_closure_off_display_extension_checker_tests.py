@@ -17,7 +17,7 @@ from tools.checks.website_page import WebsitePage
 TODAY = date( 2026, 11, 8 )
 LAST_DAY = '2026-11-08'
 LATER = '2026-11-12'
-EXTENDED = date( 2026, 11, 15 )
+EXTENDED = date( 2026, 12, 8 )
 EXHIBIT = 'Indo-Malaya Pavilion'
 ORANGUTAN = 'Sumatran Orangutan'
 GIBBON = 'White-Handed Gibbon'
@@ -130,10 +130,15 @@ def _install_page( monkeypatch: pytest.MonkeyPatch, names: list[ str ] ) -> None
    monkeypatch.setattr( WebsitePage, 'fetch_text', fetch_text )
 
 
-def _line( species: str, exhibit: str ) -> str:
+def _line( species: str, exhibit: str, scope: str ) -> str:
+   name = species
+
+   if scope != '':
+      name = name + AppStringProvider.format( 'format.bulletSeparator' ) + scope
+
    lines = [
       CheckReport.text( 'checks.categoryItem' )
-      + AppStringProvider.format( 'format.middleDotPair', first=species, second=exhibit )
+      + AppStringProvider.format( 'format.middleDotPair', first=name, second=exhibit )
    ]
    lines.append( CheckReport.detail_item(
       CheckReport.text( 'checks.photo' )
@@ -184,7 +189,7 @@ def Test_CheckSchedules_TestLinkedAnimalReturnsTomorrow_ExpectClosureExtended(
    output = capsys.readouterr().out
 
    assert result == 0
-   assert CheckReport.fixed_count == 2
+   assert CheckReport.fixed_count == 3
    assert _update_end( database, ORANGUTAN_UPDATE ) == EXTENDED.isoformat()
    assert _update_end( database, EURASIA_UPDATE ) == None
    ends = _ends( database )
@@ -197,11 +202,13 @@ def Test_CheckSchedules_TestLinkedAnimalReturnsTomorrow_ExpectClosureExtended(
    assert output == (
       CheckReport.heading( 'closureOffDisplay', TODAY )
       + '\n\n'
-      + CheckReport.category_line( 'checks.closureOffDisplayReturningTomorrow', 2 )
+      + CheckReport.category_line( 'checks.closureOffDisplayEndingWithinTheMonth', 3 )
       + '\n'
-      + _line( ORANGUTAN, EXHIBIT )
+      + _line( ORANGUTAN, EXHIBIT, 'Indoor habitat' )
       + '\n'
-      + _line( GIBBON, EXHIBIT )
+      + _line( ORANGUTAN, EXHIBIT, 'Outdoor habitat' )
+      + '\n'
+      + _line( GIBBON, EXHIBIT, 'Gibbon habitat' )
       + '\n\n'
    )
 
@@ -225,7 +232,7 @@ def Test_CheckSchedules_TestReturningTomorrowNotOnWebsite_ExpectUnchanged(
    assert _ends( database )[ ( GIBBON, 'Gibbon habitat' ) ] == LATER
 
 
-def Test_CheckSchedules_TestNoAnimalReturnsTomorrow_ExpectUnchanged(
+def Test_CheckSchedules_TestEndInsideTheMonth_ExpectExtended(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch,
       capsys: pytest.CaptureFixture[ str ] ) -> None:
@@ -252,7 +259,45 @@ def Test_CheckSchedules_TestNoAnimalReturnsTomorrow_ExpectUnchanged(
    result = CHECKER.check_schedules( database, TODAY )
 
    assert result == 0
+   assert CheckReport.fixed_count == 4
+   assert _ends( database )[ ( ORANGUTAN, 'Indoor habitat' ) ] == EXTENDED.isoformat()
+   assert _ends( database )[ ( GIBBON, 'Gibbon habitat' ) ] == EXTENDED.isoformat()
+   assert _ends( database )[ ( PANDA, 'Panda habitat' ) ] == EXTENDED.isoformat()
+   assert _update_end( database, ORANGUTAN_UPDATE ) == EXTENDED.isoformat()
+   assert _update_end( database, EURASIA_UPDATE ) == None
+   assert CheckReport.category_line( 'checks.closureOffDisplayEndingWithinTheMonth', 4 ) in capsys.readouterr().out
+
+
+def Test_CheckSchedules_TestEndAlreadyAMonthOut_ExpectUnchanged(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database = tmp_path / 'animals.db'
+   _database( database )
+   kept = EXTENDED.isoformat()
+   connection = sqlite3.connect( database )
+   connection.execute(
+      """   UPDATE AnimalStatus
+            SET OFF_DISPLAY_END = ?
+            WHERE OFF_DISPLAY_FOR_SEASON = 0
+      """,
+      ( kept, ),
+   )
+   connection.execute(
+      'UPDATE ZooUpdate SET END_DATE = ? WHERE TITLE = ?',
+      ( kept, ORANGUTAN_UPDATE ),
+   )
+   connection.commit()
+   connection.close()
+   _install_page( monkeypatch, [ ORANGUTAN, GIBBON, PANDA ] )
+   CheckReport.reset_fixed_count()
+
+   result = CHECKER.check_schedules( database, TODAY )
+
+   assert result == 0
    assert CheckReport.fixed_count == 0
    assert capsys.readouterr().out == ''
-   assert _ends( database )[ ( GIBBON, 'Gibbon habitat' ) ] == LATER
-   assert _update_end( database, ORANGUTAN_UPDATE ) == LATER
+   assert _ends( database )[ ( ORANGUTAN, 'Indoor habitat' ) ] == kept
+   assert _ends( database )[ ( GIBBON, 'Gibbon habitat' ) ] == kept
+   assert _update_end( database, ORANGUTAN_UPDATE ) == kept
+   assert _update_end( database, EURASIA_UPDATE ) == None

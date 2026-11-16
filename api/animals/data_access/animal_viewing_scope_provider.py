@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from ..domain.animal_viewing_scope import AnimalViewingScope
+from .enclosure_viewing_mapper import EnclosureViewingMapper
 from ...types import Types
+from ...walk_graph.domain.viewing_spot_reference import ViewingSpotReference
 
 
 class AnimalViewingScopeProvider():
@@ -27,3 +29,19 @@ class AnimalViewingScopeProvider():
          AnimalViewingScope.from_enclosure_name( row[ 'NAME' ] )
          for row in rows
       ]
+
+
+   @classmethod
+   def fetch_animal_enclosures(
+         cls,
+         conn: Types.Connection ) -> list[ ViewingSpotReference ]:
+      rows = conn.execute(
+         """   SELECT SPECIES, EXHIBIT, NAME
+               FROM EnclosureViewing
+               WHERE NAME IS NOT NULL
+                  AND NAME != ''
+               ORDER BY SPECIES, EXHIBIT, NAME;
+         """
+      ).fetchall()
+      return EnclosureViewingMapper.map_records( rows )
+

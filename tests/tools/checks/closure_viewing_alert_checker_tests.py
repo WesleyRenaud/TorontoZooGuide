@@ -17,6 +17,7 @@ from tools.checks.closure_viewing_alert import ClosureViewingAlert
 from tools.checks.closure_viewing_alert_checker import ClosureViewingAlertChecker
 from tools.checks.paths import Paths
 from tools.checks.viewing_alert_sentence import ViewingAlertSentence
+from tools.checks.viewing_alert_sentence_builder import ViewingAlertSentenceBuilder
 
 
 TODAY = date( 2026, 11, 13 )
@@ -34,6 +35,12 @@ CREATE TABLE ZooUpdate (
 CREATE TABLE Enclosure (
    SPECIES TEXT,
    EXHIBIT TEXT
+);
+
+CREATE TABLE EnclosureViewing (
+   SPECIES TEXT,
+   EXHIBIT TEXT,
+   NAME TEXT
 );
 
 CREATE TABLE AnimalStatus (
@@ -177,8 +184,10 @@ def written_sentence(
       off_display: bool,
       scope: str,
       title: str,
-      description: str ) -> str:
-   return SENTENCE
+      description: str,
+      enclosures: list[ str ],
+      closed: list[ str ] ) -> ViewingAlertSentence:
+   return ViewingAlertSentence( SENTENCE )
 
 
 def Test_Choose_TestOneHome_ExpectThatExhibit() -> None:
@@ -385,7 +394,7 @@ def Test_CheckSchedules_TestClosureNamesAnimal_ExpectAlert(
       '2026-07-09',
       '2026-12-13',
    )
-   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( written_sentence ) )
+   monkeypatch.setattr( ViewingAlertSentenceBuilder, 'write', classmethod( written_sentence ) )
    CheckReport.reset_fixed_count()
 
    result = ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
@@ -419,7 +428,7 @@ def Test_CheckSchedules_TestDifferentSentence_ExpectUpdatedAlert(
       '2026-12-13',
    )
    insert_alert( database_path, 'Old sentence.', '2026-12-13' )
-   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( written_sentence ) )
+   monkeypatch.setattr( ViewingAlertSentenceBuilder, 'write', classmethod( written_sentence ) )
    CheckReport.reset_fixed_count()
 
    result = ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
@@ -446,7 +455,7 @@ def Test_CheckSchedules_TestLaterEnd_ExpectExtendedAlert(
       '2026-12-14',
    )
    insert_alert( database_path, SENTENCE, '2026-12-13' )
-   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( written_sentence ) )
+   monkeypatch.setattr( ViewingAlertSentenceBuilder, 'write', classmethod( written_sentence ) )
    CheckReport.reset_fixed_count()
 
    result = ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
@@ -474,7 +483,7 @@ def Test_CheckSchedules_TestClosureEndsToday_ExpectAlertEndsToday(
       '2026-07-09',
       '2026-11-13',
    )
-   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( written_sentence ) )
+   monkeypatch.setattr( ViewingAlertSentenceBuilder, 'write', classmethod( written_sentence ) )
    CheckReport.reset_fixed_count()
 
    ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
@@ -527,7 +536,7 @@ def Test_CheckSchedules_TestSameAlert_ExpectNoRewrite(
       '2026-12-13',
    )
    insert_alert( database_path, SENTENCE, '2026-12-13' )
-   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( written_sentence ) )
+   monkeypatch.setattr( ViewingAlertSentenceBuilder, 'write', classmethod( written_sentence ) )
    CheckReport.reset_fixed_count()
 
    result = ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
@@ -560,11 +569,13 @@ def Test_CheckSchedules_TestDeparture_ExpectNoAlert(
          off_display: bool,
          scope: str,
          title: str,
-         description: str ) -> str:
+         description: str,
+         enclosures: list[ str ],
+         closed: list[ str ] ) -> ViewingAlertSentence:
       calls.append( off_display )
-      return SENTENCE
+      return ViewingAlertSentence( SENTENCE )
 
-   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( write ) )
+   monkeypatch.setattr( ViewingAlertSentenceBuilder, 'write', classmethod( write ) )
    CheckReport.reset_fixed_count()
 
    ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
@@ -597,11 +608,15 @@ def Test_CheckSchedules_TestOffDisplay_ExpectOffDisplayFact(
          off_display: bool,
          scope: str,
          title: str,
-         description: str ) -> str:
+         description: str,
+         enclosures: list[ str ],
+         closed: list[ str ] ) -> ViewingAlertSentence:
       calls.append( off_display )
-      return 'The polar bear is temporarily off display at Tundra Trek.'
+      return ViewingAlertSentence(
+         'The polar bear is temporarily off display at Tundra Trek.',
+      )
 
-   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( write ) )
+   monkeypatch.setattr( ViewingAlertSentenceBuilder, 'write', classmethod( write ) )
    CheckReport.reset_fixed_count()
 
    ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
@@ -697,7 +712,7 @@ def Test_CheckSchedules_TestClosureBesideUnrelatedAlert_ExpectUnrelatedRemoved(
       '2026-11-01',
       '2026-12-13',
    )
-   monkeypatch.setattr( ViewingAlertSentence, 'write', classmethod( written_sentence ) )
+   monkeypatch.setattr( ViewingAlertSentenceBuilder, 'write', classmethod( written_sentence ) )
    CheckReport.reset_fixed_count()
 
    result = ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
@@ -711,3 +726,57 @@ def Test_CheckSchedules_TestClosureBesideUnrelatedAlert_ExpectUnrelatedRemoved(
    assert stored_alerts( database_path ) == [
       ( 'Polar Bear', 'Tundra Trek', SENTENCE, '2026-12-13' ),
    ]
+
+
+def Test_CheckSchedules_TestIndoorEnclosure_ExpectOnlyThatHabitat(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database_path = tmp_path / 'animals.db'
+   database( database_path )
+   insert_home( database_path, 'Sumatran Orangutan', 'Indo-Malaya Pavilion' )
+   connection = sqlite3.connect( database_path )
+   connection.execute(
+      """   INSERT INTO EnclosureViewing ( SPECIES, EXHIBIT, NAME )
+            VALUES ( 'Sumatran Orangutan', 'Indo-Malaya Pavilion', 'Indoor' )
+      """
+   )
+   connection.execute(
+      """   INSERT INTO EnclosureViewing ( SPECIES, EXHIBIT, NAME )
+            VALUES ( 'Sumatran Orangutan', 'Indo-Malaya Pavilion', 'Outdoor' )
+      """
+   )
+   connection.execute(
+      """   INSERT INTO AnimalStatus (
+               SPECIES, EXHIBIT, IS_OFF_DISPLAY, OFF_DISPLAY_FOR_SEASON,
+               VIEWING_SCOPE, OFF_DISPLAY_START, OFF_DISPLAY_END,
+               CLOSURE_UPDATE_TITLE, CLOSURE_UPDATE_START
+            ) VALUES (
+               'Sumatran Orangutan', 'Indo-Malaya Pavilion', 1, 0,
+               'Indoor', '2026-11-01', '2026-11-30', NULL, NULL
+            )
+      """
+   )
+   connection.commit()
+   connection.close()
+   insert_closure(
+      database_path,
+      'Indo-Malaya Pavilion Construction',
+      'The Sumatran orangutan indoor habitat and a portion of the '
+      'Indo-Malaya Pavilion are closed due to construction.',
+      '2026-11-12',
+      '2026-12-13',
+   )
+   CheckReport.reset_fixed_count()
+
+   result = ClosureViewingAlertChecker.check_schedules( database_path, TODAY )
+
+   sentence = (
+      'The Sumatran orangutan indoor habitat is closed due to construction. '
+      'The Sumatran orangutans can be seen in the outdoor habitat.'
+   )
+   assert result == 0
+   assert sentence in capsys.readouterr().out
+   assert stored_alerts( database_path ) == [
+      ( 'Sumatran Orangutan', 'Indo-Malaya Pavilion', sentence, '2026-12-13' ),
+   ]
+

@@ -45,6 +45,7 @@ from ..status.animal_off_display_status_builder import AnimalOffDisplayStatusBui
 from ..status.animal_viewing_alert import AnimalViewingAlert
 from ..status.animal_viewing_alert_builder import AnimalViewingAlertBuilder
 from ...types import Types
+from ...walk_graph.domain.viewing_spot_reference import ViewingSpotReference
 
 
 class AnimalCoordinator():
@@ -293,6 +294,12 @@ class AnimalCoordinator():
          RequestConnectionProvider.get(),
          species=species,
          exhibit=exhibit )
+
+
+   @classmethod
+   def get_animal_enclosures( cls ) -> list[ ViewingSpotReference ]:
+      return AnimalViewingScopeProvider.fetch_animal_enclosures(
+         RequestConnectionProvider.get() )
 
 
    @classmethod

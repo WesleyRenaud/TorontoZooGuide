@@ -18,6 +18,13 @@ export class GuestStatusStrings {
          isClosed: ' is closed',
          beforeClosed: '{before} at {exhibit}{after}',
          sentenceAtExhibit: '{sentence} at {exhibit}.',
+         habitat: '{name} habitat',
+         namedEnclosure: 'the {name}',
+         inPlace: 'in {place}',
+         andPair: '{first} and {second}',
+         andSeries: '{first}, and {last}',
+         enclosureClosed: 'The {species} {enclosures} is closed{reason}.',
+         enclosuresClosed: 'The {species} {enclosures} are closed{reason}.',
          singleHabitatAlternateEnclosureViewingAlert: (
             'If you do not see the {species} {chosenLocation}, '
             + 'then check their {alternateHabitat} habitat.'

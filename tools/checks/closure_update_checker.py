@@ -16,6 +16,7 @@ from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .closure_update import ClosureUpdate
+from .closure_update_builder import ClosureUpdateBuilder
 from .closure_update_plan import ClosureUpdatePlan
 from tools.fix.closure_update_fixer import ClosureUpdateFixer
 from .website_closure import WebsiteClosure
@@ -47,7 +48,7 @@ class ClosureUpdateChecker():
       notices = WebsiteClosure.closures(
          WebsitePage.fetch_text( WebsitePage.url( WebsitePage.ALERTS ) )
       )
-      return ClosureUpdatePlan.build(
+      return ClosureUpdateBuilder.build(
          notices,
          cls.active_updates( database, today ),
          today,
@@ -69,6 +70,7 @@ class ClosureUpdateChecker():
          CheckReport.text( 'checks.setUpdateFrom' ),
          CheckReport.text( 'checks.endedUpdate' ),
          CheckReport.text( 'checks.extendedUpdateThrough' ),
+         CheckReport.text( 'checks.trimmedUpdateThrough' ),
       )
 
       return sum(
@@ -84,12 +86,13 @@ class ClosureUpdateChecker():
       added = cls.lines_for( plan.added, ClosureUpdate.added_line )
       ended = cls.lines_for( plan.ended, ClosureUpdate.ended_line )
       extended = cls.lines_for( plan.extended, ClosureUpdate.extended_line )
+      trimmed = cls.lines_for( plan.trimmed, ClosureUpdate.trimmed_line )
       print( CheckReport.heading( 'closureUpdate', today ) )
       print()
       CheckReport.print_category( 'checks.websiteOnly', added )
       CheckReport.print_category( 'checks.appOnly', ended )
-      CheckReport.print_category( 'checks.windowsDoNotAlign', extended )
-      return cls.remaining( added + ended + extended )
+      CheckReport.print_category( 'checks.windowsDoNotAlign', extended + trimmed )
+      return cls.remaining( added + ended + extended + trimmed )
 
 
    @classmethod

@@ -467,7 +467,10 @@ def Test_CheckSchedules_TestWebsiteOnly_ExpectWebsiteViolation(
 
    result, output = _check( database, capsys )
 
-   website_talk = GuardiansTalkListing( name='West Caucasian tur', location=WEBSITE_LOCATION )
+   website_talk = GuardiansTalkListing(
+      name='West Caucasian tur',
+      location=WEBSITE_LOCATION,
+   )
    assert result == 1
    assert f'  { GuardiansTalkComparison.label( website_talk ) }' in output
    assert f'  { GuardiansTalkComparison.label( GuardiansTalkListing( name=TALK, location=LOCATION ) ) }' not in output
@@ -577,6 +580,53 @@ def Test_CheckSchedules_TestDifferentTime_ExpectWindowFixed(
    html = _email( output, result )
    assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
+
+
+def Test_CheckSchedules_TestNamedEnclosure_ExpectEnclosureOnTheLine(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      [ ( TALK, LOCATION, 'Giraffe House' ) ],
+      [ (
+         TALK,
+         LOCATION,
+         'Giraffe House',
+         THURSDAY.isoformat(),
+         ( THURSDAY + timedelta( days=1 ) ).isoformat(),
+         OTHER_CLOCK,
+         { THURSDAY.weekday() },
+      ) ],
+   )
+   _install_page(
+      monkeypatch,
+      _page( [ ( THURSDAY, [ ( WEBSITE_CLOCK, TALK, WEBSITE_LOCATION ) ] ) ] ),
+   )
+
+   result, output = _check( database, capsys )
+
+   connection = sqlite3.connect( database )
+   enclosure_name = connection.execute(
+      """   SELECT ENCLOSURE_NAME
+            FROM MeetTheGuardiansTalk
+            WHERE NAME = ?
+      """,
+      ( TALK, ),
+   ).fetchone()[ 0 ]
+   connection.close()
+   line = next(
+      item
+      for item in output.splitlines()
+      if TALK in item
+   )
+   segments = line.split( CheckReport.text( 'format.middleDotJoin' ) )
+   assert result == 0
+   assert enclosure_name in segments[ 0 ]
+   assert segments[ -1 ] != enclosure_name
+   html = _email( output, result )
+   assert enclosure_name in html
 
 
 def Test_CheckSchedules_TestWebsiteWindowLonger_ExpectWindowFixed(

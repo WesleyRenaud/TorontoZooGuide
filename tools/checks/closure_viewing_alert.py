@@ -58,6 +58,20 @@ class ClosureViewingAlert():
       return ( self.species.casefold(), self.exhibit.casefold() )
 
 
+   def closed_scopes(
+         self,
+         off_display: list[ TemporaryOffDisplayAnimal ],
+         today: date ) -> list[ str ]:
+      return [
+         animal.viewing_scope
+         for animal in off_display
+         if animal.species == self.species
+         and animal.exhibit == self.exhibit
+         and animal.covers( today )
+         and animal.viewing_scope != ''
+      ]
+
+
    def current( self, stored: list[ AnimalViewingAlert ] ) -> AnimalViewingAlert | None:
       for alert in stored:
          if alert.species == self.species and alert.exhibit == self.exhibit:

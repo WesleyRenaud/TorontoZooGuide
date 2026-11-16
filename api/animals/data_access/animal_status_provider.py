@@ -154,7 +154,8 @@ class AnimalStatusProvider():
                      EXHIBIT,
                      OFF_DISPLAY_END,
                      CLOSURE_UPDATE_TITLE,
-                     CLOSURE_UPDATE_START
+                     CLOSURE_UPDATE_START,
+                     VIEWING_SCOPE
                   FROM AnimalStatus
                   WHERE IS_OFF_DISPLAY = 1
                      AND OFF_DISPLAY_FOR_SEASON = 0
@@ -234,12 +235,15 @@ class AnimalStatusProvider():
                   WHERE IS_OFF_DISPLAY = 1
                      AND OFF_DISPLAY_FOR_SEASON = 0
                      AND CLOSURE_UPDATE_TITLE = ?
-                     AND CLOSURE_UPDATE_START = ?;
+                     AND CLOSURE_UPDATE_START = ?
+                     AND OFF_DISPLAY_END IS NOT NULL
+                     AND OFF_DISPLAY_END < ?;
             """,
             (
                end_date,
                title,
                start_date,
+               end_date,
             ) )
          conn.commit()
 

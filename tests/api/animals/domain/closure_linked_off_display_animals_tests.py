@@ -20,6 +20,7 @@ def _animal( species: str, title: str, start: date ) -> ClosureLinkedOffDisplayA
       end=date( 2026, 11, 9 ),
       closure_update_title=title,
       closure_update_start=start,
+      viewing_scope=None,
    )
 
 

@@ -1,6 +1,6 @@
 export class CheckStrings {
    static checks = {
-      animalAlerts: 'Animal alerts',
+      animalAlerts: 'Viewing alerts for closures',
       appCatalogueNotOnWebsite: 'In the app catalogue and not on the website',
       appDatesNotBookable: 'App dates not bookable: ',
       appDatesNotOnWebsite: 'App dates not on the website: ',
@@ -14,12 +14,11 @@ export class CheckStrings {
       closedForSeasonAppOnly: 'Closed for the season in the app and not on the website',
       closedForSeasonReturningSoon: 'Closed for the season on the website, back on display within a week',
       closedForSeasonWebsiteOnly: 'Closed for the season on the website and not in the app',
-      closureOffDisplayReturningTomorrow: 'Off display on the website and the app, back on display tomorrow',
+      closureOffDisplayEndingWithinTheMonth: 'Off display on the website and the app',
       countItem: ' for ',
       countNames: {
-         drinkingFountains: 'Drinking fountains',
          exhibits: 'Exhibits',
-         giftShops: 'Gift shops',
+         zoomobile: 'Zoomobile',
       },
       couldNotFindDatabase: 'Could not find the database.',
       couldNotWriteViewingAlert: 'Could not write the viewing alert',
@@ -64,10 +63,14 @@ export class CheckStrings {
       extendedScheduleThrough: 'Extended the schedule through ',
       extendedUpdateThrough: 'Extended the update through ',
       extendedRestroomThrough: 'Extended the restroom through ',
+      extendedTemporaryClosureThrough: 'Extended the temporary closure through ',
       extendedStationThrough: 'Extended the station through ',
       extendedRestroomAlertThrough: 'Extended the restroom alert through ',
       extendedViewingAlertThrough: 'Extended the viewing alert through ',
-      extendedViewingHoursThrough: 'Extended the viewing hours through ',
+      extendedViewingHoursThrough: 'Extended the viewing hours from ',
+      viewingHoursExtended: 'Viewing hours extended',
+      viewingHoursTrimmed: 'Viewing hours trimmed',
+      viewingHoursDoNotMatch: 'Daily times do not match',
       headingMiddle: ' check for ',
       hoursDayCountEnd: ' days): ',
       hoursDayCountStart: ' (',
@@ -81,6 +84,7 @@ export class CheckStrings {
       offForSeasonAppOnly: 'Off for the season in the app and not on the website',
       offForSeasonWebsiteOnly: 'Off for the season on the website and not in the app',
       openedRestroom: 'Opened the restroom.',
+      openedTemporaryClosure: 'Opened the temporary closure.',
       openedStation: 'Opened the station.',
       openTime: 'open ',
       period: '.',
@@ -112,6 +116,7 @@ export class CheckStrings {
       setOpenForSeasonFrom: 'Set open for the season from ',
       setRestroomAlertFrom: 'Set the restroom alert from ',
       setRestroomFrom: 'Set the restroom from ',
+      setTemporaryClosureFrom: 'Set the temporary closure from ',
       setStationFrom: 'Set the station from ',
       setRouteTo: 'Set the route to ',
       setScheduleFrom: 'Set the schedule from ',
@@ -141,7 +146,8 @@ export class CheckStrings {
       trimmedClosedForSeasonThrough: 'Trimmed closed for the season through ',
       trimmedOpenForSeasonThrough: 'Trimmed open for the season through ',
       trimmedScheduleThrough: 'Trimmed the schedule through ',
-      trimmedViewingHoursThrough: 'Trimmed the viewing hours through ',
+      trimmedUpdateThrough: 'Trimmed the update through ',
+      trimmedViewingHoursThrough: 'Trimmed the viewing hours from ',
       websiteCatalogueNotInApp: 'On the website catalogue and not in the app',
       websiteDatesCompared: 'Website dates compared from ',
       websiteDatesNotInApp: 'Website dates not in the app: ',
@@ -170,7 +176,7 @@ export class CheckStrings {
       closureUpdate: {
          description: 'Copy closure notices from the Toronto Zoo alerts page into the app and keep them active for a month.',
          kind: 'Closure notice',
-         section: 'Closure updates',
+         section: 'Closure Updates',
       },
       closureViewingAlert: {
          description: 'Write a guest viewing alert from each closure notice using the exhibit and whether the animal is temporarily off display.',
@@ -202,13 +208,24 @@ export class CheckStrings {
          description: 'Copy restroom closures and alerts from the Toronto Zoo alerts page into the app and keep them active for a month.',
          kind: 'Restroom notice',
       },
+      temporaryAttraction: {
+         description: 'Copy temporary attraction closures from the Toronto Zoo alerts page and keep them active for a month.',
+         kind: 'Temporary attraction closure',
+      },
+      temporaryGiftShop: {
+         description: 'Copy temporary gift shop closures from the Toronto Zoo alerts page and keep them active for a month.',
+         kind: 'Temporary gift shop closure',
+      },
+      temporaryRestaurant: {
+         description: 'Copy temporary restaurant closures from the Toronto Zoo alerts page and keep them active for a month.',
+         kind: 'Temporary restaurant closure',
+      },
       stationClosure: {
          description: 'Copy Zoomobile station closures from the Toronto Zoo alerts page into the app.',
          kind: 'Station closure',
-         section: 'Zoomobile stations',
       },
       schedule: {
-         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, restrooms, zoomobile stations, the zoomobile route, viewing hours, closure viewing alerts, attractions closed for the season, restaurants, gift shops, drinking fountains closed for the season, listed attractions, zoo hours, and zoo events with the Toronto Zoo website.',
+         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, restrooms, zoomobile stations, the zoomobile route, viewing hours, closure viewing alerts, attractions closed for the season, temporary attraction closures, restaurants, temporary restaurant closures, gift shops, temporary gift shop closures, drinking fountains closed for the season, listed attractions, zoo hours, and zoo events with the Toronto Zoo website.',
       },
       seasonalAttraction: {
          description: 'Compare attractions closed for the season on the Toronto Zoo website with the attractions closed for the season in the app.',
@@ -252,7 +269,6 @@ export class CheckStrings {
       zoomobileRoute: {
          description: 'Schedule the current Zoomobile route from the Toronto Zoo ticket page.',
          kind: 'Zoomobile route schedule',
-         section: 'Zoomobile route',
       },
       wildEncounter: {
          description: 'Compare scheduled wild encounters with the Toronto Zoo website and each encounter booking calendar.',
@@ -261,12 +277,12 @@ export class CheckStrings {
       },
       zooHours: {
          description: 'Compare zoo hours listed on the Toronto Zoo website with the zoo hours in the app.',
-         kind: 'Zoo hours',
+         kind: 'Zoo Hours',
       },
       zooEvent: {
          description: 'Copy zoo events from the Toronto Zoo homepage and remove events that are no longer listed.',
-         kind: 'Zoo event',
-         section: 'Zoo events',
+         kind: 'Zoo Event',
+         section: 'Zoo Events',
       },
    };
 }

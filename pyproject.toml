@@ -44,6 +44,16 @@ exclude = [
    "api/seed/tables/animal_seed_table.py",
    "api/zoo.py"
 ]
+tuple_dict_key_exclude = [
+   "api/guardians/itinerary/itinerary_guardians_talks_builder.py",
+   "api/itinerary/domain/itinerary_transportation_animal_visibility_filter.py",
+   "api/itinerary/validation/selected_exhibit_date_change_animals_builder.py",
+   "api/transportation/data_access/transportation_route_leg_marker_provider.py",
+   "tests/api/itinerary/scheduling/bulk/loop_unit_attraction_hours_scheduler_tests.py",
+   "tests/api/seed/static_data_seeder_tests.py",
+   "tests/tools/checks/animal_closure_off_display_extension_checker_tests.py",
+   "tools/checks/viewing_hours_plan.py",
+]
 
 [tool.tzg_python_one_class_per_file]
 include = [

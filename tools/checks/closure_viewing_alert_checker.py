@@ -15,12 +15,13 @@ from api.models import Update
 from api.request_connection_provider import RequestConnectionProvider
 from api.shared.date_values import DateValues
 from api.updates.coordinators.update_coordinator import UpdateCoordinator
+from api.walk_graph.domain.viewing_spot_reference import ViewingSpotReference
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
 from .closure_viewing_alert import ClosureViewingAlert
 from tools.fix.closure_viewing_alert_fixer import ClosureViewingAlertFixer
-from .viewing_alert_sentence import ViewingAlertSentence
+from .viewing_alert_sentence_builder import ViewingAlertSentenceBuilder
 
 
 class ClosureViewingAlertChecker():
@@ -40,6 +41,7 @@ class ClosureViewingAlertChecker():
             list[ AnimalSpeciesExhibit ],
             list[ TemporaryOffDisplayAnimal ],
             list[ AnimalViewingAlert ],
+            list[ ViewingSpotReference ],
          ]:
       connection = DatabaseConnectionProvider.open( str( database ) )
       RequestConnectionProvider.set( connection )
@@ -50,6 +52,7 @@ class ClosureViewingAlertChecker():
             AnimalCoordinator.get_animal_species_exhibits(),
             AnimalCoordinator.get_temporary_off_display_animals(),
             AnimalCoordinator.get_animal_viewing_alerts(),
+            AnimalCoordinator.get_animal_enclosures(),
          )
       finally:
          RequestConnectionProvider.clear()
@@ -72,7 +75,7 @@ class ClosureViewingAlertChecker():
 
    @classmethod
    def check_schedules( cls, database: Path, today: date ) -> int:
-      closures, placements, off_display, stored = cls.load( database, today )
+      closures, placements, off_display, stored, enclosures = cls.load( database, today )
       alerts = ClosureViewingAlert.choose(
          closures,
          placements,
@@ -85,14 +88,22 @@ class ClosureViewingAlertChecker():
 
       try:
          for alert in alerts:
-            alert.message = ViewingAlertSentence.write(
+            alert.message = ViewingAlertSentenceBuilder.write(
                species=alert.species,
                exhibit=alert.exhibit,
                off_display=alert.off_display,
                scope=alert.scope,
                title=alert.title,
                description=alert.description,
-            )
+               enclosures=[
+                  enclosure.name
+                  for enclosure in enclosures
+                  if enclosure.species == alert.species
+                  and enclosure.exhibit == alert.exhibit
+                  and enclosure.name != None
+               ],
+               closed=alert.closed_scopes( off_display, today ),
+            ).text
 
             if alert.message != '' and alert.needs_save( stored ):
                ready.append( alert )

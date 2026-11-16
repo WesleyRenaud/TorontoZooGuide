@@ -7,3 +7,4 @@ from dataclasses import dataclass
 class GuardiansTalkListing:
    name: str
    location: str
+   enclosure_name: str | None = None

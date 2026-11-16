@@ -29,7 +29,7 @@ class GuardiansTalkOnWebsiteNotInAppChecker():
       return [
          GuardiansTalkComparison.talk_line(
             identity,
-            animal=GuardiansTalkComparison.linked_animal( identity, prepared.animals ),
+            GuardiansTalkComparison.linked_animal( identity, prepared.animals ),
          )
          for identity in sorted( identities, key=GuardiansTalkComparison.label )
       ]

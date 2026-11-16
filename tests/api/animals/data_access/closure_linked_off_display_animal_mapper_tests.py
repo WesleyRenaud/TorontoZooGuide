@@ -20,6 +20,7 @@ def Test_MapRecords_TestRow_ExpectClosureLinkedAnimal() -> None:
       'OFF_DISPLAY_END': '2026-11-09',
       'CLOSURE_UPDATE_TITLE': TITLE,
       'CLOSURE_UPDATE_START': '2026-05-13',
+      'VIEWING_SCOPE': 'Indoor',
    } )
 
    records = ClosureLinkedOffDisplayAnimalMapper.map_records( [ row ] )
@@ -30,5 +31,6 @@ def Test_MapRecords_TestRow_ExpectClosureLinkedAnimal() -> None:
          exhibit=EXHIBIT,
          end=date( 2026, 11, 9 ),
          closure_update_title=TITLE,
-         closure_update_start=date( 2026, 5, 13 ) ),
+         closure_update_start=date( 2026, 5, 13 ),
+         viewing_scope='Indoor' ),
    ]

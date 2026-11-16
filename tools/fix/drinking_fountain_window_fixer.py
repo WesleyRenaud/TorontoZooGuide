@@ -14,7 +14,7 @@ class DrinkingFountainWindowFixer():
    @classmethod
    def line( cls, window: DrinkingFountainWindow ) -> str:
       return CheckReport.join_lines( [
-         AppStringProvider.format( 'checks.countNames.drinkingFountains' ),
+         AppStringProvider.format( 'map.filterTypes.drinkingFountain' ),
          window.detail(),
       ] )
 

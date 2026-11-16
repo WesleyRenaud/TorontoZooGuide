@@ -16,11 +16,24 @@ from tools.checks.check_report import CheckReport
 
 class AnimalClosureOffDisplayExtensionFixer():
    @classmethod
-   def line( cls, species: str, exhibit: str, end: date ) -> str:
+   def label( cls, species: str, scope: str | None ) -> str:
+      if scope == None or scope == '':
+         return species
+
+      return species + AppStringProvider.format( 'format.bulletSeparator' ) + scope
+
+
+   @classmethod
+   def line(
+         cls,
+         species: str,
+         exhibit: str,
+         scope: str | None,
+         end: date ) -> str:
       lines = [
          AppStringProvider.format(
             'format.middleDotPair',
-            first=species,
+            first=cls.label( species, scope ),
             second=exhibit,
          )
       ]
@@ -40,7 +53,7 @@ class AnimalClosureOffDisplayExtensionFixer():
    def extend_closure( cls, group: ClosureLinkedOffDisplayAnimals, end: date ) -> None:
       start = group.start.isoformat()
       end_key = end.isoformat()
-      UpdateCoordinator.end_update(
+      UpdateCoordinator.extend_end(
          title=group.title,
          start_date=start,
          end_date=end_key )
@@ -68,8 +81,13 @@ class AnimalClosureOffDisplayExtensionFixer():
          for group in groups:
             cls.extend_closure( group, end )
             lines.extend(
-               cls.line( enclosure.species, enclosure.exhibit, end )
-               for enclosure in group.enclosures()
+               cls.line(
+                  animal.species,
+                  animal.exhibit,
+                  animal.viewing_scope,
+                  end,
+               )
+               for animal in group.animals
             )
 
          CheckReport.note_fixed( len( lines ) )

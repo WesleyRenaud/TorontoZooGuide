@@ -14,14 +14,17 @@ from tools.checks.animal_temporary_off_display_in_app_not_on_website_checker imp
 from tools.checks.animal_temporary_off_display_on_website_not_in_app_checker import AnimalTemporaryOffDisplayOnWebsiteNotInAppChecker
 from tools.checks.animal_website_catalogue_not_in_app_checker import AnimalWebsiteCatalogueNotInAppChecker
 from tools.checks.attraction_list_checker import AttractionListChecker
+from tools.checks.attraction_temporary_closure_checker import AttractionTemporaryClosureChecker
 from tools.checks.attraction_window_checker import AttractionWindowChecker
 from tools.checks.check_report_parser import CheckReportParser
 from tools.checks.closure_viewing_alert_checker import ClosureViewingAlertChecker
 from tools.checks.exhibit_season_checker import ExhibitSeasonChecker
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
+from tools.checks.gift_shop_temporary_closure_checker import GiftShopTemporaryClosureChecker
 from tools.checks.gift_shop_window_checker import GiftShopWindowChecker
 from tools.checks.guardians_talk_schedule_checker import GuardiansTalkScheduleChecker
 from tools.checks.restaurant_list_checker import RestaurantListChecker
+from tools.checks.restaurant_temporary_closure_checker import RestaurantTemporaryClosureChecker
 from tools.checks.restaurant_window_checker import RestaurantWindowChecker
 from tools.checks.restroom_notice_checker import RestroomNoticeChecker
 from tools.checks.schedule_checker import ScheduleChecker
@@ -41,8 +44,8 @@ CHECKS = (
    ( ExhibitSeasonChecker, 'check_schedules' ),
    ( WildEncounterScheduleChecker, 'check_schedules' ),
    ( GuardiansTalkScheduleChecker, 'check_schedules' ),
-   ( ScheduleChecker, 'check_animals' ),
    ( ScheduleChecker, 'check_closure_updates' ),
+   ( ScheduleChecker, 'check_animals' ),
    ( RestroomNoticeChecker, 'check_schedules' ),
    ( StationClosureChecker, 'check_schedules' ),
    ( ZoomobileRouteChecker, 'check_schedules' ),
@@ -174,14 +177,19 @@ def Test_CheckRestaurants_TestClosureAndCatalog_ExpectOneCount(
       calls.append( 'windows' )
       return 0
 
+   def check_temporary( database: Path, today: date ) -> int:
+      calls.append( 'temporary' )
+      return 7
+
    monkeypatch.setattr( SeasonalRestaurantClosureChecker, 'check_schedules', check_closure )
    monkeypatch.setattr( RestaurantListChecker, 'check_lists', check_catalog )
    monkeypatch.setattr( RestaurantWindowChecker, 'check_schedules', check_windows )
+   monkeypatch.setattr( RestaurantTemporaryClosureChecker, 'check_schedules', check_temporary )
 
    result = ScheduleChecker.check_restaurants( tmp_path / 'animals.db', TODAY )
 
-   assert result == 5
-   assert calls == [ 'closure', 'catalog', 'windows' ]
+   assert result == 12
+   assert calls == [ 'closure', 'catalog', 'windows', 'temporary' ]
 
 
 def Test_CheckGiftShops_TestClosureAndCatalog_ExpectOneCount(
@@ -201,14 +209,19 @@ def Test_CheckGiftShops_TestClosureAndCatalog_ExpectOneCount(
       calls.append( 'windows' )
       return 0
 
+   def check_temporary( database: Path, today: date ) -> int:
+      calls.append( 'temporary' )
+      return 1
+
    monkeypatch.setattr( SeasonalGiftShopClosureChecker, 'check_schedules', check_closure )
    monkeypatch.setattr( GiftShopListChecker, 'check_lists', check_catalog )
    monkeypatch.setattr( GiftShopWindowChecker, 'check_schedules', check_windows )
+   monkeypatch.setattr( GiftShopTemporaryClosureChecker, 'check_schedules', check_temporary )
 
    result = ScheduleChecker.check_gift_shops( tmp_path / 'animals.db', TODAY )
 
-   assert result == 8
-   assert calls == [ 'closure', 'catalog', 'windows' ]
+   assert result == 9
+   assert calls == [ 'closure', 'catalog', 'windows', 'temporary' ]
 
 
 def Test_CheckAttractions_TestClosureAndWindows_ExpectOneCount(
@@ -224,13 +237,18 @@ def Test_CheckAttractions_TestClosureAndWindows_ExpectOneCount(
       calls.append( 'windows' )
       return 1
 
+   def check_temporary( database: Path, today: date ) -> int:
+      calls.append( 'temporary' )
+      return 2
+
    monkeypatch.setattr( SeasonalAttractionClosureChecker, 'check_schedules', check_closure )
    monkeypatch.setattr( AttractionWindowChecker, 'check_schedules', check_windows )
+   monkeypatch.setattr( AttractionTemporaryClosureChecker, 'check_schedules', check_temporary )
 
    result = ScheduleChecker.check_attractions( tmp_path / 'animals.db', TODAY )
 
-   assert result == 4
-   assert calls == [ 'closure', 'windows' ]
+   assert result == 6
+   assert calls == [ 'closure', 'windows', 'temporary' ]
 
 
 def Test_RunChecks_TestIssueCounts_ExpectSummary(
@@ -283,8 +301,8 @@ def Test_RunChecks_TestIssueCounts_ExpectSummary(
       check_exhibits,
       check_encounters,
       check_talks,
-      check_animals,
       check_clear,
+      check_animals,
       check_clear,
       check_clear,
       check_clear,
