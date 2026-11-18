@@ -17,6 +17,8 @@ export class CheckStrings {
       closedForSeasonAppOnly: 'Closed for the season in the app and not on the website',
       closedForSeasonReturningSoon: 'Closed for the season on the website, back on display within a week',
       closedForSeasonWebsiteOnly: 'Closed for the season on the website and not in the app',
+      closedInApp: 'Closed in the app and not on the website',
+      closedOnWebsite: 'Closed on the website and not in the app',
       closureOffDisplayEndingWithinTheMonth: 'Off display on the website and the app',
       countItem: ' for ',
       countNames: {
@@ -229,7 +231,7 @@ export class CheckStrings {
          kind: 'Station closure',
       },
       schedule: {
-         description: 'Compare exhibits closed for the season, wild encounters, guardians talks, animals, closure updates, restrooms, zoomobile stations, the zoomobile route, viewing hours, closure viewing alerts, attractions closed for the season, temporary attraction closures, attraction hours, restaurants, temporary restaurant closures, gift shops, temporary gift shop closures, drinking fountains closed for the season, listed attractions, zoo hours, and zoo events with the Toronto Zoo website.',
+         description: 'Compare exhibits closed for the season, temporary exhibit closures, wild encounters, guardians talks, animals, closure updates, restrooms, zoomobile stations, the zoomobile route, viewing hours, closure viewing alerts, attractions closed for the season, temporary attraction closures, attraction hours, restaurants, temporary restaurant closures, gift shops, temporary gift shop closures, drinking fountains closed for the season, listed attractions, zoo hours, and zoo events with the Toronto Zoo website.',
       },
       seasonalAttraction: {
          description: 'Compare attractions closed for the season on the Toronto Zoo website with the attractions closed for the season in the app.',
@@ -245,6 +247,10 @@ export class CheckStrings {
          description: 'Close an exhibit for the season when every animal in it is off display for the season, and reopen it when they are not.',
          kind: 'Seasonal exhibit closure',
          section: 'Exhibits closed for the season',
+      },
+      temporaryExhibit: {
+         description: 'Copy a temporary exhibit closure from the Toronto Zoo alerts page. A notice with no date closes the exhibit for today, and a notice with a date range uses that range.',
+         kind: 'Temporary exhibit closure',
       },
       seasonalGiftShop: {
          description: 'Compare gift shops closed for the season on the Toronto Zoo website with the gift shops closed for the season in the app.',

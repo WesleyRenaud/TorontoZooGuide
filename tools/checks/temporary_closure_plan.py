@@ -157,15 +157,16 @@ class TemporaryClosurePlan():
             continue
 
          kept = cls.kept_end( item.end, today ) if notice.end == None else notice.end
+         start = item.start if notice.start == None else notice.start
 
-         if item.start == None or kept == None or kept == item.end:
+         if start == None or kept == None or ( start == item.start and kept == item.end ):
             continue
 
          extensions.append( TemporaryClosureChange(
             item.place,
             item.message,
             item.kind,
-            item.start,
+            start,
             kept,
             item.photo_path,
          ) )

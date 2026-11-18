@@ -104,6 +104,7 @@ class CheckEmailRenderer():
          ],
          AppStringProvider.format( 'checks.countNames.exhibits' ): [
             cls.check_kind( 'seasonalExhibit' ),
+            cls.check_kind( 'temporaryExhibit' ),
          ],
          AppStringProvider.format( 'map.filter.attractions' ): [
             cls.check_kind( 'seasonalAttraction' ),

@@ -138,6 +138,7 @@ def Test_GetClosureRecords_TestProvider_ExpectRecords(
       exhibit=EXHIBIT_NAME,
       closed_start=START_DATE,
       closed_end=END_DATE,
+      closed_message='',
       is_closed_for_season=True )
 
    monkeypatch.setattr(
@@ -157,6 +158,7 @@ def Test_GetSeasonalExhibits_TestClosures_ExpectBuiltExhibits(
       exhibit=EXHIBIT_NAME,
       closed_start=START_DATE,
       closed_end=None,
+      closed_message='',
       is_closed_for_season=True,
    ) ]
    built = [ SeasonalExhibit(

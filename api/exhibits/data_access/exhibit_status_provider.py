@@ -116,6 +116,7 @@ class ExhibitStatusProvider():
                      EXHIBIT,
                      CLOSED_START,
                      CLOSED_END,
+                     CLOSED_MESSAGE,
                      CLOSED_FOR_SEASON
                   FROM ExhibitStatus
                   WHERE IS_CLOSED = 1;
