@@ -40,7 +40,7 @@ class TemporaryClosureCheck():
       extended = [ change.extended_line() for change in cls.ordered( plan.extended ) ]
       print( CheckReport.heading( report, today ) )
       print()
-      CheckReport.print_category( 'checks.websiteOnly', added )
-      CheckReport.print_category( 'checks.appOnly', ended )
+      CheckReport.print_category( 'checks.closedOnWebsite', added )
+      CheckReport.print_category( 'checks.closedInApp', ended )
       CheckReport.print_category( 'checks.windowsDoNotAlign', extended )
       return cls.remaining( added + ended + extended )

@@ -11,6 +11,7 @@ class ExhibitClosureMapper():
          exhibit=row[ 'EXHIBIT' ],
          closed_start=row[ 'CLOSED_START' ],
          closed_end=row[ 'CLOSED_END' ],
+         closed_message=row[ 'CLOSED_MESSAGE' ],
          is_closed_for_season=bool( row[ 'CLOSED_FOR_SEASON' ] ) )
 
 

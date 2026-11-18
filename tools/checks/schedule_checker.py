@@ -23,6 +23,7 @@ from .check_report_parser import CheckReportParser
 from .closure_update_checker import ClosureUpdateChecker
 from .closure_viewing_alert_checker import ClosureViewingAlertChecker
 from .exhibit_season_checker import ExhibitSeasonChecker
+from .exhibit_temporary_closure_checker import ExhibitTemporaryClosureChecker
 from .gift_shop_list_checker import GiftShopListChecker
 from .gift_shop_temporary_closure_checker import GiftShopTemporaryClosureChecker
 from .gift_shop_window_checker import GiftShopWindowChecker
@@ -47,6 +48,14 @@ class ScheduleChecker():
    @classmethod
    def parse_args( cls ) -> argparse.Namespace:
       return CheckArgsParser.parse( AppStringProvider.format( 'reports.schedule.description' ) )
+
+
+   @classmethod
+   def check_exhibits( cls, database: Path, today: date ) -> int:
+      return (
+         ExhibitTemporaryClosureChecker.check_schedules( database, today )
+         + ExhibitSeasonChecker.check_schedules( database, today )
+      )
 
 
    @classmethod
@@ -105,7 +114,7 @@ class ScheduleChecker():
    @classmethod
    def run_checks( cls, database: Path, today: date ) -> int:
       CheckReport.reset_fixed_count()
-      exhibit_issues = ExhibitSeasonChecker.check_schedules( database, today )
+      exhibit_issues = cls.check_exhibits( database, today )
       encounter_issues = WildEncounterScheduleChecker.check_schedules( database, today )
       talk_issues = GuardiansTalkScheduleChecker.check_schedules( database, today )
       closure_update_issues = cls.check_closure_updates( database, today )

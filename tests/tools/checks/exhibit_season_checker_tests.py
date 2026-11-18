@@ -266,6 +266,27 @@ def Test_CheckSchedules_TestOpenBeyondTheWindow_ExpectShortened(
    assert _status( database ) == ( 0, TODAY.isoformat(), '2026-11-30', 0 )
 
 
+def Test_CheckSchedules_TestFutureMaintenanceClosure_ExpectLeftAlone(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      CANADIAN,
+      ( 4, 11 ),
+      [ 'Moose' ],
+      ( 1, '2026-11-20', '2026-11-22', 0 ),
+   )
+   _install_page( monkeypatch, [ 'Moose' ] )
+
+   result, output = _check( database, capsys )
+
+   assert result == 0
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
+   assert _status( database ) == ( 1, '2026-11-20', '2026-11-22', 0 )
+
+
 def Test_CheckSchedules_TestMaintenanceClosure_ExpectLeftAlone(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],

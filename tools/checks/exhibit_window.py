@@ -30,7 +30,10 @@ class ExhibitWindow():
          status is not None
          and status.is_closed
          and not status.closed_for_season
-         and cls.covers( status, today )
+         and (
+            status.end is None
+            or DateValues.is_date_on_or_before( today, status.end )
+         )
       )
 
 

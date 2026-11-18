@@ -19,6 +19,7 @@ from tools.checks.attraction_window_checker import AttractionWindowChecker
 from tools.checks.check_report_parser import CheckReportParser
 from tools.checks.closure_viewing_alert_checker import ClosureViewingAlertChecker
 from tools.checks.exhibit_season_checker import ExhibitSeasonChecker
+from tools.checks.exhibit_temporary_closure_checker import ExhibitTemporaryClosureChecker
 from tools.checks.gift_shop_list_checker import GiftShopListChecker
 from tools.checks.gift_shop_temporary_closure_checker import GiftShopTemporaryClosureChecker
 from tools.checks.gift_shop_window_checker import GiftShopWindowChecker
@@ -41,7 +42,7 @@ from tools.checks.zoomobile_route_checker import ZoomobileRouteChecker
 
 TODAY = date( 2026, 11, 2 )
 CHECKS = (
-   ( ExhibitSeasonChecker, 'check_schedules' ),
+   ( ScheduleChecker, 'check_exhibits' ),
    ( WildEncounterScheduleChecker, 'check_schedules' ),
    ( GuardiansTalkScheduleChecker, 'check_schedules' ),
    ( ScheduleChecker, 'check_closure_updates' ),
@@ -249,6 +250,28 @@ def Test_CheckAttractions_TestClosureAndWindows_ExpectOneCount(
 
    assert result == 6
    assert calls == [ 'closure', 'windows', 'temporary' ]
+
+
+def Test_CheckExhibits_TestTemporaryThenSeason_ExpectOneCount(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   calls = []
+
+   def check_temporary( database: Path, today: date ) -> int:
+      calls.append( 'temporary' )
+      return 2
+
+   def check_season( database: Path, today: date ) -> int:
+      calls.append( 'season' )
+      return 3
+
+   monkeypatch.setattr( ExhibitTemporaryClosureChecker, 'check_schedules', check_temporary )
+   monkeypatch.setattr( ExhibitSeasonChecker, 'check_schedules', check_season )
+
+   result = ScheduleChecker.check_exhibits( tmp_path / 'animals.db', TODAY )
+
+   assert result == 5
+   assert calls == [ 'temporary', 'season' ]
 
 
 def Test_RunChecks_TestIssueCounts_ExpectSummary(
