@@ -28,7 +28,7 @@ SNOW_LEOPARD_WEBSITE = 'Snow Leopard'
 SNOW_LEOPARD_LINK = 'https://example.test/snow'
 TODAY = date( 2026, 11, 1 )
 SCHEDULE_START = TODAY
-SCHEDULE_END = date( 2026, 11, 5 )
+SCHEDULE_END = date( 2026, 11, 4 )
 CLOCK = '11:00 AM'
 REGION = 'Africa'
 WEBSITE_CLOCK = '11:00'
@@ -162,10 +162,9 @@ def _enabled_dates( days: list[ date ] ) -> dict[ str, object ]:
 
 
 def _matched_dates() -> list[ date ]:
-   last = SCHEDULE_END - timedelta( days=1 )
    return [
       TODAY + timedelta( days=offset )
-      for offset in range( ( last - TODAY ).days + 1 )
+      for offset in range( ( SCHEDULE_END - TODAY ).days + 1 )
    ]
 
 
@@ -362,7 +361,7 @@ def Test_CheckSchedules_TestScheduleEndedToday_ExpectScheduleRemoved(
          (
             KANGAROO,
             TODAY.isoformat(),
-            ( TODAY + timedelta( days=1 ) ).isoformat(),
+            TODAY.isoformat(),
             CLOCK,
          ),
       ] )
@@ -461,7 +460,7 @@ def Test_CheckSchedules_TestDifferentTime_ExpectWindowFixed(
    assert CheckReport.text( 'checks.setScheduleFrom' ) in output
    assert 'November 2, 2026 through November 4, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }2:00 PM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in output
-   assert _schedule_end( database, GIRAFFE ) == '2026-11-05'
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-04'
    html = _email( output, result )
    assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
@@ -491,7 +490,7 @@ def Test_CheckSchedules_TestBookableWindowLonger_ExpectWindowViolation(
    assert 'November 2, 2026 through November 6, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in output
    assert CheckReport.text( 'checks.bookableDatesNotInApp' ) not in output
-   assert _schedule_end( database, GIRAFFE ) == '2026-11-07'
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-06'
    html = _email( output, result )
    assert CheckReport.text( 'checks.setScheduleFrom' ) in html
    assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
@@ -515,13 +514,13 @@ def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowViolation(
    assert result == 0
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert f'  { _encounter_label( GIRAFFE ) }' in output
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert 'November 2, 2026 through November 2, 2026.' in output
+   assert CheckReport.text( 'checks.setScheduleFor' ) in output
+   assert 'Set the schedule for November 2, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }11:00 AM Sun, Mon, Tue, Wed, Thu, Fri, Sat' in output
    assert CheckReport.text( 'checks.appDatesNotBookable' ) not in output
-   assert _schedule_end( database, GIRAFFE ) == '2026-11-03'
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-02'
    html = _email( output, result )
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
+   assert CheckReport.text( 'checks.setScheduleFor' ) in html
    assert CheckReport.text( 'checks.bookingDatesCompared' ) not in html
 
 
@@ -575,7 +574,7 @@ def Test_CheckSchedules_TestUnscheduledWithImage_ExpectPhotoAndSchedule(
    assert result == 0
    assert photo in output
    assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert _schedule_end( database, name ) == '2026-11-05'
+   assert _schedule_end( database, name ) == '2026-11-04'
    html = _email( output, result )
    assert CheckEmailRenderer.image_src( photo ) in html
 
@@ -602,6 +601,117 @@ def Test_CheckSchedules_TestTodayNotBookable_ExpectWindowKept(
    assert _schedule_end( database, GIRAFFE ) == SCHEDULE_END.isoformat()
 
 
+def Test_CheckSchedules_TestLastBookableDayOutsideWeekdays_ExpectWindowKept(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database = tmp_path / 'animals.db'
+   start = date( 2026, 11, 2 )
+   last = date( 2026, 11, 8 )
+   _write_database(
+      database,
+      [ ( GIRAFFE, GIRAFFE_LINK ) ],
+      [ (
+         GIRAFFE,
+         start.isoformat(),
+         last.isoformat(),
+         CLOCK,
+      ) ] )
+   connection = sqlite3.connect( database )
+   connection.execute(
+      """   UPDATE WildEncounterSchedule
+            SET MONDAY = 1,
+                TUESDAY = 0,
+                WEDNESDAY = 0,
+                THURSDAY = 0,
+                FRIDAY = 1,
+                SATURDAY = 1,
+                SUNDAY = 0
+            WHERE WILD_ENCOUNTER = ?
+      """,
+      ( GIRAFFE, ),
+   )
+   connection.commit()
+   connection.close()
+   days = [ '', GIRAFFE, '', '', '', GIRAFFE, GIRAFFE ]
+   cells = ''.join( f'<td>{ name }</td>' for name in days )
+   page = (
+      '<table><tr><th>Time</th><th>Sunday</th><th>Monday</th><th>Tuesday</th>'
+      '<th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th></tr>'
+      f'<tr><td>{ WEBSITE_CLOCK }</td>{ cells }</tr></table>'
+   )
+   _install_web(
+      monkeypatch,
+      {
+         WebsitePage.url( WildEncounterComparison.PAGE ): page,
+         GIRAFFE_LINK: _booking_page( GIRAFFE_TOUR ),
+      },
+      { GIRAFFE_TOUR: _enabled_dates( [
+         start,
+         date( 2026, 11, 6 ),
+         date( 2026, 11, 7 ),
+         last,
+      ] ) } )
+   CheckReport.reset_fixed_count()
+
+   result = CHECKER.check_schedules( database, TODAY )
+
+   output = capsys.readouterr().out
+   assert result == 0
+   assert CheckReport.fixed_count == 0
+   assert CheckReport.category_line( 'checks.windowsDoNotAlign', 0 ) in output
+   assert CheckReport.text( 'checks.setScheduleFrom' ) not in output
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-08'
+   assert _schedule_count( database, GIRAFFE ) == 1
+
+
+def Test_CheckSchedules_TestTrailingBookableDayOutsideWeekdays_ExpectEndOnLastScheduledDay(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   database = tmp_path / 'animals.db'
+   start = date( 2026, 11, 2 )
+   sunday = date( 2026, 11, 8 )
+   _write_database(
+      database,
+      [ ( GIRAFFE, GIRAFFE_LINK ) ],
+      [ ( GIRAFFE, start.isoformat(), start.isoformat(), CLOCK ) ] )
+   days = [ '', GIRAFFE, '', '', '', GIRAFFE, GIRAFFE ]
+   cells = ''.join( f'<td>{ name }</td>' for name in days )
+   page = (
+      '<table><tr><th>Time</th><th>Sunday</th><th>Monday</th><th>Tuesday</th>'
+      '<th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th></tr>'
+      f'<tr><td>{ WEBSITE_CLOCK }</td>{ cells }</tr></table>'
+   )
+   _install_web(
+      monkeypatch,
+      {
+         WebsitePage.url( WildEncounterComparison.PAGE ): page,
+         GIRAFFE_LINK: _booking_page( GIRAFFE_TOUR ),
+      },
+      { GIRAFFE_TOUR: _enabled_dates( [
+         start,
+         date( 2026, 11, 6 ),
+         date( 2026, 11, 7 ),
+         sunday,
+      ] ) } )
+   CheckReport.reset_fixed_count()
+
+   result = CHECKER.check_schedules( database, TODAY )
+
+   output = capsys.readouterr().out
+   assert result == 0
+   assert CheckReport.fixed_count == 1
+   assert 'November 2, 2026 through November 7, 2026.' in output
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-07'
+   CheckReport.reset_fixed_count()
+
+   CHECKER.check_schedules( database, TODAY )
+
+   assert CheckReport.fixed_count == 0
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-07'
+
+
 def Test_CheckSchedules_TestLaterDayStillDiffers_ExpectWebsiteWindow(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch,
@@ -622,4 +732,4 @@ def Test_CheckSchedules_TestLaterDayStillDiffers_ExpectWebsiteWindow(
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert CheckReport.text( 'checks.setScheduleFrom' ) in output
    assert 'November 2, 2026 through November 6, 2026.' in output
-   assert _schedule_end( database, GIRAFFE ) == '2026-11-07'
+   assert _schedule_end( database, GIRAFFE ) == '2026-11-06'

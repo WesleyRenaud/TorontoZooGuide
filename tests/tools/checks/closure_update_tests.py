@@ -57,6 +57,7 @@ def Test_Build_TestSoonerEnd_ExpectExtension() -> None:
    assert dates( plan.extended ) == [
       ( 'Pathway is closed.', date( 2026, 5, 3 ), HORIZON ),
    ]
+   assert 'Extended the update through December 11, 2026.' in plan.extended[ 0 ].extended_line()
    assert plan.added == []
    assert plan.ended == []
 
@@ -99,13 +100,13 @@ def Test_Build_TestMissingOnWebsite_ExpectEnd() -> None:
    )
 
    assert dates( plan.ended ) == [
-      ( 'Old closure', date( 2026, 5, 3 ), TODAY ),
+      ( 'Old closure', date( 2026, 5, 3 ), date( 2026, 11, 10 ) ),
    ]
    assert plan.added == []
    assert plan.extended == []
 
 
-def Test_Build_TestClosedOnANamedDay_ExpectEndTheNextDay() -> None:
+def Test_Build_TestClosedOnANamedDay_ExpectEndOnThatDay() -> None:
    plan = ClosureUpdateBuilder.build(
       [ notice( 'The VR station is closed for today, Sunday, November 15.' ) ],
       [],
@@ -116,14 +117,14 @@ def Test_Build_TestClosedOnANamedDay_ExpectEndTheNextDay() -> None:
       (
          'The VR station is closed for today, Sunday, November 15.',
          TODAY,
-         date( 2026, 11, 16 ),
+         date( 2026, 11, 15 ),
       ),
    ]
    assert plan.extended == []
    assert plan.trimmed == []
 
 
-def Test_Build_TestClosedToday_ExpectEndTomorrow() -> None:
+def Test_Build_TestClosedToday_ExpectEndToday() -> None:
    plan = ClosureUpdateBuilder.build(
       [ notice( 'The VR station is closed today.' ) ],
       [],
@@ -131,11 +132,11 @@ def Test_Build_TestClosedToday_ExpectEndTomorrow() -> None:
    )
 
    assert dates( plan.added ) == [
-      ( 'The VR station is closed today.', TODAY, date( 2026, 11, 12 ) ),
+      ( 'The VR station is closed today.', TODAY, TODAY ),
    ]
 
 
-def Test_Build_TestDateRange_ExpectDayAfterTheLastDay() -> None:
+def Test_Build_TestDateRange_ExpectEndOnTheLastDay() -> None:
    day = date( 2026, 6, 1 )
    plan = ClosureUpdateBuilder.build(
       [ notice( 'TundraAir Ride Closure June 2nd-4th.' ) ],
@@ -144,7 +145,7 @@ def Test_Build_TestDateRange_ExpectDayAfterTheLastDay() -> None:
    )
 
    assert dates( plan.added ) == [
-      ( 'TundraAir Ride Closure June 2nd-4th.', day, date( 2026, 6, 5 ) ),
+      ( 'TundraAir Ride Closure June 2nd-4th.', day, date( 2026, 6, 4 ) ),
    ]
 
 
@@ -157,8 +158,49 @@ def Test_Build_TestMonthEndOnANamedDay_ExpectTrimmed() -> None:
    )
 
    assert dates( plan.trimmed ) == [
-      ( title, date( 2026, 11, 15 ), date( 2026, 11, 16 ) ),
+      ( title, date( 2026, 11, 15 ), date( 2026, 11, 15 ) ),
    ]
    assert plan.added == []
    assert plan.extended == []
+
+
+def Test_AddedLine_TestDescription_ExpectNoticeText() -> None:
+   update = ClosureUpdate(
+      'Tuesday, November 17',
+      'The Indo-Malaya Pavilion will open late.',
+      date( 2026, 11, 17 ),
+      date( 2026, 11, 17 ),
+   )
+   line = update.added_line()
+
+   assert 'Tuesday, November 17' in line
+   assert 'The Indo-Malaya Pavilion will open late.' in line
+   assert 'Set the update for November 17, 2026.' in line
+   assert 'through' not in line
+
+
+def Test_ExtendedLine_TestDescription_ExpectTitleAndEnd() -> None:
+   update = ClosureUpdate(
+      'Eurasia Wilds Loop Pathway Closure',
+      'A portion of the pathway is closed.',
+      date( 2026, 5, 3 ),
+      date( 2026, 12, 17 ),
+   )
+   line = update.extended_line()
+
+   assert line.startswith( 'Eurasia Wilds Loop Pathway Closure' )
+   assert 'A portion of the pathway is closed.' not in line
+   assert 'Extended the update through December 17, 2026.' in line
+
+
+def Test_AddedLine_TestSeveralDays_ExpectThrough() -> None:
+   update = ClosureUpdate(
+      'TundraAir Ride Closure',
+      'Closed June 2nd-4th.',
+      date( 2026, 6, 2 ),
+      date( 2026, 6, 4 ),
+   )
+   line = update.added_line()
+
+   assert 'Set the update from June 2, 2026 through June 4, 2026.' in line
 

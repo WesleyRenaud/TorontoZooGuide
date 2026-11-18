@@ -18,12 +18,19 @@ class WeekSchedule:
          cls,
          dates: list[ date ],
          slots: set[ ScheduleSlot ] ) -> WeekSchedule | None:
-      if dates == [] or slots == set():
+      weekdays = { slot.weekday for slot in slots }
+      scheduled = [
+         day
+         for day in dates
+         if day.weekday() in weekdays
+      ]
+
+      if scheduled == []:
          return None
 
       return cls(
-         start=min( dates ),
-         end=max( dates ),
+         start=min( scheduled ),
+         end=max( scheduled ),
          slots=frozenset( slots ),
       )
 

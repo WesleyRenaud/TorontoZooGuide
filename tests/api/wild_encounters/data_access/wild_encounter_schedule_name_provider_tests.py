@@ -114,7 +114,7 @@ def Test_FetchScheduledWildEncounterNames_TestExpired_ExpectExcluded(
    assert scheduled_wild_encounter_names == []
 
 
-def Test_FetchScheduledWildEncounterNames_TestEndingToday_ExpectExcluded(
+def Test_FetchScheduledWildEncounterNames_TestEndingToday_ExpectIncluded(
       wild_encounter_schedule_name_conn: sqlite3.Connection ) -> None:
    _insert_schedule(
       wild_encounter_schedule_name_conn,
@@ -126,4 +126,4 @@ def Test_FetchScheduledWildEncounterNames_TestEndingToday_ExpectExcluded(
       wild_encounter_schedule_name_conn,
       TODAY )
 
-   assert scheduled_wild_encounter_names == []
+   assert scheduled_wild_encounter_names == [ GIRAFFE ]

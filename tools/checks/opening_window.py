@@ -102,23 +102,14 @@ class OpeningWindow():
             + CheckReport.text( 'checks.period' )
          )
 
-      when = DateValues.format_display_date_value( window.start )
-      end = DateValues.format_display_date_value( window.end )
-
-      if end != None:
-         when = when + CheckReport.text( 'checks.dateThrough' ) + end
-
-      return (
-         CheckReport.text( 'checks.setScheduleFrom' )
-         + when
-         + CheckReport.text( 'checks.period' )
-      )
+      return CheckReport.set_schedule( window.start, window.end )
 
 
    @classmethod
    def unfixed( cls, line: str ) -> bool:
       phrases = (
          CheckReport.text( 'checks.setScheduleFrom' ),
+         CheckReport.text( 'checks.setScheduleFor' ),
          CheckReport.text( 'checks.extendedScheduleThrough' ),
          CheckReport.text( 'checks.trimmedScheduleThrough' ),
       )
@@ -126,13 +117,15 @@ class OpeningWindow():
 
 
    @classmethod
-   def detail( cls, window: OpeningWindow ) -> str:
+   def detail( cls, window: OpeningWindow, clock: str | None = None ) -> str:
+      days = window.pattern.description()
+
+      if clock != None:
+         days += CheckReport.text( 'checks.attractionHoursResumeFrom' ) + clock
+
       return CheckReport.join_lines( [
          CheckReport.detail_item( cls.schedule_line( window ) ),
-         CheckReport.detail_item(
-            CheckReport.text( 'format.bulletItem' )
-            + window.pattern.description()
-         ),
+         CheckReport.detail_item( CheckReport.text( 'format.bulletItem' ) + days ),
       ] )
 
 

@@ -11,7 +11,12 @@ from tools.checks.opening_window import OpeningWindow
 
 class AttractionWindowFixer():
    @classmethod
-   def apply( cls, database: Path, name: str, window: OpeningWindow ) -> str:
+   def apply(
+         cls,
+         database: Path,
+         name: str,
+         window: OpeningWindow,
+         clock: str | None = None ) -> str:
       connection = DatabaseConnectionProvider.open( str( database ) )
       RequestConnectionProvider.set( connection )
 
@@ -38,4 +43,4 @@ class AttractionWindowFixer():
          connection.close()
 
       CheckReport.note_fixed( 1 )
-      return OpeningWindow.detail( window )
+      return OpeningWindow.detail( window, clock )

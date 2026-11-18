@@ -6,13 +6,14 @@ from pathlib import Path
 import sys
 
 from api.app_string_provider import AppStringProvider
+from api.attractions.data_access.attraction_hours_schedule_record import AttractionHoursScheduleRecord
 from api.attractions.data_access.attraction_provider import AttractionProvider
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
 from api.database_connection_provider import DatabaseConnectionProvider
 from api.shared.date_values import DateValues
 from api.shared.peak_months import PeakMonths
 from .attraction_catalogue import AttractionCatalogue
-from .attraction_listing import AttractionListing
+from .attraction_hours_reader import AttractionHoursReader
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
 from .check_report import CheckReport
@@ -41,26 +42,6 @@ class AttractionWindowChecker():
 
 
    @classmethod
-   def listed_names(
-         cls,
-         item: WebsiteAttraction,
-         listings: list[ AttractionListing ] ) -> list[ str ]:
-      website = AttractionListing( name=item.title, link=item.href )
-
-      if website.is_website_only():
-         return []
-
-      return next(
-         (
-            [ listing.name ]
-            for listing in listings
-            if listing.matches( website )
-         ),
-         [],
-      )
-
-
-   @classmethod
    def load_months( cls, database: Path ) -> dict[ str, PeakMonths ]:
       connection = DatabaseConnectionProvider.open( str( database ) )
 
@@ -71,34 +52,68 @@ class AttractionWindowChecker():
 
 
    @classmethod
-   def report_lines(
+   def schedule_window(
          cls,
-         database: Path,
          name: str,
-         status: str | None,
+         item: WebsiteAttraction,
          schedules: list[ AttractionScheduleRecord ],
          today: date,
-         months: PeakMonths ) -> list[ str ]:
-      pattern = WeekdayWindow.parse( status )
+         months: PeakMonths ) -> OpeningWindow | None:
+      pattern = WeekdayWindow.parse( item.status )
 
       if pattern == None:
-         return []
+         return None
 
-      replacement = OpeningWindow.replacement(
+      return OpeningWindow.replacement(
          pattern,
          OpeningWindow.covering( schedules, name, today, 'attraction' ),
          today,
          months,
       )
 
-      if replacement == None:
+
+   @classmethod
+   def report_lines(
+         cls,
+         database: Path,
+         name: str,
+         item: WebsiteAttraction,
+         schedules: list[ AttractionScheduleRecord ],
+         hours_records: list[ AttractionHoursScheduleRecord ],
+         today: date,
+         months: PeakMonths ) -> list[ str ]:
+      details: list[ str ] = []
+      window = cls.schedule_window( name, item, schedules, today, months )
+
+      if item.hours == None:
+         hours = []
+         clock = None
+      else:
+         hours, clock = AttractionHoursReader.report_lines(
+            database,
+            name,
+            item.status,
+            item.hours,
+            hours_records,
+            today,
+            months,
+            None if window == None else window.end,
+         )
+
+      if window != None:
+         details.append(
+            AttractionWindowFixer.apply( database, name, window, clock )
+         )
+
+      details.extend( hours )
+
+      if details == []:
          return []
 
       return [
-         CheckReport.join_lines( [
-            AttractionCatalogue.app_line( name ),
-            AttractionWindowFixer.apply( database, name, replacement ),
-         ] ),
+         CheckReport.join_lines(
+            [ AttractionCatalogue.app_line( name ) ] + details
+         ),
       ]
 
 
@@ -108,12 +123,13 @@ class AttractionWindowChecker():
          AttractionCatalogue.load_attractions( database )
       )
       schedules = cls.load_schedules( database )
+      hours_records = AttractionHoursReader.load( database )
       months = cls.load_months( database )
       seen: set[ str ] = set()
       lines: list[ str ] = []
 
       for item in AttractionCatalogue.fetch_website_attractions():
-         for name in cls.listed_names( item, listings ):
+         for name in AttractionCatalogue.listed_names( item, listings ):
             if name in seen:
                continue
 
@@ -122,8 +138,9 @@ class AttractionWindowChecker():
                cls.report_lines(
                   database,
                   name,
-                  item.status,
+                  item,
                   schedules,
+                  hours_records,
                   today,
                   months.get( name, PeakMonths() ),
                )
@@ -142,7 +159,10 @@ class AttractionWindowChecker():
          'checks.windowsDoNotAlign',
          lines,
       )
-      return sum( OpeningWindow.unfixed( line ) for line in lines )
+      return sum(
+         OpeningWindow.unfixed( line ) and AttractionHoursReader.unfixed( line )
+         for line in lines
+      )
 
 
    @classmethod

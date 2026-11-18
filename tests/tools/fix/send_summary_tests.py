@@ -717,16 +717,14 @@ def Test_RenderHtml_TestClear_ExpectAllClear() -> None:
    assert '2027-01-01' not in html
 
 
-def Test_RenderHtml_TestFailure_ExpectMessage() -> None:
-   html = CheckEmailRenderer.render_html(
-      'Zoo Hours check for 2026-11-04.\n\n'
-      + CheckReportParser.format_error_count( 0 )
-      + '\n',
-      2,
-   )
-
-   assert CheckReport.text( 'checks.status.couldNotFinish' ) in html
-   assert 'Wednesday, November 4, 2026' in html
+def Test_RenderHtml_TestFailure_ExpectCrash() -> None:
+   with pytest.raises( RuntimeError ):
+      CheckEmailRenderer.render_html(
+         'Zoo Hours check for 2026-11-04.\n\n'
+         + CheckReportParser.format_error_count( 0 )
+         + '\n',
+         2,
+      )
 
 
 def Test_SubjectFor_TestZeroErrors_ExpectSummarySubject() -> None:
@@ -769,10 +767,9 @@ def Test_SubjectFor_TestFixedErrors_ExpectAllErrors() -> None:
    )
 
 
-def Test_SubjectFor_TestFailedCheck_ExpectCouldNotFinish() -> None:
-   subject = CheckReportParser.subject_for( 'Could not fetch the page.', 2 )
-
-   assert subject == AppStringProvider.format( 'checks.subject.couldNotFinish' )
+def Test_SubjectFor_TestFailedCheck_ExpectCrash() -> None:
+   with pytest.raises( RuntimeError, match='Could not fetch the page.' ):
+      CheckReportParser.subject_for( 'Could not fetch the page.', 2 )
 
 
 def Test_SendSummary_TestMessage_ExpectLoginAndSend(
@@ -904,6 +901,8 @@ def Test_Main_TestPreview_ExpectOpenedHtml(
       'run_check',
       lambda: (
          'Zoo Hours check for 2026-11-04.\n\n'
+         + CheckReportParser.format_fixed_count( 0 )
+         + '\n\n'
          + CheckReportParser.format_error_count( 0 )
          + '\n',
          0,
@@ -947,10 +946,25 @@ def Test_Main_TestSentSummary_ExpectExitCode0(
    assert FakeSmtp.instances[ 0 ].sent is not None
 
 
-def Test_SummaryLine_TestCheckStopped_ExpectDidNotFinish() -> None:
+def Test_SummaryLine_TestCheckStopped_ExpectCrash() -> None:
    body = 'Could not write the viewing alert.\n'
 
-   assert send_summary.summary_line( body ) == CheckReport.text( 'checks.status.didNotFinish' )
+   with pytest.raises( RuntimeError, match='Could not write the viewing alert.' ):
+      send_summary.summary_line( body )
+
+
+def Test_Main_TestCheckCrashed_ExpectCrash(
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   FakeSmtp.instances = []
+   monkeypatch.setattr( send_summary_module.smtplib, 'SMTP', FakeSmtp )
+   monkeypatch.setenv( send_summary.PASSWORD_VARIABLE, 'app-password' )
+   monkeypatch.setattr( send_summary, 'run_check', lambda: ( 'ValueError: boom\n', 1 ) )
+   monkeypatch.setattr( sys, 'argv', [ 'fix' ] )
+
+   with pytest.raises( RuntimeError, match='ValueError: boom' ):
+      send_summary.main()
+
+   assert FakeSmtp.instances == []
 
 
 def Test_SummaryLine_TestNothingFixed_ExpectNoErrorsDetected() -> None:

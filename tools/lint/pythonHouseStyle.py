@@ -191,6 +191,60 @@ def report_tuple_dict_keys(
          'Do not use a tuple as a dict key type. Name the record.' )
 
 
+def is_date_type( node: ast.expr ) -> bool:
+   if isinstance( node, ast.Name ) and node.id == 'date':
+      return True
+
+   if isinstance( node, ast.Attribute ) and node.attr == 'date':
+      return True
+
+   if isinstance( node, ast.BinOp ) and isinstance( node.op, ast.BitOr ):
+      sides = ( node.left, node.right )
+      return (
+         any( is_date_type( side ) for side in sides )
+         and any( isinstance( side, ast.Constant ) and side.value is None for side in sides )
+      )
+
+   return False
+
+
+def date_tuple_nodes( annotation: ast.expr | None ) -> list[ ast.expr ]:
+   if annotation is None:
+      return []
+
+   found: list[ ast.expr ] = []
+
+   for child in ast.walk( annotation ):
+      if not isinstance( child, ast.Subscript ):
+         continue
+
+      if annotation_type_name( child.value ) not in { 'tuple', 'Tuple' }:
+         continue
+
+      elements = child.slice.elts if isinstance( child.slice, ast.Tuple ) else [ child.slice ]
+
+      if elements == [] or any( is_ellipsis_node( element ) for element in elements ):
+         continue
+
+      if all( is_date_type( element ) for element in elements ):
+         found.append( child )
+
+   return found
+
+
+def report_date_tuples(
+      violations: list[ tuple[ str, int, int, str ] ],
+      path: Path,
+      annotation: ast.expr | None ) -> None:
+   for node in date_tuple_nodes( annotation ):
+      add_violation(
+         violations,
+         path,
+         node.lineno or 1,
+         ( node.col_offset or 0 ) + 1,
+         'Do not use a tuple of dates. Name the record.' )
+
+
 def disallowed_homogeneous_collection_message( node: ast.expr ) -> str | None:
    if isinstance( node, ast.Subscript ):
       subscript_name = annotation_type_name( node.value )
@@ -302,6 +356,7 @@ def check_typing_annotations(
    for node in ast.walk( tree ):
       if isinstance( node, ast.AnnAssign ):
          report_disallowed_homogeneous_collections( violations, path, node.annotation )
+         report_date_tuples( violations, path, node.annotation )
 
          if report_tuple_keys:
             report_tuple_dict_keys( violations, path, node.annotation )
@@ -341,6 +396,7 @@ def check_typing_annotations(
                   'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
 
          report_disallowed_homogeneous_collections( violations, path, arg.annotation )
+         report_date_tuples( violations, path, arg.annotation )
 
          if report_tuple_keys:
             report_tuple_dict_keys( violations, path, arg.annotation )
@@ -358,6 +414,7 @@ def check_typing_annotations(
                violations,
                path,
                node.args.vararg.annotation )
+            report_date_tuples( violations, path, node.args.vararg.annotation )
 
             if report_tuple_keys:
                report_tuple_dict_keys( violations, path, node.args.vararg.annotation )
@@ -375,6 +432,7 @@ def check_typing_annotations(
                violations,
                path,
                node.args.kwarg.annotation )
+            report_date_tuples( violations, path, node.args.kwarg.annotation )
 
             if report_tuple_keys:
                report_tuple_dict_keys( violations, path, node.args.kwarg.annotation )
@@ -397,6 +455,7 @@ def check_typing_annotations(
                   f'Do not use "object" as the return type for "{ node.name }"; '
                   'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
          report_disallowed_homogeneous_collections( violations, path, node.returns )
+         report_date_tuples( violations, path, node.returns )
 
          if report_tuple_keys:
             report_tuple_dict_keys( violations, path, node.returns )
@@ -419,6 +478,7 @@ def check_typing_annotations(
                   'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
 
          report_disallowed_homogeneous_collections( violations, path, node.returns )
+         report_date_tuples( violations, path, node.returns )
 
          if report_tuple_keys:
             report_tuple_dict_keys( violations, path, node.returns )

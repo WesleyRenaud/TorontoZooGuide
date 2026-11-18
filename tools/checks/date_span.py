@@ -7,10 +7,13 @@ from datetime import date, timedelta
 @dataclass( frozen=True )
 class DateSpan:
    start: date
-   end: date
+   end: date | None
 
 
    def is_next_day( self, day: date ) -> bool:
+      if self.end == None:
+         return False
+
       return day == self.end + timedelta( days=1 )
 
 

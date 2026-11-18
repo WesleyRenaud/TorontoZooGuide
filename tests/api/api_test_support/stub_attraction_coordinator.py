@@ -11,7 +11,7 @@ from api.models.attraction import Attraction
 class StubAttractionCoordinator():
    instances: list[ StubAttractionCoordinator ] = []
    default_success: bool = True
-   raise_time_bounds_error: bool = False
+   missing_time_bounds: bool = False
    raise_hours_schedule_error: bool = False
    attraction_names: list[ str ]
    attractions: list[ Attraction ]
@@ -108,7 +108,7 @@ class StubAttractionCoordinator():
          self,
          *,
          start_date: str | None = None,
-         end_date: str | None = None ) -> AttractionHoursScheduleTimeBounds:
+         end_date: str | None = None ) -> AttractionHoursScheduleTimeBounds | None:
       self.calls.append(
          CoordinatorCall(
             'get_attraction_hours_schedule_time_bounds',
@@ -118,8 +118,8 @@ class StubAttractionCoordinator():
             },
          )
       )
-      if StubAttractionCoordinator.raise_time_bounds_error:
-         raise ValueError( 'No zoo hours found for the selected date range.' )
+      if StubAttractionCoordinator.missing_time_bounds:
+         return None
 
       assert self.hours_time_bounds is not None
       return self.hours_time_bounds

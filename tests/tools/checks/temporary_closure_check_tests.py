@@ -17,7 +17,11 @@ from tools.checks.website_page import WebsitePage
 
 TODAY = date( 2026, 11, 15 )
 NAMES = {
-   ItemType.ATTRACTION: [ 'Splash Island', 'Waterside Theatre' ],
+   ItemType.ATTRACTION: [
+      'Splash Island',
+      'Waterside Theatre',
+      'Wildlife Health & Science Centre',
+   ],
    ItemType.RESTAURANT: [ 'Caribou Café' ],
    ItemType.GIFT_SHOP: [ 'Zootique' ],
 }
@@ -133,7 +137,12 @@ def notice( html: str, place: str ) -> str:
       if place not in names:
          continue
 
-      for item in TemporaryClosureReader.read( html, { name: name for name in names }, kind ):
+      for item in TemporaryClosureReader.read(
+            html,
+            { name: name for name in names },
+            kind,
+            TODAY,
+      ):
          if item.place == place:
             return item.message
 
@@ -325,4 +334,42 @@ def Test_CheckSchedules_TestEndPastHorizon_ExpectNoChange(
    assert result == 0
    assert overrides( database_path ) == [
       ( 'Zootique', '2026-11-01', '2026-12-20', 1, message ),
+   ]
+
+
+def Test_CheckSchedules_TestNamedDay_ExpectThatDayOnly(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database_path = tmp_path / 'animals.db'
+   database( database_path )
+   connection = sqlite3.connect( database_path )
+   connection.execute(
+      'INSERT INTO Attraction ( NAME ) VALUES ( ? )',
+      ( 'Wildlife Health & Science Centre', ),
+   )
+   connection.commit()
+   connection.close()
+   html = page( [
+      box(
+         'Wednesday, December 9',
+         'The Wildlife Health and Science Centre will close early at 1:00pm due to a private event.',
+      ),
+   ] )
+
+   result = check( database_path, html, monkeypatch, AttractionTemporaryClosureChecker )
+   output = capsys.readouterr().out
+   message = notice( html, 'Wildlife Health & Science Centre' )
+
+   assert result == 0
+   assert 'December 9, 2026' in output
+   assert overrides( database_path ) == [
+      ( 'Wildlife Health & Science Centre', '2026-12-09', '2026-12-09', 1, message ),
+   ]
+
+   again = check( database_path, html, monkeypatch, AttractionTemporaryClosureChecker )
+
+   assert again == 0
+   assert overrides( database_path ) == [
+      ( 'Wildlife Health & Science Centre', '2026-12-09', '2026-12-09', 1, message ),
    ]

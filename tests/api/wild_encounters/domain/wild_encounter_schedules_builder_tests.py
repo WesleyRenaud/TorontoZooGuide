@@ -80,11 +80,30 @@ def Test_Covers_TestOpenEndedRange_ExpectStartThroughLaterDates() -> None:
    assert not schedule.covers( date( 2026, 10, 31 ) )
    assert schedule.covers( date( 2026, 11, 1 ) )
    assert schedule.covers( date( 2026, 11, 4 ) )
-   assert not schedule.covers( date( 2026, 11, 5 ) )
+   assert schedule.covers( date( 2026, 11, 5 ) )
+   assert not schedule.covers( date( 2026, 11, 6 ) )
 
 
-def Test_LastDay_TestEndDate_ExpectDayBeforeEnd() -> None:
-   assert _monday_schedule().last_day() == date( 2026, 11, 4 )
+def Test_Covers_TestMissingStart_ExpectNotCovered() -> None:
+   schedule = WildEncounterSchedule(
+      name=GIRAFFE,
+      start=None,
+      end=date( 2026, 11, 5 ),
+      encounter_time='11:00 AM',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+   )
+
+   assert not schedule.covers( date( 2026, 11, 1 ) )
+
+
+def Test_LastDay_TestEndDate_ExpectThatDay() -> None:
+   assert _monday_schedule().last_day() == date( 2026, 11, 5 )
 
 
 def Test_LastDay_TestOpenEnded_ExpectNone() -> None:

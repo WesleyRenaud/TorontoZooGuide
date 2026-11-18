@@ -120,19 +120,21 @@ class CheckReportParser():
 
    @classmethod
    def subject_for( cls, body: str, exit_code: int ) -> str:
-      if exit_code == CheckExitCode.CLEAR or exit_code == CheckExitCode.DIFFERENCES:
-         error_count = cls.error_count( body )
+      error_count = cls.error_count( body )
 
-         if error_count != None:
-            fixed = cls.recorded_fixed_count( body ) or 0
-            return (
-               AppStringProvider.format( 'checks.subject.summary' )
-               + cls.format_error_count( error_count + fixed )
-            )
+      unfinished = (
+         exit_code != CheckExitCode.CLEAR
+         and exit_code != CheckExitCode.DIFFERENCES
+      )
 
-         return AppStringProvider.format( 'checks.subject.finished' )
+      if unfinished or error_count == None:
+         raise RuntimeError( body )
 
-      return AppStringProvider.format( 'checks.subject.couldNotFinish' )
+      fixed = cls.recorded_fixed_count( body ) or 0
+      return (
+         AppStringProvider.format( 'checks.subject.summary' )
+         + cls.format_error_count( error_count + fixed )
+      )
 
 
    @classmethod

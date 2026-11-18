@@ -67,6 +67,7 @@ class ClosureUpdateChecker():
    @classmethod
    def remaining( cls, lines: list[ str ] ) -> int:
       phrases = (
+         CheckReport.text( 'checks.setUpdateFor' ),
          CheckReport.text( 'checks.setUpdateFrom' ),
          CheckReport.text( 'checks.endedUpdate' ),
          CheckReport.text( 'checks.extendedUpdateThrough' ),

@@ -153,7 +153,7 @@ class GuardiansTalkScheduleProvider():
                      AND s.ENCLOSURE_NAME IS ?
                      AND s.TALK_TIME = ?
                      AND s.SCHEDULE_START_DATE <= ?
-                     AND COALESCE( s.SCHEDULE_END_DATE, ? ) > ?;
+                     AND COALESCE( s.SCHEDULE_END_DATE, ? ) >= ?;
             """,
             (
                talk_name,
@@ -203,7 +203,7 @@ class GuardiansTalkScheduleProvider():
                      AND t.LOCATION = s.LOCATION
                      AND t.ENCLOSURE_NAME IS s.ENCLOSURE_NAME
                   WHERE s.SCHEDULE_START_DATE <= ?
-                     AND COALESCE( s.SCHEDULE_END_DATE, ? ) > ?
+                     AND COALESCE( s.SCHEDULE_END_DATE, ? ) >= ?
                      AND NOT EXISTS (
                         SELECT 1
                         FROM GuardiansTalkCancellation c
@@ -246,7 +246,7 @@ class GuardiansTalkScheduleProvider():
                   WHERE TALK_NAME = ?
                      AND LOCATION = ?
                      AND ENCLOSURE_NAME IS ?
-                     AND COALESCE( SCHEDULE_END_DATE, ? ) > ?
+                     AND COALESCE( SCHEDULE_END_DATE, ? ) >= ?
                   ORDER BY TALK_TIME;""",
             (
                talk_name,

@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 from datetime import date
 from pathlib import Path
-import sys
 
 from .animal_app_catalogue_not_on_website_checker import AnimalAppCatalogueNotOnWebsiteChecker
 from .animal_closure_off_display_extension_checker import AnimalClosureOffDisplayExtensionChecker
@@ -174,17 +173,9 @@ class ScheduleChecker():
       args = cls.parse_args()
 
       if not args.database.exists():
-         print(
-            AppStringProvider.format( 'checks.couldNotFindDatabase' ),
-            file=sys.stderr,
-         )
-         return CheckExitCode.COULD_NOT_FINISH
+         raise RuntimeError( AppStringProvider.format( 'checks.couldNotFindDatabase' ) )
 
-      try:
-         return cls.run_checks( args.database, DateValues.today() )
-      except RuntimeError as error:
-         print( error, file=sys.stderr )
-         return CheckExitCode.COULD_NOT_FINISH
+      return cls.run_checks( args.database, DateValues.today() )
 
 
 if __name__ == '__main__':

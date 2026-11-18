@@ -6,6 +6,7 @@ from api_test_support.recorded_closure import RecordedClosure
 from api_test_support.recorded_opening_schedule import RecordedOpeningSchedule
 import pytest
 
+from api.app_string_provider import AppStringProvider
 from api.attractions.coordinators import attraction_coordinator as attraction_coordinator_module
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.attractions.data_access.attraction_closure_record import AttractionClosureRecord
@@ -749,7 +750,9 @@ def Test_SetAttractionHoursSchedule_TestOutsideBounds_ExpectValueError(
       'times_are_within_bounds',
       lambda *_args, **_kwargs: False )
 
-   with pytest.raises( ValueError, match='Attraction hours must fall within regular zoo hours' ):
+   with pytest.raises(
+         ValueError,
+         match=AppStringProvider.format( 'apiErrors.invalidAttractionHours' ) ):
       AttractionCoordinator.set_attraction_hours_schedule(
          ATTRACTION_NAME,
          START_DATE,

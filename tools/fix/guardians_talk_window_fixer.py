@@ -30,11 +30,7 @@ class GuardiansTalkWindowFixer():
    def detail( cls, correction: GuardiansTalkWindowCorrection ) -> str:
       lines = [
          CheckReport.detail_item(
-            CheckReport.text( 'checks.setScheduleFrom' )
-            + DateValues.format_display_date_value( correction.start )
-            + CheckReport.text( 'checks.dateThrough' )
-            + DateValues.format_display_date_value( correction.end )
-            + CheckReport.text( 'checks.period' )
+            CheckReport.set_schedule( correction.start, correction.end )
          ),
       ]
       lines.extend(

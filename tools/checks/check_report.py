@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from api.app_string_provider import AppStringProvider
+from api.shared.date_values import DateValues
 from .date_span import DateSpan
 
 
@@ -113,11 +114,48 @@ class CheckReport():
 
 
    @classmethod
+   def shared_lines( cls, opening: str, lines: list[ str ] ) -> list[ str ]:
+      shared = cls.detail_item( opening )
+
+      if len( lines ) < 2 or any( not line.startswith( shared ) for line in lines ):
+         return lines
+
+      listed = [ cls.detail_item( opening + cls.text( 'checks.labelValue' ) ) ]
+
+      for line in lines:
+         listed.append( cls.detail_item(
+            cls.text( 'format.bulletItem' ) + line.removeprefix( shared ).strip()
+         ) )
+
+      return listed
+
+
+   @classmethod
    def format_date_span( cls, start: date, end: date ) -> str:
       if start == end:
          return start.isoformat()
 
       return start.isoformat() + cls.text( 'checks.dateThrough' ) + end.isoformat()
+
+
+   @classmethod
+   def set_schedule( cls, start: date, end: date | None ) -> str:
+      shown = DateValues.format_display_date_value( start )
+
+      if end != None and start == end:
+         return (
+            cls.text( 'checks.setScheduleFor' )
+            + shown
+            + cls.text( 'checks.period' )
+         )
+
+      if end != None:
+         shown += (
+            cls.text( 'checks.dateThrough' )
+            + DateValues.format_display_date_value( end )
+         )
+
+      return cls.text( 'checks.setScheduleFrom' ) + shown + cls.text( 'checks.period' )
 
 
    @classmethod

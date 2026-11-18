@@ -37,6 +37,19 @@ def Test_Closures_TestDetailsBody_ExpectBodyWithoutSummary() -> None:
    assert 'expand for details' not in closure.description
 
 
+def Test_Closures_TestStyleAfterNotice_ExpectSentenceOnly() -> None:
+   page = """
+<h2 id="notices">Notices</h2>
+<div class="box"><p><strong>Wednesday, December 9</strong><br>
+The centre will close early.</p></div>
+<style>.status { color:#fff; }</style>
+<h2 id="animals">Animals</h2>
+"""
+   closure = WebsiteClosure.closures( page )[ 0 ]
+
+   assert closure.description == 'The centre will close early.'
+
+
 def Test_NoticesSection_TestMissingHeading_ExpectReadError() -> None:
    with pytest.raises( RuntimeError, match='Could not read the alerts page.' ):
       WebsiteClosure.notices( '<p>No notices heading</p>' )

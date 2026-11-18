@@ -225,7 +225,7 @@ def Test_FetchScheduleRecords_TestExpiredAndActiveRows_ExpectOnlyActiveRowOnVisi
    assert not records[ Position.FIRST ].is_cancelled
 
 
-def Test_FetchScheduleRecords_TestEndsOnVisitDate_ExpectEmpty(
+def Test_FetchScheduleRecords_TestEndsOnVisitDate_ExpectRecord(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row(
       schedule_provider_conn,
@@ -237,7 +237,8 @@ def Test_FetchScheduleRecords_TestEndsOnVisitDate_ExpectEmpty(
       schedule_provider_conn,
       VISIT_DATE )
 
-   assert records == []
+   assert len( records ) == 1
+   assert records[ Position.FIRST ].name == KANGAROO
 
 
 def Test_FetchScheduleRecords_TestCancellationOnVisitDate_ExpectIsCancelledTrue(
@@ -315,7 +316,7 @@ def Test_FetchScheduleTimes_TestCoveringDate_ExpectDistinctOrderedTimes(
    assert times == [ SECOND_ENCOUNTER_TIME, KANGAROO_ENCOUNTER_TIME ]
 
 
-def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectEmpty(
+def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectTime(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row(
       schedule_provider_conn,
@@ -329,7 +330,7 @@ def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectEmpty(
       KANGAROO,
       '2026-06-15' )
 
-   assert times == []
+   assert times == [ KANGAROO_ENCOUNTER_TIME ]
 
 
 def Test_ScheduleOverlapsExistingSchedule_TestOverlappingDates_ExpectTrue(

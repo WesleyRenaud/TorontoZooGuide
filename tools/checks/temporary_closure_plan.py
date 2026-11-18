@@ -73,11 +73,23 @@ class TemporaryClosurePlan():
 
 
    @classmethod
+   def matched_closure(
+         cls,
+         item: TemporaryClosureChange,
+         notices: list[ TemporaryClosure ] ) -> TemporaryClosure | None:
+      for notice in notices:
+         if cls.same( notice, item ):
+            return notice
+
+      return None
+
+
+   @classmethod
    def on_website(
          cls,
          item: TemporaryClosureChange,
          notices: list[ TemporaryClosure ] ) -> bool:
-      return any( cls.same( notice, item ) for notice in notices )
+      return cls.matched_closure( item, notices ) != None
 
 
    @classmethod
@@ -86,8 +98,8 @@ class TemporaryClosurePlan():
          notice.place,
          notice.message,
          notice.kind,
-         today,
-         cls.horizon( today ),
+         today if notice.start == None else notice.start,
+         cls.horizon( today ) if notice.end == None else notice.end,
          notice.photo_path,
       )
 
@@ -102,6 +114,7 @@ class TemporaryClosurePlan():
          cls.addition( notice, today )
          for notice in notices
          if cls.matched( notice, stored ) == None
+         and DateValues.is_date_on_or_before( today, notice.end )
       ]
 
 
@@ -117,12 +130,11 @@ class TemporaryClosurePlan():
          if cls.on_website( item, notices ):
             continue
 
-         start = item.start if item.start != None else today
          endings.append( TemporaryClosureChange(
             item.place,
             item.message,
             item.kind,
-            start,
+            item.start if item.start != None else today,
             CalendarDates.one_day_earlier( today ),
             item.photo_path,
          ) )
@@ -139,10 +151,12 @@ class TemporaryClosurePlan():
       extensions = []
 
       for item in stored:
-         if not cls.on_website( item, notices ):
+         notice = cls.matched_closure( item, notices )
+
+         if notice == None:
             continue
 
-         kept = cls.kept_end( item.end, today )
+         kept = cls.kept_end( item.end, today ) if notice.end == None else notice.end
 
          if item.start == None or kept == None or kept == item.end:
             continue

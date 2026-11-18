@@ -499,13 +499,13 @@ def Test_CheckSchedules_TestCatalogTalkWithoutSchedule_ExpectWindowFixed(
    assert f'  { GuardiansTalkComparison.label( GuardiansTalkListing( name=TALK, location=LOCATION ) ) }' in output
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert CheckReport.text( 'checks.setScheduleFor' ) in output
+   assert 'Set the schedule for November 5, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
    assert _schedule_count( database, TALK ) == 1
    assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
+   assert CheckReport.text( 'checks.setScheduleFor' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
@@ -537,13 +537,13 @@ def Test_CheckSchedules_TestScheduleEndedBeforeWindow_ExpectWindowFixed(
    assert result == 0
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert CheckReport.category_line( 'checks.scheduledOnWebsiteOnly', 0 ) in output
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert CheckReport.text( 'checks.setScheduleFor' ) in output
+   assert 'Set the schedule for November 5, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
    assert _schedule_count( database, TALK ) == 1
    assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
+   assert CheckReport.text( 'checks.setScheduleFor' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
@@ -573,12 +573,12 @@ def Test_CheckSchedules_TestDifferentTime_ExpectWindowFixed(
 
    assert result == 0
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert CheckReport.text( 'checks.setScheduleFor' ) in output
+   assert 'Set the schedule for November 5, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
    assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
+   assert CheckReport.text( 'checks.setScheduleFor' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
@@ -700,15 +700,15 @@ def Test_CheckSchedules_TestAppWindowLonger_ExpectWindowFixed(
    result, output = _check( database, capsys )
 
    assert result == 0
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert CheckReport.text( 'checks.setScheduleFor' ) in output
+   assert 'Set the schedule for November 5, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
    assert AFTER_WINDOW.isoformat() not in output
    assert CheckReport.text( 'checks.appDatesNotOnWebsite' ) not in output
    assert CheckReport.text( 'checks.websiteDatesNotInApp' ) not in output
    assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
+   assert CheckReport.text( 'checks.setScheduleFor' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html
 
 
@@ -774,11 +774,11 @@ def Test_CheckSchedules_TestAppWindowPastWebsite_ExpectWindowFixed(
    assert result == 0
    assert CheckReport.category_line( 'checks.windowsDoNotAlign', 1 ) in output
    assert CheckReport.category_line( 'checks.scheduledInAppOnly', 0 ) in output
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in output
-   assert 'November 5, 2026 through November 5, 2026.' in output
+   assert CheckReport.text( 'checks.setScheduleFor' ) in output
+   assert 'Set the schedule for November 5, 2026.' in output
    assert f'{ CheckReport.text( "format.bulletItem" ) }1:00 PM Thu' in output
    assert AFTER_WINDOW.isoformat() not in output
    assert _schedule_end( database, TALK ) == THURSDAY.isoformat()
    html = _email( output, result )
-   assert CheckReport.text( 'checks.setScheduleFrom' ) in html
+   assert CheckReport.text( 'checks.setScheduleFor' ) in html
    assert CheckReport.text( 'checks.websiteDatesCompared' ) not in html

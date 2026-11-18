@@ -5,6 +5,7 @@ import re
 
 from api.shared.calendar_dates import CalendarDates
 from api.shared.text_values import TextValues
+from .date_span import DateSpan
 from .station_closure import StationClosure
 from .viewing_alert_sentence_builder import ViewingAlertSentenceBuilder
 from .website_closure import WebsiteClosure
@@ -93,7 +94,7 @@ class StationClosureReader():
 
 
    @classmethod
-   def span( cls, text: str, today: date ) -> tuple[ date, date ] | None:
+   def span( cls, text: str, today: date ) -> DateSpan | None:
       match = cls.DATE_RE.search( text )
 
       if match == None:
@@ -116,7 +117,7 @@ class StationClosureReader():
       if end < start:
          end = end.replace( year=end.year + 1 )
 
-      return start, end
+      return DateSpan( start=start, end=end )
 
 
    @classmethod
@@ -135,7 +136,8 @@ class StationClosureReader():
                continue
 
             chosen = current or pending
-            start, end = ( None, None ) if chosen == None else chosen
+            start = None if chosen == None else chosen.start
+            end = None if chosen == None else chosen.end
 
             for station in stations:
                found.setdefault( station, StationClosure( station, sentence, start, end ) )
