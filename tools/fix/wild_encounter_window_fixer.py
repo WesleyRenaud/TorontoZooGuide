@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import timedelta
 from pathlib import Path
 
 from api.database_connection_provider import DatabaseConnectionProvider
@@ -27,14 +26,9 @@ class WildEncounterWindowFixer():
 
    @classmethod
    def detail( cls, correction: EncounterScheduleCorrection ) -> str:
-      last = correction.end - timedelta( days=1 )
       lines = [
          CheckReport.detail_item(
-            CheckReport.text( 'checks.setScheduleFrom' )
-            + DateValues.format_display_date_value( correction.start )
-            + CheckReport.text( 'checks.dateThrough' )
-            + DateValues.format_display_date_value( last )
-            + CheckReport.text( 'checks.period' )
+            CheckReport.set_schedule( correction.start, correction.end )
          ),
       ]
       lines.extend(
@@ -78,7 +72,7 @@ class WildEncounterWindowFixer():
       return EncounterScheduleCorrection(
          name=name,
          start=schedule.start,
-         end=schedule.end + timedelta( days=1 ),
+         end=schedule.end,
          slots=set( schedule.slots ),
       )
 

@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from datetime import date
 from datetime import timedelta
 
+from ...shared.date_values import DateValues
+
 
 @dataclass( frozen=True )
 class WildEncounterSchedule:
@@ -21,17 +23,14 @@ class WildEncounterSchedule:
 
 
    def covers( self, day: date ) -> bool:
-      if self.start == None or self.start > day:
+      if self.start == None:
          return False
 
-      return self.end == None or self.end > day
+      return DateValues.is_date_in_range( day, self.start, self.end )
 
 
    def last_day( self ) -> date | None:
-      if self.end == None:
-         return None
-
-      return self.end - timedelta( days=1 )
+      return self.end
 
 
    @classmethod

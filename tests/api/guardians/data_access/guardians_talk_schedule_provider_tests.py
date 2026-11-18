@@ -329,7 +329,7 @@ def Test_FetchDayScheduleRecordsFromSchedule_TestNoCancellation_ExpectRecord(
    assert records[ Position.FIRST ].talk_time == TALK_TIME
 
 
-def Test_FetchDayScheduleRecordsFromSchedule_TestEndsOnVisitDate_ExpectEmpty(
+def Test_FetchDayScheduleRecordsFromSchedule_TestEndsOnVisitDate_ExpectRecord(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row(
       schedule_provider_conn,
@@ -342,7 +342,8 @@ def Test_FetchDayScheduleRecordsFromSchedule_TestEndsOnVisitDate_ExpectEmpty(
          VISIT_DATE )
    )
 
-   assert records == []
+   assert len( records ) == 1
+   assert records[ Position.FIRST ].name == TALK_NAME
 
 
 def Test_FetchDayScheduleRecordsFromSchedule_TestEndBeforeStart_ExpectEmpty(
@@ -362,7 +363,7 @@ def Test_FetchDayScheduleRecordsFromSchedule_TestEndBeforeStart_ExpectEmpty(
    assert records == []
 
 
-def Test_FetchScheduleRecordsCoveringDate_TestEndsOnOccurrenceDate_ExpectEmpty(
+def Test_FetchScheduleRecordsCoveringDate_TestEndsOnOccurrenceDate_ExpectRecord(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row(
       schedule_provider_conn,
@@ -377,7 +378,7 @@ def Test_FetchScheduleRecordsCoveringDate_TestEndsOnOccurrenceDate_ExpectEmpty(
       occurrence_date=VISIT_DATE,
       enclosure_name=None )
 
-   assert records == []
+   assert len( records ) == 1
 
 
 def Test_FetchDayScheduleRecordsFromSchedule_TestWithCancellation_ExpectEmpty(
@@ -439,7 +440,7 @@ def Test_FetchScheduleTimes_TestNotStarted_ExpectTime(
    assert schedule_times == [ TALK_TIME ]
 
 
-def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectEmpty(
+def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectTime(
       schedule_provider_conn: sqlite3.Connection ) -> None:
    _insert_schedule_row(
       schedule_provider_conn,
@@ -454,7 +455,7 @@ def Test_FetchScheduleTimes_TestEndsOnVisitDate_ExpectEmpty(
       VISIT_DATE,
       enclosure_name=None )
 
-   assert schedule_times == []
+   assert schedule_times == [ TALK_TIME ]
 
 
 def Test_ScheduleOverlapsExistingSchedule_TestOverlappingDates_ExpectTrue(

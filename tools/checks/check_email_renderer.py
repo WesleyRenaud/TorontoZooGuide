@@ -62,11 +62,7 @@ class CheckEmailRenderer():
          error_count: int | None,
          fixed_count: int ) -> StatusCopy:
       if exit_code == CheckExitCode.COULD_NOT_FINISH or error_count is None:
-         return StatusCopy(
-            headline_color=ColorTokens.color( ColorToken.DANGER ),
-            headline=AppStringProvider.format( 'checks.status.couldNotFinish' ),
-            summary=AppStringProvider.format( 'checks.status.didNotFinish' ),
-         )
+         raise RuntimeError
 
       if error_count == 0 and fixed_count == 0:
          return StatusCopy(
@@ -256,6 +252,17 @@ class CheckEmailRenderer():
 
    @classmethod
    def item_label( cls, title: str ) -> str:
+      name, subtitle, description = title.partition(
+         AppStringProvider.format( 'format.subtitleSeparator' )
+      )
+
+      if subtitle != '':
+         return cls.markup(
+            'item_subtitle',
+            label=cls.text( name ),
+            description=cls.text( description ),
+         )
+
       species, separator, exhibit = title.rpartition(
          AppStringProvider.format( 'format.middleDotJoin' )
       )
@@ -412,6 +419,9 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.extendedOpenForSeasonThrough' ),
          AppStringProvider.format( 'checks.extendedScheduleThrough' ),
          AppStringProvider.format( 'checks.extendedUpdateThrough' ),
+         AppStringProvider.format( 'checks.setUpdateFor' ),
+         AppStringProvider.format( 'checks.setUpdateFrom' ),
+         AppStringProvider.format( 'checks.endedUpdate' ),
          AppStringProvider.format( 'checks.extendedRestroomThrough' ),
          AppStringProvider.format( 'checks.extendedTemporaryClosureThrough' ),
          AppStringProvider.format( 'checks.extendedRestroomAlertThrough' ),
@@ -429,12 +439,16 @@ class CheckEmailRenderer():
          AppStringProvider.format( 'checks.setOpenForSeason' ),
          AppStringProvider.format( 'checks.setOpenForSeasonFrom' ),
          AppStringProvider.format( 'checks.setScheduleFrom' ),
+         AppStringProvider.format( 'checks.setScheduleFor' ),
          AppStringProvider.format( 'checks.removedHours' ),
          AppStringProvider.format( 'checks.removedSchedule' ),
          AppStringProvider.format( 'checks.removedViewingAlert' ),
          AppStringProvider.format( 'checks.removedZooEvent' ),
          AppStringProvider.format( 'checks.addedZooEvent' ),
          AppStringProvider.format( 'checks.setHours' ),
+         AppStringProvider.format( 'checks.setAttractionHoursFrom' ),
+         AppStringProvider.format( 'checks.extendedAttractionHoursThrough' ),
+         AppStringProvider.format( 'checks.trimmedAttractionHoursThrough' ),
          AppStringProvider.format( 'checks.setViewingAlert' ),
          AppStringProvider.format( 'checks.updatedHours' ),
          AppStringProvider.format( 'checks.updatedViewingAlert' ),

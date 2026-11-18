@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ...app_string_provider import AppStringProvider
 from ..data_access.attraction_closure_record import AttractionClosureRecord
 from ..data_access.attraction_hours_schedule_provider import AttractionHoursScheduleProvider
 from ..data_access.attraction_provider import AttractionProvider
@@ -333,7 +334,7 @@ class AttractionCoordinator():
    def get_attraction_hours_schedule_time_bounds(
          cls,
          start_date: Types.DateInput = None,
-         end_date: Types.DateInput = None ) -> AttractionHoursScheduleTimeBounds:
+         end_date: Types.DateInput = None ) -> AttractionHoursScheduleTimeBounds | None:
       return AttractionHoursScheduleTimeBoundsBuilder.fetch(
          RequestConnectionProvider.get(),
          start_date=start_date,
@@ -358,20 +359,16 @@ class AttractionCoordinator():
          weekday_end_time,
          weekend_holiday_start_time,
          weekend_holiday_end_time )
-      bounds = AttractionHoursScheduleTimeBoundsBuilder.fetch(
-         RequestConnectionProvider.get(),
-         start_date=schedule.start_date,
-         end_date=schedule.end_date )
 
-      if not AttractionHoursScheduleTimeBoundsBuilder.times_are_within_bounds(
-            bounds,
+      if not AttractionHoursScheduleTimeBoundsBuilder.hours_fall_within(
+            RequestConnectionProvider.get(),
+            schedule.start_date,
+            schedule.end_date,
             weekday_start_time=schedule.weekday_start_time,
             weekday_end_time=schedule.weekday_end_time,
             weekend_holiday_start_time=schedule.weekend_holiday_start_time,
             weekend_holiday_end_time=schedule.weekend_holiday_end_time ):
-         raise ValueError(
-            'Attraction hours must fall within regular zoo hours for the '
-            'selected date range.' )
+         raise ValueError( AppStringProvider.format( 'apiErrors.invalidAttractionHours' ) )
 
       return schedule
 

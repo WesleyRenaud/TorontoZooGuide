@@ -10,6 +10,7 @@ from api.database_connection_provider import DatabaseConnectionProvider
 from api.request_connection_provider import RequestConnectionProvider
 from .attraction_card import AttractionCard
 from .attraction_detail_image import AttractionDetailImage
+from .attraction_hours_reader import AttractionHoursReader
 from .attraction_listing import AttractionListing
 from .check_report import CheckReport
 from .exhibit_region_colors import ExhibitRegionColors
@@ -33,13 +34,17 @@ class AttractionCatalogue():
 
 
    @classmethod
-   def website_attractions( cls, cards: list[ AttractionCard ] ) -> list[ WebsiteAttraction ]:
+   def website_attractions(
+         cls,
+         cards: list[ AttractionCard ],
+         page_html: str ) -> list[ WebsiteAttraction ]:
       return [
          WebsiteAttraction(
             href=card.href,
             title=WebsitePage.col3_title( card.body ),
             status=WebsitePage.opening_status( card.body ),
             image=cls.card_image( card.body ),
+            hours=AttractionHoursReader.published( card.body, page_html, card.href ),
          )
          for card in cards
       ]
@@ -47,7 +52,7 @@ class AttractionCatalogue():
 
    @classmethod
    def parse_website_attractions( cls, page_html: str ) -> list[ WebsiteAttraction ]:
-      return cls.website_attractions( AttractionCard.find( page_html ) )
+      return cls.website_attractions( AttractionCard.find( page_html ), page_html )
 
 
    @classmethod
@@ -75,6 +80,26 @@ class AttractionCatalogue():
          AttractionListing( name=attraction.name, link=attraction.info_link )
          for attraction in attractions
       ]
+
+
+   @classmethod
+   def listed_names(
+         cls,
+         item: WebsiteAttraction,
+         listings: list[ AttractionListing ] ) -> list[ str ]:
+      website = AttractionListing( name=item.title, link=item.href )
+
+      if website.is_website_only():
+         return []
+
+      return next(
+         (
+            [ listing.name ]
+            for listing in listings
+            if listing.matches( website )
+         ),
+         [],
+      )
 
 
    @classmethod

@@ -90,15 +90,14 @@ class ZooEventChecker():
 
    @classmethod
    def added_line( cls, event: WebsiteZooEvent ) -> str:
-      details = [
+      separator = CheckReport.text( 'format.subtitleSeparator' )
+      name = ( event.name + separator + event.description ).removesuffix( separator )
+
+      return CheckReport.join_lines( [
+         name,
          CheckReport.detail_item( CheckReport.text( 'checks.photo' ) + event.image ),
          CheckReport.detail_item( CheckReport.text( 'checks.addedZooEvent' ) ),
-      ]
-
-      if event.description != '':
-         details.append( CheckReport.detail_item( event.description ) )
-
-      return CheckReport.join_lines( [ event.name, *details ] )
+      ] )
 
 
    @classmethod

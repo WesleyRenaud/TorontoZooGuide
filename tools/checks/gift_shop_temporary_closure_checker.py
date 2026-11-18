@@ -41,10 +41,7 @@ class GiftShopTemporaryClosureChecker():
          if not record.is_closed:
             continue
 
-         if not DateValues.is_date_in_range(
-               today,
-               record.override_start_date,
-               record.override_end_date ):
+         if not DateValues.is_date_on_or_before( today, record.override_end_date ):
             continue
 
          rows.append( TemporaryClosureChange(
@@ -76,6 +73,7 @@ class GiftShopTemporaryClosureChecker():
             for name in names
          },
          ItemType.GIFT_SHOP,
+         today,
       )
       plan = TemporaryClosurePlan.build( notices, stored, today )
       GiftShopTemporaryClosureFixer.apply( database, plan )

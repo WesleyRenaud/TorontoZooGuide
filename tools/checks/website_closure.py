@@ -13,6 +13,7 @@ class WebsiteClosure():
    BOX_RE = re.compile(
       r'(?is)<div class="box[^"]*"[^>]*>.*?(?=<div class="box|\Z)',
    )
+   STYLE_RE = re.compile( r'(?is)<style\b[^>]*>.*?</style>|<script\b[^>]*>.*?</script>' )
    STRONG_RE = re.compile( r'(?is)<strong>(.*?)</strong>' )
    SUMMARY_END_RE = re.compile( r'(?is)</summary>' )
    SEASON_RE = re.compile( r'for the (?:winter )?season' )
@@ -44,6 +45,7 @@ class WebsiteClosure():
 
    @classmethod
    def description( cls, box: str, title: str ) -> str:
+      box = cls.STYLE_RE.sub( ' ', box )
       summary_end = cls.SUMMARY_END_RE.search( box )
 
       if summary_end != None:

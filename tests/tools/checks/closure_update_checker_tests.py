@@ -249,8 +249,8 @@ def Test_CheckSchedules_TestDifferentWording_ExpectReplacementAndMovedAnimal(
       ( row[ 'TITLE' ], row[ 'START_DATE' ] ): row[ 'END_DATE' ]
       for row in rows( database_path )
    }
-   assert stored[ ( 'Indoor Orangutan Habitat Closure', '2026-05-13' ) ] == '2026-11-11'
-   assert stored[ ( 'Gift shop path', '2026-06-01' ) ] == '2026-11-11'
+   assert stored[ ( 'Indoor Orangutan Habitat Closure', '2026-05-13' ) ] == '2026-11-10'
+   assert stored[ ( 'Gift shop path', '2026-06-01' ) ] == '2026-11-10'
    assert stored[ ( 'Indo-Malaya Pavilion Construction', '2026-11-11' ) ] == '2026-12-11'
    assert animals( database_path ) == [
       ( 'Fennec fox', 'Gift shop path', '2026-06-01' ),

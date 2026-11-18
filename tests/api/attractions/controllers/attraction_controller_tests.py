@@ -124,7 +124,7 @@ def _hours_schedule_call() -> dict[ str, object ]:
 def stub_attraction_coordinator( monkeypatch: pytest.MonkeyPatch ) -> StubAttractionCoordinator:
    StubAttractionCoordinator.instances = []
    StubAttractionCoordinator.default_success = True
-   StubAttractionCoordinator.raise_time_bounds_error = False
+   StubAttractionCoordinator.missing_time_bounds = False
    StubAttractionCoordinator.raise_hours_schedule_error = False
    stub = StubAttractionCoordinator(
       attraction_names=[ ATTRACTION_NAME, OTHER_ATTRACTION_NAME ],
@@ -520,7 +520,7 @@ def Test_GetAttractionHoursScheduleTimeBounds_TestHttpRequest_ExpectNormalizedBo
 
 def Test_GetAttractionHoursScheduleTimeBounds_TestHttpRequest_ExpectCouldNotResolveBoundsApiError(
       stub_attraction_coordinator: StubAttractionCoordinator ) -> None:
-   StubAttractionCoordinator.raise_time_bounds_error = True
+   StubAttractionCoordinator.missing_time_bounds = True
    handler = make_handler(
       '/get-attraction-hours-schedule-time-bounds',
       {

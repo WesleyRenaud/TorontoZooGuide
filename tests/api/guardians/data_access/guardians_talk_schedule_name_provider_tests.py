@@ -163,7 +163,7 @@ def Test_FetchScheduledTalkNames_TestExpired_ExpectExcluded(
    assert scheduled_talk_names == []
 
 
-def Test_FetchScheduledTalkNames_TestEndingToday_ExpectExcluded(
+def Test_FetchScheduledTalkNames_TestEndingToday_ExpectIncluded(
       guardians_talk_schedule_name_conn: sqlite3.Connection ) -> None:
    _insert_schedule(
       guardians_talk_schedule_name_conn,
@@ -177,7 +177,7 @@ def Test_FetchScheduledTalkNames_TestEndingToday_ExpectExcluded(
       TODAY,
       AFRICA )
 
-   assert scheduled_talk_names == []
+   assert scheduled_talk_names == [ GuardiansTalkOption( name=LION ) ]
 
 
 def Test_FetchScheduledTalkNames_TestOtherLocation_ExpectExcluded(
@@ -244,7 +244,7 @@ def Test_FetchScheduledTalkLocations_TestExpired_ExpectExcluded(
    assert scheduled_talk_locations == []
 
 
-def Test_FetchScheduledTalkLocations_TestEndingToday_ExpectExcluded(
+def Test_FetchScheduledTalkLocations_TestEndingToday_ExpectIncluded(
       guardians_talk_schedule_name_conn: sqlite3.Connection ) -> None:
    _insert_schedule(
       guardians_talk_schedule_name_conn,
@@ -257,4 +257,4 @@ def Test_FetchScheduledTalkLocations_TestEndingToday_ExpectExcluded(
       guardians_talk_schedule_name_conn,
       TODAY )
 
-   assert scheduled_talk_locations == []
+   assert scheduled_talk_locations == [ AFRICA ]

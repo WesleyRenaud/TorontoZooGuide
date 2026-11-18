@@ -486,6 +486,14 @@ def Test_IsHoliday_TestCanadianHolidays_ExpectTrue() -> None:
    assert all( results )
 
 
+def Test_IsChristmas_TestDecember25_ExpectTrue() -> None:
+   assert CalendarDates.is_christmas( date( 2026, 12, 25 ) ) is True
+
+
+def Test_IsChristmas_TestChristmasEve_ExpectFalse() -> None:
+   assert CalendarDates.is_christmas( date( 2026, 12, 24 ) ) is False
+
+
 def Test_IsHoliday_TestChristmasEve_ExpectFalse() -> None:
    christmas_eve = date( 2026, 12, 24 )
 

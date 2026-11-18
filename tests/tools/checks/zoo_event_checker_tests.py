@@ -251,8 +251,11 @@ def Test_CheckSchedules_TestMissingAndExtra_ExpectAddedAndRemoved(
 
    assert issues == 0
    assert CheckReport.fixed_count == 3
+   description = 'Journey Through an Illuminated Animal Lantern Experience!'
+   added = CheckReport.text( 'checks.addedZooEvent' )
+
    assert 'Photo: https://www.torontozoo.com/!/img/event/26/glowthumb1080n.webp' in output
-   assert 'Journey Through an Illuminated Animal Lantern Experience!' in output
+   assert output.index( description ) < output.index( added )
    assert stored_rows( path ) == [
       ( 'Glow In The Wild', '2026-09-03', '2027-01-03' ),
       ( 'Member Mondays', '2026-08-02', '2026-08-31' ),

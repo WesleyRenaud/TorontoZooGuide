@@ -13,6 +13,7 @@ from api.shared.date_values import DateValues
 from api.shared.text_values import TextValues
 from api.updates.domain.update_type import UpdateType
 from .check_report import CheckReport
+from .date_span import DateSpan
 from .exhibit_name import ExhibitName
 from .paths import Paths
 from .website_page import WebsitePage
@@ -253,7 +254,7 @@ class ClosureViewingAlert():
 
 
    @classmethod
-   def window( cls, update: Update ) -> tuple[ date, date | None ] | None:
+   def window( cls, update: Update ) -> DateSpan | None:
       if update.update_type != UpdateType.CLOSURE.value or not update.start_date:
          return None
 
@@ -263,7 +264,7 @@ class ClosureViewingAlert():
          return None
 
       end = DateValues.parse_date_value( update.end_date ) if update.end_date else None
-      return ( start, end )
+      return DateSpan( start=start, end=end )
 
 
    @classmethod
@@ -359,7 +360,7 @@ class ClosureViewingAlert():
          if window == None:
             continue
 
-         start, end = window
+         start, end = window.start, window.end
          text = TextValues.beside( update.title, update.description )
 
          for place in cls.matched( text, placements, off_display, today ):

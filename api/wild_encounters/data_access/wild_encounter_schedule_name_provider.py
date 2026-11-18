@@ -18,7 +18,7 @@ class WildEncounterScheduleNameProvider():
                      WILD_ENCOUNTER
                   FROM WildEncounterSchedule
                   WHERE SCHEDULE_END_DATE IS NULL
-                     OR SCHEDULE_END_DATE > ?
+                     OR SCHEDULE_END_DATE >= ?
                   ORDER BY WILD_ENCOUNTER;
             """,
             ( today, ) )

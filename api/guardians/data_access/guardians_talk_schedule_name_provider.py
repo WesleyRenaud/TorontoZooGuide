@@ -23,7 +23,7 @@ class GuardiansTalkScheduleNameProvider():
                   WHERE LOCATION = ?
                      AND (
                         SCHEDULE_END_DATE IS NULL
-                        OR SCHEDULE_END_DATE > ?
+                        OR SCHEDULE_END_DATE >= ?
                      )
                   ORDER BY TALK_NAME, ENCLOSURE_NAME;
             """,
@@ -48,7 +48,7 @@ class GuardiansTalkScheduleNameProvider():
                      LOCATION
                   FROM GuardiansTalkSchedule
                   WHERE SCHEDULE_END_DATE IS NULL
-                     OR SCHEDULE_END_DATE > ?
+                     OR SCHEDULE_END_DATE >= ?
                   ORDER BY LOCATION;
             """,
             ( today, ) )

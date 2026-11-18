@@ -353,11 +353,11 @@ class AttractionController():
          handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      try:
-         bounds = AttractionCoordinator.get_attraction_hours_schedule_time_bounds(
-            start_date=data.get( 'scheduleStartDate' ),
-            end_date=data.get( 'scheduleEndDate' ) )
-      except ValueError:
+      bounds = AttractionCoordinator.get_attraction_hours_schedule_time_bounds(
+         start_date=data.get( 'scheduleStartDate' ),
+         end_date=data.get( 'scheduleEndDate' ) )
+
+      if bounds is None:
          response = { 'success': False }
          ApiErrorResponseApplier.apply_error(
             response,

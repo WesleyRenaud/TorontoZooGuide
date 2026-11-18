@@ -199,7 +199,15 @@ class CalendarDates:
 
 
    @staticmethod
+   def is_christmas( d: date ) -> bool:
+      return d.month == 12 and d.day == 25
+
+
+   @staticmethod
    def is_holiday( d: date ) -> bool:
+      if CalendarDates.is_christmas( d ):
+         return True
+
       year = d.year
 
       holidays = {
@@ -211,7 +219,6 @@ class CalendarDates:
          CalendarDates.get_civic_holiday( year ),
          CalendarDates.get_labour_day( year ),
          CalendarDates.get_thanksgiving( year ),
-         date( year, 12, 25 )
       }
 
       return d in holidays

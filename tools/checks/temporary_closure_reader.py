@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from datetime import date
 import re
 
 from api.shared.enums.item_type import ItemType
 from api.shared.text_values import TextValues
+from .closure_update_builder import ClosureUpdateBuilder
 from .temporary_closure import TemporaryClosure
 from .viewing_alert_sentence_builder import ViewingAlertSentenceBuilder
 from .website_closure import WebsiteClosure
@@ -25,7 +27,7 @@ class TemporaryClosureReader():
 
    @classmethod
    def fold( cls, value: str ) -> str:
-      return value.casefold().translate( cls.FOLDS )
+      return value.casefold().translate( cls.FOLDS ).replace( '&', 'and' )
 
 
    @classmethod
@@ -84,10 +86,18 @@ class TemporaryClosureReader():
          cls,
          page_html: str,
          photo_paths: dict[ str, str ],
-         kind: ItemType ) -> list[ TemporaryClosure ]:
+         kind: ItemType,
+         today: date ) -> list[ TemporaryClosure ]:
       found = {}
 
       for notice in WebsiteClosure.notices( page_html ):
+         days = ClosureUpdateBuilder.dates_named(
+            TextValues.beside( notice.title, notice.description ),
+            today,
+         )
+         start = min( days ) if days != [] else None
+         end = max( days ) if days != [] else None
+
          for sentence in ViewingAlertSentenceBuilder.notice_parts( cls.text( notice ) ):
             if not cls.closure( sentence ):
                continue
@@ -103,6 +113,8 @@ class TemporaryClosureReader():
                   sentence,
                   kind,
                   photo_paths[ name ],
+                  start,
+                  end,
                )
 
       return list( found.values() )

@@ -197,7 +197,7 @@ class ClosureUpdateBuilder():
       if days == []:
          return None
 
-      return CalendarDates.one_day_later( max( days ) )
+      return max( days )
 
 
    @classmethod
@@ -205,16 +205,21 @@ class ClosureUpdateBuilder():
          cls,
          notice: WebsiteClosure,
          today: date ) -> ClosureUpdate:
-      end = cls.named_end( notice, today )
+      named = cls.named_end( notice, today )
 
-      if end == None:
-         end = cls.horizon( today )
+      if named == None:
+         return ClosureUpdate(
+            notice.title,
+            notice.description,
+            today,
+            cls.horizon( today ),
+         )
 
       return ClosureUpdate(
          notice.title,
          notice.description,
          today,
-         end,
+         named,
       )
 
 
@@ -229,7 +234,7 @@ class ClosureUpdateBuilder():
          update.title,
          update.description,
          start,
-         today,
+         CalendarDates.one_day_earlier( today ),
       )
 
 

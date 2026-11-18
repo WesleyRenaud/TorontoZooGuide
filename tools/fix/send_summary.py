@@ -75,8 +75,20 @@ class SendSummary():
 
 
    @classmethod
+   def crash_unless_finished( cls, body: str, exit_code: int ) -> None:
+      if (
+            exit_code in ( CheckExitCode.CLEAR, CheckExitCode.DIFFERENCES )
+            and CheckReportParser.error_count( body ) != None
+            and CheckReportParser.recorded_fixed_count( body ) != None ):
+         return
+
+      raise RuntimeError( body )
+
+
+   @classmethod
    def preview( cls, args: argparse.Namespace ) -> int:
       body, exit_code = cls.run_check()
+      cls.crash_unless_finished( body, exit_code )
       cls.write_preview( cls.message_body( body ), exit_code, args.html )
       cls.open_preview( args.html )
       print( args.html )
@@ -97,7 +109,7 @@ class SendSummary():
       errors = CheckReportParser.error_count( body )
 
       if fixed == None or errors == None:
-         return AppStringProvider.format( 'checks.status.didNotFinish' )
+         raise RuntimeError( body )
 
       detected = errors + fixed
 
@@ -157,6 +169,7 @@ class SendSummary():
          return CheckExitCode.COULD_NOT_FINISH
 
       body, exit_code = cls.run_check()
+      cls.crash_unless_finished( body, exit_code )
       print( cls.summary_line( body ) )
 
       try:
