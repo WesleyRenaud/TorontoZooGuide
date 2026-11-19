@@ -6,6 +6,10 @@ on:
     - cron: '0 11 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -37,6 +41,29 @@ jobs:
           set +e
           python3 -m tools.fix
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Save the database fixes
+        if: steps.website_check.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet -- animals.db; then
+            exit 0
+          fi
+
+          branch="tools/daily-check-database-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          git add -- animals.db
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m "Apply the daily check fixes to the animal database."
+          git push -u origin HEAD
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Apply the daily check fixes to the animal database" \
+            --body "The daily check updated animals.db. This pull request saves those fixes."
+          gh pr merge "$branch" --merge --delete-branch
 
       - name: Fail when issues remain
         if: always() && steps.website_check.outputs.exit_code != '0'
