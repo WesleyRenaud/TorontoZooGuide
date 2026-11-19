@@ -20,6 +20,25 @@ from .website_page import WebsitePage
 
 
 class ClosureViewingAlert():
+   PLACE_WORDS = frozenset( {
+      'bathroom',
+      'bistro',
+      'cafe',
+      'elevator',
+      'kiosk',
+      'lodge',
+      'restaurant',
+      'restroom',
+      'shop',
+      'station',
+      'washroom',
+   } )
+   PLACE_ACCENTS = str.maketrans( {
+      'á': 'a',
+      'é': 'e',
+      'è': 'e',
+      'ê': 'e',
+   } )
    species: str
    exhibit: str
    off_display: bool
@@ -196,12 +215,43 @@ class ClosureViewingAlert():
 
 
    @classmethod
+   def place_word( cls, word: str ) -> str:
+      return word.strip( '.,;:!?)"\'' ).translate( cls.PLACE_ACCENTS )
+
+
+   @classmethod
+   def following_word( cls, haystack: str, end: int ) -> str:
+      rest = haystack[ end: ].lstrip( ' ' )
+
+      if rest == '':
+         return ''
+
+      return cls.place_word( rest.split( ' ', 1 )[ 0 ] )
+
+
+   @classmethod
+   def names_animal( cls, haystack: str, needle: str ) -> bool:
+      start = 0
+
+      while True:
+         index = haystack.find( needle, start )
+
+         if index < 0:
+            return False
+
+         if cls.following_word( haystack, index + len( needle ) ) not in cls.PLACE_WORDS:
+            return True
+
+         start = index + len( needle )
+
+
+   @classmethod
    def names_species( cls, text: str, species: str ) -> bool:
       key = AnimalCatalogue.comparison_key( species, False )
       haystack = TextValues.spaced( WebsitePage.normalize_name( text ) )
       return (
-         TextValues.spaced( key ) in haystack
-         or TextValues.spaced( TextValues.plural( key ) ) in haystack
+         cls.names_animal( haystack, TextValues.spaced( key ) )
+         or cls.names_animal( haystack, TextValues.spaced( TextValues.plural( key ) ) )
       )
 
 
