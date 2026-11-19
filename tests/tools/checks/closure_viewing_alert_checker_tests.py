@@ -211,6 +211,43 @@ def Test_Choose_TestOneHome_ExpectThatExhibit() -> None:
    assert alerts[ 0 ].end == date( 2026, 12, 13 )
 
 
+def Test_Choose_TestCafeNamedInClosure_ExpectNoAnimal() -> None:
+   alerts = ClosureViewingAlert.choose(
+      [ notice(
+         'Wednesday, December 9',
+         'The nearest alternative washrooms are located at the Caribou Café. '
+         'The washrooms will close early at 1:00pm.',
+         '2026-12-09',
+         '2026-12-09',
+      ) ],
+      [ home( 'Caribou', 'Tundra Trek' ) ],
+      [],
+      [],
+      TODAY,
+   )
+
+   assert alerts == []
+
+
+def Test_Choose_TestCaribouHabitat_ExpectSpecies() -> None:
+   alerts = ClosureViewingAlert.choose(
+      [ notice(
+         'The caribou habitat is closed.',
+         '',
+         '2026-12-09',
+         '2026-12-09',
+      ) ],
+      [ home( 'Caribou', 'Tundra Trek' ) ],
+      [],
+      [],
+      TODAY,
+   )
+
+   assert len( alerts ) == 1
+   assert alerts[ 0 ].species == 'Caribou'
+   assert alerts[ 0 ].exhibit == 'Tundra Trek'
+
+
 def Test_Choose_TestFormerHabitat_ExpectCurrentExhibit() -> None:
    alerts = ClosureViewingAlert.choose(
       [ notice(
