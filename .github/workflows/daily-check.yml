@@ -2,6 +2,7 @@ name: Daily check
 
 on:
   workflow_dispatch:
+  # cron.surf starts the check at 6:00 AM Toronto.
   # cron.surf: 0 6 * * * America/Toronto
   schedule:
     # Backup. GitHub often starts this hours after 6:00 AM Toronto time.
