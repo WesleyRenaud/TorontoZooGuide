@@ -65,9 +65,7 @@ class GiftShopProvider():
    @classmethod
    def fetch_gift_shop_records(
          cls,
-         conn: Types.Connection,
-         month: Types.VisitMonth,
-         day: Types.VisitDay ) -> list[ GiftShopRecord ]:
+         conn: Types.Connection ) -> list[ GiftShopRecord ]:
       cur = conn.cursor()
 
       try:
@@ -78,14 +76,12 @@ class GiftShopProvider():
                      g.DESCRIPTION,
                      g.X_COORD,
                      g.Y_COORD,
-                     COALESCE( gdsam.WEEKDAY_VALUE, 1.0 ) AS GIFT_SHOP_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
-                     COALESCE( gdsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS GIFT_SHOP_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
-                  FROM GiftShop g
-                  LEFT JOIN GiftShopDaySeasonalAvailabilityMultiplier gdsam
-                     ON g.NAME = gdsam.GIFT_SHOP
-                     AND gdsam.MONTH = ?
-                     AND gdsam.DAY = ?;
-            """, ( month, day ) )
+                     g.WEEKDAY_START_MONTH,
+                     g.WEEKDAY_END_MONTH,
+                     g.WEEKEND_START_MONTH,
+                     g.WEEKEND_END_MONTH
+                  FROM GiftShop g;
+            """ )
 
          return GiftShopMapper.map_records( data.fetchall() )
 

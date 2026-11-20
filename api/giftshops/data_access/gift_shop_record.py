@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from ...shared.peak_months import PeakMonths
 from ...types import Types
 
 
@@ -12,5 +13,4 @@ class GiftShopRecord:
    description: str
    x_coord: Types.Coordinate
    y_coord: Types.Coordinate
-   weekday_multiplier: Types.SeasonalMultiplier
-   weekend_holiday_multiplier: Types.SeasonalMultiplier
+   peak_months: PeakMonths = field( default_factory=PeakMonths )

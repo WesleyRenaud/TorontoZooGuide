@@ -8,7 +8,6 @@ from ..data_access.gift_shop_schedule_override_record import GiftShopScheduleOve
 from ..data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from ...models import GiftShop
 from ...shared.enums import ScheduleStatus
-from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningScheduleSeasonalMultiplierResolver
 from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
 from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
@@ -85,14 +84,16 @@ class GiftShopBuilder():
 
 
    @classmethod
-   def get_day_seasonal_availability_multiplier(
+   def month_multiplier(
          cls,
          gift_shop_record: GiftShopRecord,
-         context: OpeningScheduleVisitContext ) -> Types.SeasonalMultiplier:
-      return OpeningScheduleSeasonalMultiplierResolver.resolve(
-         weekday_multiplier=gift_shop_record.weekday_multiplier,
-         weekend_holiday_multiplier=gift_shop_record.weekend_holiday_multiplier,
-         is_weekend_or_holiday=context.is_weekend_or_holiday )
+         context: OpeningScheduleVisitContext ) -> float:
+      if gift_shop_record.peak_months.covers(
+            context.target_date.month,
+            context.is_weekend_or_holiday ):
+         return 1.0
+
+      return 0.0
 
 
    @classmethod
@@ -110,7 +111,7 @@ class GiftShopBuilder():
          override_records=schedule_override_records,
          target_date=context.target_date,
          weekday=context.weekday,
-         seasonal_multiplier=cls.get_day_seasonal_availability_multiplier(
+         seasonal_multiplier=cls.month_multiplier(
             gift_shop_record=gift_shop_record,
             context=context ) )
       is_closed_for_season = False

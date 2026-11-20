@@ -10,6 +10,7 @@ from api.giftshops.domain.gift_shop_builder import GiftShopBuilder
 from api.shared.enums.position import Position
 from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
+from api.shared.peak_months import PeakMonths
 
 
 GIFT_SHOP_NAME = 'Zootique'
@@ -41,8 +42,6 @@ def _gift_shop_record( **overrides: object ) -> GiftShopRecord:
       'description': 'Gift shop',
       'x_coord': 1.0,
       'y_coord': 2.0,
-      'weekday_multiplier': 1.0,
-      'weekend_holiday_multiplier': 1.0,
    }
    values.update( overrides )
 
@@ -122,8 +121,8 @@ def Test_GetActiveScheduleStatus_TestOpenMonday_ExpectOpen() -> None:
 
 def Test_BuildGiftShops_TestClosedGiftShop_ExpectExcludedUnlessIncludedOrListed() -> None:
    context = _visit_context()
-   closed_record = _gift_shop_record( weekday_multiplier=0, weekend_holiday_multiplier=0 )
-   schedule_records = [ _schedule_record() ]
+   closed_record = _gift_shop_record( peak_months=PeakMonths( 1, 2 ) )
+   schedule_records: list[ GiftShopScheduleRecord ] = []
 
    open_only = GiftShopBuilder.build_gift_shops(
       gift_shop_records=[ closed_record ],
@@ -149,6 +148,17 @@ def Test_BuildGiftShops_TestClosedGiftShop_ExpectExcludedUnlessIncludedOrListed(
    assert len( with_closed ) == 1
    assert with_closed[ Position.FIRST ].is_closed is True
    assert len( explicitly_listed ) == 1
+
+
+def Test_BuildGiftShop_TestInsideMonths_ExpectOpen() -> None:
+   gift_shop = GiftShopBuilder.build_gift_shop(
+      gift_shop_record=_gift_shop_record( peak_months=PeakMonths( 6, 8 ) ),
+      schedule_records=[],
+      schedule_override_records=[],
+      context=_visit_context() )
+
+   assert gift_shop.is_closed is False
+   assert gift_shop.likelihood == 100
 
 
 def Test_BuildGiftShop_TestClosedSchedule_ExpectCustomClosedMessage() -> None:

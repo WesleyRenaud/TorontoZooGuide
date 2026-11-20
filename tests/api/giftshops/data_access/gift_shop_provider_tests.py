@@ -6,6 +6,7 @@ import pytest
 
 from api.giftshops.data_access.gift_shop_provider import GiftShopProvider
 from api.shared.enums.position import Position
+from api.shared.peak_months import PeakMonths
 
 
 GIFT_SHOP_PROVIDER_SCHEMA = """
@@ -14,16 +15,11 @@ CREATE TABLE GiftShop (
    LOCATION      TEXT NOT NULL,
    DESCRIPTION   TEXT NOT NULL,
    X_COORD       REAL NOT NULL,
-   Y_COORD       REAL NOT NULL
-);
-
-CREATE TABLE GiftShopDaySeasonalAvailabilityMultiplier (
-   GIFT_SHOP               TEXT    NOT NULL,
-   MONTH                   INTEGER NOT NULL,
-   DAY                     INTEGER NOT NULL,
-   WEEKDAY_VALUE           REAL    NOT NULL,
-   WEEKEND_HOLIDAY_VALUE   REAL    NOT NULL,
-   PRIMARY KEY ( GIFT_SHOP, MONTH, DAY )
+   Y_COORD       REAL NOT NULL,
+   WEEKDAY_START_MONTH      INTEGER,
+   WEEKDAY_END_MONTH        INTEGER,
+   WEEKEND_START_MONTH      INTEGER,
+   WEEKEND_END_MONTH        INTEGER
 );
 
 CREATE TABLE GiftShopOpeningSchedule (
@@ -54,8 +50,6 @@ CREATE TABLE GiftShopScheduleOverride (
 
 ZOO_SHOP = 'Zoo Shop'
 SAVANNA_STORE = 'Savanna Store'
-VISIT_MONTH = 6
-VISIT_DAY = 15
 
 
 @pytest.fixture
@@ -73,18 +67,33 @@ def _insert_gift_shop(
       conn: sqlite3.Connection,
       *,
       name: str,
-      location: str = 'Main Entrance' ) -> None:
+      location: str = 'Main Entrance',
+      months: PeakMonths = PeakMonths() ) -> None:
    conn.execute(
       """   INSERT INTO GiftShop (
                NAME,
                LOCATION,
                DESCRIPTION,
                X_COORD,
-               Y_COORD
+               Y_COORD,
+               WEEKDAY_START_MONTH,
+               WEEKDAY_END_MONTH,
+               WEEKEND_START_MONTH,
+               WEEKEND_END_MONTH
             )
-            VALUES ( ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? );
       """,
-      ( name, location, f'{ name } description', 3.0, 4.0 ),
+      (
+         name,
+         location,
+         f'{ name } description',
+         3.0,
+         4.0,
+         months.weekday_start,
+         months.weekday_end,
+         months.weekend_start,
+         months.weekend_end,
+      ),
    )
 
 
@@ -109,15 +118,12 @@ def Test_FetchGiftShopNames_TestPopulated_ExpectNames(
    assert set( names ) == { ZOO_SHOP, SAVANNA_STORE }
 
 
-def Test_FetchGiftShopRecords_TestNoMultiplier_ExpectDefaultMultipliers(
+def Test_FetchGiftShopRecords_TestNoMonths_ExpectOpenMonths(
       gift_shop_provider_conn: sqlite3.Connection ) -> None:
    _insert_gift_shop( gift_shop_provider_conn, name=ZOO_SHOP )
    gift_shop_provider_conn.commit()
 
-   records = GiftShopProvider.fetch_gift_shop_records(
-      gift_shop_provider_conn,
-      VISIT_MONTH,
-      VISIT_DAY )
+   records = GiftShopProvider.fetch_gift_shop_records( gift_shop_provider_conn )
 
    assert len( records ) == 1
    record = records[ Position.FIRST ]
@@ -126,35 +132,24 @@ def Test_FetchGiftShopRecords_TestNoMultiplier_ExpectDefaultMultipliers(
    assert record.description == f'{ ZOO_SHOP } description'
    assert record.x_coord == 3.0
    assert record.y_coord == 4.0
-   assert record.weekday_multiplier == 1.0
-   assert record.weekend_holiday_multiplier == 1.0
+   assert record.peak_months == PeakMonths()
 
 
-def Test_FetchGiftShopRecords_TestMatchingMultiplier_ExpectJoinedValues(
+def Test_FetchGiftShopRecords_TestMonths_ExpectStoredMonths(
       gift_shop_provider_conn: sqlite3.Connection ) -> None:
+   months = PeakMonths( 4, 10, 3, 12 )
    _insert_gift_shop(
       gift_shop_provider_conn,
       name=SAVANNA_STORE,
-      location='Africa' )
-   gift_shop_provider_conn.execute(
-      """   INSERT INTO GiftShopDaySeasonalAvailabilityMultiplier (
-               GIFT_SHOP, MONTH, DAY, WEEKDAY_VALUE, WEEKEND_HOLIDAY_VALUE
-            )
-            VALUES ( ?, ?, ?, ?, ? );
-      """,
-      ( SAVANNA_STORE, VISIT_MONTH, VISIT_DAY, 0.6, 0.9 ),
-   )
+      location='Africa',
+      months=months )
    gift_shop_provider_conn.commit()
 
-   records = GiftShopProvider.fetch_gift_shop_records(
-      gift_shop_provider_conn,
-      VISIT_MONTH,
-      VISIT_DAY )
+   records = GiftShopProvider.fetch_gift_shop_records( gift_shop_provider_conn )
 
    assert len( records ) == 1
    assert records[ Position.FIRST ].name == SAVANNA_STORE
-   assert records[ Position.FIRST ].weekday_multiplier == 0.6
-   assert records[ Position.FIRST ].weekend_holiday_multiplier == 0.9
+   assert records[ Position.FIRST ].peak_months == months
 
 
 def Test_FetchGiftShopScheduleRecords_TestEmpty_ExpectEmptyList(
