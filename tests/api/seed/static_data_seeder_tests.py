@@ -216,12 +216,6 @@ def Test_Seed_TestZoomobileTransportationGraph_ExpectSchemaAndSeedIntegrity() ->
       'ROUTE',
       'STATION',
    }
-   assert column_names( cursor, 'TransportationDayRoute' ) >= {
-      'TRANSPORTATION',
-      'MONTH',
-      'DAY',
-      'ROUTE',
-   }
    assert column_names( cursor, 'TransportationLeg' ) >= {
       'TRANSPORTATION',
       'FROM_STATION',

@@ -30,14 +30,6 @@ CREATE TABLE TransportationRouteSchedule (
    ROUTE                 TEXT NOT NULL,
    PRIMARY KEY ( TRANSPORTATION, SCHEDULE_START_DATE )
 );
-
-CREATE TABLE TransportationDayRoute (
-   TRANSPORTATION   TEXT    NOT NULL,
-   MONTH            INTEGER NOT NULL,
-   DAY              INTEGER NOT NULL,
-   ROUTE            TEXT    NOT NULL,
-   PRIMARY KEY ( TRANSPORTATION, MONTH, DAY )
-);
 """
 
 TRAIN = 'Zoo Train'
@@ -178,37 +170,5 @@ def Test_FetchActiveTransportationRoute_TestOpenEndedAndNewerStart_ExpectNewestR
       transportation_active_route_provider_conn,
       TransportationName.ZOOMOBILE,
       TARGET_DATE )
-
-   assert route == SUMMER
-
-
-def Test_FetchTransportationDayRoute_TestMissing_ExpectNone(
-      transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
-   transportation_day_route = TransportationActiveRouteProvider.fetch_transportation_day_route(
-      transportation_active_route_provider_conn,
-      TransportationName.ZOOMOBILE,
-      TARGET_DATE.month,
-      TARGET_DATE.day )
-
-   assert transportation_day_route is None
-
-
-def Test_FetchTransportationDayRoute_TestPresent_ExpectRoute(
-      transportation_active_route_provider_conn: sqlite3.Connection ) -> None:
-   transportation_active_route_provider_conn.execute(
-      """   INSERT INTO TransportationDayRoute (
-               TRANSPORTATION, MONTH, DAY, ROUTE
-            )
-            VALUES ( ?, ?, ?, ? );
-      """,
-      ( TransportationName.ZOOMOBILE, TARGET_DATE.month, TARGET_DATE.day, SUMMER ),
-   )
-   transportation_active_route_provider_conn.commit()
-
-   route = TransportationActiveRouteProvider.fetch_transportation_day_route(
-      transportation_active_route_provider_conn,
-      TransportationName.ZOOMOBILE,
-      TARGET_DATE.month,
-      TARGET_DATE.day )
 
    assert route == SUMMER

@@ -20,7 +20,6 @@ from .tables.picnic_site_seed_table import picnic_sites as _picnic_sites
 from .tables.region_seed_table import regions as _regions
 from .tables.restaurant_seed_table import restaurants as _restaurants
 from .tables.restroom_seed_table import restrooms as _restrooms
-from .tables.transportation_day_route_seed_table import transportation_day_routes as _transportation_day_routes
 from .tables.transportation_leg_seed_table import transportation_legs as _transportation_legs
 from .tables.transportation_route_leg_marker_seed_table import transportation_route_leg_markers as _transportation_route_leg_markers
 from .tables.transportation_route_leg_seed_table import transportation_route_legs as _transportation_route_legs
@@ -58,7 +57,6 @@ class Data():
    restaurants = _restaurants
    restrooms = _restrooms
    transportations = _transportations
-   transportation_day_routes = _transportation_day_routes
    transportation_legs = _transportation_legs
    transportation_routes = _transportation_routes
    transportation_route_legs = _transportation_route_legs

@@ -289,10 +289,6 @@ def Test_GetTransportationStationsMatchingQuery_TestResolvedRoute_ExpectMatches(
       'fetch_active_transportation_route',
       lambda *_args, **_kwargs: ROUTE )
    monkeypatch.setattr(
-      TransportationActiveRouteProvider,
-      'fetch_transportation_day_route',
-      lambda *_args, **_kwargs: ROUTE )
-   monkeypatch.setattr(
       ActiveTransportationRouteBuilder,
       'resolve_requested_transportation_route',
       lambda *_args, **_kwargs: ( ROUTE, 'manual' ) )
@@ -335,10 +331,6 @@ def Test_GetTransportationRoute_TestResolvedRoute_ExpectActiveRoute(
    monkeypatch.setattr(
       TransportationActiveRouteProvider,
       'fetch_active_transportation_route',
-      lambda *_args, **_kwargs: ROUTE )
-   monkeypatch.setattr(
-      TransportationActiveRouteProvider,
-      'fetch_transportation_day_route',
       lambda *_args, **_kwargs: ROUTE )
    monkeypatch.setattr(
       ActiveTransportationRouteBuilder,
@@ -408,13 +400,9 @@ def Test_GetActiveTransportationRoute_TestInvalidRoute_ExpectNone(
    assert active_transportation_route is None
 
 
-def Test_GetTransportationDayRoute_TestValidRoute_ExpectRoute(
+def Test_GetTransportationDayRoute_TestJune_ExpectSummer(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr(
-      TransportationActiveRouteProvider,
-      'fetch_transportation_day_route',
-      lambda *_args, **_kwargs: ROUTE )
    monkeypatch.setattr(
       TransportationCoordinator,
       'get_transportation_route_ids',
@@ -425,19 +413,14 @@ def Test_GetTransportationDayRoute_TestValidRoute_ExpectRoute(
       lambda route, valid_routes: route in valid_routes )
 
    transportation_day_route = TransportationCoordinator.get_transportation_day_route(
-      month=VISIT_MONTH,
-      day=VISIT_DAY )
+      month=VISIT_MONTH )
 
    assert transportation_day_route == ROUTE
 
 
-def Test_GetTransportationDayRoute_TestInvalidRoute_ExpectNone(
+def Test_GetTransportationDayRoute_TestWinterMonthNotInRoutes_ExpectNone(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
-   monkeypatch.setattr(
-      TransportationActiveRouteProvider,
-      'fetch_transportation_day_route',
-      lambda *_args, **_kwargs: None )
    monkeypatch.setattr(
       TransportationCoordinator,
       'get_transportation_route_ids',
@@ -448,8 +431,14 @@ def Test_GetTransportationDayRoute_TestInvalidRoute_ExpectNone(
       lambda route, valid_routes: route in valid_routes )
 
    transportation_day_route = TransportationCoordinator.get_transportation_day_route(
-      month=VISIT_MONTH,
-      day=VISIT_DAY )
+      month=1 )
+
+   assert transportation_day_route is None
+
+
+def Test_GetTransportationDayRoute_TestUnknownMonth_ExpectNone() -> None:
+   transportation_day_route = TransportationCoordinator.get_transportation_day_route(
+      month='Not a month' )
 
    assert transportation_day_route is None
 

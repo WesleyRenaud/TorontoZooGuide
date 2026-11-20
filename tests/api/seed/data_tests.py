@@ -30,7 +30,6 @@ from api.seed.tables.region_seed_table import regions
 from api.seed.tables.restaurant_seed_table import DATA_FILE as RESTAURANT_DATA_FILE
 from api.seed.tables.restaurant_seed_table import restaurants
 from api.seed.tables.restroom_seed_table import restrooms
-from api.seed.tables.transportation_day_route_seed_table import transportation_day_routes
 from api.seed.tables.transportation_leg_seed_table import transportation_legs
 from api.seed.tables.transportation_route_leg_marker_seed_table import transportation_route_leg_markers
 from api.seed.tables.transportation_route_leg_seed_table import transportation_route_legs
@@ -146,7 +145,6 @@ def Test_Data_TestSeedTables_ExpectWired() -> None:
    assert Data.restaurants is restaurants
    assert Data.restrooms is restrooms
    assert Data.transportations is transportations
-   assert Data.transportation_day_routes is transportation_day_routes
    assert Data.transportation_legs is transportation_legs
    assert Data.transportation_routes is transportation_routes
    assert Data.transportation_route_legs is transportation_route_legs
