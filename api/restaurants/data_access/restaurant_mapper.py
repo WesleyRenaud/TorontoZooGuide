@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .restaurant_record import RestaurantRecord
+from ...shared.peak_months import PeakMonths
 from ...types import Types
 
 
@@ -15,8 +16,7 @@ class RestaurantMapper():
          menu_link=row[ 'MENU_LINK' ],
          x_coord=row[ 'X_COORD' ],
          y_coord=row[ 'Y_COORD' ],
-         weekday_multiplier=row[ 'RESTAURANT_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ],
-         weekend_holiday_multiplier=row[ 'RESTAURANT_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ] )
+         peak_months=PeakMonths.from_row( row ) )
 
 
    @classmethod

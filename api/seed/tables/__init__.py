@@ -54,7 +54,6 @@ from .meet_the_guardians_talk_seed_table import MeetTheGuardiansTalkSeedTable
 from .pavilion_seed_table import PavilionSeedTable
 from .picnic_site_seed_table import PicnicSiteSeedTable
 from .region_seed_table import RegionSeedTable
-from .restaurant_day_seasonal_availability_multiplier_seed_table import RestaurantDaySeasonalAvailabilityMultiplierSeedTable
 from .restaurant_opening_schedule_seed_table import RestaurantOpeningScheduleSeedTable
 from .restaurant_schedule_override_seed_table import RestaurantScheduleOverrideSeedTable
 from .restaurant_seed_table import RestaurantSeedTable
@@ -91,7 +90,6 @@ static_tables = [
    AnimalDaySeasonalViewabilityMultiplierSeedTable,
    PavilionSeedTable,
    RestaurantSeedTable,
-   RestaurantDaySeasonalAvailabilityMultiplierSeedTable,
    RestroomSeedTable,
    GiftShopSeedTable,
    GiftShopDaySeasonalAvailabilityMultiplierSeedTable,

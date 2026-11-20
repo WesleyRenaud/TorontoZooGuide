@@ -28,7 +28,6 @@ from api.seed.tables.meet_the_guardians_talk_seed_table import guardians_talks
 from api.seed.tables.pavilion_seed_table import pavilions
 from api.seed.tables.picnic_site_seed_table import picnic_sites
 from api.seed.tables.region_seed_table import regions
-from api.seed.tables.restaurant_day_seasonal_availability_multiplier_seed_table import restaurant_day_seasonal_availability_multipliers
 from api.seed.tables.restaurant_seed_table import DATA_FILE as RESTAURANT_DATA_FILE
 from api.seed.tables.restaurant_seed_table import restaurants
 from api.seed.tables.restroom_seed_table import restrooms
@@ -147,7 +146,6 @@ def Test_Data_TestSeedTables_ExpectWired() -> None:
    assert Data.picnic_sites is picnic_sites
    assert Data.regions is regions
    assert Data.restaurants is restaurants
-   assert Data.restaurant_day_seasonal_availability_multipliers is restaurant_day_seasonal_availability_multipliers
    assert Data.restrooms is restrooms
    assert Data.transportations is transportations
    assert Data.transportation_day_routes is transportation_day_routes

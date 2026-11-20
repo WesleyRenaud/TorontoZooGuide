@@ -10,6 +10,7 @@ from api.restaurants.domain.restaurant_builder import RestaurantBuilder
 from api.shared.enums.position import Position
 from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
+from api.shared.peak_months import PeakMonths
 
 
 RESTAURANT_NAME = 'Africa Restaurant'
@@ -43,8 +44,6 @@ def _restaurant_record( **overrides: object ) -> RestaurantRecord:
       'menu_link': None,
       'x_coord': 1.0,
       'y_coord': 2.0,
-      'weekday_multiplier': 1.0,
-      'weekend_holiday_multiplier': 1.0,
    }
    values.update( overrides )
 
@@ -134,8 +133,8 @@ def Test_GetActiveScheduleStatus_TestClosedMonday_ExpectClosedMessage() -> None:
 
 def Test_BuildRestaurants_TestClosedRestaurant_ExpectExcludedUnlessIncludedOrListed() -> None:
    context = _visit_context()
-   closed_record = _restaurant_record( weekday_multiplier=0, weekend_holiday_multiplier=0 )
-   schedule_records = [ _schedule_record() ]
+   closed_record = _restaurant_record( peak_months=PeakMonths( 1, 2 ) )
+   schedule_records: list[ RestaurantScheduleRecord ] = []
 
    open_only = RestaurantBuilder.build_restaurants(
       restaurant_records=[ closed_record ],
@@ -162,6 +161,17 @@ def Test_BuildRestaurants_TestClosedRestaurant_ExpectExcludedUnlessIncludedOrLis
    assert with_closed[ Position.FIRST ].is_closed is True
    assert len( explicitly_listed ) == 1
    assert explicitly_listed[ Position.FIRST ].name == RESTAURANT_NAME
+
+
+def Test_BuildRestaurant_TestInsideMonths_ExpectOpen() -> None:
+   restaurant = RestaurantBuilder.build_restaurant(
+      restaurant_record=_restaurant_record( peak_months=PeakMonths( 6, 8 ) ),
+      schedule_records=[],
+      schedule_override_records=[],
+      context=_visit_context() )
+
+   assert restaurant.is_closed is False
+   assert restaurant.likelihood == 100
 
 
 def Test_BuildRestaurant_TestClosedSchedule_ExpectCustomClosedMessage() -> None:
