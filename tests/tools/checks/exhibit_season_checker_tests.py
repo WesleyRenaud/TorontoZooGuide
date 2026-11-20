@@ -266,6 +266,29 @@ def Test_CheckSchedules_TestOpenBeyondTheWindow_ExpectShortened(
    assert _status( database ) == ( 0, TODAY.isoformat(), '2026-11-30', 0 )
 
 
+def Test_CheckSchedules_TestExpiredOpenWebStillOpen_ExpectReopened(
+      tmp_path: Path,
+      capsys: pytest.CaptureFixture[ str ],
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database = tmp_path / 'animals.db'
+   _write_database(
+      database,
+      MAYAN,
+      ( 4, 10 ),
+      [ 'Capybara', 'Turkey Vulture' ],
+      ( 0, '2026-04-29', '2026-10-31', 0 ),
+   )
+   _install_page( monkeypatch, [ 'Capybara' ] )
+
+   result, output = _check( database, capsys )
+
+   assert result == 0
+   assert CheckReport.text( 'checks.setOpenForSeasonFrom' ) in output
+   assert 'November 25, 2026' in output
+   assert _status( database ) == ( 0, '2026-11-11', '2026-11-25', 0 )
+   assert _animal_ends( database ) == []
+
+
 def Test_CheckSchedules_TestFutureMaintenanceClosure_ExpectLeftAlone(
       tmp_path: Path,
       capsys: pytest.CaptureFixture[ str ],
