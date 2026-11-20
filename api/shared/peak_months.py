@@ -25,6 +25,23 @@ class PeakMonths():
       )
 
 
+   def covers( self, month: int, weekend: bool ) -> bool:
+      start = self.weekday_start
+      end = self.weekday_end
+
+      if weekend and self.weekend_start != None and self.weekend_end != None:
+         start = self.weekend_start
+         end = self.weekend_end
+
+      if start == None or end == None:
+         return True
+
+      if start <= end:
+         return start <= month <= end
+
+      return month >= start or month <= end
+
+
    def end_for( self, weekend_only: bool, today: date ) -> date | None:
       start_month = self.weekday_start
       end_month = self.weekday_end

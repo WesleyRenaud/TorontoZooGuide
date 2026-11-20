@@ -431,9 +431,7 @@ def Test_GetAttractionLikelihoodForVisitDate_TestActiveSeasonClosure_ExpectZero(
          hyperlink_text='',
          x_coord=0,
          y_coord=0,
-         region='',
-         weekday_multiplier=1,
-         weekend_holiday_multiplier=1 ) )
+         region='' ) )
    monkeypatch.setattr(
       AttractionProvider,
       'fetch_attraction_schedule_records',

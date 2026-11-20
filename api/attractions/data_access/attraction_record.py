@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from ...shared.peak_months import PeakMonths
 from ...types import Types
 
 
@@ -15,8 +16,7 @@ class AttractionRecord:
    x_coord: Types.Coordinate
    y_coord: Types.Coordinate
    region: str
-   weekday_multiplier: Types.SeasonalMultiplier
-   weekend_holiday_multiplier: Types.SeasonalMultiplier
+   peak_months: PeakMonths = field( default_factory=PeakMonths )
    weekday_start_time: Types.ScheduleTimeKey = None
    weekday_end_time: Types.ScheduleTimeKey = None
    weekend_holiday_start_time: Types.ScheduleTimeKey = None

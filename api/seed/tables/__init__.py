@@ -7,7 +7,6 @@ from .animal_viewing_alert_seed_table import AnimalViewingAlertSeedTable
 from .animal_visibility_schedule_seed_table import AnimalVisibilityScheduleSeedTable
 from .app_setting_seed_table import AppSettingSeedTable
 from .attraction_animal_seed_table import AttractionAnimalSeedTable
-from .attraction_day_seasonal_availability_multiplier_seed_table import AttractionDaySeasonalAvailabilityMultiplierSeedTable
 from .attraction_hours_schedule_seed_table import AttractionHoursScheduleSeedTable
 from .attraction_opening_schedule_seed_table import AttractionOpeningScheduleSeedTable
 from .attraction_schedule_override_seed_table import AttractionScheduleOverrideSeedTable
@@ -100,7 +99,6 @@ static_tables = [
    ItineraryStatusSeedTable,
    AttractionSeedTable,
    AttractionAnimalSeedTable,
-   AttractionDaySeasonalAvailabilityMultiplierSeedTable,
    TransportationSeedTable,
    TransportationStationSeedTable,
    TransportationRouteSeedTable,

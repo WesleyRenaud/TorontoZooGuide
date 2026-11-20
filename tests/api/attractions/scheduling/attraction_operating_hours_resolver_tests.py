@@ -30,8 +30,6 @@ def _attraction_record() -> AttractionRecord:
       x_coord=1.0,
       y_coord=2.0,
       region='Americas',
-      weekday_multiplier=1.0,
-      weekend_holiday_multiplier=1.0,
       weekday_start_time=WEEKDAY_START_TIME,
       weekday_end_time=WEEKDAY_END_TIME,
       weekend_holiday_start_time=WEEKEND_START_TIME,
@@ -83,9 +81,7 @@ def Test_OperatingHoursSeconds_TestMissingAttractionTimes_ExpectZooFallback() ->
       hyperlink_text='Learn more',
       x_coord=1.0,
       y_coord=2.0,
-      region='Americas',
-      weekday_multiplier=1.0,
-      weekend_holiday_multiplier=1.0 )
+      region='Americas' )
    zoo_hours = OperatingHours(
       open_seconds=ZOO_OPEN_SECONDS,
       close_seconds=ZOO_CLOSE_SECONDS )
@@ -128,9 +124,7 @@ def Test_FetchConfiguredOperatingHoursSeconds_TestNoConfiguredHours_ExpectNone(
       hyperlink_text='Learn more',
       x_coord=1.0,
       y_coord=2.0,
-      region='Americas',
-      weekday_multiplier=1.0,
-      weekend_holiday_multiplier=1.0 )
+      region='Americas' )
    monkeypatch.setattr(
       AttractionProvider,
       'fetch_attraction_record_for_calendar_day',

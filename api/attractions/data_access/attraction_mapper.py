@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .attraction_record import AttractionRecord
+from ...shared.peak_months import PeakMonths
 from ...types import Types
 
 
@@ -16,8 +17,7 @@ class AttractionMapper():
          x_coord=row[ 'X_COORD' ],
          y_coord=row[ 'Y_COORD' ],
          region=row[ 'REGION' ],
-         weekday_multiplier=row[ 'ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ],
-         weekend_holiday_multiplier=row[ 'ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ],
+         peak_months=PeakMonths.from_row( row ),
          weekday_start_time=row[ 'WEEKDAY_START_TIME' ],
          weekday_end_time=row[ 'WEEKDAY_END_TIME' ],
          weekend_holiday_start_time=row[ 'WEEKEND_HOLIDAY_START_TIME' ],

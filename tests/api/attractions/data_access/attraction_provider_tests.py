@@ -9,6 +9,7 @@ from api.attractions.data_access.attraction_provider import AttractionProvider
 from api.attractions.domain.attraction_info_link import AttractionInfoLink
 from api.shared.enums.position import Position
 from api.shared.enums.transportation_name import TransportationName
+from api.shared.peak_months import PeakMonths
 
 
 ATTRACTION_PROVIDER_SCHEMA = """
@@ -21,16 +22,11 @@ CREATE TABLE Attraction (
    X_COORD                  REAL    NOT NULL,
    Y_COORD                  REAL    NOT NULL,
    REGION                   TEXT    NOT NULL,
-   IS_ALSO_TRANSPORTATION   INTEGER NOT NULL
-);
-
-CREATE TABLE AttractionDaySeasonalAvailabilityMultiplier (
-   ATTRACTION              TEXT    NOT NULL,
-   MONTH                   INTEGER NOT NULL,
-   DAY                     INTEGER NOT NULL,
-   WEEKDAY_VALUE           REAL    NOT NULL,
-   WEEKEND_HOLIDAY_VALUE   REAL    NOT NULL,
-   PRIMARY KEY ( ATTRACTION, MONTH, DAY )
+   IS_ALSO_TRANSPORTATION   INTEGER NOT NULL,
+   WEEKDAY_START_MONTH      INTEGER,
+   WEEKDAY_END_MONTH        INTEGER,
+   WEEKEND_START_MONTH      INTEGER,
+   WEEKEND_END_MONTH        INTEGER
 );
 
 CREATE TABLE AttractionHoursSchedule (
@@ -91,7 +87,8 @@ def _insert_attraction(
       *,
       name: str,
       free_with_admission: int = 1,
-      is_also_transportation: int = 0 ) -> None:
+      is_also_transportation: int = 0,
+      months: PeakMonths = PeakMonths() ) -> None:
    conn.execute(
       """   INSERT INTO Attraction (
                NAME,
@@ -102,9 +99,13 @@ def _insert_attraction(
                X_COORD,
                Y_COORD,
                REGION,
-               IS_ALSO_TRANSPORTATION
+               IS_ALSO_TRANSPORTATION,
+               WEEKDAY_START_MONTH,
+               WEEKDAY_END_MONTH,
+               WEEKEND_START_MONTH,
+               WEEKEND_END_MONTH
             )
-            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
       """,
       (
          name,
@@ -116,6 +117,10 @@ def _insert_attraction(
          20.5,
          'Tundra Trek',
          is_also_transportation,
+         months.weekday_start,
+         months.weekday_end,
+         months.weekend_start,
+         months.weekend_end,
       ),
    )
 
@@ -162,7 +167,7 @@ def Test_FetchAttractionInfoLinks_TestMultipleAttractions_ExpectNameAndLinkOrder
    ]
 
 
-def Test_FetchAttractionRecords_TestNoMultiplierOrHours_ExpectDefaultMultipliersAndNullHours(
+def Test_FetchAttractionRecords_TestNoMonthsOrHours_ExpectOpenMonthsAndNullHours(
       attraction_provider_conn: sqlite3.Connection ) -> None:
    _insert_attraction( attraction_provider_conn, name=CAROUSEL )
    attraction_provider_conn.commit()
@@ -181,8 +186,7 @@ def Test_FetchAttractionRecords_TestNoMultiplierOrHours_ExpectDefaultMultipliers
    assert record.x_coord == 10.5
    assert record.y_coord == 20.5
    assert record.region == 'Tundra Trek'
-   assert record.weekday_multiplier == 1.0
-   assert record.weekend_holiday_multiplier == 1.0
+   assert record.peak_months == PeakMonths()
    assert record.weekday_start_time is None
    assert record.weekday_end_time is None
    assert record.weekend_holiday_start_time is None
@@ -190,21 +194,15 @@ def Test_FetchAttractionRecords_TestNoMultiplierOrHours_ExpectDefaultMultipliers
    assert record.is_also_transportation is False
 
 
-def Test_FetchAttractionRecords_TestMatchingMultiplierAndHours_ExpectJoinedValues(
+def Test_FetchAttractionRecords_TestMonthsAndHours_ExpectJoinedValues(
       attraction_provider_conn: sqlite3.Connection ) -> None:
+   months = PeakMonths( 4, 10, 3, 12 )
    _insert_attraction(
       attraction_provider_conn,
       name=TransportationName.ZOOMOBILE,
       free_with_admission=0,
-      is_also_transportation=1 )
-   attraction_provider_conn.execute(
-      """   INSERT INTO AttractionDaySeasonalAvailabilityMultiplier (
-               ATTRACTION, MONTH, DAY, WEEKDAY_VALUE, WEEKEND_HOLIDAY_VALUE
-            )
-            VALUES ( ?, ?, ?, ?, ? );
-      """,
-      ( TransportationName.ZOOMOBILE, 6, 15, 0.5, 0.75 ),
-   )
+      is_also_transportation=1,
+      months=months )
    attraction_provider_conn.execute(
       """   INSERT INTO AttractionHoursSchedule (
                ATTRACTION,
@@ -237,8 +235,7 @@ def Test_FetchAttractionRecords_TestMatchingMultiplierAndHours_ExpectJoinedValue
    record = records[ Position.FIRST ]
    assert record.name == TransportationName.ZOOMOBILE
    assert record.free_with_admission == 0
-   assert record.weekday_multiplier == 0.5
-   assert record.weekend_holiday_multiplier == 0.75
+   assert record.peak_months == months
    assert record.weekday_start_time == '10:00'
    assert record.weekday_end_time == '16:00'
    assert record.weekend_holiday_start_time == '09:30'
@@ -309,14 +306,6 @@ def Test_FetchAttractionRecordForCalendarDay_TestOpenEndedHours_ExpectJoinedHour
       """,
       ( CAROUSEL, '2026-06-01', '11:00', '17:00', '10:00', '18:00' ),
    )
-   attraction_provider_conn.execute(
-      """   INSERT INTO AttractionDaySeasonalAvailabilityMultiplier (
-               ATTRACTION, MONTH, DAY, WEEKDAY_VALUE, WEEKEND_HOLIDAY_VALUE
-            )
-            VALUES ( ?, ?, ?, ?, ? );
-      """,
-      ( CAROUSEL, 12, 25, 0.2, 0.3 ),
-   )
    attraction_provider_conn.commit()
 
    matching = AttractionProvider.fetch_attraction_record_for_calendar_day(
@@ -330,10 +319,9 @@ def Test_FetchAttractionRecordForCalendarDay_TestOpenEndedHours_ExpectJoinedHour
 
    assert matching is not None
    assert matching.weekday_start_time == '11:00'
-   assert matching.weekday_multiplier == 1.0
+   assert matching.peak_months == PeakMonths()
    assert other_day is not None
-   assert other_day.weekday_multiplier == 0.2
-   assert other_day.weekend_holiday_multiplier == 0.3
+   assert other_day.peak_months == PeakMonths()
    assert other_day.weekday_start_time == '11:00'
 
 
