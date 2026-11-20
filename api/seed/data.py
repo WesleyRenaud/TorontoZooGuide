@@ -2,7 +2,6 @@ from .tables.animal_day_seasonal_viewability_multiplier_seed_table import animal
 from .tables.animal_seed_table import animals as _animals
 from .tables.attraction_seed_table import attractions as _attractions
 from .tables.defibrillator_seed_table import defibrillators as _defibrillators
-from .tables.drinking_fountain_day_seasonal_availability_multiplier_seed_table import drinking_fountain_day_seasonal_availability_multipliers as _drinking_fountain_day_seasonal_availability_multipliers
 from .tables.drinking_fountain_seed_table import drinking_fountains as _drinking_fountains
 from .tables.emergency_intercom_seed_table import emergency_intercoms as _emergency_intercoms
 from .tables.enclosure_seed_table import enclosures as _enclosures
@@ -38,8 +37,6 @@ class Data():
    attractions = _attractions
    defibrillators = _defibrillators
    drinking_fountains = _drinking_fountains
-   drinking_fountain_day_seasonal_availability_multipliers = (
-      _drinking_fountain_day_seasonal_availability_multipliers )
    emergency_intercoms = _emergency_intercoms
    enclosures = _enclosures
    enclosure_viewings = _enclosure_viewings

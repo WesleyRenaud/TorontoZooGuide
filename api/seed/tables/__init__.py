@@ -13,7 +13,6 @@ from .attraction_schedule_override_seed_table import AttractionScheduleOverrideS
 from .attraction_seed_table import AttractionSeedTable
 from .attraction_status_seed_table import AttractionStatusSeedTable
 from .defibrillator_seed_table import DefibrillatorSeedTable
-from .drinking_fountain_day_seasonal_availability_multiplier_seed_table import DrinkingFountainDaySeasonalAvailabilityMultiplierSeedTable
 from .drinking_fountain_seed_table import DrinkingFountainSeedTable
 from .drinking_fountain_status_seed_table import DrinkingFountainStatusSeedTable
 from .emergency_intercom_seed_table import EmergencyIntercomSeedTable
@@ -106,7 +105,6 @@ static_tables = [
    GuardiansTalkAnimalSeedTable,
    WildEncounterMeetingSpotSeedTable,
    WildEncounterSeedTable,
-   DrinkingFountainDaySeasonalAvailabilityMultiplierSeedTable,
    DrinkingFountainSeedTable,
    DefibrillatorSeedTable,
    EmergencyIntercomSeedTable,

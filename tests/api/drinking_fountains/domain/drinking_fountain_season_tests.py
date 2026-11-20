@@ -61,3 +61,11 @@ def Test_OpenEnd_TestMarch_ExpectTwoWeeks() -> None:
    end = DrinkingFountainSeason.open_end( MARCH )
 
    assert end == CalendarDates.two_weeks_later( MARCH )
+
+
+def Test_Likelihood_TestJune_ExpectOpen() -> None:
+   assert DrinkingFountainSeason.likelihood( JUNE ) == 1.0
+
+
+def Test_Likelihood_TestNovember_ExpectClosed() -> None:
+   assert DrinkingFountainSeason.likelihood( NOVEMBER ) == 0.0

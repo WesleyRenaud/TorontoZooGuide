@@ -10,7 +10,6 @@ from api.seed.tables.animal_seed_table import animals
 from api.seed.tables.attraction_seed_table import attractions
 from api.seed.tables.attraction_seed_table import DATA_FILE as ATTRACTION_DATA_FILE
 from api.seed.tables.defibrillator_seed_table import defibrillators
-from api.seed.tables.drinking_fountain_day_seasonal_availability_multiplier_seed_table import drinking_fountain_day_seasonal_availability_multipliers
 from api.seed.tables.drinking_fountain_seed_table import drinking_fountains
 from api.seed.tables.emergency_intercom_seed_table import emergency_intercoms
 from api.seed.tables.enclosure_seed_table import enclosures
@@ -127,7 +126,6 @@ def Test_Data_TestSeedTables_ExpectWired() -> None:
    assert Data.attractions is attractions
    assert Data.defibrillators is defibrillators
    assert Data.drinking_fountains is drinking_fountains
-   assert Data.drinking_fountain_day_seasonal_availability_multipliers is drinking_fountain_day_seasonal_availability_multipliers
    assert Data.emergency_intercoms is emergency_intercoms
    assert Data.enclosures is enclosures
    assert Data.enclosure_viewings is enclosure_viewings

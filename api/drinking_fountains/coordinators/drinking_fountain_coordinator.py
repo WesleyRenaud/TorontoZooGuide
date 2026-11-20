@@ -3,6 +3,7 @@ from __future__ import annotations
 from ..data_access.drinking_fountain_provider import DrinkingFountainProvider
 from ..data_access.drinking_fountain_status_provider import DrinkingFountainStatusProvider
 from ..domain.drinking_fountain_builder import DrinkingFountainBuilder
+from ..domain.drinking_fountain_season import DrinkingFountainSeason
 from ..domain.seasonal_drinking_fountains import SeasonalDrinkingFountains
 from ..domain.seasonal_drinking_fountains_builder import SeasonalDrinkingFountainsBuilder
 from ...models import DrinkingFountain
@@ -33,9 +34,7 @@ class DrinkingFountainCoordinator():
             status_record )
          is_closed_for_season = is_closed
       else:
-         seasonal_likelihood = DrinkingFountainStatusProvider.fetch_drinking_fountain_seasonal_likelihood(
-            RequestConnectionProvider.get(),
-            target_date )
+         seasonal_likelihood = DrinkingFountainSeason.likelihood( target_date )
          is_closed, closed_message, likelihood = DrinkingFountainStatusBuilder.build_seasonal_status(
             seasonal_likelihood )
          is_closed_for_season = False
