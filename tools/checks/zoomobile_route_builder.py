@@ -6,15 +6,12 @@ from api.shared.calendar_dates import CalendarDates
 from api.shared.date_values import DateValues
 from api.shared.enums.transportation_route_id import TransportationRouteId
 from api.transportation.scheduling.transportation_current_route_schedule import TransportationCurrentRouteSchedule
+from api.transportation.scheduling.zoomobile_season import ZoomobileSeason
 from .zoomobile_route_change import ZoomobileRouteChange
 from .zoomobile_route_plan import ZoomobileRoutePlan
 
 
 class ZoomobileRouteBuilder():
-   SUMMER_MONTHS = ( 5, 6, 7, 8, 9, 10 )
-   WINTER_MONTHS = ( 11, 12, 1, 2, 3, 4 )
-
-
    @classmethod
    def through( cls, route: str, today: date ) -> date:
       if cls.aligns( route, today ):
@@ -26,9 +23,9 @@ class ZoomobileRouteBuilder():
    @classmethod
    def aligns( cls, route: str, today: date ) -> bool:
       if route == TransportationRouteId.SUMMER.value:
-         return today.month == 4 or today.month in cls.SUMMER_MONTHS
+         return today.month == 4 or today.month in ZoomobileSeason.SUMMER_MONTHS
 
-      return today.month == 10 or today.month in cls.WINTER_MONTHS
+      return today.month == 10 or today.month in ZoomobileSeason.WINTER_MONTHS
 
 
    @classmethod

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from ..data_access.transportation_day_loop_provider import TransportationDayLoopProvider
+from ...transportation.scheduling.zoomobile_season import ZoomobileSeason
 from ...types import Types
 
 
@@ -22,11 +23,7 @@ class TransportationRouteResolver():
       if active_route is not None:
          return active_route
 
-      day_route = TransportationDayLoopProvider.fetch_transportation_day_route(
-         conn,
-         transportation=transportation,
-         month=target_date.month,
-         day=target_date.day )
+      day_route = ZoomobileSeason.route_for( transportation, target_date.month )
 
       if day_route is None:
          raise ValueError(

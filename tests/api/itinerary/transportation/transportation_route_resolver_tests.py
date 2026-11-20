@@ -18,15 +18,9 @@ def stub_transportation_route_resolver( monkeypatch: pytest.MonkeyPatch ) -> Non
       TransportationDayLoopProvider,
       'fetch_transportation_active_route',
       lambda conn, *, transportation, target_date: None )
-   monkeypatch.setattr(
-      TransportationDayLoopProvider,
-      'fetch_transportation_day_route',
-      lambda conn, *, transportation, month, day: 'summer'
-      if transportation == TransportationName.ZOOMOBILE and month == 6 and day == 15
-      else None )
 
 
-def Test_ResolveForDate_TestSummerDay_ExpectDayRoute(
+def Test_ResolveForDate_TestSummerDay_ExpectMonthRoute(
       stub_transportation_route_resolver: None ) -> None:
    route = TransportationRouteResolver.resolve_for_date(
       None,
@@ -43,10 +37,6 @@ def Test_ResolveForDate_TestActiveRouteOverride_ExpectActiveRoute(
       TransportationDayLoopProvider,
       'fetch_transportation_active_route',
       lambda conn, *, transportation, target_date: active_route )
-   monkeypatch.setattr(
-      TransportationDayLoopProvider,
-      'fetch_transportation_day_route',
-      lambda conn, *, transportation, month, day: 'summer' )
 
    route = TransportationRouteResolver.resolve_for_date(
       None,
@@ -56,19 +46,15 @@ def Test_ResolveForDate_TestActiveRouteOverride_ExpectActiveRoute(
    assert route == active_route
 
 
-def Test_ResolveForDate_TestMissingRoute_ExpectValueError(
+def Test_ResolveForDate_TestOtherTransportation_ExpectValueError(
       monkeypatch: pytest.MonkeyPatch ) -> None:
    monkeypatch.setattr(
       TransportationDayLoopProvider,
       'fetch_transportation_active_route',
       lambda conn, *, transportation, target_date: None )
-   monkeypatch.setattr(
-      TransportationDayLoopProvider,
-      'fetch_transportation_day_route',
-      lambda conn, *, transportation, month, day: None )
 
    with pytest.raises( ValueError, match='No route defined' ):
       TransportationRouteResolver.resolve_for_date(
          None,
-         transportation=TransportationName.ZOOMOBILE,
+         transportation='Tundra Trek Ride',
          target_date=VISIT_DATE )

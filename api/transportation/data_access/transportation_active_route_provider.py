@@ -80,27 +80,3 @@ class TransportationActiveRouteProvider():
       finally:
          cur.close()
 
-
-   @classmethod
-   def fetch_transportation_day_route(
-         cls,
-         conn: Types.Connection,
-         transportation: str,
-         month: int,
-         day: int ) -> str | None:
-      cur = conn.cursor()
-      try:
-         data = cur.execute(
-            """   SELECT
-                     z.ROUTE
-                  FROM TransportationDayRoute z
-                  WHERE z.TRANSPORTATION = ?
-                  AND z.MONTH = ?
-                  AND z.DAY = ?;
-            """, ( transportation, month, day ) )
-         route_data = data.fetchone()
-         if route_data is None:
-            return None
-         return route_data[ 'ROUTE' ]
-      finally:
-         cur.close()

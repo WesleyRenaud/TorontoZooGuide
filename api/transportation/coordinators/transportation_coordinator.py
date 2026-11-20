@@ -18,8 +18,10 @@ from ...models.active_transportation_route import ActiveTransportationRoute
 from ...models.transportation import Transportation
 from ...request_connection_provider import RequestConnectionProvider
 from ..scheduling.transportation_current_route_schedule_builder import TransportationCurrentRouteScheduleBuilder
+from ..scheduling.zoomobile_season import ZoomobileSeason
 from ..search.transportation_stations_matching_query_builder import TransportationStationsMatchingQueryBuilder
 from ..search.transportations_matching_query_builder import TransportationsMatchingQueryBuilder
+from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ...shared.enums.transportation_name import TransportationName
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
@@ -146,11 +148,9 @@ class TransportationCoordinator():
             RequestConnectionProvider.get(),
             transportation,
             target_date=route_context.target_date ),
-         TransportationActiveRouteProvider.fetch_transportation_day_route(
-            RequestConnectionProvider.get(),
+         ZoomobileSeason.route_for(
             transportation,
-            month=route_context.normalized_month,
-            day=route_context.normalized_day ),
+            route_context.normalized_month ),
          valid_routes )
       transportation_stations = cls.get_transportation_stations(
          route=resolved_route,
@@ -185,11 +185,9 @@ class TransportationCoordinator():
             RequestConnectionProvider.get(),
             transportation,
             target_date=route_context.target_date ),
-         TransportationActiveRouteProvider.fetch_transportation_day_route(
-            RequestConnectionProvider.get(),
+         ZoomobileSeason.route_for(
             transportation,
-            month=route_context.normalized_month,
-            day=route_context.normalized_day ),
+            route_context.normalized_month ),
          valid_routes )
 
       return ActiveTransportationRouteBuilder.build_active_transportation_route_response(
@@ -226,13 +224,13 @@ class TransportationCoordinator():
    def get_transportation_day_route(
          cls,
          month: Types.MonthInput,
-         day: Types.VisitDay,
          transportation: str = TransportationName.ZOOMOBILE ) -> str | None:
-      route = TransportationActiveRouteProvider.fetch_transportation_day_route(
-         RequestConnectionProvider.get(),
-         transportation,
-         month=month,
-         day=day )
+      month_number = CalendarDates.normalize_month( month )
+
+      if month_number is None:
+         return None
+
+      route = ZoomobileSeason.route_for( transportation, month_number )
 
       if not ActiveTransportationRouteBuilder.is_valid_transportation_route(
             route,

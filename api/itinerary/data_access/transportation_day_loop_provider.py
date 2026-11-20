@@ -45,36 +45,6 @@ class TransportationDayLoopProvider():
 
 
    @classmethod
-   def fetch_transportation_day_route(
-         cls,
-         conn: Types.Connection,
-         *,
-         transportation: str,
-         month: int,
-         day: int ) -> str | None:
-      cur = conn.cursor()
-
-      try:
-         row = cur.execute(
-            """   SELECT ROUTE
-                  FROM TransportationDayRoute
-                  WHERE TRANSPORTATION = ?
-                    AND MONTH = ?
-                    AND DAY = ?;
-            """,
-            ( transportation, month, day ),
-         ).fetchone()
-
-         if row is None:
-            return None
-
-         return row[ 'ROUTE' ]
-
-      finally:
-         cur.close()
-
-
-   @classmethod
    def fetch_main_transportation_station(
          cls,
          conn: Types.Connection,
