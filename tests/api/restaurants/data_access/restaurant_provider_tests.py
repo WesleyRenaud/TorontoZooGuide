@@ -7,6 +7,7 @@ import pytest
 from api.restaurants.data_access.restaurant_provider import RestaurantProvider
 from api.restaurants.domain.restaurant_menu_link import RestaurantMenuLink
 from api.shared.enums.position import Position
+from api.shared.peak_months import PeakMonths
 
 
 RESTAURANT_PROVIDER_SCHEMA = """
@@ -17,16 +18,11 @@ CREATE TABLE Restaurant (
    DESCRIPTION    TEXT NOT NULL,
    MENU_LINK      TEXT,
    X_COORD        REAL NOT NULL,
-   Y_COORD        REAL NOT NULL
-);
-
-CREATE TABLE RestaurantDaySeasonalAvailabilityMultiplier (
-   RESTAURANT              TEXT    NOT NULL,
-   MONTH                   INTEGER NOT NULL,
-   DAY                     INTEGER NOT NULL,
-   WEEKDAY_VALUE           REAL    NOT NULL,
-   WEEKEND_HOLIDAY_VALUE   REAL    NOT NULL,
-   PRIMARY KEY ( RESTAURANT, MONTH, DAY )
+   Y_COORD        REAL NOT NULL,
+   WEEKDAY_START_MONTH      INTEGER,
+   WEEKDAY_END_MONTH        INTEGER,
+   WEEKEND_START_MONTH      INTEGER,
+   WEEKEND_END_MONTH        INTEGER
 );
 
 CREATE TABLE RestaurantOpeningSchedule (
@@ -57,8 +53,6 @@ CREATE TABLE RestaurantScheduleOverride (
 
 PEACOCK_CAFE = 'Peacock Cafe'
 SIMBA_SNACKS = 'Simba Snacks'
-VISIT_MONTH = 6
-VISIT_DAY = 15
 
 
 @pytest.fixture
@@ -78,7 +72,8 @@ def _insert_restaurant(
       name: str,
       location: str | None = 'Africa',
       sub_location: str | None = None,
-      menu_link: str | None = None ) -> None:
+      menu_link: str | None = None,
+      months: PeakMonths = PeakMonths() ) -> None:
    conn.execute(
       """   INSERT INTO Restaurant (
                NAME,
@@ -87,9 +82,13 @@ def _insert_restaurant(
                DESCRIPTION,
                MENU_LINK,
                X_COORD,
-               Y_COORD
+               Y_COORD,
+               WEEKDAY_START_MONTH,
+               WEEKDAY_END_MONTH,
+               WEEKEND_START_MONTH,
+               WEEKEND_END_MONTH
             )
-            VALUES ( ?, ?, ?, ?, ?, ?, ? );
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
       """,
       (
          name,
@@ -99,6 +98,10 @@ def _insert_restaurant(
          menu_link,
          1.0,
          2.0,
+         months.weekday_start,
+         months.weekday_end,
+         months.weekend_start,
+         months.weekend_end,
       ),
    )
 
@@ -138,7 +141,7 @@ def Test_FetchRestaurantMenuLinks_TestMultipleRestaurants_ExpectNameAndLinkOrder
    ]
 
 
-def Test_FetchRestaurantRecords_TestNoMultiplier_ExpectDefaultMultipliers(
+def Test_FetchRestaurantRecords_TestNoMonths_ExpectOpenMonths(
       restaurant_provider_conn: sqlite3.Connection ) -> None:
    _insert_restaurant(
       restaurant_provider_conn,
@@ -147,10 +150,7 @@ def Test_FetchRestaurantRecords_TestNoMultiplier_ExpectDefaultMultipliers(
       menu_link='https://example.test/menu' )
    restaurant_provider_conn.commit()
 
-   records = RestaurantProvider.fetch_restaurant_records(
-      restaurant_provider_conn,
-      VISIT_MONTH,
-      VISIT_DAY )
+   records = RestaurantProvider.fetch_restaurant_records( restaurant_provider_conn )
 
    assert len( records ) == 1
    record = records[ Position.FIRST ]
@@ -161,40 +161,23 @@ def Test_FetchRestaurantRecords_TestNoMultiplier_ExpectDefaultMultipliers(
    assert record.menu_link == 'https://example.test/menu'
    assert record.x_coord == 1.0
    assert record.y_coord == 2.0
-   assert record.weekday_multiplier == 1.0
-   assert record.weekend_holiday_multiplier == 1.0
+   assert record.peak_months == PeakMonths()
 
 
-def Test_FetchRestaurantRecords_TestMatchingMultiplier_ExpectJoinedValues(
+def Test_FetchRestaurantRecords_TestMonths_ExpectStoredMonths(
       restaurant_provider_conn: sqlite3.Connection ) -> None:
-   _insert_restaurant( restaurant_provider_conn, name=SIMBA_SNACKS )
-   restaurant_provider_conn.execute(
-      """   INSERT INTO RestaurantDaySeasonalAvailabilityMultiplier (
-               RESTAURANT, MONTH, DAY, WEEKDAY_VALUE, WEEKEND_HOLIDAY_VALUE
-            )
-            VALUES ( ?, ?, ?, ?, ? );
-      """,
-      ( SIMBA_SNACKS, VISIT_MONTH, VISIT_DAY, 0.4, 0.8 ),
-   )
-   restaurant_provider_conn.execute(
-      """   INSERT INTO RestaurantDaySeasonalAvailabilityMultiplier (
-               RESTAURANT, MONTH, DAY, WEEKDAY_VALUE, WEEKEND_HOLIDAY_VALUE
-            )
-            VALUES ( ?, ?, ?, ?, ? );
-      """,
-      ( SIMBA_SNACKS, 12, 25, 0.1, 0.2 ),
-   )
+   months = PeakMonths( 4, 10, 3, 12 )
+   _insert_restaurant(
+      restaurant_provider_conn,
+      name=SIMBA_SNACKS,
+      months=months )
    restaurant_provider_conn.commit()
 
-   records = RestaurantProvider.fetch_restaurant_records(
-      restaurant_provider_conn,
-      VISIT_MONTH,
-      VISIT_DAY )
+   records = RestaurantProvider.fetch_restaurant_records( restaurant_provider_conn )
 
    assert len( records ) == 1
    assert records[ Position.FIRST ].name == SIMBA_SNACKS
-   assert records[ Position.FIRST ].weekday_multiplier == 0.4
-   assert records[ Position.FIRST ].weekend_holiday_multiplier == 0.8
+   assert records[ Position.FIRST ].peak_months == months
 
 
 def Test_FetchRestaurantScheduleRecords_TestEmpty_ExpectEmptyList(

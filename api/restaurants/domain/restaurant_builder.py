@@ -8,7 +8,6 @@ from ..data_access.restaurant_schedule_override_record import RestaurantSchedule
 from ..data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from ...models import Restaurant
 from ...shared.enums import ScheduleStatus
-from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningScheduleSeasonalMultiplierResolver
 from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
 from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
@@ -85,14 +84,16 @@ class RestaurantBuilder():
 
 
    @classmethod
-   def get_day_seasonal_availability_multiplier(
+   def month_multiplier(
          cls,
          restaurant_record: RestaurantRecord,
-         context: OpeningScheduleVisitContext ) -> Types.SeasonalMultiplier:
-      return OpeningScheduleSeasonalMultiplierResolver.resolve(
-         weekday_multiplier=restaurant_record.weekday_multiplier,
-         weekend_holiday_multiplier=restaurant_record.weekend_holiday_multiplier,
-         is_weekend_or_holiday=context.is_weekend_or_holiday )
+         context: OpeningScheduleVisitContext ) -> float:
+      if restaurant_record.peak_months.covers(
+            context.target_date.month,
+            context.is_weekend_or_holiday ):
+         return 1.0
+
+      return 0.0
 
 
    @classmethod
@@ -110,7 +111,7 @@ class RestaurantBuilder():
          override_records=schedule_override_records,
          target_date=context.target_date,
          weekday=context.weekday,
-         seasonal_multiplier=cls.get_day_seasonal_availability_multiplier(
+         seasonal_multiplier=cls.month_multiplier(
             restaurant_record=restaurant_record,
             context=context ) )
       is_closed_for_season = False

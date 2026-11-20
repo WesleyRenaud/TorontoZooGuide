@@ -19,7 +19,6 @@ from .tables.meet_the_guardians_talk_seed_table import guardians_talks as _guard
 from .tables.pavilion_seed_table import pavilions as _pavilions
 from .tables.picnic_site_seed_table import picnic_sites as _picnic_sites
 from .tables.region_seed_table import regions as _regions
-from .tables.restaurant_day_seasonal_availability_multiplier_seed_table import restaurant_day_seasonal_availability_multipliers as _restaurant_day_seasonal_availability_multipliers
 from .tables.restaurant_seed_table import restaurants as _restaurants
 from .tables.restroom_seed_table import restrooms as _restrooms
 from .tables.transportation_day_route_seed_table import transportation_day_routes as _transportation_day_routes
@@ -59,7 +58,6 @@ class Data():
    picnic_sites = _picnic_sites
    regions = _regions
    restaurants = _restaurants
-   restaurant_day_seasonal_availability_multipliers = _restaurant_day_seasonal_availability_multipliers
    restrooms = _restrooms
    transportations = _transportations
    transportation_day_routes = _transportation_day_routes

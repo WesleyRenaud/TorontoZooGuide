@@ -86,9 +86,7 @@ class RestaurantProvider():
    @classmethod
    def fetch_restaurant_records(
          cls,
-         conn: Types.Connection,
-         month: Types.VisitMonth,
-         day: Types.VisitDay ) -> list[ RestaurantRecord ]:
+         conn: Types.Connection ) -> list[ RestaurantRecord ]:
       cur = conn.cursor()
 
       try:
@@ -101,14 +99,12 @@ class RestaurantProvider():
                      r.MENU_LINK,
                      r.X_COORD,
                      r.Y_COORD,
-                     COALESCE( rdsam.WEEKDAY_VALUE, 1.0 ) AS RESTAURANT_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
-                     COALESCE( rdsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS RESTAURANT_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
-                  FROM Restaurant r
-                  LEFT JOIN RestaurantDaySeasonalAvailabilityMultiplier rdsam
-                     ON r.NAME = rdsam.RESTAURANT
-                     AND rdsam.MONTH = ?
-                     AND rdsam.DAY = ?;
-            """, ( month, day ) )
+                     r.WEEKDAY_START_MONTH,
+                     r.WEEKDAY_END_MONTH,
+                     r.WEEKEND_START_MONTH,
+                     r.WEEKEND_END_MONTH
+                  FROM Restaurant r;
+            """ )
 
          return RestaurantMapper.map_records( data.fetchall() )
 

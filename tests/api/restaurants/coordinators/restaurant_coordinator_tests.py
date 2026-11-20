@@ -262,7 +262,7 @@ def Test_GetRestaurants_TestProvidersAndBuilder_ExpectRestaurants(
    monkeypatch.setattr(
       RestaurantProvider,
       'fetch_restaurant_records',
-      lambda _conn, *, month, day: restaurant_records if month == 6 and day == 15 else [] )
+      lambda _conn: restaurant_records )
    monkeypatch.setattr(
       RestaurantProvider,
       'fetch_restaurant_schedule_records',

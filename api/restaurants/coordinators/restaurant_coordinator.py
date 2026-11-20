@@ -60,9 +60,7 @@ class RestaurantCoordinator():
 
       return RestaurantBuilder.build_restaurants(
          restaurant_records=RestaurantProvider.fetch_restaurant_records(
-            RequestConnectionProvider.get(),
-            month=context.normalized_month,
-            day=context.normalized_day ),
+            RequestConnectionProvider.get() ),
          schedule_records=RestaurantProvider.fetch_restaurant_schedule_records( RequestConnectionProvider.get() ),
          schedule_override_records=RestaurantProvider.fetch_restaurant_schedule_override_records(
             RequestConnectionProvider.get() ),
