@@ -54,9 +54,7 @@ class GiftShopCoordinator():
 
       return GiftShopBuilder.build_gift_shops(
          gift_shop_records=GiftShopProvider.fetch_gift_shop_records(
-            RequestConnectionProvider.get(),
-            month=context.normalized_month,
-            day=context.normalized_day ),
+            RequestConnectionProvider.get() ),
          schedule_records=GiftShopProvider.fetch_gift_shop_schedule_records( RequestConnectionProvider.get() ),
          schedule_override_records=GiftShopProvider.fetch_gift_shop_schedule_override_records(
             RequestConnectionProvider.get() ),

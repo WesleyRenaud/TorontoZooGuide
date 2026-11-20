@@ -245,7 +245,7 @@ def Test_GetGiftShops_TestProvidersAndBuilder_ExpectGiftShops(
    monkeypatch.setattr(
       GiftShopProvider,
       'fetch_gift_shop_records',
-      lambda _conn, *, month, day: gift_shop_records if month == 6 and day == 15 else [] )
+      lambda _conn: gift_shop_records )
    monkeypatch.setattr(
       GiftShopProvider,
       'fetch_gift_shop_schedule_records',

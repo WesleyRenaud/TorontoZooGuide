@@ -18,7 +18,6 @@ from api.seed.tables.enclosure_viewing_seed_table import enclosure_viewings
 from api.seed.tables.event_site_seed_table import event_sites
 from api.seed.tables.exhibit_day_seasonal_availability_multiplier_seed_table import exhibit_day_seasonal_availability_multipliers
 from api.seed.tables.exhibit_seed_table import exhibits
-from api.seed.tables.gift_shop_day_seasonal_availability_multiplier_seed_table import gift_shop_day_seasonal_availability_multipliers
 from api.seed.tables.gift_shop_seed_table import DATA_FILE as GIFT_SHOP_DATA_FILE
 from api.seed.tables.gift_shop_seed_table import gift_shops
 from api.seed.tables.guest_service_seed_table import guest_services
@@ -137,7 +136,6 @@ def Test_Data_TestSeedTables_ExpectWired() -> None:
    assert Data.exhibits is exhibits
    assert Data.exhibit_day_seasonal_availability_multipliers is exhibit_day_seasonal_availability_multipliers
    assert Data.gift_shops is gift_shops
-   assert Data.gift_shop_day_seasonal_availability_multipliers is gift_shop_day_seasonal_availability_multipliers
    assert Data.guest_services is guest_services
    assert Data.itinerary_event_defaults is itinerary_event_defaults
    assert Data.itinerary_statuses is itinerary_statuses

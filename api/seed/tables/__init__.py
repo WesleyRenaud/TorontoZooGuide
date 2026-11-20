@@ -23,7 +23,6 @@ from .event_site_seed_table import EventSiteSeedTable
 from .exhibit_day_seasonal_availability_multiplier_seed_table import ExhibitDaySeasonalAvailabilityMultiplierSeedTable
 from .exhibit_seed_table import ExhibitSeedTable
 from .exhibit_status_seed_table import ExhibitStatusSeedTable
-from .gift_shop_day_seasonal_availability_multiplier_seed_table import GiftShopDaySeasonalAvailabilityMultiplierSeedTable
 from .gift_shop_opening_schedule_seed_table import GiftShopOpeningScheduleSeedTable
 from .gift_shop_schedule_override_seed_table import GiftShopScheduleOverrideSeedTable
 from .gift_shop_seed_table import GiftShopSeedTable
@@ -92,7 +91,6 @@ static_tables = [
    RestaurantSeedTable,
    RestroomSeedTable,
    GiftShopSeedTable,
-   GiftShopDaySeasonalAvailabilityMultiplierSeedTable,
    ItineraryEventDefaultSeedTable,
    ItineraryStatusSeedTable,
    AttractionSeedTable,

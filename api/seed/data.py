@@ -10,7 +10,6 @@ from .tables.enclosure_viewing_seed_table import enclosure_viewings as _enclosur
 from .tables.event_site_seed_table import event_sites as _event_sites
 from .tables.exhibit_day_seasonal_availability_multiplier_seed_table import exhibit_day_seasonal_availability_multipliers as _exhibit_day_seasonal_availability_multipliers
 from .tables.exhibit_seed_table import exhibits as _exhibits
-from .tables.gift_shop_day_seasonal_availability_multiplier_seed_table import gift_shop_day_seasonal_availability_multipliers as _gift_shop_day_seasonal_availability_multipliers
 from .tables.gift_shop_seed_table import gift_shops as _gift_shops
 from .tables.guest_service_seed_table import guest_services as _guest_services
 from .tables.itinerary_event_default_seed_table import itinerary_event_defaults as _itinerary_event_defaults
@@ -49,7 +48,6 @@ class Data():
    exhibits = _exhibits
    exhibit_day_seasonal_availability_multipliers = _exhibit_day_seasonal_availability_multipliers
    gift_shops = _gift_shops
-   gift_shop_day_seasonal_availability_multipliers = _gift_shop_day_seasonal_availability_multipliers
    guest_services = _guest_services
    itinerary_event_defaults = _itinerary_event_defaults
    itinerary_statuses = _itinerary_statuses
