@@ -10,7 +10,6 @@ from ..data_access.attraction_schedule_record import AttractionScheduleRecord
 from ...models import Attraction
 from ...shared.calendar_dates import CalendarDates
 from ...shared.enums import ScheduleStatus
-from ...shared.opening_schedule_seasonal_multiplier_resolver import OpeningScheduleSeasonalMultiplierResolver
 from ...shared.opening_schedule_status_resolver import OpeningScheduleStatusResolver
 from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext
 from ...shared.opening_schedule_visit_context_resolver import OpeningScheduleVisitContextResolver
@@ -104,14 +103,16 @@ class AttractionBuilder():
 
 
    @classmethod
-   def get_day_seasonal_availability_multiplier(
+   def month_multiplier(
          cls,
          attraction_record: AttractionRecord,
-         is_weekend_or_holiday: bool ) -> Types.SeasonalMultiplier:
-      return OpeningScheduleSeasonalMultiplierResolver.resolve(
-         weekday_multiplier=attraction_record.weekday_multiplier,
-         weekend_holiday_multiplier=attraction_record.weekend_holiday_multiplier,
-         is_weekend_or_holiday=is_weekend_or_holiday )
+         target_date: date ) -> float:
+      weekend = CalendarDates.is_weekend_or_holiday( d=target_date )
+
+      if attraction_record.peak_months.covers( target_date.month, weekend ):
+         return 1.0
+
+      return 0.0
 
 
    @classmethod
@@ -134,9 +135,9 @@ class AttractionBuilder():
          ],
          target_date=target_date,
          weekday=target_date.weekday(),
-         seasonal_multiplier=cls.get_day_seasonal_availability_multiplier(
+         seasonal_multiplier=cls.month_multiplier(
             attraction_record=attraction_record,
-            is_weekend_or_holiday=CalendarDates.is_weekend_or_holiday( d=target_date ) ),
+            target_date=target_date ),
          build_closed_schedule_message=lambda schedule_record: cls.build_closed_schedule_message(
             attraction_name=attraction_record.name,
             schedule_record=schedule_record ),

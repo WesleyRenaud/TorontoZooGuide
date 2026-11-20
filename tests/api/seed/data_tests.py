@@ -7,7 +7,6 @@ from api.seed.data import Data
 from api.seed.json_seed_loader import JsonSeedLoader
 from api.seed.tables.animal_day_seasonal_viewability_multiplier_seed_table import animal_day_seasonal_viewability_multipliers
 from api.seed.tables.animal_seed_table import animals
-from api.seed.tables.attraction_day_seasonal_availability_multiplier_seed_table import attraction_day_seasonal_availability_multipliers
 from api.seed.tables.attraction_seed_table import attractions
 from api.seed.tables.attraction_seed_table import DATA_FILE as ATTRACTION_DATA_FILE
 from api.seed.tables.defibrillator_seed_table import defibrillators
@@ -129,7 +128,6 @@ def Test_Data_TestSeedTables_ExpectWired() -> None:
    assert Data.animals is animals
    assert Data.animal_day_seasonal_viewability_multipliers is animal_day_seasonal_viewability_multipliers
    assert Data.attractions is attractions
-   assert Data.attraction_day_seasonal_availability_multipliers is attraction_day_seasonal_availability_multipliers
    assert Data.defibrillators is defibrillators
    assert Data.drinking_fountains is drinking_fountains
    assert Data.drinking_fountain_day_seasonal_availability_multipliers is drinking_fountain_day_seasonal_availability_multipliers

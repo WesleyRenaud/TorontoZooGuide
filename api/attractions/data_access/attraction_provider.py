@@ -105,25 +105,21 @@ class AttractionProvider():
                      a.Y_COORD,
                      a.REGION,
                      a.IS_ALSO_TRANSPORTATION,
-                     COALESCE( adsam.WEEKDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
-                     COALESCE( adsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER,
+                     a.WEEKDAY_START_MONTH,
+                     a.WEEKDAY_END_MONTH,
+                     a.WEEKEND_START_MONTH,
+                     a.WEEKEND_END_MONTH,
                      ahs.WEEKDAY_START_TIME,
                      ahs.WEEKDAY_END_TIME,
                      ahs.WEEKEND_HOLIDAY_START_TIME,
                      ahs.WEEKEND_HOLIDAY_END_TIME
                   FROM Attraction a
-                  LEFT JOIN AttractionDaySeasonalAvailabilityMultiplier adsam
-                     ON a.NAME = adsam.ATTRACTION
-                     AND adsam.MONTH = ?
-                     AND adsam.DAY = ?
                   LEFT JOIN AttractionHoursSchedule ahs
                      ON a.NAME = ahs.ATTRACTION
                      AND ahs.SCHEDULE_START_DATE <= ?
                      AND COALESCE( ahs.SCHEDULE_END_DATE, ? ) >= ?;
             """,
             (
-               visit_date.month,
-               visit_date.day,
                visit_date,
                Constants.OPEN_ENDED_SQL_DATE,
                visit_date,
@@ -155,17 +151,15 @@ class AttractionProvider():
                      a.Y_COORD,
                      a.REGION,
                      a.IS_ALSO_TRANSPORTATION,
-                     COALESCE( adsam.WEEKDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
-                     COALESCE( adsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER,
+                     a.WEEKDAY_START_MONTH,
+                     a.WEEKDAY_END_MONTH,
+                     a.WEEKEND_START_MONTH,
+                     a.WEEKEND_END_MONTH,
                      ahs.WEEKDAY_START_TIME,
                      ahs.WEEKDAY_END_TIME,
                      ahs.WEEKEND_HOLIDAY_START_TIME,
                      ahs.WEEKEND_HOLIDAY_END_TIME
                   FROM Attraction a
-                  LEFT JOIN AttractionDaySeasonalAvailabilityMultiplier adsam
-                     ON a.NAME = adsam.ATTRACTION
-                     AND adsam.MONTH = ?
-                     AND adsam.DAY = ?
                   LEFT JOIN AttractionHoursSchedule ahs
                      ON a.NAME = ahs.ATTRACTION
                      AND ahs.SCHEDULE_START_DATE <= ?
@@ -173,8 +167,6 @@ class AttractionProvider():
                   WHERE a.NAME = ?;
             """,
             (
-               visit_date.month,
-               visit_date.day,
                visit_date,
                Constants.OPEN_ENDED_SQL_DATE,
                visit_date,

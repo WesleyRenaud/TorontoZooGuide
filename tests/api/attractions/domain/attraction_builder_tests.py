@@ -10,6 +10,7 @@ from api.attractions.domain.attraction_builder import AttractionBuilder
 from api.shared.enums.position import Position
 from api.shared.enums.schedule_status import ScheduleStatus
 from api.shared.opening_schedule_visit_context import OpeningScheduleVisitContext
+from api.shared.peak_months import PeakMonths
 
 
 ATTRACTION_NAME = 'Conservation Carousel'
@@ -51,8 +52,6 @@ def _attraction_record( **overrides: object ) -> AttractionRecord:
       'x_coord': 1.0,
       'y_coord': 2.0,
       'region': 'Front Courtyard',
-      'weekday_multiplier': 1.0,
-      'weekend_holiday_multiplier': 1.0,
       'weekday_start_time': WEEKDAY_START_TIME,
       'weekday_end_time': WEEKDAY_END_TIME,
       'weekend_holiday_start_time': WEEKEND_START_TIME,
@@ -201,8 +200,7 @@ def Test_BuildAttraction_TestTransportationFlag_ExpectIsAlsoTransportationRetain
 
 def Test_BuildAttractions_TestClosedAttraction_ExpectExcludedUnlessRequested() -> None:
    closed_attraction_record = _attraction_record(
-      weekday_multiplier=0,
-      weekend_holiday_multiplier=0 )
+      peak_months=PeakMonths( 1, 2 ) )
    context = _visit_context(
       target_date=WEEKDAY_VISIT_DATE,
       is_weekend_or_holiday=False )

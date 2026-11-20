@@ -106,3 +106,45 @@ def Test_ScheduleEnd_TestWeekendEndBeforeEveryday_ExpectWeekendEnd() -> None:
    end = months.schedule_end( True, today )
 
    assert end == _month_end( today, 12 )
+
+
+def Test_Covers_TestWeekdayInsideJuneThroughAugust_ExpectOpen() -> None:
+   months = PeakMonths( 6, 8, 5, 10 )
+
+   assert months.covers( 7, False )
+
+
+def Test_Covers_TestWeekdayBeforeJune_ExpectClosed() -> None:
+   months = PeakMonths( 6, 8, 5, 10 )
+
+   assert months.covers( 4, False ) == False
+
+
+def Test_Covers_TestWeekendInsideMayThroughOctober_ExpectOpen() -> None:
+   months = PeakMonths( 6, 8, 5, 10 )
+
+   assert months.covers( 5, True )
+
+
+def Test_Covers_TestWeekendAfterOctober_ExpectClosed() -> None:
+   months = PeakMonths( 6, 8, 5, 10 )
+
+   assert months.covers( 11, True ) == False
+
+
+def Test_Covers_TestNoMonths_ExpectOpen() -> None:
+   assert PeakMonths().covers( 1, False )
+
+
+def Test_Covers_TestWrappedWinter_ExpectJanuaryOpenAndJuneClosed() -> None:
+   months = PeakMonths( 11, 3 )
+
+   assert months.covers( 1, False )
+   assert months.covers( 6, False ) == False
+
+
+def Test_Covers_TestWeekendUsesWeekdayMonthsWhenUnset_ExpectJulyOpen() -> None:
+   months = PeakMonths( 4, 10 )
+
+   assert months.covers( 7, True )
+   assert months.covers( 1, True ) == False
