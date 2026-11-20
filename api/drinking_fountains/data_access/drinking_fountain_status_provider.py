@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import date
-
 from .drinking_fountain_status_mapper import DrinkingFountainStatusMapper
 from .drinking_fountain_status_record import DrinkingFountainStatusRecord
 from ...types import Types
@@ -56,34 +54,6 @@ class DrinkingFountainStatusProvider():
          ).fetchone()
 
          return DrinkingFountainStatusMapper.map_record( row )
-
-      finally:
-         cur.close()
-
-
-   @classmethod
-   def fetch_drinking_fountain_seasonal_likelihood(
-         cls,
-         conn: Types.Connection,
-         target_date: date ) -> float:
-      cur = conn.cursor()
-
-      try:
-         data = cur.execute(
-            """   SELECT
-                     LIKELIHOOD
-                  FROM DrinkingFountainDaySeasonalAvailabilityMultiplier
-                  WHERE MONTH = ?
-                     AND DAY = ?;
-            """,
-            (
-               target_date.month,
-               target_date.day
-            ) )
-
-         row = data.fetchone()
-
-         return row[ 'LIKELIHOOD' ] if row else 1.0
 
       finally:
          cur.close()

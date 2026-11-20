@@ -16,6 +16,14 @@ class DrinkingFountainSeason():
 
 
    @classmethod
+   def likelihood( cls, today: date ) -> float:
+      if cls.open_season( today ):
+         return 1.0
+
+      return 0.0
+
+
+   @classmethod
    def closed_until_month( cls ) -> int:
       return CalendarDates.previous_month( cls.OPEN_START_MONTH )
 

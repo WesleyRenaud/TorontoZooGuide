@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import date
 import sqlite3
 
 import pytest
@@ -19,13 +18,6 @@ CREATE TABLE DrinkingFountainStatus (
    END_DATE         TEXT,
    CLOSED_MESSAGE   TEXT
 );
-
-CREATE TABLE DrinkingFountainDaySeasonalAvailabilityMultiplier (
-   MONTH            INTEGER NOT NULL,
-   DAY              INTEGER NOT NULL,
-   LIKELIHOOD       REAL NOT NULL,
-   PRIMARY KEY ( MONTH, DAY )
-);
 """
 
 
@@ -34,15 +26,6 @@ def drinking_fountain_status_conn() -> sqlite3.Connection:
    conn = sqlite3.connect( ':memory:' )
    conn.row_factory = sqlite3.Row
    conn.executescript( DRINKING_FOUNTAIN_STATUS_SCHEMA )
-   conn.execute(
-      """   INSERT INTO DrinkingFountainDaySeasonalAvailabilityMultiplier (
-               MONTH,
-               DAY,
-               LIKELIHOOD
-            )
-            VALUES ( 6, 15, 0.5 );
-      """ )
-   conn.commit()
 
    yield conn
 
@@ -135,21 +118,3 @@ def Test_DeleteStatus_TestEmptyTable_ExpectFalse(
       drinking_fountain_status_conn )
 
    assert result is False
-
-
-def Test_FetchSeasonalLikelihood_TestKnownDate_ExpectStoredLikelihood(
-      drinking_fountain_status_conn: sqlite3.Connection ) -> None:
-   drinking_fountain_seasonal_likelihood = DrinkingFountainStatusProvider.fetch_drinking_fountain_seasonal_likelihood(
-      drinking_fountain_status_conn,
-      date( 2026, 6, 15 ) )
-
-   assert drinking_fountain_seasonal_likelihood == 0.5
-
-
-def Test_FetchSeasonalLikelihood_TestUnknownDate_ExpectDefaultOne(
-      drinking_fountain_status_conn: sqlite3.Connection ) -> None:
-   drinking_fountain_seasonal_likelihood = DrinkingFountainStatusProvider.fetch_drinking_fountain_seasonal_likelihood(
-      drinking_fountain_status_conn,
-      date( 2026, 1, 1 ) )
-
-   assert drinking_fountain_seasonal_likelihood == 1.0

@@ -26,7 +26,6 @@ START_DATE = '2026-06-01'
 END_DATE = '2026-06-30'
 MESSAGE = 'Closed for the season.'
 STATUS_LIKELIHOOD = 0.0
-SEASONAL_LIKELIHOOD = 0.8
 
 FOUNTAIN = DrinkingFountain(
    x_coord=10.0,
@@ -108,7 +107,7 @@ def Test_GetDrinkingFountains_TestStatusApplies_ExpectStatusBuilt(
    assert captured[ 'is_closed_for_season' ] is True
 
 
-def Test_GetDrinkingFountains_TestStatusMissing_ExpectSeasonalFallback(
+def Test_GetDrinkingFountains_TestJuneWithoutStatus_ExpectOpen(
       stub_request_connection: None,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    fountain_records = [ StubRecord() ]
@@ -122,14 +121,6 @@ def Test_GetDrinkingFountains_TestStatusMissing_ExpectSeasonalFallback(
       DrinkingFountainStatusProvider,
       'fetch_drinking_fountain_status_record',
       lambda _conn: None )
-   monkeypatch.setattr(
-      DrinkingFountainStatusProvider,
-      'fetch_drinking_fountain_seasonal_likelihood',
-      lambda _conn, target_date: SEASONAL_LIKELIHOOD if target_date == VISIT_DATE else 0.0 )
-   monkeypatch.setattr(
-      DrinkingFountainStatusBuilder,
-      'build_seasonal_status',
-      lambda likelihood: ( False, None, likelihood ) )
    monkeypatch.setattr(
       DrinkingFountainProvider,
       'fetch_drinking_fountain_records',
@@ -162,7 +153,53 @@ def Test_GetDrinkingFountains_TestStatusMissing_ExpectSeasonalFallback(
    assert captured[ 'records' ] is fountain_records
    assert captured[ 'is_closed' ] is False
    assert captured[ 'closed_message' ] is None
-   assert captured[ 'likelihood' ] == SEASONAL_LIKELIHOOD
+   assert captured[ 'likelihood' ] == 1.0
+   assert captured[ 'is_closed_for_season' ] is False
+
+
+def Test_GetDrinkingFountains_TestJanuaryWithoutStatus_ExpectClosed(
+      stub_request_connection: None,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   captured: dict[ str, object ] = {}
+
+   monkeypatch.setattr(
+      CalendarDates,
+      'visit_target_date',
+      lambda **_kwargs: date( 2026, 1, 15 ) )
+   monkeypatch.setattr(
+      DrinkingFountainStatusProvider,
+      'fetch_drinking_fountain_status_record',
+      lambda _conn: None )
+   monkeypatch.setattr(
+      DrinkingFountainProvider,
+      'fetch_drinking_fountain_records',
+      lambda _conn: [] )
+
+   def build_drinking_fountains(
+         records: list[ StubRecord ],
+         is_closed: bool,
+         closed_message: str | None,
+         likelihood: float,
+         is_closed_for_season: bool = False ) -> list[ DrinkingFountain ]:
+      captured[ 'is_closed' ] = is_closed
+      captured[ 'closed_message' ] = closed_message
+      captured[ 'likelihood' ] = likelihood
+      captured[ 'is_closed_for_season' ] = is_closed_for_season
+      return []
+
+   monkeypatch.setattr(
+      DrinkingFountainBuilder,
+      'build_drinking_fountains',
+      build_drinking_fountains )
+
+   DrinkingFountainCoordinator.get_drinking_fountains(
+      month='January',
+      day=VISIT_DAY,
+      year=VISIT_YEAR )
+
+   assert captured[ 'is_closed' ] is True
+   assert captured[ 'closed_message' ] is None
+   assert captured[ 'likelihood' ] == 0.0
    assert captured[ 'is_closed_for_season' ] is False
 
 
