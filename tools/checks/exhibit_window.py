@@ -102,14 +102,23 @@ class ExhibitWindow():
          today: date,
          target: date ) -> ExhibitWindow | None:
       if (
-         status is None
-         or status.is_closed
-         or status.start is None
-         or not cls.covers( status, today )
+         status is not None
+         and not status.is_closed
+         and status.start is not None
+         and cls.covers( status, today )
       ):
-         return None
+         return cls.adjusted( False, status, today, target )
 
-      return cls.adjusted( False, status, today, target )
+      if (
+         status is not None
+         and not status.is_closed
+         and status.start is not None
+         and status.end is not None
+         and not cls.covers( status, today )
+      ):
+         return cls( False, today, target )
+
+      return None
 
 
    def detail( self ) -> str:
