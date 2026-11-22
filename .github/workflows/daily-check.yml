@@ -2,12 +2,6 @@ name: Daily check
 
 on:
   workflow_dispatch:
-  # cron.surf starts the check at 6:00 AM Toronto.
-  # cron.surf: 0 6 * * * America/Toronto
-  schedule:
-    # Backup. GitHub often starts this hours after 6:00 AM Toronto time.
-    # It does nothing when the 6:00 AM run has already happened.
-    - cron: '0 11 * * *'
 
 permissions:
   actions: read
@@ -23,63 +17,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Skip when a check already started today
-        id: gate
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ "$GITHUB_EVENT_NAME" != "schedule" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if ! runs=$(gh run list --workflow daily-check.yml --limit 30 --json databaseId,conclusion,createdAt,status); then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if ! decision=$(TODAY="$(TZ=America/Toronto date +%F)" RUNS="$runs" python3 -c 'import textwrap; exec(textwrap.dedent("""
-          import json
-          import os
-          from datetime import datetime
-          from zoneinfo import ZoneInfo
-
-          zone = ZoneInfo("America/Toronto")
-          today = os.environ["TODAY"]
-          current = int(os.environ["GITHUB_RUN_ID"])
-          active = {"queued", "in_progress", "waiting", "pending", "requested"}
-
-          for run in json.loads(os.environ["RUNS"]):
-              if run["databaseId"] == current:
-                  continue
-
-              created = datetime.fromisoformat(run["createdAt"].replace("Z", "+00:00")).astimezone(zone)
-
-              if created.date().isoformat() != today:
-                  continue
-
-              if run["status"] in active or run["conclusion"] == "success":
-                  print("false")
-                  break
-          else:
-              print("true")
-          """))'); then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [ "$decision" = "false" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Check out repository
-        if: steps.gate.outputs.run == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Python
-        if: steps.gate.outputs.run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -87,18 +28,15 @@ jobs:
           cache-dependency-path: requirements-dev.txt
 
       - name: Install Python dependencies
-        if: steps.gate.outputs.run == 'true'
         run: python -m pip install -r requirements-dev.txt
 
       - name: Set up Node
-        if: steps.gate.outputs.run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
       - name: Fix and email the summary
         id: website_check
-        if: steps.gate.outputs.run == 'true'
         env:
           CHECK_EMAIL_PASSWORD: ${{ secrets.CHECK_EMAIL_PASSWORD }}
         run: |
@@ -107,7 +45,7 @@ jobs:
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
       - name: Save the database fixes
-        if: steps.gate.outputs.run == 'true' && steps.website_check.outcome == 'success'
+        if: steps.website_check.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -130,5 +68,5 @@ jobs:
           gh pr merge "$branch" --merge --delete-branch
 
       - name: Fail when issues remain
-        if: steps.gate.outputs.run == 'true' && steps.website_check.outputs.exit_code != '0'
+        if: steps.website_check.outputs.exit_code != '0'
         run: exit 1
