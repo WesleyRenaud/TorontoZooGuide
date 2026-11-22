@@ -16,7 +16,7 @@ Create a fine-grained personal access token with access to **WesleyRenaud/Toront
 
 ## cron-job.org
 
-1. Create a job at [cron-job.org](https://cron.job.org/).
+1. Create a job at [cron-job.org](https://cron-job.org/).
 2. Schedule: `0 6 * * *`, timezone **America/Toronto**.
 3. Request:
    - Method: `POST`
