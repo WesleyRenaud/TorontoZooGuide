@@ -24,6 +24,7 @@
       "test:js": "node --test \"tests/scripts/**/*.test.mjs\"",
       "test:api": "python3 -m pytest tests/api tests/tools -n auto",
       "test:py": "python3 -m pytest tests/api tests/tools -n auto",
+      "prestart": "python3 -m tools.animals_database_syncer",
       "start": "python3 -m api"
    },
    "devDependencies": {

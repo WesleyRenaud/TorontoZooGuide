@@ -1,6 +1,17 @@
 export class CheckStrings {
    static checks = {
       animalAlerts: 'Viewing alerts for closures',
+      animalsDatabaseSyncer: {
+         alreadyMatches: 'animals.db already matches {remote}/{branch}.',
+         pulledLatest: 'Pulled latest {branch} (includes {database}).',
+         skipCouldNotFetch: 'Skipping animals.db sync (could not fetch {remote}/{branch}{detail}).',
+         skipCouldNotRestore: 'Skipping animals.db sync (could not restore {database}{detail}).',
+         skipDirtyDatabase: 'Skipping animals.db sync (local {database} has uncommitted changes).',
+         skipError: 'Skipping animals.db sync ({error}).',
+         skipNotGitRepository: 'Skipping animals.db sync (not a git repository).',
+         skipWrongBranch: 'Skipping animals.db sync (on {branch}, not {expected}).',
+         updatedDatabase: 'Updated {database} from {remote}/{branch}. Run git pull when ready to update the rest of the branch.',
+      },
       appCatalogueNotOnWebsite: 'In the app catalogue and not on the website',
       appDatesNotBookable: 'App dates not bookable: ',
       appDatesNotOnWebsite: 'App dates not on the website: ',
