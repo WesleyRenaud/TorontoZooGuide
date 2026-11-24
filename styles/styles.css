@@ -37,9 +37,11 @@ html.console-operations-page {
 html.home-page body,
 html.console-operations-page body {
    height: 100%;
+   height: 100dvh;
+   margin: 0;
    display: flex;
-   justify-content: center;
-   overflow: visible;
+   justify-content: stretch;
+   overflow: hidden;
    overscroll-behavior: none;
 }
 
@@ -48,29 +50,63 @@ body > .console-operations-page {
    position: relative;
    display: flex;
    flex-direction: column;
-   width: var(--layout-page-width);
-   height: var(--layout-page-height);
+   width: 100%;
+   max-width: 100%;
+   height: 100%;
    min-height: 0;
+   flex: 1 1 auto;
    overflow: hidden;
-   zoom: var(--layout-fit);
 }
 
-/* Below about 92% of the 1512×809 picture, the window is zoomed in and the picture scrolls. */
-@media (max-width: 1390px), (max-height: 743px) {
-   html.home-page,
-   html.console-operations-page {
-      overflow: auto;
-   }
-
+/*
+ * When the CSS viewport is at least the design stage (large window, or browser
+ * zoom-out enlarging CSS pixels), scale the 1512×809 stage up so explore/map
+ * type stays near design size. Zoom-in / small windows stay on the fluid shell.
+ */
+@media (min-width: 1512px) and (min-height: 809px) {
    html.home-page body,
    html.console-operations-page body {
-      height: auto;
-      display: block;
+      justify-content: center;
+      align-items: center;
    }
 
    body > .home-page,
    body > .console-operations-page {
-      zoom: 1;
+      width: var(--layout-page-width);
+      height: var(--layout-page-height);
+      max-width: none;
+      flex: 0 0 auto;
+      zoom: var(--layout-fit);
+   }
+
+   :root {
+      --layout-top-bar-height: calc(var(--layout-page-height) * 0.08);
+      --layout-nav-height: calc(var(--layout-page-height) * 0.06 + 5px);
+      --map-frame-height: calc(
+         var(--layout-page-height) - var(--layout-top-bar-height) - var(--layout-nav-height)
+      );
+      --map-menu-width: calc(var(--layout-page-width) * 0.2112);
+      --explore-control-font: 9.6px;
+      --marker-size: calc(var(--map-frame-height) * 12 / 691);
+   }
+
+   .top-bar-title {
+      font-size: calc(var(--layout-page-height) * 0.0148);
+   }
+
+   .side-panel-title {
+      font-size: 1.5em;
+   }
+
+   nav ul {
+      gap: calc(var(--layout-page-height) * 0.0062);
+   }
+
+   nav ul li a {
+      height: calc(var(--layout-page-height) * 0.06);
+      font-size: calc(var(--layout-page-height) * 0.0148);
+      border-radius: calc(var(--layout-page-height) * 0.0062);
+      padding: 0 calc(var(--layout-page-height) * 0.006);
    }
 }
 
@@ -88,14 +124,16 @@ body > .console-operations-page {
 
 .home-page main.map-layout {
    display: grid;
-   grid-template-columns: minmax(0, 1fr) minmax(0, calc(var(--map-frame-height) * var(--zoo-map-aspect-width) / var(--zoo-map-aspect-height)));
+   grid-template-columns:
+      minmax(var(--map-menu-width), 1fr)
+      minmax(0, calc(var(--map-frame-height) * var(--zoo-map-aspect-width) / var(--zoo-map-aspect-height)));
    grid-template-rows: minmax(0, 1fr);
 }
 
 .home-page main.map-layout > .side-panel.left {
    width: auto;
    height: auto;
-   min-width: 0;
+   min-width: var(--map-menu-width);
    max-width: 100%;
 }
 
@@ -122,17 +160,18 @@ body > .console-operations-page {
    display: flex;
    justify-content: center;
    align-items: center;
-   gap: calc(var(--layout-page-height) * 0.0148);
+   gap: max(0.5rem, 1.5vh);
 
    color: var(--color-white);
 
    z-index: 10;
    box-sizing: border-box;
    padding: 0 8px;
+   flex-shrink: 0;
 }
 
 .top-bar-title {
-   font-size: calc(var(--layout-page-height) * 0.0148);
+   font-size: max(0.85rem, 1.6vh);
    font-weight: bold;
    letter-spacing: 0.02em;
    line-height: 1;
@@ -175,7 +214,7 @@ body > .console-operations-page {
 .side-panel-title {
    margin: 0;
    color: var(--color-white);
-   font-size: 1.5em;
+   font-size: max(1.1rem, 2.4vh);
    font-weight: 700;
    letter-spacing: 0.02em;
 }
@@ -225,7 +264,7 @@ body > .console-operations-page {
 
 .side-panel-toggle .toggle-row {
    gap: 4.75px;
-   font-size: 9.6px;
+   font-size: var(--explore-control-font);
 }
 
 .side-panel-toggle .toggle-row input[type="checkbox"],
@@ -273,7 +312,7 @@ body > .console-operations-page {
 }
 
 .transportation-route-title {
-   font-size: 9.6px;
+   font-size: var(--explore-control-font);
    font-weight: 700;
    color: #14230af2;
 }
@@ -291,7 +330,7 @@ body > .console-operations-page {
    align-items: center;
    gap: 4.75px;
 
-   font-size: 9.6px;
+   font-size: var(--explore-control-font);
    font-weight: 600;
    color: #14230ae6;
    cursor: pointer;
@@ -400,7 +439,7 @@ body > .console-operations-page {
    cursor: pointer;
 
    font-family: var(--font-family-base);
-   font-size: 8.16px;
+   font-size: calc(var(--explore-control-font) * 0.85);
    font-weight: 700;
    color: #14230af2;
 }
@@ -446,7 +485,7 @@ body > .console-operations-page {
    box-sizing: border-box;
 
    font-family: var(--font-family-base);
-   font-size: 9.6px;
+   font-size: var(--explore-control-font);
    font-weight: 700;
 
    padding: 4.25px 4.75px;
@@ -559,7 +598,7 @@ body > .console-operations-page {
    background-color: transparent;
    color: var(--color-brand-primary-muted);
    font-family: var(--font-family-base);
-   font-size: 10.4px;
+   font-size: max(10.4px, 1.3vh);
    font-weight: 700;
    line-height: 1.1;
    cursor: pointer;
@@ -655,7 +694,7 @@ body > .console-operations-page {
 
 .explore-update-count {
    font-family: var(--font-family-base);
-   font-size: 9.6px;
+   font-size: var(--explore-control-font);
    font-weight: 700;
    line-height: 1.1;
    color: var(--color-brand-primary-muted);
@@ -669,7 +708,7 @@ body > .console-operations-page {
    background-color: transparent;
    color: var(--color-brand-primary);
    font-family: var(--font-family-base);
-   font-size: 9.6px;
+   font-size: var(--explore-control-font);
    font-weight: 800;
    line-height: 1;
    cursor: pointer;
@@ -875,17 +914,17 @@ body > .console-operations-page {
 }
 
 .animal-search-results .animal-result-species {
-   font-size: 9.6px;
+   font-size: var(--explore-control-font);
 }
 
 .animal-search-results .animal-result-exhibit {
-   font-size: 6.72px;
+   font-size: max(6.72px, 0.85vh);
 }
 
 .animal-search-results .animal-result-map-btn {
    padding: 3.25px 5px;
    border-radius: 2.75px;
-   font-size: 6.72px;
+   font-size: max(6.72px, 0.85vh);
    box-shadow: 0 1.5px 3.25px #00000038;
 }
 
@@ -1270,7 +1309,7 @@ nav {
    display: flex;
    justify-content: center;
    align-items: center;
-   padding: calc(var(--layout-page-height) * 0.0031) 0;
+   padding: max(2px, 0.35vh) max(4px, 1vw);
    flex-shrink: 0;
    box-sizing: border-box;
    position: relative;
@@ -1283,27 +1322,37 @@ nav ul {
    display: flex;
    flex-wrap: nowrap;
    justify-content: center;
-   gap: calc(var(--layout-page-height) * 0.0062);
+   gap: max(4px, 0.6vh);
    list-style-type: none;
    width: 100%;
    min-width: 0;
+}
+
+nav ul li {
+   flex: 1 1 0;
+   min-width: 0;
+   display: flex;
 }
 
 nav ul li a {
    display: flex;
    justify-content: center;
    align-items: center;
-   width: calc(var(--layout-page-height) * 0.22);
-   height: calc(var(--layout-page-height) * 0.06);
+   width: 100%;
+   height: clamp(2.5rem, 5.5vh, 3.05rem);
+   padding: 0 0.45em;
+   box-sizing: border-box;
    background-color: var(--color-brand-accent);
    color: var(--color-white);
    font-weight: bold;
-   font-size: calc(var(--layout-page-height) * 0.0148);
+   font-size: clamp(0.75rem, 1.35vh, 0.9rem);
+   line-height: 1.15;
    text-align: center;
-   border-radius: calc(var(--layout-page-height) * 0.0062);
+   text-wrap: balance;
+   overflow-wrap: break-word;
+   border-radius: max(3px, 0.5vh);
    text-decoration: none;
    transition: background 0.3s, transform 0.3s;
-   flex-shrink: 0;
 }
 
 nav ul li a:hover {
@@ -6005,13 +6054,6 @@ nav ul li a[aria-current="page"]:hover {
    border: 0.75px solid #5e960047;
    background: #fcf8ecfc;
    box-shadow: 0 6.5px 22.5px #00000057;
-   zoom: var(--layout-fit);
-}
-
-@media (max-width: 1390px), (max-height: 743px) {
-   .console-overlap-dialog-card {
-      zoom: 1;
-   }
 }
 
 .console-overlap-dialog-header {
