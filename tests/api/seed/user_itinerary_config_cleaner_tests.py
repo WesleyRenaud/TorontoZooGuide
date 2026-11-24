@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from pathlib import Path
 import runpy
 import sqlite3
 
 import pytest
 
+from api.database_connection_provider import DatabaseConnectionProvider
 from api.itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from api.seed.user_itinerary_config_cleaner import UserItineraryConfigCleaner
 from api.shared.enums import ItineraryErrorType
@@ -15,41 +17,11 @@ CREATE TABLE ItineraryStatus (
    STATUS             TEXT NOT NULL PRIMARY KEY,
    IS_SUPPRESSABLE    BOOL NOT NULL
 );
-
-CREATE TABLE ItineraryStatusSuppression (
-   STATUS             TEXT NOT NULL PRIMARY KEY,
-   IS_SUPPRESSED      BOOL NOT NULL DEFAULT 0
-);
 """
 
 
-class _SharedConnection:
-   _conn: sqlite3.Connection
-   calls: list[ str ]
-
-
-   def __init__( self, conn: sqlite3.Connection ) -> None:
-      self._conn = conn
-      self.calls = []
-
-
-   def cursor( self ) -> sqlite3.Cursor:
-      self.calls.append( 'cursor' )
-      return self._conn.cursor()
-
-
-   def commit( self ) -> None:
-      self.calls.append( 'commit' )
-      self._conn.commit()
-
-
-   def close( self ) -> None:
-      self.calls.append( 'close' )
-
-
-@pytest.fixture
-def config_cleaner_conn() -> sqlite3.Connection:
-   conn = sqlite3.connect( ':memory:' )
+def _prepare_animals_db( path: Path ) -> None:
+   conn = sqlite3.connect( path )
    conn.executescript( STATUS_SCHEMA )
    conn.execute(
       """   INSERT INTO ItineraryStatus (
@@ -58,89 +30,96 @@ def config_cleaner_conn() -> sqlite3.Connection:
             )
             VALUES ( ?, 1 );
       """,
-      ( ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value, ) )
+      ( ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value, ),
+   )
    conn.commit()
-
-   yield conn
-
    conn.close()
+   DatabaseConnectionProvider.ensure_itinerary_schema( DatabaseConnectionProvider.itinerary_path_beside( path ) )
+
+
+@pytest.fixture
+def config_cleaner_db( tmp_path: Path ) -> Path:
+   path = tmp_path / 'animals.db'
+   _prepare_animals_db( path )
+
+   return path
 
 
 def Test_Clear_TestSuppressedWarning_ExpectCleared(
-      config_cleaner_conn: sqlite3.Connection ) -> None:
+      config_cleaner_db: Path ) -> None:
+   conn = DatabaseConnectionProvider.open( str( config_cleaner_db ) )
    ItineraryStatusProvider.suppress_itinerary_status(
-      config_cleaner_conn,
+      conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
-   cur = config_cleaner_conn.cursor()
+   cur = conn.cursor()
    UserItineraryConfigCleaner.clear( cur )
-   config_cleaner_conn.commit()
+   conn.commit()
    cur.close()
 
-   assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
-      config_cleaner_conn,
+   suppressed = ItineraryStatusProvider.is_itinerary_error_suppressed(
+      conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+   DatabaseConnectionProvider.close( conn )
+
+   assert not suppressed
 
 
 def Test_Main_TestNoneSuppressed_ExpectReportsNoneEnabled(
-      monkeypatch: pytest.MonkeyPatch,
-      capsys: pytest.CaptureFixture[ str ],
-      config_cleaner_conn: sqlite3.Connection ) -> None:
-   shared = _SharedConnection( config_cleaner_conn )
-   monkeypatch.setattr(
-      'api.seed.user_itinerary_config_cleaner.sqlite3.connect',
-      lambda db_path: shared )
+      config_cleaner_db: Path,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   UserItineraryConfigCleaner.main( db_path=str( config_cleaner_db ) )
 
-   UserItineraryConfigCleaner.main( db_path=':memory:' )
-
-   assert shared.calls == [ 'cursor', 'cursor', 'commit', 'close' ]
    out = capsys.readouterr().out
    assert "No Don't show this again suppressions were enabled." in out
    assert 'User itinerary config cleared successfully.' in out
 
 
 def Test_Main_TestSuppressedWarning_ExpectReportsClearedStatuses(
-      monkeypatch: pytest.MonkeyPatch,
-      capsys: pytest.CaptureFixture[ str ],
-      config_cleaner_conn: sqlite3.Connection ) -> None:
+      config_cleaner_db: Path,
+      capsys: pytest.CaptureFixture[ str ] ) -> None:
+   conn = DatabaseConnectionProvider.open( str( config_cleaner_db ) )
    ItineraryStatusProvider.suppress_itinerary_status(
-      config_cleaner_conn,
+      conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+   conn.commit()
+   DatabaseConnectionProvider.close( conn )
 
-   shared = _SharedConnection( config_cleaner_conn )
-   monkeypatch.setattr(
-      'api.seed.user_itinerary_config_cleaner.sqlite3.connect',
-      lambda db_path: shared )
+   UserItineraryConfigCleaner.main( db_path=str( config_cleaner_db ) )
 
-   UserItineraryConfigCleaner.main( db_path=':memory:' )
-
+   conn = DatabaseConnectionProvider.open( str( config_cleaner_db ) )
+   suppressed = ItineraryStatusProvider.is_itinerary_error_suppressed(
+      conn,
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+   DatabaseConnectionProvider.close( conn )
    out = capsys.readouterr().out
+
    assert (
       "Cleared Don't show this again for: "
       + ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value
       + '.' ) in out
    assert 'User itinerary config cleared successfully.' in out
-   assert not ItineraryStatusProvider.is_itinerary_error_suppressed(
-      config_cleaner_conn,
-      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+   assert not suppressed
 
 
-def Test_ModuleMain_TestMonkeypatchedConnect_ExpectClearCommitAndClose(
+def Test_ModuleMain_TestDefaultAnimalsPath_ExpectClearSucceeds(
+      tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch,
       capsys: pytest.CaptureFixture[ str ] ) -> None:
-   real_connect = sqlite3.connect
+   path = tmp_path / 'animals.db'
+   _prepare_animals_db( path )
+   real_open = DatabaseConnectionProvider.open
 
-   def connect_override( db_path: str ) -> sqlite3.Connection:
+   def open_override( db_path: str = 'animals.db' ) -> sqlite3.Connection:
       if db_path == 'animals.db':
-         conn = real_connect( ':memory:' )
-         conn.executescript( STATUS_SCHEMA )
-         return conn
+         return real_open( str( path ) )
 
-      return real_connect( db_path )
+      return real_open( db_path )
 
    monkeypatch.setattr(
-      'api.seed.user_itinerary_config_cleaner.sqlite3.connect',
-      connect_override )
+      DatabaseConnectionProvider,
+      'open',
+      classmethod( lambda cls, db_path='animals.db': open_override( db_path ) ) )
 
    runpy.run_module( 'api.seed.user_itinerary_config_cleaner', run_name='__main__' )
 

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 from datetime import timedelta
-import sqlite3
 
+from ..database_connection_provider import DatabaseConnectionProvider
 from ..types import Types
 
 
@@ -25,7 +25,7 @@ class UserItineraryDateBackdater():
 
    @classmethod
    def main( cls, db_path: str = 'animals.db' ) -> None:
-      conn = sqlite3.connect( db_path )
+      conn = DatabaseConnectionProvider.open( db_path )
       cursor = conn.cursor()
 
       try:
@@ -33,7 +33,7 @@ class UserItineraryDateBackdater():
          conn.commit()
       finally:
          cursor.close()
-         conn.close()
+         DatabaseConnectionProvider.close( conn )
 
       if backdated_to is None:
          print( 'No itinerary date row to backdate. Save an itinerary first.' )

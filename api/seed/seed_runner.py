@@ -17,7 +17,10 @@ class SeedRunner():
 
       try:
          SchemaCreator.create( cursor )
-         MigrationRunner.run_on_cursor( cursor, skip_before=SEED_MIGRATIONS_START )
+         MigrationRunner.run_on_cursor(
+            cursor,
+            db_path=db_path,
+            skip_before=SEED_MIGRATIONS_START )
          conn.commit()
       finally:
          conn.close()
@@ -42,7 +45,10 @@ class SeedRunner():
 
       try:
          SchemaCreator.create( cursor )
-         MigrationRunner.run_on_cursor( cursor, skip_before=SEED_MIGRATIONS_START )
+         MigrationRunner.run_on_cursor(
+            cursor,
+            db_path=db_path,
+            skip_before=SEED_MIGRATIONS_START )
          StaticDataSeeder.seed( cursor )
          conn.commit()
       finally:

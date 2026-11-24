@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .tables import runtime_tables
 from .tables import static_tables
+from .tables import user_itinerary_tables
 from ..types import Types
 
 
@@ -12,4 +13,10 @@ class SchemaCreator():
          table.create_table( cursor )
 
       for table in runtime_tables:
+         table.create_table( cursor )
+
+
+   @classmethod
+   def create_user_itinerary( cls, cursor: Types.Cursor ) -> None:
+      for table in user_itinerary_tables:
          table.create_table( cursor )

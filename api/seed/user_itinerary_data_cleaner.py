@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import sqlite3
-
+from ..database_connection_provider import DatabaseConnectionProvider
 from ..itinerary.data_access.clear_itinerary_provider import ClearItineraryProvider
 from ..itinerary.data_access.itinerary_walk_route_provider import ItineraryWalkRouteProvider
 from ..types import Types
@@ -22,7 +21,7 @@ class UserItineraryDataCleaner():
 
    @classmethod
    def main( cls, db_path: str = 'animals.db' ) -> None:
-      conn = sqlite3.connect( db_path )
+      conn = DatabaseConnectionProvider.open( db_path )
       cursor = conn.cursor()
 
       try:
@@ -30,7 +29,7 @@ class UserItineraryDataCleaner():
          conn.commit()
       finally:
          cursor.close()
-         conn.close()
+         DatabaseConnectionProvider.close( conn )
 
       print( 'User itinerary data cleared successfully.' )
 

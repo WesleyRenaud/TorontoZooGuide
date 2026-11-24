@@ -143,6 +143,9 @@ runtime_tables = [
    WildEncounterScheduleSeedTable,
    WildEncounterCancellationSeedTable,
    DrinkingFountainStatusSeedTable,
+]
+
+user_itinerary_tables = [
    ItineraryStatusSuppressionSeedTable,
    ItineraryDateSeedTable,
    ItineraryExhibitSeedTable,

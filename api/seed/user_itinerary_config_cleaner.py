@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import sqlite3
-
+from ..database_connection_provider import DatabaseConnectionProvider
 from ..itinerary.data_access.itinerary_status_provider import ItineraryStatusProvider
 from ..types import Types
 
@@ -14,7 +13,7 @@ class UserItineraryConfigCleaner():
 
    @classmethod
    def main( cls, db_path: str = 'animals.db' ) -> None:
-      conn = sqlite3.connect( db_path )
+      conn = DatabaseConnectionProvider.open( db_path )
       cursor = conn.cursor()
 
       try:
@@ -23,7 +22,7 @@ class UserItineraryConfigCleaner():
          conn.commit()
       finally:
          cursor.close()
-         conn.close()
+         DatabaseConnectionProvider.close( conn )
 
       if suppressed_before:
          print(

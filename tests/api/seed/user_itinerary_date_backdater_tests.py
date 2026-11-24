@@ -8,6 +8,7 @@ import sqlite3
 
 import pytest
 
+from api.database_connection_provider import DatabaseConnectionProvider
 from api.seed.user_itinerary_date_backdater import UserItineraryDateBackdater
 from api.shared.enums.position import Position
 
@@ -85,10 +86,10 @@ def Test_Main_TestDatabasePath_ExpectBackdatesAndPrints(
    yesterday = ( date.today() - timedelta( days=1 ) ).isoformat()
    UserItineraryDateBackdater.main( str( path ) )
 
-   conn = sqlite3.connect( path )
+   conn = DatabaseConnectionProvider.open( str( path ) )
    stored = conn.execute(
       'SELECT ITINERARY_DATE FROM ItineraryDate;' ).fetchone()[ Position.FIRST ]
-   conn.close()
+   DatabaseConnectionProvider.close( conn )
 
    assert stored == yesterday
    assert f'Itinerary date backdated to { yesterday }.' in capsys.readouterr().out
@@ -123,25 +124,26 @@ def Test_ModuleMain_TestDatabasePath_ExpectBackdatesAndPrints(
    conn.commit()
    conn.close()
 
-   real_connect = sqlite3.connect
+   real_open = DatabaseConnectionProvider.open
 
-   def connect_override( db_path: str ) -> sqlite3.Connection:
+   def open_override( db_path: str = 'animals.db' ) -> sqlite3.Connection:
       if db_path == 'animals.db':
-         return real_connect( str( path ) )
+         return real_open( str( path ) )
 
-      return real_connect( db_path )
+      return real_open( db_path )
 
    monkeypatch.setattr(
-      'api.seed.user_itinerary_date_backdater.sqlite3.connect',
-      connect_override )
+      DatabaseConnectionProvider,
+      'open',
+      classmethod( lambda cls, db_path='animals.db': open_override( db_path ) ) )
 
    yesterday = ( date.today() - timedelta( days=1 ) ).isoformat()
    runpy.run_module( 'api.seed.user_itinerary_date_backdater', run_name='__main__' )
 
-   conn = sqlite3.connect( path )
+   conn = DatabaseConnectionProvider.open( str( path ) )
    stored = conn.execute(
       'SELECT ITINERARY_DATE FROM ItineraryDate;' ).fetchone()[ Position.FIRST ]
-   conn.close()
+   DatabaseConnectionProvider.close( conn )
 
    assert stored == yesterday
    assert f'Itinerary date backdated to { yesterday }.' in capsys.readouterr().out

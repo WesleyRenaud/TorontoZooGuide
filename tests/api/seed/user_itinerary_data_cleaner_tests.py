@@ -6,6 +6,7 @@ import sqlite3
 
 import pytest
 
+from api.database_connection_provider import DatabaseConnectionProvider
 from api.seed.user_itinerary_data_cleaner import UserItineraryDataCleaner
 from api.shared.enums.position import Position
 
@@ -187,9 +188,9 @@ def Test_Main_TestDatabasePath_ExpectClearsAndPrintsSuccess(
 
    UserItineraryDataCleaner.main( str( path ) )
 
-   conn = sqlite3.connect( path )
+   conn = DatabaseConnectionProvider.open( str( path ) )
    count = conn.execute( 'SELECT COUNT(*) FROM ItineraryExhibit;' ).fetchone()[ Position.FIRST ]
-   conn.close()
+   DatabaseConnectionProvider.close( conn )
 
    assert count == 0
    assert 'User itinerary data cleared successfully.' in capsys.readouterr().out
@@ -209,23 +210,24 @@ def Test_ModuleMain_TestDatabasePath_ExpectClearsAndPrintsSuccess(
    conn.commit()
    conn.close()
 
-   real_connect = sqlite3.connect
+   real_open = DatabaseConnectionProvider.open
 
-   def connect_override( db_path: str ) -> sqlite3.Connection:
+   def open_override( db_path: str = 'animals.db' ) -> sqlite3.Connection:
       if db_path == 'animals.db':
-         return real_connect( str( path ) )
+         return real_open( str( path ) )
 
-      return real_connect( db_path )
+      return real_open( db_path )
 
    monkeypatch.setattr(
-      'api.seed.user_itinerary_data_cleaner.sqlite3.connect',
-      connect_override )
+      DatabaseConnectionProvider,
+      'open',
+      classmethod( lambda cls, db_path='animals.db': open_override( db_path ) ) )
 
    runpy.run_module( 'api.seed.user_itinerary_data_cleaner', run_name='__main__' )
 
-   conn = sqlite3.connect( path )
+   conn = DatabaseConnectionProvider.open( str( path ) )
    count = conn.execute( 'SELECT COUNT(*) FROM ItineraryExhibit;' ).fetchone()[ Position.FIRST ]
-   conn.close()
+   DatabaseConnectionProvider.close( conn )
 
    assert count == 0
    assert 'User itinerary data cleared successfully.' in capsys.readouterr().out

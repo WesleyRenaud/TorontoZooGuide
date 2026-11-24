@@ -76,7 +76,7 @@ def Test_ApplySchema_TestMonkeypatchedConnect_ExpectSchemaMigrateCommit(
       lambda cur: calls.append( 'schema' ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.MigrationRunner.run_on_cursor',
-      lambda cur, *, skip_before: calls.append( f'migrate:{ skip_before }' ) )
+      lambda cur, *, db_path, skip_before=None: calls.append( f'migrate:{ skip_before }' ) )
 
    SeedRunner.apply_schema( db_path=':memory:' )
 
@@ -125,7 +125,7 @@ def Test_Main_TestMonkeypatchedConnect_ExpectSchemaMigrateSeedCommit(
       lambda cur: calls.append( 'schema' ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.MigrationRunner.run_on_cursor',
-      lambda cur, *, skip_before: calls.append( f'migrate:{ skip_before }' ) )
+      lambda cur, *, db_path, skip_before=None: calls.append( f'migrate:{ skip_before }' ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.StaticDataSeeder.seed',
       lambda cur: calls.append( 'seed' ) )
@@ -159,7 +159,7 @@ def Test_ModuleMain_TestMonkeypatchedConnect_ExpectSchemaMigrateSeedCommit(
       lambda cur: calls.append( 'schema' ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.MigrationRunner.run_on_cursor',
-      lambda cur, *, skip_before: calls.append( f'migrate:{ skip_before }' ) )
+      lambda cur, *, db_path, skip_before=None: calls.append( f'migrate:{ skip_before }' ) )
    monkeypatch.setattr(
       'api.seed.seed_runner.StaticDataSeeder.seed',
       lambda cur: calls.append( 'seed' ) )
