@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import sqlite3
 
+from ...database_connection_provider import DatabaseConnectionProvider
 from ...shared.enums.position import Position
 from ...types import Types
 
@@ -73,7 +74,11 @@ class MigrationRunner():
       except sqlite3.OperationalError as error:
          message = str( error ).lower()
 
-         if 'duplicate column name' in message or 'no such table' in message or 'no such column' in message:
+         if (
+               'duplicate column name' in message
+               or 'no such table' in message
+               or 'no such column' in message
+               or 'unknown database' in message ):
             return
 
          raise
@@ -92,8 +97,10 @@ class MigrationRunner():
          cls,
          cursor: Types.Cursor,
          *,
+         db_path: str,
          skip_before: str | None = None,
       ) -> None:
+      DatabaseConnectionProvider.attach_itinerary( cursor.connection, db_path )
       applied = cls.applied_migrations( cursor )
 
       for migration_file in cls.migration_files():
@@ -118,7 +125,7 @@ class MigrationRunner():
       cursor = conn.cursor()
 
       try:
-         cls.run_on_cursor( cursor )
+         cls.run_on_cursor( cursor, db_path=db_path )
          conn.commit()
       finally:
          conn.close()

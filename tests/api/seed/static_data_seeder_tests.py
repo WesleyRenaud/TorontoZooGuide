@@ -193,7 +193,11 @@ def Test_Seed_TestZoomobileTransportationGraph_ExpectSchemaAndSeedIntegrity() ->
    cursor = conn.cursor()
 
    SchemaCreator.create( cursor )
-   MigrationRunner.run_on_cursor( cursor, skip_before='011_runtime_schema_column_additions.sql' )
+   MigrationRunner.run_on_cursor(
+      cursor,
+      db_path=':memory:',
+      skip_before='011_runtime_schema_column_additions.sql' )
+
    StaticDataSeeder.seed( cursor )
    conn.commit()
 

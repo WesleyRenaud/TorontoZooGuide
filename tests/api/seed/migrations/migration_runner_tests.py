@@ -7,7 +7,9 @@ import warnings
 
 import pytest
 
+from api.database_connection_provider import DatabaseConnectionProvider
 from api.seed.migrations.migration_runner import MigrationRunner
+from api.seed.schema_creator import SchemaCreator
 from api.shared.enums.position import Position
 
 @pytest.fixture
@@ -49,7 +51,7 @@ def Test_RunOnCursor_TestAlreadyApplied_ExpectSkipped(
       'migration_files',
       classmethod( lambda cls: [ migration_file ] ) )
 
-   MigrationRunner.run_on_cursor( cursor )
+   MigrationRunner.run_on_cursor( cursor, db_path=':memory:' )
 
    tables = {
       row[ Position.FIRST ]
@@ -74,6 +76,7 @@ def Test_RunOnCursor_TestSkipBefore_ExpectRecordedWithoutExecuting(
 
    MigrationRunner.run_on_cursor(
       cursor,
+      db_path=':memory:',
       skip_before='999_future.sql' )
 
    applied = MigrationRunner.applied_migrations( cursor )
@@ -127,6 +130,46 @@ def Test_Run_TestConnectCommitClose_ExpectApplied(
 
    assert 'Widget' in tables
    assert '001_create_widget.sql' in applied
+
+
+def Test_RunOnCursor_TestSplitUserItineraryMigration_ExpectCopiedAndDropped(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   animals_path = tmp_path / 'animals.db'
+   exhibit = 'Africa Savanna'
+   migration_file = tmp_path / '048_split_user_itinerary_database.sql'
+   migration_file.write_text(
+      ( Path( 'api/seed/migrations/048_split_user_itinerary_database.sql' )
+        .read_text() ) )
+   conn = sqlite3.connect( animals_path )
+   SchemaCreator.create_user_itinerary( conn.cursor() )
+   conn.execute(
+      'INSERT INTO ItineraryExhibit ( EXHIBIT ) VALUES ( ? )',
+      ( exhibit, ),
+   )
+   conn.commit()
+   cursor = conn.cursor()
+   monkeypatch.setattr(
+      MigrationRunner,
+      'migration_files',
+      classmethod( lambda cls: [ migration_file ] ) )
+
+   MigrationRunner.run_on_cursor( cursor, db_path=str( animals_path ) )
+   conn.commit()
+   main_tables = {
+      row[ Position.FIRST ]
+      for row in conn.execute(
+         "SELECT name FROM main.sqlite_master WHERE type = 'table'"
+      )
+   }
+   exhibit_count = conn.execute(
+      'SELECT COUNT(*) FROM ItineraryExhibit WHERE EXHIBIT = ?',
+      ( exhibit, ),
+   ).fetchone()[ Position.FIRST ]
+   DatabaseConnectionProvider.close( conn )
+
+   assert 'ItineraryExhibit' not in main_tables
+   assert exhibit_count == 1
 
 
 def Test_ModuleMain_TestRunInvoked_ExpectMigrationRunnerCalled(
