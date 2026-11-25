@@ -35,24 +35,32 @@ test('Test_BlurMapDateInput_TestInputAndActive_ExpectBlurCalls', () => {
 });
 
 
-test('Test_CloseMapDatePicker_TestFpAndInput_ExpectCloseAndBlur', () => {
+test('Test_CloseMapDatePicker_TestOpenPicker_ExpectCloseWithoutBlur', () => {
    const closes = [];
    const blurs = [];
    const originalBlur = MapControlsBinder.blurMapDateInput;
-   const input = 'input';
    MapControlsBinder.blurMapDateInput = (nextInput) => {
       blurs.push(nextInput);
    };
 
    try {
-      MapControlsBinder.closeMapDatePicker({ close: () => closes.push(true) }, input);
-      MapControlsBinder.closeMapDatePicker(null, input);
+      MapControlsBinder.closeMapDatePicker({ isOpen: true, close: () => closes.push(true) });
 
       assert.deepEqual(closes, [true]);
-      assert.deepEqual(blurs, [input, input]);
+      assert.deepEqual(blurs, []);
    } finally {
       MapControlsBinder.blurMapDateInput = originalBlur;
    }
+});
+
+
+test('Test_CloseMapDatePicker_TestClosedOrMissingPicker_ExpectNoClose', () => {
+   const closes = [];
+
+   MapControlsBinder.closeMapDatePicker({ isOpen: false, close: () => closes.push(true) });
+   MapControlsBinder.closeMapDatePicker(null);
+
+   assert.deepEqual(closes, []);
 });
 
 

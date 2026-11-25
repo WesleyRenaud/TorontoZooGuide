@@ -10,9 +10,10 @@ export class MapControlsBinder {
       document.activeElement?.blur?.();
    }
 
-   static closeMapDatePicker(fp, mapDateInput) {
-      fp?.close();
-      MapControlsBinder.blurMapDateInput(mapDateInput);
+   static closeMapDatePicker(fp) {
+      if (fp?.isOpen) {
+         fp.close();
+      }
    }
 
    static finishMapDatePicker(mapDateInput, keyboardState) {
@@ -119,7 +120,7 @@ export class MapControlsBinder {
       onUpdate,
    } = {}) {
       MapControlsBinder.syncDateInputVisibility(mapPreset, mapDateInput);
-      MapControlsBinder.closeMapDatePicker(fp, mapDateInput);
+      MapControlsBinder.closeMapDatePicker(fp);
 
       if (!mapPreset?.value) {
          return;
