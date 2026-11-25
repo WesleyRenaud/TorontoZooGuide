@@ -1,38 +1,19 @@
 from __future__ import annotations
 
-import calendar
 from datetime import date
-import re
 
 from api.models import Update
 from api.shared.calendar_dates import CalendarDates
 from api.shared.date_values import DateValues
 from api.shared.text_values import TextValues
 from api.updates.domain.update_type import UpdateType
+from .closure_notice_dates import ClosureNoticeDates
 from .closure_update import ClosureUpdate
 from .closure_update_plan import ClosureUpdatePlan
 from .website_closure import WebsiteClosure
 
 
 class ClosureUpdateBuilder():
-   MONTH = (
-      r'jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|'
-      r'aug(?:ust)?|sept(?:ember)?|sep(?:tember)?|oct(?:ober)?|'
-      r'nov(?:ember)?|dec(?:ember)?'
-   )
-   SUFFIX = r'(?:st|nd|rd|th)?'
-   DATE_RE = re.compile(
-      rf'(?i)\b(?P<month>{ MONTH })\.?\s+(?P<day>\d{{1,2}}){ SUFFIX }'
-      rf'(?:\s*,?\s*(?P<year>\d{{4}}))?'
-      rf'(?:\s*(?:–|-|—|\+|to|through)\s*'
-      rf'(?:(?P<end_month>{ MONTH })\.?\s+)?'
-      rf'(?P<end_day>\d{{1,2}}){ SUFFIX }'
-      rf'(?:\s*,?\s*(?P<end_year>\d{{4}}))?)?'
-   )
-   TODAY_RE = re.compile( r'(?i)\btoday\b' )
-   TOMORROW_RE = re.compile( r'(?i)\btomorrow\b' )
-
-
    @classmethod
    def horizon( cls, today: date ) -> date:
       return CalendarDates.one_month_later( today )
@@ -102,102 +83,11 @@ class ClosureUpdateBuilder():
 
 
    @classmethod
-   def month_number( cls, name: str ) -> int | None:
-      folded = name.casefold().rstrip( '.' )
-
-      if folded in ( 'sep', 'sept' ):
-         folded = 'september'
-
-      number = CalendarDates.month_index( folded )
-
-      if number != None:
-         return number
-
-      for index, abbr in enumerate( calendar.month_abbr ):
-         if abbr != '' and abbr.casefold() == folded:
-            return index
-
-      return None
-
-
-   @classmethod
-   def on_day(
-         cls,
-         month_name: str,
-         day_text: str,
-         year_text: str | None,
-         today: date ) -> date | None:
-      month = cls.month_number( month_name )
-
-      if month == None:
-         return None
-
-      year = today.year if year_text == None else int( year_text )
-      day = int( day_text )
-
-      try:
-         return date( year, month, day )
-      except ValueError:
-         return None
-
-
-   @classmethod
-   def dates_named( cls, text: str, today: date ) -> list[ date ]:
-      found = []
-
-      for match in cls.DATE_RE.finditer( text ):
-         start = cls.on_day(
-            match.group( 'month' ),
-            match.group( 'day' ),
-            match.group( 'year' ),
-            today,
-         )
-
-         if start != None:
-            found.append( start )
-
-         if match.group( 'end_day' ) == None:
-            continue
-
-         end_month = match.group( 'end_month' ) or match.group( 'month' )
-         end = cls.on_day(
-            end_month,
-            match.group( 'end_day' ),
-            match.group( 'end_year' ) or match.group( 'year' ),
-            today,
-         )
-
-         if end == None:
-            continue
-
-         if start != None and end < start:
-            end = end.replace( year=end.year + 1 )
-
-         found.append( end )
-
-      if found != []:
-         return found
-
-      if cls.TODAY_RE.search( text ) != None:
-         return [ today ]
-
-      if cls.TOMORROW_RE.search( text ) != None:
-         return [ CalendarDates.one_day_later( today ) ]
-
-      return []
-
-
-   @classmethod
    def named_end( cls, notice: WebsiteClosure, today: date ) -> date | None:
-      days = cls.dates_named(
+      return ClosureNoticeDates.parse(
          TextValues.beside( notice.title, notice.description ),
          today,
-      )
-
-      if days == []:
-         return None
-
-      return max( days )
+      ).end
 
 
    @classmethod

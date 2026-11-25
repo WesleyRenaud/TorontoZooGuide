@@ -113,6 +113,14 @@ def Test_month_index( name: str, expected: int | None ) -> None:
 
 
 @pytest.mark.parametrize(
+   'year',
+   [ 2027, 2028 ],
+)
+def Test_MonthMidpoint_TestFebruary_ExpectFifteenth( year: int ) -> None:
+   assert CalendarDates.month_midpoint( year, 2 ) == date( year, 2, 15 )
+
+
+@pytest.mark.parametrize(
    'month, day, today, expected',
    [
       ( 1, 2, date( 2026, 12, 28 ), date( 2027, 1, 2 ) ),

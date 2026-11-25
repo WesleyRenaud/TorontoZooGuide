@@ -15,8 +15,7 @@ from api.shared.text_values import TextValues
 from api.types import Types
 from .check_args_parser import CheckArgsParser
 from .check_exit_code import CheckExitCode
-from .closure_update_builder import ClosureUpdateBuilder
-from .date_span import DateSpan
+from .closure_notice_dates import ClosureNoticeDates
 from .exhibit_closure_sentence import ExhibitClosureSentence
 from .exhibit_detail_image import ExhibitDetailImage
 from .temporary_closure import TemporaryClosure
@@ -65,48 +64,32 @@ class ExhibitTemporaryClosureChecker():
 
 
    @classmethod
-   def span( cls, notice: WebsiteClosure, today: date ) -> DateSpan | None:
-      days = ClosureUpdateBuilder.dates_named(
-         TextValues.beside( notice.title, notice.description ),
-         today,
-      )
-      start = min( days ) if days != [] else today
-      end = max( days ) if days != [] else today
-
-      if DateValues.is_date_on_or_before( today, end ):
-         return DateSpan( start, end )
-
-      return None
-
-
-   @classmethod
    def notices(
          cls,
          page_html: str,
          names: list[ str ],
          today: date ) -> list[ TemporaryClosure ]:
-      found = {}
+      found = []
 
       for notice in WebsiteClosure.notices( page_html ):
-         span = cls.span( notice, today )
-
-         if span == None:
-            continue
-
+         dates = ClosureNoticeDates.parse(
+            TextValues.beside( notice.title, notice.description ),
+            today,
+         )
          for sentence in ViewingAlertSentenceBuilder.notice_parts(
             TemporaryClosureReader.text( notice ),
          ):
             for name in ExhibitClosureSentence.closed_names( sentence, names ):
-               found.setdefault( name, TemporaryClosure(
+               found.append( TemporaryClosure(
                   name,
                   sentence,
                   ItemType.EXHIBIT,
                   ExhibitDetailImage.source( name ),
-                  span.start,
-                  span.end,
+                  dates.start,
+                  dates.end,
                ) )
 
-      return list( found.values() )
+      return found
 
 
    @classmethod

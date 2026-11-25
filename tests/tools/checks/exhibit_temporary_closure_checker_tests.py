@@ -106,7 +106,7 @@ def check(
    return ExhibitTemporaryClosureChecker.check_schedules( path, today )
 
 
-def Test_CheckSchedules_TestUndatedNotice_ExpectClosedToday(
+def Test_CheckSchedules_TestUndatedNotice_ExpectStandardMonthWindow(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    database_path = tmp_path / 'animals.db'
@@ -128,13 +128,13 @@ def Test_CheckSchedules_TestUndatedNotice_ExpectClosedToday(
          1,
          'The Canadian Domain is closed due to current weather conditions.',
          '2026-11-18',
-         '2026-11-18',
+         '2026-12-18',
          0,
       ),
    ]
 
 
-def Test_CheckSchedules_TestSameUndatedNotice_ExpectNoSecondWrite(
+def Test_CheckSchedules_TestSameTodayNotice_ExpectNoSecondWrite(
       tmp_path: Path,
       monkeypatch: pytest.MonkeyPatch ) -> None:
    database_path = tmp_path / 'animals.db'
@@ -142,7 +142,7 @@ def Test_CheckSchedules_TestSameUndatedNotice_ExpectNoSecondWrite(
    html = page( [
       box(
          'Weather',
-         'The Canadian Domain is closed due to current weather conditions.',
+         'The Canadian Domain is closed today due to current weather conditions.',
       ),
    ] )
    check( database_path, html, TODAY, monkeypatch )
@@ -180,6 +180,57 @@ def Test_CheckSchedules_TestNamedRange_ExpectThatRange(
          0,
       ),
    ]
+
+
+def Test_CheckSchedules_TestMidMonthNotice_ExpectRollingEndUntilRemoved(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database_path = tmp_path / 'animals.db'
+   database( database_path )
+   message = 'The Americas Pavilion will be closed for maintenance.'
+   insert_status( database_path, 'Americas Pavilion', message, '2026-11-30', '2026-11-30' )
+   html = page( [ box( 'Monday, November 30 - Mid-December (Subject to Change)', message ) ] )
+
+   assert check( database_path, html, date( 2026, 11, 25 ), monkeypatch ) == 0
+   assert status( database_path )[ 0 ][ 3 : 5 ] == ( '2026-11-30', '2026-12-15' )
+
+   assert check( database_path, html, date( 2026, 12, 3 ), monkeypatch ) == 0
+   assert CheckReport.fixed_count == 0
+
+   assert check( database_path, html, date( 2026, 12, 10 ), monkeypatch ) == 0
+   assert status( database_path )[ 0 ][ 3 : 5 ] == ( '2026-11-30', '2026-12-17' )
+
+   assert check( database_path, page( [] ), date( 2026, 12, 11 ), monkeypatch ) == 0
+   assert status( database_path )[ 0 ] == (
+      'Americas Pavilion', 0, None, '2026-11-30', '2026-12-10', 0,
+   )
+
+
+def Test_Notices_TestExpiredUndatedAndDatedNotices_ExpectAllNotices() -> None:
+   message = 'The Americas Pavilion will be closed for maintenance.'
+   html = page( [
+      box( 'November 10-15', message ),
+      box( 'Maintenance', message ),
+      box( 'November 30 - mid-December', message ),
+   ] )
+
+   notices = ExhibitTemporaryClosureChecker.notices( html, NAMES, TODAY )
+
+   assert [ notice.end for notice in notices ] == [ date( 2026, 11, 15 ), None, date( 2026, 12, 15 ) ]
+
+
+def Test_CheckSchedules_TestPostedExpiredNotice_ExpectPublishedEndDate(
+      tmp_path: Path,
+      monkeypatch: pytest.MonkeyPatch ) -> None:
+   database_path = tmp_path / 'animals.db'
+   database( database_path )
+   message = 'The Americas Pavilion was closed for maintenance.'
+   insert_status( database_path, 'Americas Pavilion', message, '2026-11-10', '2026-11-30' )
+   html = page( [ box( 'November 10-15', message ) ] )
+
+   assert check( database_path, html, TODAY, monkeypatch ) == 0
+   assert CheckReport.fixed_count == 1
+   assert status( database_path )[ 0 ][ 3 : 5 ] == ( '2026-11-10', '2026-11-15' )
 
 
 def Test_CheckSchedules_TestNameUsedForSomethingElse_ExpectNoClosure(
