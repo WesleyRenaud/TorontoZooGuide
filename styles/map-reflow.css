@@ -1,0 +1,180 @@
+:root {
+   --layout-fit: min(
+      100vw / var(--layout-page-width),
+      100dvh / var(--layout-page-height)
+   );
+   --layout-top-bar-height: max(2.75rem, 8vh);
+   --map-frame-height: calc(100dvh - var(--layout-top-bar-height) - var(--layout-nav-height));
+   --marker-size: max(10px, calc(var(--map-frame-height) * 12 / 691));
+   --map-menu-width: max(18rem, 22vw);
+   --explore-control-font: max(9.6px, 1.2vh);
+}
+
+html.home-page body {
+   height: 100dvh;
+   justify-content: stretch;
+   overflow: hidden;
+}
+
+body > .home-page {
+   width: 100%;
+   max-width: 100%;
+   height: 100%;
+   flex: 1 1 auto;
+   zoom: 1;
+}
+
+.home-page main.map-layout {
+   --panel-min-width: var(--map-menu-width);
+   grid-template-columns:
+      minmax(var(--panel-min-width), 1fr)
+      minmax(0, calc(var(--map-frame-height) * var(--zoo-map-aspect-width) / var(--zoo-map-aspect-height)));
+}
+
+.home-page main.map-layout > .side-panel.left {
+   min-width: var(--map-menu-width);
+}
+
+.top-bar {
+   gap: max(0.5rem, 1.5vh);
+   flex-shrink: 0;
+}
+
+.top-bar-title {
+   font-size: max(0.85rem, 1.6vh);
+}
+
+.side-panel-title {
+   font-size: max(1.1rem, 2.4vh);
+}
+
+.side-panel-toggle .toggle-row,
+.transportation-route-title,
+.transportation-route-option,
+.animal-search,
+.explore-update-count,
+.explore-update-arrow,
+.animal-search-results .animal-result-species {
+   font-size: var(--explore-control-font);
+}
+
+.multi-select-dropdown label {
+   font-size: calc(var(--explore-control-font) * 0.85);
+}
+
+.explore-updates-tab {
+   font-size: max(10.4px, 1.3vh);
+}
+
+.animal-search-results .animal-result-exhibit,
+.animal-search-results .animal-result-map-btn {
+   font-size: max(6.72px, 0.85vh);
+}
+
+.home-page main.itinerary-layout {
+   --panel-min-width: max(var(--map-menu-width), 38%);
+   display: grid;
+}
+
+@media (max-width: 48rem), (max-height: 25rem) {
+   html.itinerary-page {
+      --map-frame-height: max(6rem, 45dvh);
+      --map-marker-panel-width: 0px;
+   }
+
+   html.itinerary-page,
+   html.itinerary-page body,
+   .itinerary-page body > .home-page {
+      height: auto;
+      overflow: visible;
+   }
+
+   .itinerary-page body > .home-page {
+      min-height: 100dvh;
+   }
+
+   .home-page main.itinerary-layout {
+      flex: 1 0 auto;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto var(--map-frame-height);
+      overflow: visible;
+   }
+
+   .home-page main.itinerary-layout > .side-panel.left {
+      min-width: 0;
+   }
+
+   .itinerary-panel .side-panel-body {
+      height: auto;
+      overflow: visible;
+   }
+
+   .itinerary-panel .itin-panel-view {
+      overflow: visible;
+   }
+
+   .itinerary-page .itinerary-flow {
+      position: fixed;
+   }
+
+   .itinerary-flow .itin-overlay {
+      align-items: flex-start;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+   }
+
+   .itinerary-flow .itin-overlay > .itin-card {
+      box-sizing: border-box;
+      width: min(450px, 100%);
+      max-height: none;
+      margin-block: auto;
+   }
+
+   .itinerary-flow .itin-card.itin-card-tall {
+      height: auto;
+   }
+}
+
+/* Keep the shared button sizes whenever the full row fits. */
+@media (max-width: 910px) {
+   nav ul li {
+      flex: 0 1 calc(var(--layout-page-height) * 0.22);
+      min-width: 0;
+   }
+
+   nav ul li a {
+      width: 100%;
+      line-height: 1;
+      overflow-wrap: anywhere;
+   }
+}
+
+@media (max-width: 260px) {
+   nav ul li {
+      flex-basis: max-content;
+   }
+}
+
+/* Keep the desktop proportions when the full design fits in the CSS viewport. */
+@media (min-width: 1512px) and (min-height: 809px) {
+   :root {
+      --layout-top-bar-height: calc(var(--layout-page-height) * 0.08);
+      --map-frame-height: calc(var(--layout-page-height) - var(--layout-top-bar-height) - var(--layout-nav-height));
+      --map-menu-width: calc(var(--layout-page-width) * 0.2112);
+      --explore-control-font: 9.6px;
+      --marker-size: calc(var(--map-frame-height) * 12 / 691);
+   }
+
+   html.home-page body {
+      justify-content: center;
+      align-items: center;
+   }
+
+   body > .home-page {
+      width: var(--layout-page-width);
+      height: var(--layout-page-height);
+      max-width: none;
+      flex: 0 0 auto;
+      zoom: var(--layout-fit);
+   }
+}
