@@ -10,6 +10,7 @@ import { TooltipController } from '../../../scripts/tooltips/tooltipController.j
 import { TooltipRenderer } from '../../../scripts/tooltips/tooltipRenderer.js';
 import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
+import { Strings } from '../../../scripts/strings.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
@@ -112,6 +113,17 @@ function _createApi(tooltipEl) {
       attractionClosedBanner: {},
       drinkingFountainClosedBanner: {},
    });
+}
+
+
+function _createHoverRecorder() {
+   return {
+      shows: [],
+      hides: 0,
+      show(text, markerEl) { this.shows.push([text, markerEl]); },
+      move() {},
+      hide() { this.hides += 1; },
+   };
 }
 
 
@@ -275,6 +287,121 @@ test('Test_CreateTooltipController_TestNonClickable_ExpectNoOpen', () => {
       nonClickable.click();
 
       assert.equal(api.getOpenItems().length, Position.SECOND);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestClickableMarker_ExpectButtonSemantics', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const hoverText = 'Australasia Pavilion';
+   const items = [{ type: ItemType.PAVILION, name: hoverText }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      markerEl.dataset.hover = hoverText;
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+
+      assert.equal(markerEl.getAttribute('role'), 'button');
+      assert.equal(markerEl.getAttribute('tabindex'), '0');
+      assert.equal(markerEl.getAttribute('aria-label'), hoverText);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestMarkerWithoutHoverText_ExpectFallbackLabel', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const items = [{ type: ItemType.TRANSPORTATION_ROUTE_MARKER }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+
+      assert.equal(markerEl.getAttribute('aria-label'), Strings.map.markerAria);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestNonClickableMarker_ExpectNotFocusable', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.attachToMarker(markerEl, items, _createHoverRecorder(), { clickable: false });
+
+      assert.equal(markerEl.getAttribute('role'), null);
+      assert.equal(markerEl.getAttribute('tabindex'), null);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestMarkerEnterKey_ExpectOpen', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const hover = _createHoverRecorder();
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.attachToMarker(markerEl, items, hover);
+      const notPrevented = markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+
+      assert.equal(notPrevented, false);
+      assert.equal(hover.hides, 1);
+      assert.deepEqual(api.getOpenItems(), items);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestMarkerSpaceKeyTwice_ExpectClosed', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'keydown', key: ' ' });
+      markerEl.dispatchEvent({ type: 'keydown', key: ' ' });
+
+      assert.deepEqual(api.getOpenItems(), []);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestMarkerOtherKey_ExpectIgnored', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      const notPrevented = markerEl.dispatchEvent({ type: 'keydown', key: 'Tab' });
+
+      assert.equal(notPrevented, true);
+      assert.deepEqual(api.getOpenItems(), []);
    } finally {
       stubs.restore();
    }

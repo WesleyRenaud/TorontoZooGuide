@@ -4,6 +4,7 @@ import { GlobalListener } from './globalListener.js';
 import { MarkerHelper } from '../markers/markerHelper.js';
 import { PositionFragment } from './positionFragment.js';
 import { ItemType } from '../shared/enums/itemType.js';
+import { Strings } from '../strings.js';
 import { TooltipRenderer } from './tooltipRenderer.js';
 
 export class TooltipController {
@@ -103,7 +104,21 @@ export class TooltipController {
             return;
          }
 
+         markerEl.setAttribute('role', 'button');
+         markerEl.setAttribute('tabindex', '0');
+         markerEl.setAttribute('aria-label', markerEl.dataset.hover || Strings.map.markerAria);
+
          markerEl.addEventListener('click', (event) => {
+            event.stopPropagation();
+            hover?.hide?.();
+            toggle(markerEl, items);
+         });
+         markerEl.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') {
+               return;
+            }
+
+            event.preventDefault();
             event.stopPropagation();
             hover?.hide?.();
             toggle(markerEl, items);

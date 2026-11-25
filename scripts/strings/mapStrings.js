@@ -27,6 +27,7 @@ export class MapStrings {
          showMapLabels: 'Show region/pavilion text',
       },
       mapAria: 'Toronto Zoo Map',
+      markerAria: 'Map marker',
       visitDateAndHours: (dateLabel, hoursLabel) => `${dateLabel} \u00B7 ${hoursLabel}`,
       mapPresetPlaceholder: 'Select a map',
       mapPresets: {
