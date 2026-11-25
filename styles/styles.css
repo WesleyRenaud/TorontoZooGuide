@@ -1399,6 +1399,11 @@ nav ul li a[aria-current="page"]:hover {
    box-shadow: 0 0 0 calc(var(--marker-unit) * 1.5) #ffdd00fa;
 }
 
+.marker:focus-visible {
+   outline: 2px solid var(--color-brand-primary-dark);
+   outline-offset: calc(var(--marker-unit) * 1.75 + 1px);
+}
+
 /* ============================================================
    HOVER TOOLTIP
 ============================================================ */
