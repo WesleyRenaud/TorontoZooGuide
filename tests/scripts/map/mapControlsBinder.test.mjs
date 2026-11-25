@@ -56,6 +56,78 @@ test('Test_CloseMapDatePicker_TestFpAndInput_ExpectCloseAndBlur', () => {
 });
 
 
+test('Test_FinishMapDatePicker_TestKeyboardState_ExpectFocusWithoutBlur', () => {
+   const originalBlur = MapControlsBinder.blurMapDateInput;
+   const events = [];
+   const mapDateInput = { focus: () => events.push('focus') };
+   MapControlsBinder.blurMapDateInput = () => events.push('blur');
+
+   try {
+      MapControlsBinder.finishMapDatePicker(mapDateInput, { returnFocus: true });
+      MapControlsBinder.finishMapDatePicker(null, { returnFocus: true });
+
+      assert.deepEqual(events, ['focus']);
+   } finally {
+      MapControlsBinder.blurMapDateInput = originalBlur;
+   }
+});
+
+
+test('Test_FinishMapDatePicker_TestPointerState_ExpectBlur', () => {
+   const originalBlur = MapControlsBinder.blurMapDateInput;
+   const events = [];
+   const mapDateInput = { focus: () => events.push('focus') };
+   MapControlsBinder.blurMapDateInput = (input) => events.push(input);
+
+   try {
+      MapControlsBinder.finishMapDatePicker(mapDateInput, { returnFocus: false });
+      MapControlsBinder.finishMapDatePicker(mapDateInput);
+
+      assert.deepEqual(events, [mapDateInput, mapDateInput]);
+   } finally {
+      MapControlsBinder.blurMapDateInput = originalBlur;
+   }
+});
+
+
+test('Test_OpenMapDatePickerFromKeyboard_TestSelectedDay_ExpectOpenAndFocusSelectedDay', () => {
+   const events = [];
+   const keyboardState = { returnFocus: false };
+   const fp = {
+      open: () => events.push('open'),
+      selectedDateElem: { focus: () => events.push('selected') },
+      todayDateElem: { focus: () => events.push('today') },
+   };
+
+   MapControlsBinder.openMapDatePickerFromKeyboard(fp, keyboardState);
+
+   assert.deepEqual(events, ['open', 'selected']);
+   assert.equal(keyboardState.returnFocus, true);
+});
+
+
+test('Test_OpenMapDatePickerFromKeyboard_TestNoSelectedDay_ExpectFocusToday', () => {
+   const events = [];
+   const fp = {
+      open: () => events.push('open'),
+      selectedDateElem: null,
+      todayDateElem: { focus: () => events.push('today') },
+   };
+
+   MapControlsBinder.openMapDatePickerFromKeyboard(fp, {});
+
+   assert.deepEqual(events, ['open', 'today']);
+});
+
+
+test('Test_OpenMapDatePickerFromKeyboard_TestNoPicker_ExpectNoThrow', () => {
+   const keyboardState = {};
+
+   assert.doesNotThrow(() => MapControlsBinder.openMapDatePickerFromKeyboard(null, keyboardState));
+   assert.equal(keyboardState.returnFocus, true);
+});
+
+
 test('Test_IsSpecificDayPreset_TestSpecificDay_ExpectTrue', () => {
    const isSpecific = MapControlsBinder.isSpecificDayPreset({ value: Strings.map.presetIds.specificDay });
 
@@ -411,7 +483,6 @@ test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
       pickerOptions.onSpecificDayChange(iso);
       mapPreset.listeners.change();
       mapDateInput.listeners.mousedown({ preventDefault() {} });
-      mapDateInput.listeners.focus();
       includeOffDisplayCheckbox.listeners.change();
       radio.listeners.change();
       mapPreset.value = 'today';
@@ -424,7 +495,8 @@ test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
       assert.deepEqual(updates.at(Position.FIRST), ['onUpdate', Strings.map.presetIds.specificDay, iso]);
       assert.ok(updates.some(([kind]) => kind === 'preset'));
       assert.deepEqual(opens, [true]);
-      assert.equal(blurs.at(Position.LAST), mapDateInput);
+      assert.deepEqual(blurs, []);
+      assert.equal(mapDateInput.listeners.focus, undefined);
       assert.ok(updates.some(([kind]) => kind === 'update'));
       assert.equal(opens.length, Position.SECOND);
    } finally {
@@ -433,5 +505,94 @@ test('Test_InitMapControls_TestWired_ExpectRefetchAndEvents', () => {
       MapControlsBinder.updateMapForCurrentControls = originalUpdate;
       MapControlsBinder.syncDateInputVisibility = originalSync;
       MapControlsBinder.blurMapDateInput = originalBlur;
+   }
+});
+
+
+test('Test_InitMapDatePicker_TestKeyboardState_ExpectFocusOnChangeAndClose', () => {
+   const originalInit = VisitDateAdapter.initVisitDateFlatpickr;
+   const originalBlur = MapControlsBinder.blurMapDateInput;
+   const optionsSeen = [];
+   const events = [];
+   MapControlsBinder.blurMapDateInput = () => events.push('blur');
+   VisitDateAdapter.initVisitDateFlatpickr = (input, options) => {
+      optionsSeen.push({ input, options });
+      return { id: 'fp', close() {}, open() {} };
+   };
+
+   try {
+      MapControlsBinder.initMapDatePicker({ focus: () => events.push('focus') }, {
+         mapPreset: { value: Strings.map.presetIds.specificDay },
+         earliestSelectableNoon: new Date('2026-06-01T12:00:00'),
+         keyboardState: { returnFocus: true },
+         onSpecificDayChange: () => events.push('change'),
+      });
+      optionsSeen.at(Position.FIRST).options.onChange(null, '2026-06-15', { close() {} });
+      optionsSeen.at(Position.FIRST).options.onClose();
+
+      assert.deepEqual(events, ['focus', 'change', 'focus']);
+   } finally {
+      VisitDateAdapter.initVisitDateFlatpickr = originalInit;
+      MapControlsBinder.blurMapDateInput = originalBlur;
+   }
+});
+
+
+test('Test_InitMapControls_TestDateKeydown_ExpectOpenKeysOpenPicker', () => {
+   const originalInitPicker = MapControlsBinder.initMapDatePicker;
+   const originalSync = MapControlsBinder.syncDateInputVisibility;
+   let pickerOptions = null;
+   const opens = [];
+   const fp = {
+      open: () => opens.push(true),
+      close() {},
+      selectedDateElem: { focus() {} },
+   };
+   const makeEvent = (key) => {
+      const event = { key, prevented: false, stopped: false };
+      event.preventDefault = () => { event.prevented = true; };
+      event.stopPropagation = () => { event.stopped = true; };
+      return event;
+   };
+
+   MapControlsBinder.initMapDatePicker = (_input, options) => {
+      pickerOptions = options;
+      return fp;
+   };
+   MapControlsBinder.syncDateInputVisibility = () => {};
+
+   const mapPreset = document.createElement('select');
+   mapPreset.value = Strings.map.presetIds.specificDay;
+   const mapDateInput = document.createElement('input');
+
+   try {
+      MapControlsBinder.initMapControls({
+         mapPreset,
+         mapDateInput,
+         onUpdate: () => {},
+      });
+      const openEvents = ['Enter', ' ', 'ArrowDown'].map(makeEvent);
+      openEvents.forEach((event) => mapDateInput.listeners.keydown(event));
+      const keyboardOpenState = pickerOptions.keyboardState.returnFocus;
+
+      const otherKey = makeEvent('a');
+      mapDateInput.listeners.keydown(otherKey);
+
+      mapDateInput.listeners.mousedown({ preventDefault() {} });
+      const pointerOpenState = pickerOptions.keyboardState.returnFocus;
+
+      mapPreset.value = 'today';
+      const hiddenDateKey = makeEvent('Enter');
+      mapDateInput.listeners.keydown(hiddenDateKey);
+
+      assert.ok(openEvents.every((event) => event.prevented && event.stopped));
+      assert.equal(keyboardOpenState, true);
+      assert.equal(otherKey.prevented, false);
+      assert.equal(pointerOpenState, false);
+      assert.equal(hiddenDateKey.prevented, false);
+      assert.equal(opens.length, 4);
+   } finally {
+      MapControlsBinder.initMapDatePicker = originalInitPicker;
+      MapControlsBinder.syncDateInputVisibility = originalSync;
    }
 });

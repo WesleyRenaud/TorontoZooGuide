@@ -1089,6 +1089,15 @@ body > .console-operations-page {
    opacity: 0;
 }
 
+.home-page .map-date-field:has(input#mapDate:focus-visible) {
+   outline: 2px solid var(--color-brand-primary-dark);
+   outline-offset: 2px;
+}
+
+.home-page input#mapDate:focus-visible {
+   outline: none;
+}
+
 .home-page .map-date-readout {
    display: inline-block;
    min-width: 16.7em; /* longest date and hours label */
