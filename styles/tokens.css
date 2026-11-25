@@ -87,23 +87,19 @@
    --font-weight-extrabold: 800;
 
    /* ── Layout ──
-      Fluid shell by default (zoom-in friendly). Chrome tracks vh with floors so
-      browser zoom-out can grow CSS sizes again. Above the design stage size,
-      styles.css scales the 1512×809 stage up (see layout-fit). */
+      The 100% screen: 1512×809 stage scaled to fit the window. */
    --layout-page-width: 1512px;
    --layout-page-height: 809px;
-   --layout-fit: min(
-      100vw / var(--layout-page-width),
-      100dvh / var(--layout-page-height)
-   );
-   --layout-top-bar-height: max(2.75rem, 8vh);
-   --layout-nav-height: max(2.85rem, 7vh);
+   --layout-fit: min(100vw / var(--layout-page-width), 100vh / var(--layout-page-height));
+   --layout-top-bar-height: calc(var(--layout-page-height) * 0.08);
+   /* 6% button row plus the 5px of padding from the 100% screen. */
+   --layout-nav-height: calc(var(--layout-page-height) * 0.06 + 5px);
    /* Matches ZooMapConstants and images/map/zoo-map.svg. */
    --zoo-map-aspect-width: 4096;
    --zoo-map-aspect-height: 2665;
-   --map-frame-height: calc(100dvh - var(--layout-top-bar-height) - var(--layout-nav-height));
+   --map-frame-height: calc(var(--layout-page-height) - var(--layout-top-bar-height) - var(--layout-nav-height));
    /* 12px animal dot on a 691px map frame at 100%. */
-   --marker-size: max(10px, calc(var(--map-frame-height) * 12 / 691));
+   --marker-size: calc(var(--map-frame-height) * 12 / 691);
    /* 1px of that dot. Marker rules multiply this by their pixel size. */
    --marker-unit: calc(var(--marker-size) / 12);
    /* 8px number inside a marker. */
@@ -111,8 +107,8 @@
    --hover-tooltip-px: 1px;
    /* 262.5px across the 1512px page. */
    --side-column-width: calc(var(--layout-page-width) * 0.1736);
-   /* Explore panel: higher floor; can grow with the viewport. */
-   --map-menu-width: max(18rem, 22vw);
+   /* 319.3px across the 1512px page. */
+   --map-menu-width: calc(var(--layout-page-width) * 0.2112);
    /* Marker anchor stays on the previous column width. */
    --map-marker-panel-width: 405px;
 
@@ -139,7 +135,7 @@
    --shadow-xl: 0 3px 7px #00000059;
 
    /* ── Explore controls (dropdown + search) ── */
-   --explore-control-font: max(9.6px, 1.2vh);
+   --explore-control-font: 9.6px;
    --explore-control-weight: var(--font-weight-bold);
    --explore-control-pad-y: 4.25px;
    --explore-control-pad-x: var(--space-3);
