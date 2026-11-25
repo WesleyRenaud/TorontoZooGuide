@@ -3,6 +3,8 @@ import { VisitDateAdapter } from '../visitDates/visitDateAdapter.js';
 import { VisitDateValidator } from '../visitDates/visitDateValidator.js';
 
 export class MapControlsBinder {
+   static MAP_DATE_OPEN_KEYS = new Set(['Enter', ' ', 'ArrowDown']);
+
    static blurMapDateInput(mapDateInput) {
       mapDateInput?.blur();
       document.activeElement?.blur?.();
@@ -11,6 +13,28 @@ export class MapControlsBinder {
    static closeMapDatePicker(fp, mapDateInput) {
       fp?.close();
       MapControlsBinder.blurMapDateInput(mapDateInput);
+   }
+
+   static finishMapDatePicker(mapDateInput, keyboardState) {
+      if (keyboardState?.returnFocus) {
+         mapDateInput?.focus?.();
+         return;
+      }
+
+      MapControlsBinder.blurMapDateInput(mapDateInput);
+   }
+
+   static openMapDatePickerFromKeyboard(fp, keyboardState) {
+      keyboardState.returnFocus = true;
+
+      if (!fp) {
+         return;
+      }
+
+      fp.open();
+
+      const dayToFocus = fp.selectedDateElem ?? fp.todayDateElem;
+      dayToFocus?.focus();
    }
 
    static isSpecificDayPreset(mapPreset) {
@@ -66,6 +90,7 @@ export class MapControlsBinder {
       mapPreset,
       onSpecificDayChange,
       earliestSelectableNoon,
+      keyboardState = {},
    } = {}) {
       const floor = earliestSelectableNoon ?? VisitDateValidator.getToday();
 
@@ -75,14 +100,14 @@ export class MapControlsBinder {
          clickOpens: false,
          onChange: (_safeDate, isoDate, instance) => {
             instance.close();
-            MapControlsBinder.blurMapDateInput(mapDateInput);
+            MapControlsBinder.finishMapDatePicker(mapDateInput, keyboardState);
 
             if (MapControlsBinder.isSpecificDayPreset(mapPreset)) {
                onSpecificDayChange(isoDate);
             }
          },
          onClose: () => {
-            MapControlsBinder.blurMapDateInput(mapDateInput);
+            MapControlsBinder.finishMapDatePicker(mapDateInput, keyboardState);
          },
       });
    }
@@ -125,9 +150,11 @@ export class MapControlsBinder {
          return null;
       }
 
+      const keyboardState = { returnFocus: false };
       const fp = MapControlsBinder.initMapDatePicker(mapDateInput, {
          mapPreset,
          earliestSelectableNoon,
+         keyboardState,
          onSpecificDayChange: (dateStr) => {
             onUpdate(Strings.map.presetIds.specificDay, dateStr);
          },
@@ -155,11 +182,21 @@ export class MapControlsBinder {
          }
 
          event.preventDefault();
+         keyboardState.returnFocus = false;
          fp?.open();
       });
 
-      mapDateInput.addEventListener('focus', () => {
-         MapControlsBinder.blurMapDateInput(mapDateInput);
+      mapDateInput.addEventListener('keydown', (event) => {
+         if (
+            !MapControlsBinder.MAP_DATE_OPEN_KEYS.has(event.key)
+            || !MapControlsBinder.isSpecificDayPreset(mapPreset)
+         ) {
+            return;
+         }
+
+         event.preventDefault();
+         event.stopPropagation();
+         MapControlsBinder.openMapDatePickerFromKeyboard(fp, keyboardState);
       });
 
       MapControlsBinder.bindChangeListeners([
