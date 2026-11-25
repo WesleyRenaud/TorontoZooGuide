@@ -149,6 +149,24 @@ def Test_Build_TestDateRange_ExpectEndOnTheLastDay() -> None:
    ]
 
 
+def Test_Build_TestMidMonthRange_ExpectLaterOfMidpointAndOneWeek() -> None:
+   title = 'Monday, November 30 - Mid-December (Subject to Change)'
+   start = date( 2026, 11, 25 )
+   first = ClosureUpdateBuilder.build(
+      [ notice( title ) ],
+      [ stored( title, start='2026-11-25', end='2026-11-30' ) ],
+      date( 2026, 12, 3 ),
+   )
+   second = ClosureUpdateBuilder.build(
+      [ notice( title ) ],
+      [ stored( title, start='2026-11-25', end='2026-12-15' ) ],
+      date( 2026, 12, 10 ),
+   )
+
+   assert dates( first.extended ) == [ ( title, start, date( 2026, 12, 15 ) ) ]
+   assert dates( second.extended ) == [ ( title, start, date( 2026, 12, 17 ) ) ]
+
+
 def Test_Build_TestMonthEndOnANamedDay_ExpectTrimmed() -> None:
    title = 'The VR station is closed for today, Sunday, November 15.'
    plan = ClosureUpdateBuilder.build(

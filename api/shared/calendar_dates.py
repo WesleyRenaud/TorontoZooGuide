@@ -296,6 +296,11 @@ class CalendarDates:
 
 
    @staticmethod
+   def month_midpoint( year: int, month: int ) -> date:
+      return date( year, month, 15 )
+
+
+   @staticmethod
    def two_weeks_later( day: date ) -> date:
       return day + timedelta( days=14 )
 

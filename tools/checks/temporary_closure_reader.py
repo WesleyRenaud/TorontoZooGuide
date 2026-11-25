@@ -5,7 +5,7 @@ import re
 
 from api.shared.enums.item_type import ItemType
 from api.shared.text_values import TextValues
-from .closure_update_builder import ClosureUpdateBuilder
+from .closure_notice_dates import ClosureNoticeDates
 from .temporary_closure import TemporaryClosure
 from .viewing_alert_sentence_builder import ViewingAlertSentenceBuilder
 from .website_closure import WebsiteClosure
@@ -91,12 +91,10 @@ class TemporaryClosureReader():
       found = {}
 
       for notice in WebsiteClosure.notices( page_html ):
-         days = ClosureUpdateBuilder.dates_named(
+         dates = ClosureNoticeDates.parse(
             TextValues.beside( notice.title, notice.description ),
             today,
          )
-         start = min( days ) if days != [] else None
-         end = max( days ) if days != [] else None
 
          for sentence in ViewingAlertSentenceBuilder.notice_parts( cls.text( notice ) ):
             if not cls.closure( sentence ):
@@ -113,8 +111,8 @@ class TemporaryClosureReader():
                   sentence,
                   kind,
                   photo_paths[ name ],
-                  start,
-                  end,
+                  dates.start,
+                  dates.end,
                )
 
       return list( found.values() )
