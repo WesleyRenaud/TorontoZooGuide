@@ -17,7 +17,7 @@ export class AnimalsRouter {
          return navigationId === latestNavigationId;
       }
 
-      async function runNavigation(task, render) {
+      async function runNavigation(task, render, { focus = true } = {}) {
          const navigationId = beginNavigation();
          const result = await task();
 
@@ -26,6 +26,9 @@ export class AnimalsRouter {
          }
 
          render(result);
+         if (focus) {
+            listEl.firstElementChild?.focus();
+         }
       }
 
       function shouldShowExhibits(region) {
@@ -48,12 +51,12 @@ export class AnimalsRouter {
          return showAnimals(region.name, region.name);
       }
 
-      async function showRegions() {
+      async function showRegions({ focus = true } = {}) {
          await runNavigation(() => AnimalsClient.getRegions(), (regions) => {
             listView.renderRegions(regions, {
                onRegionSelected: showRegionSelection,
             });
-         });
+         }, { focus });
       }
 
       async function showExhibits(regionName) {
@@ -87,7 +90,7 @@ export class AnimalsRouter {
       }
 
       function start() {
-         return showRegions();
+         return showRegions({ focus: false });
       }
 
       return { start };
