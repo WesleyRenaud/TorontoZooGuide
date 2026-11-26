@@ -28,6 +28,22 @@ export class MapStrings {
       },
       mapAria: 'Toronto Zoo Map',
       markerAria: 'Map marker',
+      markerAriaGroup: (count, noun, name, moreCount) => (
+         `${count} ${noun}: ${name} and ${moreCount} more`
+      ),
+      markerAriaNouns: {
+         animal: 'species',
+         pavilion: 'pavilions',
+         transportationStation: 'stations',
+         guardiansTalk: 'talks',
+         wildEncounter: 'wild encounters',
+         drinkingFountain: 'drinking fountains',
+         defibrillator: 'defibrillators',
+         emergencyIntercom: 'emergency intercoms',
+         guestService: 'guest services',
+         picnicSite: 'picnic sites',
+         eventSite: 'event sites',
+      },
       visitDateAndHours: (dateLabel, hoursLabel) => `${dateLabel} \u00B7 ${hoursLabel}`,
       mapPresetPlaceholder: 'Select a map',
       mapPresets: {

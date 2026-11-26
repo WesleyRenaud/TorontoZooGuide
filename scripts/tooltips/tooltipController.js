@@ -1,6 +1,7 @@
 import { BannerSynchronizer } from './bannerSynchronizer.js';
 import { CarouselView } from './carouselView.js';
 import { GlobalListener } from './globalListener.js';
+import { MarkerAccessibleNameFormatter } from '../markers/markerAccessibleNameFormatter.js';
 import { MarkerHelper } from '../markers/markerHelper.js';
 import { PositionFragment } from './positionFragment.js';
 import { ItemType } from '../shared/enums/itemType.js';
@@ -123,7 +124,7 @@ export class TooltipController {
 
          markerEl.setAttribute('role', 'button');
          markerEl.setAttribute('tabindex', '0');
-         markerEl.setAttribute('aria-label', getMarkerLabel(markerEl));
+         markerEl.setAttribute('aria-label', getMarkerLabel(markerEl, items));
          markerEl.setAttribute('aria-expanded', 'false');
 
          if (tooltipEl?.id) {
@@ -169,7 +170,13 @@ export class TooltipController {
          return isTooltipVisible() && getOpenMarker() === markerEl;
       }
 
-      function getMarkerLabel(markerEl) {
+      function getMarkerLabel(markerEl, items) {
+         const accessibleName = MarkerAccessibleNameFormatter.buildAccessibleName(items);
+
+         if (accessibleName) {
+            return accessibleName;
+         }
+
          return markerEl?.dataset?.hover || Strings.map.markerAria;
       }
 
@@ -223,7 +230,7 @@ export class TooltipController {
             return;
          }
 
-         tooltipEl.setAttribute('aria-label', Strings.tooltips.detailsAria(getMarkerLabel(markerEl)));
+         tooltipEl.setAttribute('aria-label', Strings.tooltips.detailsAria(getMarkerLabel(markerEl, items)));
          setTooltipVisibility(true);
          setMarkerExpanded(markerEl, true);
          globalListeners.install();
