@@ -95,3 +95,31 @@ test('Test_InitVisitDateFlatpickr_TestOmitMaxDateFn_ExpectDerivedMax', () => {
       VisitDateValidator.toISODate(VisitDateValidator.getMaxDate(daysAhead, floor))
    );
 });
+
+
+test('Test_InitVisitDateFlatpickr_TestBlurOnCloseDisabled_ExpectFocusKept', () => {
+   const inputEl = createDomNode('input', 'itin-date-input');
+   const blurCalls = [];
+   inputEl.blur = () => {
+      blurCalls.push('input');
+   };
+   const nextField = createDomNode('input', 'itin-time-input');
+   nextField.blur = () => {
+      blurCalls.push('next');
+   };
+   document.activeElement = nextField;
+
+   VisitDateAdapter.initVisitDateFlatpickr(inputEl, {
+      defaultDate: floor,
+      earliestNoon: floor,
+      getTodayFn: () => floor,
+      blurOnClose: false,
+      initFlatpickr: (_input, options) => {
+         options.onReady([floor], '2026-06-15', { setDate() {} });
+         options.onClose([], '', { setDate() {} });
+         return { setDate() {} };
+      },
+   });
+
+   assert.deepEqual(blurCalls, []);
+});

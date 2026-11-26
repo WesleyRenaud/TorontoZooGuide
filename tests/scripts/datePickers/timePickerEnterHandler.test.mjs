@@ -148,6 +148,7 @@ test('Test_WireTimePickerEnterCommit_TestEnter_ExpectCommit', () => {
    const inputEl = document.createElement('input');
    inputEl.value = time;
    const instance = {
+      isOpen: true,
       calendarContainer: document.createElement('div'),
    };
 
@@ -203,6 +204,7 @@ test('Test_WireTimePickerEnterCommit_TestEnterEmpty_ExpectNoCommit', () => {
    const inputEl = document.createElement('input');
    inputEl.value = '';
    const instance = {
+      isOpen: true,
       calendarContainer: document.createElement('div'),
    };
 
@@ -222,3 +224,29 @@ test('Test_WireTimePickerEnterCommit_TestEnterEmpty_ExpectNoCommit', () => {
       ReadOpenPickerFormatter.readOpenPickerTime = original;
    }
 });
+
+
+test('Test_WireTimePickerEnterCommit_TestEnterWhenClosed_ExpectNoCommit', () => {
+   const commits = [];
+   const time = '11:00 AM';
+   const inputEl = document.createElement('input');
+   inputEl.value = time;
+   const instance = {
+      isOpen: false,
+      calendarContainer: document.createElement('div'),
+   };
+   const prevented = [];
+
+   TimePickerEnterHandler.wireTimePickerEnterCommit(inputEl, instance, (nextTime) => {
+      commits.push(nextTime);
+   });
+   inputEl.listeners.keydown({
+      key: 'Enter',
+      preventDefault: () => { prevented.push('default'); },
+      stopImmediatePropagation: () => { prevented.push('stop'); },
+   });
+
+   assert.deepEqual(commits, []);
+   assert.deepEqual(prevented, []);
+});
+

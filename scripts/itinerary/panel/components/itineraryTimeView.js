@@ -1,4 +1,5 @@
 import { ConsoleDateFactory } from '../../../datePickers/consoleDateFactory.js';
+import { FlatpickrActivationBinder } from '../../../datePickers/flatpickrActivationBinder.js';
 import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
 import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 import { ItineraryTimeInputHelper } from './itineraryTimeInputHelper.js';
@@ -229,7 +230,9 @@ export class ItineraryTimeView {
             instance.calendarContainer.classList.add('itinerary-day-time-picker');
          },
          ...timePickerOptions,
+         clickOpens: false,
       });
+      FlatpickrActivationBinder.install(input, () => flatpickrInstance);
 
       return field;
    }

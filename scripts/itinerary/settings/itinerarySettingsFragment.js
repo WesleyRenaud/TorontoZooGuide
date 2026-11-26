@@ -1,3 +1,4 @@
+import { ItineraryCardModal } from '../itineraryCardModal.js';
 import { ItinerarySettingsView } from './itinerarySettingsView.js';
 import { ItineraryPanelFragment } from '../panel/components/itineraryPanelFragment.js';
 
@@ -15,6 +16,7 @@ export class ItinerarySettingsFragment {
       ) ?? document.querySelector(ItinerarySettingsFragment.SETTINGS_OVERLAY_SELECTOR);
       existingOverlay?.__tzgPopupCleanup?.();
       existingOverlay?.remove();
+      ItineraryCardModal.release();
 
       const view = ItinerarySettingsView.buildItinerarySettingsView({
          statuses,
@@ -24,14 +26,22 @@ export class ItinerarySettingsFragment {
          mountEl,
          root: view.root,
          overlay: view.root,
-         initialFocusEl: view.saveButtonEl,
+         initialFocusEl: null,
          dismissOnOverlayClick: false,
          dismissOnEscape: false,
       });
 
       function closeOverlay() {
+         ItineraryCardModal.release();
          popup.close();
       }
+
+      ItineraryCardModal.syncOpenCard(mountEl, {
+         returnFocusFallback: ItineraryCardModal.getGearButton(),
+         onEscape: () => {
+            view.closeButtonEl.click();
+         },
+      });
 
       view.closeButtonEl.addEventListener('click', () => {
          if (onClose) {

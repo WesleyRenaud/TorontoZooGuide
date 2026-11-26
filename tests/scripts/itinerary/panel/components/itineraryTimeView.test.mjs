@@ -488,3 +488,25 @@ test('Test_MakeItineraryTimeInput_TestOutsideClickOnPicker_ExpectIgnored', async
       deps.restore();
    }
 });
+
+
+test('Test_MakeItineraryTimeInput_TestPickerActivation_ExpectManualOpenOnly', () => {
+   const deps = _installTimeInputDeps();
+
+   try {
+      const field = ItineraryTimeView.makeItineraryTimeInput({
+         label: 'Arrival',
+         value: '09:30 AM',
+         onChange: async () => {},
+         clearAriaLabel: 'Clear arrival',
+      });
+      const input = field.querySelector('.itinerary-day-time-input');
+
+      assert.equal(deps.getPickerOptions().clickOpens, false);
+      assert.equal(input.getAttribute('aria-haspopup'), 'dialog');
+      assert.equal(input.getAttribute('aria-expanded'), 'false');
+   } finally {
+      deps.restore();
+   }
+});
+

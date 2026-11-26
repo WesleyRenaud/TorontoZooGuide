@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { ItineraryCardModal } from '../../../../scripts/itinerary/itineraryCardModal.js';
 import { WizardController } from '../../../../scripts/itinerary/wizard/wizardController.js';
 import { ItineraryWizardStore } from '../../../../scripts/itinerary/wizard/itineraryWizardStore.js';
 import { Strings } from '../../../../scripts/strings.js';
@@ -493,4 +494,38 @@ test('Test_Saves_TestSavesWhenFinishingAfterSelectionChanges_ExpectOk', async ()
 
    assert.equal(finalizeCalls.length, 1);
    assert.deepEqual(finalizeCalls[Position.FIRST].animals, nextAnimals);
+});
+
+
+test('Test_HandleEscape_TestNoUnsavedChanges_ExpectWizardClosed', async () => {
+   const mountEl = createDomNode('div', 'wizard-mount');
+   const dateController = {
+      show() {},
+      getDate: () => null,
+   };
+
+   await WizardController.openItineraryWizard({
+      mountEl,
+      deps: {
+         loadItinerary: async () => null,
+         resolveEarliestVisitDate: async () => makeNoonDate(_year, _juneIndex, _day),
+         createWizardState: () => ItineraryWizardStore.createItineraryWizardState({}),
+         createDateStepController: () => dateController,
+         selectionStepConfigs: [],
+         finalizeWizard: async () => {},
+         showConfirmPopup: () => {},
+         syncAnimalDraft: () => {},
+      },
+   });
+   const event = {
+      key: 'Escape',
+      defaultPrevented: false,
+      preventDefault() { this.defaultPrevented = true; },
+      stopPropagation() { this.propagationStopped = true; },
+   };
+
+   ItineraryCardModal.handleDocumentKeydown(event);
+
+   assert.equal(event.defaultPrevented, true);
+   assert.equal(mountEl.children.length, 0);
 });

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ItineraryPanelFragment } from '../../../../scripts/itinerary/panel/components/itineraryPanelFragment.js';
+import { ItineraryCardModal } from '../../../../scripts/itinerary/itineraryCardModal.js';
 import { ItinerarySettingsFragment } from '../../../../scripts/itinerary/settings/itinerarySettingsFragment.js';
 import { ItinerarySettingsView } from '../../../../scripts/itinerary/settings/itinerarySettingsView.js';
 import { Strings } from '../../../../scripts/strings.js';
@@ -80,7 +81,7 @@ test('Test_ShowItinerarySettingsOverlay_TestMount_ExpectSaveAndCloseCallbacks', 
       assert.equal(mountedArgs.mountEl, mountEl);
       assert.equal(mountedArgs.root, root);
       assert.equal(mountedArgs.overlay, root);
-      assert.equal(mountedArgs.initialFocusEl, saveButtonEl);
+      assert.equal(mountedArgs.initialFocusEl, null);
       assert.equal(mountedArgs.dismissOnOverlayClick, dismissOnOverlayClick);
       assert.equal(mountedArgs.dismissOnEscape, dismissOnEscape);
       assert.equal(view.closeButtonEl, closeButtonEl);
@@ -153,5 +154,27 @@ test('Test_ShowItinerarySettingsOverlay_TestExistingOverlay_ExpectReplaced', () 
    assert.equal(
       second.root.querySelector('.itin-top-title').textContent,
       Strings.itinerary.settings.title
+   );
+});
+
+
+test('Test_ShowItinerarySettingsOverlay_TestEscape_ExpectCloses', () => {
+   const mountEl = document.getElementById('itineraryFlow');
+   ItinerarySettingsFragment.showItinerarySettingsOverlay({
+      mountEl,
+   });
+   const event = {
+      key: 'Escape',
+      defaultPrevented: false,
+      preventDefault() { this.defaultPrevented = true; },
+      stopPropagation() { this.propagationStopped = true; },
+   };
+
+   ItineraryCardModal.handleDocumentKeydown(event);
+
+   assert.equal(event.defaultPrevented, true);
+   assert.equal(
+      mountEl.querySelectorAll(ItinerarySettingsFragment.SETTINGS_OVERLAY_SELECTOR).length,
+      0
    );
 });

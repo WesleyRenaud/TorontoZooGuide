@@ -4214,6 +4214,29 @@ html.animals-page body {
    overflow: hidden;
 }
 
+.itin-card .itin-close:focus-visible,
+.itin-card .itin-prev:focus-visible,
+.itin-card .itin-next:focus-visible,
+.itin-card .itin-finish:focus-visible,
+.itin-card button:focus-visible,
+.itin-card input:focus-visible,
+.itin-card [tabindex]:not(.itin-h1):focus-visible {
+   outline: 2px solid var(--color-warning);
+   outline-offset: 1px;
+}
+
+.itin-card:focus,
+.itin-card .itin-h1:focus,
+.itin-card .itin-h1:focus-visible {
+   outline: none;
+}
+
+/* Opened by a mouse click: no ring until the user presses a key in the card.
+   Auto-open focuses the heading, which never shows a ring. */
+.itin-card[data-pointer-opened] :focus-visible {
+   outline: none;
+}
+
 .itin-card-topbar {
    display: flex;
    justify-content: center;

@@ -180,7 +180,11 @@ test('Test_MakeScheduleItemTimeFields_TestPickerChange_ExpectSynced', () => {
       });
       capturedOptions.onChange([], changedTime, instance);
       const options = fields.getScheduleTimeOptions();
+      const timeInput = _getTimeInput(fields);
 
+      assert.equal(capturedOptions.clickOpens, false);
+      assert.equal(timeInput.getAttribute('aria-haspopup'), 'dialog');
+      assert.equal(timeInput.getAttribute('aria-expanded'), 'false');
       assert.deepEqual(options, {
          startTime: changedTime,
          durationMinutes: null,

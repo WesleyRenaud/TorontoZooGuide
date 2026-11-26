@@ -104,6 +104,15 @@ test('Test_IsFocusableElement_TestNegativeTabindex_ExpectFalse', () => {
 });
 
 
+test('Test_IsFocusableElement_TestInputWithoutTabindex_ExpectTrue', () => {
+   const input = _createFocusable('input', 'itin-date-input', { tabindex: null });
+   const excluded = _createFocusable('input', 'hidden-input', { tabindex: '-1' });
+
+   assert.equal(TooltipFocusManager.isFocusableElement(input), true);
+   assert.equal(TooltipFocusManager.isFocusableElement(excluded), false);
+});
+
+
 test('Test_IsFocusableElement_TestAnchorWithHref_ExpectTrue', () => {
    const element = _createFocusable('a', 'tooltip-link', { tabindex: null });
    element.setAttribute('href', 'https://example.test');
