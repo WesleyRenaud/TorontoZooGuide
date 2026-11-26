@@ -1,3 +1,4 @@
+import { FlatpickrActivationBinder } from '../../datePickers/flatpickrActivationBinder.js';
 import { VisitDateAdapter } from '../../visitDates/visitDateAdapter.js';
 import { VisitDateFormatter } from '../../visitDates/visitDateFormatter.js';
 import { VisitDateValidator } from '../../visitDates/visitDateValidator.js';
@@ -48,7 +49,8 @@ export class DateSelectorPickerBinder {
             defaultDate: getDate() || floor,
             earliestNoon: floor,
             daysAhead,
-            clickOpens: true,
+            clickOpens: false,
+            blurOnClose: false,
             getTodayFn,
             getMaxDateFn: resolveMaxDate,
             onReady: (safeDate, _isoDate, instance) => {
@@ -57,12 +59,14 @@ export class DateSelectorPickerBinder {
             onChange: (safeDate, _isoDate, instance) => {
                applyPickerDate(safeDate, instance);
                instance.close();
-               inputEl?.blur();
+
+               if (FlatpickrActivationBinder.wasOpenedByPointer(inputEl)) {
+                  inputEl?.blur();
+               }
             },
-            onClose: () => {
-               inputEl?.blur();
-            },
+            onClose: () => {},
          });
+         FlatpickrActivationBinder.install(inputEl, () => flatpickrInstance);
       }
 
       return {

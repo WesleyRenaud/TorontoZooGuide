@@ -1,4 +1,5 @@
 import { ConsoleDateFactory } from '../../../datePickers/consoleDateFactory.js';
+import { FlatpickrActivationBinder } from '../../../datePickers/flatpickrActivationBinder.js';
 import { ItineraryItemFormatter } from '../itineraryItemFormatter.js';
 import { ItineraryPanelHelper } from '../itineraryPanelHelper.js';
 import { ScheduleItemTimeFieldsHelper } from './scheduleItemTimeFieldsHelper.js';
@@ -50,7 +51,6 @@ export class ScheduleItemTimeFields {
          timeInput.disabled = disabled;
          timeInput.readOnly = disabled;
          timeInput.setAttribute('aria-disabled', String(disabled));
-         flatpickrInstance?.set('clickOpens', !disabled);
       }
 
       function syncDurationFieldState() {
@@ -86,6 +86,7 @@ export class ScheduleItemTimeFields {
 
       ConsoleDateFactory.initTimePicker(timeInput, {
          allowInput: false,
+         clickOpens: false,
          onChange: commitPickerTime,
          onClose: commitPickerTime,
          onReady(_selectedDates, _dateStr, instance) {
@@ -94,6 +95,7 @@ export class ScheduleItemTimeFields {
             syncTimeInputDisabledState();
          },
       });
+      FlatpickrActivationBinder.install(timeInput, () => flatpickrInstance);
 
       function setFixedTimeScheduleMode({ lockTimes = false } = {}) {
          areTimesLocked = lockTimes;

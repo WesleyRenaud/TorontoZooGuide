@@ -2,6 +2,7 @@ import { DraftStore } from '../draftStore.js';
 import { FilterDraftExcludingWarningFixedTimeItems } from './filterDraftExcludingWarningFixedTimeItems.js';
 import { ConfirmFragment } from '../../itinerary/panel/components/confirmFragment.js';
 import { DateSelector } from '../../itinerary/selectors/dateSelector.js';
+import { ItineraryCardModal } from '../itineraryCardModal.js';
 import { ItineraryConfirmationResult } from '../itineraryConfirmationResult.js';
 import { ItineraryService } from '../itineraryService.js';
 import { ItineraryShape } from '../itineraryShape.js';
@@ -56,9 +57,15 @@ export class WizardController {
       const wizardSteps = {};
       let activeStepKey = WizardStepConfigs.WIZARD_DEFAULT_START_STEP;
 
-      function showStep(stepKey) {
+      async function showStep(stepKey) {
          activeStepKey = stepKey;
-         return wizardSteps[stepKey]?.show();
+         await wizardSteps[stepKey]?.show();
+         ItineraryCardModal.syncOpenCard(mountEl, {
+            returnFocusFallback: ItineraryCardModal.getBuildItineraryButton(),
+            onEscape: () => {
+               void handleClose();
+            },
+         });
       }
 
       function updateSelection(selectionKey, value, options = {}) {

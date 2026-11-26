@@ -8,17 +8,24 @@ export class TooltipFocusManager {
          return false;
       }
 
+      const tabIndex = element.getAttribute?.('tabindex');
+
+      if (tabIndex != null && Number(tabIndex) < 0) {
+         return false;
+      }
+
       const tagName = String(element.tagName || '').toLowerCase();
 
-      if (tagName === 'button') {
+      if (tagName === 'button'
+         || tagName === 'input'
+         || tagName === 'select'
+         || tagName === 'textarea') {
          return true;
       }
 
       if (tagName === 'a' && element.getAttribute?.('href')) {
          return true;
       }
-
-      const tabIndex = element.getAttribute?.('tabindex');
 
       return tabIndex != null && Number(tabIndex) >= 0;
    }

@@ -1,3 +1,5 @@
+import { ItineraryCardModal } from '../itineraryCardModal.js';
+
 export class WizardControllerHelper {
    static async loadDefaultSelectionStepConfigs() {
       const { WizardSelectionStepFactory } = await import(
@@ -8,6 +10,7 @@ export class WizardControllerHelper {
    }
 
    static clearWizard(mountEl) {
+      ItineraryCardModal.release();
       mountEl?.replaceChildren();
    }
 

@@ -39,6 +39,10 @@ export class TimePickerEnterHandler {
             return;
          }
 
+         if (!instance?.isOpen) {
+            return;
+         }
+
          event.preventDefault();
          event.stopImmediatePropagation();
 

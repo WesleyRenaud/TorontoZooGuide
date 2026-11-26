@@ -12,6 +12,7 @@ export class VisitDateAdapter {
          onChange = null,
          onReady = null,
          onClose = null,
+         blurOnClose = true,
          initFlatpickr: initFlatpickrFn = FlatpickrAdapter.initFlatpickr,
          getTodayFn = VisitDateValidator.getToday,
          getMaxDateFn = null,
@@ -79,8 +80,11 @@ export class VisitDateAdapter {
             );
          },
          onClose: (selectedDates, dateStr, instance) => {
-            inputEl.blur();
-            document.activeElement?.blur?.();
+            if (blurOnClose) {
+               inputEl.blur();
+               document.activeElement?.blur?.();
+            }
+
             onClose?.(selectedDates, dateStr, instance);
          },
       });

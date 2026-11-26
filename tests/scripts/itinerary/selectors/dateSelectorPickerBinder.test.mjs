@@ -16,6 +16,7 @@ test('Test_CreateDatePickerBinding_TestCallbacks_ExpectModelWired', () => {
    let syncedMaxDate = null;
    const flatpickrCalls = [];
    const selectedDate = makeNoonDate(2026, 5, 16);
+   let capturedOptions = null;
 
    const binding = DateSelectorPickerBinder.createDatePickerBinding({
       inputEl,
@@ -37,6 +38,7 @@ test('Test_CreateDatePickerBinding_TestCallbacks_ExpectModelWired', () => {
       getMaxDateFn: () => maxDate,
       daysAhead: 2,
       initFlatpickr: (_input, options) => {
+         capturedOptions = options;
          const instance = {
             input: _input,
             close() {
@@ -64,6 +66,9 @@ test('Test_CreateDatePickerBinding_TestCallbacks_ExpectModelWired', () => {
    binding.syncBounds();
    binding.close();
 
+   assert.equal(capturedOptions.clickOpens, false);
+   assert.equal(inputEl.getAttribute('aria-haspopup'), 'dialog');
+   assert.equal(inputEl.getAttribute('aria-expanded'), 'false');
    assert.equal(currentDate, selectedDate);
    assert.match(inputEl.value, /June 16, 2026/);
    assert.equal(syncedDates.length, 3);
