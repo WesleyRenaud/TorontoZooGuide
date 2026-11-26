@@ -98,6 +98,32 @@ test('Test_CreateAnimalCardClickHandler_TestAnimal_ExpectOpened', () => {
 });
 
 
+test('Test_CreateAnimalCardClickHandler_TestReturnFocusFallback_ExpectPassedToOverlay', async () => {
+   const calls = [];
+   const talkCalls = [];
+   const pin = { id: 'pin' };
+   const originalOpen = GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal;
+   GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal = async (item, options) => {
+      talkCalls.push(options);
+   };
+
+   try {
+      const handler = MapRuntimeFactory.createAnimalCardClickHandler({
+         openFromAnimal: (item, options) => calls.push(options),
+      });
+      handler({ type: ItemType.ANIMAL, species: 'African Lion' }, { returnFocusFallback: pin });
+      handler({ type: ItemType.ANIMAL, species: 'African Lion' });
+      handler({ type: ItemType.GUARDIANS_TALK }, { returnFocusFallback: pin });
+      await Promise.resolve();
+
+      assert.deepEqual(calls, [{ returnFocusFallback: pin }, { returnFocusFallback: null }]);
+      assert.deepEqual(talkCalls, [{ returnFocusFallback: pin }]);
+   } finally {
+      GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal = originalOpen;
+   }
+});
+
+
 test('Test_CreateAnimalCardClickHandler_TestTalk_ExpectOpened', async () => {
    const openedTalks = [];
    const originalOpen = GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal;
@@ -172,6 +198,7 @@ test('Test_CreateMapTooltipAndFocus_TestWiring_ExpectControllers', () => {
       assert.equal(tooltip.tooltip, true);
       assert.equal(tooltip.options.onAnimalCardClick, clickHandler);
       assert.equal(tooltip.options.banner, banner);
+      assert.equal(tooltip.options.isKeyboardSuspended(), false);
       assert.equal(focus.focus, true);
       assert.equal(focus.options.getMarkerByCoord(coordKey), `marker:${coordKey}`);
       assert.deepEqual(focus.options.getAllMarkers(), allMarkers);
@@ -182,6 +209,26 @@ test('Test_CreateMapTooltipAndFocus_TestWiring_ExpectControllers', () => {
       TooltipController.createTooltipController = originalTooltip;
       FocusController.createFocusController = originalFocus;
       LabelPresenter.initLabelVisibilityToggle = originalLabels;
+   }
+});
+
+
+test('Test_CreateMapTooltip_TestSpeciesOverlayOpen_ExpectKeyboardSuspended', () => {
+   const originalTooltip = TooltipController.createTooltipController;
+   let overlayOpen = false;
+   TooltipController.createTooltipController = (options) => ({ options });
+
+   try {
+      const tooltip = MapRuntimeFactory.createMapTooltip({
+         tooltipEl: { id: 'tip' },
+         speciesOverlay: { isOpen: () => overlayOpen },
+      });
+
+      assert.equal(tooltip.options.isKeyboardSuspended(), false);
+      overlayOpen = true;
+      assert.equal(tooltip.options.isKeyboardSuspended(), true);
+   } finally {
+      TooltipController.createTooltipController = originalTooltip;
    }
 });
 

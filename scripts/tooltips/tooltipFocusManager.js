@@ -45,8 +45,14 @@ export class TooltipFocusManager {
       return found;
    }
 
-   static focusElement(element) {
-      element?.focus?.({ preventScroll: true });
+   static POINTER_OPENED_ATTRIBUTE = 'data-pointer-opened';
+
+   static focusElement(element, { pointer = false } = {}) {
+      const options = pointer
+         ? { preventScroll: true, focusVisible: false }
+         : { preventScroll: true };
+
+      element?.focus?.(options);
    }
 
    static createTooltipFocusManager({
@@ -54,6 +60,7 @@ export class TooltipFocusManager {
       getOpener,
       isOpen,
       onFocusLeave,
+      isFocusLeaveSuspended = () => false,
    }) {
       let installed = false;
 
@@ -81,8 +88,22 @@ export class TooltipFocusManager {
          return firstCardLink || focusable[0] || tooltipEl;
       }
 
-      function focusInitial() {
-         TooltipFocusManager.focusElement(getInitialFocusTarget());
+      function setPointerOpened(isPointerOpened) {
+         if (isPointerOpened) {
+            tooltipEl?.setAttribute?.(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE, '');
+            return;
+         }
+
+         tooltipEl?.removeAttribute?.(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE);
+      }
+
+      function focusInitial({ pointer = false } = {}) {
+         setPointerOpened(pointer);
+         TooltipFocusManager.focusElement(getInitialFocusTarget(), { pointer });
+      }
+
+      function clearPointerOpened() {
+         setPointerOpened(false);
       }
 
       function recoverFocus() {
@@ -132,9 +153,14 @@ export class TooltipFocusManager {
          }
       }
 
+      function handleKeydown(event) {
+         clearPointerOpened();
+         handleTab(event);
+      }
+
       function handleFocusOut() {
          setTimeout(() => {
-            if (!isOpen()) {
+            if (!isOpen() || isFocusLeaveSuspended()) {
                return;
             }
 
@@ -164,7 +190,7 @@ export class TooltipFocusManager {
          installed = true;
          tooltipEl.setAttribute('role', 'dialog');
          tooltipEl.setAttribute('tabindex', '-1');
-         tooltipEl.addEventListener('keydown', handleTab);
+         tooltipEl.addEventListener('keydown', handleKeydown);
          tooltipEl.addEventListener('focusout', handleFocusOut);
       }
 
@@ -172,6 +198,7 @@ export class TooltipFocusManager {
          install,
          containsFocus,
          focusInitial,
+         clearPointerOpened,
          recoverFocus,
          restoreFocusToOpener,
          getFocusableElements,

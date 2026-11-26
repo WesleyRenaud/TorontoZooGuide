@@ -8,6 +8,7 @@ export class SpeciesOverlayBuilder {
 
       return {
          overlay,
+         card: overlay?.querySelector('.species-overlay-card') ?? null,
          content: overlay?.querySelector('.species-overlay-content') ?? null,
          closeButton: overlay?.querySelector('.species-close') ?? null,
       };

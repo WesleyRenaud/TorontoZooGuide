@@ -29,6 +29,7 @@ function _stubTooltipDeps({ renderResult = true } = {}) {
    let closeFn = null;
    let isOpenFn = null;
    let getItemAtIndex = null;
+   let listenerOptions = null;
 
    const originals = {
       banners: BannerSynchronizer.createTooltipBannerSync,
@@ -60,6 +61,7 @@ function _stubTooltipDeps({ renderResult = true } = {}) {
    };
 
    GlobalListener.createTooltipGlobalListeners = (options) => {
+      listenerOptions = options;
       stepFn = options.step;
       closeFn = options.close;
       isOpenFn = options.isOpen;
@@ -89,6 +91,7 @@ function _stubTooltipDeps({ renderResult = true } = {}) {
       getCloseFn: () => closeFn,
       getIsOpenFn: () => isOpenFn,
       getItemAtIndex: () => getItemAtIndex,
+      getListenerOptions: () => listenerOptions,
       restore() {
          BannerSynchronizer.createTooltipBannerSync = originals.banners;
          CarouselView.createTooltipCarouselView = originals.carousel;
@@ -128,7 +131,9 @@ function _createHoverRecorder() {
 
 
 function _trackFocus(element) {
-   element.focus = () => {
+   element.focusCalls = [];
+   element.focus = (options) => {
+      element.focusCalls.push(options);
       document.activeElement = element;
    };
    return element;
@@ -650,6 +655,122 @@ test('Test_CreateTooltipController_TestTabFromClosedMarker_ExpectNativeTab', () 
 
       assert.equal(notPrevented, true);
       assert.equal(document.activeElement, markerEl);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestKeyboardSuspendedOption_ExpectPassedToGlobalListeners', () => {
+   const stubs = _stubTooltipDeps();
+   const isKeyboardSuspended = () => true;
+
+   try {
+      TooltipController.createTooltipController({
+         tooltipEl: document.createElement('div'),
+         isKeyboardSuspended,
+      });
+
+      assert.equal(stubs.getListenerOptions().isKeyboardSuspended, isKeyboardSuspended);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestMouseClickMarker_ExpectFocusWithoutRing', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'click', detail: 1 });
+
+      assert.equal(document.activeElement, tooltipEl);
+      assert.deepEqual(tooltipEl.focusCalls, [{ preventScroll: true, focusVisible: false }]);
+      assert.equal(tooltipEl.hasAttribute('data-pointer-opened'), true);
+
+      markerEl.dispatchEvent({ type: 'click', detail: 1 });
+      assert.equal(tooltipEl.hasAttribute('data-pointer-opened'), false);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestKeyboardOpenMarker_ExpectFocusRingKept', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+      markerEl.dispatchEvent({ type: 'click', detail: 0 });
+
+      assert.deepEqual(tooltipEl.focusCalls, [{ preventScroll: true }, { preventScroll: true }]);
+      assert.equal(tooltipEl.hasAttribute('data-pointer-opened'), false);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestSpeciesLinkActivation_ExpectPinPassedAsFocusFallback', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+   const clicks = [];
+
+   try {
+      const api = TooltipController.createTooltipController({
+         tooltipEl,
+         onAnimalCardClick: (item, context) => clicks.push([item, context]),
+      });
+      const markerEl = document.createElement('div');
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+      stubs.getListenerOptions().onAnimalCardClick(items[0]);
+
+      assert.deepEqual(clicks, [[items[0], { returnFocusFallback: markerEl }]]);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestKeyboardSuspended_ExpectFocusLeaveSuspended', async () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const outside = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+   let suspended = true;
+
+   try {
+      const api = TooltipController.createTooltipController({
+         tooltipEl,
+         isKeyboardSuspended: () => suspended,
+      });
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+      outside.focus();
+      tooltipEl.dispatchEvent({ type: 'focusout' });
+      await new Promise((resolve) => setTimeout(resolve, 5));
+
+      assert.deepEqual(api.getOpenItems(), items);
+
+      suspended = false;
+      tooltipEl.dispatchEvent({ type: 'focusout' });
+      await new Promise((resolve) => setTimeout(resolve, 5));
+
+      assert.deepEqual(api.getOpenItems(), []);
    } finally {
       stubs.restore();
    }

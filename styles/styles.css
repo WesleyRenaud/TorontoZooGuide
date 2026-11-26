@@ -1604,6 +1604,12 @@ nav ul li a[aria-current="page"]:hover {
    outline-offset: 1px;
 }
 
+/* Opened by a mouse click: no ring until the user presses a key in the box. */
+#tooltip[data-pointer-opened]:focus-visible,
+#tooltip[data-pointer-opened] :focus-visible {
+   outline: none;
+}
+
 /* ============================================================
    TOOLTIP CLOSE BUTTON
 ============================================================ */
@@ -1902,6 +1908,24 @@ nav ul li a[aria-current="page"]:hover {
 
 .species-close::before {
    content: none;
+}
+
+.species-overlay-card:focus,
+.species-overlay-card .animal-species-name:focus {
+   outline: none;
+}
+
+.species-overlay-card .species-close:focus-visible,
+.species-overlay-card .species-overlay-nav-btn:focus-visible,
+.species-overlay-card .animal-species-name:focus-visible,
+.species-overlay-card .species-overlay-scroll:focus-visible {
+   outline: 2px solid var(--color-warning);
+   outline-offset: 1px;
+}
+
+/* Opened by a mouse click: no ring until the user presses a key in the pop-up. */
+.species-overlay-card[data-pointer-opened] :focus-visible {
+   outline: none;
 }
 
 /* ============================================================

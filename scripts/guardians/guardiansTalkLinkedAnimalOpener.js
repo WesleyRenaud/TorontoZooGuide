@@ -9,7 +9,7 @@ export class GuardiansTalkLinkedAnimalOpener {
       )[0] ?? null;
    }
 
-   static async openGuardiansTalkLinkedAnimal(talk) {
+   static async openGuardiansTalkLinkedAnimal(talk, { returnFocusFallback = null } = {}) {
       const linkedAnimals = GuardiansTalkLinkedAnimalNormalizer.normalizeGuardiansTalkLinkedAnimals(
          talk.linked_animals
       );
@@ -22,7 +22,7 @@ export class GuardiansTalkLinkedAnimalOpener {
       const animal = await AnimalsClient.getAnimalInformation(linked);
 
       if (animal) {
-         SpeciesFragment.openAnimalSpeciesOverlay(animal, { linkedAnimals });
+         SpeciesFragment.openAnimalSpeciesOverlay(animal, { linkedAnimals, returnFocusFallback });
       }
    }
 }

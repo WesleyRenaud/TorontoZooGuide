@@ -31,16 +31,18 @@ export class MapRuntimeFactory {
    }
 
    static createAnimalCardClickHandler(speciesOverlay) {
-      return (item) => {
+      return (item, { returnFocusFallback = null } = {}) => {
          const itemType = String(item?.type || '');
 
          if (itemType === ItemType.ANIMAL) {
-            speciesOverlay.openFromAnimal(item);
+            speciesOverlay.openFromAnimal(item, { returnFocusFallback });
             return;
          }
 
          if (itemType === ItemType.GUARDIANS_TALK) {
-            void GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal(item);
+            void GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal(item, {
+               returnFocusFallback,
+            });
          }
       };
    }
@@ -52,6 +54,7 @@ export class MapRuntimeFactory {
       return TooltipController.createTooltipController({
          tooltipEl,
          onAnimalCardClick: MapRuntimeFactory.createAnimalCardClickHandler(speciesOverlay),
+         isKeyboardSuspended: () => Boolean(speciesOverlay?.isOpen?.()),
          ...MapRuntimeFactory.createMapBannerSet(),
       });
    }

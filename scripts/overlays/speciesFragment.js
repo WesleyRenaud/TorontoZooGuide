@@ -2,6 +2,7 @@ import { AnimalsClient } from '../api/animalsClient.js';
 import { GuardiansTalkLinkedAnimalNormalizer } from '../guardians/guardiansTalkLinkedAnimalNormalizer.js';
 import { AnimalIdentity } from '../itinerary/animalIdentity.js';
 import { SpeciesOverlayBuilder } from './speciesOverlayBuilder.js';
+import { SpeciesOverlayModal } from './speciesOverlayModal.js';
 import { Strings } from '../strings.js';
 
 export class SpeciesFragment {
@@ -21,9 +22,38 @@ export class SpeciesFragment {
          navigationToken: 0,
       };
 
-      function close() {
-         SpeciesOverlayBuilder.resolveOverlayElements().overlay?.classList.add('hidden');
+      const modal = SpeciesOverlayModal.createSpeciesOverlayModal({
+         getOverlay: () => SpeciesOverlayBuilder.resolveOverlayElements().overlay,
+         getDialog: () => SpeciesOverlayBuilder.resolveOverlayElements().card,
+      });
+
+      function isOpen() {
+         const { overlay } = SpeciesOverlayBuilder.resolveOverlayElements();
+
+         return Boolean(overlay) && !overlay.classList.contains('hidden');
       }
+
+      function close() {
+         const { overlay } = SpeciesOverlayBuilder.resolveOverlayElements();
+
+         modal.deactivate();
+         overlay?.classList.add('hidden');
+      }
+
+      function handleDocumentKeydown(event) {
+         modal.handleKeydown(event);
+
+         if (event.key !== 'Escape' || !isOpen()) {
+            return;
+         }
+
+         event.preventDefault();
+         event.stopPropagation();
+         close();
+      }
+
+      globalThis.document?.addEventListener?.('keydown', handleDocumentKeydown, true);
+      modal.install();
 
       function bindShell({ overlay, closeButton }) {
          if (boundOverlay !== overlay) {
@@ -49,7 +79,7 @@ export class SpeciesFragment {
          });
       }
 
-      function render(animal) {
+      function render(animal, { preferredFocusSelector = null } = {}) {
          const { overlay, content, closeButton } = SpeciesOverlayBuilder.resolveOverlayElements();
 
          if (!overlay || !content || !animal) {
@@ -68,6 +98,13 @@ export class SpeciesFragment {
             SpeciesOverlayBuilder.createOverlayScrollContent(animal)
          );
          overlay.classList.remove('hidden');
+
+         if (modal.isActive()) {
+            modal.activate();
+            modal.focusIfLost(
+               preferredFocusSelector ? content.querySelector(preferredFocusSelector) : null
+            );
+         }
       }
 
       async function navigate(delta) {
@@ -92,7 +129,11 @@ export class SpeciesFragment {
             }
 
             state.index = nextIndex;
-            render(animal);
+            render(animal, {
+               preferredFocusSelector: delta < 0
+                  ? '.species-overlay-nav-prev'
+                  : '.species-overlay-nav-next',
+            });
          }
          finally {
             if (token === state.navigationToken) {
@@ -114,9 +155,13 @@ export class SpeciesFragment {
          state.isNavigating = false;
          state.navigationToken += 1;
          render(animal);
+
+         if (isOpen()) {
+            modal.activate({ returnFocusFallback: options.returnFocusFallback ?? null });
+         }
       }
 
-      SpeciesFragment.speciesOverlayController = { openFromAnimal, close };
+      SpeciesFragment.speciesOverlayController = { openFromAnimal, close, isOpen };
       return SpeciesFragment.speciesOverlayController;
 
    }
