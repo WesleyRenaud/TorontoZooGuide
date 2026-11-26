@@ -69,3 +69,27 @@ test('Test_OpenGuardiansTalkLinkedAnimal_TestMissingLinked_ExpectNoOp', async ()
       SpeciesFragment.openAnimalSpeciesOverlay = originalOpen;
    }
 });
+
+
+test('Test_OpenGuardiansTalkLinkedAnimal_TestReturnFocusFallback_ExpectPassedThrough', async () => {
+   const originalGet = AnimalsClient.getAnimalInformation;
+   const originalOpen = SpeciesFragment.openAnimalSpeciesOverlay;
+   const opened = [];
+   const pin = { id: 'pin' };
+   AnimalsClient.getAnimalInformation = async (linked) => ({ species: linked.species });
+   SpeciesFragment.openAnimalSpeciesOverlay = (animal, options) => {
+      opened.push(options);
+   };
+
+   try {
+      await GuardiansTalkLinkedAnimalOpener.openGuardiansTalkLinkedAnimal(
+         { linked_animals: [{ species: 'African Lion', exhibit: 'African Savanna' }] },
+         { returnFocusFallback: pin }
+      );
+
+      assert.equal(opened[0].returnFocusFallback, pin);
+   } finally {
+      AnimalsClient.getAnimalInformation = originalGet;
+      SpeciesFragment.openAnimalSpeciesOverlay = originalOpen;
+   }
+});

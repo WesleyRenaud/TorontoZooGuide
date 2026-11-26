@@ -7,6 +7,7 @@ export class GlobalListener {
    step,
    getItemAtIndex,
    onAnimalCardClick,
+   isKeyboardSuspended = () => false,
 }) {
       let installed = false;
 
@@ -53,7 +54,7 @@ export class GlobalListener {
       }
 
       function handleDocumentKeydown(event) {
-         if (!isOpen()) {
+         if (!isOpen() || event.defaultPrevented || isKeyboardSuspended()) {
             return;
          }
 

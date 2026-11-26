@@ -347,3 +347,50 @@ test('Test_CreateTooltipFocusManager_TestFocusOutWhenClosedOrWindowBlurred_Expec
 
    assert.equal(leaves, 0);
 });
+
+
+test('Test_CreateTooltipFocusManager_TestPointerFocusInitial_ExpectNoFocusRing', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+
+   manager.focusInitial({ pointer: true });
+
+   assert.equal(document.activeElement, tree.firstLink);
+   assert.deepEqual(tree.firstLink.focusCalls, [{ preventScroll: true, focusVisible: false }]);
+   assert.equal(tree.tooltipEl.hasAttribute(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE), true);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestKeyboardFocusAfterPointer_ExpectRingRestored', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+
+   manager.focusInitial({ pointer: true });
+   manager.focusInitial();
+
+   assert.equal(tree.tooltipEl.hasAttribute(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE), false);
+   assert.deepEqual(tree.firstLink.focusCalls[1], { preventScroll: true });
+});
+
+
+test('Test_CreateTooltipFocusManager_TestKeydownInTooltip_ExpectPointerModeCleared', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+   manager.install();
+   manager.focusInitial({ pointer: true });
+
+   tree.tooltipEl.dispatchEvent({ type: 'keydown', key: 'ArrowRight' });
+
+   assert.equal(tree.tooltipEl.hasAttribute(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE), false);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestClearPointerOpened_ExpectAttributeRemoved', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+   manager.focusInitial({ pointer: true });
+
+   manager.clearPointerOpened();
+
+   assert.equal(tree.tooltipEl.hasAttribute(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE), false);
+});

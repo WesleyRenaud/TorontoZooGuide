@@ -15,6 +15,7 @@ test('Test_ResolveOverlayElements_TestMissing_ExpectNulls', () => {
 
    assert.deepEqual(parts, {
       overlay: null,
+      card: null,
       content: null,
       closeButton: null,
    });

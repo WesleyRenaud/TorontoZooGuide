@@ -17,7 +17,8 @@ export class TooltipController {
    restroomMessageBanner,
    giftShopClosedBanner,
    attractionClosedBanner,
-   drinkingFountainClosedBanner }) {
+   drinkingFountainClosedBanner,
+   isKeyboardSuspended }) {
       let openState = createEmptyOpenState();
 
       function createEmptyOpenState() {
@@ -76,7 +77,10 @@ export class TooltipController {
          close,
          step: (delta) => carousel.step(delta),
          getItemAtIndex: getOpenItem,
-         onAnimalCardClick,
+         onAnimalCardClick: (item) => onAnimalCardClick?.(item, {
+            returnFocusFallback: getOpenMarker(),
+         }),
+         isKeyboardSuspended,
       });
 
       const focusManager = TooltipFocusManager.createTooltipFocusManager({
@@ -84,6 +88,7 @@ export class TooltipController {
          getOpener: getOpenMarker,
          isOpen,
          onFocusLeave: () => close(),
+         isFocusLeaveSuspended: () => Boolean(isKeyboardSuspended?.()),
       });
 
       focusManager.install();
@@ -128,7 +133,7 @@ export class TooltipController {
          markerEl.addEventListener('click', (event) => {
             event.stopPropagation();
             hover?.hide?.();
-            toggle(markerEl, items, { moveFocus: true });
+            toggle(markerEl, items, { moveFocus: true, pointer: isPointerClick(event) });
          });
          markerEl.addEventListener('keydown', (event) => {
             if (isForwardTab(event) && isOpenFor(markerEl)) {
@@ -146,6 +151,10 @@ export class TooltipController {
             hover?.hide?.();
             toggle(markerEl, items, { moveFocus: true });
          });
+      }
+
+      function isPointerClick(event) {
+         return Number(event?.detail) > 0;
       }
 
       function isForwardTab(event) {
@@ -200,7 +209,7 @@ export class TooltipController {
          open(markerEl, items, opts);
       }
 
-      function open(markerEl, items, { moveFocus = false } = {}) {
+      function open(markerEl, items, { moveFocus = false, pointer = false } = {}) {
          if (!tooltipEl || !markerEl) {
             return;
          }
@@ -222,7 +231,7 @@ export class TooltipController {
          PositionFragment.positionTooltip(tooltipEl, markerEl);
 
          if (moveFocus) {
-            focusManager.focusInitial();
+            focusManager.focusInitial({ pointer });
          }
       }
 
@@ -235,6 +244,7 @@ export class TooltipController {
          const shouldRestoreFocus = focusManager.containsFocus();
 
          globalListeners.uninstall();
+         focusManager.clearPointerOpened();
          banners.hideAll();
          setMarkerExpanded(getOpenMarker(), false);
          restoreOpenMarkerVisual();

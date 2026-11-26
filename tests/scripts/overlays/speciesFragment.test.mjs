@@ -48,6 +48,50 @@ function _animalPayload({ species, exhibit, identification }) {
    };
 }
 
+function _captureCaptureKeydown() {
+   const captured = { handler: null, capture: null };
+   document.addEventListener = (type, handler, capture) => {
+      if (type === 'keydown') {
+         captured.handler = handler;
+         captured.capture = capture;
+      }
+   };
+   return captured;
+}
+
+function _keyEvent(key) {
+   return {
+      key,
+      prevented: false,
+      stopped: false,
+      preventDefault() { this.prevented = true; },
+      stopPropagation() { this.stopped = true; },
+   };
+}
+
+function _focusable(tagName = 'span') {
+   const element = createDomNode(tagName);
+   element.focusCalls = 0;
+   element.focus = () => {
+      element.focusCalls += 1;
+      document.activeElement = element;
+   };
+   return element;
+}
+
+function _trackAllFocus() {
+   const originalCreate = document.createElement;
+   document.createElement = (tagName) => {
+      const element = originalCreate(tagName);
+      element.focus = () => {
+         document.activeElement = element;
+      };
+      return element;
+   };
+}
+
+const LION = Object.freeze({ species: 'African Lion', exhibit: 'Africa Savanna' });
+
 installDomTestHooks({
    before: () => {
       SpeciesFragment.speciesOverlayController = null;
@@ -282,4 +326,180 @@ test('Test_InitSpeciesOverlay_TestCloseMissingRenderNavigateGuards_ExpectHandled
    } finally {
       AnimalsClient.getAnimalInformation = originalGet;
    }
+});
+
+test('Test_InitSpeciesOverlay_TestEscapeWhileOpen_ExpectClosedAndEventConsumed', () => {
+   const captured = _captureCaptureKeydown();
+   const overlay = document.getElementById('speciesOverlay');
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   controller.openFromAnimal({ ...LION });
+   const event = _keyEvent('Escape');
+
+   assert.equal(controller.isOpen(), true);
+   captured.handler(event);
+
+   assert.equal(captured.capture, true);
+   assert.equal(overlay.classList.contains('hidden'), true);
+   assert.equal(controller.isOpen(), false);
+   assert.equal(event.prevented, true);
+   assert.equal(event.stopped, true);
+});
+
+test('Test_InitSpeciesOverlay_TestEscapeWhileClosedOrOtherKey_ExpectIgnored', () => {
+   const captured = _captureCaptureKeydown();
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   const closedEscape = _keyEvent('Escape');
+   captured.handler(closedEscape);
+   controller.openFromAnimal({ ...LION });
+   const arrow = _keyEvent('ArrowRight');
+   captured.handler(arrow);
+
+   assert.equal(closedEscape.prevented, false);
+   assert.equal(closedEscape.stopped, false);
+   assert.equal(arrow.prevented, false);
+   assert.equal(arrow.stopped, false);
+   assert.equal(controller.isOpen(), true);
+});
+
+test('Test_InitSpeciesOverlay_TestCloseWithFocusLost_ExpectFocusReturnedToOpener', () => {
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   const opener = _focusable();
+   opener.focus();
+   controller.openFromAnimal({ ...LION });
+   controller.openFromAnimal({ ...LION });
+   document.activeElement = document.body;
+
+   controller.close();
+
+   assert.equal(document.activeElement, opener);
+   assert.equal(opener.focusCalls, 2);
+});
+
+test('Test_InitSpeciesOverlay_TestCloseWithFocusInsideOverlay_ExpectFocusReturnedToOpener', () => {
+   const overlay = document.getElementById('speciesOverlay');
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   const opener = _focusable();
+   const inside = _focusable('button');
+   overlay.appendChild(inside);
+   opener.focus();
+   controller.openFromAnimal({ ...LION });
+   inside.focus();
+
+   controller.close();
+
+   assert.equal(document.activeElement, opener);
+});
+
+test('Test_InitSpeciesOverlay_TestCloseWithFocusOnOpener_ExpectFocusUnchanged', () => {
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   const opener = _focusable();
+   const elsewhere = _focusable('button');
+   opener.focus();
+   controller.openFromAnimal({ ...LION });
+   elsewhere.focus();
+
+   controller.close();
+
+   assert.equal(document.activeElement, elsewhere);
+   assert.equal(opener.focusCalls, 1);
+});
+
+test('Test_InitSpeciesOverlay_TestCloseWithDisconnectedOpener_ExpectNoFocusCall', () => {
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   const opener = _focusable();
+   opener.focus();
+   controller.openFromAnimal({ ...LION });
+   opener.isConnected = false;
+   document.activeElement = document.body;
+
+   controller.close();
+   controller.close();
+
+   assert.equal(opener.focusCalls, 1);
+   assert.equal(document.activeElement, document.body);
+});
+
+test('Test_InitSpeciesOverlay_TestOpenWithoutFocusedElement_ExpectNoRestore', () => {
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   document.activeElement = document.body;
+   controller.openFromAnimal({ ...LION });
+
+   controller.close();
+
+   assert.equal(document.activeElement, document.body);
+});
+
+test('Test_OpenFromAnimal_TestOpen_ExpectModalDialogWithFocusOnTitle', () => {
+   _trackAllFocus();
+   const overlay = document.getElementById('speciesOverlay');
+   const card = overlay.querySelector('.species-overlay-card');
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   const opener = _focusable();
+   opener.focus();
+
+   controller.openFromAnimal({ ...LION });
+   const title = card.querySelector('.animal-species-name');
+
+   assert.equal(card.getAttribute('role'), 'dialog');
+   assert.equal(card.getAttribute('aria-modal'), 'true');
+   assert.equal(card.getAttribute('aria-labelledby'), title.id);
+   assert.equal(document.activeElement, title);
+
+   document.activeElement = overlay.querySelector('.species-close');
+   controller.close();
+   assert.equal(document.activeElement, opener);
+});
+
+test('Test_OpenFromAnimal_TestOpenerGone_ExpectFocusOnFallback', () => {
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   const opener = _focusable();
+   const pin = _focusable('div');
+   opener.focus();
+   controller.openFromAnimal({ ...LION }, { returnFocusFallback: pin });
+   opener.isConnected = false;
+   document.activeElement = document.body;
+
+   controller.close();
+
+   assert.equal(document.activeElement, pin);
+});
+
+test('Test_Navigate_TestFocusOnNextButton_ExpectFocusOnNewNextButton', async () => {
+   _trackAllFocus();
+   const content = document.getElementById('speciesOverlay')
+      ?.querySelector('.species-overlay-content');
+   const tamarin = { species: 'Golden Lion Tamarin', exhibit: 'Americas Pavilion' };
+   const sloth = { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' };
+   globalThis.fetch = createFetchMock({
+      '/get-animal-information': () => _animalPayload({ ...sloth, identification: 'Slow' }),
+   });
+
+   SpeciesFragment.openAnimalSpeciesOverlay({ ...tamarin }, { linkedAnimals: [tamarin, sloth] });
+   const firstNext = content.querySelector('.species-overlay-nav-next');
+   firstNext.focus();
+   firstNext.click();
+   await new Promise((resolve) => setTimeout(resolve, 0));
+   const secondNext = content.querySelector('.species-overlay-nav-next');
+
+   assert.notEqual(secondNext, firstNext);
+   assert.equal(document.activeElement, secondNext);
+});
+
+test('Test_InitSpeciesOverlay_TestKeydown_ExpectTabTrappedInsideDialog', () => {
+   _trackAllFocus();
+   const captured = _captureCaptureKeydown();
+   const overlay = document.getElementById('speciesOverlay');
+   const closeButton = overlay.querySelector('.species-close');
+   closeButton.focus = () => {
+      document.activeElement = closeButton;
+   };
+   const controller = SpeciesFragment.initSpeciesOverlay();
+   _focusable().focus();
+   controller.openFromAnimal({ ...LION });
+   const event = _keyEvent('Tab');
+
+   captured.handler(event);
+
+   assert.equal(event.prevented, true);
+   assert.equal(document.activeElement, closeButton);
 });

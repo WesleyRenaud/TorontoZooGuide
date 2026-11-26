@@ -311,3 +311,71 @@ test('Test_CreateTooltipGlobalListeners_TestEnterOutsideTooltip_ExpectIgnored', 
       captured.restore();
    }
 });
+
+
+test('Test_CreateTooltipGlobalListeners_TestKeyboardSuspended_ExpectKeysIgnored', () => {
+   const captured = _captureDocumentListeners();
+   const steps = [];
+   const clicked = [];
+   let closes = 0;
+
+   try {
+      const api = _createApi({
+         isKeyboardSuspended: () => true,
+         step: (delta) => steps.push(delta),
+         close: () => { closes += 1; },
+         getItemAtIndex: () => ({ type: 'animal' }),
+         onAnimalCardClick: (value) => clicked.push(value),
+      });
+      api.install();
+      const escapeEvent = { key: 'Escape', preventDefault() { this.defaultPrevented = true; } };
+      const arrowEvent = { key: 'ArrowRight', preventDefault() { this.defaultPrevented = true; } };
+      captured.listeners.keydown(escapeEvent);
+      captured.listeners.keydown(arrowEvent);
+      captured.listeners.keydown({ ...arrowEvent, key: 'ArrowLeft' });
+      captured.listeners.keydown(_speciesKeyEvent('Enter'));
+
+      assert.equal(closes, 0);
+      assert.deepEqual(steps, []);
+      assert.deepEqual(clicked, []);
+      assert.equal(escapeEvent.defaultPrevented, undefined);
+      assert.equal(arrowEvent.defaultPrevented, undefined);
+   } finally {
+      captured.restore();
+   }
+});
+
+
+test('Test_CreateTooltipGlobalListeners_TestDefaultPreventedEscape_ExpectNotClosed', () => {
+   const captured = _captureDocumentListeners();
+   let closes = 0;
+
+   try {
+      const api = _createApi({ close: () => { closes += 1; } });
+      api.install();
+      captured.listeners.keydown({ key: 'Escape', defaultPrevented: true, preventDefault() {} });
+
+      assert.equal(closes, 0);
+   } finally {
+      captured.restore();
+   }
+});
+
+
+test('Test_CreateTooltipGlobalListeners_TestKeyboardNotSuspended_ExpectEscapeCloses', () => {
+   const captured = _captureDocumentListeners();
+   let closes = 0;
+
+   try {
+      const api = _createApi({
+         isKeyboardSuspended: () => false,
+         close: () => { closes += 1; },
+      });
+      api.install();
+      captured.listeners.keydown({ key: 'Escape', preventDefault() {} });
+
+      assert.equal(closes, 1);
+   } finally {
+      captured.restore();
+   }
+});
