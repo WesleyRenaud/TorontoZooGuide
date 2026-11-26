@@ -327,6 +327,31 @@ test('Test_CreateTooltipController_TestClickableMarker_ExpectButtonSemantics', (
 });
 
 
+test('Test_CreateTooltipController_TestAnimalCluster_ExpectAccessibleNameStartsWithCount', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   const firstSpecies = 'Black Tree Monitor';
+   const items = [
+      { type: ItemType.ANIMAL, species: firstSpecies },
+      ...Array.from({ length: 36 }, (_, index) => ({
+         type: ItemType.ANIMAL,
+         species: `Other ${index}`,
+      })),
+   ];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      markerEl.dataset.hover = `${firstSpecies} ${Strings.format.moreCount(36)}`;
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+
+      assert.equal(markerEl.getAttribute('aria-label'), '37 species: Black Tree Monitor and 36 more');
+   } finally {
+      stubs.restore();
+   }
+});
+
+
 test('Test_CreateTooltipController_TestMarkerWithoutHoverText_ExpectFallbackLabel', () => {
    const stubs = _stubTooltipDeps();
    const tooltipEl = document.createElement('div');

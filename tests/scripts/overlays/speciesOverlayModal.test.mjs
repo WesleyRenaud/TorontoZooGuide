@@ -354,6 +354,45 @@ test('Test_CreateSpeciesOverlayModal_TestInstall_ExpectCaptureListeners', () => 
 });
 
 
+test('Test_CreateSpeciesOverlayModal_TestTitleWithoutScroll_ExpectNamedDialog', () => {
+   const overlay = createDomNode('div');
+   const card = createDomNode('div', 'species-overlay-card');
+   const title = _focusable('h2', 'animal-species-name');
+   title.removeAttribute('tabindex');
+   title.textContent = 'African Lion';
+   overlay.appendChild(card);
+   card.appendChild(title);
+   const modal = SpeciesOverlayModal.createSpeciesOverlayModal({
+      getOverlay: () => overlay,
+      getDialog: () => card,
+   });
+
+   modal.activate();
+
+   assert.equal(card.getAttribute('aria-labelledby'), title.id);
+   assert.equal(document.activeElement, title);
+   assert.equal(card.querySelector('.species-overlay-scroll'), null);
+});
+
+
+test('Test_CreateSpeciesOverlayModal_TestNoTitleWithControl_ExpectFirstControlFocused', () => {
+   const overlay = createDomNode('div');
+   const card = createDomNode('div', 'species-overlay-card');
+   const closeButton = _focusable('button', 'species-close');
+   overlay.appendChild(card);
+   card.appendChild(closeButton);
+   const modal = SpeciesOverlayModal.createSpeciesOverlayModal({
+      getOverlay: () => overlay,
+      getDialog: () => card,
+   });
+
+   modal.activate();
+
+   assert.equal(card.getAttribute('aria-labelledby'), null);
+   assert.equal(document.activeElement, closeButton);
+});
+
+
 test('Test_CreateSpeciesOverlayModal_TestMissingDialog_ExpectNoThrow', () => {
    const modal = SpeciesOverlayModal.createSpeciesOverlayModal({
       getOverlay: () => null,
