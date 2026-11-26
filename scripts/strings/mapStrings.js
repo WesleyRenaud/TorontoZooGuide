@@ -115,5 +115,9 @@ export class MapStrings {
       startTime: value => `Start Time: ${value}`,
       times: value => `Times: ${value}`,
       menu: 'MENU',
+      detailsAria: label => `${label} details`,
+      closeDetailsAria: 'Close details',
+      previousCardAria: 'Previous item',
+      nextCardAria: 'Next item',
    };
 }

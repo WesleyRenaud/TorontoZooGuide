@@ -127,6 +127,14 @@ function _createHoverRecorder() {
 }
 
 
+function _trackFocus(element) {
+   element.focus = () => {
+      document.activeElement = element;
+   };
+   return element;
+}
+
+
 test('Test_CreateTooltipController_TestOpen_ExpectVisible', () => {
    const stubs = _stubTooltipDeps({ renderResult: true });
    const tooltipEl = document.createElement('div');
@@ -478,6 +486,170 @@ test('Test_CreateTooltipController_TestSyncMarkerGuards_ExpectNoop', () => {
       onIndexChange(Position.FIRST);
 
       assert.equal(stubs.animalIconCalls.length, Position.FIRST);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestClickableMarker_ExpectCollapsedDisclosureState', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = document.createElement('div');
+   tooltipEl.id = 'tooltip';
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+
+      assert.equal(markerEl.getAttribute('aria-expanded'), 'false');
+      assert.equal(markerEl.getAttribute('aria-controls'), 'tooltip');
+      assert.equal(tooltipEl.getAttribute('role'), 'dialog');
+      assert.equal(tooltipEl.getAttribute('aria-modal'), null);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestMarkerEnterKey_ExpectFocusMovedAndNamed', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      markerEl.dataset.hover = 'African Lion';
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.focus();
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+
+      assert.equal(document.activeElement, tooltipEl);
+      assert.equal(markerEl.getAttribute('aria-expanded'), 'true');
+      assert.equal(tooltipEl.getAttribute('aria-label'), Strings.tooltips.detailsAria('African Lion'));
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestMarkerClick_ExpectFocusMoved', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.click();
+
+      assert.equal(document.activeElement, tooltipEl);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestProgrammaticOpen_ExpectFocusUnchanged', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const searchBox = _trackFocus(document.createElement('input'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = document.createElement('div');
+      searchBox.focus();
+      api.open(markerEl, items);
+
+      assert.equal(document.activeElement, searchBox);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestCloseWithFocusInside_ExpectFocusReturnedToMarker', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+      stubs.getCloseFn()();
+
+      assert.equal(document.activeElement, markerEl);
+      assert.equal(markerEl.getAttribute('aria-expanded'), 'false');
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestCloseWithFocusOutside_ExpectFocusUnchanged', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const otherEl = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+      otherEl.focus();
+      stubs.getCloseFn()();
+
+      assert.equal(document.activeElement, otherEl);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestTabFromOpenMarker_ExpectFocusIntoTooltip', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   tooltipEl.style.display = 'none';
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      api.open(markerEl, items);
+      markerEl.focus();
+      const notPrevented = markerEl.dispatchEvent({ type: 'keydown', key: 'Tab' });
+
+      assert.equal(notPrevented, false);
+      assert.equal(document.activeElement, tooltipEl);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestTabFromClosedMarker_ExpectNativeTab', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   tooltipEl.style.display = 'none';
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.focus();
+      const notPrevented = markerEl.dispatchEvent({ type: 'keydown', key: 'Tab' });
+
+      assert.equal(notPrevented, true);
+      assert.equal(document.activeElement, markerEl);
    } finally {
       stubs.restore();
    }

@@ -23,6 +23,37 @@ function _createApi(overrides = {}) {
 }
 
 
+function _captureDocumentListeners() {
+   const listeners = { click: null, keydown: null };
+   const originalAdd = document.addEventListener;
+   document.addEventListener = (type, handler) => {
+      listeners[type] = handler;
+   };
+
+   return {
+      listeners,
+      restore() {
+         document.addEventListener = originalAdd;
+      },
+   };
+}
+
+
+function _speciesKeyEvent(key, { inTooltip = true } = {}) {
+   const speciesLink = { dataset: { index: '0' }, inTooltip };
+
+   return {
+      key,
+      target: {
+         closest: (selector) => (selector === '.species-link' ? speciesLink : null),
+      },
+      defaultPrevented: false,
+      preventDefault() { this.defaultPrevented = true; },
+      stopPropagation() {},
+   };
+}
+
+
 test('Test_CreateTooltipGlobalListeners_TestInstall_ExpectHandlers', () => {
    const listeners = { click: null, keydown: null };
    const originalAdd = document.addEventListener;
@@ -231,5 +262,52 @@ test('Test_CreateTooltipGlobalListeners_TestClosedState_ExpectNoClose', () => {
       assert.deepEqual(steps, []);
    } finally {
       document.addEventListener = originalAdd;
+   }
+});
+
+
+test('Test_CreateTooltipGlobalListeners_TestEnterOnSpeciesLink_ExpectActivated', () => {
+   const captured = _captureDocumentListeners();
+   const item = { type: 'animal', species: 'African Lion' };
+   const clicked = [];
+
+   try {
+      const api = _createApi({
+         getItemAtIndex: () => item,
+         onAnimalCardClick: (value) => clicked.push(value),
+      });
+      api.install();
+      const enterEvent = _speciesKeyEvent('Enter');
+      captured.listeners.keydown(enterEvent);
+      captured.listeners.keydown(_speciesKeyEvent(' '));
+
+      assert.equal(enterEvent.defaultPrevented, true);
+      assert.deepEqual(clicked, [item, item]);
+   } finally {
+      captured.restore();
+   }
+});
+
+
+test('Test_CreateTooltipGlobalListeners_TestEnterOutsideTooltip_ExpectIgnored', () => {
+   const captured = _captureDocumentListeners();
+   const clicked = [];
+   let closes = 0;
+
+   try {
+      const api = _createApi({
+         getItemAtIndex: () => ({ type: 'animal' }),
+         onAnimalCardClick: (value) => clicked.push(value),
+         close: () => { closes += 1; },
+      });
+      api.install();
+      const event = _speciesKeyEvent('Enter', { inTooltip: false });
+      captured.listeners.keydown(event);
+
+      assert.equal(event.defaultPrevented, false);
+      assert.deepEqual(clicked, []);
+      assert.equal(closes, 0);
+   } finally {
+      captured.restore();
    }
 });

@@ -1591,6 +1591,44 @@ nav ul li a[aria-current="page"]:hover {
    background-color: var(--color-brand-primary);
 }
 
+#tooltip:focus {
+   outline: none;
+}
+
+#tooltip:focus-visible,
+#tooltip .tooltip-arrow:focus-visible,
+#tooltip .tooltip-close:focus-visible,
+#tooltip .species-link:focus-visible,
+#tooltip .tooltip-link:focus-visible {
+   outline: 2px solid var(--color-warning);
+   outline-offset: 1px;
+}
+
+/* ============================================================
+   TOOLTIP CLOSE BUTTON
+============================================================ */
+
+#tooltip .tooltip-close {
+   position: absolute;
+   top: 12px;
+   right: 12px;
+   z-index: 1;
+   margin: 0;
+   border: 0;
+   border-radius: 2.5px;
+   padding: 1px 5px;
+   background-color: var(--color-brand-link);
+   color: var(--color-white);
+   font: inherit;
+   font-weight: bold;
+   line-height: 1.2;
+   cursor: pointer;
+}
+
+#tooltip .tooltip-close:hover {
+   background-color: var(--color-brand-primary-dark);
+}
+
 /* ============================================================
    SPECIES OVERLAY
 ============================================================ */
