@@ -5,6 +5,7 @@ export class CarouselView {
    tooltipEl,
    getRendererForItem,
    onIndexChange,
+   onClose,
 }) {
       let carouselEl = null;
       let itemsForCarousel = [];
@@ -35,13 +36,38 @@ export class CarouselView {
          renderedItemIndices = [];
       }
 
-      function createArrow(symbol, onClick) {
+      function createArrow(symbol, label, onClick) {
          const el = document.createElement('div');
          el.className = 'tooltip-arrow';
          el.textContent = symbol;
+         el.setAttribute('role', 'button');
+         el.setAttribute('tabindex', '0');
+         el.setAttribute('aria-label', label);
          el.addEventListener('click', (e) => {
             e.stopPropagation();
             onClick();
+         });
+         el.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' && e.key !== ' ') {
+               return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+            onClick();
+         });
+         return el;
+      }
+
+      function createCloseButton() {
+         const el = document.createElement('button');
+         el.type = 'button';
+         el.className = 'tooltip-close';
+         el.textContent = Strings.common.closeSymbol;
+         el.setAttribute('aria-label', Strings.tooltips.closeDetailsAria);
+         el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onClose?.();
          });
          return el;
       }
@@ -50,10 +76,18 @@ export class CarouselView {
          const nav = document.createElement('div');
          nav.className = 'tooltip-nav';
 
-         const left = createArrow(Strings.common.previousSymbol, () => step(-1));
+         const left = createArrow(
+            Strings.common.previousSymbol,
+            Strings.tooltips.previousCardAria,
+            () => step(-1)
+         );
          left.classList.add('tooltip-prev', 'visible');
 
-         const right = createArrow(Strings.common.nextSymbol, () => step(+1));
+         const right = createArrow(
+            Strings.common.nextSymbol,
+            Strings.tooltips.nextCardAria,
+            () => step(+1)
+         );
          right.classList.add('tooltip-next', 'visible');
 
          nav.appendChild(left);
@@ -108,6 +142,10 @@ export class CarouselView {
             tooltipEl.appendChild(createNav());
          } else {
             tooltipEl.classList.add('no-arrows');
+         }
+
+         if (onClose) {
+            tooltipEl.appendChild(createCloseButton());
          }
 
          return true;

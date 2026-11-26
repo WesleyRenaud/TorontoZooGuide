@@ -5,6 +5,7 @@ import { MarkerHelper } from '../markers/markerHelper.js';
 import { PositionFragment } from './positionFragment.js';
 import { ItemType } from '../shared/enums/itemType.js';
 import { Strings } from '../strings.js';
+import { TooltipFocusManager } from './tooltipFocusManager.js';
 import { TooltipRenderer } from './tooltipRenderer.js';
 
 export class TooltipController {
@@ -64,7 +65,9 @@ export class TooltipController {
          onIndexChange: (index) => {
             syncMarkerToIndex(index);
             banners.sync(getOpenItem(index));
+            focusManager.recoverFocus();
          },
+         onClose: () => close(),
       });
 
       const globalListeners = GlobalListener.createTooltipGlobalListeners({
@@ -75,6 +78,15 @@ export class TooltipController {
          getItemAtIndex: getOpenItem,
          onAnimalCardClick,
       });
+
+      const focusManager = TooltipFocusManager.createTooltipFocusManager({
+         tooltipEl,
+         getOpener: getOpenMarker,
+         isOpen,
+         onFocusLeave: () => close(),
+      });
+
+      focusManager.install();
 
       function isOpen() {
          return Boolean(getOpenMarker()) || isTooltipVisible();
@@ -106,14 +118,25 @@ export class TooltipController {
 
          markerEl.setAttribute('role', 'button');
          markerEl.setAttribute('tabindex', '0');
-         markerEl.setAttribute('aria-label', markerEl.dataset.hover || Strings.map.markerAria);
+         markerEl.setAttribute('aria-label', getMarkerLabel(markerEl));
+         markerEl.setAttribute('aria-expanded', 'false');
+
+         if (tooltipEl?.id) {
+            markerEl.setAttribute('aria-controls', tooltipEl.id);
+         }
 
          markerEl.addEventListener('click', (event) => {
             event.stopPropagation();
             hover?.hide?.();
-            toggle(markerEl, items);
+            toggle(markerEl, items, { moveFocus: true });
          });
          markerEl.addEventListener('keydown', (event) => {
+            if (isForwardTab(event) && isOpenFor(markerEl)) {
+               event.preventDefault();
+               focusManager.focusInitial();
+               return;
+            }
+
             if (event.key !== 'Enter' && event.key !== ' ') {
                return;
             }
@@ -121,8 +144,32 @@ export class TooltipController {
             event.preventDefault();
             event.stopPropagation();
             hover?.hide?.();
-            toggle(markerEl, items);
+            toggle(markerEl, items, { moveFocus: true });
          });
+      }
+
+      function isForwardTab(event) {
+         return event.key === 'Tab'
+            && !event.shiftKey
+            && !event.altKey
+            && !event.ctrlKey
+            && !event.metaKey;
+      }
+
+      function isOpenFor(markerEl) {
+         return isTooltipVisible() && getOpenMarker() === markerEl;
+      }
+
+      function getMarkerLabel(markerEl) {
+         return markerEl?.dataset?.hover || Strings.map.markerAria;
+      }
+
+      function setMarkerExpanded(markerEl, isExpanded) {
+         if (markerEl?.getAttribute?.('aria-expanded') == null) {
+            return;
+         }
+
+         markerEl.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
       }
 
       function addMarkerHoverHandlers(markerEl, hover) {
@@ -144,16 +191,16 @@ export class TooltipController {
          addMarkerHoverHandlers(markerEl, hover);
       }
 
-      function toggle(markerEl, items) {
+      function toggle(markerEl, items, opts = {}) {
          if (isOpen() && getOpenMarker() === markerEl) {
             close();
             return;
          }
 
-         open(markerEl, items);
+         open(markerEl, items, opts);
       }
 
-      function open(markerEl, items) {
+      function open(markerEl, items, { moveFocus = false } = {}) {
          if (!tooltipEl || !markerEl) {
             return;
          }
@@ -167,10 +214,16 @@ export class TooltipController {
             return;
          }
 
+         tooltipEl.setAttribute('aria-label', Strings.tooltips.detailsAria(getMarkerLabel(markerEl)));
          setTooltipVisibility(true);
+         setMarkerExpanded(markerEl, true);
          globalListeners.install();
          carousel.showFirst();
          PositionFragment.positionTooltip(tooltipEl, markerEl);
+
+         if (moveFocus) {
+            focusManager.focusInitial();
+         }
       }
 
       function close() {
@@ -179,11 +232,19 @@ export class TooltipController {
             return;
          }
 
+         const shouldRestoreFocus = focusManager.containsFocus();
+
          globalListeners.uninstall();
          banners.hideAll();
+         setMarkerExpanded(getOpenMarker(), false);
          restoreOpenMarkerVisual();
          setTooltipVisibility(false);
          carousel.clear();
+
+         if (shouldRestoreFocus) {
+            focusManager.restoreFocusToOpener();
+         }
+
          resetOpenState();
       }
 

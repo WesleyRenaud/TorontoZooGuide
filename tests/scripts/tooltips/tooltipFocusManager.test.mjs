@@ -1,0 +1,349 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import { TooltipFocusManager } from '../../../scripts/tooltips/tooltipFocusManager.js';
+import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
+
+installDomTestHooks();
+
+
+function _trackFocus(element) {
+   element.focusCalls = [];
+   element.focus = (options) => {
+      element.focusCalls.push(options);
+      document.activeElement = element;
+   };
+   return element;
+}
+
+
+function _createFocusable(tagName, className = '', { tabindex = '0' } = {}) {
+   const element = _trackFocus(document.createElement(tagName));
+
+   if (className) {
+      element.className = className;
+   }
+
+   if (tabindex != null && tagName !== 'button') {
+      element.setAttribute('tabindex', tabindex);
+   }
+
+   return element;
+}
+
+
+function _createTooltipTree() {
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const content = document.createElement('div');
+   const firstCard = document.createElement('div');
+   const secondCard = document.createElement('div');
+   const firstLink = _createFocusable('span', 'species-link');
+   const hiddenLink = _createFocusable('span', 'species-link');
+   const prevArrow = _createFocusable('div', 'tooltip-arrow');
+   const closeButton = _createFocusable('button', 'tooltip-close');
+
+   secondCard.style.display = 'none';
+   firstCard.appendChild(firstLink);
+   secondCard.appendChild(hiddenLink);
+   content.appendChild(firstCard);
+   content.appendChild(secondCard);
+   tooltipEl.appendChild(content);
+   tooltipEl.appendChild(prevArrow);
+   tooltipEl.appendChild(closeButton);
+
+   return {
+      tooltipEl,
+      firstCard,
+      secondCard,
+      firstLink,
+      hiddenLink,
+      prevArrow,
+      closeButton,
+   };
+}
+
+
+function _createManager(tooltipEl, overrides = {}) {
+   const opener = _createFocusable('div', 'marker');
+
+   const manager = TooltipFocusManager.createTooltipFocusManager({
+      tooltipEl,
+      getOpener: () => opener,
+      isOpen: () => true,
+      onFocusLeave: () => {},
+      ...overrides,
+   });
+
+   return { manager, opener };
+}
+
+
+function _tabEvent({ shiftKey = false } = {}) {
+   return {
+      key: 'Tab',
+      shiftKey,
+      defaultPrevented: false,
+      preventDefault() { this.defaultPrevented = true; },
+   };
+}
+
+
+test('Test_CollectFocusableElements_TestHiddenCard_ExpectVisibleControlsInOrder', () => {
+   const tree = _createTooltipTree();
+
+   const focusable = TooltipFocusManager.collectFocusableElements(tree.tooltipEl);
+
+   assert.deepEqual(focusable, [tree.firstLink, tree.prevArrow, tree.closeButton]);
+});
+
+
+test('Test_IsFocusableElement_TestNegativeTabindex_ExpectFalse', () => {
+   const element = _createFocusable('span', '', { tabindex: '-1' });
+
+   assert.equal(TooltipFocusManager.isFocusableElement(element), false);
+});
+
+
+test('Test_IsFocusableElement_TestAnchorWithHref_ExpectTrue', () => {
+   const element = _createFocusable('a', 'tooltip-link', { tabindex: null });
+   element.setAttribute('href', 'https://example.test');
+
+   assert.equal(TooltipFocusManager.isFocusableElement(element), true);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestInstall_ExpectNonModalDialog', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+
+   manager.install();
+   manager.install();
+
+   assert.equal(tree.tooltipEl.getAttribute('role'), 'dialog');
+   assert.equal(tree.tooltipEl.getAttribute('tabindex'), '-1');
+   assert.equal(tree.tooltipEl.getAttribute('aria-modal'), null);
+   assert.ok(tree.tooltipEl.listeners.keydown);
+   assert.ok(tree.tooltipEl.listeners.focusout);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusInitial_ExpectFirstCardLink', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+
+   manager.focusInitial();
+
+   assert.equal(document.activeElement, tree.firstLink);
+   assert.deepEqual(tree.firstLink.focusCalls, [{ preventScroll: true }]);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusInitialWithoutLinks_ExpectTooltip', () => {
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const { manager } = _createManager(tooltipEl);
+
+   manager.focusInitial();
+
+   assert.equal(document.activeElement, tooltipEl);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusInitialOnlyControls_ExpectFirstControl', () => {
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const closeButton = _createFocusable('button', 'tooltip-close');
+   tooltipEl.appendChild(closeButton);
+   const { manager } = _createManager(tooltipEl);
+
+   manager.focusInitial();
+
+   assert.equal(document.activeElement, closeButton);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestRecoverFocusFromHiddenCard_ExpectVisibleLink', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+   document.activeElement = tree.hiddenLink;
+
+   manager.recoverFocus();
+
+   assert.equal(document.activeElement, tree.firstLink);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestRecoverFocusOnVisibleControl_ExpectUnchanged', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+   document.activeElement = tree.prevArrow;
+
+   manager.recoverFocus();
+
+   assert.equal(document.activeElement, tree.prevArrow);
+   assert.deepEqual(tree.firstLink.focusCalls, []);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestRecoverFocusOutside_ExpectUnchanged', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+   const outside = _createFocusable('button');
+   document.activeElement = outside;
+
+   manager.recoverFocus();
+
+   assert.equal(document.activeElement, outside);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestContainsFocus_ExpectTooltipDescendantsOnly', () => {
+   const tree = _createTooltipTree();
+   const { manager, opener } = _createManager(tree.tooltipEl);
+
+   document.activeElement = tree.firstLink;
+   assert.equal(manager.containsFocus(), true);
+
+   document.activeElement = opener;
+   assert.equal(manager.containsFocus(), false);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestShiftTabOnFirst_ExpectOpenerFocused', () => {
+   const tree = _createTooltipTree();
+   const { manager, opener } = _createManager(tree.tooltipEl);
+   document.activeElement = tree.firstLink;
+   const event = _tabEvent({ shiftKey: true });
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, true);
+   assert.equal(document.activeElement, opener);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestTabOnLast_ExpectOpenerThenNativeTab', () => {
+   const tree = _createTooltipTree();
+   const { manager, opener } = _createManager(tree.tooltipEl);
+   document.activeElement = tree.closeButton;
+   const event = _tabEvent();
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, false);
+   assert.equal(document.activeElement, opener);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestTabInMiddle_ExpectNativeTab', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+   document.activeElement = tree.firstLink;
+   const event = _tabEvent();
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, false);
+   assert.equal(document.activeElement, tree.firstLink);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestRestoreFocus_ExpectOpenerFocused', () => {
+   const tree = _createTooltipTree();
+   const { manager, opener } = _createManager(tree.tooltipEl);
+   document.activeElement = tree.firstLink;
+
+   manager.restoreFocusToOpener();
+
+   assert.equal(document.activeElement, opener);
+   assert.deepEqual(opener.focusCalls, [{ preventScroll: true }]);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusMovesElsewhere_ExpectFocusLeave', async () => {
+   const tree = _createTooltipTree();
+   let leaves = 0;
+   const { manager } = _createManager(tree.tooltipEl, { onFocusLeave: () => { leaves += 1; } });
+   const outside = _createFocusable('button');
+
+   document.activeElement = outside;
+   manager.handleFocusOut();
+   await new Promise((resolve) => setTimeout(resolve, 5));
+
+   assert.equal(leaves, 1);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusMovesToOpenerOrInside_ExpectStaysOpen', async () => {
+   const tree = _createTooltipTree();
+   let leaves = 0;
+   const { manager, opener } = _createManager(tree.tooltipEl, { onFocusLeave: () => { leaves += 1; } });
+
+   document.activeElement = opener;
+   manager.handleFocusOut();
+   await new Promise((resolve) => setTimeout(resolve, 5));
+   document.activeElement = tree.closeButton;
+   manager.handleFocusOut();
+   await new Promise((resolve) => setTimeout(resolve, 5));
+   document.activeElement = document.body;
+   manager.handleFocusOut();
+   await new Promise((resolve) => setTimeout(resolve, 5));
+
+   assert.equal(leaves, 0);
+});
+
+
+test('Test_IsFocusableElement_TestDisabledOrMissing_ExpectFalse', () => {
+   const button = _createFocusable('button');
+   button.disabled = true;
+
+   assert.equal(TooltipFocusManager.isFocusableElement(button), false);
+   assert.equal(TooltipFocusManager.isFocusableElement(null), false);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestNonTabOrModifiedKey_ExpectIgnored', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+   document.activeElement = tree.firstLink;
+   const enterEvent = { ..._tabEvent({ shiftKey: true }), key: 'Enter' };
+   const ctrlTabEvent = { ..._tabEvent({ shiftKey: true }), ctrlKey: true };
+
+   manager.handleTab(enterEvent);
+   manager.handleTab(ctrlTabEvent);
+
+   assert.equal(enterEvent.defaultPrevented, false);
+   assert.equal(ctrlTabEvent.defaultPrevented, false);
+   assert.equal(document.activeElement, tree.firstLink);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestTabWithoutOpener_ExpectIgnored', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl, { getOpener: () => null });
+   document.activeElement = tree.firstLink;
+   const event = _tabEvent({ shiftKey: true });
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, false);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusOutWhenClosedOrWindowBlurred_ExpectNoFocusLeave', async () => {
+   const tree = _createTooltipTree();
+   let leaves = 0;
+   let open = false;
+   const { manager } = _createManager(tree.tooltipEl, {
+      isOpen: () => open,
+      onFocusLeave: () => { leaves += 1; },
+   });
+   document.activeElement = _createFocusable('button');
+
+   manager.handleFocusOut();
+   await new Promise((resolve) => setTimeout(resolve, 5));
+   open = true;
+   document.hasFocus = () => false;
+   manager.handleFocusOut();
+   await new Promise((resolve) => setTimeout(resolve, 5));
+
+   assert.equal(leaves, 0);
+});

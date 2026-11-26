@@ -57,6 +57,17 @@ export class GlobalListener {
             return;
          }
 
+         if (event.key === 'Enter' || event.key === ' ') {
+            const speciesLink = getClosest(event.target, '.species-link');
+
+            if (speciesLink && (tooltipEl?.contains?.(speciesLink) ?? false)) {
+               event.preventDefault();
+               handleSpeciesLinkClick(speciesLink, event);
+            }
+
+            return;
+         }
+
          if (event.key === 'Escape') {
             event.preventDefault();
             close();

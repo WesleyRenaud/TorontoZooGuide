@@ -138,3 +138,53 @@ test('Test_CreateTooltipCarouselView_TestNonArrayItems_ExpectCleared', () => {
    assert.equal(rendered, false);
    assert.equal(tooltipEl.children.length, Position.FIRST);
 });
+
+
+test('Test_CreateTooltipCarouselView_TestOnClose_ExpectCloseButton', () => {
+   const tooltipEl = document.createElement('div');
+   let closes = 0;
+   const view = _createView(tooltipEl, { onClose: () => { closes += 1; } });
+
+   view.render([{ name: 'African Lion' }]);
+   const closeButton = tooltipEl.querySelector('.tooltip-close');
+   closeButton.click();
+
+   assert.equal(String(closeButton.tagName).toLowerCase(), 'button');
+   assert.equal(closeButton.type, 'button');
+   assert.equal(closeButton.textContent, Strings.common.closeSymbol);
+   assert.equal(closeButton.getAttribute('aria-label'), Strings.tooltips.closeDetailsAria);
+   assert.equal(closes, 1);
+});
+
+
+test('Test_CreateTooltipCarouselView_TestWithoutOnClose_ExpectNoCloseButton', () => {
+   const tooltipEl = document.createElement('div');
+   const view = _createView(tooltipEl);
+
+   view.render([{ name: 'African Lion' }]);
+
+   assert.equal(tooltipEl.querySelector('.tooltip-close'), null);
+});
+
+
+test('Test_CreateTooltipCarouselView_TestArrows_ExpectKeyboardOperableButtons', () => {
+   const tooltipEl = document.createElement('div');
+   const indices = [];
+   const view = _createView(tooltipEl, { onIndexChange: (index) => indices.push(index) });
+
+   view.render([{ name: 'African Lion' }, { name: 'Amur Tiger' }]);
+   view.showFirst();
+   const prev = tooltipEl.querySelector('.tooltip-prev');
+   const next = tooltipEl.querySelector('.tooltip-next');
+   const enterNotPrevented = next.dispatchEvent({ type: 'keydown', key: 'Enter' });
+   next.dispatchEvent({ type: 'keydown', key: ' ' });
+   const otherNotPrevented = prev.dispatchEvent({ type: 'keydown', key: 'a' });
+
+   assert.equal(prev.getAttribute('role'), 'button');
+   assert.equal(prev.getAttribute('tabindex'), '0');
+   assert.equal(prev.getAttribute('aria-label'), Strings.tooltips.previousCardAria);
+   assert.equal(next.getAttribute('aria-label'), Strings.tooltips.nextCardAria);
+   assert.equal(enterNotPrevented, false);
+   assert.equal(otherNotPrevented, true);
+   assert.deepEqual(indices, [0, 1, 0]);
+});
