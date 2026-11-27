@@ -134,6 +134,20 @@
    --shadow-lg: 0 2px 5px #00000047;
    --shadow-xl: 0 3px 7px #00000059;
 
+   /* ── Focus ring (keyboard :focus-visible) ──
+      A single solid ring in the site's primary text color. It meets
+      3:1 contrast on green buttons, cream and panel surfaces, and the
+      green tooltip and species pop-up backgrounds (WCAG 1.4.11). */
+   --focus-ring-color: var(--color-text-primary);
+   --focus-ring-width: 3px;
+   --focus-ring-offset: 2px;
+   /* Space a clipping container needs inside its overflow edge so the
+      3px ring at 2px offset, plus 1px for subpixels and a slight
+      translateY on some buttons, can show on all four sides. */
+   --focus-ring-clearance: calc(
+      var(--focus-ring-width) + var(--focus-ring-offset) + 1px
+   );
+
    /* ── Explore controls (dropdown + search) ── */
    --explore-control-font: 9.6px;
    --explore-control-weight: var(--font-weight-bold);
