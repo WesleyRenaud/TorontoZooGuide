@@ -103,3 +103,34 @@ test('Test_CreateSingleMessageBanner_TestCloseAndHide_ExpectHidden', () => {
 
    assert.equal(el.style.display, 'none');
 });
+
+
+test('Test_CreateMessageBanner_TestFocusableElements_ExpectCloseButtonOnlyWhileShown', () => {
+   const banner = MessageFragment.createSingleMessageBanner((item) => item.closed_message);
+
+   assert.deepEqual(banner.getFocusableElements(), []);
+
+   banner.sync({ closed_message: 'Closed today' });
+   const closeButton = document.body.children.at(Position.LAST).querySelector('.off-display-closed-close');
+
+   assert.deepEqual(banner.getFocusableElements(), [closeButton]);
+
+   banner.hide();
+
+   assert.deepEqual(banner.getFocusableElements(), []);
+});
+
+
+test('Test_CreateMessageBanner_TestClose_ExpectHiddenAndDismissHandlerCalled', () => {
+   const banner = MessageFragment.createSingleMessageBanner((item) => item.closed_message);
+   let dismissals = 0;
+   banner.setOnDismiss(() => { dismissals += 1; });
+   banner.sync({ closed_message: 'Closed today' });
+   const el = document.body.children.at(Position.LAST);
+   const closeButton = el.querySelector('.off-display-closed-close');
+
+   closeButton.listeners.click({ stopPropagation() {} });
+
+   assert.equal(el.style.display, 'none');
+   assert.equal(dismissals, Position.SECOND);
+});

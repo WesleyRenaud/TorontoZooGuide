@@ -15,6 +15,13 @@ function _createBanner() {
       sync(item) {
          this.syncs.push(item);
       },
+      focusables: [],
+      getFocusableElements() {
+         return this.focusables;
+      },
+      setOnDismiss(handler) {
+         this.onDismiss = handler;
+      },
    };
 }
 
@@ -87,4 +94,40 @@ test('Test_CreateTooltipBannerSync_TestUnknown_ExpectNoAttractionSync', () => {
    syncer.sync({ type: 'unknown' });
 
    assert.equal(attraction.syncs.length, 0);
+});
+
+
+test('Test_CreateTooltipBannerSync_TestOnDismiss_ExpectPassedToEveryBanner', () => {
+   const animal = _createBanner();
+   const restaurant = _createBanner();
+   const onDismiss = () => {};
+
+   BannerSynchronizer.createTooltipBannerSync({
+      offDisplayBanner: animal,
+      restaurantClosedBanner: restaurant,
+      onDismiss,
+   });
+
+   assert.equal(animal.onDismiss, onDismiss);
+   assert.equal(restaurant.onDismiss, onDismiss);
+});
+
+
+test('Test_CreateTooltipBannerSync_TestFocusableElements_ExpectShownBannerOnly', () => {
+   const animal = _createBanner();
+   const restaurant = _createBanner();
+   const closeButton = {};
+   restaurant.focusables = [closeButton];
+   const syncer = BannerSynchronizer.createTooltipBannerSync({
+      offDisplayBanner: animal,
+      restaurantClosedBanner: restaurant,
+   });
+
+   assert.deepEqual(syncer.getFocusableElements(), []);
+
+   syncer.sync({ type: 'restaurant' });
+   assert.deepEqual(syncer.getFocusableElements(), [closeButton]);
+
+   syncer.hideAll();
+   assert.deepEqual(syncer.getFocusableElements(), []);
 });

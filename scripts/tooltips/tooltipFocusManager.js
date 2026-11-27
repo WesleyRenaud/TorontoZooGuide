@@ -68,6 +68,7 @@ export class TooltipFocusManager {
       isOpen,
       onFocusLeave,
       isFocusLeaveSuspended = () => false,
+      getBannerFocusables = () => [],
    }) {
       let installed = false;
 
@@ -75,10 +76,40 @@ export class TooltipFocusManager {
          return globalThis.document?.activeElement ?? null;
       }
 
+      function isBannerElement(element) {
+         return getBannerFocusables().includes(element);
+      }
+
+      function findBannerCloseButton() {
+         const bannerFocusables = getBannerFocusables();
+
+         if (bannerFocusables.length === 0) {
+            return null;
+         }
+
+         return bannerFocusables[0];
+      }
+
+      function isTooltipDescendant(element) {
+         if (!tooltipEl || typeof tooltipEl.contains !== 'function') {
+            return false;
+         }
+
+         return Boolean(tooltipEl.contains(element));
+      }
+
       function containsFocus() {
          const active = getActiveElement();
 
-         return Boolean(active && tooltipEl?.contains?.(active));
+         if (!active) {
+            return false;
+         }
+
+         if (isBannerElement(active)) {
+            return true;
+         }
+
+         return isTooltipDescendant(active);
       }
 
       function getFocusableElements() {
@@ -120,7 +151,15 @@ export class TooltipFocusManager {
 
          const active = getActiveElement();
 
-         if (active === tooltipEl || getFocusableElements().includes(active)) {
+         if (active === tooltipEl) {
+            return;
+         }
+
+         if (isBannerElement(active)) {
+            return;
+         }
+
+         if (getFocusableElements().includes(active)) {
             return;
          }
 
@@ -148,6 +187,12 @@ export class TooltipFocusManager {
 
          const focusable = getFocusableElements();
          const active = getActiveElement();
+
+         if (isBannerElement(active)) {
+            handleBannerTab(event, opener, focusable);
+            return;
+         }
+
          const isFirst = active === tooltipEl || active === focusable[0];
          const isLast = active === tooltipEl
             ? focusable.length === 0
@@ -159,14 +204,57 @@ export class TooltipFocusManager {
             return;
          }
 
-         if (!event.shiftKey && isLast) {
-            TooltipFocusManager.focusElement(opener);
+         if (event.shiftKey || !isLast) {
+            return;
          }
+
+         const bannerCloseButton = findBannerCloseButton();
+
+         if (bannerCloseButton) {
+            event.preventDefault();
+            TooltipFocusManager.focusElement(bannerCloseButton);
+            return;
+         }
+
+         TooltipFocusManager.focusElement(opener);
+      }
+
+      function handleBannerTab(event, opener, focusable) {
+         if (!event.shiftKey) {
+            TooltipFocusManager.focusElement(opener);
+            return;
+         }
+
+         event.preventDefault();
+
+         if (focusable.length === 0) {
+            TooltipFocusManager.focusElement(tooltipEl);
+            return;
+         }
+
+         TooltipFocusManager.focusElement(focusable[focusable.length - 1]);
       }
 
       function handleKeydown(event) {
          clearPointerOpened();
          handleTab(event);
+      }
+
+      function handleBannerKeydown(event) {
+         if (!isBannerElement(event.target)) {
+            return;
+         }
+
+         clearPointerOpened();
+         handleTab(event);
+      }
+
+      function handleBannerFocusOut(event) {
+         if (!isBannerElement(event.target)) {
+            return;
+         }
+
+         handleFocusOut();
       }
 
       function handleFocusOut() {
@@ -185,7 +273,15 @@ export class TooltipFocusManager {
                return;
             }
 
-            if (tooltipEl?.contains?.(active) || active === getOpener()) {
+            if (isTooltipDescendant(active)) {
+               return;
+            }
+
+            if (isBannerElement(active)) {
+               return;
+            }
+
+            if (active === getOpener()) {
                return;
             }
 
@@ -203,6 +299,8 @@ export class TooltipFocusManager {
          tooltipEl.setAttribute('tabindex', '-1');
          tooltipEl.addEventListener('keydown', handleKeydown);
          tooltipEl.addEventListener('focusout', handleFocusOut);
+         document.addEventListener('keydown', handleBannerKeydown);
+         document.addEventListener('focusout', handleBannerFocusOut);
       }
 
       return {

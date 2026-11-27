@@ -30,6 +30,8 @@ function _stubTooltipDeps({ renderResult = true } = {}) {
    let isOpenFn = null;
    let getItemAtIndex = null;
    let listenerOptions = null;
+   let bannerOptions = null;
+   const bannerFocusables = [];
 
    const originals = {
       banners: BannerSynchronizer.createTooltipBannerSync,
@@ -41,10 +43,14 @@ function _stubTooltipDeps({ renderResult = true } = {}) {
       getRenderer: TooltipRenderer.getRendererForItem,
    };
 
-   BannerSynchronizer.createTooltipBannerSync = () => ({
-      sync: (item) => bannerSyncs.push(item),
-      hideAll: () => bannerHides.push(true),
-   });
+   BannerSynchronizer.createTooltipBannerSync = (options) => {
+      bannerOptions = options;
+      return {
+         sync: (item) => bannerSyncs.push(item),
+         hideAll: () => bannerHides.push(true),
+         getFocusableElements: () => bannerFocusables,
+      };
+   };
 
    CarouselView.createTooltipCarouselView = (options) => {
       onIndexChange = options.onIndexChange;
@@ -81,6 +87,8 @@ function _stubTooltipDeps({ renderResult = true } = {}) {
    return {
       bannerSyncs,
       bannerHides,
+      bannerFocusables,
+      getBannerOptions: () => bannerOptions,
       carouselCalls,
       listenerCalls,
       positions,
@@ -760,6 +768,45 @@ test('Test_CreateTooltipController_TestKeyboardCloseMarker_ExpectOpenerFocusedWi
 
       assert.equal(document.activeElement, markerEl);
       assert.deepEqual(markerEl.focusCalls, [{ preventScroll: true }]);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestTabFromLastTooltipControlWithBanner_ExpectBannerCloseButtonFocused', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const bannerCloseButton = _trackFocus(document.createElement('button'));
+   stubs.bannerFocusables.push(bannerCloseButton);
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'click', detail: 0 });
+      const notPrevented = tooltipEl.dispatchEvent({ type: 'keydown', key: 'Tab' });
+
+      assert.equal(notPrevented, false);
+      assert.equal(document.activeElement, bannerCloseButton);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestBannerDismissed_ExpectFocusBackInTooltip', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+
+   try {
+      _createApi(tooltipEl);
+
+      stubs.getBannerOptions().onDismiss();
+
+      assert.equal(document.activeElement, tooltipEl);
+      assert.deepEqual(tooltipEl.focusCalls, [{ preventScroll: true }]);
    } finally {
       stubs.restore();
    }

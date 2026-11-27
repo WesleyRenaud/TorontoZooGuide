@@ -1,4 +1,12 @@
 export class BannerSynchronizer {
+   static hasMethod(banner, methodName) {
+      if (!banner) {
+         return false;
+      }
+
+      return typeof banner[methodName] === 'function';
+   }
+
    static createTooltipBannerSync({
       offDisplayBanner,
       restaurantClosedBanner,
@@ -6,6 +14,7 @@ export class BannerSynchronizer {
       giftShopClosedBanner,
       attractionClosedBanner,
       drinkingFountainClosedBanner,
+      onDismiss,
    }) {
       const bannersByType = {
          animal: offDisplayBanner,
@@ -17,23 +26,58 @@ export class BannerSynchronizer {
       };
 
       const allBanners = Object.values(bannersByType);
+      let shownBanner = null;
+
+      allBanners.forEach((banner) => {
+         if (!BannerSynchronizer.hasMethod(banner, 'setOnDismiss')) {
+            return;
+         }
+
+         banner.setOnDismiss(onDismiss);
+      });
 
       function hideAll() {
+         shownBanner = null;
+
          allBanners.forEach((banner) => {
             banner?.hide?.();
          });
       }
 
+      function getFocusableElements() {
+         if (!BannerSynchronizer.hasMethod(shownBanner, 'getFocusableElements')) {
+            return [];
+         }
+
+         return shownBanner.getFocusableElements();
+      }
+
+      function findBanner(type) {
+         const banner = bannersByType[type];
+
+         if (!banner) {
+            return null;
+         }
+
+         return banner;
+      }
+
       function sync(item) {
          const type = String(item?.type || '');
-         const activeBanner = bannersByType[type] ?? null;
 
          hideAll();
-         activeBanner?.sync?.(item);
+         shownBanner = findBanner(type);
+
+         if (!BannerSynchronizer.hasMethod(shownBanner, 'sync')) {
+            return;
+         }
+
+         shownBanner.sync(item);
       }
 
       return {
          hideAll,
+         getFocusableElements,
          sync,
       };
    }

@@ -9,6 +9,8 @@ export class MessageFragment {
       let element = null;
       let iconElement = null;
       let textElement = null;
+      let closeButtonElement = null;
+      let onDismiss = null;
 
       function createMessageElement(message) {
          const messageElement = document.createElement('p');
@@ -32,6 +34,17 @@ export class MessageFragment {
          );
       }
 
+      function handleCloseClick(event) {
+         event.stopPropagation();
+         hide();
+
+         if (!onDismiss) {
+            return;
+         }
+
+         onDismiss();
+      }
+
       function ensure() {
          if (element) {
             return element;
@@ -47,19 +60,16 @@ export class MessageFragment {
          textElement = document.createElement('div');
          textElement.className = 'off-display-closed-text';
 
-         const closeButton = document.createElement('button');
-         closeButton.className = 'off-display-closed-close';
-         closeButton.type = 'button';
-         closeButton.setAttribute('aria-label', Strings.common.close);
-         closeButton.textContent = Strings.common.closeSymbol;
+         closeButtonElement = document.createElement('button');
+         closeButtonElement.className = 'off-display-closed-close';
+         closeButtonElement.type = 'button';
+         closeButtonElement.setAttribute('aria-label', Strings.common.close);
+         closeButtonElement.textContent = Strings.common.closeSymbol;
 
          element.addEventListener('click', event => event.stopPropagation());
-         closeButton.addEventListener('click', event => {
-            event.stopPropagation();
-            hide();
-         });
+         closeButtonElement.addEventListener('click', handleCloseClick);
 
-         element.append(iconElement, textElement, closeButton);
+         element.append(iconElement, textElement, closeButtonElement);
          document.body.appendChild(element);
 
          return element;
@@ -68,6 +78,18 @@ export class MessageFragment {
       function hide() {
          if (!element) return;
          element.style.display = 'none';
+      }
+
+      function getFocusableElements() {
+         if (!element || element.style.display === 'none') {
+            return [];
+         }
+
+         return [closeButtonElement];
+      }
+
+      function setOnDismiss(handler) {
+         onDismiss = handler;
       }
 
       function sync(item) {
@@ -84,7 +106,7 @@ export class MessageFragment {
          banner.style.display = 'flex';
       }
 
-      return { sync, hide };
+      return { sync, hide, getFocusableElements, setOnDismiss };
    }
 
    static createSingleMessageBanner(getMessage, isOffDisplayForSeason = () => false) {
