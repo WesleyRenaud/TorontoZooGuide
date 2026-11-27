@@ -88,6 +88,17 @@ function _tabEvent({ shiftKey = false } = {}) {
 }
 
 
+function _createBannerManager(tooltipEl, overrides = {}) {
+   const bannerCloseButton = _createFocusable('button', 'off-display-closed-close');
+   const { manager, opener } = _createManager(tooltipEl, {
+      getBannerFocusables: () => [bannerCloseButton],
+      ...overrides,
+   });
+
+   return { manager, opener, bannerCloseButton };
+}
+
+
 test('Test_CollectFocusableElements_TestHiddenCard_ExpectVisibleControlsInOrder', () => {
    const tree = _createTooltipTree();
 
@@ -414,4 +425,190 @@ test('Test_CreateTooltipFocusManager_TestClearPointerOpened_ExpectAttributeRemov
    manager.clearPointerOpened();
 
    assert.equal(tree.tooltipEl.hasAttribute(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE), false);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestShiftTabOnFirstWithBanner_ExpectOpenerFocused', () => {
+   const tree = _createTooltipTree();
+   const { manager, opener } = _createBannerManager(tree.tooltipEl);
+   document.activeElement = tree.firstLink;
+   const event = _tabEvent({ shiftKey: true });
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, true);
+   assert.equal(document.activeElement, opener);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestTabOnLastWithBanner_ExpectBannerFocused', () => {
+   const tree = _createTooltipTree();
+   const { manager, bannerCloseButton } = _createBannerManager(tree.tooltipEl);
+   document.activeElement = tree.closeButton;
+   const event = _tabEvent();
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, true);
+   assert.equal(document.activeElement, bannerCloseButton);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestTabInMiddleWithBanner_ExpectNativeTab', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createBannerManager(tree.tooltipEl);
+   document.activeElement = tree.firstLink;
+   const event = _tabEvent();
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, false);
+   assert.equal(document.activeElement, tree.firstLink);
+});
+test('Test_CreateTooltipFocusManager_TestTabOnBanner_ExpectOpenerThenNativeTab', () => {
+   const tree = _createTooltipTree();
+   const { manager, opener, bannerCloseButton } = _createBannerManager(tree.tooltipEl);
+   document.activeElement = bannerCloseButton;
+   const event = _tabEvent();
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, false);
+   assert.equal(document.activeElement, opener);
+});
+test('Test_CreateTooltipFocusManager_TestShiftTabOnBannerWithEmptyTooltip_ExpectTooltipFocused', () => {
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const { manager, bannerCloseButton } = _createBannerManager(tooltipEl);
+   document.activeElement = bannerCloseButton;
+
+   manager.handleTab(_tabEvent({ shiftKey: true }));
+
+   assert.equal(document.activeElement, tooltipEl);
+});
+test('Test_CreateTooltipFocusManager_TestShiftTabOnBanner_ExpectLastTooltipControlFocused', () => {
+   const tree = _createTooltipTree();
+   const { manager, bannerCloseButton } = _createBannerManager(tree.tooltipEl);
+   document.activeElement = bannerCloseButton;
+   const event = _tabEvent({ shiftKey: true });
+
+   manager.handleTab(event);
+
+   assert.equal(event.defaultPrevented, true);
+   assert.equal(document.activeElement, tree.closeButton);
+});
+test('Test_CreateTooltipFocusManager_TestBannerFocused_ExpectCountedAsInsideTooltip', () => {
+   const tree = _createTooltipTree();
+   const { manager, bannerCloseButton } = _createBannerManager(tree.tooltipEl);
+   document.activeElement = bannerCloseButton;
+
+   manager.recoverFocus();
+
+   assert.equal(manager.containsFocus(), true);
+   assert.equal(document.activeElement, bannerCloseButton);
+   assert.deepEqual(tree.firstLink.focusCalls, []);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusMovesToBanner_ExpectNoFocusLeave', async () => {
+   const tree = _createTooltipTree();
+   let leaves = 0;
+   const { manager, bannerCloseButton } = _createBannerManager(tree.tooltipEl, {
+      onFocusLeave: () => { leaves += 1; },
+   });
+   document.activeElement = bannerCloseButton;
+
+   manager.handleFocusOut();
+   await new Promise((resolve) => setTimeout(resolve, 5));
+
+   assert.equal(leaves, 0);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestKeydownOnBanner_ExpectTabHandledAndPointerModeCleared', () => {
+   const tree = _createTooltipTree();
+   const { manager, bannerCloseButton } = _createBannerManager(tree.tooltipEl);
+   const documentListeners = {};
+   document.addEventListener = (name, handler) => { documentListeners[name] = handler; };
+   manager.install();
+   manager.focusInitial({ pointer: true });
+   document.activeElement = bannerCloseButton;
+   const event = { ..._tabEvent({ shiftKey: true }), target: bannerCloseButton };
+
+   documentListeners.keydown(event);
+
+   assert.equal(event.defaultPrevented, true);
+   assert.equal(document.activeElement, tree.closeButton);
+   assert.equal(tree.tooltipEl.hasAttribute(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE), false);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestKeydownElsewhere_ExpectIgnored', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createBannerManager(tree.tooltipEl);
+   const documentListeners = {};
+   document.addEventListener = (name, handler) => { documentListeners[name] = handler; };
+   manager.install();
+   document.activeElement = tree.firstLink;
+   const event = { ..._tabEvent(), target: tree.firstLink };
+
+   documentListeners.keydown(event);
+
+   assert.equal(event.defaultPrevented, false);
+   assert.equal(document.activeElement, tree.firstLink);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestTooltipWithoutContains_ExpectNoFocusInside', () => {
+   const { manager } = _createManager({});
+   document.activeElement = _createFocusable('button');
+
+   assert.equal(manager.containsFocus(), false);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestRecoverFocusOnTooltipItself_ExpectUnchanged', () => {
+   const tree = _createTooltipTree();
+   const { manager } = _createManager(tree.tooltipEl);
+   document.activeElement = tree.tooltipEl;
+
+   manager.recoverFocus();
+
+   assert.equal(document.activeElement, tree.tooltipEl);
+   assert.deepEqual(tree.firstLink.focusCalls, []);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusLeavesBanner_ExpectFocusLeave', async () => {
+   const tree = _createTooltipTree();
+   let leaves = 0;
+   const { manager, bannerCloseButton } = _createBannerManager(tree.tooltipEl, {
+      onFocusLeave: () => { leaves += 1; },
+   });
+   const documentListeners = {};
+   document.addEventListener = (name, handler) => { documentListeners[name] = handler; };
+   manager.install();
+   document.activeElement = _createFocusable('button');
+
+   documentListeners.focusout({ target: bannerCloseButton });
+   await new Promise((resolve) => setTimeout(resolve, 5));
+
+   assert.equal(leaves, 1);
+});
+
+
+test('Test_CreateTooltipFocusManager_TestFocusOutElsewhere_ExpectIgnored', async () => {
+   const tree = _createTooltipTree();
+   let leaves = 0;
+   const { manager } = _createBannerManager(tree.tooltipEl, {
+      onFocusLeave: () => { leaves += 1; },
+   });
+   const documentListeners = {};
+   document.addEventListener = (name, handler) => { documentListeners[name] = handler; };
+   manager.install();
+   document.activeElement = _createFocusable('button');
+
+   documentListeners.focusout({ target: tree.firstLink });
+   await new Promise((resolve) => setTimeout(resolve, 5));
+
+   assert.equal(leaves, 0);
 });

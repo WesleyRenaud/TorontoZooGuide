@@ -59,6 +59,7 @@ export class TooltipController {
          giftShopClosedBanner,
          attractionClosedBanner,
          drinkingFountainClosedBanner,
+         onDismiss: () => focusManager.focusInitial(),
       });
 
       const carousel = CarouselView.createTooltipCarouselView({
@@ -90,6 +91,7 @@ export class TooltipController {
          isOpen,
          onFocusLeave: () => close(),
          isFocusLeaveSuspended: () => Boolean(isKeyboardSuspended?.()),
+         getBannerFocusables: banners.getFocusableElements,
       });
 
       focusManager.install();
