@@ -2,6 +2,7 @@ import { CoordinateEditor } from './coordinateEditor.js';
 import { MarkerBuilder } from './markerBuilder.js';
 import { MarkerGrouper } from './markerGrouper.js';
 import { MarkerLayerHelper } from './markerLayerHelper.js';
+import { MarkerTargetSizer } from './markerTargetSizer.js';
 
 export class MarkerController {
    static createMarkerLayer({
@@ -48,9 +49,22 @@ export class MarkerController {
          return fragment;
       }
 
+      function applyTargetSizes() {
+         MarkerTargetSizer.applyToMarkers(getAllMarkers());
+      }
+
+      function watchLayerSize() {
+         if (typeof ResizeObserver !== 'function') {
+            return;
+         }
+
+         new ResizeObserver(applyTargetSizes).observe(markerSurface);
+      }
+
       function render(items) {
          clear();
          markerSurface.appendChild(buildMarkerFragment(items));
+         applyTargetSizes();
       }
 
       function getMarkerByCoord(key) {
@@ -60,6 +74,8 @@ export class MarkerController {
       function getAllMarkers() {
          return Array.from(markerElsByCoord.values());
       }
+
+      watchLayerSize();
 
       return { render, getMarkerByCoord, getAllMarkers };
    }

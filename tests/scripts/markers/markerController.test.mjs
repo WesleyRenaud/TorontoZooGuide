@@ -6,11 +6,30 @@ import { CoordinateEditor } from '../../../scripts/markers/coordinateEditor.js';
 import { MarkerBuilder } from '../../../scripts/markers/markerBuilder.js';
 import { MarkerGrouper } from '../../../scripts/markers/markerGrouper.js';
 import { MarkerLayerHelper } from '../../../scripts/markers/markerLayerHelper.js';
+import { MarkerTargetSizer } from '../../../scripts/markers/markerTargetSizer.js';
 import { ItemType } from '../../../scripts/shared/enums/itemType.js';
 import { Position } from '../../../scripts/shared/enums/position.js';
 import { installDomTestHooks } from '../helpers/domTestSetup.mjs';
 
 installDomTestHooks();
+
+
+function _createMarkerSurface() {
+   const markerSurface = document.createElement('div');
+   const originalAppend = markerSurface.appendChild.bind(markerSurface);
+
+   markerSurface.appendChild = (child) => {
+      if (child?.tagName === '#fragment') {
+         for (const nested of [...child.children]) {
+            originalAppend(nested);
+         }
+         return child;
+      }
+      return originalAppend(child);
+   };
+
+   return markerSurface;
+}
 
 
 test('Test_CreateMarkerLayer_TestRenderAndLookup_ExpectMarkers', () => {
@@ -133,5 +152,80 @@ test('Test_CreateMarkerLayer_TestMarkerSurface_ExpectMarkersOnSurface', () => {
       MarkerBuilder.bindMarkerInteractions = originalBind;
       MarkerGrouper.groupMarkersByCoordinate = originalGroup;
       MarkerLayerHelper.shouldRenderMarkerGroup = originalShould;
+   }
+});
+
+
+test('Test_Render_TestMarkers_ExpectTargetSizesApplied', () => {
+   const originalCreate = MarkerBuilder.createMarkerElement;
+   const originalBind = MarkerBuilder.bindMarkerInteractions;
+   const originalGroup = MarkerGrouper.groupMarkersByCoordinate;
+   const originalApply = MarkerTargetSizer.applyToMarkers;
+   const renderedKey = '10|20';
+   const appliedMarkerLists = [];
+
+   MarkerBuilder.createMarkerElement = (group) => {
+      const el = document.createElement('div');
+      el.id = group.key;
+      return el;
+   };
+   MarkerBuilder.bindMarkerInteractions = () => {};
+   MarkerGrouper.groupMarkersByCoordinate = () => new Map([
+      [renderedKey, { key: renderedKey, items: [{ type: ItemType.ANIMAL }] }],
+   ]);
+   MarkerTargetSizer.applyToMarkers = (markerEls) => {
+      appliedMarkerLists.push(markerEls);
+   };
+
+   try {
+      const layer = MarkerController.createMarkerLayer({
+         markerSurface: _createMarkerSurface(),
+         tooltip: {},
+         hover: {},
+      });
+      layer.render([{ type: ItemType.ANIMAL }]);
+
+      assert.equal(appliedMarkerLists.length, Position.SECOND);
+      assert.equal(appliedMarkerLists.at(Position.FIRST).at(Position.FIRST).id, renderedKey);
+   } finally {
+      MarkerBuilder.createMarkerElement = originalCreate;
+      MarkerBuilder.bindMarkerInteractions = originalBind;
+      MarkerGrouper.groupMarkersByCoordinate = originalGroup;
+      MarkerTargetSizer.applyToMarkers = originalApply;
+   }
+});
+
+
+test('Test_CreateMarkerLayer_TestResize_ExpectTargetSizesRecomputed', () => {
+   const originalObserver = globalThis.ResizeObserver;
+   const originalApply = MarkerTargetSizer.applyToMarkers;
+   const observed = [];
+   const callbacks = [];
+   let applyCount = 0;
+
+   globalThis.ResizeObserver = class ResizeObserver {
+      constructor(callback) {
+         callbacks.push(callback);
+      }
+
+      observe(element) {
+         observed.push(element);
+      }
+   };
+   MarkerTargetSizer.applyToMarkers = () => {
+      applyCount += 1;
+   };
+
+   try {
+      const markerSurface = _createMarkerSurface();
+
+      MarkerController.createMarkerLayer({ markerSurface, tooltip: {}, hover: {} });
+      callbacks.at(Position.FIRST)();
+
+      assert.deepEqual(observed, [markerSurface]);
+      assert.equal(applyCount, Position.SECOND);
+   } finally {
+      globalThis.ResizeObserver = originalObserver;
+      MarkerTargetSizer.applyToMarkers = originalApply;
    }
 });
