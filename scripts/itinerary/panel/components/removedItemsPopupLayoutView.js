@@ -27,7 +27,7 @@ export class RemovedItemsPopupLayoutView {
 
       content.appendChild(
          ItineraryPanelHelper.el(
-            'div',
+            'h2',
             'itin-h1',
             isEmptyItinerary
                ? Strings.itinerary.removedItems.emptyItineraryTitle

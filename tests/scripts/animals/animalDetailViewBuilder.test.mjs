@@ -32,14 +32,14 @@ test('Test_BuildDetailSection_TestBlank_ExpectNull', () => {
 });
 
 
-test('Test_BuildHeading_TestEmpty_ExpectNull', () => {
+test('Test_BuildTextElement_TestEmpty_ExpectNull', () => {
    const tagName = 'h2';
    const className = 'name';
    const text = '';
 
-   const heading = AnimalDetailViewBuilder.buildHeading(tagName, className, text);
+   const element = AnimalDetailViewBuilder.buildTextElement(tagName, className, text);
 
-   assert.equal(heading, null);
+   assert.equal(element, null);
 });
 
 

@@ -56,8 +56,11 @@ test('Test_BuildSpeciesContent_TestPopulatedAnimal_ExpectSections', () => {
    );
    assert.equal(image?.alt, species);
    assert.equal(speciesHeading?.textContent, species);
+   assert.equal(speciesHeading?.tagName.toLowerCase(), 'h2');
    assert.equal(latinHeading?.textContent, latinName);
+   assert.equal(latinHeading?.tagName.toLowerCase(), 'p');
    assert.equal(exhibitHeading?.textContent, exhibit);
+   assert.equal(exhibitHeading?.tagName.toLowerCase(), 'p');
    assert.match(_allText(fragment), /Identification:/i);
    assert.match(_allText(fragment), new RegExp(identification));
 });

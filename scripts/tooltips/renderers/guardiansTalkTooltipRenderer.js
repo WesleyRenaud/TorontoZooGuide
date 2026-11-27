@@ -19,7 +19,7 @@ export class GuardiansTalkTooltipRenderer {
          ? {
             element: SpeciesLinkTitleBuilder.createSpeciesLinkTitleElement({
                text: name,
-               tagName: 'strong',
+               tagName: 'h2',
                className: 'tooltip-card-title',
                dataset: {
                   index,

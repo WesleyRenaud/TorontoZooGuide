@@ -40,7 +40,7 @@ function _buildDialog({ titleText = 'Set Visit Date', titleId = 'overlayTitle' }
    const mountEl = createDomNode('div', 'itinerary-flow');
    const overlay = createDomNode('div', 'itin-overlay');
    const card = createDomNode('section', 'itin-card');
-   const title = _focusable('h1', 'itin-h1');
+   const title = _focusable('h2', 'itin-h1');
    const closeButton = _focusable('button', 'itin-close');
    const nextButton = _focusable('button', 'itin-next');
 
@@ -111,7 +111,7 @@ test('Test_CreateOverlayModal_TestTitleWithoutId_ExpectTabbableHeadingUnlabelled
 test('Test_CreateOverlayModal_TestRefresh_ExpectFocusMovesToNewHeading', () => {
    const page = _buildDialog();
    page.modal.activate();
-   const nextTitle = _focusable('h1', 'itin-h1');
+   const nextTitle = _focusable('h2', 'itin-h1');
    nextTitle.removeAttribute('tabindex');
    nextTitle.textContent = 'Select Regions';
    page.card.replaceChildren(nextTitle, page.closeButton, page.nextButton);

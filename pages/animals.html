@@ -28,22 +28,23 @@
       <div class="home-page">
 
          <!-- Top bar with title + logo -->
-         <div class="top-bar">
-            <span class="top-bar-title">{{ site.titles.guide }}</span>
+         <header class="top-bar">
+            <h1 class="top-bar-title">{{ site.titles.guide }}</h1>
             <img 
                src="../images/logos/toronto-zoo-logo.png"
                alt="{{ site.logoAlt }}"
                class="top-bar-logo"
             >
-         </div>
+         </header>
 
          <!-- Main content -->
          <main>
+            <h2 class="sr-only">{{ site.nav.animals }}</h2>
             <div class="list"></div>
          </main>
 
          <!-- Bottom navigation menu -->
-         <nav>
+         <nav aria-label="{{ site.nav.ariaLabel }}">
             <ul>
                <li><a href="map.html">{{ site.nav.map }}</a></li>
                <li><a href="animals.html" aria-current="page">{{ site.nav.animals }}</a></li>

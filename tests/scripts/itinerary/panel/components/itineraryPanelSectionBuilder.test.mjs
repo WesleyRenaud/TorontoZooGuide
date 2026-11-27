@@ -100,6 +100,41 @@ test('Test_MakeSection_TestHeaderToggleEditCleanup_ExpectSection', () => {
 });
 
 
+test('Test_MakeSection_TestDefaultHeadingTag_ExpectH3Title', () => {
+   const originalUpdate = ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight;
+
+   ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight = () => {};
+
+   try {
+      const section = ItineraryPanelSectionBuilder.makeSection({ title: 'Animals', count: 0 });
+      const titleEl = section.querySelector('.itin-panel-section-title');
+
+      assert.equal(titleEl.tagName.toLowerCase(), 'h3');
+      section.__tzgCleanup?.();
+   } finally {
+      ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight = originalUpdate;
+   }
+});
+
+
+test('Test_MakeSection_TestCustomHeadingTag_ExpectThatTagTitle', () => {
+   const originalUpdate = ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight;
+   const headingTag = 'h5';
+
+   ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight = () => {};
+
+   try {
+      const section = ItineraryPanelSectionBuilder.makeSection({ title: 'Animals', count: 0, headingTag });
+      const titleEl = section.querySelector('.itin-panel-section-title');
+
+      assert.equal(titleEl.tagName.toLowerCase(), headingTag);
+      section.__tzgCleanup?.();
+   } finally {
+      ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight = originalUpdate;
+   }
+});
+
+
 test('Test_MakeSection_TestHideEditButton_ExpectNoEdit', () => {
    const originalUpdate = ItineraryPanelSectionBuilderHelper.updateSectionBodyHeight;
    const title = 'Date';

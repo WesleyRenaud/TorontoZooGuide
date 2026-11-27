@@ -102,6 +102,7 @@ test('Test_MakeItemsListSection_TestSections_ExpectWrapperWithTitle', () => {
       assert.equal(wrapper.querySelector('.itinerary-day-items-title')?.textContent, title);
       assert.equal(sectionCalls.length, 1);
       assert.equal(sectionCalls.at(Position.FIRST).showEditButton, false);
+      assert.equal(sectionCalls.at(Position.FIRST).headingTag, 'h5');
    } finally {
       SectionConfigs.buildSectionConfigs = originalBuild;
       ItineraryPanelHelper.el = originalEl;

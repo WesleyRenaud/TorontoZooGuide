@@ -11,6 +11,7 @@ export class PageStrings {
       },
       logoAlt: 'Toronto Zoo Logo',
       nav: {
+         ariaLabel: 'Site navigation',
          animals: 'Animals',
          itinerary: 'Itinerary',
          map: 'Map',

@@ -18,7 +18,7 @@ export class CardFactory {
       }
       else if (title?.text) {
          card.appendChild(
-            TooltipCardElementBuilder.createTextElement(title.tagName || 'strong', title.text, {
+            TooltipCardElementBuilder.createTextElement(title.tagName || 'h2', title.text, {
                className: title.className,
                dataset: title.dataset,
             })

@@ -33,7 +33,7 @@ export class DateSelectorView {
       const body = document.createElement('div');
       body.className = 'itin-card-body';
 
-      const heading = document.createElement('h1');
+      const heading = document.createElement('h2');
       heading.className = 'itin-h1';
       heading.textContent = strings.itinerary.selectors.titleDate;
 

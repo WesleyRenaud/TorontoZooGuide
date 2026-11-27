@@ -3,7 +3,7 @@ import { Strings } from '../strings.js';
 
 export class ExploreEventCardHelper {
    static createEventTitleEl(event) {
-      const titleEl = document.createElement('h4');
+      const titleEl = document.createElement('h3');
       titleEl.className = 'explore-update-title';
 
       const name = event.name || Strings.map.events.title;

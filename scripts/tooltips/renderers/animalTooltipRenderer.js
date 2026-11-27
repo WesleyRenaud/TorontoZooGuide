@@ -37,7 +37,7 @@ export class AnimalTooltipRenderer {
             element: SpeciesLinkTitleBuilder.createAnimalTitleLinkElement({
                species: AnimalSelectorModel.getAnimalSpecies(a),
                enclosureName: AnimalSelectorModel.getAnimalEnclosureName(a),
-               tagName: 'strong',
+               tagName: 'h2',
                className: 'tooltip-card-title',
                dataset: {
                   index,

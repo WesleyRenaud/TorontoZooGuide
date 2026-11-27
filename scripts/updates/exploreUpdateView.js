@@ -11,7 +11,7 @@ export class ExploreUpdateView {
       metaEl.className = 'explore-update-meta';
       metaEl.appendChild(ExploreUpdateCardHelper.createUpdateTypeEl(update));
 
-      const titleEl = document.createElement('h4');
+      const titleEl = document.createElement('h3');
       titleEl.className = 'explore-update-title';
       titleEl.textContent = update.title || Strings.labels.update;
 
