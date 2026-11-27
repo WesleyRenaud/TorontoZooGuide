@@ -128,7 +128,7 @@ test('Test_CreateCard_TestAnimal_ExpectCardFactoryPayload', () => {
          exhibit,
          Strings.tooltips.likelihoodDetail(displayed.phrase, displayed.text),
       ]);
-      assert.equal(captured.payload.title.element.title.tagName, 'strong');
+      assert.equal(captured.payload.title.element.title.tagName, 'h2');
       assert.equal(captured.payload.title.element.title.dataset.index, index);
    } finally {
       _restoreCardFactory(originals);

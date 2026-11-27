@@ -76,7 +76,7 @@ export class RemovedItemsPopupContentBuilder {
       const section = ItineraryPanelHelper.el('div', 'itin-removed-section');
 
       section.appendChild(
-         ItineraryPanelHelper.el('div', 'itin-removed-section-title', title)
+         ItineraryPanelHelper.el('h3', 'itin-removed-section-title', title)
       );
 
       if (subtitle) {

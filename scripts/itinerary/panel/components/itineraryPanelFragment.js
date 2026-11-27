@@ -54,7 +54,7 @@ export class ItineraryPanelFragment {
             : 'itin-card-topbar'
       );
       topbar.appendChild(
-         ItineraryPanelHelper.el('div', 'itin-top-title', title)
+         ItineraryPanelHelper.el('h2', 'itin-top-title', title)
       );
 
       const closeButton = showCloseButton

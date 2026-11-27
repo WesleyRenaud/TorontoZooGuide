@@ -16,11 +16,11 @@ export class SpeciesOverlayView {
       fragment.appendChild(SpeciesOverlayContentBuilder.createTextElement('h2', 'animal-species-name', titleLine || species));
 
       if (latinName) {
-         fragment.appendChild(SpeciesOverlayContentBuilder.createTextElement('h6', 'latin-name', latinName));
+         fragment.appendChild(SpeciesOverlayContentBuilder.createTextElement('p', 'latin-name', latinName));
       }
 
       if (exhibitLine) {
-         fragment.appendChild(SpeciesOverlayContentBuilder.createTextElement('h4', 'animal-exhibit', exhibitLine));
+         fragment.appendChild(SpeciesOverlayContentBuilder.createTextElement('p', 'animal-exhibit', exhibitLine));
       }
 
       Strings.animalsPage.detailSections.forEach(([title, key]) => {

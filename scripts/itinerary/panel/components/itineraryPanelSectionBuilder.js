@@ -3,18 +3,21 @@ import { ItineraryPanelSectionBuilderHelper } from './itineraryPanelSectionBuild
 import { Strings } from '../../../strings.js';
 
 export class ItineraryPanelSectionBuilder {
+   static DEFAULT_HEADING_TAG = 'h3';
+
    static makeSection({
       title,
       count,
       children = [],
       stepKey,
       showEditButton = true,
+      headingTag = ItineraryPanelSectionBuilder.DEFAULT_HEADING_TAG,
    }) {
       const section = ItineraryPanelHelper.el('section', 'itin-panel-section');
 
       const header = ItineraryPanelHelper.el('div', 'itin-panel-section-header');
 
-      const titleEl = ItineraryPanelHelper.el('div', 'itin-panel-section-title');
+      const titleEl = ItineraryPanelHelper.el(headingTag, 'itin-panel-section-title');
       titleEl.appendChild(document.createTextNode(title));
 
       const countEl = ItineraryPanelHelper.el('span', 'itin-panel-count', `(${count})`);

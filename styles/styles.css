@@ -129,6 +129,7 @@ body > .console-operations-page {
 }
 
 .top-bar-title {
+   margin: 0;
    font-size: calc(var(--layout-page-height) * 0.0148);
    font-weight: bold;
    letter-spacing: 0.02em;
@@ -1518,7 +1519,11 @@ nav ul li a[aria-current="page"]:hover {
    overflow: hidden;
 }
 
-.tooltip-card strong,
+.tooltip-card h2 {
+   margin: 0;
+}
+
+.tooltip-card h2,
 .tooltip-card span {
    color: var(--color-white);
    white-space: normal;
@@ -1529,7 +1534,7 @@ nav ul li a[aria-current="page"]:hover {
 
 .tooltip-card .tooltip-card-title { font-size: 0.375em; }
 .tooltip-card .tooltip-card-title span { font-size: inherit; }
-.tooltip-card strong:not(.tooltip-card-title) { font-size: 0.5em; }
+.tooltip-card h2:not(.tooltip-card-title) { font-size: 0.5em; }
 .tooltip-card span { font-size: 0.375em; }
 
 .tooltip-link {
@@ -1652,29 +1657,30 @@ nav ul li a[aria-current="page"]:hover {
 }
 
 .species-overlay-card h2,
-.species-overlay-card h4,
-.species-overlay-card h6,
+.species-overlay-card .animal-exhibit,
+.species-overlay-card .latin-name,
 .list h2,
-.list h4,
-.list h6 {
+.list .animal-exhibit,
+.list .latin-name {
    text-align: center;
    margin: 0;
+   font-weight: bold;
 }
 
 .species-overlay-card h2 { font-size: 0.625em; }
 .list h2 { font-size: 1.25em; }
 
-.species-overlay-card h4 { font-size: 0.5em; }
-.list h4 { font-size: 1em; }
+.species-overlay-card .animal-exhibit { font-size: 0.5em; }
+.list .animal-exhibit { font-size: 1em; }
 
-.species-overlay-card h6,
-.list h6 {
+.species-overlay-card .latin-name,
+.list .latin-name {
    color: var(--color-marker-orange);
    font-style: italic;
 }
 
-.species-overlay-card h6 { font-size: 0.375em; }
-.list h6 { font-size: 0.75em; }
+.species-overlay-card .latin-name { font-size: 0.375em; }
+.list .latin-name { font-size: 0.75em; }
 
 .species-overlay-scroll {
    overflow-y: auto;
@@ -4226,6 +4232,7 @@ html.animals-page body {
 }
 
 .itin-top-title {
+   margin: 0;
    font-family: var(--font-family-base);
    font-size: 1.05em;
    font-weight: 900;
@@ -4845,6 +4852,7 @@ html.animals-page body {
 }
 
 .itin-panel-section-title {
+   margin: 0;
    font-size: 0.95em;
    font-weight: 900;
    color: #14230aeb;
@@ -5421,6 +5429,7 @@ html.animals-page body {
 }
 
 .itin-removed-section-title {
+   margin: 0;
    font-family: var(--font-family-base);
    font-size: 0.6em;
    font-weight: 900;

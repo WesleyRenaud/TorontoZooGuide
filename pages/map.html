@@ -22,14 +22,14 @@
       <div class="home-page">
 
          <!-- Top bar with title + logo -->
-         <div class="top-bar">
-            <span class="top-bar-title">{{ site.titles.guide }}</span>
+         <header class="top-bar">
+            <h1 class="top-bar-title">{{ site.titles.guide }}</h1>
             <img 
                src="../images/logos/toronto-zoo-logo.png"
                alt="{{ site.logoAlt }}"
                class="top-bar-logo"
             >
-         </div>
+         </header>
 
          <main class="map-layout">
             <!-- LEFT PANEL: Explore menu -->
@@ -248,7 +248,7 @@
          </div>
 
          <!-- Bottom navigation menu -->
-         <nav>
+         <nav aria-label="{{ site.nav.ariaLabel }}">
             <ul>
                <li><a href="map.html" aria-current="page">{{ site.nav.map }}</a></li>
                <li><a href="animals.html">{{ site.nav.animals }}</a></li>

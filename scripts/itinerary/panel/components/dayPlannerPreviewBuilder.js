@@ -6,6 +6,9 @@ import { ScheduleItemView } from './scheduleItemView.js';
 import { SectionConfigs } from '../sectionConfigs.js';
 
 export class DayPlannerPreviewBuilder {
+   // The items list sits under an h4 ("Scheduled Items"), so its sections are h5.
+   static SECTION_HEADING_TAG = 'h5';
+
    static resolveSectionShowEditButton(
       sectionKey,
       {
@@ -52,6 +55,7 @@ export class DayPlannerPreviewBuilder {
       sectionConfigs.forEach((sectionConfig) => {
          wrapper.appendChild(ItineraryPanelSectionBuilder.makeSection({
             ...sectionConfig,
+            headingTag: DayPlannerPreviewBuilder.SECTION_HEADING_TAG,
             showEditButton: DayPlannerPreviewBuilder.resolveSectionShowEditButton(sectionConfig.key, {
                showEditButton,
                editButtonSectionKeys,

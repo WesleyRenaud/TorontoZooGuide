@@ -53,7 +53,7 @@ function _buildPage() {
    const buildButton = _focusable('button', 'itin-panel-build-btn');
    const overlay = createDomNode('div', 'itin-overlay');
    const card = createDomNode('section', 'itin-card');
-   const title = _focusable('h1', 'itin-h1');
+   const title = _focusable('h2', 'itin-h1');
    const closeButton = _focusable('button', 'itin-close');
    const nextButton = _focusable('button', 'itin-next');
 
@@ -118,7 +118,7 @@ test('Test_SyncOpenCard_TestStepChange_ExpectFocusMovesToNewHeading', () => {
       returnFocusFallback: page.buildButton,
    });
 
-   const nextTitle = _focusable('h1', 'itin-h1');
+   const nextTitle = _focusable('h2', 'itin-h1');
    nextTitle.removeAttribute('tabindex');
    nextTitle.textContent = 'Select Regions';
    page.card.replaceChildren(nextTitle, page.closeButton, page.nextButton);

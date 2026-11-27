@@ -34,7 +34,7 @@ export class SelectorShellBuilder {
       const bodyEl = document.createElement('div');
       bodyEl.className = 'itin-card-body itin-card-body-tall';
 
-      const heading = document.createElement('h1');
+      const heading = document.createElement('h2');
       heading.className = 'itin-h1';
       heading.textContent = h1;
 

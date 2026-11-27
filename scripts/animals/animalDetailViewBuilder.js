@@ -53,7 +53,7 @@ export class AnimalDetailViewBuilder {
       return image;
    }
 
-   static buildHeading(tagName, className, text) {
+   static buildTextElement(tagName, className, text) {
       const value = ValueNormalizer.asTrimmedString(text);
 
       if (!value) {
@@ -88,24 +88,24 @@ export class AnimalDetailViewBuilder {
    static buildAnimalDetailContent(animal, { exhibitName } = {}) {
       const fragment = document.createDocumentFragment();
       const image = AnimalDetailViewBuilder.buildAnimalImage(animal);
-      const speciesHeading = AnimalDetailViewBuilder.buildHeading('h2', 'animal-species-name', animal?.species);
-      const latinHeading = AnimalDetailViewBuilder.buildHeading('h6', 'latin-name', animal?.latin_name);
-      const exhibitHeading = AnimalDetailViewBuilder.buildHeading('h4', 'animal-exhibit', animal?.exhibit);
+      const speciesNameEl = AnimalDetailViewBuilder.buildTextElement('h2', 'animal-species-name', animal?.species);
+      const latinNameEl = AnimalDetailViewBuilder.buildTextElement('p', 'latin-name', animal?.latin_name);
+      const exhibitEl = AnimalDetailViewBuilder.buildTextElement('p', 'animal-exhibit', animal?.exhibit);
 
       if (image) {
          fragment.appendChild(image);
       }
 
-      if (speciesHeading) {
-         fragment.appendChild(speciesHeading);
+      if (speciesNameEl) {
+         fragment.appendChild(speciesNameEl);
       }
 
-      if (latinHeading) {
-         fragment.appendChild(latinHeading);
+      if (latinNameEl) {
+         fragment.appendChild(latinNameEl);
       }
 
-      if (exhibitHeading) {
-         fragment.appendChild(exhibitHeading);
+      if (exhibitEl) {
+         fragment.appendChild(exhibitEl);
          fragment.appendChild(AnimalDetailViewBuilder.buildViewOnMapButton(animal, exhibitName));
       }
 
