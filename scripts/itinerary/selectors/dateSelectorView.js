@@ -2,6 +2,9 @@ import { DateSelectorViewHelper } from './dateSelectorViewHelper.js';
 import { Strings } from '../../strings.js';
 
 export class DateSelectorView {
+   static INPUT_ID = 'itinVisitDate';
+   static LABEL_ID = 'itinVisitDateLabel';
+
    static buildDateSelectorView(strings = Strings) {
       const root = document.createElement('div');
       root.className = 'itin-overlay';
@@ -38,12 +41,15 @@ export class DateSelectorView {
       subtitle.className = 'itin-subtitle';
       subtitle.textContent = strings.itinerary.selectors.visitDateSubtitle;
 
-      const fieldLabel = document.createElement('div');
+      const fieldLabel = document.createElement('label');
       fieldLabel.className = 'itin-field-label';
+      fieldLabel.id = DateSelectorView.LABEL_ID;
+      fieldLabel.htmlFor = DateSelectorView.INPUT_ID;
       fieldLabel.textContent = strings.itinerary.selectors.visitDate;
 
       const inputEl = document.createElement('input');
       inputEl.className = 'itin-date-input';
+      inputEl.id = DateSelectorView.INPUT_ID;
       inputEl.type = 'text';
       inputEl.inputMode = 'none';
       inputEl.autocomplete = 'off';

@@ -45,16 +45,30 @@ function _visitLabel(isoDate, hours = null) {
 }
 
 
+function _labelledBy() {
+   return (
+      `${MapTopBarVisitPresenter.LABEL_ID} ${MapTopBarVisitPresenter.READOUT_WHEN_ID}`
+   );
+}
+
+
 function _root() {
    const root = document.createElement('div');
+   const label = document.createElement('label');
+   label.id = MapTopBarVisitPresenter.LABEL_ID;
+   label.htmlFor = 'mapDate';
+   label.textContent = Strings.itinerary.selectors.visitDate;
    const input = document.createElement('input');
+   input.id = 'mapDate';
    const readoutEl = document.createElement('span');
    readoutEl.className = 'map-date-readout';
    readoutEl.hidden = true;
+   readoutEl.setAttribute('aria-hidden', 'true');
    const whenEl = document.createElement('span');
    whenEl.className = 'map-date-readout-when';
+   whenEl.id = MapTopBarVisitPresenter.READOUT_WHEN_ID;
    readoutEl.append(whenEl);
-   root.append(input, readoutEl);
+   root.append(label, input, readoutEl);
    return root;
 }
 
@@ -132,7 +146,9 @@ test('Test_Apply_TestReadout_ExpectVisibleText', () => {
    assert.equal(root.classList.contains('has-readout'), true);
    assert.equal(root.querySelector('.map-date-readout').hidden, false);
    assert.equal(root.querySelector('.map-date-readout-when').textContent, readout);
-   assert.equal(root.querySelector('input').getAttribute('aria-label'), readout);
+   assert.equal(root.querySelector('.map-date-readout').hasAttribute('aria-hidden'), false);
+   assert.equal(root.querySelector('input').hasAttribute('aria-label'), false);
+   assert.equal(root.querySelector('input').getAttribute('aria-labelledby'), _labelledBy());
 });
 
 
@@ -144,8 +160,28 @@ test('Test_Apply_TestEmpty_ExpectHidden', () => {
 
    assert.equal(root.classList.contains('has-readout'), false);
    assert.equal(root.querySelector('.map-date-readout').hidden, true);
+   assert.equal(root.querySelector('.map-date-readout').getAttribute('aria-hidden'), 'true');
    assert.equal(root.querySelector('.map-date-readout-when').textContent, '');
    assert.equal(root.querySelector('input').hasAttribute('aria-label'), false);
+   assert.equal(root.querySelector('input').hasAttribute('aria-labelledby'), false);
+});
+
+
+test('Test_Apply_TestReadout_ExpectNameIncludesLabelAndDate', () => {
+   const root = _root();
+   const readout = _visitLabel(_TODAY_ISO, _hours());
+
+   MapTopBarVisitPresenter.apply(root, readout);
+
+   const input = root.querySelector('input');
+   const labelledBy = input.getAttribute('aria-labelledby').split(/\s+/);
+   const name = labelledBy
+      .map((id) => root.querySelector(`#${id}`)?.textContent ?? '')
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+   assert.equal(name, `${Strings.itinerary.selectors.visitDate} ${readout}`);
 });
 
 
