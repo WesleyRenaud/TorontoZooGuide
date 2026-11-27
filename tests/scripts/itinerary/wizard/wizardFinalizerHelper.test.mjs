@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { ItineraryCardModal } from '../../../../scripts/itinerary/itineraryCardModal.js';
 import { ItineraryShape } from '../../../../scripts/itinerary/itineraryShape.js';
 import { RegionStorageStore } from '../../../../scripts/itinerary/selectors/regionSelector/regionStorageStore.js';
 import { WizardFinalizerHelper } from '../../../../scripts/itinerary/wizard/wizardFinalizerHelper.js';
@@ -17,6 +18,25 @@ test('Test_ClearWizardMount_TestChildren_ExpectCleared', () => {
    WizardFinalizerHelper.clearWizardMount(mountEl);
 
    assert.equal(mountEl.children.length, 0);
+});
+
+
+test('Test_ClearWizardMount_TestOpenCard_ExpectModalReleased', () => {
+   const originalRelease = ItineraryCardModal.release;
+   const mountEl = document.createElement('div');
+   let releaseCount = 0;
+
+   ItineraryCardModal.release = () => {
+      releaseCount += 1;
+   };
+
+   try {
+      WizardFinalizerHelper.clearWizardMount(mountEl);
+
+      assert.equal(releaseCount, 1);
+   } finally {
+      ItineraryCardModal.release = originalRelease;
+   }
 });
 
 
