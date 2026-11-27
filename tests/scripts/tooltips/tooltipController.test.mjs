@@ -726,6 +726,46 @@ test('Test_CreateTooltipController_TestMouseClickMarker_ExpectFocusWithoutRing',
 });
 
 
+test('Test_CreateTooltipController_TestMouseCloseMarker_ExpectOpenerFocusedWithoutRing', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'click', detail: 1 });
+      markerEl.dispatchEvent({ type: 'click', detail: 1 });
+
+      assert.equal(document.activeElement, markerEl);
+      assert.deepEqual(markerEl.focusCalls, [{ preventScroll: true, focusVisible: false }]);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
+test('Test_CreateTooltipController_TestKeyboardCloseMarker_ExpectOpenerFocusedWithRing', () => {
+   const stubs = _stubTooltipDeps();
+   const tooltipEl = _trackFocus(document.createElement('div'));
+   const items = [{ type: ItemType.ANIMAL, species: 'African Lion' }];
+
+   try {
+      const api = _createApi(tooltipEl);
+      const markerEl = _trackFocus(document.createElement('div'));
+      api.attachToMarker(markerEl, items, _createHoverRecorder());
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+      markerEl.dispatchEvent({ type: 'keydown', key: 'Enter' });
+
+      assert.equal(document.activeElement, markerEl);
+      assert.deepEqual(markerEl.focusCalls, [{ preventScroll: true }]);
+   } finally {
+      stubs.restore();
+   }
+});
+
+
 test('Test_CreateTooltipController_TestKeyboardOpenMarker_ExpectFocusRingKept', () => {
    const stubs = _stubTooltipDeps();
    const tooltipEl = _trackFocus(document.createElement('div'));

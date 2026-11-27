@@ -1340,6 +1340,13 @@ nav ul li a[aria-current="page"]:hover {
    display: none;
 }
 
+.marker::before {
+   content: '';
+   position: absolute;
+   inset: min(0px, calc((100% - var(--marker-target-size, 0px)) / 2));
+   border-radius: 50%;
+}
+
 .marker-wild-encounter {
    width: var(--marker-size);
    height: var(--marker-size);

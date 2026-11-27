@@ -251,7 +251,6 @@ export class TooltipController {
          const shouldRestoreFocus = focusManager.containsFocus();
 
          globalListeners.uninstall();
-         focusManager.clearPointerOpened();
          banners.hideAll();
          setMarkerExpanded(getOpenMarker(), false);
          restoreOpenMarkerVisual();
@@ -262,6 +261,7 @@ export class TooltipController {
             focusManager.restoreFocusToOpener();
          }
 
+         focusManager.clearPointerOpened();
          resetOpenState();
       }
 

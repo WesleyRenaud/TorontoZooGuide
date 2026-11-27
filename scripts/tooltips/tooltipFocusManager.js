@@ -127,8 +127,12 @@ export class TooltipFocusManager {
          focusInitial();
       }
 
+      function isPointerOpened() {
+         return Boolean(tooltipEl?.hasAttribute?.(TooltipFocusManager.POINTER_OPENED_ATTRIBUTE));
+      }
+
       function restoreFocusToOpener() {
-         TooltipFocusManager.focusElement(getOpener());
+         TooltipFocusManager.focusElement(getOpener(), { pointer: isPointerOpened() });
       }
 
       function handleTab(event) {

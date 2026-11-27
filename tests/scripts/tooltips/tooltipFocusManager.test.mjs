@@ -267,6 +267,18 @@ test('Test_CreateTooltipFocusManager_TestRestoreFocus_ExpectOpenerFocused', () =
 });
 
 
+test('Test_CreateTooltipFocusManager_TestRestoreFocusAfterPointerOpen_ExpectOpenerFocusedWithoutRing', () => {
+   const tree = _createTooltipTree();
+   const { manager, opener } = _createManager(tree.tooltipEl);
+   manager.focusInitial({ pointer: true });
+
+   manager.restoreFocusToOpener();
+
+   assert.equal(document.activeElement, opener);
+   assert.deepEqual(opener.focusCalls, [{ preventScroll: true, focusVisible: false }]);
+});
+
+
 test('Test_CreateTooltipFocusManager_TestFocusMovesElsewhere_ExpectFocusLeave', async () => {
    const tree = _createTooltipTree();
    let leaves = 0;
