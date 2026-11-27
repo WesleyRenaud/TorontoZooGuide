@@ -203,6 +203,7 @@
             <div class="map-container">
                <!-- Dropdown container -->
                <div class="map-controls">
+                  <label for="mapPreset" class="sr-only">{{ map.mapPresetLabel }}</label>
                   <select id="mapPreset">
                      <option value="" disabled hidden>{{ map.mapPresetPlaceholder }}</option>
                      <option value="{{ map.presetIds.summer }}">{{ map.mapPresets.summer }}</option>
@@ -212,9 +213,10 @@
 
                   <!-- Date picker only relevant if "Specific Map" is selected -->
                   <div class="map-date-field" id="mapDateField">
+                     <label for="mapDate" class="sr-only" id="mapDateLabel">{{ itinerary.selectors.visitDate }}</label>
                      <input type="text" id="mapDate" placeholder="{{ placeholders.date }}">
                      <span class="map-date-readout" hidden aria-hidden="true">
-                        <span class="map-date-readout-when"></span>
+                        <span class="map-date-readout-when" id="mapDateReadoutWhen"></span>
                      </span>
                   </div>
                </div>

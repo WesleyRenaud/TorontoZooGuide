@@ -4,6 +4,8 @@ import { VisitDateFormatter } from '../visitDates/visitDateFormatter.js';
 
 export class MapTopBarVisitPresenter {
    static latestVisit = Symbol('latestVisit');
+   static LABEL_ID = 'mapDateLabel';
+   static READOUT_WHEN_ID = 'mapDateReadoutWhen';
 
    static buildReadout({
       preset,
@@ -40,6 +42,7 @@ export class MapTopBarVisitPresenter {
       if (!when) {
          root.classList.remove('has-readout');
          readoutEl.hidden = true;
+         readoutEl.setAttribute('aria-hidden', 'true');
          whenEl.textContent = '';
          MapTopBarVisitPresenter.labelInput(root, '');
          return;
@@ -47,6 +50,7 @@ export class MapTopBarVisitPresenter {
 
       root.classList.add('has-readout');
       readoutEl.hidden = false;
+      readoutEl.removeAttribute('aria-hidden');
       whenEl.textContent = when;
       MapTopBarVisitPresenter.labelInput(root, when);
    }
@@ -58,12 +62,17 @@ export class MapTopBarVisitPresenter {
          return;
       }
 
+      input.removeAttribute('aria-label');
+
       if (when) {
-         input.setAttribute('aria-label', when);
+         input.setAttribute(
+            'aria-labelledby',
+            `${MapTopBarVisitPresenter.LABEL_ID} ${MapTopBarVisitPresenter.READOUT_WHEN_ID}`
+         );
          return;
       }
 
-      input.removeAttribute('aria-label');
+      input.removeAttribute('aria-labelledby');
    }
 
    static async loadHours(getZooHours, isoDate) {

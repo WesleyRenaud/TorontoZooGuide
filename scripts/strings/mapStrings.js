@@ -46,6 +46,7 @@ export class MapStrings {
       },
       visitDateAndHours: (dateLabel, hoursLabel) => `${dateLabel} \u00B7 ${hoursLabel}`,
       mapPresetPlaceholder: 'Select a map',
+      mapPresetLabel: 'Map preset',
       mapPresets: {
          summer: 'Summer Map',
          winter: 'Winter Map',

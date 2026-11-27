@@ -15,7 +15,14 @@ test('Test_BuildDateSelectorView_TestDefaultStrings_ExpectDialogParts', () => {
    assert.equal(view.root.querySelector('.itin-card').getAttribute('role'), 'dialog');
    assert.equal(view.root.querySelector('.itin-h1').textContent, Strings.itinerary.selectors.titleDate);
    assert.equal(view.inputEl.className, 'itin-date-input');
+   assert.equal(view.inputEl.id, DateSelectorView.INPUT_ID);
    assert.equal(view.inputEl.readOnly, true);
+
+   const fieldLabel = view.root.querySelector('.itin-field-label');
+   assert.equal(fieldLabel.tagName.toLowerCase(), 'label');
+   assert.equal(fieldLabel.htmlFor, DateSelectorView.INPUT_ID);
+   assert.equal(fieldLabel.id, DateSelectorView.LABEL_ID);
+   assert.equal(fieldLabel.textContent, Strings.itinerary.selectors.visitDate);
    assert.equal(view.nextButtonEl.textContent, Strings.itinerary.actions.next);
    assert.equal(view.finishButtonEl.textContent, Strings.itinerary.actions.finish);
    assert.equal(view.closeButtonEl.getAttribute('aria-label'), Strings.itinerary.aria.closeBuilder);
