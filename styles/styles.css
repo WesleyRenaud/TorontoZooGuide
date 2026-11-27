@@ -544,7 +544,7 @@ body > .console-operations-page {
    border-bottom: 1.5px solid transparent;
    border-radius: 0;
    background-color: transparent;
-   color: var(--color-brand-primary-muted);
+   color: var(--color-brand-link);
    font-family: var(--font-family-base);
    font-size: 10.4px;
    font-weight: 700;
@@ -558,7 +558,7 @@ body > .console-operations-page {
 .explore-updates-tab-count {
    margin-left: 3px;
    font-weight: 800;
-   color: var(--color-brand-primary);
+   color: var(--color-brand-link);
 }
 
 .explore-updates-tab.is-active {
@@ -645,7 +645,7 @@ body > .console-operations-page {
    font-size: 9.6px;
    font-weight: 700;
    line-height: 1.1;
-   color: var(--color-brand-primary-muted);
+   color: var(--color-brand-link);
 }
 
 .explore-update-arrow {
@@ -755,7 +755,7 @@ body > .console-operations-page {
 
 .explore-event-title-link:hover,
 .explore-event-title-link:focus {
-   color: var(--color-brand-accent);
+   color: var(--color-brand-primary-dark);
 }
 
 .explore-event-date-range {
@@ -778,7 +778,7 @@ body > .console-operations-page {
    font-size: 9.8px;
    font-weight: 600;
    line-height: 1.28;
-   color: var(--color-brand-primary-muted);
+   color: var(--color-brand-forest);
    overflow-wrap: anywhere;
 }
 
@@ -1226,7 +1226,7 @@ body > .console-operations-page {
    font-size: 0.6em;
    font-weight: 650;
    line-height: 1.3;
-   color: #14230a99;
+   color: #14230aa3;
 }
 
 /* Flatpickr sizing. The library's open animation sets transform, which
@@ -1242,6 +1242,18 @@ html .flatpickr-calendar.animate.open {
 
 .flatpickr-calendar.open {
    margin-top: 0.125em;
+}
+
+.flatpickr-calendar .flatpickr-day.prevMonthDay:not(.flatpickr-disabled):not(.selected),
+.flatpickr-calendar .flatpickr-day.nextMonthDay:not(.flatpickr-disabled):not(.selected) {
+   color: #14230aa3;
+}
+
+.flatpickr-calendar .flatpickr-day.selected,
+.flatpickr-calendar .flatpickr-day.selected:hover,
+.flatpickr-calendar .flatpickr-day.selected:focus {
+   background: var(--color-marker-blue);
+   border-color: var(--color-marker-blue);
 }
 
 .flatpickr-monthDropdown-month {
@@ -1682,7 +1694,7 @@ nav ul li a[aria-current="page"]:hover {
 
 .species-overlay-card .latin-name,
 .list .latin-name {
-   color: var(--color-marker-orange);
+   color: #3c3c3c;
    font-style: italic;
 }
 
@@ -3401,7 +3413,7 @@ html.animals-page body {
    border-radius: 249.75px;
    background: #5e960012;
    border: 0.25px solid #5e960033;
-   color: #5e9600d1;
+   color: var(--color-brand-link);
    font-size: 0.4125rem;
    line-height: 1.15;
    font-weight: 800;
@@ -4264,7 +4276,7 @@ html.animals-page body {
    font-size: 0.8em;
    font-weight: 650;
    margin: 0 0 13px 0;
-   color: #14230a99;
+   color: #14230aa3;
 }
 
 .itin-card-actions {
@@ -4873,7 +4885,7 @@ html.animals-page body {
 .itin-panel-count {
    font-size: 0.72em;
    font-weight: 900;
-   opacity: 0.7;
+   opacity: 0.75;
 }
 
 .itin-panel-toggle {
@@ -5846,7 +5858,7 @@ html.animals-page body {
 .console-operations-schedule-times-placeholder {
    font-size: 0.75em;
    font-weight: 700;
-   color: #14230a8c;
+   color: #14230aa3;
    line-height: 1.1;
    max-width: 100%;
    overflow: hidden;
